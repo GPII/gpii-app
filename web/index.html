@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello GPII!</title>
+    <link rel="stylesheet" href="static/foundation/css/normalize.css">
+    <link rel="stylesheet" href="static/foundation/css/foundation.css">
+    <script src="static/jquery-2.1.4.js"></script>
+    <script src="js/gpii-demo.js"></script>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    <h2 class="curuser"></h2>
+    <a href="#" class="button userlogout">Logout</a>
+
+<div class="row">
+    <div class="small-3 columns">
+        <img src="static/personas/Alice.jpg" />
+    </div>
+    <div class="small-6 columns">
+        <p>Alice - On Screen Keyboard</p>
+        <p>Alice has a high spinal cord injury and cannot control anything below her chin.  She uses a head-controlled mouse point.  At the library she will ask anyone nearby to touch the GPII card to the computer for her and she is all set.
+        </p>
+    </div>
+    <div class="small-3 columns">
+        <p>
+            <a href="#" data-token="alice" class="button userlogin radius">Login as Alice</a>
+        </p>
+    </div>
+</div>
+
+<ul class="no-bullet">
+    <li>
+        <a href="#" data-token="elmer" class="button userlogin">Elmer</a>
+    </li>
+    <li>
+        <a href="#" data-token="elod" class="button userlogin">Elod</a>
+    </li>
+    <li>
+        <a href="#" data-token="livia" class="button userlogin">Livia</a>
+    </li>
+    <li>
+        <a href="#" data-token="alice" class="button userlogin">Alice</a>
+    </li>
+    <li>
+        <a href="#" data-token="davey" class="button userlogin">Davey</a>
+    </li>
+    <li>
+        <a href="#" data-token="david" class="button userlogin">David</a>
+    </li>
+    <li>
+        <a href="#" data-token="elaine" class="button userlogin">Elaine</a>
+    </li>
+</ul>
+    We are using node <script>document.write(process.versions.node)</script>,
+    Chrome <script>document.write(process.versions.chrome)</script>,
+    and Electron <script>document.write(process.versions.electron)</script>.
+  </body>
+</html>
