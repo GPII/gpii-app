@@ -6,13 +6,12 @@ var BrowserWindow = require('browser-window');  // Module to create native brows
 var Menu = require('menu');
 var Tray = require("tray");
 var os = require("os");
-
-// Report crashes to our server.
-require('crash-reporter').start();
+var request = require("request");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 var trayIcon = null;
+var statusUpdateInterval = null;
 
 var startLocalFlowManager = function() {
     var fluid = require("universal"),
@@ -39,28 +38,103 @@ app.on('window-all-closed', function() {
     }
 });
 
-var buildContextMenu = function(gpiiStarted) {
+/**
+ *  There are three possible return values. The system is not running at all,
+ *  the system is running and no one is logged in, or the system is running and
+ *  someone is logged in.
+ *
+ *  You'll pass in a callback, taking one of these which are structured as:
+ *  - Someone logged in: [ 'actual-user-token' ]
+ *  - No one logged in: [ false ]
+ *  - System not running: [ 404 ]
+ *
+ *  These are all the first item in the returned array so you should be able
+ *  to check for false, 404, or the name of the user token.
+ *
+ *  Our endpoints and options for this could really use some further standarization
+ *  going forward.
+ */
+var getFlowManagerStatus = function(callback) {
+    request("http://localhost:8081/userToken", function(error, response, body) {
+        if (!error && body.indexOf("No user currently logged in to the system") == 0) {
+            callback([false]);
+        }
+        else if (!error) {
+            callback(JSON.parse(body));
+        }
+        else {
+            callback([404]);
+        }
+    })
+}
+
+/**
+ *  Function that can run periodically on a node timer to check and update
+ *  System status, currently keyed in user, etc.
+ */
+var currentSystemStatus = [false, null];
+var updateSystemStatus = function() {
+    getFlowManagerStatus(function(statusArray) {
+        var status = statusArray[0];
+        var newStatus = null;
+        if (status === 404) {
+            newStatus = [false, null];
+        }
+        else if (status === false) {
+            newStatus = [true, null];
+        }
+        else {
+            newStatus = [true, status];
+        }
+        if (currentSystemStatus[0] !== newStatus[0] || currentSystemStatus[1] !== newStatus[1]) {
+            trayIcon.setContextMenu(buildContextMenu(newStatus[0], newStatus[1]));
+        }
+        currentSystemStatus = newStatus;
+    });
+}
+
+/**
+ *  This builds the menu for the task tray, there are currently 3 possible states.
+ *  1. GPII Started; No User Keyed In  (true, null)
+ *  2. GPII Started; User Keyed In     (true, 'alice')
+ *  3. GPII Stopped                    (false, null)
+ */
+var buildContextMenu = function(gpiiStarted, keyedUser) {
     var menu = [];
     if (gpiiStarted) {
-        menu.push(
-            {
-                label: "Stop GPII",
-                click: function() {
-                    stopLocalFlowManager();
-                    trayIcon.setContextMenu(buildContextMenu(false));
-                }
-            });
+        menu.push({ label: "FlowManager Running", enabled: false });
     }
     else {
-        menu.push(
-            {
-                label: "Start GPII",
-                click: function() {
-                    startLocalFlowManager();
-                    trayIcon.setContextMenu(buildContextMenu(true));
-                }
-            });
+        menu.push({ label: "FlowManager Not Running", enabled: false });
     }
+
+    if (gpiiStarted && keyedUser) {
+        menu.push({ label: "Keyed in as " + keyedUser, enabled: false });
+        menu.push({ label: "Keyed out " + keyedUser, enabled: false });
+    }
+    else if (gpiiStarted) {
+        menu.push({ label: "No one is keyed in", enabled: false });
+    }
+
+    if (gpiiStarted) {
+        menu.push({
+            label: "Stop GPII",
+            click: function() {
+                stopLocalFlowManager();
+                trayIcon.setContextMenu(buildContextMenu(false, null));
+            }
+        });
+    }
+    else {
+        menu.push({
+            label: "Start GPII",
+            click: function() {
+                startLocalFlowManager();
+                trayIcon.setContextMenu(buildContextMenu(true, null));
+            }
+        });
+    }
+
     menu.push({
         label: "Exit",
         click: function() {
@@ -80,9 +154,11 @@ app.on('ready', function() {
         trayIcon = new Tray(path.join(__dirname, 'web/icons/gpii.ico'));
     }
     trayIcon.setToolTip("GPII Electron");
-    trayIcon.setContextMenu(buildContextMenu(true));;
+    var menu = buildContextMenu(true, null);
+    trayIcon.setContextMenu(menu);
     startLocalFlowManager();
-    // startPersonaDemo();
+    currentSystemStatus = [true, null];
+    statusUpdateInterval = setInterval(updateSystemStatus, 5000);
 });
 
 /*

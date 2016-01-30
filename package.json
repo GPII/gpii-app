@@ -24,7 +24,8 @@
   "homepage": "https://github.com/atom/electron-quick-start#readme",
   "devDependencies": {
     "electron-prebuilt": "^0.34.0",
-    "electron-rebuild": "^1.1.2"
+    "electron-rebuild": "^1.1.2",
+    "request": "^2.69.0"
   },
   "dependencies": {
     "windows": "git://github.com/amb26/windows.git#3e24c5d126bd454d4526aa239b9e1013e4a04198",
