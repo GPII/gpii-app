@@ -72,7 +72,7 @@ var getFlowManagerStatus = function(callback) {
  *  Function that can run periodically on a node timer to check and update
  *  System status, currently keyed in user, etc.
  */
-var currentSystemStatus = [false, null];
+var currentSystemStatus = [true, null];
 var updateSystemStatus = function() {
     getFlowManagerStatus(function(statusArray) {
         var status = statusArray[0];
