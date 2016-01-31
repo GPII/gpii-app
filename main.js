@@ -93,6 +93,20 @@ var updateSystemStatus = function() {
     });
 }
 
+var keyIn = function(token) {
+    request("http://localhost:8081/user/"+token+"/login", function(error, response, body) {
+        //TODO Put in some error logging
+    });
+    updateSystemStatus();
+}
+
+var keyOut = function(token) {
+    request("http://localhost:8081/user/"+token+"/logout", function(error, response, body) {
+        //TODO Put in some error logging
+    });
+    updateSystemStatus();
+}
+
 /**
  *  This builds the menu for the task tray, there are currently 3 possible states.
  *  1. GPII Started; No User Keyed In  (true, null)
@@ -110,10 +124,25 @@ var buildContextMenu = function(gpiiStarted, keyedUser) {
 
     if (gpiiStarted && keyedUser) {
         menu.push({ label: "Keyed in as " + keyedUser, enabled: false });
-        menu.push({ label: "Keyed out " + keyedUser, enabled: false });
+        menu.push({ label: "Key out " + keyedUser,
+            click: function() {
+                keyOut(keyedUser);
+            }
+        });
     }
     else if (gpiiStarted) {
         menu.push({ label: "No one is keyed in", enabled: false });
+        menu.push({ label: "Log in with persona...",
+            submenu: [
+                { label: "Alice", click: function() { keyIn("alice"); }},
+                { label: "Davey", click: function() { keyIn("davey"); }},
+                { label: "David", click: function() { keyIn("david"); }},
+                { label: "Elaine", click: function() { keyIn("elaine"); }},
+                { label: "Elmer", click: function() { keyIn("elmer"); }},
+                { label: "Elod" , click: function() { keyIn("elod"); }},
+                { label: "Livia", click: function() { keyIn("livia"); }},
+            ]
+        })
     }
 
     if (gpiiStarted) {
