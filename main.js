@@ -12,6 +12,7 @@ var request = require("request");
 // be closed automatically when the JavaScript object is garbage collected.
 var trayIcon = null;
 var statusUpdateInterval = null;
+var firstDiscWindow = null;
 
 var startLocalFlowManager = function() {
     var fluid = require("universal"),
@@ -115,6 +116,25 @@ var keyOut = function(token) {
  */
 var buildContextMenu = function(gpiiStarted, keyedUser) {
     var menu = [];
+    // menu.push({
+    //     label: "Start First Discovery Tool",
+    //     click: function() {
+    //         console.log("Launching the first discovery tool...");
+    //         var firstDiscWindow = new BrowserWindow({
+    //             frame: true,
+    //             height: 600,
+    //             width: 400,
+    //             resizable: true,
+    //             "web-preferences": {
+    //                 "web-security": false
+    //             }
+    //         });
+    //         var firstDiscURL = "file://"+__dirname+"/node_modules/gpii-first-discovery/demos/index.html";
+    //         console.log(firstDiscURL);
+    //         firstDiscWindow.loadUrl(firstDiscURL);
+    //         firstDiscWindow.webContents.openDevTools();
+    //     }
+    // })
     if (gpiiStarted) {
         menu.push({ label: "FlowManager Running", enabled: false });
     }
@@ -173,6 +193,14 @@ var buildContextMenu = function(gpiiStarted, keyedUser) {
     return Menu.buildFromTemplate(menu);
 };
 
+var exec = require("child_process").exec;
+var startLocalFirstDiscoveryServer = function() {
+    console.log("About to launch first discover server");
+    var child = exec('npm start', {
+        cwd: "./node_modules/gpii-first-discovery-server"
+    });
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
@@ -186,39 +214,7 @@ app.on('ready', function() {
     var menu = buildContextMenu(true, null);
     trayIcon.setContextMenu(menu);
     startLocalFlowManager();
+    startLocalFirstDiscoveryServer();
     currentSystemStatus = [true, null];
     statusUpdateInterval = setInterval(updateSystemStatus, 5000);
 });
-
-/*
- *  Code below if for the Persona Demo Window. Destined for another file or
- *  module in the project.
- */
-
-// Global Window Reference
-var personaDemoWindow = null;
-
-var startPersonaDemo = function() {
-    // Create the browser window.
-    personaDemoWindow = new BrowserWindow({
-        width: 800, height: 600,
-        "web-preferences": {
-            "web-security": false
-        }
-    });
-
-    // and load the index.html of the app.
-    personaDemoWindow.loadUrl('file://' + __dirname + '/web/index.html');
-
-    // Open the DevTools.
-    personaDemoWindow.webContents.openDevTools();
-
-    // Emitted when the window is closed.
-    personaDemoWindow.on('closed', function() {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
-        personaDemoWindow = null;
-    });
-
-};

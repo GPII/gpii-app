@@ -25,10 +25,17 @@
   "devDependencies": {
     "electron-prebuilt": "^0.34.0",
     "electron-rebuild": "^1.1.2",
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "gpii-first-discovery": "git://github.com/GPII/first-discovery.git#c6242135a6bdf569ac4fa6bd430b3ed7306f7f99"
   },
   "dependencies": {
-    "windows": "git://github.com/amb26/windows.git#3e24c5d126bd454d4526aa239b9e1013e4a04198",
-    "universal": "git://github.com/amb26/universal.git#d2f5a9ff8709d5777aff128c069ca76b5a836811"
+    "windows": "git://github.com/sgithens/windows.git#0ff2c109978996e7c309b4e81a29fbfcbcd5c1c2",
+    "universal": "git://github.com/sgithens/universal.git#bd7d543e545a4bf69440994c4e7cdb236bbc5369",
+    "first-discovery-server": "git://github.com/sgithens/first-discovery-server.git#8c7e814baf4ebc18d3bae802d123fce63dc7b416"
+  },
+  "skip_deps": {
+    "note": "Currently working on testing TT-5 JAWS",
+    "universal": "git://github.com/amb26/universal.git#d2f5a9ff8709d5777aff128c069ca76b5a836811",
+    "first-discovery-server": "Is from: https://github.com/sgithens/first-discovery-server/tree/lgs-r3"
   }
 }
