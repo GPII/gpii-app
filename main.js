@@ -199,7 +199,14 @@ var startLocalFirstDiscoveryServer = function() {
     var child = exec('npm start', {
         cwd: "./node_modules/gpii-first-discovery-server"
     });
-}
+};
+
+var startWindowsProximityListener = function() {
+    console.log("About to launch Windows Proximity Listener");
+    var child = exec('GPIIWindowsProximityListener.exe', {
+        cwd: "./lgsbin"
+    });
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -215,6 +222,7 @@ app.on('ready', function() {
     trayIcon.setContextMenu(menu);
     startLocalFlowManager();
     startLocalFirstDiscoveryServer();
+    startWindowsProximityListener();
     currentSystemStatus = [true, null];
     statusUpdateInterval = setInterval(updateSystemStatus, 5000);
 });

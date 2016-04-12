@@ -35,7 +35,7 @@
   },
   "skip_deps": {
     "note": "Currently working on testing TT-5 JAWS",
-    "universal": "git://github.com/amb26/universal.git#d2f5a9ff8709d5777aff128c069ca76b5a836811",
+    "universal": "Is from https://github.com/sgithens/universal/tree/lgs-r3",
     "first-discovery-server": "Is from: https://github.com/sgithens/first-discovery-server/tree/lgs-r3"
   }
 }
