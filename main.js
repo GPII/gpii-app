@@ -31,13 +31,13 @@ var stopLocalFlowManager = function() {
 };
 
 // Quit when all windows are closed.
-app.on('window-all-closed', function() {
+//app.on('window-all-closed', function() {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform != 'darwin') {
-        app.quit();
-    }
-});
+//    if (process.platform != 'darwin') {
+//         app.quit();
+//     }
+// });
 
 /**
  *  There are three possible return values. The system is not running at all,
@@ -135,12 +135,12 @@ var buildContextMenu = function(gpiiStarted, keyedUser) {
     //         firstDiscWindow.webContents.openDevTools();
     //     }
     // })
-    if (gpiiStarted) {
-        menu.push({ label: "FlowManager Running", enabled: false });
-    }
-    else {
-        menu.push({ label: "FlowManager Not Running", enabled: false });
-    }
+    // if (gpiiStarted) {
+    //     menu.push({ label: "FlowManager Running", enabled: false });
+    // }
+    // else {
+    //     menu.push({ label: "FlowManager Not Running", enabled: false });
+    // }
 
     if (gpiiStarted && keyedUser) {
         menu.push({ label: "Keyed in as " + keyedUser, enabled: false });
@@ -165,45 +165,53 @@ var buildContextMenu = function(gpiiStarted, keyedUser) {
         })
     }
 
-    if (gpiiStarted) {
-        menu.push({
-            label: "Stop GPII",
-            click: function() {
-                stopLocalFlowManager();
-                trayIcon.setContextMenu(buildContextMenu(false, null));
-            }
-        });
-    }
-    else {
-        menu.push({
-            label: "Start GPII",
-            click: function() {
-                startLocalFlowManager();
-                trayIcon.setContextMenu(buildContextMenu(true, null));
-            }
-        });
-    }
+    // if (gpiiStarted) {
+    //     menu.push({
+    //         label: "Stop GPII",
+    //         click: function() {
+    //             stopLocalFlowManager();
+    //             trayIcon.setContextMenu(buildContextMenu(false, null));
+    //         }
+    //     });
+    // }
+    // else {
+    //     menu.push({
+    //         label: "Start GPII",
+    //         click: function() {
+    //             startLocalFlowManager();
+    //             trayIcon.setContextMenu(buildContextMenu(true, null));
+    //         }
+    //     });
+    // }
 
     menu.push({
         label: "Exit",
         click: function() {
-            app.quit();
+            quitLGS();
         }
     });
     return Menu.buildFromTemplate(menu);
 };
 
+var quitLGS = function() {
+    // TODO FDS isn't actually stopping at the moment
+    fdsChildProcess.kill('SIGKILL');
+    app.quit();
+};
+
 var exec = require("child_process").exec;
+var spawn = require("child_process").spawn;
+var fdsChildProcess = null;
 var startLocalFirstDiscoveryServer = function() {
     console.log("About to launch first discover server");
-    var child = exec('npm start', {
+    fdsChildProcess = exec("..\\..\\lgsbin\\node-431-x86.exe index.js", {
         cwd: "./node_modules/gpii-first-discovery-server"
     });
 };
 
 var startWindowsProximityListener = function() {
     console.log("About to launch Windows Proximity Listener");
-    var child = exec('GPIIWindowsProximityListener.exe', {
+    var child = spawn('GPIIWindowsProximityListener.exe', {
         cwd: "./lgsbin"
     });
 };
