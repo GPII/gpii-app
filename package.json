@@ -30,8 +30,11 @@
   },
   "dependencies": {
     "windows": "git://github.com/sgithens/windows.git#0ff2c109978996e7c309b4e81a29fbfcbcd5c1c2",
-    "universal": "git://github.com/sgithens/universal.git#bd7d543e545a4bf69440994c4e7cdb236bbc5369",
-    "first-discovery-server": "git://github.com/sgithens/first-discovery-server.git#8c7e814baf4ebc18d3bae802d123fce63dc7b416"
+    "universal": "git://github.com/sgithens/universal.git#f5652a00b79f5b86832ead1f646de478a158b16d",
+    "first-discovery-server": "git://github.com/sgithens/first-discovery-server.git#5139fa7aa5bf81fc2e3c9e254ceadea1bb7188c5"
+  },
+  "skip_checked_out_locally_for_development": {
+
   },
   "skip_deps": {
     "note": "Currently working on testing TT-5 JAWS",
