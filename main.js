@@ -204,7 +204,7 @@ var spawn = require("child_process").spawn;
 var fdsChildProcess = null;
 var startLocalFirstDiscoveryServer = function() {
     console.log("About to launch first discover server");
-    fdsChildProcess = exec("..\\..\\lgsbin\\node-431-x86.exe index.js", {
+    fdsChildProcess = exec("..\\..\\lgsbin\\node-443-x64.exe index.js", {
         cwd: "./node_modules/gpii-first-discovery-server"
     });
 };
