@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-var path = require('path');
-var app = require('app');  // Module to control application life.
-var BrowserWindow = require('browser-window');  // Module to create native browser window.
-var Menu = require('menu');
+var path = require("path");
+var app = require("app");  // Module to control application life.
+var BrowserWindow = require("browser-window");  // Module to create native browser window.
+var Menu = require("menu");
 var Tray = require("tray");
 var os = require("os");
 var request = require("request");
@@ -18,7 +18,7 @@ var startLocalFlowManager = function() {
     var fluid = require("universal"),
         gpii = fluid.registerNamespace("gpii");
 
-    if (os.platform() === 'win32') {
+    if (os.platform() === "win32") {
         var windows = require("gpii-windows/index.js");
     }
 
@@ -195,7 +195,7 @@ var buildContextMenu = function(gpiiStarted, keyedUser) {
 
 var quitLGS = function() {
     // TODO FDS isn't actually stopping at the moment
-    fdsChildProcess.kill('SIGKILL');
+    fdsChildProcess.kill("SIGKILL");
     app.quit();
 };
 
@@ -211,19 +211,19 @@ var startLocalFirstDiscoveryServer = function() {
 
 var startWindowsProximityListener = function() {
     console.log("About to launch Windows Proximity Listener");
-    var child = spawn('GPIIWindowsProximityListener.exe', {
+    var child = spawn("GPIIWindowsProximityListener.exe", {
         cwd: "./lgsbin"
     });
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.on('ready', function() {
-    if (process.platform === 'darwin') {
-        trayIcon = new Tray(path.join(__dirname, 'web/icons/gpii-icon.png'));
+app.on("ready", function() {
+    if (process.platform === "darwin") {
+        trayIcon = new Tray(path.join(__dirname, "web/icons/gpii-icon.png"));
     }
     else {
-        trayIcon = new Tray(path.join(__dirname, 'web/icons/gpii.ico'));
+        trayIcon = new Tray(path.join(__dirname, "web/icons/gpii.ico"));
     }
     trayIcon.setToolTip("GPII Electron");
     var menu = buildContextMenu(true, null);
