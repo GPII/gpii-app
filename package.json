@@ -1,7 +1,7 @@
 {
-  "name": "electron-gpii",
+  "name": "gpii-electron",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
   "main": "main.js",
   "scripts": {
     "start": "electron main.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atom/electron-quick-start.git"
+    "url": "git+https://github.com/gpii/gpii-electron.git"
   },
   "keywords": [
     "Electron",
@@ -17,12 +17,6 @@
     "start",
     "tutorial"
   ],
-  "author": "GitHub",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/atom/electron-quick-start/issues"
-  },
-  "homepage": "https://github.com/atom/electron-quick-start#readme",
   "devDependencies": {
     "dedupe-infusion": "1.0.0",
     "electron-prebuilt": "^0.34.0",
@@ -30,7 +24,7 @@
     "request": "^2.69.0"
   },
   "dependencies": {
-    "windows": "git://github.com/sgithens/windows.git#0ff2c109978996e7c309b4e81a29fbfcbcd5c1c2",
-    "universal": "git://github.com/sgithens/universal.git#f5652a00b79f5b86832ead1f646de478a158b16d"
+    "windows": "git://github.com/amb26/windows.git#61cb7163b83044a689e4c5a24d0fdb706fc58d1a",
+    "universal": "git://github.com/amb26/universal.git#9a8956efb9ebcdeb99f2d9213c3f0d1ec4e7a82a"
   }
 }
