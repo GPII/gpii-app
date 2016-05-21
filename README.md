@@ -10,6 +10,7 @@ npm install
 ./node_modules/.bin/electron-rebuild
 # Or on Windows, this can take a while, be moderately patient
 .\node_modules\.bin\electron-rebuild.cmd
+npm run dedupe-infusion
 npm start
 ```
 

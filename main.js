@@ -2,17 +2,15 @@
 
 var path = require("path");
 var app = require("app");  // Module to control application life.
-var BrowserWindow = require("browser-window");  // Module to create native browser window.
 var Menu = require("menu");
 var Tray = require("tray");
 var os = require("os");
 var request = require("request");
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
+// Top Level variables to track the Tray icon and the interval to ping the 
+// local flowmanager to see if the logged in status has changed.
 var trayIcon = null;
 var statusUpdateInterval = null;
-var firstDiscWindow = null;
 
 var startLocalFlowManager = function() {
     var fluid = require("universal"),
@@ -29,15 +27,6 @@ var stopLocalFlowManager = function() {
     var configs = fluid.queryIoCSelector(fluid.rootComponent, "kettle.config");
     fluid.each(configs, function (config) {config.destroy();});
 };
-
-// Quit when all windows are closed.
-//app.on('window-all-closed', function() {
-    // On OS X it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-//    if (process.platform != 'darwin') {
-//         app.quit();
-//     }
-// });
 
 /**
  *  There are three possible return values. The system is not running at all,
@@ -113,35 +102,12 @@ var keyOut = function(token) {
  *  1. GPII Started; No User Keyed In  (true, null)
  *  2. GPII Started; User Keyed In     (true, 'alice')
  *  3. GPII Stopped                    (false, null)
+ *
+ *  Currently scenerio 3 shouldnt' happen as we've taken out the menu to start 
+ *  and stop the flowmanager. But this may be useful in the future.
  */
 var buildContextMenu = function(gpiiStarted, keyedUser) {
     var menu = [];
-    // menu.push({
-    //     label: "Start First Discovery Tool",
-    //     click: function() {
-    //         console.log("Launching the first discovery tool...");
-    //         var firstDiscWindow = new BrowserWindow({
-    //             frame: true,
-    //             height: 600,
-    //             width: 400,
-    //             resizable: true,
-    //             "web-preferences": {
-    //                 "web-security": false
-    //             }
-    //         });
-    //         var firstDiscURL = "file://"+__dirname+"/node_modules/gpii-first-discovery/demos/index.html";
-    //         console.log(firstDiscURL);
-    //         firstDiscWindow.loadUrl(firstDiscURL);
-    //         firstDiscWindow.webContents.openDevTools();
-    //     }
-    // })
-    // if (gpiiStarted) {
-    //     menu.push({ label: "FlowManager Running", enabled: false });
-    // }
-    // else {
-    //     menu.push({ label: "FlowManager Not Running", enabled: false });
-    // }
-
     if (gpiiStarted && keyedUser) {
         menu.push({ label: "Keyed in as " + keyedUser, enabled: false });
         menu.push({ label: "Key out " + keyedUser,
@@ -164,41 +130,22 @@ var buildContextMenu = function(gpiiStarted, keyedUser) {
             ]
         })
     }
-
-    // if (gpiiStarted) {
-    //     menu.push({
-    //         label: "Stop GPII",
-    //         click: function() {
-    //             stopLocalFlowManager();
-    //             trayIcon.setContextMenu(buildContextMenu(false, null));
-    //         }
-    //     });
-    // }
-    // else {
-    //     menu.push({
-    //         label: "Start GPII",
-    //         click: function() {
-    //             startLocalFlowManager();
-    //             trayIcon.setContextMenu(buildContextMenu(true, null));
-    //         }
-    //     });
-    // }
-
     menu.push({
         label: "Exit",
         click: function() {
-            quitLGS();
+            // see note below about refactoring
+            // quitLGS();
+            app.quit();
         }
     });
     return Menu.buildFromTemplate(menu);
 };
 
-var quitLGS = function() {
-    // TODO FDS isn't actually stopping at the moment
-    fdsChildProcess.kill("SIGKILL");
-    app.quit();
-};
 
+// The below 2 pieces of functionality will be refactored as an extension once
+// this work is infusion-ized. ie. Such that a specific GPII distribution, such
+// as LGS could add in these custom startup pieces, but the core demo one would
+// not.
 var exec = require("child_process").exec;
 var spawn = require("child_process").spawn;
 var fdsChildProcess = null;
@@ -207,6 +154,10 @@ var startLocalFirstDiscoveryServer = function() {
     fdsChildProcess = exec("..\\..\\lgsbin\\node-443-x64.exe index.js", {
         cwd: "./node_modules/gpii-first-discovery-server"
     });
+};
+
+var quitLGS = function() {
+    fdsChildProcess.kill("SIGKILL");
 };
 
 var startWindowsProximityListener = function() {
@@ -229,8 +180,9 @@ app.on("ready", function() {
     var menu = buildContextMenu(true, null);
     trayIcon.setContextMenu(menu);
     startLocalFlowManager();
-    startLocalFirstDiscoveryServer();
-    startWindowsProximityListener();
+    // See note above about refactoring for these 2 functions.
+    // startLocalFirstDiscoveryServer();
+    // startWindowsProximityListener();
     currentSystemStatus = [true, null];
     statusUpdateInterval = setInterval(updateSystemStatus, 5000);
 });

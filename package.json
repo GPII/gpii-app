@@ -4,7 +4,8 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "electron main.js",
+    "dedupe-infusion": "node -e \"require('dedupe-infusion')();\""
   },
   "repository": {
     "type": "git",
@@ -23,22 +24,13 @@
   },
   "homepage": "https://github.com/atom/electron-quick-start#readme",
   "devDependencies": {
+    "dedupe-infusion": "1.0.0",
     "electron-prebuilt": "^0.34.0",
     "electron-rebuild": "^1.1.2",
-    "request": "^2.69.0",
-    "gpii-first-discovery": "git://github.com/GPII/first-discovery.git#c6242135a6bdf569ac4fa6bd430b3ed7306f7f99"
+    "request": "^2.69.0"
   },
   "dependencies": {
     "windows": "git://github.com/sgithens/windows.git#0ff2c109978996e7c309b4e81a29fbfcbcd5c1c2",
-    "universal": "git://github.com/sgithens/universal.git#f5652a00b79f5b86832ead1f646de478a158b16d",
-    "first-discovery-server": "git://github.com/sgithens/first-discovery-server.git#5139fa7aa5bf81fc2e3c9e254ceadea1bb7188c5"
-  },
-  "skip_checked_out_locally_for_development": {
-
-  },
-  "skip_deps": {
-    "note": "Currently working on testing TT-5 JAWS",
-    "universal": "Is from https://github.com/sgithens/universal/tree/lgs-r3",
-    "first-discovery-server": "Is from: https://github.com/sgithens/first-discovery-server/tree/lgs-r3"
+    "universal": "git://github.com/sgithens/universal.git#f5652a00b79f5b86832ead1f646de478a158b16d"
   }
 }
