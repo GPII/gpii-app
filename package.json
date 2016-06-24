@@ -4,8 +4,7 @@
   "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js",
-    "dedupe-infusion": "node -e \"require('dedupe-infusion')();\""
+    "start": "electron main.js"
   },
   "repository": {
     "type": "git",
@@ -18,13 +17,12 @@
     "tutorial"
   ],
   "devDependencies": {
-    "dedupe-infusion": "1.0.0",
     "electron-prebuilt": "^0.34.0",
     "electron-rebuild": "^1.1.2",
     "request": "^2.69.0"
   },
   "dependencies": {
-    "windows": "git://github.com/amb26/windows.git#61cb7163b83044a689e4c5a24d0fdb706fc58d1a",
-    "universal": "git://github.com/amb26/universal.git#9a8956efb9ebcdeb99f2d9213c3f0d1ec4e7a82a"
+    "windows": "git://github.com/gpii/windows.git#fd2c0609301c2c78aed6aaad241ca4e3b7ab3cf2",
+    "universal": "git://github.com/gpii/universal.git#c7ed823d5a7271e544820593b6b8ed045777b7d8"
   }
 }

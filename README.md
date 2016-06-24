@@ -7,10 +7,7 @@ development:
 
 ```bash
 npm install
-./node_modules/.bin/electron-rebuild
-# Or on Windows, this can take a while, be moderately patient
-.\node_modules\.bin\electron-rebuild.cmd
-npm run dedupe-infusion
+
 npm start
 ```
 
@@ -19,5 +16,5 @@ you have several VMs with Windows/Linux/etc mounted to a shared folder) you
 currently will need to wipe out the node_modules between OS runs as `npm install`
 includes some platform specific versions when building.
 
-As of writing, this application only pulls in the specific extensions for 
+As of writing, this application only pulls in the specific extensions for
 Windows. On Linux or OS X only core features will be included at runtime.
