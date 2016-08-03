@@ -1,0 +1,28 @@
+{
+  "name": "gpii-electron",
+  "version": "1.0.0",
+  "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpii/gpii-electron.git"
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial"
+  ],
+  "devDependencies": {
+    "electron-prebuilt": "^0.34.0",
+    "electron-rebuild": "^1.1.5",
+    "request": "^2.69.0"
+  },
+  "dependencies": {
+    "windows": "git://github.com/gpii/windows.git#fd2c0609301c2c78aed6aaad241ca4e3b7ab3cf2",
+    "universal": "git://github.com/gpii/universal.git#c7ed823d5a7271e544820593b6b8ed045777b7d8"
+  }
+}
