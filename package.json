@@ -4,7 +4,8 @@
   "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "electron main.js",
+    "test": "electron tests.js"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,9 @@
     "request": "^2.69.0"
   },
   "dependencies": {
-    "windows": "git://github.com/gpii/windows.git#fd2c0609301c2c78aed6aaad241ca4e3b7ab3cf2",
-    "universal": "git://github.com/gpii/universal.git#c7ed823d5a7271e544820593b6b8ed045777b7d8"
+    "infusion": "git://github.com/michelled/infusion.git#900b02553b9764e1815d35b101004790930d55ca",
+    "windows": "git://github.com/gpii/windows.git#c41f26dae5a57dd870cc154bdfbda598274a995d",
+    "universal": "git://github.com/gpii/universal.git#98561d07c0b49d4d565be9027adebf36c1d1fe82",
+    "node-jqunit": "1.1.4"
   }
 }
