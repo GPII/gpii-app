@@ -20,10 +20,11 @@
   "devDependencies": {
     "electron-prebuilt": "^0.34.0",
     "electron-rebuild": "^1.1.5",
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "shelljs": "0.3.0"
   },
   "dependencies": {
-    "infusion": "git://github.com/michelled/infusion.git#900b02553b9764e1815d35b101004790930d55ca",
+    "infusion": "git://github.com/fluid-project/infusion.git#99765614ca5679580024e8b673189ed419468a0c",
     "windows": "git://github.com/gpii/windows.git#c41f26dae5a57dd870cc154bdfbda598274a995d",
     "universal": "git://github.com/gpii/universal.git#98561d07c0b49d4d565be9027adebf36c1d1fe82",
     "node-jqunit": "1.1.4"
