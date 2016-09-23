@@ -18,15 +18,14 @@
     "tutorial"
   ],
   "devDependencies": {
-    "electron-prebuilt": "^0.34.0",
-    "electron-rebuild": "^1.1.5",
+    "electron": "1.4.1",
     "request": "^2.69.0",
     "shelljs": "0.3.0"
   },
   "dependencies": {
     "infusion": "git://github.com/fluid-project/infusion.git#99765614ca5679580024e8b673189ed419468a0c",
-    "windows": "git://github.com/gpii/windows.git#c41f26dae5a57dd870cc154bdfbda598274a995d",
-    "universal": "git://github.com/gpii/universal.git#98561d07c0b49d4d565be9027adebf36c1d1fe82",
+    "windows": "git://github.com/javihernandez/windows.git#6a1d8fdb0836c6ff3aa9b355fa83ae8938680558",
+    "universal": "git://github.com/javihernandez/universal.git#570143d4822ae1cd8a4b9e1ef27b0e82d84b7fe9",
     "node-jqunit": "1.1.4"
   }
 }

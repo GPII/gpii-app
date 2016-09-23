@@ -10,14 +10,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
 
+const {app, Menu, Tray} = require('electron')
 var path = require("path");
-var app = require("app");  // Module to control application life.
-var Menu = require("menu");
-var Tray = require("tray");
-var os = require("os");
 var request = require("request");
+var os = require("os");
 
-// Top Level variables to track the Tray icon and the interval to ping the 
+// Top Level variables to track the Tray icon and the interval to ping the
 // local flowmanager to see if the logged in status has changed.
 var trayIcon = null;
 var statusUpdateInterval = null;
@@ -113,7 +111,7 @@ var keyOut = function(token) {
  *  2. GPII Started; User Keyed In     (true, 'alice')
  *  3. GPII Stopped                    (false, null)
  *
- *  Currently scenerio 3 shouldnt' happen as we've taken out the menu to start 
+ *  Currently scenerio 3 shouldnt' happen as we've taken out the menu to start
  *  and stop the flowmanager. But this may be useful in the future.
  */
 var buildContextMenu = function(gpiiStarted, keyedUser) {
