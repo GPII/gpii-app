@@ -36,12 +36,13 @@ fluid.defaults("gpii.app", {
         }]
     },
     modelListeners: {
-        keyedInSet: [{ //  Will this be a race condition?
+        keyedInSet: [{
             funcName: "gpii.app.keyOut",
             args: ["{change}.oldValue"]
         }, {
             funcName: "gpii.app.keyIn",
-            args: ["{change}.value"]
+            args: ["{change}.value"],
+            priority: "after:keyOut"
         }]
     },
     invokers: {
@@ -94,16 +95,16 @@ fluid.defaults("gpii.taskTray", {
     listeners: {
         onCreate: [{
             funcName: "gpii.taskTray.makeTray",
-            args: ["{that}.options.icon"]
+            args: ["{that}.options.icon", "{that}.options.menuLabels.tooltip"]
         }, {
             funcName: "gpii.taskTray.updateMenu",
-            args: ["{that}.model.gpiiStarted", "{that}.model.keyedInSet", "{that}.changeSet"]
+            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels", "{that}.model.keyedInSet", "{that}.changeSet"]
         }],
     },
     modelListeners: {
-        "*": {
+        "*": { // is there a better way to do this so that I don't repeat the args block from above?
             funcName: "gpii.taskTray.updateMenu",
-            args: ["{that}.model.gpiiStarted", "{that}.model.keyedInSet", "{that}.changeSet"]
+            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels", "{that}.model.keyedInSet", "{that}.changeSet"]
         }
     },
     invokers: {
@@ -112,30 +113,38 @@ fluid.defaults("gpii.taskTray", {
             value: "{arguments}.0"
         }
     },
-    icon: "web/icons/gpii.ico"
+    icon: "web/icons/gpii.ico",
+    menuLabels: {
+        tooltip: "GPII Electron",
+        keyedIn: "Keyed in with %setName", // string template
+        keyOut: "Key out %setName", //string template
+        notKeyedIn: "Not keyed in",
+        exit: "Exit",
+        keyIn: "Key in set ..."
+    }
 });
 
-gpii.taskTray.makeTray = function (icon) {
+gpii.taskTray.makeTray = function (icon, tooltip) {
     tray = new Tray(path.join(__dirname, icon));
-    tray.setToolTip("GPII Electron");
+    tray.setToolTip(tooltip);
 };
 
-gpii.taskTray.updateSet = function (menu, setName, changeSetFn) {
+gpii.taskTray.updateSet = function (menu, menuLabels, setName, changeSetFn) {
     if (setName) {
-        menu.push({ label: "Keyed in with " + setName, enabled: false });
-        menu.push({ label: "Key out " + setName,
+        menu.push({ label: fluid.stringTemplate(menuLabels.keyedIn, {"setName": setName}), enabled: false });
+        menu.push({ label: fluid.stringTemplate(menuLabels.keyOut, {"setName": setName}),
             click: function () {
                 changeSetFn("");
             }
         });
     } else {
-        menu.push({ label: "Not keyed in", enabled: false });
+        menu.push({ label: menuLabels.notKeyedIn, enabled: false });
     }
     return menu;
 };
 
-gpii.taskTray.updateSnapsets = function (menu, keyInFn) {
-    menu.push({ label: "Key in set...",
+gpii.taskTray.updateSnapsets = function (menu, keyInLabel, keyInFn) {
+    menu.push({ label: keyInLabel,
         submenu: [
             { label: "Alice", click: function() { keyInFn("alice"); }},
             { label: "Davey", click: function() { keyInFn("davey"); }},
@@ -149,9 +158,9 @@ gpii.taskTray.updateSnapsets = function (menu, keyInFn) {
     return menu;
 };
 
-gpii.taskTray.addExit = function (menu) {
+gpii.taskTray.addExit = function (menu, exitLabel) {
     menu.push({
-        label: "Exit",
+        label: exitLabel,
         click: function() {
             app.quit();
         }
@@ -159,17 +168,17 @@ gpii.taskTray.addExit = function (menu) {
     return menu;
 };
 
-gpii.taskTray.updateMenu = function (gpiiStarted, setName, changeSetFn) {
+gpii.taskTray.updateMenu = function (gpiiStarted, menuLabels, setName, changeSetFn) {
     if (!tray) {
         return;
     }
 
     var menu = [];
     if (gpiiStarted) {
-        menu = gpii.taskTray.updateSet(menu, setName, changeSetFn);
-        menu = gpii.taskTray.updateSnapsets(menu, changeSetFn);
+        menu = gpii.taskTray.updateSet(menu, menuLabels, setName, changeSetFn);
+        menu = gpii.taskTray.updateSnapsets(menu, menuLabels.keyIn, changeSetFn);
     }
-    menu = gpii.taskTray.addExit(menu);
+    menu = gpii.taskTray.addExit(menu, menuLabels.exit);
     tray.setContextMenu(Menu.buildFromTemplate(menu));
 };
 
