@@ -98,13 +98,15 @@ fluid.defaults("gpii.taskTray", {
             args: ["{that}.options.icon", "{that}.options.menuLabels.tooltip"]
         }, {
             funcName: "gpii.taskTray.updateMenu",
-            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels", "{that}.model.keyedInSet", "{that}.changeSet"]
+            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels",
+            "{that}.options.snapsets", "{that}.model.keyedInSet", "{that}.changeSet"]
         }],
     },
     modelListeners: {
         "*": { // is there a better way to do this so that I don't repeat the args block from above?
             funcName: "gpii.taskTray.updateMenu",
-            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels", "{that}.model.keyedInSet", "{that}.changeSet"]
+            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels",
+            "{that}.options.snapsets", "{that}.model.keyedInSet", "{that}.changeSet"]
         }
     },
     invokers: {
@@ -121,6 +123,15 @@ fluid.defaults("gpii.taskTray", {
         notKeyedIn: "Not keyed in",
         exit: "Exit",
         keyIn: "Key in set ..."
+    },
+    snapsets: {
+        alice: "Alice",
+        davey: "Davey",
+        david: "David",
+        elaine: "Elaine",
+        elmer: "Elmer",
+        elod: "Elod",
+        livia: "Livia"
     }
 });
 
@@ -143,17 +154,15 @@ gpii.taskTray.updateSet = function (menu, menuLabels, setName, changeSetFn) {
     return menu;
 };
 
-gpii.taskTray.updateSnapsets = function (menu, keyInLabel, keyInFn) {
-    menu.push({ label: keyInLabel,
-        submenu: [
-            { label: "Alice", click: function() { keyInFn("alice"); }},
-            { label: "Davey", click: function() { keyInFn("davey"); }},
-            { label: "David", click: function() { keyInFn("david"); }},
-            { label: "Elaine", click: function() { keyInFn("elaine"); }},
-            { label: "Elmer", click: function() { keyInFn("elmer"); }},
-            { label: "Elod" , click: function() { keyInFn("elod"); }},
-            { label: "Livia", click: function() { keyInFn("livia"); }},
-        ]
+gpii.taskTray.updateSnapsets = function (menu, keyInLabel, snapsets, keyInFn) {
+    var submenuArray = [];
+    fluid.each(snapsets, function (value, key) {
+        submenuArray.push({label: value, click: function () { keyInFn(key); }});
+    });
+
+    menu.push({
+        label: keyInLabel,
+        submenu: submenuArray
     });
     return menu;
 };
@@ -168,15 +177,15 @@ gpii.taskTray.addExit = function (menu, exitLabel) {
     return menu;
 };
 
-gpii.taskTray.updateMenu = function (gpiiStarted, menuLabels, setName, changeSetFn) {
+gpii.taskTray.updateMenu = function (gpiiStarted, menuLabels, snapsets, keyedInSet, changeSetFn) {
     if (!tray) {
         return;
     }
 
     var menu = [];
     if (gpiiStarted) {
-        menu = gpii.taskTray.updateSet(menu, menuLabels, setName, changeSetFn);
-        menu = gpii.taskTray.updateSnapsets(menu, menuLabels.keyIn, changeSetFn);
+        menu = gpii.taskTray.updateSet(menu, menuLabels, snapsets[keyedInSet], changeSetFn);
+        menu = gpii.taskTray.updateSnapsets(menu, menuLabels.keyIn, snapsets, changeSetFn);
     }
     menu = gpii.taskTray.addExit(menu, menuLabels.exit);
     tray.setContextMenu(Menu.buildFromTemplate(menu));
