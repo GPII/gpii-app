@@ -17,9 +17,6 @@ var path = require("path");
 var request = require("request");
 var os = require("os");
 
-// The tray needs to be global
-var tray = null;
-
 // Component to start and stop parts of the GPII as well as key in and key out users
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
@@ -84,6 +81,14 @@ fluid.defaults("gpii.taskTray", {
         gpiiStarted: false,
         keyedInSet: null
     },
+     members: {
+        tray: {
+            expander: {
+                funcName: "gpii.taskTray.makeTray",
+                args: ["{that}.options.icon", "{that}.options.menuLabels.tooltip"]
+            }
+        }
+     },
     components: {
         app: {
             type: "gpii.app",
@@ -94,9 +99,6 @@ fluid.defaults("gpii.taskTray", {
     },
     listeners: {
         onCreate: [{
-            funcName: "gpii.taskTray.makeTray",
-            args: ["{that}.options.icon", "{that}.options.menuLabels.tooltip"]
-        }, {
             funcName: "{that}.updateMenu"
         }],
     },
@@ -113,7 +115,7 @@ fluid.defaults("gpii.taskTray", {
         updateMenu: {
             funcName: "gpii.taskTray.updateMenu",
             args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels",
-            "{that}.options.snapsets", "{that}.model.keyedInSet", "{that}.changeSet"]
+            "{that}.options.snapsets", "{that}.model.keyedInSet", "{that}.changeSet", "{that}"]
         }
     },
     icon: "web/icons/gpii.ico",
@@ -137,8 +139,7 @@ fluid.defaults("gpii.taskTray", {
 });
 
 gpii.taskTray.makeTray = function (icon, tooltip) {
-    tray = new Tray(path.join(__dirname, icon));
-    tray.setToolTip(tooltip);
+    return new Tray(path.join(__dirname, icon));
 };
 
 gpii.taskTray.updateSet = function (menu, menuLabels, setName, changeSetFn) {
@@ -178,8 +179,8 @@ gpii.taskTray.addExit = function (menu, exitLabel) {
     return menu;
 };
 
-gpii.taskTray.updateMenu = function (gpiiStarted, menuLabels, snapsets, keyedInSet, changeSetFn) {
-    if (!tray) {
+gpii.taskTray.updateMenu = function (gpiiStarted, menuLabels, snapsets, keyedInSet, changeSetFn, that) {
+    if (!that.tray) {
         return;
     }
 
@@ -189,7 +190,8 @@ gpii.taskTray.updateMenu = function (gpiiStarted, menuLabels, snapsets, keyedInS
         menu = gpii.taskTray.updateSnapsets(menu, menuLabels.keyIn, snapsets, changeSetFn);
     }
     menu = gpii.taskTray.addExit(menu, menuLabels.exit);
-    tray.setContextMenu(Menu.buildFromTemplate(menu));
+    that.tray.setToolTip(menuLabels.tooltip);
+    that.tray.setContextMenu(Menu.buildFromTemplate(menu));
 };
 
 // This method will be called when Electron has finished
