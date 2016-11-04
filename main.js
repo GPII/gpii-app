@@ -97,22 +97,23 @@ fluid.defaults("gpii.taskTray", {
             funcName: "gpii.taskTray.makeTray",
             args: ["{that}.options.icon", "{that}.options.menuLabels.tooltip"]
         }, {
-            funcName: "gpii.taskTray.updateMenu",
-            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels",
-            "{that}.options.snapsets", "{that}.model.keyedInSet", "{that}.changeSet"]
+            funcName: "{that}.updateMenu"
         }],
     },
     modelListeners: {
-        "*": { // is there a better way to do this so that I don't repeat the args block from above?
-            funcName: "gpii.taskTray.updateMenu",
-            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels",
-            "{that}.options.snapsets", "{that}.model.keyedInSet", "{that}.changeSet"]
+        "*": {
+            funcName: "{that}.updateMenu"
         }
     },
     invokers: {
         changeSet: {
             changePath: "keyedInSet",
             value: "{arguments}.0"
+        },
+        updateMenu: {
+            funcName: "gpii.taskTray.updateMenu",
+            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels",
+            "{that}.options.snapsets", "{that}.model.keyedInSet", "{that}.changeSet"]
         }
     },
     icon: "web/icons/gpii.ico",
