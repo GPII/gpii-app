@@ -23,9 +23,9 @@
     "shelljs": "0.3.0"
   },
   "dependencies": {
-    "infusion": "git://github.com/fluid-project/infusion.git#99765614ca5679580024e8b673189ed419468a0c",
-    "windows": "git://github.com/javihernandez/windows.git#6a1d8fdb0836c6ff3aa9b355fa83ae8938680558",
-    "universal": "git://github.com/javihernandez/universal.git#570143d4822ae1cd8a4b9e1ef27b0e82d84b7fe9",
+    "infusion": "git://github.com/fluid-project/infusion.git#8fbd9a1ef3ee94b2dea8d9384348ac92b5a103d0",
+    "windows": "git://github.com/GPII/windows.git#3eb9e8c4bda54bc583af7309998ab202370bde23",
+    "universal": "git://github.com/GPII/universal.git#1a3434d970cb484956eb18310683bdfe473123d6",
     "node-jqunit": "1.1.4"
   }
 }

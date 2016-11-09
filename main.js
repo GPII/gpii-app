@@ -81,11 +81,11 @@ fluid.defaults("gpii.taskTray", {
         gpiiStarted: false,
         keyedInSet: null
     },
-     members: {
+    members: {
         tray: {
             expander: {
                 funcName: "gpii.taskTray.makeTray",
-                args: ["{that}.options.icon", "{that}.options.menuLabels.tooltip"]
+                args: ["{that}.options.icon"]
             }
         }
      },
@@ -98,9 +98,9 @@ fluid.defaults("gpii.taskTray", {
         }
     },
     listeners: {
-        onCreate: [{
+        onCreate: {
             funcName: "{that}.updateMenu"
-        }],
+        }
     },
     modelListeners: {
         "*": {
@@ -138,7 +138,7 @@ fluid.defaults("gpii.taskTray", {
     }
 });
 
-gpii.taskTray.makeTray = function (icon, tooltip) {
+gpii.taskTray.makeTray = function (icon) {
     return new Tray(path.join(__dirname, icon));
 };
 
