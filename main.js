@@ -80,10 +80,7 @@ gpii.app.keyOut = function (token) {
 // Component to create and update the task tray menu.
 fluid.defaults("gpii.taskTray", {
     gradeNames: "fluid.modelComponent",
-    model: { // Do I need to specify a default or will it sync up with the other component?
-        gpiiStarted: false,
-        keyedInSet: null
-    },
+    model: "{that}.app.model",
     members: {
         tray: {
             expander: {
