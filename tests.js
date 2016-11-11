@@ -1,7 +1,8 @@
+/* eslint-env node */
 "use strict";
 
-const {app} = require('electron')
+var app = require("electron").app;
 
-app.on("ready", function() {
+app.on("ready", function () {
     require("./node_modules/gpii-windows/tests/UnitTests.js");
 });

@@ -8,11 +8,14 @@ Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
 You may obtain a copy of the License at
 https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
+/* eslint-env node */
 "use strict";
 
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
-const {app, Menu, Tray} = require('electron')
+var app = require("electron").app;
+var Menu = require("electron").Menu;
+var Tray = require("electron").Tray;
 var path = require("path");
 var request = require("request");
 var os = require("os");
@@ -55,23 +58,23 @@ gpii.app.startLocalFlowManager = function () {
         gpii = fluid.registerNamespace("gpii");
 
     if (os.platform() === "win32") {
-        var windows = require("gpii-windows/index.js");
+        require("gpii-windows/index.js");
     }
 
     gpii.start();
 };
 
 gpii.app.keyIn = function (token) {
-    request("http://localhost:8081/user/"+token+"/login", function(error, response, body) {
+    request("http://localhost:8081/user/" + token + "/login", function (/*error, response, body*/) {
         //TODO Put in some error logging
     });
-}
+};
 
 gpii.app.keyOut = function (token) {
-    request("http://localhost:8081/user/"+token+"/logout", function(error, response, body) {
+    request("http://localhost:8081/user/" + token + "/logout", function (/*error, response, body*/) {
         //TODO Put in some error logging
     });
-}
+};
 
 
 // Component to create and update the task tray menu.
@@ -88,7 +91,7 @@ fluid.defaults("gpii.taskTray", {
                 args: ["{that}.options.icon"]
             }
         }
-     },
+    },
     components: {
         app: {
             type: "gpii.app",
@@ -172,7 +175,7 @@ gpii.taskTray.updateSnapsets = function (menu, keyInLabel, snapsets, keyInFn) {
 gpii.taskTray.addExit = function (menu, exitLabel) {
     menu.push({
         label: exitLabel,
-        click: function() {
+        click: function () {
             app.quit();
         }
     });
@@ -196,7 +199,7 @@ gpii.taskTray.updateMenu = function (gpiiStarted, menuLabels, snapsets, keyedInS
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.on("ready", function() {
+app.on("ready", function () {
     gpii.taskTray();
 
 });
