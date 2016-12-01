@@ -6,11 +6,17 @@ Running the Application
 -----------------------
 
 'vagrant up' - install dependencies and run in a Windows VM
-'npm start' (in the VM)
+
+'cd c:\\vagrant' (in a terminal in the VM)
+
+'npm start' (in the VM terminal)
 
 
 Running the Tests in a VM
 -------------------------
 
 'vagrant up' - install dependencies and run in a Windows VM
-'npm test' (in the VM)
+
+'cd c:\\vagrant' (in a terminal in the VM)
+
+'npm test' (in the VM terminal)

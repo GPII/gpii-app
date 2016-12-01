@@ -174,6 +174,7 @@ gpii.taskTray.addExit = function (menu, exitLabel) {
     menu.push({
         label: exitLabel,
         click: function () {
+            var app = require("electron").app;
             app.quit();
         }
     });
