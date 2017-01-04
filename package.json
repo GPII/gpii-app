@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "infusion": "2.0.0-dev.20161027T155641Z.0bcd507",
-    "windows": "git://github.com/GPII/windows.git#3eb9e8c4bda54bc583af7309998ab202370bde23",
-    "universal": "git://github.com/GPII/universal.git#1a3434d970cb484956eb18310683bdfe473123d6",
+    "windows": "git://github.com/kaspermarkus/windows.git#251b900bf24939c6c24a469fa6c493eeaaee8579",
+    "universal": "git://github.com/GPII/universal.git#88aec55cd2cafb2cab914978b11c5e1bc7926260",
     "node-jqunit": "1.1.4"
   }
 }
