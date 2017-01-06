@@ -12,6 +12,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 /* eslint-env node */
 
+"use strict";
+
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
 var Menu = require("electron").Menu;
@@ -20,21 +22,111 @@ var path = require("path");
 var request = require("request");
 var os = require("os");
 
+/*
+ ** Component to manage the task tray.
+ */
+fluid.defaults("gpii.taskTray", {
+    gradeNames: "fluid.modelComponent",
+    model: {
+        menu: null
+    },
+    members: {
+        tray: {
+            expander: {
+                funcName: "gpii.taskTray.makeTray",
+                args: ["{that}.options.icon"]
+            }
+        }
+    },
+    components: {
+        app: {
+            type: "gpii.app",
+            options: {
+                events: {
+                    onAppReady: "{taskTray}.events.onAppReady"
+                }
+            }
+        },
+        menu: {
+            type: "gpii.taskTray.menu",
+            createOnEvent: "onAppReady",
+            options: {
+                modelRelay: {
+                    target: "{taskTray}.model.menu",
+                    singleTransform: {
+                        type: "fluid.transforms.free",
+                        func: "gpii.taskTray.menu.updateMenu",
+                        args: ["{that}", "{app}.model.gpiiStarted", "{app}.model.keyedInSet"]
+                    }
+                },
+                invokers: {
+                    // The function used to apply prefs sets
+                    changeSet: {
+                        changePath: "{app}.model.keyedInSet",
+                        value: "{arguments}.0"
+                    }
+                }
+            }
+        }
+    },
+    events: {
+        onAppReady: null
+    },
+    listeners: {
+        "onCreate.updateTaskTray": {
+            funcName: "{that}.updateTaskTray",
+            args: ["{that}.model.menu"]
+        }
+    },
+    modelListeners: {
+        "menu": {
+            funcName: "{that}.updateTaskTray",
+            args: ["{change}.value"],
+            excludeSource: "init"
+        }
+    },
+    invokers: {
+        updateTaskTray: {
+            funcName: "gpii.taskTray.updateTaskTray",
+            args: ["{that}.tray", "{that}.options.labels.tooltip", "{arguments}.0"] // menu
+        }
+    },
+    icon: "icons/gpii.ico",
+    labels: {
+        tooltip: "GPII Electron"
+    }
+});
 
-// Component to start and stop parts of the GPII as well as key in and key out users
+gpii.taskTray.makeTray = function (icon) {
+    return new Tray(path.join(__dirname, icon));
+};
+
+gpii.taskTray.updateTaskTray = function (tray, tooltipLabel, menu) {
+    tray.setToolTip(tooltipLabel);
+    tray.setContextMenu(Menu.buildFromTemplate(menu));
+};
+
+/*
+ ** Component to start and stop parts of the GPII as well as key in and key out users
+ */
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
         gpiiStarted: false,
         keyedInSet: null
     },
+    events: {
+        onAppReady: null
+    },
     listeners: {
-        onCreate: [{
-            funcName: "gpii.app.startLocalFlowManager"
-        }, {
+        "onCreate.startGpii": {
+            funcName: "gpii.app.startLocalFlowManager",
+            args: ["{that}"]
+        },
+        "onCreate.changeStarted": {
             funcName: "{that}.changeStarted",
             args: [true]
-        }]
+        }
     },
     modelListeners: {
         keyedInSet: [{
@@ -54,7 +146,7 @@ fluid.defaults("gpii.app", {
     }
 });
 
-gpii.app.startLocalFlowManager = function () {
+gpii.app.startLocalFlowManager = function (that) {
     var fluid = require("universal"),
         gpii = fluid.registerNamespace("gpii");
 
@@ -63,6 +155,8 @@ gpii.app.startLocalFlowManager = function () {
     }
 
     gpii.start();
+    //TODO: needs to fire an on ready so we can be certain that everything has started
+    that.events.onAppReady.fire();
 };
 
 gpii.app.keyIn = function (token) {
@@ -77,49 +171,11 @@ gpii.app.keyOut = function (token) {
     });
 };
 
-
-// Component to create and update the task tray menu.
-fluid.defaults("gpii.taskTray", {
+/*
+ ** Component to create and update the task tray menu.
+ */
+fluid.defaults("gpii.taskTray.menu", {
     gradeNames: "fluid.modelComponent",
-    model: "{that}.app.model",
-    members: {
-        tray: {
-            expander: {
-                funcName: "gpii.taskTray.makeTray",
-                args: ["{that}.options.icon"]
-            }
-        }
-    },
-    components: {
-        app: {
-            type: "gpii.app",
-            options: {
-                model: "{gpii.taskTray}.model"
-            }
-        }
-    },
-    listeners: {
-        onCreate: {
-            funcName: "{that}.updateMenu"
-        }
-    },
-    modelListeners: {
-        "*": {
-            funcName: "{that}.updateMenu"
-        }
-    },
-    invokers: {
-        changeSet: {
-            changePath: "keyedInSet",
-            value: "{arguments}.0"
-        },
-        updateMenu: {
-            funcName: "gpii.taskTray.updateMenu",
-            args: ["{that}.model.gpiiStarted", "{that}.options.menuLabels",
-            "{that}.options.snapsets", "{that}.model.keyedInSet", "{that}.changeSet", "{that}"]
-        }
-    },
-    icon: "icons/gpii.ico",
     menuLabels: {
         tooltip: "GPII Electron",
         keyedIn: "Keyed in with %setName", // string template
@@ -138,10 +194,6 @@ fluid.defaults("gpii.taskTray", {
         livia: "Livia"
     }
 });
-
-gpii.taskTray.makeTray = function (icon) {
-    return new Tray(path.join(__dirname, icon));
-};
 
 gpii.taskTray.updateSet = function (menu, menuLabels, setName, changeSetFn) {
     if (setName) {
@@ -181,17 +233,15 @@ gpii.taskTray.addExit = function (menu, exitLabel) {
     return menu;
 };
 
-gpii.taskTray.updateMenu = function (gpiiStarted, menuLabels, snapsets, keyedInSet, changeSetFn, that) {
-    if (!that.tray) {
-        return;
-    }
-
+gpii.taskTray.menu.updateMenu = function (that, gpiiStarted, keyedInSet) {
+    var menuLabels = that.options.menuLabels;
+    var snapsets = that.options.snapsets;
+    var changeSetFn = that.changeSet;
     var menu = [];
     if (gpiiStarted) {
         menu = gpii.taskTray.updateSet(menu, menuLabels, snapsets[keyedInSet], changeSetFn);
         menu = gpii.taskTray.updateSnapsets(menu, menuLabels.keyIn, snapsets, changeSetFn);
     }
-    menu = gpii.taskTray.addExit(menu, menuLabels.exit);
-    that.tray.setToolTip(menuLabels.tooltip);
-    that.tray.setContextMenu(Menu.buildFromTemplate(menu));
+    that.menu = gpii.taskTray.addExit(menu, menuLabels.exit);
+    return that.menu;
 };
