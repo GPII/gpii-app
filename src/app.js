@@ -124,8 +124,8 @@ fluid.defaults("gpii.app", {
             args: ["{that}"]
         },
         "onCreate.changeStarted": {
-            funcName: "{that}.changeStarted",
-            args: [true]
+            changePath: "gpiiStarted",
+            value: "{arguments}.0"
         }
     },
     modelListeners: {
@@ -137,12 +137,6 @@ fluid.defaults("gpii.app", {
             args: ["{change}.value"],
             priority: "after:keyOut"
         }]
-    },
-    invokers: {
-        changeStarted: {
-            changePath: "gpiiStarted",
-            value: "{arguments}.0"
-        }
     }
 });
 
