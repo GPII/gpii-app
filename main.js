@@ -11,15 +11,23 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 /* eslint-env node */
 "use strict";
 
-var fluid = require("infusion");
-var gpii = fluid.registerNamespace("gpii");
-var app = require("electron").app;
-require("./src/app.js");
+var fluid = require("infusion"),
+    gpii = fluid.registerNamespace("gpii"),
+    app = require("electron").app,
+    kettle = fluid.registerNamespace("kettle"),
+    universal = require("universal");
 
+require("gpii-windows/index.js");
+
+require("./src/app.js");
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on("ready", function () {
-    gpii.taskTray();
+    // gpii.taskTray();
 
+    kettle.config.loadConfig({
+        configName: kettle.config.getConfigName("app"),
+        configPath: kettle.config.getConfigPath(__dirname + "/configs")
+    });
 });

@@ -1,7 +1,7 @@
 /*!
 GPII Electron
 Copyright 2016 Steven Githens
-Copyright 2016 OCAD University
+Copyright 2016-2017 OCAD University
 
 Licensed under the New BSD license. You may not use this file except in
 compliance with this License.
@@ -28,7 +28,9 @@ var os = require("os");
 fluid.defaults("gpii.taskTray", {
     gradeNames: "fluid.modelComponent",
     model: {
-        menu: null
+        // This model has a "menu" item that is only relayed from gpii.taskTray.menu,
+        // The comment below is for documentation purpose.
+        // menu: null
     },
     members: {
         tray: {
@@ -41,15 +43,15 @@ fluid.defaults("gpii.taskTray", {
     components: {
         app: {
             type: "gpii.app",
-            options: {
-                events: {
-                    onAppReady: "{taskTray}.events.onAppReady"
-                }
-            }
+            // options: {
+            //     events: {
+            //         onAppReady: "{taskTray}.events.onAppReady"
+            //     }
+            // }
         },
         menu: {
             type: "gpii.taskTray.menu",
-            createOnEvent: "onAppReady",
+            // createOnEvent: "onAppReady",
             options: {
                 modelRelay: {
                     target: "{taskTray}.model.menu",
@@ -73,16 +75,28 @@ fluid.defaults("gpii.taskTray", {
         onAppReady: null
     },
     listeners: {
-        "onCreate.updateTaskTray": {
-            funcName: "{that}.updateTaskTray",
-            args: ["{that}.model.menu"]
+        "{lifecycleManager}.events.onSessionStart": {
+            listener: "{that}.events.onAppReady.fire",
+            namespace: "onLifeCycelSessionStart"
+        },
+        "{lifecycleManager}.events.onSessionStart": {
+            funcName: "console.log",
+            args: ["lifecycleManager onSessionStart is fired"],
+            namespace: "onSessionStartDebug"
+        },
+        // "onCreate.updateTaskTray": {
+        //     funcName: "{that}.updateTaskTray",
+        //     args: ["{that}.model.menu"]
+        // },
+        "onAppReady.debug": {
+            funcName: "console.log",
+            args: ["onAppReady is fired"]
         }
     },
     modelListeners: {
         "menu": {
             funcName: "{that}.updateTaskTray",
-            args: ["{change}.value"],
-            excludeSource: "init"
+            args: ["{change}.value"]
         }
     },
     invokers: {
@@ -98,12 +112,17 @@ fluid.defaults("gpii.taskTray", {
 });
 
 gpii.taskTray.makeTray = function (icon) {
+    console.log("=========================== making the TRAY");
     return new Tray(path.join(__dirname, icon));
 };
 
 gpii.taskTray.updateTaskTray = function (tray, tooltipLabel, menu) {
-    tray.setToolTip(tooltipLabel);
-    tray.setContextMenu(Menu.buildFromTemplate(menu));
+    if (menu) {
+        tray.setToolTip(tooltipLabel);
+        tray.setContextMenu(Menu.buildFromTemplate(menu));
+    } else {
+        console.log("+++++++++++++ menu is null");
+    }
 };
 
 /*
@@ -119,10 +138,10 @@ fluid.defaults("gpii.app", {
         onAppReady: null
     },
     listeners: {
-        "onCreate.startGpii": {
-            funcName: "gpii.app.startLocalFlowManager",
-            args: ["{that}"]
-        },
+        // "onCreate.startGpii": {
+        //     funcName: "gpii.app.startLocalFlowManager",
+        //     args: ["{that}"]
+        // },
         "onCreate.changeStarted": {
             funcName: "{that}.changeStarted",
             args: [true]
@@ -242,6 +261,18 @@ gpii.taskTray.menu.updateMenu = function (that, gpiiStarted, keyedInSet) {
         menu = gpii.taskTray.updateSet(menu, menuLabels, snapsets[keyedInSet], changeSetFn);
         menu = gpii.taskTray.updateSnapsets(menu, menuLabels.keyIn, snapsets, changeSetFn);
     }
-    that.menu = gpii.taskTray.addExit(menu, menuLabels.exit);
-    return that.menu;
+    return gpii.taskTray.addExit(menu, menuLabels.exit);
 };
+
+// A wrapper that wraps gpii.taskTray as a subcomponent. This is the grade need by configs/app.json
+// to distribute gpii.taskTray as a subcomponent of GPII flow manager since infusion doesn't support
+// broadcasting directly to "components" block which probably would destroy GPII.
+
+fluid.defaults("gpii.taskTrayWrapper", {
+    gradeNames: ["fluid.component"],
+    components: {
+        taskTray: {
+            type: "gpii.taskTray"
+        }
+    }
+});
