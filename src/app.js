@@ -81,27 +81,31 @@ fluid.defaults("gpii.taskTray", {
         },
         "{lifecycleManager}.events.onSessionStart": {
             funcName: "console.log",
-            args: ["lifecycleManager onSessionStart is fired"],
+            args: ["==== lifecycleManager onSessionStart is fired: ", "{arguments}.1"],
             namespace: "onSessionStartDebug"
         },
-        // "onCreate.updateTaskTray": {
-        //     funcName: "{that}.updateTaskTray",
+        // "onCreate.updateMenu": {
+        //     funcName: "{that}.updateMenu",
         //     args: ["{that}.model.menu"]
         // },
         "onAppReady.debug": {
             funcName: "console.log",
             args: ["onAppReady is fired"]
+        },
+        "onCreate.addTooltip": {
+            listener: "gpii.taskTray.addTooltip",
+            args: ["{that}.tray", "{that}.options.labels.tooltip"]
         }
     },
     modelListeners: {
         "menu": {
-            funcName: "{that}.updateTaskTray",
+            funcName: "{that}.updateMenu",
             args: ["{change}.value"]
         }
     },
     invokers: {
-        updateTaskTray: {
-            funcName: "gpii.taskTray.updateTaskTray",
+        updateMenu: {
+            funcName: "gpii.taskTray.updateMenu",
             args: ["{that}.tray", "{that}.options.labels.tooltip", "{arguments}.0"] // menu
         }
     },
@@ -112,17 +116,15 @@ fluid.defaults("gpii.taskTray", {
 });
 
 gpii.taskTray.makeTray = function (icon) {
-    console.log("=========================== making the TRAY");
     return new Tray(path.join(__dirname, icon));
 };
 
-gpii.taskTray.updateTaskTray = function (tray, tooltipLabel, menu) {
-    if (menu) {
-        tray.setToolTip(tooltipLabel);
-        tray.setContextMenu(Menu.buildFromTemplate(menu));
-    } else {
-        console.log("+++++++++++++ menu is null");
-    }
+gpii.taskTray.addTooltip = function (tray, tooltipLabel) {
+    tray.setToolTip(tooltipLabel);
+};
+
+gpii.taskTray.updateMenu = function (tray, tooltipLabel, menu) {
+    tray.setContextMenu(Menu.buildFromTemplate(menu));
 };
 
 /*
