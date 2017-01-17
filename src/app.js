@@ -33,7 +33,7 @@ fluid.defaults("gpii.app", {
         // menu: null,
         keyedInUserToken: null
     },
-    // The list of the default snapsets shown on the initial eletron menu for key-in
+    // The list of the default snapsets shown on the initial task tray menu for key-in
     snapsets: {
         alice: "Alice",
         davey: "Davey",
@@ -115,8 +115,9 @@ fluid.defaults("gpii.app", {
             args: ["{that}", "{arguments}.1.options.userToken"]
         },
         "onCreate.addTooltip": {
-            listener: "gpii.app.addTooltip",
-            args: ["{that}.tray", "{that}.options.labels.tooltip"]
+                "this": "{that}.tray",
+                "method": "setToolTip",
+                "args": ["{that}.options.labels.tooltip"]
         }
     },
     modelListeners: {
@@ -146,16 +147,12 @@ fluid.defaults("gpii.app", {
     },
     icon: "icons/gpii.ico",
     labels: {
-        tooltip: "GPII Electron"
+        tooltip: "GPII"
     }
 });
 
 gpii.app.makeTray = function (icon) {
     return new Tray(path.join(__dirname, icon));
-};
-
-gpii.app.addTooltip = function (tray, tooltipLabel) {
-    tray.setToolTip(tooltipLabel);
 };
 
 gpii.app.updateMenu = function (tray, menu) {
