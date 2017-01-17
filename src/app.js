@@ -48,13 +48,14 @@ fluid.defaults("gpii.app", {
             expander: {
                 funcName: "gpii.app.makeTray",
                 args: ["{that}.options.icon"]
-            }
+            },
+            createOnEvent: "onGPIIReady"
         }
     },
     components: {
         menu: {
             type: "gpii.app.menu",
-            // createOnEvent: "onGPIIReady",
+            createOnEvent: "onGPIIReady",
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
@@ -103,11 +104,14 @@ fluid.defaults("gpii.app", {
             }
         }
     },
-    // TODO: hook up onGPIIReady with kettle server onListen event to ensure GPII starts
-    // events: {
-    //     onGPIIReady: null
-    // },
+    events: {
+        onGPIIReady: null
+    },
     listeners: {
+        "{kettle.server}.events.onListen": {
+            "this": "{that}.events.onGPIIReady",   // Is this the best way to do this?
+            method: "fire"
+        },
         "{lifecycleManager}.events.onSessionStart": {
             listener: "{that}.updateKeyedInUserToken",
             args: ["{arguments}.1"],
@@ -119,8 +123,8 @@ fluid.defaults("gpii.app", {
         },
         "onCreate.addTooltip": {
             "this": "{that}.tray",
-            "method": "setToolTip",
-            "args": ["{that}.options.labels.tooltip"]
+            method: "setToolTip",
+            args: ["{that}.options.labels.tooltip"]
         }
     },
     modelListeners: {
