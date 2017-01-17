@@ -1,5 +1,5 @@
 /*!
-GPII Electron
+GPII Application
 Copyright 2016 Steven Githens
 Copyright 2016-2017 OCAD University
 
@@ -69,11 +69,13 @@ fluid.defaults("gpii.app", {
                     }
                 },
                 listeners: {
-                    // onKeyIn event that is fired when a new user keys in contains these steps:
-                    // 1. key out the old keyed in user token;
-                    // 2. key in the new user token;
-                    // 3. the key-in triggers GPII {lifecycleManager}.events.onSessionStart that fires a model change to set the new model.keyedInUserToken,
-                    //    which causes the menu structure to be updated
+                    // onKeyIn event is fired when a new user keys in through the task tray.
+                    // This should result in:
+                    // 1. key out the old keyed in user token
+                    // 2. key in the new user token
+                    //   a) trigger GPII {lifecycleManager}.events.onSessionStart
+                    //   b) fire a model change to set the new model.keyedInUserToken
+                    //   c) update the menu
                     "onKeyIn.performKeyOut": {
                         listener: "{app}.keyOut",
                         args: "{that}.model.keyedInUserToken"
@@ -83,10 +85,11 @@ fluid.defaults("gpii.app", {
                         args: ["{arguments}.0"],
                         priority: "after:performKeyOut"
                     },
-
-                    // onKeyOut event that is fired when a keyed-in user keys out. It contains these steps:
-                    // 1. key out the currently keyed in user;
-                    // 2. change model.keyedInUserToken which causes the menu structure to be updated
+                    // onKeyOut event is fired when a keyed-in user keys out through the task tray.
+                    // This should result in:
+                    // 1. key out the currently keyed in user
+                    //    a) change model.keyedInUserToken
+                    //    b) update the menu
                     "onKeyOut.performKeyOut": {
                         listener: "{app}.keyOut",
                         args: ["{arguments}.0"]
@@ -115,9 +118,9 @@ fluid.defaults("gpii.app", {
             args: ["{that}", "{arguments}.1.options.userToken"]
         },
         "onCreate.addTooltip": {
-                "this": "{that}.tray",
-                "method": "setToolTip",
-                "args": ["{that}.options.labels.tooltip"]
+            "this": "{that}.tray",
+            "method": "setToolTip",
+            "args": ["{that}.options.labels.tooltip"]
         }
     },
     modelListeners: {
@@ -151,31 +154,59 @@ fluid.defaults("gpii.app", {
     }
 });
 
+/**
+  * Creates the Electron Tray
+  * @param icon {String} Path to the icon that represents the GPII in the task tray.
+  */
 gpii.app.makeTray = function (icon) {
     return new Tray(path.join(__dirname, icon));
 };
 
+/**
+  * Refreshes the task tray menu for the GPII Application using the menu in the model
+  * @param tray {Object} An Electron 'Tray' object.
+  * @param menu {Array} A nested array representing the menu for the GPII Application.
+  */
 gpii.app.updateMenu = function (tray, menu) {
     tray.setContextMenu(Menu.buildFromTemplate(menu));
 };
 
+/**
+  * Keys into the GPII.
+  * Currently uses an url to key in although this should be changed to use Electron IPC.
+  * @param token {String} The token to key in with.
+  */
 gpii.app.keyIn = function (token) {
     request("http://localhost:8081/user/" + token + "/login", function (/*error, response, body*/) {
         //TODO Put in some error logging
     });
 };
 
+/**
+  * Keys out of the GPII.
+  * Currently uses an url to key out although this should be changed to use Electron IPC.
+  * @param token {String} The token to key out with.
+  */
 gpii.app.keyOut = function (token) {
     request("http://localhost:8081/user/" + token + "/logout", function (/*error, response, body*/) {
         //TODO Put in some error logging
     });
 };
 
+/**
+  * Stops the Electron Application.
+  */
 gpii.app.exit = function () {
+    //TODO: This should stop the GPII gracefully before quitting the application.
     var app = require("electron").app;
     app.quit();
 };
 
+/**
+  * Handles when a user token is keyed out through other means besides the task tray key out feature.
+  * @param that {Component} An instance of gpii.app
+  * @param keyedOutUserToken {String} The token that was keyed out.
+  */
 gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
     var currentKeyedInUserToken = that.model.keyedInUserToken;
 
@@ -192,7 +223,6 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
 fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
     menuLabels: {
-        tooltip: "GPII Electron",
         keyedIn: "Keyed in with %userTokenName", // string template
         keyOut: "Key out %userTokenName", //string template
         notKeyedIn: "Not keyed in",
@@ -205,6 +235,8 @@ fluid.defaults("gpii.app.menu", {
         onExit: null
     }
 });
+
+//TODO: The following functions need some refactoring love.
 
 gpii.app.menu.updateKeyedIn = function (menu, menuLabels, keyedInUserToken, keyedInUserTokenLabel, keyOutEvt) {
     if (keyedInUserToken) {
