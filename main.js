@@ -18,6 +18,8 @@ var fluid = require("infusion"),
 require("universal");
 require("gpii-windows/index.js");
 
+require("./src/logging.js");
+
 require("./src/app.js");
 
 // This method will be called when Electron has finished
