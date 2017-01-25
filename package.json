@@ -4,8 +4,6 @@
   "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js",
-    "test": "electron tests.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +26,8 @@
     "shelljs": "0.3.0"
   },
   "scripts": {
+    "start": "electron main.js",
+    "test": "electron tests.js",
     "postinstall": "cd ./node_modules/leveldown && node-gyp rebuild --target=1.4.1 --dist-url=https://atom.io/download/atom-shell"
   },
   "dependencies": {
