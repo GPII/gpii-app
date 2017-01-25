@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "infusion": "git://github.com/amb26/infusion.git#240c00be023732ac8dcc193a57bc1b46c58d2de7",
-    "windows": "git://github.com/kaspermarkus/windows.git#fbe84b819b75d8debc7d7af3aa554479accdbeaf",
+    "windows": "git://github.com/kaspermarkus/windows.git#8fde84c8e4bbc7a8d33ca96a927540f57eb50fab",
     "universal": "git://github.com/GPII/universal.git#4b9405d3b6168c1c041b8eac2bd88cebf764f678",
     "node-jqunit": "1.1.4"
   }
