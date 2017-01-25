@@ -27,10 +27,13 @@
     "request": "^2.69.0",
     "shelljs": "0.3.0"
   },
+  "scripts": {
+    "postinstall": "cd ./node_modules/leveldown && node-gyp rebuild --target=1.4.1 --dist-url=https://atom.io/download/atom-shell"
+  },
   "dependencies": {
-    "infusion": "2.0.0-dev.20161027T155641Z.0bcd507",
+    "infusion": "git://github.com/amb26/infusion.git#240c00be023732ac8dcc193a57bc1b46c58d2de7",
     "windows": "git://github.com/kaspermarkus/windows.git#fbe84b819b75d8debc7d7af3aa554479accdbeaf",
-    "universal": "git://github.com/GPII/universal.git#88aec55cd2cafb2cab914978b11c5e1bc7926260",
+    "universal": "git://github.com/GPII/universal.git#4b9405d3b6168c1c041b8eac2bd88cebf764f678",
     "node-jqunit": "1.1.4"
   }
 }
