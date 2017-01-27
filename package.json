@@ -4,8 +4,6 @@
   "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js",
-    "test": "electron tests.js"
   },
   "repository": {
     "type": "git",
@@ -20,12 +18,17 @@
     "grunt-shell": "1.3.0",
     "shelljs": "0.3.0"
   },
+  "scripts": {
+    "start": "electron main.js",
+    "test": "electron tests.js",
+    "postinstall": "cd ./node_modules/leveldown && node-gyp rebuild --target=1.4.1 --dist-url=https://atom.io/download/atom-shell"
+  },
   "dependencies": {
     "electron": "1.4.1",
     "request": "2.69.0",
-    "infusion": "2.0.0-dev.20161027T155641Z.0bcd507",
-    "windows": "git://github.com/GPII/windows.git#24cdf9164d0696a1617db250573e205b4568385b",
-    "universal": "git://github.com/GPII/universal.git#b58d1859e4d53303a1fdc4d74640e0c43af345e5",
+    "infusion": "git://github.com/amb26/infusion.git#240c00be023732ac8dcc193a57bc1b46c58d2de7",
+    "windows": "git://github.com/kaspermarkus/windows.git#8fde84c8e4bbc7a8d33ca96a927540f57eb50fab",
+    "universal": "git://github.com/GPII/universal.git#4b9405d3b6168c1c041b8eac2bd88cebf764f678",
     "node-jqunit": "1.1.4"
   }
 }
