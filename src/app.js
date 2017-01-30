@@ -28,18 +28,8 @@ fluid.defaults("gpii.app", {
         // This model has a "menu" item that is only relayed from gpii.app.menu,
         // Don't uncomment the line below so that the initial menu can be populated
         // by gpii.app.menu component using the initial model.keyedInUserToken.
-        // menu: null,
+//        menu: "{menu}.model.menuTemplate",
         keyedInUserToken: null
-    },
-    // The list of the default snapsets shown on the initial task tray menu for key-in
-    snapsets: {
-        alice: "Alice",
-        davey: "Davey",
-        david: "David",
-        elaine: "Elaine",
-        elmer: "Elmer",
-        elod: "Elod",
-        livia: "Livia"
     },
     members: {
         tray: {
@@ -58,15 +48,16 @@ fluid.defaults("gpii.app", {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
                 },
-                snapsets: "{app}.options.snapsets",
-                modelRelay: {
+                modelRelay: { // The problem here is that the menu is going to contain functions. 
                     target: "{app}.model.menu",
+                    input: "{that}.model.menuTemplate",
                     singleTransform: {
                         type: "fluid.transforms.free",
-                        func: "gpii.app.menu.generateMenuStructure",
-                        args: ["{that}", "{that}.model.keyedInUserToken"]
+                        func: "gpii.app.menu.expandMenuTemplate",
+                        args: ["{that}.events", "{that}.model.menuTemplate"]
                     }
                 },
+                snapsets: "{app}.options.snapsets",
                 listeners: {
                     // onKeyIn event is fired when a new user keys in through the task tray.
                     // This should result in:
@@ -170,7 +161,11 @@ gpii.app.makeTray = function (icon) {
   * @param menu {Array} A nested array representing the menu for the GPII Application.
   */
 gpii.app.updateMenu = function (tray, menu) {
-    tray.setContextMenu(Menu.buildFromTemplate(menu));
+
+    console.log("====================", menu);
+    if (menu) {
+        tray.setContextMenu(Menu.buildFromTemplate(menu));
+    }
 };
 
 /**
@@ -224,6 +219,63 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
  */
 fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
+    model: {
+        //keyedInUserToken  // comes from the app.
+        userTokenName: "", // this should be updated based on user behaviour
+        keyedInUser: {
+            label: "", // Must be updated when user changes.
+            enabled: false
+        },
+        keyOut: null       // May or may not be in the menu, must be updated when user changes.
+        //menuTemplate: [] // this should be updated on change of userTokenName OR maybe we don't need to store it
+    },
+    modelListeners: {
+        "keyedInUserToken.generateMenu": {
+            funcName: "gpii.app.menu.generateMenuTemplate",
+            args: ["{that}", "{that}.model.keyedInUserToken"]
+        },
+        "keyedInUserToken.log": {
+            funcName: "console.log",
+            args: ["keyedInUserToken changed " + "{change}.value"]
+        }
+    },
+    // The list of the default snapsets shown on the task tray menu for key-in
+    snapsets: {
+        label: "{that}.options.menuLabels.keyIn",
+        submenu: [{
+            label: "Alice",
+            click: "onKeyIn",
+            token: "alice"
+        }, {
+            label: "Davey",
+            click: "onKeyIn",
+            token: "davey"
+        }, {
+            label: "David",
+            click: "onKeyIn",
+            token: "david"
+        }, {
+            label: "Elaine",
+            click: "onKeyIn",
+            token: "elaine"
+        }, {
+            label: "Elmer",
+            click: "onKeyIn",
+            token: "elmer"
+        }, {
+            label: "Elod",
+            click: "onKeyIn",
+            token: "elod"
+        }, {
+            label: "Livia",
+            click: "onKeyIn",
+            token: "livia"
+        }]
+    },
+    exit: {
+        label: "{that}.options.menuLabels.exit",
+        click: "onExit"
+    },
     menuLabels: {
         keyedIn: "Keyed in with %userTokenName", // string template
         keyOut: "Key out %userTokenName", //string template
@@ -231,6 +283,12 @@ fluid.defaults("gpii.app.menu", {
         exit: "Exit",
         keyIn: "Key in ..."
     },
+    // invokers: {
+    //     expandMenuTemplate: {
+    //         funcName: "gpii.app.menu.expandMenuTemplate",
+    //         args: ["{that}", "{that}.model.menuTemplate"]
+    //     }
+    // },
     events: {
         onKeyIn: null,
         onKeyOut: null,
@@ -238,67 +296,49 @@ fluid.defaults("gpii.app.menu", {
     }
 });
 
-//TODO: The following functions need some refactoring love.
-
-gpii.app.menu.updateKeyedIn = function (menu, menuLabels, keyedInUserToken, keyedInUserTokenLabel, keyOutEvt) {
+gpii.app.menu.generateMenuTemplate = function (that, keyedInUserToken, name) {
+    name = name || keyedInUserToken;
+    //TODO: Wrong Place! Maybe it can all be done in configuration.
     if (keyedInUserToken) {
-        keyedInUserTokenLabel = keyedInUserTokenLabel || keyedInUserToken;
-
-        menu = gpii.app.menu.addDisabledItem(menu, fluid.stringTemplate(menuLabels.keyedIn, {"userTokenName": keyedInUserTokenLabel}));
-        menu = gpii.app.menu.addItem(menu,
-            fluid.stringTemplate(menuLabels.keyOut, {"userTokenName": keyedInUserTokenLabel}),
-            keyOutEvt, keyedInUserToken);
+        that.model.keyedInUser.label = fluid.stringTemplate(that.options.menuLabels.keyedIn, {"userTokenName": name});
+        that.model.keyOut = {
+            label: fluid.stringTemplate(that.options.menuLabels.keyOut, {"userTokenName": name}),
+            click: "onKeyOut",
+            token: keyedInUserToken
+        };
     } else {
-        menu = gpii.app.menu.addDisabledItem(menu, menuLabels.notKeyedIn);
+        that.model.keyedInUser.label = that.options.menuLabels.notKeyedIn;
     }
-    return menu;
+
+    var menuTemplate = [that.model.keyedInUser];
+    if (keyedInUserToken) {
+        menuTemplate.push(that.model.keyOut);
+    }
+    menuTemplate = menuTemplate.concat([that.options.snapsets, that.options.exit]);
+
+    that.applier.change("menuTemplate", menuTemplate);
 };
 
-gpii.app.menu.updateSnapsets = function (menu, keyInLabel, snapsets, keyInEvt) {
-    var submenuArray = [];
-    fluid.each(snapsets, function (value, userToken) {
-        submenuArray = gpii.app.menu.addItem(submenuArray, value, keyInEvt, userToken);
-    });
-
-    menu = gpii.app.menu.addSubmenuItem(menu, keyInLabel, submenuArray);
-    return menu;
-};
-
-gpii.app.menu.addSubmenuItem = function (menuTemplate, label, submenuTemplate) {
-    menuTemplate.push({
-        "label": label,
-        "submenu": submenuTemplate
-    });
-    return menuTemplate;
-};
-
-gpii.app.menu.addDisabledItem = function (menuTemplate, label) {
-    menuTemplate.push({
-        "label": label,
-        "enabled": false
-    });
-    return menuTemplate;
-};
-
-gpii.app.menu.addItem = function (menuTemplate, label, clickEvt, token) {
-    menuTemplate.push({
-        "label": label ,
-        "click": function () {
-            clickEvt.fire(token);
+gpii.app.menu.expandMenuTemplate = function (events, menuTemplate) {
+    // Traverse the array.
+    fluid.each(menuTemplate, function (menuItem) {
+        if (menuItem.click) {
+            menuItem.click = function () {
+                events[menuItem.click].fire(menuItem.token);
+            };
+        }
+        if (menuItem.submenu) {
+            menuItem.submenu = gpii.app.menu.expandMenuTemplate(events, menuItem.submenu);
         }
     });
+console.log("+++++++++++++      the template:", menuTemplate);
+    fluid.each(menuTemplate, function(item) {
+        console.log("+++++++++++++", item);
+    });
     return menuTemplate;
 };
 
-gpii.app.menu.generateMenuStructure = function (that, keyedInUserToken) {
-    var menuLabels = that.options.menuLabels;
-    var snapsets = that.options.snapsets;
-    var menu = [];
 
-    menu = gpii.app.menu.updateKeyedIn(menu, menuLabels, keyedInUserToken, snapsets[keyedInUserToken], that.events.onKeyOut);
-    menu = gpii.app.menu.updateSnapsets(menu, menuLabels.keyIn, snapsets, that.events.onKeyIn);
-    return gpii.app.menu.addItem(menu, menuLabels.exit, that.events.onExit);
-};
 
 // A wrapper that wraps gpii.app as a subcomponent. This is the grade need by configs/app.json
 // to distribute gpii.app as a subcomponent of GPII flow manager since infusion doesn't support
