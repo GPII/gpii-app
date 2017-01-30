@@ -244,15 +244,12 @@ gpii.app.menu.updateKeyedIn = function (menu, menuLabels, keyedInUserToken, keye
     if (keyedInUserToken) {
         keyedInUserTokenLabel = keyedInUserTokenLabel || keyedInUserToken;
 
-        menu.push({ label: fluid.stringTemplate(menuLabels.keyedIn, {"userTokenName": keyedInUserTokenLabel}), enabled: false });
-        menu.push({ label: fluid.stringTemplate(menuLabels.keyOut, {"userTokenName": keyedInUserTokenLabel}),
-            click: function () {
-                // key out an keyed in user
-                keyOutEvt.fire(keyedInUserToken);
-            }
-        });
+        menu = gpii.app.menu.addDisabledItem(menu, fluid.stringTemplate(menuLabels.keyedIn, {"userTokenName": keyedInUserTokenLabel}));
+        menu = gpii.app.menu.addItem(menu,
+            fluid.stringTemplate(menuLabels.keyOut, {"userTokenName": keyedInUserTokenLabel}),
+            keyOutEvt, keyedInUserToken);
     } else {
-        menu.push({ label: menuLabels.notKeyedIn, enabled: false });
+        menu = gpii.app.menu.addDisabledItem(menu, menuLabels.notKeyedIn);
     }
     return menu;
 };
@@ -260,26 +257,37 @@ gpii.app.menu.updateKeyedIn = function (menu, menuLabels, keyedInUserToken, keye
 gpii.app.menu.updateSnapsets = function (menu, keyInLabel, snapsets, keyInEvt) {
     var submenuArray = [];
     fluid.each(snapsets, function (value, userToken) {
-        submenuArray.push({label: value, click: function () {
-            keyInEvt.fire(userToken);
-        }});
+        submenuArray = gpii.app.menu.addItem(submenuArray, value, keyInEvt, userToken);
     });
 
-    menu.push({
-        label: keyInLabel,
-        submenu: submenuArray
-    });
+    menu = gpii.app.menu.addSubmenuItem(menu, keyInLabel, submenuArray);
     return menu;
 };
 
-gpii.app.menu.addExit = function (menu, exitLabel, exitEvt) {
-    menu.push({
-        label: exitLabel,
-        click: function () {
-            exitEvt.fire();
+gpii.app.menu.addSubmenuItem = function (menuTemplate, label, submenuTemplate) {
+    menuTemplate.push({
+        "label": label,
+        "submenu": submenuTemplate
+    });
+    return menuTemplate;
+};
+
+gpii.app.menu.addDisabledItem = function (menuTemplate, label) {
+    menuTemplate.push({
+        "label": label,
+        "enabled": false
+    });
+    return menuTemplate;
+};
+
+gpii.app.menu.addItem = function (menuTemplate, label, clickEvt, token) {
+    menuTemplate.push({
+        "label": label ,
+        "click": function () {
+            clickEvt.fire(token);
         }
     });
-    return menu;
+    return menuTemplate;
 };
 
 gpii.app.menu.generateMenuStructure = function (that, keyedInUserToken) {
@@ -289,7 +297,7 @@ gpii.app.menu.generateMenuStructure = function (that, keyedInUserToken) {
 
     menu = gpii.app.menu.updateKeyedIn(menu, menuLabels, keyedInUserToken, snapsets[keyedInUserToken], that.events.onKeyOut);
     menu = gpii.app.menu.updateSnapsets(menu, menuLabels.keyIn, snapsets, that.events.onKeyIn);
-    return gpii.app.menu.addExit(menu, menuLabels.exit, that.events.onExit);
+    return gpii.app.menu.addItem(menu, menuLabels.exit, that.events.onExit);
 };
 
 // A wrapper that wraps gpii.app as a subcomponent. This is the grade need by configs/app.json
