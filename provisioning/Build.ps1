@@ -26,18 +26,9 @@ Write-OutPut "mainDir set to: $($mainDir)"
 Import-Module "$($originalBuildScriptPath)/Provisioning.psm1" -Force
 Import-Module "$env:ChocolateyInstall\helpers\chocolateyInstaller.psm1" -Force -Verbose
 
-######### SNIP ###########
 # Obtain some useful paths.
 $systemDrive = $env:SystemDrive
-# Acquire information about the system and environment.
-$winVersion = [System.Environment]::OSVersion
-$OSBitness = Get-OSBitness
-$processorBits = Get-ProcessorBits
-Write-Verbose "Calling build in $($winVersion.VersionString) - OS $($OSBitness)bits - Processor $($processorBits)bits"
-Write-Verbose "PSModulePath is $($env:PSModulePath)"
 Write-Verbose "systemDrive is $($systemDrive)"
-Write-Verbose "mainDir is $($mainDir)"
-######### UNSNIP ###########
 
 # Install nodejs and python via chocolatey
 ############
@@ -46,9 +37,10 @@ $nodePath = "C:\Program Files (x86)\nodejs"
 $nodeVersion = "6.9.1"
 Invoke-Command $chocolatey "install nodejs.install --version $($nodeVersion) --forcex86 -y"
 Add-Path $nodePath $true
+$npm = "npm" -f $env:SystemDrive
 refreshenv
 
-Invoke-Command "$($nodePath)\npm.cmd" "install node-gyp@3.4.0" "$($nodePath)\node_modules\npm"
+Invoke-Command "$npm" "install node-gyp@3.4.0" "$($nodePath)\node_modules\npm"
 
 $python2Path = "C:\tools\python2"
 Invoke-Command $chocolatey "install python2 -y"
@@ -57,13 +49,10 @@ refreshenv
 
 # Run npm install
 # ############
-$npm = "npm" -f $env:SystemDrive
 Invoke-Command "$npm" "config set msvs_version 2015 --global"
-
 refreshenv
 
-Invoke-Command "$($nodePath)\npm.cmd" "install" $mainDir
-# refreshenv
+Invoke-Command "$npm" "install" $mainDir
 
 # # Run all the windows provisioning scripts
 # ############
