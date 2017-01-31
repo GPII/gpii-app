@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
   "main": "main.js",
-  "scripts": {
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gpii/gpii-app.git"
