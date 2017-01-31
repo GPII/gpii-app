@@ -1,11 +1,10 @@
-/* eslint-env node */
 "use strict";
 
 module.exports = function (grunt) {
 
     grunt.initConfig({
         eslint: {
-            all: ["*.js"]
+            all: ["*.js", "src/**/*.js", "tests/**/*.js"]
         },
         jsonlint: {
             all: [".eslintrc.json", "package.json", "configs/**/*.json", "src/**/*.json", "tests/**/*.json"]

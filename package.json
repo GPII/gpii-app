@@ -1,5 +1,5 @@
 {
-  "name": "gpii-electron",
+  "name": "gpii-app",
   "version": "1.0.0",
   "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
   "main": "main.js",
@@ -7,22 +7,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gpii/gpii-electron.git"
+    "url": "git+https://github.com/gpii/gpii-app.git"
   },
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial"
-  ],
   "devDependencies": {
-    "electron": "1.4.1",
-    "eslint-config-fluid": "^1.0.0",
+    "electron-packager": "^8.5.0",
+    "eslint-config-fluid": "1.0.0",
     "fluid-grunt-eslint": "18.1.2",
     "grunt": "1.0.1",
     "grunt-jsonlint": "1.1.0",
     "grunt-shell": "1.3.0",
-    "request": "^2.69.0",
     "shelljs": "0.3.0"
   },
   "scripts": {
@@ -31,6 +24,8 @@
     "postinstall": "cd ./node_modules/leveldown && node-gyp rebuild --target=1.4.1 --dist-url=https://atom.io/download/atom-shell"
   },
   "dependencies": {
+    "electron": "1.4.1",
+    "request": "2.69.0",
     "infusion": "git://github.com/amb26/infusion.git#240c00be023732ac8dcc193a57bc1b46c58d2de7",
     "windows": "git://github.com/kaspermarkus/windows.git#04963330620af83baa03f92a227da7f4616e7aa1",
     "universal": "git://github.com/GPII/universal.git#4b9405d3b6168c1c041b8eac2bd88cebf764f678",
