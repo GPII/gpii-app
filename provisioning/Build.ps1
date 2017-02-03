@@ -10,8 +10,8 @@
   script
 #>
 
-param ( # default to script path
-    [string]$originalBuildScriptPath = (Split-Path -parent $PSCommandPath)
+param (
+    [string]$originalBuildScriptPath = (Split-Path -parent $PSCommandPath) # Default to script path.
 )
 
 # Turn verbose on, change to "SilentlyContinue" for default behaviour.
