@@ -28,7 +28,7 @@ fluid.defaults("gpii.app", {
         // This model has a "menu" item that is only relayed from gpii.app.menu,
         // Don't uncomment the line below so that the initial menu can be populated
         // by gpii.app.menu component using the initial model.keyedInUserToken.
-//        menu: "{menu}.model.menuTemplate",
+        // menu: null,
         keyedInUserToken: null
     },
     members: {
@@ -48,7 +48,7 @@ fluid.defaults("gpii.app", {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
                 },
-                modelRelay: { // The problem here is that the menu is going to contain functions.
+                modelRelay: { // TODO: The problem here is that the menu is going to contain functions.
                     target: "{app}.model.menu",
                     input: "{that}.model.menuTemplate",
                     singleTransform: {
@@ -57,7 +57,6 @@ fluid.defaults("gpii.app", {
                         args: ["{that}.events", "{that}.model.menuTemplate"]
                     }
                 },
-                snapsets: "{app}.options.snapsets",
                 listeners: {
                     // onKeyIn event is fired when a new user keys in through the task tray.
                     // This should result in:
@@ -161,9 +160,7 @@ gpii.app.makeTray = function (icon) {
   * @param menu {Array} A nested array representing the menu for the GPII Application.
   */
 gpii.app.updateMenu = function (tray, menu) {
-    if (menu) {
-        tray.setContextMenu(Menu.buildFromTemplate(menu));
-    }
+    tray.setContextMenu(Menu.buildFromTemplate(menu));
 };
 
 /**
@@ -219,22 +216,17 @@ fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
     model: {
         //keyedInUserToken  // comes from the app.
-        userTokenName: "", // this should be updated based on user behaviour
         keyedInUser: {
-            label: "", // Must be updated when user changes.
+            label: "", // Must be updated when keyedInUserToken changes.
             enabled: false
         },
-        keyOut: null       // May or may not be in the menu, must be updated when user changes.
-        //menuTemplate: [] // this should be updated on change of userTokenName OR maybe we don't need to store it
+        keyOut: null       // May or may not be in the menu, must be updated when keyedInUserToken changes.
+        //menuTemplate: [] // this is updated on change of keyedInUserToken
     },
     modelListeners: {
         "keyedInUserToken.generateMenu": {
             funcName: "gpii.app.menu.generateMenuTemplate",
             args: ["{that}", "{that}.model.keyedInUserToken"]
-        },
-        "keyedInUserToken.log": {
-            funcName: "console.log",
-            args: ["keyedInUserToken changed " + "{change}.value"]
         }
     },
     // The list of the default snapsets shown on the task tray menu for key-in
@@ -288,6 +280,11 @@ fluid.defaults("gpii.app.menu", {
     }
 });
 
+/**
+  * Creates a JSON representation of a menu.
+  * @param that {Component} An instance of gpii.app.menu
+  * @param keyedInUserToken {String} The token for the user that is currently keyed in.
+  */
 gpii.app.menu.generateMenuTemplate = function (that, keyedInUserToken) {
     //TODO: Wrong Place! Maybe it can all be done in configuration.
     if (keyedInUserToken) {
@@ -312,6 +309,13 @@ gpii.app.menu.generateMenuTemplate = function (that, keyedInUserToken) {
     that.applier.change("menuTemplate", menuTemplate);
 };
 
+/**
+  * Takes a JSON array that represents a menu template and expands the 'click' entries into functions
+  * that fire the appropriate event.
+  * @param events {Object} An object that contains the events that might be fired from an item in the menu.
+  * @param menuTemplate {Array} A JSON array that represents a menu template
+  * @return {Array} The expanded menu template. This can be used to create an Electron menu.
+  */
 gpii.app.menu.expandMenuTemplate = function (events, menuTemplate) {
     fluid.each(menuTemplate, function (menuItem) {
         if (typeof menuItem.click === "string") {
