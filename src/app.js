@@ -48,7 +48,7 @@ fluid.defaults("gpii.app", {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
                 },
-                modelRelay: { // The problem here is that the menu is going to contain functions. 
+                modelRelay: { // The problem here is that the menu is going to contain functions.
                     target: "{app}.model.menu",
                     input: "{that}.model.menuTemplate",
                     singleTransform: {
@@ -161,8 +161,6 @@ gpii.app.makeTray = function (icon) {
   * @param menu {Array} A nested array representing the menu for the GPII Application.
   */
 gpii.app.updateMenu = function (tray, menu) {
-
-    console.log("====================", menu);
     if (menu) {
         tray.setContextMenu(Menu.buildFromTemplate(menu));
     }
@@ -283,12 +281,6 @@ fluid.defaults("gpii.app.menu", {
         exit: "Exit",
         keyIn: "Key in ..."
     },
-    // invokers: {
-    //     expandMenuTemplate: {
-    //         funcName: "gpii.app.menu.expandMenuTemplate",
-    //         args: ["{that}", "{that}.model.menuTemplate"]
-    //     }
-    // },
     events: {
         onKeyIn: null,
         onKeyOut: null,
@@ -296,10 +288,11 @@ fluid.defaults("gpii.app.menu", {
     }
 });
 
-gpii.app.menu.generateMenuTemplate = function (that, keyedInUserToken, name) {
-    name = name || keyedInUserToken;
+gpii.app.menu.generateMenuTemplate = function (that, keyedInUserToken) {
     //TODO: Wrong Place! Maybe it can all be done in configuration.
     if (keyedInUserToken) {
+        // TODO: Name should actually be stored along with the user token.
+        var name = keyedInUserToken.charAt(0).toUpperCase() + keyedInUserToken.substr(1);
         that.model.keyedInUser.label = fluid.stringTemplate(that.options.menuLabels.keyedIn, {"userTokenName": name});
         that.model.keyOut = {
             label: fluid.stringTemplate(that.options.menuLabels.keyOut, {"userTokenName": name}),
@@ -320,21 +313,18 @@ gpii.app.menu.generateMenuTemplate = function (that, keyedInUserToken, name) {
 };
 
 gpii.app.menu.expandMenuTemplate = function (events, menuTemplate) {
-    // Traverse the array.
     fluid.each(menuTemplate, function (menuItem) {
-        if (menuItem.click) {
+        if (typeof menuItem.click === "string") {
+            var evtName = menuItem.click;
             menuItem.click = function () {
-                events[menuItem.click].fire(menuItem.token);
+                events[evtName].fire(menuItem.token);
             };
         }
         if (menuItem.submenu) {
             menuItem.submenu = gpii.app.menu.expandMenuTemplate(events, menuItem.submenu);
         }
     });
-console.log("+++++++++++++      the template:", menuTemplate);
-    fluid.each(menuTemplate, function(item) {
-        console.log("+++++++++++++", item);
-    });
+
     return menuTemplate;
 };
 
