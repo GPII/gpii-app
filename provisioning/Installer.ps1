@@ -44,7 +44,7 @@ $packagerMetadata = "--app-copyright=`"Raising the Floor - International Associa
 
 $packagerDir = Join-Path $installerDir "packager"
 md $packagerDir
-Invoke-Command "electron-packager.cmd" "$projectDir --platform=win32 --arch=x64 --overwrite --out=$packagerDir $packagerMetadata"
+Invoke-Command "electron-packager.cmd" "$projectDir --platform=win32 --arch=ia32 --overwrite --out=$packagerDir $packagerMetadata"
 
 # Copying the packaged GPII-App content to staging/.
 $packagedAppDir = (Join-Path $packagerDir "gpii-app-win32-x64")
