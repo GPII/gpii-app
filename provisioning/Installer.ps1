@@ -39,7 +39,6 @@ $appDir = Join-Path $stagingWindowsDir "app"
 
 # Install electron-packager globally.
 # TODO: Define electron-packager invocation in npm scripts.
-# TODO: Delete --prune when got fixed this issue https://github.com/electron-userland/electron-packager/issues/495
 Invoke-Command $npm "install electron-packager -g" $projectDir
 
 # Npm install the application, this needs to be done for packaging.
@@ -49,7 +48,8 @@ $packagerMetadata = "--app-copyright=`"Raising the Floor - International Associa
 
 $packagerDir = Join-Path $installerDir "packager"
 md $packagerDir
-Invoke-Command $npm "prune --production"
+# TODO: Delete --prune when got fixed this issue https://github.com/electron-userland/electron-packager/issues/495
+Invoke-Command $npm "prune --production" $projectDir
 Invoke-Command "electron-packager.cmd" "$projectDir --platform=win32 --arch=ia32 --no-prune --overwrite --out=$packagerDir $packagerMetadata"
 
 # Copying the packaged GPII-App content to staging/.

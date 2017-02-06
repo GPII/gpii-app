@@ -89,10 +89,3 @@ try {
     Write-OutPut "Build.ps1 FAILED"
     exit 1
 }
-try {
-    Write-OutPut "Running windows script: $($windowsProvisioningDir)\Installer.ps1"
-    Invoke-Expression "$($windowsProvisioningDir)\Installer.ps1"
-} catch {
-    Write-OutPut "Installer.ps1 FAILED"
-    exit 1
-}
