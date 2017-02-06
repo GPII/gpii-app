@@ -223,10 +223,41 @@ fluid.defaults("gpii.app.menu", {
         keyOut: null       // May or may not be in the menu, must be updated when keyedInUserToken changes.
         //menuTemplate: [] // this is updated on change of keyedInUserToken
     },
-    modelListeners: {
-        "keyedInUserToken.generateMenu": {
-            funcName: "gpii.app.menu.generateMenuTemplate",
-            args: ["{that}", "{that}.model.keyedInUserToken"]
+    modelRelay: {
+        "userName": {
+            target: "userName",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getUserName",
+                args: ["{app}.model.keyedInUserToken"]
+            }
+        },
+        "keyedInUserLabel": {
+            target: "keyedInUser.label",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getNameLabel",
+                args: ["{that}.model.userName", "{that}.options.menuLabels.keyedIn", "{that}.options.menuLabels.notKeyedIn"]
+            },
+            priority: "after:userName"
+        },
+        "keyOut": {
+            target: "keyOut",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getKeyOut",
+                args: ["{app}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.keyOut"]
+            },
+            priority: "after:userName"
+        },
+        "menuTemplate:": {
+            target: "menuTemplate",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.generateMenuTemplate",
+                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
+            },
+            priority: "last"
         }
     },
     // The list of the default snapsets shown on the task tray menu for key-in
@@ -280,33 +311,43 @@ fluid.defaults("gpii.app.menu", {
     }
 });
 
-/**
-  * Creates a JSON representation of a menu.
-  * @param that {Component} An instance of gpii.app.menu
-  * @param keyedInUserToken {String} The token for the user that is currently keyed in.
-  */
-gpii.app.menu.generateMenuTemplate = function (that, keyedInUserToken) {
-    //TODO: Wrong Place! Maybe it can all be done in configuration.
-    if (keyedInUserToken) {
-        // TODO: Name should actually be stored along with the user token.
-        var name = keyedInUserToken.charAt(0).toUpperCase() + keyedInUserToken.substr(1);
-        that.model.keyedInUser.label = fluid.stringTemplate(that.options.menuLabels.keyedIn, {"userTokenName": name});
-        that.model.keyOut = {
-            label: fluid.stringTemplate(that.options.menuLabels.keyOut, {"userTokenName": name}),
+gpii.app.menu.getUserName = function (keyedInUserToken) {
+    // TODO: Name should actually be stored along with the user token.
+    return keyedInUserToken ? keyedInUserToken.charAt(0).toUpperCase() + keyedInUserToken.substr(1) : "";
+};
+
+// I think this can be moved into configuration.
+gpii.app.menu.getNameLabel = function (name, keyedInStrTemp, notKeyedInStr) {
+    return name ? fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}) : notKeyedInStr;
+};
+
+gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
+    var keyOut = null;
+
+    if (name) {
+        keyOut = { // TODO: probably should put at least the structure of this into configuration
+            label: fluid.stringTemplate(keyOutStrTemp, {"userTokenName": name}),
             click: "onKeyOut",
             token: keyedInUserToken
         };
-    } else {
-        that.model.keyedInUser.label = that.options.menuLabels.notKeyedIn;
     }
 
-    var menuTemplate = [that.model.keyedInUser];
-    if (keyedInUserToken) {
-        menuTemplate.push(that.model.keyOut);
-    }
-    menuTemplate = menuTemplate.concat([that.options.snapsets, that.options.exit]);
+    return keyOut;
+};
 
-    that.applier.change("menuTemplate", menuTemplate);
+/**
+  * Creates a JSON representation of a menu.
+  */
+
+gpii.app.menu.generateMenuTemplate = function (/* all the items in the menu */) {
+    var menuTemplate = [];
+    fluid.each(arguments, function (item) {
+        if (item) {
+            menuTemplate.push(item);
+        }
+    });
+
+    return menuTemplate;
 };
 
 /**
