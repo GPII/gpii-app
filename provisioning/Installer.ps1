@@ -29,7 +29,7 @@ if ((Test-Path -Path $installerDir)){
 }
 Invoke-Command $git "clone --branch $($installerBranch) $($installerRepo) $($installerDir)"
 
-$stagingWindowsDir = [io.path]::combine($installerDir, "staging", "windows")
+$stagingWindowsDir = Join-Path (Join-Path $installerDir "staging") "windows"
 if (Test-Path -Path $stagingWindowsDir) {
     rm $stagingWindowsDir -Recurse -Force
 }
