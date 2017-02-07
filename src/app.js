@@ -25,10 +25,6 @@ var request = require("request");
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
-        // This model has a "menu" item that is only relayed from gpii.app.menu,
-        // Don't uncomment the line below so that the initial menu can be populated
-        // by gpii.app.menu component using the initial model.keyedInUserToken.
-        // menu: null,
         keyedInUserToken: null
     },
     members: {
@@ -48,13 +44,10 @@ fluid.defaults("gpii.app", {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
                 },
-                modelRelay: { // TODO: The problem here is that the menu is going to contain functions.
-                    target: "{app}.model.menu",
-                    input: "{that}.model.menuTemplate",
-                    singleTransform: {
-                        type: "fluid.transforms.free",
-                        func: "gpii.app.menu.expandMenuTemplate",
-                        args: ["{that}.events", "{that}.model.menuTemplate"]
+                modelListeners: {
+                    "menuTemplate": {
+                        funcName: "gpii.app.updateMenu",
+                        args: ["{app}.tray", "{that}.model.menuTemplate", "{that}.events"]
                     }
                 },
                 listeners: {
@@ -97,7 +90,7 @@ fluid.defaults("gpii.app", {
     },
     listeners: {
         "{kettle.server}.events.onListen": {
-            "this": "{that}.events.onGPIIReady",   // Is this the best way to do this?
+            "this": "{that}.events.onGPIIReady",
             method: "fire"
         },
         "{lifecycleManager}.events.onSessionStart": {
@@ -115,17 +108,7 @@ fluid.defaults("gpii.app", {
             args: ["{that}.options.labels.tooltip"]
         }
     },
-    modelListeners: {
-        "menu": {
-            funcName: "{that}.updateMenu",
-            args: ["{change}.value"]
-        }
-    },
     invokers: {
-        updateMenu: {
-            funcName: "gpii.app.updateMenu",
-            args: ["{that}.tray", "{arguments}.0"] // menu
-        },
         updateKeyedInUserToken: {
             changePath: "keyedInUserToken",
             value: "{arguments}.0"
@@ -157,10 +140,13 @@ gpii.app.makeTray = function (icon) {
 /**
   * Refreshes the task tray menu for the GPII Application using the menu in the model
   * @param tray {Object} An Electron 'Tray' object.
-  * @param menu {Array} A nested array representing the menu for the GPII Application.
+  * @param menuTemplate {Array} A nested array that is the menu template for the GPII Application.
+  * @param events {Object} An object containing the events that may be fired by items in the menu.
   */
-gpii.app.updateMenu = function (tray, menu) {
-    tray.setContextMenu(Menu.buildFromTemplate(menu));
+gpii.app.updateMenu = function (tray, menuTemplate, events) {
+    menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
+
+    tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
 };
 
 /**
@@ -215,13 +201,13 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
 fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
     model: {
-        //keyedInUserToken  // comes from the app.
+        //keyedInUserToken  // This comes from the app.
         keyedInUser: {
-            label: "", // Must be updated when keyedInUserToken changes.
+            label: "",      // Must be updated when keyedInUserToken changes.
             enabled: false
         },
-        keyOut: null       // May or may not be in the menu, must be updated when keyedInUserToken changes.
-        //menuTemplate: [] // this is updated on change of keyedInUserToken
+        keyOut: null        // May or may not be in the menu, must be updated when keyedInUserToken changes.
+        //menuTemplate: []  // This is updated on change of keyedInUserToken.
     },
     modelRelay: {
         "userName": {
@@ -229,7 +215,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getUserName",
-                args: ["{app}.model.keyedInUserToken"]
+                args: ["{that}.model.keyedInUserToken"]
             }
         },
         "keyedInUserLabel": {
@@ -246,7 +232,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyOut",
-                args: ["{app}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.keyOut"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.keyOut"]
             },
             priority: "after:userName"
         },
@@ -298,8 +284,8 @@ fluid.defaults("gpii.app.menu", {
         click: "onExit"
     },
     menuLabels: {
-        keyedIn: "Keyed in with %userTokenName", // string template
-        keyOut: "Key out %userTokenName", //string template
+        keyedIn: "Keyed in with %userTokenName",    // string template
+        keyOut: "Key out %userTokenName",           // string template
         notKeyedIn: "Not keyed in",
         exit: "Exit",
         keyIn: "Key in ..."
@@ -311,9 +297,13 @@ fluid.defaults("gpii.app.menu", {
     }
 });
 
-gpii.app.menu.getUserName = function (keyedInUserToken) {
-    // TODO: Name should actually be stored along with the user token.
-    return keyedInUserToken ? keyedInUserToken.charAt(0).toUpperCase() + keyedInUserToken.substr(1) : "";
+/**
+  * Generates a user name to be displayed based on the user token.
+  * @param userToken {String} A user token.
+  */
+gpii.app.menu.getUserName = function (userToken) {
+    // TODO: Name should actually be stored by the GPII along with the user token.
+    return userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
 };
 
 // I think this can be moved into configuration.
@@ -321,6 +311,12 @@ gpii.app.menu.getNameLabel = function (name, keyedInStrTemp, notKeyedInStr) {
     return name ? fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}) : notKeyedInStr;
 };
 
+/**
+  * Generates an object that represents the menu item for keying out.
+  * @param keyedInUserToken {String} The user token that is currently keyed in.
+  * @param name {String} The name of the user that is currently keyed in.
+  * @param keyOutStrTemp {String} The string to be displayed for the key out menu item.
+  */
 gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
     var keyOut = null;
 
@@ -337,8 +333,9 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
 
 /**
   * Creates a JSON representation of a menu.
+  * @param {Object} An object containing a menu item template.
+  * There should be one object per menu item in the order they should appear in the mneu.
   */
-
 gpii.app.menu.generateMenuTemplate = function (/* all the items in the menu */) {
     var menuTemplate = [];
     fluid.each(arguments, function (item) {
@@ -357,7 +354,7 @@ gpii.app.menu.generateMenuTemplate = function (/* all the items in the menu */) 
   * @param menuTemplate {Array} A JSON array that represents a menu template
   * @return {Array} The expanded menu template. This can be used to create an Electron menu.
   */
-gpii.app.menu.expandMenuTemplate = function (events, menuTemplate) {
+gpii.app.menu.expandMenuTemplate = function (menuTemplate, events) {
     fluid.each(menuTemplate, function (menuItem) {
         if (typeof menuItem.click === "string") {
             var evtName = menuItem.click;
@@ -366,7 +363,7 @@ gpii.app.menu.expandMenuTemplate = function (events, menuTemplate) {
             };
         }
         if (menuItem.submenu) {
-            menuItem.submenu = gpii.app.menu.expandMenuTemplate(events, menuItem.submenu);
+            menuItem.submenu = gpii.app.menu.expandMenuTemplate(menuItem.submenu, events);
         }
     });
 
