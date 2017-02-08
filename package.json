@@ -26,7 +26,7 @@
     "electron": "1.4.1",
     "request": "2.69.0",
     "infusion": "git://github.com/amb26/infusion.git#240c00be023732ac8dcc193a57bc1b46c58d2de7",
-    "gpii-windows": "git://github.com/gloob/windows.git#HST",
+    "gpii-windows": "git://github.com/gpii/windows.git#hst-2017",
     "node-jqunit": "1.1.4"
   }
 }
