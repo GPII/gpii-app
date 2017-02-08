@@ -38,51 +38,8 @@ fluid.defaults("gpii.app", {
     },
     components: {
         menu: {
-            type: "gpii.app.menu",
-            createOnEvent: "onGPIIReady",
-            options: {
-                model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
-                },
-                modelListeners: {
-                    "menuTemplate": {
-                        funcName: "gpii.app.updateMenu",
-                        args: ["{app}.tray", "{that}.model.menuTemplate", "{that}.events"]
-                    }
-                },
-                listeners: {
-                    // onKeyIn event is fired when a new user keys in through the task tray.
-                    // This should result in:
-                    // 1. key out the old keyed in user token
-                    // 2. key in the new user token
-                    //   a) trigger GPII {lifecycleManager}.events.onSessionStart
-                    //   b) fire a model change to set the new model.keyedInUserToken
-                    //   c) update the menu
-                    "onKeyIn.performKeyOut": {
-                        listener: "{app}.keyOut",
-                        args: "{that}.model.keyedInUserToken"
-                    },
-                    "onKeyIn.performKeyIn": {
-                        listener: "{app}.keyIn",
-                        args: ["{arguments}.0"],
-                        priority: "after:performKeyOut"
-                    },
-                    // onKeyOut event is fired when a keyed-in user keys out through the task tray.
-                    // This should result in:
-                    // 1. key out the currently keyed in user
-                    //    a) change model.keyedInUserToken
-                    //    b) update the menu
-                    "onKeyOut.performKeyOut": {
-                        listener: "{app}.keyOut",
-                        args: ["{arguments}.0"]
-                    },
-
-                    // onExit
-                    "onExit.performExit": {
-                        listener: "{app}.exit"
-                    }
-                }
-            }
+            type: "gpii.app.menuInApp",
+            createOnEvent: "onGPIIReady"
         }
     },
     events: {
@@ -194,6 +151,56 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
         that.updateKeyedInUserToken(null);
     }
 };
+
+/*
+ ** Configuration for using the menu in the app.
+ ** Note that this is an incomplete grade which references the app.
+ */
+fluid.defaults("gpii.app.menuInApp", {
+    gradeNames: "gpii.app.menu",
+    model: {
+        keyedInUserToken: "{app}.model.keyedInUserToken"
+    },
+    modelListeners: {
+        "menuTemplate": {
+            namespace: "updateMenu",
+            funcName: "gpii.app.updateMenu",
+            args: ["{app}.tray", "{that}.model.menuTemplate", "{that}.events"]
+        }
+    },
+    listeners: {
+        // onKeyIn event is fired when a new user keys in through the task tray.
+        // This should result in:
+        // 1. key out the old keyed in user token
+        // 2. key in the new user token
+        //   a) trigger GPII {lifecycleManager}.events.onSessionStart
+        //   b) fire a model change to set the new model.keyedInUserToken
+        //   c) update the menu
+        "onKeyIn.performKeyOut": {
+            listener: "{app}.keyOut",
+            args: "{that}.model.keyedInUserToken"
+        },
+        "onKeyIn.performKeyIn": {
+            listener: "{app}.keyIn",
+            args: ["{arguments}.0"],
+            priority: "after:performKeyOut"
+        },
+        // onKeyOut event is fired when a keyed-in user keys out through the task tray.
+        // This should result in:
+        // 1. key out the currently keyed in user
+        //    a) change model.keyedInUserToken
+        //    b) update the menu
+        "onKeyOut.performKeyOut": {
+            listener: "{app}.keyOut",
+            args: ["{arguments}.0"]
+        },
+
+        // onExit
+        "onExit.performExit": {
+            listener: "{app}.exit"
+        }
+    }
+});
 
 /*
  ** Component to generate the menu tree structure that is relayed to gpii.app for display.
