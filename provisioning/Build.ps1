@@ -22,48 +22,10 @@ $VerbosePreference = "continue"
 $mainDir = (get-item $originalBuildScriptPath).parent.FullName
 Write-OutPut "mainDir set to: $($mainDir)"
 
-# Import functions
-Import-Module "$($originalBuildScriptPath)/Provisioning.psm1" -Force
-Import-Module "$env:ChocolateyInstall\helpers\chocolateyInstaller.psm1" -Force -Verbose
-
-######### SNIP ###########
-# Obtain some useful paths.
-$systemDrive = $env:SystemDrive
-# Acquire information about the system and environment.
-$winVersion = [System.Environment]::OSVersion
-$OSBitness = Get-OSBitness
-$processorBits = Get-ProcessorBits
-Write-Verbose "Calling build in $($winVersion.VersionString) - OS $($OSBitness)bits - Processor $($processorBits)bits"
-Write-Verbose "PSModulePath is $($env:PSModulePath)"
-Write-Verbose "systemDrive is $($systemDrive)"
-Write-Verbose "mainDir is $($mainDir)"
-######### UNSNIP ###########
-
-# Install nodejs and python via chocolatey
-############
-$chocolatey = "$env:ChocolateyInstall\bin\choco.exe" -f $env:SystemDrive
-$nodePath = "C:\Program Files (x86)\nodejs"
-$nodeVersion = "6.9.1"
-Invoke-Command $chocolatey "install nodejs.install --version $($nodeVersion) --forcex86 -y"
-Add-Path $nodePath $true
-refreshenv
-
-Invoke-Command "$($nodePath)\npm.cmd" "install node-gyp@3.4.0" "$($nodePath)\node_modules\npm"
-
-$python2Path = "C:\tools\python2"
-Invoke-Command $chocolatey "install python2 -y"
-Add-Path $python2Path $true
-refreshenv
-
-# Run npm install
-# ############
-$npm = "npm" -f $env:SystemDrive
-Invoke-Command "$npm" "config set msvs_version 2015 --global"
-
-refreshenv
-
-Invoke-Command "$($nodePath)\npm.cmd" "install" $mainDir
-# refreshenv
+$bootstrapModule = Join-Path $mainDir "bootstrap.psm1"
+iwr https://raw.githubusercontent.com/GPII/windows/hst-2017/provisioning/Provisioning.psm1 -UseBasicParsing -OutFile $bootstrapModule
+Import-Module $bootstrapModule -Verbose -Force
+ri -Path $bootstrapModule -Force
 
 # # Run all the windows provisioning scripts
 # ############
@@ -89,3 +51,6 @@ try {
     Write-OutPut "Build.ps1 FAILED"
     exit 1
 }
+
+$npm = "npm" -f $env:SystemDrive
+Invoke-Command $npm "install" $mainDir
