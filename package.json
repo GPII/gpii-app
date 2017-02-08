@@ -10,7 +10,7 @@
     "url": "git+https://github.com/gpii/gpii-app.git"
   },
   "devDependencies": {
-    "electron-packager": "^8.5.0",
+    "electron-packager": "8.5.1",
     "eslint-config-fluid": "1.0.0",
     "fluid-grunt-eslint": "18.1.2",
     "grunt": "1.0.1",
