@@ -123,11 +123,6 @@ fluid.defaults("gpii.app", {
             "this": "{that}.tray",
             method: "setToolTip",
             args: ["{that}.options.labels.tooltip"]
-        },
-        "onCreate.handleErrors": {
-            "this": "{that}",
-            method: "handleError",
-            args: ["{that}"]
         }
     },
     modelListeners: {
@@ -154,9 +149,9 @@ fluid.defaults("gpii.app", {
             args: ["{arguments}.0"]
         },
         exit: "gpii.app.exit",
-        handleError: {
-            funcName: "gpii.app.handleError",
-            args: ["{that}"]
+        "handleUncaughtException": {
+            funcName: "gpii.app.handleUncaughtException",
+            args: ["{that}", "{arguments}.0"]
         }
     },
     icon: "icons/gpii.ico",
@@ -232,31 +227,36 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
  * Listen on uncaught exceptions and display it to the user is if it's interesting.
  * @param that {Component} An instance of gpii.app.
  */
-gpii.app.handleError = function (that) {
-    fluid.onUncaughtException.addListener(function (err) {
-        var handledErrors = {
-            "EADDRINUSE": {
-                message: "There is another application listening on port " + err.port,
-                fatal: true
-            }
-        };
+gpii.app.handleUncaughtException = function (that, err) {
+    var handledErrors = {
+        "EADDRINUSE": {
+            message: "There is another application listening on port " + err.port,
+            fatal: true
+        }
+    };
 
-        if (err.code) {
-            var error = handledErrors.hasOwnProperty(err.code) && handledErrors[err.code];
-            if (error) {
-                that.tray.displayBalloon({
-                    title: error.title || "GPII Error",
-                    content: error.message || err.message,
-                    icon: path.join(__dirname, "icons/gpii-icon@4x.png")
-                });
-                if (error.fatal) {
-                    // Fortunately, the balloon hangs around after exit.
-                    that.exit();
-                }
+    if (err.code) {
+        var error = handledErrors[err.code];
+        if (error) {
+            that.tray.displayBalloon({
+                title: error.title || "GPII Error",
+                content: error.message || err.message,
+                icon: path.join(__dirname, "icons/gpii-icon@4x.png")
+            });
+            if (error.fatal) {
+                // Fortunately, the balloon hangs around after exit.
+                that.exit();
             }
         }
-    }, "gpii.app", "last");
+    }
 };
+
+fluid.onUncaughtException.addListener(function (err) {
+    var app = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app");
+    if (app.length > 0) {
+        app[0].handleUncaughtException(err);
+    }
+}, "gpii.app", "last");
 
 /*
  ** Component to generate the menu tree structure that is relayed to gpii.app for display.
