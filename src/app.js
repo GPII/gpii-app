@@ -25,21 +25,7 @@ var request = require("request");
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
-        // This model has a "menu" item that is only relayed from gpii.app.menu,
-        // Don't uncomment the line below so that the initial menu can be populated
-        // by gpii.app.menu component using the initial model.keyedInUserToken.
-        // menu: null,
         keyedInUserToken: null
-    },
-    // The list of the default snapsets shown on the initial task tray menu for key-in
-    snapsets: {
-        alice: "Alice",
-        davey: "Davey",
-        david: "David",
-        elaine: "Elaine",
-        elmer: "Elmer",
-        elod: "Elod",
-        livia: "Livia"
     },
     members: {
         tray: {
@@ -52,54 +38,8 @@ fluid.defaults("gpii.app", {
     },
     components: {
         menu: {
-            type: "gpii.app.menu",
-            createOnEvent: "onGPIIReady",
-            options: {
-                model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
-                },
-                snapsets: "{app}.options.snapsets",
-                modelRelay: {
-                    target: "{app}.model.menu",
-                    singleTransform: {
-                        type: "fluid.transforms.free",
-                        func: "gpii.app.menu.generateMenuStructure",
-                        args: ["{that}", "{that}.model.keyedInUserToken"]
-                    }
-                },
-                listeners: {
-                    // onKeyIn event is fired when a new user keys in through the task tray.
-                    // This should result in:
-                    // 1. key out the old keyed in user token
-                    // 2. key in the new user token
-                    //   a) trigger GPII {lifecycleManager}.events.onSessionStart
-                    //   b) fire a model change to set the new model.keyedInUserToken
-                    //   c) update the menu
-                    "onKeyIn.performKeyOut": {
-                        listener: "{app}.keyOut",
-                        args: "{that}.model.keyedInUserToken"
-                    },
-                    "onKeyIn.performKeyIn": {
-                        listener: "{app}.keyIn",
-                        args: ["{arguments}.0"],
-                        priority: "after:performKeyOut"
-                    },
-                    // onKeyOut event is fired when a keyed-in user keys out through the task tray.
-                    // This should result in:
-                    // 1. key out the currently keyed in user
-                    //    a) change model.keyedInUserToken
-                    //    b) update the menu
-                    "onKeyOut.performKeyOut": {
-                        listener: "{app}.keyOut",
-                        args: ["{arguments}.0"]
-                    },
-
-                    // onExit
-                    "onExit.performExit": {
-                        listener: "{app}.exit"
-                    }
-                }
-            }
+            type: "gpii.app.menuInApp",
+            createOnEvent: "onGPIIReady"
         }
     },
     events: {
@@ -107,7 +47,7 @@ fluid.defaults("gpii.app", {
     },
     listeners: {
         "{kettle.server}.events.onListen": {
-            "this": "{that}.events.onGPIIReady",   // Is this the best way to do this?
+            "this": "{that}.events.onGPIIReady",
             method: "fire"
         },
         "{lifecycleManager}.events.onSessionStart": {
@@ -125,17 +65,7 @@ fluid.defaults("gpii.app", {
             args: ["{that}.options.labels.tooltip"]
         }
     },
-    modelListeners: {
-        "menu": {
-            funcName: "{that}.updateMenu",
-            args: ["{change}.value"]
-        }
-    },
     invokers: {
-        updateMenu: {
-            funcName: "gpii.app.updateMenu",
-            args: ["{that}.tray", "{arguments}.0"] // menu
-        },
         updateKeyedInUserToken: {
             changePath: "keyedInUserToken",
             value: "{arguments}.0"
@@ -167,10 +97,13 @@ gpii.app.makeTray = function (icon) {
 /**
   * Refreshes the task tray menu for the GPII Application using the menu in the model
   * @param tray {Object} An Electron 'Tray' object.
-  * @param menu {Array} A nested array representing the menu for the GPII Application.
+  * @param menuTemplate {Array} A nested array that is the menu template for the GPII Application.
+  * @param events {Object} An object containing the events that may be fired by items in the menu.
   */
-gpii.app.updateMenu = function (tray, menu) {
-    tray.setContextMenu(Menu.buildFromTemplate(menu));
+gpii.app.updateMenu = function (tray, menuTemplate, events) {
+    menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
+
+    tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
 };
 
 /**
@@ -220,13 +153,146 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
 };
 
 /*
+ ** Configuration for using the menu in the app.
+ ** Note that this is an incomplete grade which references the app.
+ */
+fluid.defaults("gpii.app.menuInApp", {
+    gradeNames: "gpii.app.menu",
+    model: {
+        keyedInUserToken: "{app}.model.keyedInUserToken"
+    },
+    modelListeners: {
+        "menuTemplate": {
+            namespace: "updateMenu",
+            funcName: "gpii.app.updateMenu",
+            args: ["{app}.tray", "{that}.model.menuTemplate", "{that}.events"]
+        }
+    },
+    listeners: {
+        // onKeyIn event is fired when a new user keys in through the task tray.
+        // This should result in:
+        // 1. key out the old keyed in user token
+        // 2. key in the new user token
+        //   a) trigger GPII {lifecycleManager}.events.onSessionStart
+        //   b) fire a model change to set the new model.keyedInUserToken
+        //   c) update the menu
+        "onKeyIn.performKeyOut": {
+            listener: "{app}.keyOut",
+            args: "{that}.model.keyedInUserToken"
+        },
+        "onKeyIn.performKeyIn": {
+            listener: "{app}.keyIn",
+            args: ["{arguments}.0"],
+            priority: "after:performKeyOut"
+        },
+        // onKeyOut event is fired when a keyed-in user keys out through the task tray.
+        // This should result in:
+        // 1. key out the currently keyed in user
+        //    a) change model.keyedInUserToken
+        //    b) update the menu
+        "onKeyOut.performKeyOut": {
+            listener: "{app}.keyOut",
+            args: ["{arguments}.0"]
+        },
+
+        // onExit
+        "onExit.performExit": {
+            listener: "{app}.exit"
+        }
+    }
+});
+
+/*
  ** Component to generate the menu tree structure that is relayed to gpii.app for display.
  */
 fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
+    model: {
+        //keyedInUserToken  // This comes from the app.
+        keyedInUser: {
+            label: "",      // Must be updated when keyedInUserToken changes.
+            enabled: false
+        },
+        keyOut: null        // May or may not be in the menu, must be updated when keyedInUserToken changes.
+        //menuTemplate: []  // This is updated on change of keyedInUserToken.
+    },
+    modelRelay: {
+        "userName": {
+            target: "userName",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getUserName",
+                args: ["{that}.model.keyedInUserToken"]
+            }
+        },
+        "keyedInUserLabel": {
+            target: "keyedInUser.label",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getNameLabel",
+                args: ["{that}.model.userName", "{that}.options.menuLabels.keyedIn", "{that}.options.menuLabels.notKeyedIn"]
+            },
+            priority: "after:userName"
+        },
+        "keyOut": {
+            target: "keyOut",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getKeyOut",
+                args: ["{that}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.keyOut"]
+            },
+            priority: "after:userName"
+        },
+        "menuTemplate:": {
+            target: "menuTemplate",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.generateMenuTemplate",
+                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
+            },
+            priority: "last"
+        }
+    },
+    // The list of the default snapsets shown on the task tray menu for key-in
+    snapsets: {
+        label: "{that}.options.menuLabels.keyIn",
+        submenu: [{
+            label: "Alice",
+            click: "onKeyIn",
+            token: "alice"
+        }, {
+            label: "Davey",
+            click: "onKeyIn",
+            token: "davey"
+        }, {
+            label: "David",
+            click: "onKeyIn",
+            token: "david"
+        }, {
+            label: "Elaine",
+            click: "onKeyIn",
+            token: "elaine"
+        }, {
+            label: "Elmer",
+            click: "onKeyIn",
+            token: "elmer"
+        }, {
+            label: "Elod",
+            click: "onKeyIn",
+            token: "elod"
+        }, {
+            label: "Livia",
+            click: "onKeyIn",
+            token: "livia"
+        }]
+    },
+    exit: {
+        label: "{that}.options.menuLabels.exit",
+        click: "onExit"
+    },
     menuLabels: {
-        keyedIn: "Keyed in with %userTokenName", // string template
-        keyOut: "Key out %userTokenName", //string template
+        keyedIn: "Keyed in with %userTokenName",    // string template
+        keyOut: "Key out %userTokenName",           // string template
         notKeyedIn: "Not keyed in",
         exit: "Exit",
         keyIn: "Key in ..."
@@ -238,59 +304,80 @@ fluid.defaults("gpii.app.menu", {
     }
 });
 
-//TODO: The following functions need some refactoring love.
+/**
+  * Generates a user name to be displayed based on the user token.
+  * @param userToken {String} A user token.
+  */
+gpii.app.menu.getUserName = function (userToken) {
+    // TODO: Name should actually be stored by the GPII along with the user token.
+    return userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
+};
 
-gpii.app.menu.updateKeyedIn = function (menu, menuLabels, keyedInUserToken, keyedInUserTokenLabel, keyOutEvt) {
-    if (keyedInUserToken) {
-        keyedInUserTokenLabel = keyedInUserTokenLabel || keyedInUserToken;
+// I think this can be moved into configuration.
+gpii.app.menu.getNameLabel = function (name, keyedInStrTemp, notKeyedInStr) {
+    return name ? fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}) : notKeyedInStr;
+};
 
-        menu.push({ label: fluid.stringTemplate(menuLabels.keyedIn, {"userTokenName": keyedInUserTokenLabel}), enabled: false });
-        menu.push({ label: fluid.stringTemplate(menuLabels.keyOut, {"userTokenName": keyedInUserTokenLabel}),
-            click: function () {
-                // key out an keyed in user
-                keyOutEvt.fire(keyedInUserToken);
-            }
-        });
-    } else {
-        menu.push({ label: menuLabels.notKeyedIn, enabled: false });
+/**
+  * Generates an object that represents the menu item for keying out.
+  * @param keyedInUserToken {String} The user token that is currently keyed in.
+  * @param name {String} The name of the user that is currently keyed in.
+  * @param keyOutStrTemp {String} The string to be displayed for the key out menu item.
+  */
+gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
+    var keyOut = null;
+
+    if (name) {
+        keyOut = { // TODO: probably should put at least the structure of this into configuration
+            label: fluid.stringTemplate(keyOutStrTemp, {"userTokenName": name}),
+            click: "onKeyOut",
+            token: keyedInUserToken
+        };
     }
-    return menu;
+
+    return keyOut;
 };
 
-gpii.app.menu.updateSnapsets = function (menu, keyInLabel, snapsets, keyInEvt) {
-    var submenuArray = [];
-    fluid.each(snapsets, function (value, userToken) {
-        submenuArray.push({label: value, click: function () {
-            keyInEvt.fire(userToken);
-        }});
-    });
-
-    menu.push({
-        label: keyInLabel,
-        submenu: submenuArray
-    });
-    return menu;
-};
-
-gpii.app.menu.addExit = function (menu, exitLabel, exitEvt) {
-    menu.push({
-        label: exitLabel,
-        click: function () {
-            exitEvt.fire();
+/**
+  * Creates a JSON representation of a menu.
+  * @param {Object} An object containing a menu item template.
+  * There should be one object per menu item in the order they should appear in the mneu.
+  */
+gpii.app.menu.generateMenuTemplate = function (/* all the items in the menu */) {
+    var menuTemplate = [];
+    fluid.each(arguments, function (item) {
+        if (item) {
+            menuTemplate.push(item);
         }
     });
-    return menu;
+
+    return menuTemplate;
 };
 
-gpii.app.menu.generateMenuStructure = function (that, keyedInUserToken) {
-    var menuLabels = that.options.menuLabels;
-    var snapsets = that.options.snapsets;
-    var menu = [];
+/**
+  * Takes a JSON array that represents a menu template and expands the 'click' entries into functions
+  * that fire the appropriate event.
+  * @param events {Object} An object that contains the events that might be fired from an item in the menu.
+  * @param menuTemplate {Array} A JSON array that represents a menu template
+  * @return {Array} The expanded menu template. This can be used to create an Electron menu.
+  */
+gpii.app.menu.expandMenuTemplate = function (menuTemplate, events) {
+    fluid.each(menuTemplate, function (menuItem) {
+        if (typeof menuItem.click === "string") {
+            var evtName = menuItem.click;
+            menuItem.click = function () {
+                events[evtName].fire(menuItem.token);
+            };
+        }
+        if (menuItem.submenu) {
+            menuItem.submenu = gpii.app.menu.expandMenuTemplate(menuItem.submenu, events);
+        }
+    });
 
-    menu = gpii.app.menu.updateKeyedIn(menu, menuLabels, keyedInUserToken, snapsets[keyedInUserToken], that.events.onKeyOut);
-    menu = gpii.app.menu.updateSnapsets(menu, menuLabels.keyIn, snapsets, that.events.onKeyIn);
-    return gpii.app.menu.addExit(menu, menuLabels.exit, that.events.onExit);
+    return menuTemplate;
 };
+
+
 
 // A wrapper that wraps gpii.app as a subcomponent. This is the grade need by configs/app.json
 // to distribute gpii.app as a subcomponent of GPII flow manager since infusion doesn't support
