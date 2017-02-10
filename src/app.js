@@ -229,7 +229,7 @@ fluid.defaults("gpii.app.menu", {
             target: "keyedInUser.label",
             singleTransform: {
                 type: "fluid.transforms.free",
-                func: "gpii.app.menu.getNameLabel",
+                func: "gpii.app.menu.getKeyedInLabel",
                 args: ["{that}.model.userName", "{that}.options.menuLabels.keyedIn", "{that}.options.menuLabels.notKeyedIn"]
             },
             priority: "after:userName"
@@ -313,8 +313,13 @@ gpii.app.menu.getUserName = function (userToken) {
     return userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
 };
 
-// I think this can be moved into configuration.
-gpii.app.menu.getNameLabel = function (name, keyedInStrTemp, notKeyedInStr) {
+/**
+  * Generates a label based on whether or not a user name is present.
+  * @param name {String} The name of the user who is keyed in.
+  * @param keyedInStrTemp {String} The string template for the label when a user is keyed in.
+  * @param notKeyedInStr {String} The string when a user is not keyed in.
+  */
+gpii.app.menu.getKeyedInLabel = function (name, keyedInStrTemp, notKeyedInStr) {
     return name ? fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}) : notKeyedInStr;
 };
 

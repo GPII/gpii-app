@@ -1,6 +1,6 @@
 /*!
 GPII Application Tests
-Copyright 2016 OCAD University
+Copyright 2017 OCAD University
 
 Licensed under the New BSD license. You may not use this file except in
 compliance with this License.
@@ -20,37 +20,25 @@ require("../src/app.js");
 
 jqUnit.module("GPII Application Main Tests");
 
-// jqUnit.asyncTest("Testing App", function () {
-//     jqUnit.expect(3);
-//
-//     var testApp = gpii.app({model: {keyedInSet: 'hc'}, invokers: });
-//     jqUnit.assertNotNull("The test app was created", testApp);
-//     jqUnit.assertEquals("hc was set through the options", 'hc', testApp.model.keyedInSet);
-//
-//
-// // gpii started
-//
-// //keyedInSet
-//
-//
-// // startLocalFlowManager
-//
-//
-//  // changeStarted
-//
-//  // key in
-//
-//
-//  // key out
-//
-//
-//
-// });
+jqUnit.test("Menu.getUserName", function () {
+    jqUnit.expect(4);
 
-jqUnit.asyncTest("Testing Task Tray", function () {
-    jqUnit.expect(2);
+    jqUnit.assertEquals("Generated name is empty when no name provided.", "", gpii.app.menu.getUserName());
+    jqUnit.assertEquals("Generated name is empty when no name provided.", "", gpii.app.menu.getUserName(""));
+    jqUnit.assertEquals("Name should be capitilized.", "Alice", gpii.app.menu.getUserName("alice"));
+    jqUnit.assertEquals("No change in name when token is numeric.", "1234", gpii.app.menu.getUserName("1234"));
+});
 
-    var taskTray = gpii.taskTray();
+jqUnit.test("Menu.getKeyedInLabel", function () {
+    jqUnit.expect(3);
 
-    jqUnit.assertNotNull("The task tray was created", taskTray);
+    var keyedIn = "Keyed in with %userTokenName";    // string template
+    var notKeyedIn = "Not keyed in";
+
+    jqUnit.assertEquals("No one is keyed in", notKeyedIn, gpii.app.menu.getKeyedInLabel("", keyedIn, notKeyedIn));
+    jqUnit.assertEquals("Alice is keyed in", fluid.stringTemplate(keyedIn, {"userTokenName": "Alice"}),
+        gpii.app.menu.getKeyedInLabel("Alice", keyedIn, notKeyedIn));
+    jqUnit.assertEquals("1234 is keyed in", fluid.stringTemplate(keyedIn, {"userTokenName": "1234"}),
+        gpii.app.menu.getKeyedInLabel("1234", keyedIn, notKeyedIn));
+
 });
