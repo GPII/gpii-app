@@ -202,6 +202,44 @@ fluid.defaults("gpii.app.menuInApp", {
     }
 });
 
+fluid.defaults("gpii.app.menuInAppDev", {
+    gradeNames: "gpii.app.menuInApp",
+    // The list of the default snapsets shown on the task tray menu for key-in
+    snapsets: {
+        label: "{that}.options.menuLabels.keyIn",
+        submenu: [{
+            label: "Alice",
+            click: "onKeyIn",
+            token: "alice"
+        }, {
+            label: "Davey",
+            click: "onKeyIn",
+            token: "davey"
+        }, {
+            label: "David",
+            click: "onKeyIn",
+            token: "david"
+        }, {
+            label: "Elaine",
+            click: "onKeyIn",
+            token: "elaine"
+        }, {
+            label: "Elmer",
+            click: "onKeyIn",
+            token: "elmer"
+        }, {
+            label: "Elod",
+            click: "onKeyIn",
+            token: "elod"
+        }, {
+            label: "Livia",
+            click: "onKeyIn",
+            token: "livia"
+        }]
+    }
+});
+
+
 /*
  ** Component to generate the menu tree structure that is relayed to gpii.app for display.
  */
@@ -253,39 +291,6 @@ fluid.defaults("gpii.app.menu", {
             priority: "last"
         }
     },
-    // The list of the default snapsets shown on the task tray menu for key-in
-    snapsets: {
-        label: "{that}.options.menuLabels.keyIn",
-        submenu: [{
-            label: "Alice",
-            click: "onKeyIn",
-            token: "alice"
-        }, {
-            label: "Davey",
-            click: "onKeyIn",
-            token: "davey"
-        }, {
-            label: "David",
-            click: "onKeyIn",
-            token: "david"
-        }, {
-            label: "Elaine",
-            click: "onKeyIn",
-            token: "elaine"
-        }, {
-            label: "Elmer",
-            click: "onKeyIn",
-            token: "elmer"
-        }, {
-            label: "Elod",
-            click: "onKeyIn",
-            token: "elod"
-        }, {
-            label: "Livia",
-            click: "onKeyIn",
-            token: "livia"
-        }]
-    },
     exit: {
         label: "{that}.options.menuLabels.exit",
         click: "onExit"
@@ -294,7 +299,7 @@ fluid.defaults("gpii.app.menu", {
         keyedIn: "Keyed in with %userTokenName",    // string template
         keyOut: "Key out %userTokenName",           // string template
         notKeyedIn: "Not keyed in",
-        exit: "Exit",
+        exit: "Exit GPII",
         keyIn: "Key in ..."
     },
     events: {
