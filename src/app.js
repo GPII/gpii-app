@@ -78,8 +78,10 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.keyOut",
             args: ["{arguments}.0"]
         },
-        exit: "gpii.app.exit",
-        "handleUncaughtException": {
+        exit: {
+            funcName: "gpii.app.exit",
+            args: "{that}"
+        }, "handleUncaughtException": {
             funcName: "gpii.app.handleUncaughtException",
             args: ["{that}", "{arguments}.0"]
         }
@@ -127,18 +129,37 @@ gpii.app.keyIn = function (token) {
   * @param token {String} The token to key out with.
   */
 gpii.app.keyOut = function (token) {
-    request("http://localhost:8081/user/" + token + "/logout", function (/*error, response, body*/) {
+    var togo = fluid.promise();
+    request("http://localhost:8081/user/" + token + "/logout", function (error, response, body) {
         //TODO Put in some error logging
+        if (error) {
+            togo.reject(error);
+        } else {
+            togo.resolve();
+        }
     });
+    return togo;
 };
 
 /**
   * Stops the Electron Application.
   */
-gpii.app.exit = function () {
-    //TODO: This should stop the GPII gracefully before quitting the application.
+gpii.app.performQuit = function () {
     var app = require("electron").app;
     app.quit();
+}
+
+/**
+  * Handles the exit of the Electron Application.
+  * @param that {Component} An instance of gpii.app
+  */
+gpii.app.exit = function (that) {
+    //TODO: This should stop the GPII gracefully before quitting the application.
+    if (that.model.keyedInUserToken) {
+        fluid.promise.map(that.keyOut(that.model.keyedInUserToken), gpii.app.performQuit);
+    } else {
+        gpii.app.performQuit();
+    }
 };
 
 /**
