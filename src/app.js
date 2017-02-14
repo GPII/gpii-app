@@ -78,7 +78,11 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.keyOut",
             args: ["{arguments}.0"]
         },
-        exit: "gpii.app.exit"
+        exit: "gpii.app.exit",
+        "handleUncaughtException": {
+            funcName: "gpii.app.handleUncaughtException",
+            args: ["{that}", "{arguments}.0"]
+        }
     },
     icon: "icons/gpii.ico",
     labels: {
@@ -151,6 +155,41 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
         that.updateKeyedInUserToken(null);
     }
 };
+
+/**
+ * Listen on uncaught exceptions and display it to the user is if it's interesting.
+ * @param that {Component} An instance of gpii.app.
+ */
+gpii.app.handleUncaughtException = function (that, err) {
+    var handledErrors = {
+        "EADDRINUSE": {
+            message: "There is another application listening on port " + err.port,
+            fatal: true
+        }
+    };
+
+    if (err.code) {
+        var error = handledErrors[err.code];
+        if (error) {
+            that.tray.displayBalloon({
+                title: error.title || "GPII Error",
+                content: error.message || err.message,
+                icon: path.join(__dirname, "icons/gpii-icon@4x.png")
+            });
+            if (error.fatal) {
+                // Fortunately, the balloon hangs around after exit.
+                that.exit();
+            }
+        }
+    }
+};
+
+fluid.onUncaughtException.addListener(function (err) {
+    var app = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app");
+    if (app.length > 0) {
+        app[0].handleUncaughtException(err);
+    }
+}, "gpii.app", "last");
 
 /*
  ** Configuration for using the menu in the app.
