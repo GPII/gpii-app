@@ -91,7 +91,11 @@ fluid.defaults("gpii.app", {
   * @param icon {String} Path to the icon that represents the GPII in the task tray.
   */
 gpii.app.makeTray = function (icon) {
-    return new Tray(path.join(__dirname, icon));
+    var tray = new Tray(path.join(__dirname, icon));
+    tray.on("click", function () {
+        tray.popUpContextMenu();
+    });
+    return tray;
 };
 
 /**
