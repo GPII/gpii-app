@@ -1,0 +1,32 @@
+{
+  "name": "gpii-app",
+  "version": "1.0.0",
+  "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
+  "main": "main.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpii/gpii-app.git"
+  },
+  "devDependencies": {
+    "electron-packager": "8.5.1",
+    "eslint-config-fluid": "1.0.0",
+    "fluid-grunt-eslint": "18.1.2",
+    "grunt": "1.0.1",
+    "grunt-jsonlint": "1.1.0",
+    "grunt-shell": "1.3.0",
+    "shelljs": "0.3.0"
+  },
+  "scripts": {
+    "start": "electron main.js",
+    "test": "electron tests.js"
+  },
+  "dependencies": {
+    "electron": "1.4.1",
+    "request": "2.69.0",
+    "infusion": "git://github.com/amb26/infusion.git#240c00be023732ac8dcc193a57bc1b46c58d2de7",
+    "gpii-windows": "git://github.com/gpii/windows.git#hst-2017",
+    "node-jqunit": "1.1.4"
+  }
+}
