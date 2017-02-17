@@ -30,7 +30,7 @@ Import-Module $bootstrapModule -Verbose -Force
 # # Run all the windows provisioning scripts
 # ############
 # TODO: Create function for downloading scripts and executing them.
-$windowsBootstrapURL = "https://raw.githubusercontent.com/GPII/windows/hst-2017/provisioning"
+$windowsBootstrapURL = "https://raw.githubusercontent.com/javihernandez/windows/GPII-2287/provisioning"
 try {
     $choco = Join-Path $originalBuildScriptPath "Chocolatey.ps1"
     Write-OutPut "Running windows script: $choco"
@@ -49,15 +49,18 @@ try {
     Write-OutPut "Npm.ps1 FAILED"
     exit 1
 }
-#try {
-#    $build = Join-Path $originalBuildScriptPath "Build-Windows.ps1"
-#    Write-OutPut "Running windows script: $build"
-#    iwr "$windowsBootstrapURL/Build.ps1" -UseBasicParsing -OutFile $build
-#    Invoke-Expression $build -skipNpm
-#} catch {
-#    Write-OutPut "Build.ps1 FAILED"
-#    exit 1
-#}
 
 $npm = "npm" -f $env:SystemDrive
 Invoke-Command $npm "install" $mainDir
+
+try {
+    $tests = Join-Path $originalBuildScriptPath "Tests.ps1"
+    $fullPath = Join-Path $originalBuildScriptPath "../node_modules/gpii-windows/provisioning/"
+    $args = "-originalBuildScriptPath $fullPath"
+    Write-OutPut "Running windows script: $tests"
+    iwr "$windowsBootstrapURL/Tests.ps1" -UseBasicParsing -OutFile $tests
+    Invoke-Expression "$tests $args"
+} catch {
+    Write-OutPut "Tests.ps1 FAILED"
+    exit 1
+}
