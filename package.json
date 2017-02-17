@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "electron main.js",
-    "test": "electron tests.js"
+    "test": "powershell provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; electron tests.js"
   },
   "dependencies": {
     "electron": "1.4.1",

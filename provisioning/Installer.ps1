@@ -29,11 +29,21 @@ if ((Test-Path -Path $installerDir)){
 }
 Invoke-Command $git "clone --branch $($installerBranch) $($installerRepo) $($installerDir)"
 
+# Create staging folder
 $stagingWindowsDir = Join-Path (Join-Path $installerDir "staging") "windows"
 if (Test-Path -Path $stagingWindowsDir) {
     rm $stagingWindowsDir -Recurse -Force
 }
 md $stagingWindowsDir
+
+# Create pre-staging folder
+# We need this because we don't want to run npm prune --production inside our
+# working 'vagrant' folder
+$preStagingDir = Join-Path $installerDir "preStaging"
+if (Test-Path -Path $preStagingDir) {
+    rm $preStagingDir -Recurse -Force
+}
+md $preStagingDir
 
 $appDir = Join-Path $stagingWindowsDir "app"
 
@@ -44,13 +54,23 @@ Invoke-Command $npm "install electron-packager -g" $projectDir
 # Npm install the application, this needs to be done for packaging.
 Invoke-Command $npm "install" $projectDir
 
+# Copy all the relevant content of projectDir into preStaging
+# TODO: Make all these robocopies a bit more sexy
+Invoke-Command "robocopy" "..\node_modules $(Join-Path $preStagingDir "node_modules") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "..\configs $(Join-Path $preStagingDir "configs") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "..\src $(Join-Path $preStagingDir "src") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "$projectDir $preStagingDir LICENSE.txt" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "$projectDir $preStagingDir main.js" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "$projectDir $preStagingDir package.json" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "$projectDir $preStagingDir README.md" $provisioningDir -errorLevel 3
+
 $packagerMetadata = "--app-copyright=`"Raising the Floor - International Association`" --win32metadata.CompanyName=`"Raising the Floor - International Association`" --win32metadata.FileDescription=`"GPII-App`" --win32metadata.OriginalFilename=`"gpii.exe`" --win32metadata.ProductName=`"GPII-App`" --win32metadata.InternalName=`"GPII-App`""
 
 $packagerDir = Join-Path $installerDir "packager"
 md $packagerDir
 # TODO: Delete --prune when got fixed this issue https://github.com/electron-userland/electron-packager/issues/495
-Invoke-Command $npm "prune --production" $projectDir
-Invoke-Command "electron-packager.cmd" "$projectDir --platform=win32 --arch=ia32 --no-prune --overwrite --out=$packagerDir $packagerMetadata"
+Invoke-Command $npm "prune --production" $preStagingDir
+Invoke-Command "electron-packager.cmd" "$preStagingDir --platform=win32 --arch=ia32 --no-prune --overwrite --out=$packagerDir $packagerMetadata"
 
 # Copying the packaged GPII-App content to staging/.
 # TODO: Try to avoid using the electron-packager directory name hardcoding it.
