@@ -146,6 +146,7 @@ gpii.app.keyOut = function (token) {
   */
 gpii.app.performQuit = function () {
     var app = require("electron").app;
+    gpii.stop();
     app.quit();
 }
 
@@ -154,7 +155,6 @@ gpii.app.performQuit = function () {
   * @param that {Component} An instance of gpii.app
   */
 gpii.app.exit = function (that) {
-    //TODO: This should stop the GPII gracefully before quitting the application.
     if (that.model.keyedInUserToken) {
         fluid.promise.map(that.keyOut(that.model.keyedInUserToken), gpii.app.performQuit);
     } else {
