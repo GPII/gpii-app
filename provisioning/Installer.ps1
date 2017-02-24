@@ -29,6 +29,13 @@ if ((Test-Path -Path $installerDir)){
 }
 Invoke-Command $git "clone --branch $($installerBranch) $($installerRepo) $($installerDir)"
 
+# If gpii-hst-tools exists delete it and clone it again
+$hstToolsDir = Join-Path (Join-Path $installerDir "staging") "gpii-hst-tools"
+if ((Test-Path -Path $installerDir)){
+    rm $hstToolsDir -Recurse -Force
+}
+Invoke-Command $git "clone https://github.com/GPII/gpii-hst-tools $($hstToolsDir)"
+
 $stagingWindowsDir = Join-Path (Join-Path $installerDir "staging") "windows"
 if (Test-Path -Path $stagingWindowsDir) {
     rm $stagingWindowsDir -Recurse -Force
