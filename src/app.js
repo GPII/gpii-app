@@ -127,6 +127,7 @@ gpii.app.keyIn = function (token) {
   * Keys out of the GPII.
   * Currently uses an url to key out although this should be changed to use Electron IPC.
   * @param token {String} The token to key out with.
+  * @return {Promise} A promise that will be resolved/rejected when the request is finished.
   */
 gpii.app.keyOut = function (token) {
     var togo = fluid.promise();
@@ -143,11 +144,17 @@ gpii.app.keyOut = function (token) {
 
 /**
   * Stops the Electron Application.
+  * @return {Promise} An already resolved promise.
   */
 gpii.app.performQuit = function () {
     var app = require("electron").app;
+    var togo = fluid.promise();
+
     gpii.stop();
     app.quit();
+
+    togo.resolve();
+    return togo;
 }
 
 /**
@@ -156,7 +163,7 @@ gpii.app.performQuit = function () {
   */
 gpii.app.exit = function (that) {
     if (that.model.keyedInUserToken) {
-        fluid.promise.map(that.keyOut(that.model.keyedInUserToken), gpii.app.performQuit);
+        fluid.promise.sequence([that.keyOut(that.model.keyedInUserToken), gpii.app.performQuit]);
     } else {
         gpii.app.performQuit();
     }
