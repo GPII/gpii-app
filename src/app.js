@@ -163,7 +163,10 @@ gpii.app.performQuit = function () {
   */
 gpii.app.exit = function (that) {
     if (that.model.keyedInUserToken) {
-        fluid.promise.sequence([that.keyOut(that.model.keyedInUserToken), gpii.app.performQuit]);
+        fluid.promise.sequence([
+            gpii.rejectToLog(that.keyOut(that.model.keyedInUserToken), "Couldn't logout current user"),
+            gpii.app.performQuit
+        ]);
     } else {
         gpii.app.performQuit();
     }
