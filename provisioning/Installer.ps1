@@ -14,8 +14,8 @@ $projectDir = (Get-Item $provisioningDir).parent.FullName
 
 Import-Module (Join-Path $provisioningDir 'Provisioning.psm1') -Force
 
-$installerRepo = "https://github.com/javihernandez/gpii-wix-installer"
-$installerBranch = "GPII-2290"
+$installerRepo = "https://github.com/GPII/gpii-wix-installer"
+$installerBranch = "HST"
 
 # Obtaining useful tools location.
 $installerDir = Join-Path $env:SystemDrive "installer" # a.k.a. C:\installer\
@@ -34,7 +34,7 @@ $hstToolsDir = Join-Path (Join-Path $installerDir "staging") "gpii-hst-tools"
 if (Test-Path -Path $hstToolsDir){
     rm $hstToolsDir -Recurse -Force
 }
-Invoke-Command $git "clone --branch GPII-2230 https://github.com/javihernandez/gpii-hst-tools $($hstToolsDir)"
+Invoke-Command $git "clone https://github.com/GPII/gpii-hst-tools $($hstToolsDir)"
 
 # Create staging folder
 $stagingWindowsDir = Join-Path (Join-Path $installerDir "staging") "windows"
