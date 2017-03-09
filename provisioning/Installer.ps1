@@ -24,10 +24,17 @@ $git = "git" -f $env:SystemDrive
 $node = Get-Command "node.exe" | Select -expandproperty Path
 
 # If $installerDir exists delete it and clone current branch of installer.
-if ((Test-Path -Path $installerDir)){
+if (Test-Path -Path $installerDir){
     rm $installerDir -Recurse -Force
 }
 Invoke-Command $git "clone --branch $($installerBranch) $($installerRepo) $($installerDir)"
+
+# If gpii-hst-tools exists delete it and clone it again
+$hstToolsDir = Join-Path (Join-Path $installerDir "staging") "gpii-hst-tools"
+if (Test-Path -Path $hstToolsDir){
+    rm $hstToolsDir -Recurse -Force
+}
+Invoke-Command $git "clone https://github.com/GPII/gpii-hst-tools $($hstToolsDir)"
 
 # Create staging folder
 $stagingWindowsDir = Join-Path (Join-Path $installerDir "staging") "windows"
