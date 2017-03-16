@@ -24,9 +24,6 @@ cd c:\vagrant\
 npm start
 ```
 
-(If you recieve an error about infusion already having been loaded, delete the folder `node_modules/gpii-windows/node_modules/infusion/` and rerun `npm start`).
-
-
 ### Running the Tests in a VM
 
 Ensure that your virtual box is up and running, then go to the folder with gpii-app and run:
