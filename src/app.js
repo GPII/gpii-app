@@ -209,7 +209,7 @@ gpii.app.handleUncaughtException = function (that, err) {
             that.tray.displayBalloon({
                 title: error.title || "GPII Error",
                 content: error.message || err.message,
-                icon: path.join(__dirname, "icons/gpii-icon@4x.png")
+                icon: path.join(__dirname, "icons/gpii-icon-balloon.png")
             });
             if (error.fatal) {
                 // Fortunately, the balloon hangs around after exit.
