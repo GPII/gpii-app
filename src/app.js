@@ -212,8 +212,8 @@ gpii.app.handleUncaughtException = function (that, err) {
                 icon: path.join(__dirname, "icons/gpii-icon-balloon.png")
             });
             if (error.fatal) {
-                // Fortunately, the balloon hangs around after exit.
-                that.exit();
+                // Give the balloon some time before exiting.
+                setTimeout(that.exit, 6000);
             }
         }
     }
