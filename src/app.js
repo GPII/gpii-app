@@ -212,8 +212,20 @@ gpii.app.handleUncaughtException = function (that, err) {
                 icon: path.join(__dirname, "icons/gpii-icon-balloon.png")
             });
             if (error.fatal) {
-                // Fortunately, the balloon hangs around after exit.
-                that.exit();
+                var timeout;
+                var quit = function () {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        that.exit();
+                    }
+                };
+                // Exit when the balloon is dismissed.
+                that.tray.on("balloon-closed", quit);
+                that.tray.on("balloon-click", quit);
+                // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
+                // TODO: See GPII-2348 about this.
+                timeout = setTimeout(quit, 12000);
             }
         }
     }
