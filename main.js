@@ -25,7 +25,7 @@ require("./src/app.js");
 // initialization and is ready to create browser windows.
 app.on("ready", function () {
     kettle.config.loadConfig({
-        configName: kettle.config.getConfigName("app"),
+        configName: kettle.config.getConfigName("app.dev"),
         configPath: kettle.config.getConfigPath(__dirname + "/configs")
     });
 });

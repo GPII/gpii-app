@@ -341,7 +341,7 @@ gpii.app.menu.getKeyedInLabel = function (name, keyedInStrTemp, notKeyedInStr) {
 gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
     var keyOut = null;
 
-    if (name) {
+    if (keyedInUserToken) {
         keyOut = { // TODO: probably should put at least the structure of this into configuration
             label: fluid.stringTemplate(keyOutStrTemp, {"userTokenName": name}),
             click: "onKeyOut",
