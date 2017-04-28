@@ -42,8 +42,8 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.menuInApp",
             createOnEvent: "onGPIIReady"
         },
-        networkTest: { // Network test component to meet GPII-2349
-            type: "gpii.app.networkTest"
+        networkCheck: { // Network check component to meet GPII-2349
+            type: "gpii.app.networkCheck"
         }
     },
     events: {
