@@ -18,7 +18,7 @@ var Menu = require("electron").Menu;
 var Tray = require("electron").Tray;
 var path = require("path");
 var request = require("request");
-require("./networkTest.js");
+require("./networkCheck.js");
 
 /*
  ** Component to manage the app.
