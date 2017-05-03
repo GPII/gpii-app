@@ -18,6 +18,7 @@ var Menu = require("electron").Menu;
 var Tray = require("electron").Tray;
 var path = require("path");
 var request = require("request");
+require("./networkCheck.js");
 
 /*
  ** Component to manage the app.
@@ -40,6 +41,9 @@ fluid.defaults("gpii.app", {
         menu: {
             type: "gpii.app.menuInApp",
             createOnEvent: "onGPIIReady"
+        },
+        networkCheck: { // Network check component to meet GPII-2349
+            type: "gpii.app.networkCheck"
         }
     },
     events: {
