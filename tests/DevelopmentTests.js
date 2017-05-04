@@ -20,9 +20,10 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii"),
     kettle = fluid.registerNamespace("kettle");
 
-//require("../index.js");
+require("../node_modules/universal/gpii/node_modules/testing");
+
 require("./DevelopmentTestDefs.js");
-console.log("++++++++++++++++++++++++++++++++++++++++++++++");
+
 gpii.loadTestingSupport();
 
 kettle.test.bootstrapServer(fluid.copy(gpii.tests.development.testDefs));

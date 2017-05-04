@@ -28,9 +28,8 @@ var fluid = require("infusion"),
 fluid.registerNamespace("gpii.tests.development");
 
 gpii.tests.development.userToken = "testUser1";
-console.log("**************************************************");
+
 gpii.tests.development.testLoginResponse = function (data) {
-    console.log("***************************** going to test login");
     jqUnit.assertEquals("Response is correct", "User with token " +
         gpii.tests.development.userToken + " was successfully logged in.", data);
 };
@@ -41,7 +40,7 @@ gpii.tests.development.testLogoutResponse = function (data) {
 };
 
 gpii.tests.development.testDefs = [{
-    name: "Flow Manager development tests",
+    name: "GPII application integration tests",
     expect: 2,
     config: {
         configName: "app.dev",
