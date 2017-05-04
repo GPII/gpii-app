@@ -8,7 +8,7 @@
     "url": "git+https://github.com/gpii/gpii-app.git"
   },
   "devDependencies": {
-    "electron-packager": "^8.5.0",
+    "electron-packager": "8.5.1",
     "eslint-config-fluid": "1.0.0",
     "fluid-grunt-eslint": "18.1.2",
     "grunt": "1.0.1",
@@ -18,15 +18,13 @@
   },
   "scripts": {
     "start": "electron main.js",
-    "test": "electron tests.js",
-    "postinstall": "cd ./node_modules/leveldown && node-gyp rebuild --target=1.4.1 --dist-url=https://atom.io/download/atom-shell"
+    "test": "powershell provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; electron tests.js"
   },
   "dependencies": {
     "electron": "1.4.1",
     "request": "2.69.0",
     "infusion": "git://github.com/amb26/infusion.git#240c00be023732ac8dcc193a57bc1b46c58d2de7",
-    "windows": "git://github.com/kaspermarkus/windows.git#04963330620af83baa03f92a227da7f4616e7aa1",
-    "universal": "git://github.com/GPII/universal.git#4b9405d3b6168c1c041b8eac2bd88cebf764f678",
+    "gpii-windows": "git://github.com/gpii/windows.git#hst-2017",
     "node-jqunit": "1.1.4"
   }
 }

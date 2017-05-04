@@ -18,6 +18,7 @@ var Menu = require("electron").Menu;
 var Tray = require("electron").Tray;
 var path = require("path");
 var request = require("request");
+require("./networkCheck.js");
 
 /*
  ** Component to manage the app.
@@ -40,6 +41,9 @@ fluid.defaults("gpii.app", {
         menu: {
             type: "gpii.app.menuInApp",
             createOnEvent: "onGPIIReady"
+        },
+        networkCheck: { // Network check component to meet GPII-2349
+            type: "gpii.app.networkCheck"
         }
     },
     events: {
@@ -78,7 +82,13 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.keyOut",
             args: ["{arguments}.0"]
         },
-        exit: "gpii.app.exit"
+        exit: {
+            funcName: "gpii.app.exit",
+            args: "{that}"
+        }, "handleUncaughtException": {
+            funcName: "gpii.app.handleUncaughtException",
+            args: ["{that}", "{arguments}.0"]
+        }
     },
     icon: "icons/gpii.ico",
     labels: {
@@ -125,20 +135,51 @@ gpii.app.keyIn = function (token) {
   * Keys out of the GPII.
   * Currently uses an url to key out although this should be changed to use Electron IPC.
   * @param token {String} The token to key out with.
+  * @return {Promise} A promise that will be resolved/rejected when the request is finished.
   */
 gpii.app.keyOut = function (token) {
-    request("http://localhost:8081/user/" + token + "/logout", function (/*error, response, body*/) {
+    var togo = fluid.promise();
+    request("http://localhost:8081/user/" + token + "/logout", function (error, response, body) {
         //TODO Put in some error logging
+        if (error) {
+            togo.reject(error);
+            fluid.log(response);
+            fluid.log(body);
+        } else {
+            togo.resolve();
+        }
     });
+    return togo;
 };
 
 /**
   * Stops the Electron Application.
+  * @return {Promise} An already resolved promise.
   */
-gpii.app.exit = function () {
-    //TODO: This should stop the GPII gracefully before quitting the application.
+gpii.app.performQuit = function () {
     var app = require("electron").app;
+    var togo = fluid.promise();
+
+    gpii.stop();
     app.quit();
+
+    togo.resolve();
+    return togo;
+};
+
+/**
+  * Handles the exit of the Electron Application.
+  * @param that {Component} An instance of gpii.app
+  */
+gpii.app.exit = function (that) {
+    if (that.model.keyedInUserToken) {
+        fluid.promise.sequence([
+            gpii.rejectToLog(that.keyOut(that.model.keyedInUserToken), "Couldn't logout current user"),
+            gpii.app.performQuit
+        ]);
+    } else {
+        gpii.app.performQuit();
+    }
 };
 
 /**
@@ -155,6 +196,53 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
         that.updateKeyedInUserToken(null);
     }
 };
+
+/**
+ * Listen on uncaught exceptions and display it to the user is if it's interesting.
+ * @param that {Component} An instance of gpii.app.
+ */
+gpii.app.handleUncaughtException = function (that, err) {
+    var handledErrors = {
+        "EADDRINUSE": {
+            message: "There is another application listening on port " + err.port,
+            fatal: true
+        }
+    };
+
+    if (err.code) {
+        var error = handledErrors[err.code];
+        if (error) {
+            that.tray.displayBalloon({
+                title: error.title || "GPII Error",
+                content: error.message || err.message,
+                icon: path.join(__dirname, "icons/gpii-icon-balloon.png")
+            });
+            if (error.fatal) {
+                var timeout;
+                var quit = function () {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        that.exit();
+                    }
+                };
+                // Exit when the balloon is dismissed.
+                that.tray.on("balloon-closed", quit);
+                that.tray.on("balloon-click", quit);
+                // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
+                // TODO: See GPII-2348 about this.
+                timeout = setTimeout(quit, 12000);
+            }
+        }
+    }
+};
+
+fluid.onUncaughtException.addListener(function (err) {
+    var app = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app");
+    if (app.length > 0) {
+        app[0].handleUncaughtException(err);
+    }
+}, "gpii.app", "last");
 
 /*
  ** Configuration for using the menu in the app.

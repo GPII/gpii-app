@@ -5,8 +5,10 @@ var app = require("electron").app,
     fluid = require("universal"),
     jqUnit = fluid.require("node-jqunit");
 
-// require("./node_modules/gpii-windows/node_modules/universal/tests/all-tests.js");
-// require("./node_modules/gpii-windows/tests/UnitTests.js");
+require("gpii-windows/index.js");
+
+require("./node_modules/universal/tests/all-tests.js");
+require("./node_modules/gpii-windows/tests/UnitTests.js");
 
 app.on("ready", function () {
     require("./tests/testApp.js");

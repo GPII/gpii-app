@@ -12,13 +12,25 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 var fluid = require("infusion"),
     app = require("electron").app,
+    gpii = fluid.registerNamespace("gpii"),
     kettle = fluid.registerNamespace("kettle");
 
 require("universal");
+
+// Check that we are not running another instance of GPII-App.
+const appIsRunning = app.makeSingleInstance((commandLine, workingDirectory) => {
+    // TODO: Properly log or handle it.
+    console.log("A second instance of GPII-App tried to be executed.")
+});
+// Check if any instance of GPII is running.
+const gpiiIsRunning = !gpii.singleInstance.registerInstance();
+if (appIsRunning || gpiiIsRunning) {
+    app.quit();
+}
+
 require("gpii-windows/index.js");
-
 require("./src/logging.js");
-
+gpii.windows.debugLog.logDebugInfo();
 require("./src/app.js");
 
 // This method will be called when Electron has finished

@@ -10,8 +10,8 @@
   script
 #>
 
-param ( # default to script path
-    [string]$originalBuildScriptPath = (Split-Path -parent $PSCommandPath)
+param (
+    [string]$originalBuildScriptPath = (Split-Path -parent $PSCommandPath) # Default to script path.
 )
 
 # Turn verbose on, change to "SilentlyContinue" for default behaviour.
@@ -22,66 +22,45 @@ $VerbosePreference = "continue"
 $mainDir = (get-item $originalBuildScriptPath).parent.FullName
 Write-OutPut "mainDir set to: $($mainDir)"
 
-# Import functions
-Import-Module "$($originalBuildScriptPath)/Provisioning.psm1" -Force
-Import-Module "$env:ChocolateyInstall\helpers\chocolateyInstaller.psm1" -Force -Verbose
-
-# Obtain some useful paths.
-$systemDrive = $env:SystemDrive
-Write-Verbose "systemDrive is $($systemDrive)"
-
-# Install nodejs and python via chocolatey
-############
-$chocolatey = "$env:ChocolateyInstall\bin\choco.exe" -f $env:SystemDrive
-$nodePath = "C:\Program Files (x86)\nodejs"
-$nodeVersion = "6.9.1"
-Invoke-Command $chocolatey "install nodejs.install --version $($nodeVersion) --forcex86 -y"
-Add-Path $nodePath $true
-$npm = "npm" -f $env:SystemDrive
-refreshenv
-
-Invoke-Command "$npm" "install node-gyp@3.4.0" "$($nodePath)\node_modules\npm"
-
-$python2Path = "C:\tools\python2"
-Invoke-Command $chocolatey "install python2 -y"
-Add-Path $python2Path $true
-refreshenv
-
-# Run npm install
-# ############
-Invoke-Command "$npm" "config set msvs_version 2015 --global"
-refreshenv
-
-Invoke-Command "$npm" "install" $mainDir
+# TODO: We should add this to a function or reduce to oneline.
+$bootstrapModule = Join-Path $originalBuildScriptPath "Provisioning.psm1"
+iwr https://raw.githubusercontent.com/GPII/windows/hst-2017/provisioning/Provisioning.psm1 -UseBasicParsing -OutFile $bootstrapModule
+Import-Module $bootstrapModule -Verbose -Force
 
 # # Run all the windows provisioning scripts
 # ############
-$windowsProvisioningDir = Join-Path $mainDir "node_modules\gpii-windows\provisioning"
+# TODO: Create function for downloading scripts and executing them.
+$windowsBootstrapURL = "https://raw.githubusercontent.com/GPII/windows/hst-2017/provisioning"
 try {
-    Write-OutPut "Running windows script: $($windowsProvisioningDir)\Chocolatey.ps1"
-    Invoke-Expression "$($windowsProvisioningDir)\Chocolatey.ps1"
+    $choco = Join-Path $originalBuildScriptPath "Chocolatey.ps1"
+    Write-OutPut "Running windows script: $choco"
+    iwr "$windowsBootstrapURL/Chocolatey.ps1" -UseBasicParsing -OutFile $choco
+    Invoke-Expression $choco
 } catch {
     Write-OutPut "Chocolatey.ps1 FAILED"
     exit 1
 }
 try {
-    Write-OutPut "Running windows script: $($windowsProvisioningDir)\Npm.ps1"
-    Invoke-Expression "$($windowsProvisioningDir)\Npm.ps1"
+    $npm = Join-Path $originalBuildScriptPath "Npm.ps1"
+    Write-OutPut "Running windows script: $npm"
+    iwr "$windowsBootstrapURL/Npm.ps1" -UseBasicParsing -OutFile $npm
+    Invoke-Expression $npm
 } catch {
     Write-OutPut "Npm.ps1 FAILED"
     exit 1
 }
+
+$npm = "npm" -f $env:SystemDrive
+Invoke-Command $npm "install" $mainDir
+
 try {
-    Write-OutPut "Running windows script: $($windowsProvisioningDir)\Build.ps1"
-    Invoke-Expression "$($windowsProvisioningDir)\Build.ps1 -skipNpm"
+    $tests = Join-Path $originalBuildScriptPath "Tests.ps1"
+    $fullPath = Join-Path $originalBuildScriptPath "../node_modules/gpii-windows/provisioning/"
+    $args = "-originalBuildScriptPath $fullPath"
+    Write-OutPut "Running windows script: $tests"
+    iwr "$windowsBootstrapURL/Tests.ps1" -UseBasicParsing -OutFile $tests
+    Invoke-Expression "$tests $args"
 } catch {
-    Write-OutPut "Build.ps1 FAILED"
-    exit 1
-}
-try {
-    Write-OutPut "Running windows script: $($windowsProvisioningDir)\Installer.ps1"
-    Invoke-Expression "$($windowsProvisioningDir)\Installer.ps1"
-} catch {
-    Write-OutPut "Installer.ps1 FAILED"
+    Write-OutPut "Tests.ps1 FAILED"
     exit 1
 }

@@ -1,3 +1,6 @@
 node_modules
 .DS_Store
 .vagrant
+provisioning/Chocolatey.ps1
+provisioning/Npm.ps1
+provisioning/Tests.ps1
