@@ -28,26 +28,27 @@ fluid.defaults("gpii.app", {
     model: {
         keyedInUserToken: null
     },
-    members: {
-        tray: {
-            expander: {
-                funcName: "gpii.app.makeTray",
-                args: ["{that}.options.icon"]
-            },
-            createOnEvent: "onGPIIReady"
-        }
-    },
     components: {
-        menu: {
-            type: "gpii.app.menuInApp",
+        tray: {
+            type: "gpii.app.tray",
             createOnEvent: "onGPIIReady"
+        },
+        menu: { // put this on the 'tray' compnent
+            type: "gpii.app.menuInApp",
+            createOnEvent: "onGPIIReady",
+            options: {
+                listeners: { // listenter will go on the tray component
+                    onCreate: "{gpii.app}.events.onAppReady.fire"
+                }
+            }
         },
         networkCheck: { // Network check component to meet GPII-2349
             type: "gpii.app.networkCheck"
         }
     },
     events: {
-        onGPIIReady: null
+        onGPIIReady: null,
+        onAppReady: null
     },
     listeners: {
         "{kettle.server}.events.onListen": {
@@ -62,11 +63,6 @@ fluid.defaults("gpii.app", {
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
-        },
-        "onCreate.addTooltip": {
-            "this": "{that}.tray",
-            method: "setToolTip",
-            args: ["{that}.options.labels.tooltip"]
         }
     },
     invokers: {
@@ -85,28 +81,15 @@ fluid.defaults("gpii.app", {
         exit: {
             funcName: "gpii.app.exit",
             args: "{that}"
-        }, "handleUncaughtException": {
+        },
+        "handleUncaughtException": {
             funcName: "gpii.app.handleUncaughtException",
             args: ["{that}", "{arguments}.0"]
         }
-    },
-    icon: "icons/gpii.ico",
-    labels: {
-        tooltip: "GPII"
     }
 });
 
-/**
-  * Creates the Electron Tray
-  * @param icon {String} Path to the icon that represents the GPII in the task tray.
-  */
-gpii.app.makeTray = function (icon) {
-    var tray = new Tray(path.join(__dirname, icon));
-    tray.on("click", function () {
-        tray.popUpContextMenu();
-    });
-    return tray;
-};
+
 
 /**
   * Refreshes the task tray menu for the GPII Application using the menu in the model
@@ -201,6 +184,7 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
  * Listen on uncaught exceptions and display it to the user is if it's interesting.
  * @param that {Component} An instance of gpii.app.
  */
+ //TODO: Fix the access to the 'tray'.
 gpii.app.handleUncaughtException = function (that, err) {
     var handledErrors = {
         "EADDRINUSE": {
@@ -244,6 +228,41 @@ fluid.onUncaughtException.addListener(function (err) {
     }
 }, "gpii.app", "last");
 
+fluid.defaults("gpii.app.tray", {
+    gradeNames: "fluid.component",
+    members: {
+        tray: {
+            expander: {
+                funcName: "gpii.app.makeTray",
+                args: ["{that}.options.icon"]
+            }
+        }
+    },
+    listeners: {
+        "onCreate.addTooltip": {
+            "this": "{that}.tray",
+            method: "setToolTip",
+            args: ["{that}.options.labels.tooltip"]
+        }
+    },
+    icon: "icons/gpii.ico",
+    labels: {
+        tooltip: "GPII"
+    }
+});
+
+/**
+  * Creates the Electron Tray
+  * @param icon {String} Path to the icon that represents the GPII in the task tray.
+  */
+gpii.app.makeTray = function (icon) {
+    var tray = new Tray(path.join(__dirname, icon));
+    tray.on("click", function () {
+        tray.popUpContextMenu();
+    });
+    return tray;
+};
+
 /*
  ** Configuration for using the menu in the app.
  ** Note that this is an incomplete grade which references the app.
@@ -257,7 +276,7 @@ fluid.defaults("gpii.app.menuInApp", {
         "menuTemplate": {
             namespace: "updateMenu",
             funcName: "gpii.app.updateMenu",
-            args: ["{app}.tray", "{that}.model.menuTemplate", "{that}.events"]
+            args: ["{tray}.tray", "{that}.model.menuTemplate", "{that}.events"]
         }
     },
     listeners: {

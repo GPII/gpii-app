@@ -44,10 +44,7 @@ jqUnit.module("GPII Application Tests");
 //
 
 
-// TEST MENU IN APP & MENU IN APP DEV
-// This test must be written in acceptance test style.
-
-// Test the functions in gpii.app.menu
+// Unit test the functions in gpii.app.menu
 
 jqUnit.test("Menu.getUserName", function () {
     jqUnit.expect(4);
