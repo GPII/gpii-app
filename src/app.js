@@ -14,12 +14,18 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
-var Menu = require("electron").Menu;
-var Tray = require("electron").Tray;
+var electron = require('electron');
+var Menu = electron.Menu;
+var Tray = electron.Tray;
+var BrowserWindow = electron.BrowserWindow;
+
 var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
 
+// This seems like a terrible idea.
+// Perhaps there is a better way to update the user without using a global.
+global.sharedObj = {keyedInUser: ""};
 /*
  ** Component to manage the app.
  */
@@ -54,11 +60,14 @@ fluid.defaults("gpii.app", {
             "this": "{that}.events.onGPIIReady",
             method: "fire"
         },
-        "{lifecycleManager}.events.onSessionStart": {
+        "{lifecycleManager}.events.onSessionStart": [{
             listener: "{that}.updateKeyedInUserToken",
             args: ["{arguments}.1"],
             namespace: "onLifeCycleManagerUserKeyedIn"
-        },
+        },{
+            listener: "gpii.app.handleSessionStart",
+            args: ["{that}"]
+        }],
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
@@ -85,7 +94,8 @@ fluid.defaults("gpii.app", {
         exit: {
             funcName: "gpii.app.exit",
             args: "{that}"
-        }, "handleUncaughtException": {
+        },
+        "handleUncaughtException": {
             funcName: "gpii.app.handleUncaughtException",
             args: ["{that}", "{arguments}.0"]
         }
@@ -180,6 +190,23 @@ gpii.app.exit = function (that) {
     }
 };
 
+// TODO: We should make sure we display the window for a minimum amount of time so it doesn't flicker.
+// TODO: This functionality should actually be bound to the 'userLoginInitiated' and 'userLogoutInitiated' events
+gpii.app.handleSessionStart = function (that) {
+    var win = new BrowserWindow({
+        width: 200,
+        height: 200,
+        frame: false,
+        alwaysOnTop: true
+    });
+
+    var url = fluid.stringTemplate("file://%dirName/html/message.html", {
+        dirName: __dirname
+    });
+    win.loadURL(url);
+    that.messageWindow = win;
+};
+
 /**
   * Handles when a user token is keyed out through other means besides the task tray key out feature.
   * @param that {Component} An instance of gpii.app
@@ -193,6 +220,9 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
     } else {
         that.updateKeyedInUserToken(null);
     }
+
+    // TODO: This functionality should actually be bound to the 'userLoginComplete' and 'userLogoutComplete'events
+    that.messageWindow.hide();
 };
 
 /**
@@ -405,7 +435,12 @@ fluid.defaults("gpii.app.menu", {
   */
 gpii.app.menu.getUserName = function (userToken) {
     // TODO: Name should actually be stored by the GPII along with the user token.
-    return userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
+    var name = userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
+
+    // TODO: Find an alternative to this global
+    global.sharedObj.keyedInUser = name;
+
+    return name;
 };
 
 // I think this can be moved into configuration.

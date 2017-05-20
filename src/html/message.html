@@ -1,0 +1,13 @@
+<html>
+<body>
+<div>
+    <!-- TODO: Dynamically generate the message instead of hard coding it here -->
+    <p>GPII</p>
+    <p>One moment</p>
+    <p>Key In</p>
+    <script>
+        const {remote} = require("electron");
+        document.write("<p>" + remote.getGlobal("sharedObj").keyedInUser + "</p>");
+</script>
+</body>
+</html>
