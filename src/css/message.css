@@ -1,0 +1,10 @@
+.gpii-message {
+    background-color: white;
+    padding: 1em 2em;
+    border: 2px solid black;
+    border-radius: 1.5em;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: inline-block;
+}

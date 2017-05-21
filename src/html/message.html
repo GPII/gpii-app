@@ -1,13 +1,20 @@
 <html>
+<head>
+    <title>GPII</title>
+    <link rel="stylesheet" href="../css/message.css">
+</head>
 <body>
-<div>
-    <!-- TODO: Dynamically generate the message instead of hard coding it here -->
-    <p>GPII</p>
-    <p>One moment</p>
-    <p>Key In</p>
-    <script>
-        const {remote} = require("electron");
-        document.write("<p>" + remote.getGlobal("sharedObj").keyedInUser + "</p>");
-</script>
+    <div class="gpii-message">
+        <!-- TODO: Dynamically generate the message instead of hard coding it here -->
+        <p>GPII</p>
+        <p>One moment</p>
+        <script>
+            const {remote} = require("electron");
+            document.write("<p> Key " +
+                remote.getGlobal("sharedObj").action + " " +
+                remote.getGlobal("sharedObj").name +
+                "</p>");
+        </script>
+    </div>
 </body>
 </html>

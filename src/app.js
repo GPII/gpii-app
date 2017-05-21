@@ -25,7 +25,7 @@ require("./networkCheck.js");
 
 // This seems like a terrible idea.
 // Perhaps there is a better way to update the user without using a global.
-global.sharedObj = {keyedInUser: ""};
+global.sharedObj = {action: "", name: ""};
 /*
  ** Component to manage the app.
  */
@@ -66,7 +66,7 @@ fluid.defaults("gpii.app", {
             namespace: "onLifeCycleManagerUserKeyedIn"
         },{
             listener: "gpii.app.handleSessionStart",
-            args: ["{that}"]
+            args: ["{that}", "In"]
         }],
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
@@ -192,11 +192,12 @@ gpii.app.exit = function (that) {
 
 // TODO: We should make sure we display the window for a minimum amount of time so it doesn't flicker.
 // TODO: This functionality should actually be bound to the 'userLoginInitiated' and 'userLogoutInitiated' events
-gpii.app.handleSessionStart = function (that) {
+gpii.app.handleSessionStart = function (that, action) {
+    global.sharedObj.action = action;
+    
     var win = new BrowserWindow({
-        width: 200,
-        height: 200,
         frame: false,
+        transparent: true,
         alwaysOnTop: true
     });
 
@@ -438,7 +439,7 @@ gpii.app.menu.getUserName = function (userToken) {
     var name = userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
 
     // TODO: Find an alternative to this global
-    global.sharedObj.keyedInUser = name;
+    global.sharedObj.name = name;
 
     return name;
 };
