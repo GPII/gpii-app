@@ -14,7 +14,6 @@ After that you can use the `vagrant up` command to create an instance of a [Wind
 
 If this is your first time creating this VM an 8 GB download will take place. The downloaded image will be valid for 90 days after which the Windows installation will no longer be useable. To remove an expired image you can use the ``vagrant box remove "inclusivedesign/windows10-eval"`` command.
 
-
 ### Running the application
 
 Now you can open a command prompt window and use the following commands to run the GPII app:
