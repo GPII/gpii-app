@@ -35,10 +35,19 @@ fluid.defaults("gpii.app", {
         keyedInUserToken: null
     },
     members: {
+        dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
+        modalDialogStartTime: 0, // timestamp recording when the modal dialog was displayed to know when we can dismiss it again
         tray: {
             expander: {
                 funcName: "gpii.app.makeTray",
                 args: ["{that}.options.icon"]
+            },
+            createOnEvent: "onGPIIReady"
+        },
+        modalDialog: {
+            expander: {
+                funcName: "gpii.app.makeModalDialog",
+                args: ["{that}"]
             },
             createOnEvent: "onGPIIReady"
         }
@@ -55,22 +64,21 @@ fluid.defaults("gpii.app", {
     events: {
         onGPIIReady: null
     },
+    modelListeners: {
+        "{lifecycleManager}.model.logonChange": {
+            funcName: "gpii.app.logonChangeListener",
+            args: [ "{that}", "{change}.value" ]
+        }
+    },
     listeners: {
         "{kettle.server}.events.onListen": {
             "this": "{that}.events.onGPIIReady",
             method: "fire"
         },
-        "{lifecycleManager}.events.onSessionStart": [{
+        "{lifecycleManager}.events.onSessionStart": {
             listener: "{that}.updateKeyedInUserToken",
             args: ["{arguments}.1"],
             namespace: "onLifeCycleManagerUserKeyedIn"
-        },{
-            listener: "gpii.app.handleSessionStart",
-            args: ["{that}", "In"]
-        }],
-        "{lifecycleManager}.events.onSessionStop": {
-            listener: "gpii.app.handleSessionStop",
-            args: ["{that}", "{arguments}.1.options.userToken"]
         },
         "onCreate.addTooltip": {
             "this": "{that}.tray",
@@ -116,6 +124,31 @@ gpii.app.makeTray = function (icon) {
         tray.popUpContextMenu();
     });
     return tray;
+};
+
+/**
+  * Creates a modal dialog. This is done up front to avoid the delay from creating a new
+  * dialog every time a new message should be displayed.
+  */
+gpii.app.makeModalDialog = function (that) {
+    var modalDialog = new BrowserWindow({
+        frame: false,
+        transparent: true,
+        alwaysOnTop: true,
+        focusable: false,
+        modal: true,
+        width: 300,
+        height: 200
+    });
+    var url = fluid.stringTemplate("file://%dirName/html/message.html", {
+        dirName: __dirname
+    });
+
+    modalDialog.loadURL(url);
+    modalDialog.center(); // center on screen
+
+    modalDialog.hide();
+    return modalDialog;
 };
 
 /**
@@ -190,40 +223,62 @@ gpii.app.exit = function (that) {
     }
 };
 
-// TODO: We should make sure we display the window for a minimum amount of time so it doesn't flicker.
-// TODO: This functionality should actually be bound to the 'userLoginInitiated' and 'userLogoutInitiated' events
-gpii.app.handleSessionStart = function (that, action) {
-    global.sharedObj.action = action;
-    
-    var win = new BrowserWindow({
-        frame: false,
-        transparent: true,
-        alwaysOnTop: true
-    });
+/**
+ * Listens to any changes in the lifecycle managers logonChange model and calls the
+ * appropriate functions in gpii-app for notifying of the current user state
+ */
+gpii.app.logonChangeListener = function (that, model) {
+    if (model.inProgress === true) {
+        var msg = (model.type === "login") ? "User Key-in: Configuring System" : "User Key-out: Restoring System";
+        gpii.app.displayModalDialog(that, msg);
+    } else {
+        gpii.app.dismissModalDialog(that);
+    }
+}
 
-    var url = fluid.stringTemplate("file://%dirName/html/message.html", {
-        dirName: __dirname
-    });
-    win.loadURL(url);
-    that.messageWindow = win;
+/**
+ * Shows the modal dialog on users screen with the message passed as parameter.
+ * Records the time it was shown in `modalDialogStartTime` which we need when
+ * dismissing it (checking whether it's been displayed for the minimum amount of time)
+ *
+ * @param that {Object} the app module
+ * @param msg {String} the message to display to the user
+ */
+gpii.app.displayModalDialog = function (that, msg) {
+    that.modalDialog.webContents.send('updateMessage', msg);
+
+    that.modalDialog.show();
+    // Hack to ensure it stays on top, even as the GPII autoconfiguration starts applications, etc., that might
+    // otherwise want to be on top
+    // see amongst other: https://blogs.msdn.microsoft.com/oldnewthing/20110310-00/?p=11253/
+    // and https://github.com/electron/electron/issues/2097
+    var interval = setInterval(function() {
+        if (!that.modalDialog.isVisible()) {
+            clearInterval(interval);
+        };
+        that.modalDialog.setAlwaysOnTop(true);
+    }, 100);
+
+    that.modalDialogStartTime = Date.now();
 };
 
 /**
-  * Handles when a user token is keyed out through other means besides the task tray key out feature.
-  * @param that {Component} An instance of gpii.app
-  * @param keyedOutUserToken {String} The token that was keyed out.
-  */
-gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
-    var currentKeyedInUserToken = that.model.keyedInUserToken;
+ * Dismisses the modal dialog. If less than `that.dialogMinDisplayTime` ms have passed since we first displayed
+ * the window, the function waits until `dialogMinDisplayTime` has passed before dismissing it.
+ *
+ * @param that {Object}: the app
+ */
+gpii.app.dismissModalDialog = function (that) {
+    // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
+    var remainingDisplayTime = (that.modalDialogStartTime + that.dialogMinDisplayTime) - Date.now();
 
-    if (keyedOutUserToken !== currentKeyedInUserToken) {
-        console.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
+    if (remainingDisplayTime > 0) {
+        setTimeout(function () {
+            that.modalDialog.hide();
+        }, remainingDisplayTime);
     } else {
-        that.updateKeyedInUserToken(null);
+        that.modalDialog.hide();
     }
-
-    // TODO: This functionality should actually be bound to the 'userLoginComplete' and 'userLogoutComplete'events
-    that.messageWindow.hide();
 };
 
 /**

@@ -8,12 +8,14 @@
         <!-- TODO: Dynamically generate the message instead of hard coding it here -->
         <p>GPII</p>
         <p>One moment</p>
+        <p id="message">Placeholder</p>
         <script>
             const {remote} = require("electron");
-            document.write("<p> Key " +
-                remote.getGlobal("sharedObj").action + " " +
-                remote.getGlobal("sharedObj").name +
-                "</p>");
+            const {ipcRenderer} = require('electron');
+            // display whatever we get via the "updateMessage" IPC channel
+            ipcRenderer.on('updateMessage', (event, msg) => {
+                document.getElementById("message").textContent = msg;
+            });
         </script>
     </div>
 </body>
