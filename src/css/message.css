@@ -1,10 +1,24 @@
 .gpii-message {
-    background-color: white;
-    padding: 1em 2em;
-    border: 2px solid black;
-    border-radius: 1.5em;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    display: inline-block;
+  border: 8px solid #83CBEF;
+  position: absolute;
+  bottom: 22px;
+  right: 0;
+  display: inline-block;
+}
+.gpii-message::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 15%;
+  border: 22px solid transparent;
+  border-top-color: #83CBEF;
+  border-bottom: 0;
+  margin-bottom: -22px;
+}
+.gpii-spinner {
+  background-color: white;
+  padding: 1em 2em;
+}
+.gpii-icon {
+  background-color: #83CBEF;
 }
