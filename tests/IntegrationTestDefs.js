@@ -24,10 +24,10 @@ require("../src/app.js");
 
 fluid.registerNamespace("gpii.tests.app");
 
-gpii.tests.app.testCreateMenuInApp = function (data) {
+gpii.tests.app.testCreateMenuInApp = function (menu) {
     jqUnit.assert("Got here");
     console.log("+++++++++++++++++++++++++++++++++");
-    console.log(data);
+    console.log(menu);
 };
 
 fluid.registerNamespace("gpii.tests.app.testDefs");
@@ -41,7 +41,7 @@ gpii.tests.app.testDefs = [{
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{
-        event: "{gpii.app}.events.onAppReady",
-        listener: "{gpii.tests.app.testCreateMenuInApp}"
+        event: "{that gpii.app.menu}.events.onCreate",
+        listener: "gpii.tests.app.testCreateMenuInApp"
     }]
 }];

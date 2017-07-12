@@ -20,6 +20,10 @@ var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
 
+gpii.app.registerAppListener = function (listener) {
+    require("electron").app.on("ready", listener);
+};
+
 /*
  ** Component to manage the app.
  */
@@ -31,26 +35,31 @@ fluid.defaults("gpii.app", {
     components: {
         tray: {
             type: "gpii.app.tray",
-            createOnEvent: "onGPIIReady"
+            createOnEvent: "onPrequisitesReady"
         },
         menu: { // put this on the 'tray' compnent
             type: "gpii.app.menuInApp",
-            createOnEvent: "onGPIIReady",
-            options: {
-                listeners: { // listenter will go on the tray component
-                    onCreate: "{gpii.app}.events.onAppReady.fire"
-                }
-            }
+            createOnEvent: "onPrequisitesReady"
         },
         networkCheck: { // Network check component to meet GPII-2349
             type: "gpii.app.networkCheck"
         }
     },
     events: {
+        onPrequisitesReady: {
+            events: {
+                onGPIIReady: "onGPIIReady",
+                onAppReady: "onAppReady"
+            }
+        },
         onGPIIReady: null,
         onAppReady: null
     },
     listeners: {
+        "onCreate.registerAppListener": {
+            listener: "gpii.app.registerAppListener",
+            args: "{that}.events.onAppReady.fire"
+        },
         "{kettle.server}.events.onListen": {
             "this": "{that}.events.onGPIIReady",
             method: "fire"

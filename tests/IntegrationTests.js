@@ -18,7 +18,6 @@
 
 var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii"),
-    jqUnit = fluid.registerNamespace("jqUnit"),
     kettle = fluid.registerNamespace("kettle");
 
 require("../node_modules/universal/gpii/node_modules/testing");
@@ -29,18 +28,13 @@ require("./IntegrationTestDefs.js");
 
 fluid.registerNamespace("gpii.tests.app");
 
-gpii.tests.app.initialTest = function (data) {
-    console.log("*(*)))()(*)(*(*)(*)*())");
-    console.log(data);
-};
-
 gpii.tests.app.startSequence = [
     { // This sequence point is required because of a QUnit bug - it defers the start of sequence by 13ms "to avoid any current callbacks" in its words
         func: "{testEnvironment}.events.constructServer.fire"
-    }, {
-        event: "{that gpii.app}.events.onAppReady",
+    }/*, {
+        event: "{that gpii.app}.events.onAppReady", // if you do this here, you can't wait for an event that happens around the same time in the actual test.
         listener: "fluid.identity"
-    }
+    }*/
 ];
 
 // This is a fork of kettle.test.testDefToCaseHolder which is written in a non-reusable style
