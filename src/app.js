@@ -20,8 +20,8 @@ var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
 
-gpii.app.registerAppListener = function (listener) {
-    require("electron").app.on("ready", listener);
+gpii.app.registerAppListener = function (evtName, listener) {
+    require("electron").app.on(evtName, listener);
 };
 
 /*
@@ -37,10 +37,6 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.tray",
             createOnEvent: "onPrequisitesReady"
         },
-        menu: { // put this on the 'tray' compnent
-            type: "gpii.app.menuInApp",
-            createOnEvent: "onPrequisitesReady"
-        },
         networkCheck: { // Network check component to meet GPII-2349
             type: "gpii.app.networkCheck"
         }
@@ -53,12 +49,17 @@ fluid.defaults("gpii.app", {
             }
         },
         onGPIIReady: null,
-        onAppReady: null
+        onAppReady: null,
+        onAppQuit: null
     },
     listeners: {
-        "onCreate.registerAppListener": {
+        "onCreate.registerAppReadyListener": {
             listener: "gpii.app.registerAppListener",
-            args: "{that}.events.onAppReady.fire"
+            args: ["ready", "{that}.events.onAppReady.fire"]
+        },
+        "onCreate.registerAppQuitListener": {
+            listener: "gpii.app.registerAppListener",
+            args: ["quit", "{that}.events.onAppQuit.fire"]
         },
         "{kettle.server}.events.onListen": {
             "this": "{that}.events.onGPIIReady",
@@ -97,20 +98,6 @@ fluid.defaults("gpii.app", {
         }
     }
 });
-
-
-
-/**
-  * Refreshes the task tray menu for the GPII Application using the menu in the model
-  * @param tray {Object} An Electron 'Tray' object.
-  * @param menuTemplate {Array} A nested array that is the menu template for the GPII Application.
-  * @param events {Object} An object containing the events that may be fired by items in the menu.
-  */
-gpii.app.updateMenu = function (tray, menuTemplate, events) {
-    menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
-
-    tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
-};
 
 /**
   * Keys into the GPII.
@@ -237,6 +224,10 @@ fluid.onUncaughtException.addListener(function (err) {
     }
 }, "gpii.app", "last");
 
+/**
+ * Component that contains an Electron Tray.
+ */
+
 fluid.defaults("gpii.app.tray", {
     gradeNames: "fluid.component",
     members: {
@@ -245,6 +236,11 @@ fluid.defaults("gpii.app.tray", {
                 funcName: "gpii.app.makeTray",
                 args: ["{that}.options.icon"]
             }
+        }
+    },
+    components: {
+        menu: {
+            type: "gpii.app.menuInApp"
         }
     },
     listeners: {
@@ -321,6 +317,18 @@ fluid.defaults("gpii.app.menuInApp", {
         }
     }
 });
+
+/**
+  * Refreshes the task tray menu for the GPII Application using the menu in the model
+  * @param tray {Object} An Electron 'Tray' object.
+  * @param menuTemplate {Array} A nested array that is the menu template for the GPII Application.
+  * @param events {Object} An object containing the events that may be fired by items in the menu.
+  */
+gpii.app.updateMenu = function (tray, menuTemplate, events) {
+    menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
+
+    tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
+};
 
 fluid.defaults("gpii.app.menuInAppDev", {
     gradeNames: "gpii.app.menuInApp",
