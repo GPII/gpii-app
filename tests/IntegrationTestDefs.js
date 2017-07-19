@@ -64,9 +64,6 @@ gpii.tests.app.testDefs = [{
         configPath: "configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    members: {
-        app: "{that gpii.app}"
-    },
     sequence: [{ // Test the menu that will be rendered
         event: "{that gpii.app.menu}.events.onCreate",
         listener: "gpii.tests.app.testInitialMenuRender"
@@ -98,5 +95,28 @@ gpii.tests.app.testDefs = [{
    // }, {
    //     event: "{configuration}.server.flowManager.app.events.onAppQuit",
    //     listener: "gpii.tests.app.testExit"
+    }]
+}];
+
+fluid.registerNamespace("gpii.tests.dev");
+
+// TODO: Test the dev config. How do I stop the server and restart it with a different config during tests?
+gpii.tests.dev.testMenuRender = function (menuTemplate) {
+    jqUnit.assert("In Dev Tests");
+};
+
+fluid.registerNamespace("gpii.tests.dev.testDefs");
+
+gpii.tests.dev.testDefs = [{
+    name: "GPII application dev config integration tests",
+    expect: 1,
+    config: {
+        configName: "app.dev",
+        configPath: "configs"
+    },
+    gradeNames: ["gpii.test.common.testCaseHolder"],
+    sequence: [{ // Test the menu that will be rendered
+        event: "{that gpii.app.menu}.events.onCreate",
+        listener: "gpii.tests.app.dev.testMenuRender"
     }]
 }];
