@@ -38,7 +38,7 @@ gpii.tests.app.testMenuRender = function (menuTemplate) {
     jqUnit.assertEquals("Second item is 'Exit GPII'", "Exit GPII", menuTemplate[1].label);
 };
 
-gpii.tests.app.testKeyInAlice = function (menuTemplate) {
+gpii.tests.app.testAliceKeyedIn = function (menuTemplate) {
     jqUnit.assertValue("The menu template exists", menuTemplate);
     jqUnit.assertEquals("There are three items in the menu", 3, menuTemplate.length);
     jqUnit.assertEquals("First item is who is keyed in", "Keyed in with Alice", menuTemplate[0].label);
@@ -46,48 +46,53 @@ gpii.tests.app.testKeyInAlice = function (menuTemplate) {
     jqUnit.assertEquals("Third item is 'Exit GPII'", "Exit GPII", menuTemplate[2].label);
 };
 
-gpii.tests.app.testFailToKeyInSammy = function () {
-    console.log("=================== Got the key in when someone is keyed in error.");
-};
-
 gpii.tests.app.testExit = function () {
     console.log("=================== In Exit");
+};
+
+gpii.tests.app.receiveApp = function (testCaseHolder, app) {
+    testCaseHolder.app = app;
 };
 
 fluid.registerNamespace("gpii.tests.app.testDefs");
 
 gpii.tests.app.testDefs = [{
     name: "GPII application integration tests",
-    expect: 13,
+    expect: 18,
     config: {
         configName: "app",
         configPath: "configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
+    distributeOptions: {
+        record: {
+            funcName: "gpii.tests.app.receiveApp",
+            args: ["{testCaseHolder}", "{arguments}.0"]
+        },
+        target: "{that flowManager gpii.app}.options.listeners.onCreate"
+    },
     sequence: [{ // Test the menu that will be rendered
         event: "{that gpii.app.menu}.events.onCreate",
         listener: "gpii.tests.app.testInitialMenuRender"
     }, { // Test menu after key in
-        func: "{configuration}.server.flowManager.app.keyIn",
+        func: "{that}.app.keyIn",
         args: "alice"
     }, {
-        changeEvent: "{configuration}.server.flowManager.app.tray.menu.applier.modelChanged",
+        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
-        listener: "gpii.tests.app.testKeyInAlice"
-    // }, { // Test key in attempt while someone is keyed in
-    //     func: "{configuration}.server.flowManager.app.keyIn",
-    //     args: "sammy"
-    // }, {
-    //     func: "console.log", // attempt to figure out what to listen to
-    //     args: ["++++++++++++++++++", "{configuration}.server.flowManager.requests.request", "++++++++++++++++++"]
-    // }, { // TODO: This never catches - just hangs - am I listening to the wrong thing?
-    //    event: "{configuration}.server.flowManager.requests.request.events.onError",
-    //    listener: "gpii.tests.app.testFailToKeyInSammy"
+        listener: "gpii.tests.app.testAliceKeyedIn"
+    }, { // Test key in attempt while someone is keyed in
+        func: "{that}.app.keyIn",
+        args: "sammy"
+    }, {
+        event: "{that flowManager kettle.request.http}.events.onError",
+        listener: "gpii.tests.app.testAliceKeyedIn",
+        args: ["{that}.app.tray.menu.model.menuTemplate"] //TODO: Find out why this fails if we don't wrap it in an array
     }, { // Test menu after key out
-        func: "{configuration}.server.flowManager.app.keyOut",
+        func: "{that}.app.keyOut",
         args: "alice"
     }, {
-        changeEvent: "{configuration}.server.flowManager.app.tray.menu.applier.modelChanged",
+        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
         listener: "gpii.tests.app.testMenuRender"
    // }, { // TODO: Test exit - not getting the test results printed - is this exit actually stopping the tests?
@@ -101,7 +106,7 @@ gpii.tests.app.testDefs = [{
 fluid.registerNamespace("gpii.tests.dev");
 
 // TODO: Test the dev config. How do I stop the server and restart it with a different config during tests?
-gpii.tests.dev.testMenuRender = function (menuTemplate) {
+gpii.tests.dev.testMenuRender = function () {
     jqUnit.assert("In Dev Tests");
 };
 
@@ -117,6 +122,6 @@ gpii.tests.dev.testDefs = [{
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{ // Test the menu that will be rendered
         event: "{that gpii.app.menu}.events.onCreate",
-        listener: "gpii.tests.app.dev.testMenuRender"
+        listener: "gpii.tests.dev.testMenuRender"
     }]
 }];
