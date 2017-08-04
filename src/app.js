@@ -18,7 +18,6 @@ var electron = require("electron");
 var Menu = electron.Menu;
 var Tray = electron.Tray;
 var BrowserWindow = electron.BrowserWindow;
-
 var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
@@ -99,6 +98,9 @@ fluid.defaults("gpii.app", {
         keyOut: {
             funcName: "gpii.app.keyOut",
             args: ["{arguments}.0"]
+        },
+        openSettings: {
+            funcName: "gpii.app.openSettings"
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -221,6 +223,17 @@ gpii.app.exit = function (that) {
     } else {
         gpii.app.performQuit();
     }
+};
+
+gpii.app.openSettings = function () {
+    var win = new BrowserWindow({
+        width: 800,
+        height: 600,
+        frame: false,
+        fullscreenable: false,
+        resizable: false
+    });
+    win.loadURL("https://google.com");
 };
 
 /**
@@ -381,6 +394,10 @@ fluid.defaults("gpii.app.menuInApp", {
         // onExit
         "onExit.performExit": {
             listener: "{app}.exit"
+        },
+
+        "onSettings.performSettings": {
+            listener: "{app}.openSettings"
         }
     }
 });
@@ -473,12 +490,21 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
+                args: ["{that}.options.settings", "{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
             },
             priority: "last"
         }
     },
+    settings: {
+        label: "{that}.options.menuLabels.settings",
+        click: "onSettings"
+    },
+    exit: {
+        label: "{that}.options.menuLabels.exit",
+        click: "onExit"
+    },
     menuLabels: {
+        settings: "Open Settings",
         keyedIn: "Keyed in with %userTokenName",    // string template
         keyOut: "Key out %userTokenName",           // string template
         notKeyedIn: "Not keyed in",
@@ -488,7 +514,8 @@ fluid.defaults("gpii.app.menu", {
     events: {
         onKeyIn: null,
         onKeyOut: null,
-        onExit: null
+        onExit: null,
+        onSettings: null
     }
 });
 
