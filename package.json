@@ -25,8 +25,8 @@
   "dependencies": {
     "electron": "1.4.1",
     "request": "2.69.0",
-    "infusion": "git://github.com/amb26/infusion.git#240c00be023732ac8dcc193a57bc1b46c58d2de7",
-    "gpii-windows": "git://github.com/kaspermarkus/windows.git#5fc0d9c65db1ac9cff9495f87bc36907d4ecd499",
+    "infusion": "3.0.0-dev.20170727T125648Z.47055ca",
+    "gpii-windows": "git://github.com/GPII/windows.git#eb89009c811bf993bf56299a1a4098e45a741d31",
     "node-jqunit": "1.1.4"
   }
 }
