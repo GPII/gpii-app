@@ -46,6 +46,12 @@ fluid.defaults("gpii.app", {
                 args: ["{that}"]
             },
             createOnEvent: "onGPIIReady"
+        },
+        settingsWindow: {
+            expander: {
+                funcName: "gpii.app.makeSettingsWindow"
+            },
+            createOnEvent: "onGPIIReady"
         }
     },
     components: {
@@ -225,15 +231,38 @@ gpii.app.exit = function (that) {
     }
 };
 
-gpii.app.openSettings = function () {
-    var win = new BrowserWindow({
-        width: 800,
+gpii.app.makeSettingsWindow = function () {
+    var settingsWindow = new BrowserWindow({
+        width: 500,
         height: 600,
+        show: false,
         frame: false,
         fullscreenable: false,
-        resizable: false
+        resizable: false,
+        skipTaskbar: true
     });
-    win.loadURL("https://google.com");
+    settingsWindow.loadURL('file://' + __dirname + '/index.html');
+
+    settingsWindow.on('blur', function () {
+        settingsWindow.hide();
+    });
+
+    return settingsWindow;
+};
+
+gpii.app.getWindowPosition = function (settingsWindow, tray) {
+    var windowBounds = settingsWindow.getBounds(),
+        trayBounds = tray.getBounds(),
+        x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2)),
+        y = Math.round(trayBounds.y - windowBounds.height - 2);
+    return {x: x, y: y};
+};
+
+gpii.app.openSettings = function (settingsWindow, tray) {
+    var position = gpii.app.getWindowPosition(settingsWindow, tray);
+    settingsWindow.setPosition(position.x, position.y, false);
+    settingsWindow.show();
+    settingsWindow.focus();
 };
 
 /**
@@ -397,7 +426,8 @@ fluid.defaults("gpii.app.menuInApp", {
         },
 
         "onSettings.performSettings": {
-            listener: "{app}.openSettings"
+            listener: "{app}.openSettings",
+            args: ["{app}.settingsWindow", "{app}.tray"]
         }
     }
 });
