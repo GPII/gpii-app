@@ -14,10 +14,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
-var electron = require("electron");
-var Menu = electron.Menu;
-var Tray = electron.Tray;
-var BrowserWindow = electron.BrowserWindow;
+var Menu = require("electron").Menu;
+var Tray = require("electron").Tray;
+var BrowserWindow = require("electron").BrowserWindow;
+var globalShortcut = require("electron").globalShortcut;
 var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
@@ -90,6 +90,10 @@ fluid.defaults("gpii.app", {
             "this": "{that}.tray",
             method: "setToolTip",
             args: ["{that}.options.labels.tooltip"]
+        },
+        "onCreate.addPcpShortcut": {
+            listener: "{that}.addPcpShortcut",
+            args: ["{that}", "{that}.settingsWindow", "{that}.tray"]
         }
     },
     invokers: {
@@ -107,6 +111,9 @@ fluid.defaults("gpii.app", {
         },
         openSettings: {
             funcName: "gpii.app.openSettings"
+        },
+        addPcpShortcut: {
+            funcName: "gpii.app.addPcpShortcut"
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -259,10 +266,20 @@ gpii.app.getWindowPosition = function (settingsWindow, tray) {
 };
 
 gpii.app.openSettings = function (settingsWindow, tray) {
+    if (settingsWindow.isVisible()) {
+        return;
+    }
+
     var position = gpii.app.getWindowPosition(settingsWindow, tray);
     settingsWindow.setPosition(position.x, position.y, false);
     settingsWindow.show();
     settingsWindow.focus();
+};
+
+gpii.app.addPcpShortcut = function (that, settingsWindow, tray) {
+    globalShortcut.register('CommandOrControl+Alt+P', function () {
+        that.openSettings(settingsWindow, tray);
+    });
 };
 
 /**
