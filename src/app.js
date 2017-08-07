@@ -135,6 +135,7 @@ gpii.app.makeWaitDialog = function () {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
 
     var dialog = new BrowserWindow({
+        show: false,
         frame: false,
         transparent: true,
         alwaysOnTop: true,
@@ -227,11 +228,7 @@ gpii.app.exit = function (that) {
  * appropriate functions in gpii-app for notifying of the current user state
  */
 gpii.app.logonChangeListener = function (that, model) {
-    if (model.inProgress === true) {
-        gpii.app.displayWaitDialog(that);
-    } else {
-        gpii.app.dismissWaitDialog(that);
-    }
+    model.inProgress ? gpii.app.displayWaitDialog(that) : gpii.app.dismissWaitDialog(that);
 };
 
 /**
@@ -240,7 +237,6 @@ gpii.app.logonChangeListener = function (that, model) {
  * dismissing it (checking whether it's been displayed for the minimum amount of time)
  *
  * @param that {Object} the app module
- * @param msg {String} the message to display to the user
  */
 gpii.app.displayWaitDialog = function (that) {
     that.dialog.show();
@@ -262,7 +258,7 @@ gpii.app.displayWaitDialog = function (that) {
  * Dismisses the dialog. If less than `that.dialogMinDisplayTime` ms have passed since we first displayed
  * the window, the function waits until `dialogMinDisplayTime` has passed before dismissing it.
  *
- * @param that {Object}: the app
+ * @param that {Object} the app
  */
 gpii.app.dismissWaitDialog = function (that) {
     // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
