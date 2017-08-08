@@ -17,6 +17,7 @@ var gpii = fluid.registerNamespace("gpii");
 var electron = require("electron");
 var Menu = electron.Menu;
 var Tray = electron.Tray;
+var shell = electron.shell;
 var BrowserWindow = electron.BrowserWindow;
 
 var path = require("path");
@@ -99,6 +100,9 @@ fluid.defaults("gpii.app", {
         keyOut: {
             funcName: "gpii.app.keyOut",
             args: ["{arguments}.0"]
+        },
+        openEditPreferences: {
+            funcName: "gpii.app.openEditPreferences"
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -221,6 +225,14 @@ gpii.app.exit = function (that) {
     } else {
         gpii.app.performQuit();
     }
+};
+
+/**
+  * Opens a website for editing the user's preferences. The site will be opened
+  * externally, in the default system browser.
+  */
+gpii.app.openEditPreferences = function () {
+    shell.openExternal("http://pmt.gpii.org");
 };
 
 /**
@@ -381,6 +393,10 @@ fluid.defaults("gpii.app.menuInApp", {
         // onExit
         "onExit.performExit": {
             listener: "{app}.exit"
+        },
+
+        "onEditPreferences": {
+            listener: "{app}.openEditPreferences"
         }
     }
 });
@@ -464,12 +480,21 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "after:userName"
         },
+        "editPreferences": {
+            target: "editPreferences",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getEditPreferences",
+                args: ["{that}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.editPreferences"]
+            },
+            priority: "after:userName"
+        },
         "menuTemplate:": {
             target: "menuTemplate",
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
+                args: ["{that}.model.keyedInUser", "{that}.model.editPreferences", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
             },
             priority: "last"
         }
@@ -482,13 +507,15 @@ fluid.defaults("gpii.app.menu", {
         keyedIn: "Keyed in with %userTokenName",    // string template
         keyOut: "Key out %userTokenName",           // string template
         notKeyedIn: "Not keyed in",
+        editPreferences: "Edit preferences ...",
         exit: "Exit GPII",
         keyIn: "Key in ..."
     },
     events: {
         onKeyIn: null,
         onKeyOut: null,
-        onExit: null
+        onExit: null,
+        onEditPreferences: null
     }
 });
 
@@ -525,6 +552,27 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
     }
 
     return keyOut;
+};
+
+/**
+  * Generates an object that represents the menu item for editing user's preferences.
+  * @param keyedInUserToken {String} The user token that is currently keyed in.
+  * @param name {String} The name of the user that is currently keyed in.
+  * @param editPreferencesStr {String} The string to be displayed for the edit preferences
+  * menu item.
+  */
+gpii.app.menu.getEditPreferences = function (keyedInUserToken, name, editPreferencesStr) {
+    var editPreferences = null;
+
+    if (name) {
+        editPreferences = {
+            label: editPreferencesStr,
+            click: "onEditPreferences",
+            token: keyedInUserToken
+        };
+    }
+
+    return editPreferences;
 };
 
 /**
