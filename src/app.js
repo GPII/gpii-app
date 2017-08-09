@@ -21,6 +21,7 @@ var BrowserWindow = electron.BrowserWindow;
 
 var path = require("path");
 var request = require("request");
+var ws = require("ws");
 require("./networkCheck.js");
 
 /**
@@ -45,7 +46,8 @@ fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
         keyedInUserToken: null,
-        showDialog: false
+        showDialog: false,
+        preferenceSets: []
     },
     components: {
         tray: {
@@ -98,6 +100,10 @@ fluid.defaults("gpii.app", {
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
+        },
+        "onCreate.addCommunicationChannel": {
+            listener: "{that}.addCommunicationChannel",
+            args: ["{that}"]
         }
     },
     invokers: {
@@ -108,6 +114,13 @@ fluid.defaults("gpii.app", {
         updateShowDialog: {
             changePath: "showDialog",
             value: "{arguments}.0"
+        },
+        updatePreferenceSets: {
+            changePath: "preferenceSets",
+            value: "{arguments}.0"
+        },
+        addCommunicationChannel: {
+            funcName: "gpii.app.addCommunicationChannel"
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
@@ -207,6 +220,95 @@ gpii.app.exit = function (that) {
     }
 };
 
+gpii.app.extractPreferenceSets = function (data) {
+    var message = JSON.parse(data),
+        inferredConfiguration;
+
+
+    if (message.value && message.value.matchMakerOutput) {
+        inferredConfiguration = message.value.matchMakerOutput.inferredConfiguration;
+
+        return {
+            preferenceSetLabels: Object.keys(inferredConfiguration),
+            activeContext: message.value.activeContextName
+        };
+    }
+
+    return {
+        preferenceSetLabels: []
+    };
+};
+
+/**
+ * TODO
+ */
+gpii.app.addCommunicationChannel = function (that) {
+    var socket = new ws("ws://localhost:8081/pcpChannel"); // eslint-disable-line new-cap
+
+    socket.on("open", function () {
+        console.log("## Socket connected");
+    });
+
+    socket.on("message", function (data) {
+        var preferenceSetsData = gpii.app.extractPreferenceSets(data);
+        var preferenceSets = gpii.app.menu.labelizePreferenceSets(
+                that.keyedInUserToken,
+                preferenceSetsData.preferenceSetLabels,
+                preferenceSetsData.activeContext);
+        // TODO set labels
+        that.updatePreferenceSets(preferenceSets);
+    });
+};
+
+/**
+ * Listens to any changes in the lifecycle managers logonChange model and calls the
+ * appropriate functions in gpii-app for notifying of the current user state
+ */
+gpii.app.logonChangeListener = function (that, model) {
+    model.inProgress ? gpii.app.displayWaitDialog(that) : gpii.app.dismissWaitDialog(that);
+};
+
+/**
+ * Shows the dialog on users screen with the message passed as parameter.
+ * Records the time it was shown in `dialogStartTime` which we need when
+ * dismissing it (checking whether it's been displayed for the minimum amount of time)
+ *
+ * @param that {Object} the app module
+ */
+gpii.app.displayWaitDialog = function (that) {
+    that.dialog.show();
+    // Hack to ensure it stays on top, even as the GPII autoconfiguration starts applications, etc., that might
+    // otherwise want to be on top
+    // see amongst other: https://blogs.msdn.microsoft.com/oldnewthing/20110310-00/?p=11253/
+    // and https://github.com/electron/electron/issues/2097
+    var interval = setInterval(function () {
+        if (!that.dialog.isVisible()) {
+            clearInterval(interval);
+        };
+        that.dialog.setAlwaysOnTop(true);
+    }, 100);
+
+    that.dialogStartTime = Date.now();
+};
+
+/**
+ * Dismisses the dialog. If less than `that.dialogMinDisplayTime` ms have passed since we first displayed
+ * the window, the function waits until `dialogMinDisplayTime` has passed before dismissing it.
+ *
+ * @param that {Object} the app
+ */
+gpii.app.dismissWaitDialog = function (that) {
+    // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
+    var remainingDisplayTime = (that.dialogStartTime + that.dialogMinDisplayTime) - Date.now();
+
+    if (remainingDisplayTime > 0) {
+        setTimeout(function () {
+            that.dialog.hide();
+        }, remainingDisplayTime);
+    } else {
+        that.dialog.hide();
+    }
+};
 
 /**
  * Handles when a user token is keyed out through other means besides the task tray key out feature.
@@ -420,7 +522,8 @@ gpii.app.dismissWaitDialog = function (that) {
 fluid.defaults("gpii.app.menuInApp", {
     gradeNames: "gpii.app.menu",
     model: {
-        keyedInUserToken: "{app}.model.keyedInUserToken"
+        keyedInUserToken: "{app}.model.keyedInUserToken",
+        preferenceSets: "{app}.model.preferenceSets"
     },
     modelListeners: {
         "menuTemplate": {
@@ -540,6 +643,7 @@ fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
     model: {
         //keyedInUserToken  // This comes from the app.
+        preferenceSets: null, // Comes from the app
         keyedInUser: {
             label: "",      // Must be updated when keyedInUserToken changes.
             enabled: false
@@ -574,12 +678,21 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "after:userName"
         },
-        "menuTemplate": {
+        "preferenceSetsLabels": {
+            target: "preferenceSetsLabels",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getPreferenceSetsLabels",
+                args: ["{that}.model.keyedInUserToken", "{that}.model.preferenceSets"]
+            },
+            priority: "after:preferenceSets"
+        },
+        "menuTemplate:": {
             target: "menuTemplate",
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
+                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.model.preferenceSetsLabels", "{that}.options.snapsets", "{that}.options.exit"]
             },
             priority: "last"
         }
@@ -638,6 +751,29 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
     return keyOut;
 };
 
+gpii.app.menu.labelizePreferenceSets = function (keyedInUserToken, preferenceSets, activeSet) {
+    var preferenceSetsLabels,
+        separator = {type: "separator"};
+
+    preferenceSetsLabels = preferenceSets.map(function (preferenceSet) {
+        return {
+            label: preferenceSet,
+            type: "checkbox",
+            token: keyedInUserToken,
+            // TODO posible to be multiple items
+            checked: preferenceSet === activeSet
+        };
+    });
+
+    // TODO move to a better place?
+    if (preferenceSetsLabels.length > 0) {
+        preferenceSetsLabels.unshift(separator);
+        preferenceSetsLabels.push(separator);
+    }
+
+    return preferenceSetsLabels;
+};
+
 /**
   * Creates a JSON representation of a menu.
   * @param {Object} An object containing a menu item template.
@@ -647,7 +783,11 @@ gpii.app.menu.generateMenuTemplate = function (/* all the items in the menu */) 
     var menuTemplate = [];
     fluid.each(arguments, function (item) {
         if (item) {
-            menuTemplate.push(item);
+            if (Array.isArray(item)) {
+                menuTemplate = menuTemplate.concat(item);
+            } else {
+                menuTemplate.push(item);
+            }
         }
     });
 
