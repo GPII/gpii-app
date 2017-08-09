@@ -1,7 +1,12 @@
 "use strict";
 (function () {
     var fluid = window.fluid,
-        gpii = fluid.registerNamespace("gpii");
+        gpii = fluid.registerNamespace("gpii"),
+        ipcRenderer = require("electron").ipcRenderer;
+
+    ipcRenderer.on("message", function (event, message) {
+        console.log("Browser window received message:", message);
+    });
 
     //XXX This is a test component. Will be removed.
     fluid.defaults("gpii.app.settingsMenu", {
@@ -20,5 +25,6 @@
 
     $(function () {
         gpii.app.settingsMenu(".flc-body", {});
+        ipcRenderer.send("reply", "This message goes back to the main window.");
     });
 })();

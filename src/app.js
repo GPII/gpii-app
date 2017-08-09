@@ -21,6 +21,7 @@ var BrowserWindow = electron.BrowserWindow;
 var globalShortcut = electron.globalShortcut;
 var path = require("path");
 var request = require("request");
+var ipcMain = require("electron").ipcMain;
 require("./networkCheck.js");
 
 /*
@@ -95,6 +96,9 @@ fluid.defaults("gpii.app", {
         "onCreate.addPcpShortcut": {
             listener: "{that}.addPcpShortcut",
             args: ["{that}", "{that}.settingsWindow", "{that}.tray"]
+        },
+        "onCreate.addCommunicationChannel": {
+            listener: "{that}.addCommunicationChannel"
         }
     },
     invokers: {
@@ -116,6 +120,9 @@ fluid.defaults("gpii.app", {
         },
         addPcpShortcut: {
             funcName: "gpii.app.addPcpShortcut"
+        },
+        addCommunicationChannel: {
+            funcName: "gpii.app.addCommunicationChannel"
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -240,6 +247,12 @@ gpii.app.exit = function (that) {
     }
 };
 
+gpii.app.addCommunicationChannel = function () {
+    ipcMain.on("reply", function (event, data) {
+        console.log("Message from browser window:", data);
+    });
+};
+
 gpii.app.makeSettingsWindow = function () {
     var settingsWindow = new BrowserWindow({
         width: 500,
@@ -276,6 +289,8 @@ gpii.app.openSettings = function (keyedInUserToken, settingsWindow, tray) {
     settingsWindow.setPosition(position.x, position.y, false);
     settingsWindow.show();
     settingsWindow.focus();
+
+    settingsWindow.webContents.send("message", "Example message. Can be of any type.");
 };
 
 gpii.app.addPcpShortcut = function (that, settingsWindow, tray) {
