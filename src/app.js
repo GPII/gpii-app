@@ -14,10 +14,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
-var Menu = require("electron").Menu;
-var Tray = require("electron").Tray;
-var BrowserWindow = require("electron").BrowserWindow;
-var globalShortcut = require("electron").globalShortcut;
+var electron = require("electron");
+var Menu = electron.Menu;
+var Tray = electron.Tray;
+var BrowserWindow = electron.BrowserWindow;
+var globalShortcut = electron.globalShortcut;
 var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
@@ -110,7 +111,8 @@ fluid.defaults("gpii.app", {
             args: ["{arguments}.0"]
         },
         openSettings: {
-            funcName: "gpii.app.openSettings"
+            funcName: "gpii.app.openSettings",
+            args: ["{that}.model.keyedInUserToken", "{arguments}.0", "{arguments}.1"]
         },
         addPcpShortcut: {
             funcName: "gpii.app.addPcpShortcut"
@@ -168,7 +170,7 @@ gpii.app.makeWaitDialog = function () {
 
 /**
   * Refreshes the task tray menu for the GPII Application using the menu in the model
-  * @param tray {Object} An Electron 'Tray' object.
+  * @param tray {Object} An Electron "Tray" object.
   * @param menuTemplate {Array} A nested array that is the menu template for the GPII Application.
   * @param events {Object} An object containing the events that may be fired by items in the menu.
   */
@@ -248,9 +250,9 @@ gpii.app.makeSettingsWindow = function () {
         resizable: false,
         skipTaskbar: true
     });
-    settingsWindow.loadURL('file://' + __dirname + '/index.html');
+    settingsWindow.loadURL("file://" + __dirname + "/index.html");
 
-    settingsWindow.on('blur', function () {
+    settingsWindow.on("blur", function () {
         settingsWindow.hide();
     });
 
@@ -265,8 +267,8 @@ gpii.app.getWindowPosition = function (settingsWindow, tray) {
     return {x: x, y: y};
 };
 
-gpii.app.openSettings = function (settingsWindow, tray) {
-    if (settingsWindow.isVisible()) {
+gpii.app.openSettings = function (keyedInUserToken, settingsWindow, tray) {
+    if (!keyedInUserToken || settingsWindow.isVisible()) {
         return;
     }
 
@@ -277,7 +279,7 @@ gpii.app.openSettings = function (settingsWindow, tray) {
 };
 
 gpii.app.addPcpShortcut = function (that, settingsWindow, tray) {
-    globalShortcut.register('CommandOrControl+Alt+P', function () {
+    globalShortcut.register("CommandOrControl+Alt+P", function () {
         that.openSettings(settingsWindow, tray);
     });
 };
@@ -532,19 +534,23 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "after:userName"
         },
+        "openSettings": {
+            target: "openSettings",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getOpenSettings",
+                args: ["{that}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.settings"]
+            }
+        },
         "menuTemplate:": {
             target: "menuTemplate",
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.options.settings", "{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
+                args: ["{that}.model.openSettings", "{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
             },
             priority: "last"
         }
-    },
-    settings: {
-        label: "{that}.options.menuLabels.settings",
-        click: "onSettings"
     },
     exit: {
         label: "{that}.options.menuLabels.exit",
@@ -601,6 +607,20 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
     return keyOut;
 };
 
+gpii.app.menu.getOpenSettings = function (keyedInUserToken, name, openSettingsStr) {
+    var openSettings = null;
+
+    if (keyedInUserToken) {
+        openSettings = {
+            label: openSettingsStr,
+            click: "onSettings",
+            token: keyedInUserToken
+        };
+    }
+
+    return openSettings;
+};
+
 /**
   * Creates a JSON representation of a menu.
   * @param {Object} An object containing a menu item template.
@@ -618,7 +638,7 @@ gpii.app.menu.generateMenuTemplate = function (/* all the items in the menu */) 
 };
 
 /**
-  * Takes a JSON array that represents a menu template and expands the 'click' entries into functions
+  * Takes a JSON array that represents a menu template and expands the "click" entries into functions
   * that fire the appropriate event.
   * @param events {Object} An object that contains the events that might be fired from an item in the menu.
   * @param menuTemplate {Array} A JSON array that represents a menu template
