@@ -1,7 +1,12 @@
 "use strict";
 (function () {
     var fluid = window.fluid,
-        gpii = fluid.registerNamespace("gpii");
+        gpii = fluid.registerNamespace("gpii"),
+        ipcRenderer = require("electron").ipcRenderer;
+
+    ipcRenderer.on("openSettingsFailure", function () {
+        new Audio("../sounds/failure.wav").play();
+    });
 
     //XXX This is a test component. Will be removed.
     fluid.defaults("gpii.app.settingsMenu", {

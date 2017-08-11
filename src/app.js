@@ -96,9 +96,6 @@ fluid.defaults("gpii.app", {
         "onCreate.addPcpShortcut": {
             listener: "{that}.addPcpShortcut",
             args: ["{that}", "{that}.settingsWindow", "{that}.tray"]
-        },
-        "onCreate.addCommunicationChannel": {
-            listener: "{that}.addCommunicationChannel"
         }
     },
     invokers: {
@@ -108,7 +105,7 @@ fluid.defaults("gpii.app", {
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
-            args: ["{arguments}.0"]
+            args: ["{that}", "{arguments}.0"]
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
@@ -116,13 +113,14 @@ fluid.defaults("gpii.app", {
         },
         openSettings: {
             funcName: "gpii.app.openSettings",
-            args: ["{that}.model.keyedInUserToken", "{arguments}.0"]
+            args: ["{that}", "{that}.model.keyedInUserToken", "{arguments}.0"]
         },
         addPcpShortcut: {
             funcName: "gpii.app.addPcpShortcut"
         },
-        addCommunicationChannel: {
-            funcName: "gpii.app.addCommunicationChannel"
+        notifySettingsWindow: {
+            funcName: "gpii.app.notifySettingsWindow",
+            args: ["{that}.settingsWindow", "{arguments}.0", "{arguments}.1"]
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -192,8 +190,8 @@ gpii.app.updateMenu = function (tray, menuTemplate, events) {
   * Currently uses an url to key in although this should be changed to use Electron IPC.
   * @param token {String} The token to key in with.
   */
-gpii.app.keyIn = function (token) {
-    request("http://localhost:8081/user/" + token + "/login", function (/*error, response, body*/) {
+gpii.app.keyIn = function (that, token) {
+    request("http://localhost:8081/user/" + token + "/login", function (/*error, response*/) {
         //TODO Put in some error logging
     });
 };
@@ -248,10 +246,18 @@ gpii.app.exit = function (that) {
 };
 
 /**
- * Creates an Electron BrowserWindow which is to be used for settings management
+ * Sends a message to the given window
  *
- * @return {Object} The created Electron `BrowserWindow`
+ * @param settingsWindow {Object} An Electron `BrowserWindow` object
+ * @param messageChannel {String} The channel to which the message to be sent
+ * @param message {String}
  */
+gpii.app.notifySettingsWindow = function (settingsWindow, messageChannel, message) {
+    if (settingsWindow) {
+        settingsWindow.webContents.send(messageChannel, message);
+    }
+};
+
 gpii.app.makeSettingsWindow = function () {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
     // TODO Make window size relative to the screen size
@@ -285,15 +291,17 @@ gpii.app.makeSettingsWindow = function () {
  * @param keyedInUserToken {String} The user token.
  * @param settingsWindow {Object} An Electron `BrowserWindow`.
  */
-gpii.app.openSettings = function (keyedInUserToken, settingsWindow) {
-    if (!keyedInUserToken || settingsWindow.isVisible()) {
+gpii.app.openSettings = function (that, keyedInUserToken, settingsWindow) {
+    if (!keyedInUserToken) {
+        that.notifySettingsWindow("openSettingsFailure");
+        return;
+    }
+    if (settingsWindow.isVisible()) {
         return;
     }
 
     settingsWindow.show();
     settingsWindow.focus();
-
-    settingsWindow.webContents.send("message", "Example message. Can be of any type.");
 };
 
 /**
@@ -509,6 +517,18 @@ fluid.defaults("gpii.app.menuInAppDev", {
             label: "Livia",
             click: "onKeyIn",
             token: "livia"
+        }, {
+            label: "Manuel",
+            click: "onKeyIn",
+            token: "manuel"
+        }, {
+            label: "Vladimir",
+            click: "onKeyIn",
+            token: "vladimir"
+        }, {
+            label: "Invalid user",
+            click: "onKeyIn",
+            token: "invalidUser"
         }]
     },
     exit: {
