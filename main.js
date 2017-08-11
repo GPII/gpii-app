@@ -30,7 +30,6 @@ if (appIsRunning || gpiiIsRunning) {
 
 require("gpii-windows/index.js");
 require("./src/logging.js");
-gpii.windows.debugLog.logDebugInfo();
 require("./src/app.js");
 
 // This method will be called when Electron has finished
