@@ -26,7 +26,7 @@
     "electron": "1.4.1",
     "request": "2.69.0",
     "infusion": "3.0.0-dev.20170727T125648Z.47055ca",
-    "gpii-windows": "git://github.com/javihernandez/windows.git#hst-2017-ci-test",
+    "gpii-windows": "git://github.com/GPII/windows.git#hst-2017",
     "node-jqunit": "1.1.4"
   }
 }

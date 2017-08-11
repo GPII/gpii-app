@@ -30,7 +30,6 @@ Vagrant.configure(2) do |config|
     vm.customize ["setextradata", "global", "GUI/SuppressMessages", "all"]
   end
 
-  config.vm.provision "shell", inline: "net stop wuauserv"
   config.vm.provision "shell", path: "provisioning/Build.ps1", args: "-originalBuildScriptPath \"C:\\vagrant\\provisioning\\\""
   config.vm.provision "shell", path: "provisioning/Installer.ps1", args: "-provisioningDir \"C:\\vagrant\\provisioning\\\""
 end
