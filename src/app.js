@@ -14,14 +14,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
-var electron = require("electron");
-var Menu = electron.Menu;
-var Tray = electron.Tray;
-var BrowserWindow = electron.BrowserWindow;
-var globalShortcut = electron.globalShortcut;
 var path = require("path");
 var request = require("request");
-var ipcMain = require("electron").ipcMain;
+var electron = require("electron"),
+    BrowserWindow = electron.BrowserWindow,
+    Menu = electron.Menu,
+    Tray = electron.Tray,
+    globalShortcut = electron.globalShortcut,
+    ipcMain = electron.ipcMain;
 require("./networkCheck.js");
 
 /*
@@ -249,11 +249,13 @@ gpii.app.exit = function (that) {
 
 gpii.app.addCommunicationChannel = function () {
     ipcMain.on("reply", function (event, data) {
+        // TODO Add more meaningfull handling
         console.log("Message from browser window:", data);
     });
 };
 
 gpii.app.makeSettingsWindow = function () {
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
     var settingsWindow = new BrowserWindow({
         width: 500,
         height: 600,
@@ -261,9 +263,15 @@ gpii.app.makeSettingsWindow = function () {
         frame: false,
         fullscreenable: false,
         resizable: false,
-        skipTaskbar: true
+        alwaysOnTop: true,
+        skipTaskbar: true,
+        x: screenSize.width - 500,
+        y: screenSize.height - 600
     });
-    settingsWindow.loadURL("file://" + __dirname + "/index.html");
+    var url = fluid.stringTemplate("file://%dirName/html/settings.html", {
+        dirName: __dirname
+    });
+    settingsWindow.loadURL(url);
 
     settingsWindow.on("blur", function () {
         settingsWindow.hide();
