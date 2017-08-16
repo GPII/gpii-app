@@ -12,12 +12,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
 
+var electron = require("electron");
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
 var path = require("path");
 var request = require("request");
-var electron = require("electron"),
-    BrowserWindow = electron.BrowserWindow,
+
+var BrowserWindow = electron.BrowserWindow,
     Menu = electron.Menu,
     Tray = electron.Tray,
     globalShortcut = electron.globalShortcut,
@@ -116,7 +117,7 @@ fluid.defaults("gpii.app", {
         },
         openSettings: {
             funcName: "gpii.app.openSettings",
-            args: ["{that}.model.keyedInUserToken", "{arguments}.0", "{arguments}.1"]
+            args: ["{that}.model.keyedInUserToken", "{arguments}.0"]
         },
         addPcpShortcut: {
             funcName: "gpii.app.addPcpShortcut"
@@ -256,6 +257,7 @@ gpii.app.addCommunicationChannel = function () {
 
 gpii.app.makeSettingsWindow = function () {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    // TODO Make window size relative to the screen size
     var settingsWindow = new BrowserWindow({
         width: 500,
         height: 600,
@@ -280,21 +282,11 @@ gpii.app.makeSettingsWindow = function () {
     return settingsWindow;
 };
 
-gpii.app.getWindowPosition = function (settingsWindow, tray) {
-    var windowBounds = settingsWindow.getBounds(),
-        trayBounds = tray.getBounds(),
-        x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2)),
-        y = Math.round(trayBounds.y - windowBounds.height - 2);
-    return {x: x, y: y};
-};
-
-gpii.app.openSettings = function (keyedInUserToken, settingsWindow, tray) {
+gpii.app.openSettings = function (keyedInUserToken, settingsWindow) {
     if (!keyedInUserToken || settingsWindow.isVisible()) {
         return;
     }
 
-    var position = gpii.app.getWindowPosition(settingsWindow, tray);
-    settingsWindow.setPosition(position.x, position.y, false);
     settingsWindow.show();
     settingsWindow.focus();
 
