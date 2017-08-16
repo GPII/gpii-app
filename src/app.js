@@ -250,11 +250,16 @@ gpii.app.exit = function (that) {
 
 gpii.app.addCommunicationChannel = function () {
     ipcMain.on("reply", function (event, data) {
-        // TODO Add more meaningfull handling
+        // TODO Add more meaningful handling
         console.log("Message from browser window:", data);
     });
 };
 
+/**
+ * Creates an Electron BrowserWindow which is to be used for settings management
+ *
+ * @return {Object} The created Electron `BrowserWindow`
+ */
 gpii.app.makeSettingsWindow = function () {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
     // TODO Make window size relative to the screen size
@@ -282,6 +287,12 @@ gpii.app.makeSettingsWindow = function () {
     return settingsWindow;
 };
 
+/**
+ * Shows the passed Electron `BrowserWindow`
+ *
+ * @param keyedInUserToken {String} The user token.
+ * @param settingsWindow {Object} An Electron `BrowserWindow`.
+ */
 gpii.app.openSettings = function (keyedInUserToken, settingsWindow) {
     if (!keyedInUserToken || settingsWindow.isVisible()) {
         return;
@@ -293,6 +304,13 @@ gpii.app.openSettings = function (keyedInUserToken, settingsWindow) {
     settingsWindow.webContents.send("message", "Example message. Can be of any type.");
 };
 
+/**
+ * Adds keyboard shortcut for opening the settings window
+ *
+ * @param that {Object} The app module.
+ * @param settingsWindow {Object} An Electron `BrowserWindow` object.
+ * @param tray {Object} An Electron `Tray` object.
+ */
 gpii.app.addPcpShortcut = function (that, settingsWindow, tray) {
     globalShortcut.register("CommandOrControl+Alt+P", function () {
         that.openSettings(settingsWindow, tray);
@@ -622,6 +640,13 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
     return keyOut;
 };
 
+/**
+  * Generates an objectd that represents the menu items for opening the settings panel
+  * @param keyedInUserToken {String} The user token that is currently keyed in.
+  * @param name {String} The name of the user that is currently keyed in.
+  * @param openSettingsStr {String} The string to be displayed for the open setting panel menu item.
+  * @returns {Object}
+  */
 gpii.app.menu.getOpenSettings = function (keyedInUserToken, name, openSettingsStr) {
     var openSettings = null;
 

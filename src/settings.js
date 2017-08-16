@@ -26,7 +26,7 @@
     $(function () {
         gpii.app.settingsMenu(".flc-body", {});
 
-        //XXX This in only with test perpose
+        //XXX This in only with test purpose
         ipcRenderer.send("reply", "This message goes back to the main window.");
     });
 })();
