@@ -21,8 +21,7 @@ var request = require("request");
 var BrowserWindow = electron.BrowserWindow,
     Menu = electron.Menu,
     Tray = electron.Tray,
-    globalShortcut = electron.globalShortcut,
-    ipcMain = electron.ipcMain;
+    globalShortcut = electron.globalShortcut;
 require("./networkCheck.js");
 
 /*
@@ -246,13 +245,6 @@ gpii.app.exit = function (that) {
     } else {
         gpii.app.performQuit();
     }
-};
-
-gpii.app.addCommunicationChannel = function () {
-    ipcMain.on("reply", function (event, data) {
-        // TODO Add more meaningful handling
-        console.log("Message from browser window:", data);
-    });
 };
 
 /**
