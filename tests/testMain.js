@@ -47,10 +47,15 @@ jqUnit.module("GPII Application Main Tests");
 //
 // });
 
-jqUnit.asyncTest("Testing Task Tray", function () {
-    jqUnit.expect(2);
+jqUnit.test("Menu.getExit", function () {
+    jqUnit.expect(4);
 
-    var taskTray = gpii.taskTray();
+    var exitStr = "Exit GPII",
+        exitObj = gpii.app.menu.getExit(false, exitStr);
+    jqUnit.assertFalse("Exit object is not created when app is not elevated", exitObj);
 
-    jqUnit.assertNotNull("The task tray was created", taskTray);
+    exitObj = gpii.app.menu.getExit(true, exitStr);
+    jqUnit.assertTrue("Exit object exists", exitObj);
+    jqUnit.assertEquals("Exit is bound to onClick", "onExit", exitObj.click);
+    jqUnit.assertEquals("Label is set in the exit object", exitStr, exitObj.label);
 });
