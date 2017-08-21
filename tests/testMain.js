@@ -47,10 +47,21 @@ jqUnit.module("GPII Application Main Tests");
 //
 // });
 
-jqUnit.asyncTest("Testing Task Tray", function () {
-    jqUnit.expect(2);
+jqUnit.test("Menu.getEditPreferences", function () {
+    jqUnit.expect(5);
 
-    var taskTray = gpii.taskTray();
+    var label = "Edit preferences ...",
+        token = "alice",
+        name = "Alice";
 
-    jqUnit.assertNotNull("The task tray was created", taskTray);
+    var editPrefsObj = gpii.app.menu.getEditPreferences(null, null, label);
+    jqUnit.assertFalse("Edit preferences object is not created when there is no keyed in user",
+    	editPrefsObj);
+
+    editPrefsObj = gpii.app.menu.getEditPreferences(token, name, label);
+    jqUnit.assertTrue("Edit preferences object exists", editPrefsObj);
+    jqUnit.assertEquals("Edit preferences object is bound to onClick", "onEditPreferences",
+    	editPrefsObj.click);
+    jqUnit.assertEquals("Token is set in the Edit preferences object", token, editPrefsObj.token);
+    jqUnit.assertEquals("Label is set in the Edit preferences object", label, editPrefsObj.label);
 });
