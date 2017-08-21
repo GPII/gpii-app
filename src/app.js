@@ -584,7 +584,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getOpenSettings",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.settings"]
+                args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.settings"]
             }
         },
         "menuTemplate:": {
@@ -655,11 +655,10 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
 /**
   * Generates an objectd that represents the menu items for opening the settings panel
   * @param keyedInUserToken {String} The user token that is currently keyed in.
-  * @param name {String} The name of the user that is currently keyed in.
   * @param openSettingsStr {String} The string to be displayed for the open setting panel menu item.
   * @returns {Object}
   */
-gpii.app.menu.getOpenSettings = function (keyedInUserToken, name, openSettingsStr) {
+gpii.app.menu.getOpenSettings = function (keyedInUserToken, openSettingsStr) {
     var openSettings = null;
 
     if (keyedInUserToken) {
