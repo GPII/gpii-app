@@ -33,23 +33,22 @@ gpii.app.registerAppListener = function (evtName, listener) {
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
-        keyedInUserToken: null
-    },
-    members: {
-        dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
-        dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
-        dialog: {
-            expander: {
-                funcName: "gpii.app.makeWaitDialog",
-                args: ["{that}"]
-            },
-            createOnEvent: "onGPIIReady"
-        }
+        keyedInUserToken: null,
+        showDialog: false
     },
     components: {
         tray: {
             type: "gpii.app.tray",
             createOnEvent: "onPrequisitesReady"
+        },
+        dialog: {
+            type: "gpii.app.dialog",
+            createOnEvent: "onPrequisitesReady",
+            options: {
+                model: {
+                    showDialog: "{gpii.app}.model.showDialog"
+                }
+            }
         },
         networkCheck: { // Network check component to meet GPII-2349
             type: "gpii.app.networkCheck"
@@ -63,23 +62,18 @@ fluid.defaults("gpii.app", {
             }
         },
         onGPIIReady: null,
-        onAppReady: null,
-        onAppQuit: null
+        onAppReady: null
     },
     modelListeners: {
         "{lifecycleManager}.model.logonChange": {
-            funcName: "gpii.app.logonChangeListener",
-            args: [ "{that}", "{change}.value" ]
+            funcName: "{that}.updateShowDialog",
+            args: ["{change}.value.inProgress"]
         }
     },
     listeners: {
         "onCreate.registerAppReadyListener": {
             listener: "gpii.app.registerAppListener",
             args: ["ready", "{that}.events.onAppReady.fire"]
-        },
-        "onCreate.registerAppQuitListener": {
-            listener: "gpii.app.registerAppListener",
-            args: ["quit", "{that}.events.onAppQuit.fire"]
         },
         "{kettle.server}.events.onListen": {
             "this": "{that}.events.onGPIIReady",
@@ -100,6 +94,10 @@ fluid.defaults("gpii.app", {
             changePath: "keyedInUserToken",
             value: "{arguments}.0"
         },
+        updateShowDialog: {
+            changePath: "showDialog",
+            value: "{arguments}.0"
+        },
         keyIn: {
             funcName: "gpii.app.keyIn",
             args: ["{arguments}.0"]
@@ -118,31 +116,6 @@ fluid.defaults("gpii.app", {
         }
     }
 });
-
-
-/**
-  * Creates a dialog. This is done up front to avoid the delay from creating a new
-  * dialog every time a new message should be displayed.
-  */
-gpii.app.makeWaitDialog = function () {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
-
-    var dialog = new BrowserWindow({
-        show: false,
-        frame: false,
-        transparent: true,
-        alwaysOnTop: true,
-        skipTaskBar: true,
-        x: screenSize.width - 900, // because the default width is 800
-        y: screenSize.height - 600 // because the default height is 600
-    });
-
-    var url = fluid.stringTemplate("file://%dirName/html/message.html", {
-        dirName: __dirname
-    });
-    dialog.loadURL(url);
-    return dialog;
-};
 
 /**
   * Refreshes the task tray menu for the GPII Application using the menu in the model
@@ -218,55 +191,6 @@ gpii.app.exit = function (that) {
     }
 };
 
-/**
- * Listens to any changes in the lifecycle managers logonChange model and calls the
- * appropriate functions in gpii-app for notifying of the current user state
- */
-gpii.app.logonChangeListener = function (that, model) {
-    model.inProgress ? gpii.app.displayWaitDialog(that) : gpii.app.dismissWaitDialog(that);
-};
-
-/**
- * Shows the dialog on users screen with the message passed as parameter.
- * Records the time it was shown in `dialogStartTime` which we need when
- * dismissing it (checking whether it's been displayed for the minimum amount of time)
- *
- * @param that {Object} the app module
- */
-gpii.app.displayWaitDialog = function (that) {
-    that.dialog.show();
-    // Hack to ensure it stays on top, even as the GPII autoconfiguration starts applications, etc., that might
-    // otherwise want to be on top
-    // see amongst other: https://blogs.msdn.microsoft.com/oldnewthing/20110310-00/?p=11253/
-    // and https://github.com/electron/electron/issues/2097
-    var interval = setInterval(function () {
-        if (!that.dialog.isVisible()) {
-            clearInterval(interval);
-        };
-        that.dialog.setAlwaysOnTop(true);
-    }, 100);
-
-    that.dialogStartTime = Date.now();
-};
-
-/**
- * Dismisses the dialog. If less than `that.dialogMinDisplayTime` ms have passed since we first displayed
- * the window, the function waits until `dialogMinDisplayTime` has passed before dismissing it.
- *
- * @param that {Object} the app
- */
-gpii.app.dismissWaitDialog = function (that) {
-    // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
-    var remainingDisplayTime = (that.dialogStartTime + that.dialogMinDisplayTime) - Date.now();
-
-    if (remainingDisplayTime > 0) {
-        setTimeout(function () {
-            that.dialog.hide();
-        }, remainingDisplayTime);
-    } else {
-        that.dialog.hide();
-    }
-};
 
 /**
  * Handles when a user token is keyed out through other means besides the task tray key out feature.
@@ -374,6 +298,104 @@ gpii.app.makeTray = function (icon) {
     });
     return tray;
 };
+
+/**
+ * Component that contains an Electron Dialog.
+ */
+
+fluid.defaults("gpii.app.dialog", {
+    gradeNames: "fluid.modelComponent",
+    model: {
+        showDialog: false
+    },
+    members: {
+        dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
+        dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
+        dialog: {
+            expander: {
+                funcName: "gpii.app.makeWaitDialog"
+            }
+        }
+    },
+    modelListeners: {
+        "showDialog": {
+            funcName: "gpii.app.showHideWaitDialog",
+            args: ["{that}", "{change}.value"]
+        }
+    }
+});
+
+/**
+ * Creates a dialog. This is done up front to avoid the delay from creating a new
+ * dialog every time a new message should be displayed.
+ */
+gpii.app.makeWaitDialog = function () {
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+
+    var dialog = new BrowserWindow({
+        show: false,
+        frame: false,
+        transparent: true,
+        alwaysOnTop: true,
+        skipTaskBar: true,
+        x: screenSize.width - 900, // because the default width is 800
+        y: screenSize.height - 600 // because the default height is 600
+    });
+
+    var url = fluid.stringTemplate("file://%dirName/html/message.html", {
+        dirName: __dirname
+    });
+    dialog.loadURL(url);
+    return dialog;
+};
+
+
+gpii.app.showHideWaitDialog = function (that, showDialog) {
+    showDialog ? gpii.app.displayWaitDialog(that) : gpii.app.dismissWaitDialog(that);
+};
+
+/**
+ * Shows the dialog on users screen with the message passed as parameter.
+ * Records the time it was shown in `dialogStartTime` which we need when
+ * dismissing it (checking whether it's been displayed for the minimum amount of time)
+ *
+ * @param that {Object} the app module
+ */
+gpii.app.displayWaitDialog = function (that) {
+    that.dialog.show();
+    // Hack to ensure it stays on top, even as the GPII autoconfiguration starts applications, etc., that might
+    // otherwise want to be on top
+    // see amongst other: https://blogs.msdn.microsoft.com/oldnewthing/20110310-00/?p=11253/
+    // and https://github.com/electron/electron/issues/2097
+    var interval = setInterval(function () {
+        if (!that.dialog.isVisible()) {
+            clearInterval(interval);
+        };
+        that.dialog.setAlwaysOnTop(true);
+    }, 100);
+
+    that.dialogStartTime = Date.now();
+};
+
+/**
+ * Dismisses the dialog. If less than `that.dialogMinDisplayTime` ms have passed since we first displayed
+ * the window, the function waits until `dialogMinDisplayTime` has passed before dismissing it.
+ *
+ * @param that {Object} the app
+ */
+gpii.app.dismissWaitDialog = function (that) {
+    // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
+    var remainingDisplayTime = (that.dialogStartTime + that.dialogMinDisplayTime) - Date.now();
+
+    if (remainingDisplayTime > 0) {
+        setTimeout(function () {
+            that.dialog.hide();
+        }, remainingDisplayTime);
+    } else {
+        that.dialog.hide();
+    }
+};
+
 
 /*
  ** Configuration for using the menu in the app.
