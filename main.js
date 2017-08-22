@@ -31,7 +31,6 @@ if (appIsRunning || gpiiIsRunning) {
 
 require("gpii-windows/index.js");
 require("./src/logging.js");
-gpii.windows.debugLog.logDebugInfo();
 require("./src/app.js");
 
 kettle.config.loadConfig({

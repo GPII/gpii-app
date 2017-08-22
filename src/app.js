@@ -14,8 +14,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
-var Menu = require("electron").Menu;
-var Tray = require("electron").Tray;
+var electron = require("electron");
+var Menu = electron.Menu;
+var Tray = electron.Tray;
+var BrowserWindow = electron.BrowserWindow;
+
 var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
@@ -31,6 +34,17 @@ fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
         keyedInUserToken: null
+    },
+    members: {
+        dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
+        dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
+        dialog: {
+            expander: {
+                funcName: "gpii.app.makeWaitDialog",
+                args: ["{that}"]
+            },
+            createOnEvent: "onGPIIReady"
+        }
     },
     components: {
         tray: {
@@ -51,6 +65,12 @@ fluid.defaults("gpii.app", {
         onGPIIReady: null,
         onAppReady: null,
         onAppQuit: null
+    },
+    modelListeners: {
+        "{lifecycleManager}.model.logonChange": {
+            funcName: "gpii.app.logonChangeListener",
+            args: [ "{that}", "{change}.value" ]
+        }
     },
     listeners: {
         "onCreate.registerAppReadyListener": {
@@ -98,6 +118,43 @@ fluid.defaults("gpii.app", {
         }
     }
 });
+
+
+/**
+  * Creates a dialog. This is done up front to avoid the delay from creating a new
+  * dialog every time a new message should be displayed.
+  */
+gpii.app.makeWaitDialog = function () {
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+
+    var dialog = new BrowserWindow({
+        show: false,
+        frame: false,
+        transparent: true,
+        alwaysOnTop: true,
+        skipTaskBar: true,
+        x: screenSize.width - 900, // because the default width is 800
+        y: screenSize.height - 600 // because the default height is 600
+    });
+
+    var url = fluid.stringTemplate("file://%dirName/html/message.html", {
+        dirName: __dirname
+    });
+    dialog.loadURL(url);
+    return dialog;
+};
+
+/**
+  * Refreshes the task tray menu for the GPII Application using the menu in the model
+  * @param tray {Object} An Electron 'Tray' object.
+  * @param menuTemplate {Array} A nested array that is the menu template for the GPII Application.
+  * @param events {Object} An object containing the events that may be fired by items in the menu.
+  */
+gpii.app.updateMenu = function (tray, menuTemplate, events) {
+    menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
+
+    tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
+};
 
 /**
   * Keys into the GPII.
@@ -162,10 +219,60 @@ gpii.app.exit = function (that) {
 };
 
 /**
-  * Handles when a user token is keyed out through other means besides the task tray key out feature.
-  * @param that {Component} An instance of gpii.app
-  * @param keyedOutUserToken {String} The token that was keyed out.
-  */
+ * Listens to any changes in the lifecycle managers logonChange model and calls the
+ * appropriate functions in gpii-app for notifying of the current user state
+ */
+gpii.app.logonChangeListener = function (that, model) {
+    model.inProgress ? gpii.app.displayWaitDialog(that) : gpii.app.dismissWaitDialog(that);
+};
+
+/**
+ * Shows the dialog on users screen with the message passed as parameter.
+ * Records the time it was shown in `dialogStartTime` which we need when
+ * dismissing it (checking whether it's been displayed for the minimum amount of time)
+ *
+ * @param that {Object} the app module
+ */
+gpii.app.displayWaitDialog = function (that) {
+    that.dialog.show();
+    // Hack to ensure it stays on top, even as the GPII autoconfiguration starts applications, etc., that might
+    // otherwise want to be on top
+    // see amongst other: https://blogs.msdn.microsoft.com/oldnewthing/20110310-00/?p=11253/
+    // and https://github.com/electron/electron/issues/2097
+    var interval = setInterval(function () {
+        if (!that.dialog.isVisible()) {
+            clearInterval(interval);
+        };
+        that.dialog.setAlwaysOnTop(true);
+    }, 100);
+
+    that.dialogStartTime = Date.now();
+};
+
+/**
+ * Dismisses the dialog. If less than `that.dialogMinDisplayTime` ms have passed since we first displayed
+ * the window, the function waits until `dialogMinDisplayTime` has passed before dismissing it.
+ *
+ * @param that {Object} the app
+ */
+gpii.app.dismissWaitDialog = function (that) {
+    // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
+    var remainingDisplayTime = (that.dialogStartTime + that.dialogMinDisplayTime) - Date.now();
+
+    if (remainingDisplayTime > 0) {
+        setTimeout(function () {
+            that.dialog.hide();
+        }, remainingDisplayTime);
+    } else {
+        that.dialog.hide();
+    }
+};
+
+/**
+ * Handles when a user token is keyed out through other means besides the task tray key out feature.
+ * @param that {Component} An instance of gpii.app
+ * @param keyedOutUserToken {String} The token that was keyed out.
+ */
 gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
     var currentKeyedInUserToken = that.model.keyedInUserToken;
 
@@ -364,6 +471,10 @@ fluid.defaults("gpii.app.menuInAppDev", {
             click: "onKeyIn",
             token: "livia"
         }]
+    },
+    exit: {
+        label: "{that}.options.menuLabels.exit",
+        click: "onExit"
     }
 });
 
@@ -419,10 +530,6 @@ fluid.defaults("gpii.app.menu", {
             priority: "last"
         }
     },
-    exit: {
-        label: "{that}.options.menuLabels.exit",
-        click: "onExit"
-    },
     menuLabels: {
         keyedIn: "Keyed in with %userTokenName",    // string template
         keyOut: "Key out %userTokenName",           // string template
@@ -443,7 +550,8 @@ fluid.defaults("gpii.app.menu", {
   */
 gpii.app.menu.getUserName = function (userToken) {
     // TODO: Name should actually be stored by the GPII along with the user token.
-    return userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
+    var name = userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
+    return name;
 };
 
 /**
