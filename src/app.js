@@ -419,6 +419,10 @@ fluid.defaults("gpii.app.menuInAppDev", {
             click: "onKeyIn",
             token: "livia"
         }]
+    },
+    exit: {
+        label: "{that}.options.menuLabels.exit",
+        click: "onExit"
     }
 });
 
@@ -473,10 +477,6 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "last"
         }
-    },
-    exit: {
-        label: "{that}.options.menuLabels.exit",
-        click: "onExit"
     },
     menuLabels: {
         keyedIn: "Keyed in with %userTokenName",    // string template
