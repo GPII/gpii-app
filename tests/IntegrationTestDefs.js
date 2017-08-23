@@ -33,21 +33,15 @@ gpii.tests.app.testInitialMenuRender = function (menu) {
 
 gpii.tests.app.testMenuRender = function (menuTemplate) {
     jqUnit.assertValue("The menu template was created", menuTemplate);
-    jqUnit.assertEquals("There are two items in the menu", 2, menuTemplate.length);
+    jqUnit.assertEquals("There is one item in the menu", 1, menuTemplate.length);
     jqUnit.assertEquals("First item is 'Not Keyed In'", "Not keyed in", menuTemplate[0].label);
-    jqUnit.assertEquals("Second item is 'Exit GPII'", "Exit GPII", menuTemplate[1].label);
 };
 
 gpii.tests.app.testAliceKeyedIn = function (menuTemplate) {
     jqUnit.assertValue("The menu template exists", menuTemplate);
-    jqUnit.assertEquals("There are three items in the menu", 3, menuTemplate.length);
+    jqUnit.assertEquals("There are two items in the menu", 2, menuTemplate.length);
     jqUnit.assertEquals("First item is who is keyed in", "Keyed in with Alice", menuTemplate[0].label);
     jqUnit.assertEquals("Second item is key out", "Key out Alice", menuTemplate[1].label);
-    jqUnit.assertEquals("Third item is 'Exit GPII'", "Exit GPII", menuTemplate[2].label);
-};
-
-gpii.tests.app.testExit = function () {
-    console.log("=================== In Exit");
 };
 
 gpii.tests.app.receiveApp = function (testCaseHolder, app) {
@@ -58,7 +52,7 @@ fluid.registerNamespace("gpii.tests.app.testDefs");
 
 gpii.tests.app.testDefs = [{
     name: "GPII application integration tests",
-    expect: 18,
+    expect: 14,
     config: {
         configName: "app",
         configPath: "configs"
@@ -87,7 +81,7 @@ gpii.tests.app.testDefs = [{
     }, {
         event: "{that flowManager kettle.request.http}.events.onError",
         listener: "gpii.tests.app.testAliceKeyedIn",
-        args: ["{that}.app.tray.menu.model.menuTemplate"] //TODO: Find out why this fails if we don't wrap it in an array
+        args: ["{that}.app.tray.menu.model.menuTemplate"]
     }, { // Test menu after key out
         func: "{that}.app.keyOut",
         args: "alice"
@@ -95,11 +89,6 @@ gpii.tests.app.testDefs = [{
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
         listener: "gpii.tests.app.testMenuRender"
-   // }, { // TODO: Test exit - not getting the test results printed - is this exit actually stopping the tests?
-   //     func: "{configuration}.server.flowManager.app.exit"
-   // }, {
-   //     event: "{configuration}.server.flowManager.app.events.onAppQuit",
-   //     listener: "gpii.tests.app.testExit"
     }]
 }];
 
