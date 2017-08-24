@@ -26,22 +26,34 @@ require("../src/app.js");
 fluid.registerNamespace("gpii.tests.app");
 
 // TODO: Is there a way to do this directly in the sequence?
-gpii.tests.app.testInitialMenuRender = function (menu) {
+gpii.tests.app.testInitialMenu = function (menu) {
     var menuTemplate = menu.model.menuTemplate;
-    gpii.tests.app.testMenuRender(menuTemplate);
+    gpii.tests.app.testMenu(menuTemplate);
 };
 
-gpii.tests.app.testMenuRender = function (menuTemplate) {
-    jqUnit.assertValue("The menu template was created", menuTemplate);
-    jqUnit.assertEquals("There is one item in the menu", 1, menuTemplate.length);
-    jqUnit.assertEquals("First item is 'Not Keyed In'", "Not keyed in", menuTemplate[0].label);
+gpii.tests.app.testTemplateExists = function (template, expectedLength) {
+    jqUnit.assertValue("The menu template was created", template);
+    jqUnit.assertEquals("There are " + expectedLength + " items in the menu", expectedLength, template.length);
 };
 
-gpii.tests.app.testAliceKeyedIn = function (menuTemplate) {
-    jqUnit.assertValue("The menu template exists", menuTemplate);
-    jqUnit.assertEquals("There are two items in the menu", 2, menuTemplate.length);
-    jqUnit.assertEquals("First item is who is keyed in", "Keyed in with Alice", menuTemplate[0].label);
-    jqUnit.assertEquals("Second item is key out", "Key out Alice", menuTemplate[1].label);
+gpii.tests.app.testItem = function (item, label) {
+    jqUnit.assertEquals("Check label ", label, item.label);
+    jqUnit.assertNull("Item has no submenu", item.submenu);
+};
+
+gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
+    gpii.tests.app.testItem(infoItem, "Keyed in with Snapset_1a");
+    gpii.tests.app.testItem(keyoutItem, "Key out Snapset_1a");
+};
+
+gpii.tests.app.testMenu = function (menuTemplate) {
+    gpii.tests.app.testTemplateExists(menuTemplate, 1);
+    gpii.tests.app.testItem(menuTemplate[0], "Not keyed in");
+};
+
+gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
+    gpii.tests.app.testTemplateExists(menuTemplate, 2);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[0], menuTemplate[1]);
 };
 
 gpii.tests.app.receiveApp = function (testCaseHolder, app) {
@@ -50,9 +62,9 @@ gpii.tests.app.receiveApp = function (testCaseHolder, app) {
 
 fluid.registerNamespace("gpii.tests.app.testDefs");
 
-gpii.tests.app.testDefs = [{
+gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
-    expect: 14,
+    expect: 20,
     config: {
         configName: "app",
         configPath: "configs"
@@ -67,50 +79,111 @@ gpii.tests.app.testDefs = [{
     },
     sequence: [{ // Test the menu that will be rendered
         event: "{that gpii.app.menu}.events.onCreate",
-        listener: "gpii.tests.app.testInitialMenuRender"
+        listener: "gpii.tests.app.testInitialMenu"
     }, { // Test menu after key in
         func: "{that}.app.keyIn",
-        args: "alice"
+        args: "snapset_1a"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
-        listener: "gpii.tests.app.testAliceKeyedIn"
+        listener: "gpii.tests.app.testMenuSnapsetKeyedIn"
     }, { // Test key in attempt while someone is keyed in
         func: "{that}.app.keyIn",
-        args: "sammy"
+        args: "snapset_2a"
     }, {
         event: "{that flowManager kettle.request.http}.events.onError",
-        listener: "gpii.tests.app.testAliceKeyedIn",
+        listener: "gpii.tests.app.testMenuSnapsetKeyedIn",
         args: ["{that}.app.tray.menu.model.menuTemplate"]
     }, { // Test menu after key out
         func: "{that}.app.keyOut",
-        args: "alice"
+        args: "snapset_1a"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
-        listener: "gpii.tests.app.testMenuRender"
+        listener: "gpii.tests.app.testMenu"
+    }, {
+        func: "console.log",
+        args: ["********************* finished with the app tests"]
     }]
-}];
+};
 
 fluid.registerNamespace("gpii.tests.dev");
 
-// TODO: Test the dev config. How do I stop the server and restart it with a different config during tests?
-gpii.tests.dev.testMenuRender = function () {
-    jqUnit.assert("In Dev Tests");
+gpii.tests.dev.testInitialMenu = function (menu) {
+    var menuTemplate = menu.model.menuTemplate;
+    gpii.tests.dev.testMenu(menuTemplate);
+};
+
+gpii.tests.dev.testKeyInList = function (item) {
+    jqUnit.assertEquals("Item is 'Key In' List", "Key in ...", item.label);
+    var submenu = item.submenu;
+    jqUnit.assertValue("Item has submenu", submenu);
+    jqUnit.assertEquals("Key in list has 11 items", 11, submenu.length);
+
+    gpii.tests.app.testItem(submenu[0], "Larger 125%");
+    gpii.tests.app.testItem(submenu[1], "Larger 150%");
+    gpii.tests.app.testItem(submenu[2], "Larger 175%");
+    gpii.tests.app.testItem(submenu[3], "Dark & Larger 125%");
+    gpii.tests.app.testItem(submenu[4], "Dark & Larger 150%");
+    gpii.tests.app.testItem(submenu[5], "Dark & Larger 175%");
+    gpii.tests.app.testItem(submenu[6], "Read To Me");
+    gpii.tests.app.testItem(submenu[7], "Magnifier 200%");
+    gpii.tests.app.testItem(submenu[8], "Magnifier 400%");
+    gpii.tests.app.testItem(submenu[9], "Magnifier 200% & Display Scaling 175%");
+    gpii.tests.app.testItem(submenu[10], "Dark Magnifier 200%");
+};
+
+gpii.tests.dev.testMenu = function (menuTemplate) {
+    gpii.tests.app.testTemplateExists(menuTemplate, 3);
+    gpii.tests.app.testItem(menuTemplate[0], "Not keyed in");
+    gpii.tests.dev.testKeyInList(menuTemplate[1]);
+    gpii.tests.app.testItem(menuTemplate[2], "Exit GPII");
+};
+
+gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
+    gpii.tests.app.testTemplateExists(menuTemplate, 4);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[0], menuTemplate[1]);
+    gpii.tests.dev.testKeyInList(menuTemplate[2]);
+    gpii.tests.app.testItem(menuTemplate[3], "Exit GPII");
 };
 
 fluid.registerNamespace("gpii.tests.dev.testDefs");
 
-gpii.tests.dev.testDefs = [{
+// TODO: Should this derive from the above app tests?
+gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 1,
+    expect: 95,
     config: {
         configName: "app.dev",
         configPath: "configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
+    distributeOptions: {
+        record: {
+            funcName: "gpii.tests.app.receiveApp",
+            args: ["{testCaseHolder}", "{arguments}.0"]
+        },
+        target: "{that flowManager gpii.app}.options.listeners.onCreate"
+    },
     sequence: [{ // Test the menu that will be rendered
         event: "{that gpii.app.menu}.events.onCreate",
-        listener: "gpii.tests.dev.testMenuRender"
+        listener: "gpii.tests.dev.testInitialMenu"
+    }, { // Test menu after key in
+        func: "{that}.app.keyIn",
+        args: "snapset_1a"
+    }, {
+        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
+        path: "menuTemplate",
+        listener: "gpii.tests.dev.testMenuSnapsetKeyedIn"
+    }, { // Test menu after key out
+        func: "{that}.app.keyOut",
+        args: "snapset_1a"
+    }, {
+        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
+        path: "menuTemplate",
+        listener: "gpii.tests.dev.testMenu"
+    }, {
+        func: "console.log",
+        args: ["********************* finished with the DEV app tests"]
     }]
-}];
+};
