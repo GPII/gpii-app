@@ -310,11 +310,11 @@ gpii.app.makeTray = function (icon) {
 fluid.defaults("gpii.app.dialog", {
     gradeNames: "fluid.modelComponent",
     model: {
-        showDialog: false
-    },
-    members: {
+        showDialog: false,
         dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
         dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
+    },
+    members: {
         dialog: {
             expander: {
                 funcName: "gpii.app.makeWaitDialog"
@@ -378,7 +378,7 @@ gpii.app.displayWaitDialog = function (that) {
         that.dialog.setAlwaysOnTop(true);
     }, 100);
 
-    that.dialogStartTime = Date.now();
+    that.model.dialogStartTime = Date.now();
 };
 
 /**
@@ -389,7 +389,7 @@ gpii.app.displayWaitDialog = function (that) {
  */
 gpii.app.dismissWaitDialog = function (that) {
     // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
-    var remainingDisplayTime = (that.dialogStartTime + that.dialogMinDisplayTime) - Date.now();
+    var remainingDisplayTime = (that.model.dialogStartTime + that.model.dialogMinDisplayTime) - Date.now();
 
     if (remainingDisplayTime > 0) {
         setTimeout(function () {

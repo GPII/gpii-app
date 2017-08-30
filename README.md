@@ -26,6 +26,11 @@ cd c:\vagrant\
 npm start
 ```
 
+Alternatively, running the application in development mode will give you a list of snapsets in the task tray menu:
+```
+npm run dev
+```
+
 ### Running the Tests in a VM
 
 Ensure that your virtual box is up and running, then open a terminal (in the VM), go to the folder with gpii-app and run the test script:

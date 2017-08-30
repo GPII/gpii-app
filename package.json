@@ -18,6 +18,7 @@
   },
   "scripts": {
     "start": "electron main.js",
+    "dev": "electron main.js ./configs app.dev",
     "test": "powershell provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; electron tests.js"
   },
   "dependencies": {

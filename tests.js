@@ -7,17 +7,17 @@ var fluid = require("universal"),
 require("gpii-windows/index.js");
 
 // Run the GPII tests
-require("./node_modules/universal/tests/all-tests.js");
-require("./node_modules/gpii-windows/tests/UnitTests.js");
+// require("./node_modules/universal/tests/all-tests.js");
+// require("./node_modules/gpii-windows/tests/UnitTests.js");
 
 // Run the electron app tests
-require("./tests/AppTests.js");
+// require("./tests/AppTests.js");
 require("./tests/IntegrationTests.js");
 
-var app = require("electron").app;
-
-app.on("ready", function () {
-    jqUnit.onAllTestsDone.addListener(function (results) {
-        process.exit(results.failed); // exits with 0 if no tests failed
-    });
-});
+// var app = require("electron").app;
+//
+// app.on("ready", function () {
+//     jqUnit.onAllTestsDone.addListener(function (results) {
+//         process.exit(results.failed); // exits with 0 if no tests failed
+//     });
+// });

@@ -20,30 +20,6 @@ require("../src/app.js");
 
 jqUnit.module("GPII Application Tests");
 
-// TEST THE FUNCTIONS IN gpii.app
-// test make Tray
-// is it possible to determine if a tray was created?
-// seems like at this point there is no way to test this. Electron apps that have a Window process can be tested with Spectron.
-
-// test update menu
-// is it possible to look at the menu and see if it was updated?
-// there is probably a model we can look at to see if it has been updated.
-
-// test key in
-// do we start the GPII when we are running tests?
-// if yes, check we can key in
-
-// test key out
-// do we start the GPII when we are running tests?
-// if yes, check we can key out
-
-// test exit
-// how do we determine if the app is running?
-
-// test handle session stop
-//
-
-
 // Unit test the functions in gpii.app.menu
 
 jqUnit.test("Menu.getUserName", function () {
