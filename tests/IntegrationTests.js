@@ -16,10 +16,11 @@
 
 "use strict";
 
-var fluid = require("infusion"),
-    gpii = fluid.registerNamespace("gpii"),
-    kettle = fluid.registerNamespace("kettle");
+var fluid = require("universal"),
+    kettle = fluid.registerNamespace("kettle"),
+    gpii = fluid.registerNamespace("gpii");
 
+require("gpii-windows/index.js");
 require("../node_modules/universal/gpii/node_modules/testing");
 
 gpii.loadTestingSupport();
