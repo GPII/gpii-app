@@ -1,8 +1,7 @@
 /* eslint-env node */
 "use strict";
 
-var fluid = require("universal"),
-    jqUnit = fluid.require("node-jqunit");
+var fluid = require("universal");
 
 require("gpii-windows/index.js");
 
@@ -13,11 +12,3 @@ require("./node_modules/gpii-windows/tests/UnitTests.js");
 // Run the electron app tests
 require("./tests/AppTests.js");
 require("./tests/IntegrationTests.js");
-
-var app = require("electron").app;
-
-app.on("ready", function () {
-    jqUnit.onAllTestsDone.addListener(function (results) {
-        process.exit(results.failed); // exits with 0 if no tests failed
-    });
-});

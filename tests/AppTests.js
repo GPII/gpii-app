@@ -14,6 +14,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
+fluid.loadTestingSupport();
 var jqUnit = fluid.require("node-jqunit");
 
 require("../src/app.js");
