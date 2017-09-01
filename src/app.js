@@ -23,9 +23,6 @@ var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
 
-gpii.app.registerAppListener = function (evtName, listener) {
-    require("electron").app.on(evtName, listener);
-};
 
 /*
  ** Component to manage the app.
@@ -72,8 +69,11 @@ fluid.defaults("gpii.app", {
     },
     listeners: {
         "onCreate.registerAppReadyListener": {
-            listener: "gpii.app.registerAppListener",
-            args: ["ready", "{that}.events.onAppReady.fire"]
+            listener: "gpii.app.registerAppListener"
+        },
+        "onCreate.appReady": {
+            listener: "gpii.app.fireAppReady",
+            args: ["{that}.events.onAppReady.fire"]
         },
         "{kettle.server}.events.onListen": {
             "this": "{that}.events.onGPIIReady",
@@ -120,6 +120,26 @@ fluid.defaults("gpii.app", {
         }
     }
 });
+
+/**
+ * Promise that resolves when the electon application is ready.
+ * Required for testing multiple configs of the app.
+ */
+gpii.app.appReady = fluid.promise();
+
+/**
+ * Listens for the electron 'ready' event and resolves the promise accordingly.
+ */
+gpii.app.registerAppListener = function () {
+    var listener = function () {
+        gpii.app.appReady.resolve(true);
+    };
+    require("electron").app.on("ready", listener);
+};
+
+gpii.app.fireAppReady = function (fireFn) {
+    gpii.app.appReady.then(fireFn);
+};
 
 /**
   * Refreshes the task tray menu for the GPII Application using the menu in the model
@@ -312,7 +332,7 @@ fluid.defaults("gpii.app.dialog", {
     model: {
         showDialog: false,
         dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
-        dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
+        dialogStartTime: 0 // timestamp recording when the dialog was displayed to know when we can dismiss it again
     },
     members: {
         dialog: {
