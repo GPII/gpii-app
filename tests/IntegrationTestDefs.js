@@ -101,9 +101,6 @@ gpii.tests.app.testDefs = {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
         listener: "gpii.tests.app.testMenu"
-    }, {
-        func: "console.log",
-        args: ["********************* finished with the app tests"]
     }]
 };
 
@@ -182,8 +179,5 @@ gpii.tests.dev.testDefs = {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
         listener: "gpii.tests.dev.testMenu"
-    }, {
-        func: "console.log",
-        args: ["********************* finished with the DEV app tests"]
     }]
 };

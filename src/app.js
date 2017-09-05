@@ -23,6 +23,20 @@ var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
 
+/**
+ * Promise that resolves when the electon application is ready.
+ * Required for testing multiple configs of the app.
+ */
+gpii.app.appReady = fluid.promise();
+
+/**
+ * Listens for the electron 'ready' event and resolves the promise accordingly.
+ */
+gpii.app.electronAppListener = function () {
+    gpii.app.appReady.resolve(true);
+};
+require("electron").app.on("ready", gpii.app.electronAppListener);
+
 
 /*
  ** Component to manage the app.
@@ -68,9 +82,6 @@ fluid.defaults("gpii.app", {
         }
     },
     listeners: {
-        "onCreate.registerAppReadyListener": {
-            listener: "gpii.app.registerAppListener"
-        },
         "onCreate.appReady": {
             listener: "gpii.app.fireAppReady",
             args: ["{that}.events.onAppReady.fire"]
@@ -87,10 +98,6 @@ fluid.defaults("gpii.app", {
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
-        },
-        "onAppReady": {
-            listener: "console.log",
-            args: ["$$$$$$$$$$$$$$$$$$$$ onAppReadyFired"]
         }
     },
     invokers: {
@@ -121,21 +128,6 @@ fluid.defaults("gpii.app", {
     }
 });
 
-/**
- * Promise that resolves when the electon application is ready.
- * Required for testing multiple configs of the app.
- */
-gpii.app.appReady = fluid.promise();
-
-/**
- * Listens for the electron 'ready' event and resolves the promise accordingly.
- */
-gpii.app.registerAppListener = function () {
-    var listener = function () {
-        gpii.app.appReady.resolve(true);
-    };
-    require("electron").app.on("ready", listener);
-};
 
 gpii.app.fireAppReady = function (fireFn) {
     gpii.app.appReady.then(fireFn);
@@ -235,8 +227,8 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
  * Listen on uncaught exceptions and display it to the user is if it's interesting.
  * @param that {Component} An instance of gpii.app.
  */
- //TODO: Fix the access to the 'tray'.
 gpii.app.handleUncaughtException = function (that, err) {
+    var tray = that.components.tray.tray;
     var handledErrors = {
         "EADDRINUSE": {
             message: "There is another application listening on port " + err.port,
@@ -247,7 +239,7 @@ gpii.app.handleUncaughtException = function (that, err) {
     if (err.code) {
         var error = handledErrors[err.code];
         if (error) {
-            that.tray.displayBalloon({
+            tray.displayBalloon({
                 title: error.title || "GPII Error",
                 content: error.message || err.message,
                 icon: path.join(__dirname, "icons/gpii-icon-balloon.png")
@@ -262,8 +254,8 @@ gpii.app.handleUncaughtException = function (that, err) {
                     }
                 };
                 // Exit when the balloon is dismissed.
-                that.tray.on("balloon-closed", quit);
-                that.tray.on("balloon-click", quit);
+                tray.on("balloon-closed", quit);
+                tray.on("balloon-click", quit);
                 // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
                 // TODO: See GPII-2348 about this.
                 timeout = setTimeout(quit, 12000);

@@ -50,7 +50,6 @@ gpii.tests.app.testDefToCaseHolder = function (configurationName, testDefIn) {
     // sequence.unshift.apply(sequence, kettle.test.startServerSequence);
     sequence.unshift.apply(sequence, gpii.tests.app.startSequence);
     sequence.push.apply(sequence, kettle.test.stopServerSequence);
-
     testDef.modules = [{
         name: configurationName + " tests",
         tests: [{
@@ -85,6 +84,4 @@ gpii.tests.app.bootstrapServer = function (testDefs, transformer) {
     return kettle.test.bootstrap(testDefs, fluid.makeArray(transformer).concat([gpii.tests.app.testDefToServerEnvironment]));
 };
 
-gpii.tests.app.bootstrapServer([fluid.copy(gpii.tests.app.testDefs)]);
-// gpii.tests.app.bootstrapServer([fluid.copy(gpii.tests.dev.testDefs)]);
-//gpii.tests.app.bootstrapServer([fluid.copy(gpii.tests.app.testDefs), fluid.copy(gpii.tests.dev.testDefs)]);
+gpii.tests.app.bootstrapServer([fluid.copy(gpii.tests.app.testDefs), fluid.copy(gpii.tests.dev.testDefs)]);
