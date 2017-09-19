@@ -37,7 +37,7 @@ fluid.defaults("gpii.app", {
         tray: {
             expander: {
                 funcName: "gpii.app.makeTray",
-                args: ["{that}.options.icon"]
+                args: ["{that}.options.icons.keyedOut"]
             },
             createOnEvent: "onGPIIReady"
         },
@@ -65,6 +65,11 @@ fluid.defaults("gpii.app", {
         "{lifecycleManager}.model.logonChange": {
             funcName: "gpii.app.logonChangeListener",
             args: [ "{that}", "{change}.value" ]
+        },
+        "keyedInUserToken": {
+            namespace: "trayIcon",
+            funcName: "gpii.app.setTrayIcon",
+            args: ["{that}", "{change}.value"]
         }
     },
     listeners: {
@@ -109,7 +114,10 @@ fluid.defaults("gpii.app", {
             args: ["{that}", "{arguments}.0"]
         }
     },
-    icon: "icons/gpii.ico",
+    icons: {
+        keyedIn: "icons/gpii.ico",
+        keyedOut: "icons/gpii-black.ico"
+    },
     labels: {
         tooltip: "GPII"
     }
@@ -125,6 +133,18 @@ gpii.app.makeTray = function (icon) {
         tray.popUpContextMenu();
     });
     return tray;
+};
+
+/**
+  * Sets the icon for the Electron Tray which represents the GPII application.
+  * @param that {Component} An instance of gpii.app.
+  * @param icon {String} Path to the icon that will represent the GPII in the task tray.
+  */
+gpii.app.setTrayIcon = function (that, keyedInUserToken) {
+    var icons = that.options.icons,
+        icon = keyedInUserToken ? icons.keyedIn : icons.keyedOut,
+        iconPath = path.join(__dirname, icon);
+    that.tray.setImage(iconPath);
 };
 
 /**
