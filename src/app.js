@@ -21,6 +21,7 @@ var BrowserWindow = electron.BrowserWindow;
 
 var path = require("path");
 var request = require("request");
+var exec = require('child_process').exec;
 require("./networkCheck.js");
 
 /*
@@ -29,7 +30,8 @@ require("./networkCheck.js");
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
-        keyedInUserToken: null
+        keyedInUserToken: null,
+        isAppElevated: false
     },
     members: {
         dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
@@ -51,7 +53,7 @@ fluid.defaults("gpii.app", {
     },
     components: {
         menu: {
-            type: "gpii.app.menuInApp",
+            type: "gpii.app.menuInAppDev",
             createOnEvent: "onGPIIReady"
         },
         networkCheck: { // Network check component to meet GPII-2349
@@ -85,11 +87,19 @@ fluid.defaults("gpii.app", {
             "this": "{that}.tray",
             method: "setToolTip",
             args: ["{that}.options.labels.tooltip"]
+        },
+        "onCreate.isAppElevated": {
+            listener: "gpii.app.checkElevation",
+            args: ["{that}"]
         }
     },
     invokers: {
         updateKeyedInUserToken: {
             changePath: "keyedInUserToken",
+            value: "{arguments}.0"
+        },
+        setAppElevated: {
+            changePath: "isAppElevated",
             value: "{arguments}.0"
         },
         keyIn: {
@@ -114,6 +124,18 @@ fluid.defaults("gpii.app", {
         tooltip: "GPII"
     }
 });
+
+/**
+  * Determines if the application is elevated (run by an admin user) or not and stores
+  * the result in the application's model.
+  * @param that {Component} An instance of gpii.app.
+  */
+gpii.app.checkElevation = function (that) {
+    exec('net session', function(error, stdout, stderr) {
+        var isAppElevated = stderr.length === 0;
+        that.setAppElevated(isAppElevated);
+    });
+};
 
 /**
   * Creates the Electron Tray
@@ -213,7 +235,9 @@ gpii.app.performQuit = function () {
   * @param that {Component} An instance of gpii.app
   */
 gpii.app.exit = function (that) {
-    if (that.model.keyedInUserToken) {
+    if (!that.model.isAppElevated) {
+        fluid.promise().reject("Only an admin user can exit the application");
+    } else if (that.model.keyedInUserToken) {
         fluid.promise.sequence([
             gpii.rejectToLog(that.keyOut(that.model.keyedInUserToken), "Couldn't logout current user"),
             gpii.app.performQuit
@@ -450,6 +474,14 @@ fluid.defaults("gpii.app.menu", {
                 args: ["{that}.model.keyedInUserToken"]
             }
         },
+        "exit": {
+            target: "exit",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getExit",
+                args: ["{app}.model.isAppElevated", "{that}.options.menuLabels.exit"]
+            }
+        },
         "keyedInUserLabel": {
             target: "keyedInUser.label",
             singleTransform: {
@@ -473,7 +505,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
+                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.model.exit"]
             },
             priority: "last"
         }
@@ -500,6 +532,25 @@ gpii.app.menu.getUserName = function (userToken) {
     // TODO: Name should actually be stored by the GPII along with the user token.
     var name = userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
     return name;
+};
+
+/**
+  * Generates an object that represents the menu item for exit.
+  * @param isAppElevated {Boolean} Whether the application is elevated (run by an admin user)
+  * or not.
+  * @param exitStr {String} The string to be displayed for the exit menu item.
+  */
+gpii.app.menu.getExit = function (isAppElevated, exitStr) {
+    var exit = null;
+
+    if (isAppElevated) {
+        exit = {
+            label: exitStr,
+            click: "onExit"
+        };
+    }
+
+    return exit;
 };
 
 // I think this can be moved into configuration.
