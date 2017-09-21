@@ -312,7 +312,7 @@ gpii.app.openSettings = function (that, keyedInUserToken, settingsWindow) {
  * @param tray {Object} An Electron `Tray` object.
  */
 gpii.app.addPcpShortcut = function (that, settingsWindow, tray) {
-    globalShortcut.register("CommandOrControl+Alt+P", function () {
+    globalShortcut.register("Super+CmdOrCtrl+Alt+U", function () {
         that.openSettings(settingsWindow, tray);
     });
 };
