@@ -12,15 +12,16 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
 
+var electron = require("electron");
 var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
-var electron = require("electron");
-var Menu = electron.Menu;
-var Tray = electron.Tray;
-var BrowserWindow = electron.BrowserWindow;
-
 var path = require("path");
 var request = require("request");
+
+var BrowserWindow = electron.BrowserWindow,
+    Menu = electron.Menu,
+    Tray = electron.Tray,
+    globalShortcut = electron.globalShortcut;
 require("./networkCheck.js");
 
 /*
@@ -37,7 +38,7 @@ fluid.defaults("gpii.app", {
         tray: {
             expander: {
                 funcName: "gpii.app.makeTray",
-                args: ["{that}.options.icon"]
+                args: ["{that}.options.icon", "{that}.openSettings"]
             },
             createOnEvent: "onGPIIReady"
         },
@@ -45,6 +46,12 @@ fluid.defaults("gpii.app", {
             expander: {
                 funcName: "gpii.app.makeWaitDialog",
                 args: ["{that}"]
+            },
+            createOnEvent: "onGPIIReady"
+        },
+        settingsWindow: {
+            expander: {
+                funcName: "gpii.app.makeSettingsWindow"
             },
             createOnEvent: "onGPIIReady"
         }
@@ -94,11 +101,19 @@ fluid.defaults("gpii.app", {
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
-            args: ["{arguments}.0"]
+            args: ["{that}", "{arguments}.0"]
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
             args: ["{arguments}.0"]
+        },
+        openSettings: {
+            funcName: "gpii.app.openSettings",
+            args: ["{that}", "{that}.model.keyedInUserToken", "{that}.settingsWindow"]
+        },
+        notifySettingsWindow: {
+            funcName: "gpii.app.notifySettingsWindow",
+            args: ["{that}.settingsWindow", "{arguments}.0", "{arguments}.1"]
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -119,11 +134,17 @@ fluid.defaults("gpii.app", {
   * Creates the Electron Tray
   * @param icon {String} Path to the icon that represents the GPII in the task tray.
   */
-gpii.app.makeTray = function (icon) {
+gpii.app.makeTray = function (icon, callback) {
     var tray = new Tray(path.join(__dirname, icon));
+
     tray.on("click", function () {
-        tray.popUpContextMenu();
+        callback();
     });
+
+    globalShortcut.register("Super+CmdOrCtrl+Alt+U", function () {
+        callback();
+    });
+
     return tray;
 };
 
@@ -153,7 +174,7 @@ gpii.app.makeWaitDialog = function () {
 
 /**
   * Refreshes the task tray menu for the GPII Application using the menu in the model
-  * @param tray {Object} An Electron 'Tray' object.
+  * @param tray {Object} An Electron "Tray" object.
   * @param menuTemplate {Array} A nested array that is the menu template for the GPII Application.
   * @param events {Object} An object containing the events that may be fired by items in the menu.
   */
@@ -168,8 +189,8 @@ gpii.app.updateMenu = function (tray, menuTemplate, events) {
   * Currently uses an url to key in although this should be changed to use Electron IPC.
   * @param token {String} The token to key in with.
   */
-gpii.app.keyIn = function (token) {
-    request("http://localhost:8081/user/" + token + "/login", function (/*error, response, body*/) {
+gpii.app.keyIn = function (that, token) {
+    request("http://localhost:8081/user/" + token + "/login", function (/*error, response*/) {
         //TODO Put in some error logging
     });
 };
@@ -221,6 +242,65 @@ gpii.app.exit = function (that) {
     } else {
         gpii.app.performQuit();
     }
+};
+
+/**
+ * Sends a message to the given window
+ *
+ * @param settingsWindow {Object} An Electron `BrowserWindow` object
+ * @param messageChannel {String} The channel to which the message to be sent
+ * @param message {String}
+ */
+gpii.app.notifySettingsWindow = function (settingsWindow, messageChannel, message) {
+    if (settingsWindow) {
+        settingsWindow.webContents.send(messageChannel, message);
+    }
+};
+
+gpii.app.makeSettingsWindow = function () {
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    // TODO Make window size relative to the screen size
+    var settingsWindow = new BrowserWindow({
+        width: 500,
+        height: 600,
+        show: false,
+        frame: false,
+        fullscreenable: false,
+        resizable: false,
+        alwaysOnTop: true,
+        skipTaskbar: true,
+        x: screenSize.width - 500,
+        y: screenSize.height - 600
+    });
+    var url = fluid.stringTemplate("file://%dirName/html/settings.html", {
+        dirName: __dirname
+    });
+    settingsWindow.loadURL(url);
+
+    settingsWindow.on("blur", function () {
+        settingsWindow.hide();
+    });
+
+    return settingsWindow;
+};
+
+/**
+ * Shows the passed Electron `BrowserWindow`
+ *
+ * @param keyedInUserToken {String} The user token.
+ * @param settingsWindow {Object} An Electron `BrowserWindow`.
+ */
+gpii.app.openSettings = function (that, keyedInUserToken, settingsWindow) {
+    if (!keyedInUserToken) {
+        that.notifySettingsWindow("openSettingsFailure");
+        return;
+    }
+    if (settingsWindow.isVisible()) {
+        return;
+    }
+
+    settingsWindow.show();
+    settingsWindow.focus();
 };
 
 /**
@@ -381,6 +461,10 @@ fluid.defaults("gpii.app.menuInApp", {
         // onExit
         "onExit.performExit": {
             listener: "{app}.exit"
+        },
+
+        "onSettings.performSettings": {
+            listener: "{app}.openSettings"
         }
     }
 });
@@ -418,6 +502,18 @@ fluid.defaults("gpii.app.menuInAppDev", {
             label: "Livia",
             click: "onKeyIn",
             token: "livia"
+        }, {
+            label: "Manuel",
+            click: "onKeyIn",
+            token: "manuel"
+        }, {
+            label: "Vladimir",
+            click: "onKeyIn",
+            token: "vladimir"
+        }, {
+            label: "Invalid user",
+            click: "onKeyIn",
+            token: "invalidUser"
         }]
     },
     exit: {
@@ -468,17 +564,30 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "after:userName"
         },
+        "openSettings": {
+            target: "openSettings",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getOpenSettings",
+                args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.settings"]
+            }
+        },
         "menuTemplate:": {
             target: "menuTemplate",
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
+                args: ["{that}.model.openSettings", "{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
             },
             priority: "last"
         }
     },
+    exit: {
+        label: "{that}.options.menuLabels.exit",
+        click: "onExit"
+    },
     menuLabels: {
+        settings: "Open Settings",
         keyedIn: "Keyed in with %userTokenName",    // string template
         keyOut: "Key out %userTokenName",           // string template
         notKeyedIn: "Not keyed in",
@@ -488,7 +597,8 @@ fluid.defaults("gpii.app.menu", {
     events: {
         onKeyIn: null,
         onKeyOut: null,
-        onExit: null
+        onExit: null,
+        onSettings: null
     }
 });
 
@@ -528,6 +638,26 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
 };
 
 /**
+  * Generates an objectd that represents the menu items for opening the settings panel
+  * @param keyedInUserToken {String} The user token that is currently keyed in.
+  * @param openSettingsStr {String} The string to be displayed for the open setting panel menu item.
+  * @returns {Object}
+  */
+gpii.app.menu.getOpenSettings = function (keyedInUserToken, openSettingsStr) {
+    var openSettings = null;
+
+    if (keyedInUserToken) {
+        openSettings = {
+            label: openSettingsStr,
+            click: "onSettings",
+            token: keyedInUserToken
+        };
+    }
+
+    return openSettings;
+};
+
+/**
   * Creates a JSON representation of a menu.
   * @param {Object} An object containing a menu item template.
   * There should be one object per menu item in the order they should appear in the mneu.
@@ -544,7 +674,7 @@ gpii.app.menu.generateMenuTemplate = function (/* all the items in the menu */) 
 };
 
 /**
-  * Takes a JSON array that represents a menu template and expands the 'click' entries into functions
+  * Takes a JSON array that represents a menu template and expands the "click" entries into functions
   * that fire the appropriate event.
   * @param events {Object} An object that contains the events that might be fired from an item in the menu.
   * @param menuTemplate {Array} A JSON array that represents a menu template
