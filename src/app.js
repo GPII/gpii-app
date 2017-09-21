@@ -38,7 +38,7 @@ fluid.defaults("gpii.app", {
         tray: {
             expander: {
                 funcName: "gpii.app.makeTray",
-                args: ["{that}.options.icon"]
+                args: ["{that}.options.icon", "{that}.openSettings"]
             },
             createOnEvent: "onGPIIReady"
         },
@@ -92,10 +92,6 @@ fluid.defaults("gpii.app", {
             "this": "{that}.tray",
             method: "setToolTip",
             args: ["{that}.options.labels.tooltip"]
-        },
-        "onCreate.addPcpShortcut": {
-            listener: "{that}.addPcpShortcut",
-            args: ["{that}", "{that}.settingsWindow", "{that}.tray"]
         }
     },
     invokers: {
@@ -113,10 +109,7 @@ fluid.defaults("gpii.app", {
         },
         openSettings: {
             funcName: "gpii.app.openSettings",
-            args: ["{that}", "{that}.model.keyedInUserToken", "{arguments}.0"]
-        },
-        addPcpShortcut: {
-            funcName: "gpii.app.addPcpShortcut"
+            args: ["{that}", "{that}.model.keyedInUserToken", "{that}.settingsWindow"]
         },
         notifySettingsWindow: {
             funcName: "gpii.app.notifySettingsWindow",
@@ -141,11 +134,17 @@ fluid.defaults("gpii.app", {
   * Creates the Electron Tray
   * @param icon {String} Path to the icon that represents the GPII in the task tray.
   */
-gpii.app.makeTray = function (icon) {
+gpii.app.makeTray = function (icon, callback) {
     var tray = new Tray(path.join(__dirname, icon));
+
     tray.on("click", function () {
-        tray.popUpContextMenu();
+        callback();
     });
+
+    globalShortcut.register("Super+CmdOrCtrl+Alt+U", function () {
+        callback();
+    });
+
     return tray;
 };
 
@@ -302,19 +301,6 @@ gpii.app.openSettings = function (that, keyedInUserToken, settingsWindow) {
 
     settingsWindow.show();
     settingsWindow.focus();
-};
-
-/**
- * Adds keyboard shortcut for opening the settings window
- *
- * @param that {Object} The app module.
- * @param settingsWindow {Object} An Electron `BrowserWindow` object.
- * @param tray {Object} An Electron `Tray` object.
- */
-gpii.app.addPcpShortcut = function (that, settingsWindow, tray) {
-    globalShortcut.register("Super+CmdOrCtrl+Alt+U", function () {
-        that.openSettings(settingsWindow, tray);
-    });
 };
 
 /**
@@ -478,8 +464,7 @@ fluid.defaults("gpii.app.menuInApp", {
         },
 
         "onSettings.performSettings": {
-            listener: "{app}.openSettings",
-            args: ["{app}.settingsWindow", "{app}.tray"]
+            listener: "{app}.openSettings"
         }
     }
 });
