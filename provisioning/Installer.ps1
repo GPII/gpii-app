@@ -95,6 +95,10 @@ $msbuild = Get-MSBuild "4.0"
 $listenersDir = Join-Path $stagingWindowsDir "listeners"
 Invoke-Command $msbuild "listeners.sln /nodeReuse:false /p:Platform=Win32 /p:Configuration=Release /p:FrameworkPathOverride=`"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1`"" $listenersDir
 
+Invoke-Environment (Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio 14.0\VS\vcvarsall.bat")
+$proximityListenerDir = Join-Path $stagingWindowsDir "listeners/GPII_ProximityListener"
+Invoke-Command "MSBuild.exe" "GPIIWindowsProximityListener.sln /t:rebuild /nodeReuse:false /p:Configuration=Release /p:Platform=`"Any CPU`"" $proximityListenerDir
+
 md (Join-Path $installerDir "output")
 md (Join-Path $installerDir "temp")
 
