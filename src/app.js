@@ -252,10 +252,6 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
         x: screenSize.width - width,
         y: screenSize.height - height
     });
-    var url = fluid.stringTemplate("file://%dirName/html/settings.html", {
-        dirName: __dirname
-    });
-    pcpWindow.loadURL(url);
 
     pcpWindow.on("blur", function () {
         pcpWindow.hide();
@@ -271,13 +267,17 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
  * @param pcpWindow {Object} An Electron `BrowserWindow`.
  */
 gpii.app.pcp.showPCPWindow = function (pcpWindow, pcp, keyedInUserToken) {
-    if (!keyedInUserToken) {
-        pcp.notifyPCPWindow("openSettingsFailure");
-        return;
-    }
     if (pcpWindow.isVisible()) {
         return;
     }
+
+    // XXX load only if not already loaded (keep state)
+    var windowStyleFile = keyedInUserToken ? "settings.html" : "slash.html";
+    var url = fluid.stringTemplate("file://%dirName/html/%styleFile", {
+        dirName: __dirname,
+        styleFile: windowStyleFile
+    });
+    pcpWindow.loadURL(url);
 
     pcpWindow.show();
     pcpWindow.focus();
