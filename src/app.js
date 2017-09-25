@@ -415,16 +415,17 @@ fluid.defaults("gpii.app.tray", {
 /**
   * Creates the Electron Tray
   * @param icon {String} Path to the icon that represents the GPII in the task tray.
+  * @param handler {Function} A handler to be used for tray menu left click.
   */
-gpii.app.makeTray = function (icon, callback) {
+gpii.app.makeTray = function (icon, handler) {
     var tray = new Tray(path.join(__dirname, icon));
 
     tray.on("click", function () {
-        callback();
+        handler();
     });
 
     globalShortcut.register("Super+CmdOrCtrl+Alt+U", function () {
-        callback();
+        handler();
     });
 
     return tray;
@@ -710,10 +711,6 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "last"
         }
-    },
-    exit: {
-        label: "{that}.options.menuLabels.exit",
-        click: "onExit"
     },
     menuLabels: {
         pcp: "Open PCP",
