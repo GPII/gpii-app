@@ -69,8 +69,9 @@ gpii.tests.app.testMenu = function (menuTemplate) {
 };
 
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 2);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[0], menuTemplate[1]);
+    gpii.tests.app.testTemplateExists(menuTemplate, 3);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[2]);
+    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
 };
 
 gpii.tests.app.receiveApp = function (testCaseHolder, app) {
@@ -81,7 +82,7 @@ fluid.registerNamespace("gpii.tests.app.testDefs");
 
 gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
-    expect: 24,
+    expect: 28,
     config: {
         configName: "app",
         configPath: "configs"
@@ -97,15 +98,17 @@ gpii.tests.app.testDefs = {
     sequence: [{ // Test the menu that will be rendered
         event: "{that gpii.app.menu}.events.onCreate",
         listener: "gpii.tests.app.testInitialMenu"
-    }, { // pcpWindow should've been created by now
-        funcName: "gpii.tests.app.pcp.testInitialPCPWindow",
-        args: ["{that}.app.pcp"]
-    }, {
-        func: "{that}.app.pcp.show"
-    }, { // Should be shown only if keyedIn
-        funcName: "gpii.tests.app.pcp.testPCPWindowIsHidden",
-        args: ["{that}.app.pcp.pcpWindow"]
-    }, { // Test menu after key in
+    }, [ // PCP window tests
+        { // pcpWindow should've been created by now
+            funcName: "gpii.tests.app.pcp.testInitialPCPWindow",
+            args: ["{that}.app.pcp"]
+        }, {
+            func: "{that}.app.pcp.show"
+        }, {
+            funcName: "gpii.tests.app.pcp.testPCPWindowIsShown",
+            args: ["{that}.app.pcp.pcpWindow"]
+        }
+    ], { // Test menu after key in
         func: "{that}.app.keyIn",
         args: "snapset_1a"
     }, {
@@ -163,10 +166,11 @@ gpii.tests.dev.testMenu = function (menuTemplate) {
 };
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 4);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[0], menuTemplate[1]);
-    gpii.tests.dev.testKeyInList(menuTemplate[2]);
-    gpii.tests.app.testItem(menuTemplate[3], "Exit GPII");
+    gpii.tests.app.testTemplateExists(menuTemplate, 5);
+    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[2]);
+    gpii.tests.dev.testKeyInList(menuTemplate[3]);
+    gpii.tests.app.testItem(menuTemplate[4], "Exit GPII");
 };
 
 fluid.registerNamespace("gpii.tests.dev.testDefs");
@@ -174,7 +178,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 95,
+    expect: 97,
     config: {
         configName: "app.dev",
         configPath: "configs"
