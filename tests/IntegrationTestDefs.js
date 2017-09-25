@@ -31,6 +31,23 @@ gpii.tests.app.testInitialMenu = function (menu) {
     gpii.tests.app.testMenu(menuTemplate);
 };
 
+// Test regarding the PCP window
+fluid.registerNamespace("gpii.tests.app.pcp");
+
+gpii.tests.app.pcp.testPCPWindowIsShown = function (pcpWindow) {
+    jqUnit.assertTrue("The PCP Window is shown", pcpWindow.isVisible());
+};
+
+gpii.tests.app.pcp.testPCPWindowIsHidden = function (pcpWindow) {
+    jqUnit.assertFalse("The PCP Window is hidden", pcpWindow.isVisible());
+};
+
+gpii.tests.app.pcp.testInitialPCPWindow = function (pcp) {
+    jqUnit.assertNotUndefined("The PCP was instantiated", pcp);
+    jqUnit.assertNotUndefined("The PCP Electron window was instantiated", pcp.pcpWindow);
+    gpii.tests.app.pcp.testPCPWindowIsHidden(pcp.pcpWindow);
+};
+
 gpii.tests.app.testTemplateExists = function (template, expectedLength) {
     jqUnit.assertValue("The menu template was created", template);
     jqUnit.assertEquals("There are " + expectedLength + " items in the menu", expectedLength, template.length);
@@ -64,7 +81,7 @@ fluid.registerNamespace("gpii.tests.app.testDefs");
 
 gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
-    expect: 20,
+    expect: 24,
     config: {
         configName: "app",
         configPath: "configs"
@@ -80,6 +97,14 @@ gpii.tests.app.testDefs = {
     sequence: [{ // Test the menu that will be rendered
         event: "{that gpii.app.menu}.events.onCreate",
         listener: "gpii.tests.app.testInitialMenu"
+    }, { // pcpWindow should've been created by now
+        funcName: "gpii.tests.app.pcp.testInitialPCPWindow",
+        args: ["{that}.app.pcp"]
+    }, {
+        func: "{that}.app.pcp.show"
+    }, { // Should be shown only if keyedIn
+        funcName: "gpii.tests.app.pcp.testPCPWindowIsHidden",
+        args: ["{that}.app.pcp.pcpWindow"]
     }, { // Test menu after key in
         func: "{that}.app.keyIn",
         args: "snapset_1a"
