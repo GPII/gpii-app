@@ -279,7 +279,6 @@ fluid.onUncaughtException.addListener(function (err) {
 /**
  * Component that contains an Electron Tray.
  */
-
 fluid.defaults("gpii.app.tray", {
     gradeNames: "fluid.modelComponent",
     members: {
@@ -288,11 +287,11 @@ fluid.defaults("gpii.app.tray", {
                 funcName: "gpii.app.makeTray",
                 args: ["{that}.model.icon"]
             }
-        },
-        icons: {
-            keyedIn: "icons/gpii-color.ico",
-            keyedOut: "icons/gpii.ico"
         }
+    },
+    icons: {
+        keyedIn: "icons/gpii-color.ico",
+        keyedOut: "icons/gpii.ico"
     },
     components: {
         menu: {
@@ -301,15 +300,16 @@ fluid.defaults("gpii.app.tray", {
     },
     model: {
         keyedInUserToken: null,
-        icon: "{that}.icons.keyedOut"
+        icon: "{that}.options.icons.keyedOut"
     },
     modelRelay: {
         keyedInUserToken: {
             target: "icon",
             singleTransform: {
-                type: "fluid.transforms.free",
-                func: "gpii.app.tray.getTrayIcon",
-                args: ["{that}.model.keyedInUserToken", "{that}.icons"]
+                type: "fluid.transforms.condition",
+                condition: "{that}.model.keyedInUserToken",
+                true: "{that}.options.icons.keyedIn",
+                false: "{that}.options.icons.keyedOut"
             }
         }
     },
@@ -331,19 +331,6 @@ fluid.defaults("gpii.app.tray", {
         tooltip: "GPII"
     }
 });
-
-/**
- * Returns the simple path to the icon file for the Electron Tray based on
- * whether there is a keyed in user or not.
- * @param keyedInUserToken {String} The token of the currently keyed in
- * user. It can be null or undefined, as well.
- * @param icons {Object} An object containing the various icons which the
- * tray can have.
- * @return {String} The simple path to the icon file for the Electron Tray.
- */
-gpii.app.tray.getTrayIcon = function (keyedInUserToken, icons) {
-    return keyedInUserToken ? icons.keyedIn : icons.keyedOut;
-};
 
 /**
   * Sets the icon for the Electron Tray which represents the GPII application.
