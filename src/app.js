@@ -51,7 +51,12 @@ fluid.defaults("gpii.app", {
     components: {
         pcp: {
             type: "gpii.app.pcp",
-            createOnEvent: "onPrequisitesReady"
+            createOnEvent: "onPrequisitesReady",
+            options: {
+                model: {
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                }
+            }
         },
         tray: {
             type: "gpii.app.tray",
@@ -250,7 +255,10 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
         alwaysOnTop: true,
         skipTaskbar: true,
         x: screenSize.width - width,
-        y: screenSize.height - height
+        y: screenSize.height - height,
+
+        // feel the app more native
+        backgroundColor: "#71c5ef"
     });
 
     pcpWindow.on("blur", function () {
@@ -260,30 +268,36 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
     return pcpWindow;
 };
 
+gpii.app.pcp.updatePCPWindowStyle = function (pcpWindow, keyedInUserToken) {
+    // In case no one is keyed in - use splash window
+    var windowStyle = keyedInUserToken ? "settings" : "splash";
+
+    /*
+     * keeps state
+     * avoid loading blinking
+     */
+    if (pcpWindow.getTitle() !== windowStyle) {
+        var url = fluid.stringTemplate("file://%dirName/html/%styleFile.html", {
+            dirName: __dirname,
+            styleFile: windowStyle
+        });
+        pcpWindow.loadURL(url);
+        pcpWindow.setTitle(windowStyle);
+    }
+};
+
 /**
  * Shows the passed Electron `BrowserWindow`
  *
  * @param keyedInUserToken {String} The user token.
  * @param pcpWindow {Object} An Electron `BrowserWindow`.
  */
-gpii.app.pcp.showPCPWindow = function (pcpWindow, pcp, keyedInUserToken) {
+gpii.app.pcp.showPCPWindow = function (pcpWindow) {
     if (pcpWindow.isVisible()) {
         return;
     }
 
-    /*
-     * XXX load only if not already loaded:
-     * + keeps state
-     * + avoid loading blinking
-     */
-    // In case no one is keyed in - use splash window
-    var windowStyleFile = keyedInUserToken ? "settings.html" : "slash.html";
-    var url = fluid.stringTemplate("file://%dirName/html/%styleFile", {
-        dirName: __dirname,
-        styleFile: windowStyleFile
-    });
-    pcpWindow.loadURL(url);
-
+    // XXX problem with loading - previous view is not cleared before the window is shown
     pcpWindow.show();
     pcpWindow.focus();
 };
@@ -356,7 +370,11 @@ fluid.onUncaughtException.addListener(function (err) {
  * Handles logic for the PCP window.
  */
 fluid.defaults("gpii.app.pcp", {
-    gradeNames: "fluid.component",
+    gradeNames: "fluid.modelComponent",
+
+    model:  {
+        keyedInUserToken: null
+    },
 
     attrs: {
         width: 500,
@@ -369,6 +387,13 @@ fluid.defaults("gpii.app.pcp", {
                 funcName: "gpii.app.pcp.makePCPWindow",
                 args: ["{that}.options.attrs.width", "{that}.options.attrs.height"]
             }
+        }
+    },
+
+    modelListeners: {
+        "keyedInUserToken": {
+            funcName: "gpii.app.pcp.updatePCPWindowStyle",
+            args: ["{that}.pcpWindow", "{that}.model.keyedInUserToken"]
         }
     },
 
@@ -774,23 +799,17 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
 };
 
 /**
-  * Generates an objectd that represents the menu items for opening the settings panel
+  * Generates an object that represents the menu items for opening the settings panel
   * @param keyedInUserToken {String} The user token that is currently keyed in.
   * @param openSettingsStr {String} The string to be displayed for the open setting panel menu item.
   * @returns {Object}
   */
 gpii.app.menu.getShowPCP = function (keyedInUserToken, openSettingsStr) {
-    var openSettings = null;
-
-    if (keyedInUserToken) {
-        openSettings = {
-            label: openSettingsStr,
-            click: "onPCP",
-            token: keyedInUserToken
-        };
-    }
-
-    return openSettings;
+    return {
+        label: openSettingsStr,
+        click: "onPCP",
+        token: keyedInUserToken
+    };
 };
 
 /**
