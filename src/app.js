@@ -540,10 +540,7 @@ fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
     model: {
         //keyedInUserToken  // This comes from the app.
-        keyedInUser: {
-            label: "",      // Must be updated when keyedInUserToken changes.
-            enabled: false
-        },
+        keyedInUser: null,  // Must be updated when keyedInUserToken changes.
         keyOut: null        // May or may not be in the menu, must be updated when keyedInUserToken changes.
         //menuTemplate: []  // This is updated on change of keyedInUserToken.
     },
@@ -556,12 +553,12 @@ fluid.defaults("gpii.app.menu", {
                 args: ["{that}.model.keyedInUserToken"]
             }
         },
-        "keyedInUserLabel": {
-            target: "keyedInUser.label",
+        "keyedInUser": {
+            target: "keyedInUser",
             singleTransform: {
                 type: "fluid.transforms.free",
-                func: "gpii.app.menu.getKeyedInLabel",
-                args: ["{that}.model.userName", "{that}.options.menuLabels.keyedIn", "{that}.options.menuLabels.notKeyedIn"]
+                func: "gpii.app.menu.getKeyedInUser",
+                args: ["{that}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.keyedIn"]
             },
             priority: "after:userName"
         },
@@ -570,7 +567,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyOut",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.keyOut"]
+                args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.keyOut", "{that}.options.menuLabels.notKeyedIn"]
             },
             priority: "after:userName"
         },
@@ -579,15 +576,15 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
+                args: ["{that}.model.keyedInUser", "{that}.options.snapsets", "{that}.model.keyOut", "{that}.options.exit"]
             },
             priority: "last"
         }
     },
     menuLabels: {
         keyedIn: "Keyed in with %userTokenName",    // string template
-        keyOut: "Key out %userTokenName",           // string template
-        notKeyedIn: "Not keyed in",
+        keyOut: "Key-out of GPII",
+        notKeyedIn: "(No one keyed in)",
         exit: "Exit GPII",
         keyIn: "Key in ..."
     },
@@ -609,29 +606,46 @@ gpii.app.menu.getUserName = function (userToken) {
 };
 
 /**
-  * Generates a label based on whether or not a user name is present.
+  * Generates an object that represents the menu item for keying in.
+  * @param keyedInUserToken {String} The user token that is currently keyed in.
   * @param name {String} The name of the user who is keyed in.
   * @param keyedInStrTemp {String} The string template for the label when a user is keyed in.
-  * @param notKeyedInStr {String} The string when a user is not keyed in.
   */
-gpii.app.menu.getKeyedInLabel = function (name, keyedInStrTemp, notKeyedInStr) {
-    return name ? fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}) : notKeyedInStr;
+gpii.app.menu.getKeyedInUser = function (keyedInUserToken, name, keyedInStrTemp) {
+    var keyedInUser = null;
+
+    if (keyedInUserToken) {
+        keyedInUser = {
+            label: fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}),
+            enabled: false
+        };
+    }
+
+    return keyedInUser;
 };
 
 /**
   * Generates an object that represents the menu item for keying out.
   * @param keyedInUserToken {String} The user token that is currently keyed in.
-  * @param name {String} The name of the user that is currently keyed in.
-  * @param keyOutStrTemp {String} The string to be displayed for the key out menu item.
+  * @param keyOutStr {String} The string to be displayed for the key out menu item
+  * if there is a keyed in user.
+  * @param notKeyedInStr {String} The string to be displayed when a user is not
+  * keyed in.
   */
-gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
-    var keyOut = null;
+gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr, notKeyedInStr) {
+    var keyOut;
 
     if (keyedInUserToken) {
-        keyOut = { // TODO: probably should put at least the structure of this into configuration
-            label: fluid.stringTemplate(keyOutStrTemp, {"userTokenName": name}),
+        keyOut = {
+            label: keyOutStr,
             click: "onKeyOut",
-            token: keyedInUserToken
+            token: keyedInUserToken,
+            enabled: true
+        };
+    } else {
+        keyOut = {
+            label: notKeyedInStr,
+            enabled: false
         };
     }
 

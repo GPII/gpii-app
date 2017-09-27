@@ -32,34 +32,40 @@ jqUnit.test("Menu.getUserName", function () {
     jqUnit.assertEquals("No change in name when token is numeric.", "1234", gpii.app.menu.getUserName("1234"));
 });
 
-jqUnit.test("Menu.getKeyedInLabel", function () {
-    jqUnit.expect(3);
+jqUnit.test("Menu.getKeyedInUser", function () {
+    jqUnit.expect(4);
 
-    var keyedIn = "Keyed in with %userTokenName";    // string template
-    var notKeyedIn = "Not keyed in";
+    var token = "alice";
+    var name = "Alice";
+    var keyedInStrTemp = "Keyed in with %userTokenName";    // string template
 
-    jqUnit.assertEquals("No one is keyed in", notKeyedIn, gpii.app.menu.getKeyedInLabel("", keyedIn, notKeyedIn));
-    jqUnit.assertEquals("Alice is keyed in", fluid.stringTemplate(keyedIn, {"userTokenName": "Alice"}),
-        gpii.app.menu.getKeyedInLabel("Alice", keyedIn, notKeyedIn));
-    jqUnit.assertEquals("1234 is keyed in", fluid.stringTemplate(keyedIn, {"userTokenName": "1234"}),
-        gpii.app.menu.getKeyedInLabel("1234", keyedIn, notKeyedIn));
+    var keyedInUserObject = gpii.app.menu.getKeyedInUser(null, null, keyedInStrTemp);
+    jqUnit.assertFalse("Keyed in user object is not created when no token is provided.", keyedInUserObject);
 
+    keyedInUserObject = gpii.app.menu.getKeyedInUser(token, name, keyedInStrTemp);
+    jqUnit.assertTrue("Keyed in user object is created when there is a token", keyedInUserObject);
+    jqUnit.assertFalse("Keyed in user object is disabled", keyedInUserObject.enabled);
+    jqUnit.assertEquals("Label is set in the keyed in user object",
+        fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}), keyedInUserObject.label);
 });
 
 jqUnit.test("Menu.getKeyOut", function () {
-    jqUnit.expect(5);
+    jqUnit.expect(7);
     var token = "alice";
-    var name = "Alice";
-    var strTemp = "Key out %userTokenName";
+    var keyOutStr = "Key-out of GPII";
+    var notKeyedInStr = "(No one keyed in)";
 
-    var keyOutObj = gpii.app.menu.getKeyOut();
-    jqUnit.assertFalse("Key out object is not created when no token is provided.", keyOutObj);
+    var keyOutObj = gpii.app.menu.getKeyOut(null, keyOutStr, notKeyedInStr);
+    jqUnit.assertEquals("Label is set in the key out object when there is no user",
+        notKeyedInStr, keyOutObj.label);
+    jqUnit.assertFalse("Key out object is disabled when no token is provided.", keyOutObj.enabled);
 
-    keyOutObj = gpii.app.menu.getKeyOut(token, name, strTemp);
+    keyOutObj = gpii.app.menu.getKeyOut(token, keyOutStr, notKeyedInStr);
     jqUnit.assertTrue("Key out object exists", keyOutObj);
+    jqUnit.assertTrue("Key out object is enabled when a token is provided", keyOutObj.enabled);
     jqUnit.assertEquals("Key out is bound to onClick", "onKeyOut", keyOutObj.click);
     jqUnit.assertEquals("Token is set in the key out object", token, keyOutObj.token);
-    jqUnit.assertEquals("Label is set in the key out object", "Key out Alice", keyOutObj.label);
+    jqUnit.assertEquals("Label is set in the key out object", keyOutStr, keyOutObj.label);
 
 });
 
