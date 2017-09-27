@@ -118,7 +118,7 @@ fluid.defaults("gpii.app", {
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
-            args: ["{that}", "{arguments}.0"]
+            args: ["{arguments}.0"]
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
@@ -157,7 +157,7 @@ gpii.app.updateMenu = function (tray, menuTemplate, events) {
   * Currently uses an url to key in although this should be changed to use Electron IPC.
   * @param token {String} The token to key in with.
   */
-gpii.app.keyIn = function (that, token) {
+gpii.app.keyIn = function (token) {
     request("http://localhost:8081/user/" + token + "/login", function (/*error, response*/) {
         //TODO Put in some error logging
     });
@@ -271,7 +271,12 @@ gpii.app.pcp.showPCPWindow = function (pcpWindow, pcp, keyedInUserToken) {
         return;
     }
 
-    // XXX load only if not already loaded (keep state)
+    /*
+     * XXX load only if not already loaded:
+     * + keeps state
+     * + avoid loading blinking
+     */
+    // In case no one is keyed in - use splash window
     var windowStyleFile = keyedInUserToken ? "settings.html" : "slash.html";
     var url = fluid.stringTemplate("file://%dirName/html/%styleFile", {
         dirName: __dirname,
