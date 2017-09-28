@@ -303,13 +303,16 @@ fluid.defaults("gpii.app.tray", {
         icon: "{that}.options.icons.keyedOut"
     },
     modelRelay: {
-        keyedInUserToken: {
+        "icon": {
             target: "icon",
             singleTransform: {
-                type: "fluid.transforms.condition",
-                condition: "{that}.model.keyedInUserToken",
-                true: "{that}.options.icons.keyedIn",
-                false: "{that}.options.icons.keyedOut"
+                type: "fluid.transforms.valueMapper",
+                defaultInput: "{that}.model.keyedInUserToken",
+                match: [{
+                    inputValue: null,
+                    outputValue: "{that}.options.icons.keyedOut"
+                }],
+                noMatch: "{that}.options.icons.keyedIn"
             }
         }
     },

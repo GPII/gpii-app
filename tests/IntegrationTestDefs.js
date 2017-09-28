@@ -146,12 +146,12 @@ gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
 
 gpii.tests.dev.testTrayKeyedOut = function (tray) {
     jqUnit.assertValue("Tray is available", tray);
-    jqUnit.assertValue("No user keyed-in icon", tray.icons.keyedOut, tray.model.icon);
+    jqUnit.assertValue("No user keyed-in icon", tray.options.icons.keyedOut, tray.model.icon);
 };
 
 gpii.tests.dev.testTrayKeyedIn = function (tray) {
     jqUnit.assertValue("Tray is available", tray);
-    jqUnit.assertValue("No user keyed-in icon", tray.icons.keyedIn, tray.model.icon);
+    jqUnit.assertValue("No user keyed-in icon", tray.options.icons.keyedIn, tray.model.icon);
 };
 
 fluid.registerNamespace("gpii.tests.dev.testDefs");
