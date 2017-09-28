@@ -47,8 +47,10 @@ fluid.defaults("gpii.app", {
     model: {
         keyedInUserToken: null,
         showDialog: false,
-        preferenceSets: [],
-        activePreferenceSet: null
+        preferences: {
+            sets: [],
+            activeSet: null
+        }
     },
     components: {
         tray: {
@@ -76,15 +78,13 @@ fluid.defaults("gpii.app", {
             }
         },
         onGPIIReady: null,
-        onAppReady: null,
-        onActivePreferenceSetChanged: null
+        onAppReady: null
     },
     modelListeners: {
         "{lifecycleManager}.model.logonChange": {
             funcName: "{that}.updateShowDialog",
             args: ["{change}.value.inProgress"]
-        },
-        "activePreferenceSet": "{that}.events.onActivePreferenceSetChanged.fire"
+        }
     },
     listeners: {
         "onCreate.appReady": {
@@ -118,16 +118,12 @@ fluid.defaults("gpii.app", {
             changePath: "showDialog",
             value: "{arguments}.0"
         },
-        updatePreferenceSets: {
-            changePath: "preferenceSets",
+        updatePreferences: {
+            changePath: "preferences",
             value: "{arguments}.0"
         },
         addCommunicationChannel: {
             funcName: "gpii.app.addCommunicationChannel"
-        },
-        updateActivePreferenceSet: {
-            changePath: "activePreferenceSet",
-            value: "{arguments}.0"
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
@@ -227,24 +223,28 @@ gpii.app.exit = function (that) {
 };
 
 /**
- * Extracts data for preference sets from server post KeyedIn message
- * @param rawData {String} The stringified json message sent on user KeyedIn.
+ * Extracts data for the user's preference sets (including the active preference
+ * set) from the message received when the user keys in.
+ * @param message {Object} The message sent when the user keys is (a JSON
+ * object).
+ * @return {Object} An object containing all preference sets and the active preference
+ * set.
  */
-gpii.app.extractPreferenceSetsData = function (rawData) {
-    var message = JSON.parse(rawData),
-        inferredConfiguration;
+gpii.app.extractPreferencesData = function (message) {
+    var value = message.value || {},
+        preferences = value.preferences,
+        activeContextName = value.activeContextName;
 
-    if (message.value && message.value.matchMakerOutput) {
-        inferredConfiguration = message.value.matchMakerOutput.inferredConfiguration;
-
+    if (preferences && preferences.contexts) {
         return {
-            preferenceSets: Object.keys(inferredConfiguration),
-            activePreferenceSet: message.value.activeContextName
+            sets: fluid.keys(preferences.contexts),
+            activeSet: activeContextName
         };
     }
 
     return {
-        preferenceSets: []
+        sets: [],
+        activeSet: null
     };
 };
 
@@ -255,10 +255,23 @@ gpii.app.extractPreferenceSetsData = function (rawData) {
 gpii.app.addCommunicationChannel = function (that) {
     var socket = new ws("ws://localhost:8081/pcpChannel"); // eslint-disable-line new-cap
 
-    socket.on("message", function (data) {
-        var preferenceSetsData = gpii.app.extractPreferenceSetsData(data);
-        that.updatePreferenceSets(preferenceSetsData.preferenceSets);
-        that.updateActivePreferenceSet(preferenceSetsData.activePreferenceSet);
+    socket.on("message", function (rawData) {
+        var data = JSON.parse(rawData),
+            operation = data.type,
+            path = data.path,
+            preferences;
+
+        if (operation === "ADD") {
+            if (path.length === 0) {
+                preferences = gpii.app.extractPreferencesData(data);
+                that.updatePreferences(preferences);
+                // TODO: Extract settings for the preference set and visualize them.
+            }
+        } else if (operation === "DELETE") {
+            preferences = gpii.app.extractPreferencesData(data);
+            that.updatePreferences(preferences);
+            // TODO: Remove all settings adjusters that have been rendered.
+        }
     });
 };
 
@@ -330,7 +343,7 @@ fluid.onUncaughtException.addListener(function (err) {
  */
 
 fluid.defaults("gpii.app.tray", {
-    gradeNames: "fluid.component",
+    gradeNames: "fluid.modelComponent",
     members: {
         tray: {
             expander: {
@@ -344,21 +357,36 @@ fluid.defaults("gpii.app.tray", {
             type: "gpii.app.menuInApp"
         }
     },
-    listeners: {
-        "onCreate.addTooltip": {
-            funcName: "gpii.app.updateTooltip",
-            args: ["{that}.tray", null, "{that}.options.labels.defaultTooltip"]
-        },
-        // update tooltip
-        "{app}.events.onActivePreferenceSetChanged": {
-            funcName: "gpii.app.updateTooltip",
-            // XXX avoid direct ref to `app`
-            args: ["{that}.tray", "{app}.model.activePreferenceSet", "{that}.options.labels.defaultTooltip"]
+    model: {
+        activePreferenceSet: "{app}.model.preferences.activeSet",
+        tooltip: ""
+    },
+    modelRelay: {
+        "tooltip": {
+            target: "tooltip",
+            singleTransform: {
+                type: "fluid.transforms.valueMapper",
+                defaultInput: "{that}.model.activePreferenceSet",
+                match: [{
+                    inputValue: null,
+                    outputValue: "{that}.options.labels.defaultTooltip"
+                }],
+                noMatch: {
+                    outputValue: "{that}.model.activePreferenceSet"
+                }
+            }
+        }
+    },
+    modelListeners: {
+        "tooltip": {
+            "this": "{that}.tray",
+            method: "setToolTip",
+            args: "{that}.model.tooltip"
         }
     },
     icon: "icons/gpii.ico",
     labels: {
-        defaultTooltip: "GPII: No one Keyed-in"
+        defaultTooltip: "(No one keyed in)"
     }
 });
 
@@ -372,17 +400,6 @@ gpii.app.makeTray = function (icon) {
         tray.popUpContextMenu();
     });
     return tray;
-};
-
-/**
- * Updates the tooltip of the Eelectron Tray
- * @param tray {Object} Electron Tray object.
- * @param activePreferenceSet {String} The active preference set, if such is present.
- * @param defaultTooltip {String} Tooltip to be set in case `activePreferenceSet` is missing.
- */
-gpii.app.updateTooltip = function (tray, activePreferenceSet, defaultTooltip) {
-    var tooltip = activePreferenceSet ? activePreferenceSet : defaultTooltip;
-    tray.setToolTip(tooltip);
 };
 
 /**
@@ -490,9 +507,7 @@ gpii.app.dismissWaitDialog = function (that) {
 fluid.defaults("gpii.app.menuInApp", {
     gradeNames: "gpii.app.menu",
     model: {
-        keyedInUserToken: "{app}.model.keyedInUserToken",
-        preferenceSets: "{app}.model.preferenceSets",
-        activePreferenceSet: "{app}.model.activePreferenceSet"
+        keyedInUserToken: "{app}.model.keyedInUserToken"
     },
     modelListeners: {
         "menuTemplate": {
@@ -612,8 +627,6 @@ fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
     model: {
         //keyedInUserToken  // This comes from the app.
-        preferenceSets: null,
-        activePreferenceSet: null,
         keyedInUser: {
             label: "",      // Must be updated when keyedInUserToken changes.
             enabled: false
@@ -653,12 +666,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: [
-                    "{that}.model.keyedInUser",
-                    "{that}.model.keyOut",
-                    "{that}.options.snapsets",
-                    "{that}.options.exit"
-                ]
+                args: ["{that}.model.keyedInUser", "{that}.model.keyOut", "{that}.options.snapsets", "{that}.options.exit"]
             },
             priority: "last"
         }
