@@ -257,7 +257,7 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
         x: screenSize.width - width,
         y: screenSize.height - height,
 
-        // feel the app more native
+        // Make the app feel more native
         backgroundColor: "#71c5ef"
     });
 
@@ -289,7 +289,6 @@ gpii.app.pcp.updatePCPWindowStyle = function (pcpWindow, keyedInUserToken) {
 /**
  * Shows the passed Electron `BrowserWindow`
  *
- * @param keyedInUserToken {String} The user token.
  * @param pcpWindow {Object} An Electron `BrowserWindow`.
  */
 gpii.app.pcp.showPCPWindow = function (pcpWindow) {
@@ -445,17 +444,18 @@ fluid.defaults("gpii.app.tray", {
 /**
   * Creates the Electron Tray
   * @param icon {String} Path to the icon that represents the GPII in the task tray.
-  * @param handler {Function} A handler to be used for tray menu left click.
+  * @param openPCP {Function} A function for showing the PCP window. Should be called
+  * whenever the user left clicks on the tray icon or uses the PCP window shortcut.
   */
-gpii.app.makeTray = function (icon, handler) {
+gpii.app.makeTray = function (icon, openPCP) {
     var tray = new Tray(path.join(__dirname, icon));
 
     tray.on("click", function () {
-        handler();
+        openPCP();
     });
 
     globalShortcut.register("Super+CmdOrCtrl+Alt+U", function () {
-        handler();
+        openPCP();
     });
 
     return tray;

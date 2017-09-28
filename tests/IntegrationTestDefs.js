@@ -64,8 +64,9 @@ gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
 };
 
 gpii.tests.app.testMenu = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 1);
-    gpii.tests.app.testItem(menuTemplate[0], "Not keyed in");
+    gpii.tests.app.testTemplateExists(menuTemplate, 2);
+    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testItem(menuTemplate[1], "Not keyed in");
 };
 
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
@@ -82,7 +83,7 @@ fluid.registerNamespace("gpii.tests.app.testDefs");
 
 gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
-    expect: 28,
+    expect: 32,
     config: {
         configName: "app",
         configPath: "configs"
@@ -159,10 +160,11 @@ gpii.tests.dev.testKeyInList = function (item) {
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 3);
-    gpii.tests.app.testItem(menuTemplate[0], "Not keyed in");
-    gpii.tests.dev.testKeyInList(menuTemplate[1]);
-    gpii.tests.app.testItem(menuTemplate[2], "Exit GPII");
+    gpii.tests.app.testTemplateExists(menuTemplate, 4);
+    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testItem(menuTemplate[1], "Not keyed in");
+    gpii.tests.dev.testKeyInList(menuTemplate[2]);
+    gpii.tests.app.testItem(menuTemplate[3], "Exit GPII");
 };
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
@@ -178,7 +180,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 97,
+    expect: 101,
     config: {
         configName: "app.dev",
         configPath: "configs"
