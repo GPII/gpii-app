@@ -7,61 +7,13 @@
     fluid.registerNamespace("gpii.pcp");
 
     gpii.pcp.addCommunicationChannel = function (that) {
-        that.updatePreferences({
-            sets: ["GPII Default", "Subway", "Noisy"],
-            activeSet: "GPII Default",
-            settings: [{
-                path: "settingOnePath",
-                type: "string",
-                values: ["a", "b", "c", "d"],
-                title: "Setting one title",
-                description: "Setting one description",
-                icon: "../icons/gear-cloud-black.png",
-                value: "b"
-            }, {
-                path: "settingTwoPath",
-                type: "string",
-                values: ["b", "c", "d", "e"],
-                title: "Setting two title",
-                description: "Setting two description",
-                icon: "../icons/gear-cloud-black.png",
-                value: "c"
-            }, {
-                path: "textfieldPath",
-                type: "text",
-                title: "Text input",
-                description: "Text input description",
-                icon: "../icons/gear-cloud-white.png",
-                value: ""
-            }, {
-                path: "invertColorsPath",
-                type: "boolean",
-                title: "Invert colors",
-                description: "Invert colors description",
-                icon: "../icons/gear-cloud-black.png",
-                value: true,
-                isPersisted: true
-            }, {
-                path: "zoomPath",
-                type: "number",
-                title: "Zoom",
-                description: "Zoom description",
-                icon: "../icons/gear-cloud-black.png",
-                value: 1,
-                min: 0.5,
-                max: 4,
-                divisibleBy: 0.1,
-                isPersisted: true
-            }, {
-                path: "ttsTrackingPath",
-                type: "array",
-                title: "TTS tracking mode",
-                description: "TTS tracking mode description",
-                icon: "../icons/gear-cloud-white.png",
-                values:  ["mouse", "caret", "focus"],
-                value: ["mouse", "focus"],
-                dynamic: true
-            }]
+        ipcRenderer.on("keyIn", function (event, preferences) {
+            that.updatePreferences(preferences);
+        });
+
+        ipcRenderer.on("keyOut", function (event, preferences) {
+            that.updatePreferences(preferences);
+            that.events.onKeyOut.fire();
         });
     };
 
@@ -186,6 +138,20 @@
         return fluid.values(widgetExemplars)
             .filter(fluid.isComponent)
             .find(function matchType(exemplar) { return exemplar.options.schemeType === schemeType; });
+    };
+
+    /**
+     * A listener which is invoked whenever a setting row is destroyed. This function
+     * simply removes the container of the destroyed dynamic component from the DOM.
+     * @param mainWindowContainer {Object} A jQuery object representing the container
+     * of the settings window
+     * @param settingRowContainer {String} A unique selector identifying the container
+     * of the setting row that has been removed.
+     */
+    gpii.pcp.onSettingRowDestroy = function (mainWindowContainer, settingRowContainer) {
+        if (settingRowContainer) {
+            mainWindowContainer.find(settingRowContainer).remove();
+        }
     };
 
     /**
@@ -432,6 +398,18 @@
             // XXX not quite valid naming as the widget component (in settingPresenter) also renders
             onSettingRendered: null
         },
+
+        listeners: {
+            "{mainWindow}.events.onKeyOut": {
+                "this": "{that}",
+                method: "destroy"
+            },
+            "onDestroy": {
+                funcName: "gpii.pcp.onSettingRowDestroy",
+                args: ["{mainWindow}.container", "{that}.settingRenderer.model.settingContainer"]
+            }
+        },
+
         components: {
             settingRenderer: {
                 type: "gpii.pcp.settingRenderer",
@@ -745,7 +723,8 @@
             "close": "gpii.pcp.closeSettingsWindow()"
         },
         events: {
-            onPreferencesReceived: null
+            onPreferencesReceived: null,
+            onKeyOut: null
         }
 
     });
