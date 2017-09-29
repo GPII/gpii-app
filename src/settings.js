@@ -654,12 +654,55 @@
     });
 
     /**
+     * A function which checks if an array object holds more than one element.
+     * @param arr {Array} The array to be checked.
+     * @return {Boolean} Whether the array has more than one element.
+     */
+    gpii.pcp.hasMultipleItems = function (arr) {
+        return arr && arr.length > 1;
+    };
+
+    /**
+     * Retrieves the type for the preferenceSetPicker subcomponent. In case there
+     * is more than one available preference set, the type should be a dropdown.
+     * Otherwise, the component should not initialize and ignore all its config
+     * properties (and hence must have an emptySubcomponent type).
+     * @param preferenceSets {Array} An array of the current preference sets.
+     * @return {String} The type of the preferenceSetPicker subcomponent.
+     */
+    gpii.pcp.getPreferenceSetPickerType = function (preferenceSets) {
+        return gpii.pcp.hasMultipleItems(preferenceSets) ? "gpii.pcp.widgets.dropdown" : "fluid.emptySubcomponent";
+    };
+
+    /**
+     * Updates the DOM elements corresponding to the header component whenever new
+     * preferences are received.
+     * @param preferenceSets {Array} An array containing the new preferece sets.
+     * @param preferenceSetPickerElem {Object} A jQuery object corresponding to the
+     * preference set dropdown (in case there are multiple preference sets, it should
+     * be shown, otherwise it should be hidden).
+     * @param activePreferenceSetElem {Object} A jQuery object corresponding to the
+     * preference set label (in case there is a single preference set it should be
+     * show, otherwise it should be hidden).
+     */
+    gpii.pcp.updateHeader = function (preferenceSets, preferenceSetPickerElem, activePreferenceSetElem) {
+        if (gpii.pcp.hasMultipleItems(preferenceSets)) {
+            preferenceSetPickerElem.show();
+            activePreferenceSetElem.hide();
+        } else {
+            preferenceSetPickerElem.hide();
+            activePreferenceSetElem.show();
+        }
+    };
+
+    /**
      * TODO
      */
     fluid.defaults("gpii.pcp.header", {
         gradeNames: ["fluid.viewComponent"],
         selectors: {
             preferenceSetPicker: ".flc-prefSetPicker",
+            activePreferenceSet: ".flc-activePreferenceSet",
             closeBtn: ".flc-closeBtn"
         },
         model: {
@@ -668,9 +711,17 @@
                 activeSet: "{mainWindow}.model.preferences.activeSet"
             }
         },
+        modelListeners: {
+            "preferences.activeSet": {
+                this: "{that}.dom.activePreferenceSet",
+                method: "text",
+                args: "{change}.value",
+                namespace: "updateElement"
+            }
+        },
         components: {
             preferenceSetPicker: {
-                type: "gpii.pcp.widgets.dropdown",
+                type: "@expand:gpii.pcp.getPreferenceSetPickerType({that}.model.preferences.sets)",
                 container: "{that}.dom.preferenceSetPicker",
                 createOnEvent: "{mainWindow}.events.onPreferencesReceived",
                 options: {
@@ -687,6 +738,10 @@
                 "this": "{that}.dom.closeBtn",
                 method: "on",
                 args: ["click", "{mainWindow}.close"]
+            },
+            "{mainWindow}.events.onPreferencesReceived": {
+                funcName: "gpii.pcp.updateHeader",
+                args: ["{that}.model.preferences.sets", "{that}.dom.preferenceSetPicker", "{that}.dom.activePreferenceSet"]
             }
         }
     });
