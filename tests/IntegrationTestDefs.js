@@ -144,12 +144,22 @@ gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
     gpii.tests.app.testItem(menuTemplate[3], "Exit GPII");
 };
 
+gpii.tests.dev.testTrayKeyedOut = function (tray) {
+    jqUnit.assertValue("Tray is available", tray);
+    jqUnit.assertValue("No user keyed-in icon", tray.options.icons.keyedOut, tray.model.icon);
+};
+
+gpii.tests.dev.testTrayKeyedIn = function (tray) {
+    jqUnit.assertValue("Tray is available", tray);
+    jqUnit.assertValue("No user keyed-in icon", tray.options.icons.keyedIn, tray.model.icon);
+};
+
 fluid.registerNamespace("gpii.tests.dev.testDefs");
 
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 95,
+    expect: 101,
     config: {
         configName: "app.dev",
         configPath: "configs"
@@ -162,9 +172,12 @@ gpii.tests.dev.testDefs = {
         },
         target: "{that flowManager gpii.app}.options.listeners.onCreate"
     },
-    sequence: [{ // Test the menu that will be rendered
-        event: "{that gpii.app.menu}.events.onCreate",
-        listener: "gpii.tests.dev.testInitialMenu"
+    sequence: [{ // Test the tray that will be rendered
+        event: "{that gpii.app.tray}.events.onCreate",
+        listener: "gpii.tests.dev.testTrayKeyedOut"
+    }, { // Test the menu that will be rendered
+        func: "gpii.tests.dev.testInitialMenu",
+        args: "{that}.app.tray.menu"
     }, { // Test menu after key in
         func: "{that}.app.keyIn",
         args: "snapset_1a"
@@ -172,6 +185,9 @@ gpii.tests.dev.testDefs = {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
         listener: "gpii.tests.dev.testMenuSnapsetKeyedIn"
+    }, {
+        func: "gpii.tests.dev.testTrayKeyedIn",
+        args: "{that}.app.tray"
     }, { // Test menu after key out
         func: "{that}.app.keyOut",
         args: "snapset_1a"
@@ -179,5 +195,8 @@ gpii.tests.dev.testDefs = {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
         listener: "gpii.tests.dev.testMenu"
+    }, {
+        func: "gpii.tests.dev.testTrayKeyedOut",
+        args: "{that}.app.tray"
     }]
 };

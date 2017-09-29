@@ -50,7 +50,12 @@ fluid.defaults("gpii.app", {
     components: {
         tray: {
             type: "gpii.app.tray",
-            createOnEvent: "onPrequisitesReady"
+            createOnEvent: "onPrequisitesReady",
+            options: {
+                model: {
+                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken"
+                }
+            }
         },
         dialog: {
             type: "gpii.app.dialog",
@@ -274,20 +279,48 @@ fluid.onUncaughtException.addListener(function (err) {
 /**
  * Component that contains an Electron Tray.
  */
-
 fluid.defaults("gpii.app.tray", {
-    gradeNames: "fluid.component",
+    gradeNames: "fluid.modelComponent",
     members: {
         tray: {
             expander: {
                 funcName: "gpii.app.makeTray",
-                args: ["{that}.options.icon"]
+                args: ["{that}.model.icon"]
             }
         }
+    },
+    icons: {
+        keyedIn: "icons/gpii-color.ico",
+        keyedOut: "icons/gpii.ico"
     },
     components: {
         menu: {
             type: "gpii.app.menuInApp"
+        }
+    },
+    model: {
+        keyedInUserToken: null,
+        icon: "{that}.options.icons.keyedOut"
+    },
+    modelRelay: {
+        "icon": {
+            target: "icon",
+            singleTransform: {
+                type: "fluid.transforms.valueMapper",
+                defaultInput: "{that}.model.keyedInUserToken",
+                match: [{
+                    inputValue: null,
+                    outputValue: "{that}.options.icons.keyedOut"
+                }],
+                noMatch: "{that}.options.icons.keyedIn"
+            }
+        }
+    },
+    modelListeners: {
+        "icon": {
+            funcName: "gpii.app.tray.setTrayIcon",
+            args: ["{that}.tray", "{change}.value"],
+            excludeSource: "init"
         }
     },
     listeners: {
@@ -297,11 +330,20 @@ fluid.defaults("gpii.app.tray", {
             args: ["{that}.options.labels.tooltip"]
         }
     },
-    icon: "icons/gpii.ico",
     labels: {
         tooltip: "GPII"
     }
 });
+
+/**
+  * Sets the icon for the Electron Tray which represents the GPII application.
+  * @param tray {Object} An instance of an Electron Tray.
+  * @param icon {String} The simple path to the icon file.
+  */
+gpii.app.tray.setTrayIcon = function (tray, icon) {
+    var iconPath = path.join(__dirname, icon);
+    tray.setImage(iconPath);
+};
 
 /**
   * Creates the Electron Tray
