@@ -21,7 +21,8 @@ var request = require("request");
 var BrowserWindow = electron.BrowserWindow,
     Menu = electron.Menu,
     Tray = electron.Tray,
-    globalShortcut = electron.globalShortcut;
+    globalShortcut = electron.globalShortcut,
+    ipcMain = electron.ipcMain;
 require("./networkCheck.js");
 
 /**
@@ -110,6 +111,10 @@ fluid.defaults("gpii.app", {
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
+        },
+        "onCreate.addCommunicationChannel": {
+            listener: "{that}.addCommunicationChannel",
+            args: ["{that}"]
         }
     },
     invokers: {
@@ -128,6 +133,9 @@ fluid.defaults("gpii.app", {
         keyOut: {
             funcName: "gpii.app.keyOut",
             args: ["{arguments}.0"]
+        },
+        addCommunicationChannel: {
+            funcName: "gpii.app.addCommunicationChannel"
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -219,6 +227,11 @@ gpii.app.exit = function (that) {
     }
 };
 
+gpii.app.addCommunicationChannel = function (that) {
+    ipcMain.on("closePCP", function () {
+        that.pcp.hide();
+    });
+};
 
 fluid.registerNamespace("gpii.app.pcp");
 
@@ -401,6 +414,10 @@ fluid.defaults("gpii.app.pcp", {
             funcName: "gpii.app.pcp.showPCPWindow",
             // XXX avoid app usage
             args: ["{that}.pcpWindow", "{that}", "{app}.model.keyedInUserToken"]
+        },
+        hide: {
+            "this": "{that}.pcpWindow",
+            method: "hide"
         },
         notifyPCPWindow: {
             funcName: "gpii.app.pcp.notifyPCPWindow",

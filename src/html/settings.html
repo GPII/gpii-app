@@ -1,13 +1,24 @@
 <html>
     <head>
+        <link href="../../node_modules/infusion/dist/assets/src/framework/preferences/css/PrefsEditor.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" type="text/css" href="../../node_modules/infusion/dist/assets/src/components/switch/css/Switch.css">
+        <link rel="stylesheet" href="../css/widgets.css">
         <link rel="stylesheet" href="../css/settings.css">
         <script type="text/javascript" src="../../node_modules/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="../../node_modules/infusion/dist/infusion-all.js"></script>
+        <script type="text/javascript" src="../widgets.js"></script>
         <script type="text/javascript" src="../settings.js"></script>
     </head>
-    <body>
-        <div class="flc-body">
-            <h1 class="flc-title"></h1>
+    <body id="flc-body">
+        <div id="flc-settingsHeader">
+            <div class="flc-prefSetPicker">
+                <select class="flc-dropdown-options"></select>
+            </div>
+            <div class="flc-closeBtn">X</div>
+            <div class="clear-both"></div>
+        </div>
+        <hr>
+        <div id="flc-settingsList">
         </div>
     </body>
 </html>
