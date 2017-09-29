@@ -23,6 +23,7 @@ var BrowserWindow = electron.BrowserWindow,
     Tray = electron.Tray,
     globalShortcut = electron.globalShortcut,
     ipcMain = electron.ipcMain;
+var ws = require("ws");
 require("./networkCheck.js");
 
 /**
@@ -47,7 +48,11 @@ fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
         keyedInUserToken: null,
-        showDialog: false
+        showDialog: false,
+        preferences: {
+            sets: [],
+            activeSet: null
+        }
     },
     components: {
         pcp: {
@@ -126,6 +131,10 @@ fluid.defaults("gpii.app", {
             changePath: "showDialog",
             value: "{arguments}.0"
         },
+        updatePreferences: {
+            changePath: "preferences",
+            value: "{arguments}.0"
+        },
         keyIn: {
             funcName: "gpii.app.keyIn",
             args: ["{arguments}.0"]
@@ -147,7 +156,6 @@ fluid.defaults("gpii.app", {
         }
     }
 });
-
 
 gpii.app.fireAppReady = function (fireFn) {
     gpii.app.appReady.then(fireFn);
@@ -225,12 +233,6 @@ gpii.app.exit = function (that) {
     } else {
         gpii.app.performQuit();
     }
-};
-
-gpii.app.addCommunicationChannel = function (that) {
-    ipcMain.on("closePCP", function () {
-        that.pcp.hide();
-    });
 };
 
 fluid.registerNamespace("gpii.app.pcp");
@@ -312,6 +314,63 @@ gpii.app.pcp.showPCPWindow = function (pcpWindow) {
     // XXX problem with loading - previous view is not cleared before the window is shown
     pcpWindow.show();
     pcpWindow.focus();
+};
+
+/**
+ * Extracts data for the user's preference sets (including the active preference
+ * set) from the message received when the user keys in.
+ * @param message {Object} The message sent when the user keys is (a JSON
+ * object).
+ * @return {Object} An object containing all preference sets and the active preference
+ * set.
+ */
+gpii.app.extractPreferencesData = function (message) {
+    var value = message.value || {},
+        preferences = value.preferences,
+        activeContextName = value.activeContextName;
+
+    if (preferences && preferences.contexts) {
+        return {
+            sets: fluid.keys(preferences.contexts),
+            activeSet: activeContextName
+        };
+    }
+
+    return {
+        sets: [],
+        activeSet: null
+    };
+};
+
+/**
+ * Opens connection to the PCP Channel WebSocket
+ * @param that {Object} The app
+ */
+gpii.app.addCommunicationChannel = function (that) {
+    var socket = new ws("ws://localhost:8081/pcpChannel"); // eslint-disable-line new-cap
+
+    socket.on("message", function (rawData) {
+        var data = JSON.parse(rawData),
+            operation = data.type,
+            path = data.path,
+            preferences;
+
+        if (operation === "ADD") {
+            if (path.length === 0) {
+                preferences = gpii.app.extractPreferencesData(data);
+                that.updatePreferences(preferences);
+                // TODO: Extract settings for the preference set and visualize them.
+            }
+        } else if (operation === "DELETE") {
+            preferences = gpii.app.extractPreferencesData(data);
+            that.updatePreferences(preferences);
+            // TODO: Remove all settings adjusters that have been rendered.
+        }
+    });
+
+    ipcMain.on("closePCP", function () {
+        that.pcp.hide();
+    });
 };
 
 /**
@@ -431,7 +490,7 @@ fluid.defaults("gpii.app.pcp", {
  */
 
 fluid.defaults("gpii.app.tray", {
-    gradeNames: "fluid.component",
+    gradeNames: "fluid.modelComponent",
     members: {
         tray: {
             expander: {
@@ -445,16 +504,36 @@ fluid.defaults("gpii.app.tray", {
             type: "gpii.app.menuInApp"
         }
     },
-    listeners: {
-        "onCreate.addTooltip": {
+    model: {
+        activePreferenceSet: "{app}.model.preferences.activeSet",
+        tooltip: ""
+    },
+    modelRelay: {
+        "tooltip": {
+            target: "tooltip",
+            singleTransform: {
+                type: "fluid.transforms.valueMapper",
+                defaultInput: "{that}.model.activePreferenceSet",
+                match: [{
+                    inputValue: null,
+                    outputValue: "{that}.options.labels.defaultTooltip"
+                }],
+                noMatch: {
+                    outputValue: "{that}.model.activePreferenceSet"
+                }
+            }
+        }
+    },
+    modelListeners: {
+        "tooltip": {
             "this": "{that}.tray",
             method: "setToolTip",
-            args: ["{that}.options.labels.tooltip"]
+            args: "{that}.model.tooltip"
         }
     },
     icon: "icons/gpii.ico",
     labels: {
-        tooltip: "GPII"
+        defaultTooltip: "(No one keyed in)"
     }
 });
 
