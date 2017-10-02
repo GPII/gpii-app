@@ -10,14 +10,17 @@ hr {
     margin-right: auto;
     border-style: inset;
     border-width: 2px;
-} 
+}
+
+.flc-solutionName:not(:empty):after {
+    content: ":";
+}
 
 .flc-setting {
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    max-height: 3vh;
 }
 
 *[class*="flc-settingListRow"] {
@@ -34,22 +37,6 @@ hr {
 
 .clear-both {
     clear: both;
-}
-
-.flc-keyOutBtn {
-    position: absolute;
-    box-sizing: border-box;
-    bottom: 10px;
-    left: 10px;
-
-    width: 80px;
-    height: 80px;
-    padding: 5px;
-    border: 2px solid rgb(54, 191, 220);
-
-    line-height: 70px;
-    user-select: none;
-    cursor: pointer;
 }
 
 .flc-restartIcon {

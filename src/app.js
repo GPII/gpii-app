@@ -317,69 +317,20 @@ gpii.app.pcp.showPCPWindow = function (pcpWindow) {
 };
 
 /**
- * Returns the prefix of a setting name. The prefix can be used to determine
- * whether the given setting is a commonwide setting or an application
- * specific setting.
- * @param settingKey {String} The name of the setting
- * @return {String} The setting name prefix
- */
-gpii.app.getSettingKeyPrefix = function (settingKey) {
-    var prefixEnd = settingKey.lastIndexOf("/");
-    return settingKey.slice(0, prefixEnd + 1);
-};
-
-/**
- * Returns the suffix of a setting name. The suffix contains the simple name
- * of a setting (i.e. the setting name with its prefix removed). Can be used
- * to obtain an application specific setting's schema from the solutions
- * registry.
- * @param settingKey {String} The name of the setting
- * @return {String} The setting name suffix
- */
-gpii.app.getSettingKeySuffix = function (settingKey) {
-    var suffixStart = settingKey.lastIndexOf("/");
-    return settingKey.slice(suffixStart + 1);
-};
-
-/**
- * Determines if the provided setting key denotes an application setting.
- * @param settingKey {String} The name of the setting
- * @return {Boolean} true if the setting key denotes an application setting
- * or false otherwise.
- */
-gpii.app.isApplicationSetting = function (settingKey) {
-    var applicationsPrefix = "http://registry.gpii.net/applications/";
-    return gpii.app.getSettingKeyPrefix(settingKey) === applicationsPrefix;
-};
-
-/**
- * Checks if a setting value is primitive, i.e. if it is a string, number,
- * boolean or array of strings, numbers or booleans.
- * @param settingValue {String} The value to check.
- * @return {Boolean} Whether the setting value is primitive or an array of
- * primitive values.
- */
-gpii.app.isPrimitiveSetting = function (settingValue) {
-    if (fluid.isArrayable(settingValue)) {
-        return settingValue.every(function (value) {
-            return gpii.app.isPrimitiveSetting(value);
-        });
-    }
-    return fluid.isPrimitive(settingValue);
-};
-
-/**
  * Creates a setting view model to be used in the settings window.
- * @param schema {Object} The setting's schema object which contains data
- * about the type, title, description, etc. of the given setting.
  * @param key {String} The name of the setting. Must be unique as
  * subsequent requests to the GPII API will use this key as identifier.
- * @param value {String} The current value of the setting.
+ * @param settingDescriptor {Object} A descriptor for the given setting
+ * containing its title, description and constraints regarding its value.
  * @return {Object} The view model for the setting.
  */
-gpii.app.createSettingModel = function (schema, key, value) {
+gpii.app.createSettingModel = function (key, settingDescriptor) {
+    var schema = settingDescriptor.schema;
+
     return {
         path: key,
+        value: settingDescriptor.value,
+        solutionName: settingDescriptor.solutionName,
 
         title: schema.title,
         description: schema.description,
@@ -388,48 +339,11 @@ gpii.app.createSettingModel = function (schema, key, value) {
         isPersisted: true,
 
         type: schema.type,
-        value: value,
         min: schema.min,
         max: schema.max,
         divisibleBy: schema.divisibleBy,
         values: schema["enum"]
     };
-};
-
-/**
- * Creates view models for application-specific settings. These view
- * models will be used in the settings window.
- * @param solutionsRegistry {Object} An object containing various data
- * pertaining to settings of different applications.
- * @param applicationKey {String} The name of the applicaion. Must be
- * unique.
- * @param applicationSettings {Object} An object whose keys are the names
- * of the application-specific settings and whose values are the values
- * of the corresponding settings.
- * @return {Array} An array of view models for the application-specific
- * settings.
- */
-gpii.app.createApplicationSettingsModels = function (solutionsRegistry, applicationKey, applicationSettings) {
-    var applicationKeySuffix = gpii.app.getSettingKeySuffix(applicationKey),
-        solutionsEntry = solutionsRegistry[applicationKeySuffix],
-        settingsKeys = fluid.keys(applicationSettings),
-        settings = [];
-
-    if (solutionsEntry) {
-        var supportedSettings = solutionsEntry.settingsHandlers.configure.supportedSettings;
-        settingsKeys.forEach(function (settingKey) {
-            var settingMetadata = supportedSettings[settingKey] || {},
-                settingSchema = settingMetadata.schema;
-            if (settingSchema) {
-                var applicationSettingKey = applicationKey + "." + settingKey,
-                    applicationSettingValue = applicationSettings[settingKey],
-                    settingModel = gpii.app.createSettingModel(settingSchema, applicationSettingKey, applicationSettingValue);
-                settings.push(settingModel);
-            }
-        });
-    }
-
-    return settings;
 };
 
 /**
@@ -444,26 +358,16 @@ gpii.app.extractPreferencesData = function (message) {
     var value = message.value || {},
         preferences = value.preferences,
         activeContextName = value.activeContextName,
-        commonTerms = value.commonTermsMetadata,
-        solutionsRegistry = value.solutionsRegistryEntries;
+        settingControls = value.settingControls;
 
-    if (preferences && preferences.contexts) {
-        var activeContextSettings = preferences.contexts[activeContextName].preferences,
-            settingsKeys = fluid.keys(activeContextSettings),
+    if (settingControls) {
+        var settingsKeys = fluid.keys(settingControls),
             settings = [];
 
         settingsKeys.forEach(function (settingKey) {
-            var settingValue = activeContextSettings[settingKey];
-            if (gpii.app.isApplicationSetting(settingKey)) {
-                var applicationSettingsModels = gpii.app.createApplicationSettingsModels(solutionsRegistry, settingKey, settingValue);
-                settings = settings.concat(applicationSettingsModels);
-            } else {
-                var settingSchema = commonTerms[settingKey].schema;
-                if (settingSchema) {
-                    var settingModel = gpii.app.createSettingModel(settingSchema, settingKey, settingValue);
-                    settings.push(settingModel);
-                }
-            }
+            var settingDescriptor = settingControls[settingKey],
+                settingModel = gpii.app.createSettingModel(settingKey, settingDescriptor);
+            settings.push(settingModel);
         });
 
         return {

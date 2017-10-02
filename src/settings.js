@@ -218,6 +218,7 @@
         gradeNames: "fluid.viewComponent",
         selectors: {
             icon: ".flc-icon",
+            solutionName: ".flc-solutionName",
             title: ".flc-title",
             memoryIcon: ".flc-memoryIcon",
             restartIcon: ".flc-restartIcon",
@@ -225,6 +226,7 @@
         },
         model: {
             icon: null,
+            solutionName: null,
             title: null,
             values: null,
             value: null
@@ -253,6 +255,11 @@
                 this: "{that}.dom.icon",
                 method: "attr",
                 args: ["src", "{that}.model.icon"]
+            },
+            "onCreate.setSolutionName": {
+                this: "{that}.dom.solutionName",
+                method: "text",
+                args: "{that}.model.solutionName"
             },
             "onCreate.setTitle": {
                 this: "{that}.dom.title",
