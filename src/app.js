@@ -51,7 +51,7 @@ fluid.defaults("gpii.app", {
         showDialog: false,
         preferences: {
             sets: [],
-            activeSet: null
+            activeSet: {}
         }
     },
     components: {
@@ -290,7 +290,7 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
 
 gpii.app.pcp.updatePCPWindowStyle = function (pcpWindow, keyedInUserToken) {
     // In case no one is keyed in - use splash window
-    var windowStyle = keyedInUserToken ? "settings" : "splash";
+    var windowStyle = keyedInUserToken ? "settings" : "settings";
 
     /*
      * keeps state
@@ -366,14 +366,14 @@ gpii.app.extractPreferencesData = function (message) {
         activeContextName = value.activeContextName,
         settingControls = value.settingControls,
         sets = [],
-        activeSet = null,
+        activeSet = {},
         settings = [];
 
     if (contexts) {
         sets = fluid.hashToArray(contexts, "path");
         activeSet = fluid.find_if(sets, function (preferenceSet) {
             return preferenceSet.path === activeContextName;
-        });
+        }, activeSet);
     }
 
     if (settingControls) {
@@ -382,12 +382,6 @@ gpii.app.extractPreferencesData = function (message) {
                 return gpii.app.createSettingModel(settingKey, settingDescriptor);
             })
         );
-
-        return {
-            sets: fluid.keys(preferences.contexts),
-            activeSet: activeContextName,
-            settings: settings
-        };
     }
 
     return {

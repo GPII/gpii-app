@@ -680,6 +680,30 @@
     };
 
     /**
+     * A listener which is invoked whenever the preference set picker component is
+     * destroyed. This function simply removes all options for the dropdown (actually
+     * represented as a <select> element) from the DOM.
+     * @param container {Object} A jQuery object representing the parent container
+     * of the preference set picker.
+     */
+    gpii.pcp.onPreferenceSetPickerDestroy = function (container) {
+        container.find("option").remove();
+    };
+
+    /**
+     * Finds a preference set given its path.
+     * @param preferenceSets {Array} An array of preference sets objects.
+     * @param path {String} The path of the preference set to look up.
+     * @return {Object} The preference set which has the corresponding path or an
+     * empty object if there is no such set.
+     */
+    gpii.pcp.findPreferenceSet = function (preferenceSets, path) {
+        return fluid.find_if(preferenceSets, function (preferenceSet) {
+            return preferenceSet.path === path;
+        }, {});
+    };
+
+    /**
      * TODO
      */
     fluid.defaults("gpii.pcp.header", {
@@ -693,13 +717,25 @@
             preferences: {
                 sets: "{mainWindow}.model.preferences.sets",
                 activeSet: "{mainWindow}.model.preferences.activeSet"
+            },
+            activeSetPath: "{mainWindow}.model.preferences.activeSet.path"
+        },
+        modelRelay: {
+            "preferences.activeSet": {
+                target: "preferences.activeSet",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.pcp.findPreferenceSet",
+                    args: ["{that}.model.preferences.sets", "{that}.model.activeSetPath"]
+                },
+                excludeSource: "init"
             }
         },
         modelListeners: {
             "preferences.activeSet": {
                 this: "{that}.dom.activePreferenceSet",
                 method: "text",
-                args: "{change}.value",
+                args: "{change}.value.name",
                 namespace: "updateElement"
             }
         },
@@ -710,9 +746,25 @@
                 createOnEvent: "{mainWindow}.events.onPreferencesReceived",
                 options: {
                     model: {
-                        optionNames: "{header}.model.preferences.sets",
-                        optionList: "{header}.model.preferences.sets",
-                        selection: "{header}.model.preferences.activeSet"
+                        optionNames: {
+                            expander: {
+                                func: "fluid.getMembers",
+                                args: ["{header}.model.preferences.sets", "name"]
+                            }
+                        },
+                        optionList: {
+                            expander: {
+                                func: "fluid.getMembers",
+                                args: ["{header}.model.preferences.sets", "path"]
+                            }
+                        },
+                        selection: "{header}.model.activeSetPath"
+                    },
+                    listeners: {
+                        "onDestroy.removeOptions": {
+                            funcName: "gpii.pcp.onPreferenceSetPickerDestroy",
+                            args: ["{that}.container"]
+                        }
                     }
                 }
             }
@@ -741,7 +793,7 @@
         model: {
             preferences: {
                 sets: [],
-                activeSet: null,
+                activeSet: {},
                 settings: []
             }
         },
