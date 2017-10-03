@@ -2,6 +2,48 @@ body {
     background-color: #71c5ef;
 }
 
-h1 {
-    text-align: center;
+hr { 
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: inset;
+    border-width: 2px;
+}
+
+.flc-solutionName:not(:empty):after {
+    content: ":";
+}
+
+.flc-setting {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+*[class*="flc-settingListRow"] {
+    margin-bottom: 15px;
+}
+
+.flc-prefSetPicker {
+    float: left;
+}
+
+.flc-closeBtn {
+    float: right;
+}
+
+.clear-both {
+    clear: both;
+}
+
+.flc-restartIcon {
+    display: none;
+    font-weight: bold;
+}
+
+.flc-memoryIcon {
+    display: none;
 }

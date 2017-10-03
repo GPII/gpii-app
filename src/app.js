@@ -21,7 +21,8 @@ var request = require("request");
 var BrowserWindow = electron.BrowserWindow,
     Menu = electron.Menu,
     Tray = electron.Tray,
-    globalShortcut = electron.globalShortcut;
+    globalShortcut = electron.globalShortcut,
+    ipcMain = electron.ipcMain;
 var ws = require("ws");
 require("./networkCheck.js");
 
@@ -139,9 +140,6 @@ fluid.defaults("gpii.app", {
             changePath: "preferences",
             value: "{arguments}.0"
         },
-        addCommunicationChannel: {
-            funcName: "gpii.app.addCommunicationChannel"
-        },
         keyIn: {
             funcName: "gpii.app.keyIn",
             args: ["{arguments}.0"]
@@ -149,6 +147,9 @@ fluid.defaults("gpii.app", {
         keyOut: {
             funcName: "gpii.app.keyOut",
             args: ["{arguments}.0"]
+        },
+        addCommunicationChannel: {
+            funcName: "gpii.app.addCommunicationChannel"
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -239,62 +240,6 @@ gpii.app.exit = function (that) {
     }
 };
 
-/**
- * Extracts data for the user's preference sets (including the active preference
- * set) from the message received when the user keys in.
- * @param message {Object} The message sent when the user keys is (a JSON
- * object).
- * @return {Object} An object containing all preference sets and the active preference
- * set.
- */
-gpii.app.extractPreferencesData = function (message) {
-    var value = message.value || {},
-        preferences = value.preferences || {},
-        contexts = preferences.contexts,
-        activeContextName = value.activeContextName,
-        sets = [],
-        activeSet = null;
-
-    if (contexts) {
-        sets = fluid.hashToArray(contexts, "path");
-        activeSet = fluid.find_if(sets, function (preferenceSet) {
-            return preferenceSet.path === activeContextName;
-        });
-    }
-
-    return {
-        sets: sets,
-        activeSet: activeSet
-    };
-};
-
-/**
- * Opens connection to the PCP Channel WebSocket
- * @param that {Object} The app
- */
-gpii.app.addCommunicationChannel = function (that) {
-    var socket = new ws("ws://localhost:8081/pcpChannel"); // eslint-disable-line new-cap
-
-    socket.on("message", function (rawData) {
-        var data = JSON.parse(rawData),
-            operation = data.type,
-            path = data.path,
-            preferences;
-
-        if (operation === "ADD") {
-            if (path.length === 0) {
-                preferences = gpii.app.extractPreferencesData(data);
-                that.updatePreferences(preferences);
-                // TODO: Extract settings for the preference set and visualize them.
-            }
-        } else if (operation === "DELETE") {
-            preferences = gpii.app.extractPreferencesData(data);
-            that.updatePreferences(preferences);
-            // TODO: Remove all settings adjusters that have been rendered.
-        }
-    });
-};
-
 fluid.registerNamespace("gpii.app.pcp");
 
 /**
@@ -374,6 +319,118 @@ gpii.app.pcp.showPCPWindow = function (pcpWindow) {
     // XXX problem with loading - previous view is not cleared before the window is shown
     pcpWindow.show();
     pcpWindow.focus();
+};
+
+/**
+ * Creates a setting view model to be used in the settings window.
+ * @param key {String} The name of the setting. Must be unique as
+ * subsequent requests to the GPII API will use this key as identifier.
+ * @param settingDescriptor {Object} A descriptor for the given setting
+ * containing its title, description and constraints regarding its value.
+ * @return {Object} The view model for the setting.
+ */
+gpii.app.createSettingModel = function (key, settingDescriptor) {
+    var schema = settingDescriptor.schema;
+
+    return {
+        path: key,
+        value: settingDescriptor.value,
+        solutionName: settingDescriptor.solutionName,
+
+        title: schema.title,
+        description: schema.description,
+        icon: "../icons/gear-cloud-black.png",
+        dynamic: false,
+        isPersisted: true,
+
+        type: schema.type,
+        min: schema.min,
+        max: schema.max,
+        divisibleBy: schema.divisibleBy,
+        values: schema["enum"]
+    };
+};
+
+/**
+ * Extracts data for the user's preference sets (including the active preference
+ * set and the applicable settings) from the message received when the user keys in.
+ * @param message {Object} The message sent when the user keys is (a JSON
+ * object).
+ * @return {Object} An object containing all preference sets, the active preference
+ * set and the corresponding settings.
+ */
+gpii.app.extractPreferencesData = function (message) {
+    var value = message.value || {},
+        preferences = value.preferences || {},
+        contexts = preferences.contexts,
+        activeContextName = value.activeContextName,
+        settingControls = value.settingControls,
+        sets = [],
+        activeSet = null,
+        settings = [];
+
+    if (contexts) {
+        sets = fluid.hashToArray(contexts, "path");
+        activeSet = fluid.find_if(sets, function (preferenceSet) {
+            return preferenceSet.path === activeContextName;
+        });
+    }
+
+    if (settingControls) {
+        settings = fluid.values(
+            fluid.transform(settingControls, function (settingDescriptor, settingKey) {
+                return gpii.app.createSettingModel(settingKey, settingDescriptor);
+            })
+        );
+
+        return {
+            sets: fluid.keys(preferences.contexts),
+            activeSet: activeContextName,
+            settings: settings
+        };
+    }
+
+    return {
+        sets: sets,
+        activeSet: activeSet,
+        settings: settings
+    };
+};
+
+/**
+ * Opens connection to the PCP Channel WebSocket
+ * @param that {Object} The app
+ */
+gpii.app.addCommunicationChannel = function (that) {
+    var socket = new ws("ws://localhost:8081/pcpChannel"); // eslint-disable-line new-cap
+
+    socket.on("message", function (rawData) {
+        var data = JSON.parse(rawData),
+            operation = data.type,
+            path = data.path,
+            preferences;
+
+        if (operation === "ADD") {
+            if (path.length === 0) {
+                preferences = gpii.app.extractPreferencesData(data);
+                that.updatePreferences(preferences);
+                that.pcp.notifyPCPWindow("keyIn", preferences);
+            }
+        } else if (operation === "DELETE") {
+            preferences = gpii.app.extractPreferencesData(data);
+            that.updatePreferences(preferences);
+            that.pcp.notifyPCPWindow("keyOut", preferences);
+        }
+    });
+
+    ipcMain.on("closePCP", function () {
+        that.pcp.hide();
+    });
+
+    ipcMain.on("keyOut", function () {
+        that.pcp.hide();
+        that.keyOut(that.model.keyedInUserToken);
+    });
 };
 
 /**
@@ -476,6 +533,10 @@ fluid.defaults("gpii.app.pcp", {
             funcName: "gpii.app.pcp.showPCPWindow",
             // XXX avoid app usage
             args: ["{that}.pcpWindow", "{that}", "{app}.model.keyedInUserToken"]
+        },
+        hide: {
+            "this": "{that}.pcpWindow",
+            method: "hide"
         },
         notifyPCPWindow: {
             funcName: "gpii.app.pcp.notifyPCPWindow",
