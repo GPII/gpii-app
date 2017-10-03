@@ -356,19 +356,27 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
  */
 gpii.app.extractPreferencesData = function (message) {
     var value = message.value || {},
-        preferences = value.preferences,
+        preferences = value.preferences || {},
+        contexts = preferences.contexts,
         activeContextName = value.activeContextName,
-        settingControls = value.settingControls;
+        settingControls = value.settingControls,
+        sets = [],
+        activeSet = null,
+        settings = [];
+
+    if (contexts) {
+        sets = fluid.hashToArray(contexts, "path");
+        activeSet = fluid.find_if(sets, function (preferenceSet) {
+            return preferenceSet.path === activeContextName;
+        });
+    }
 
     if (settingControls) {
-        var settingsKeys = fluid.keys(settingControls),
-            settings = [];
-
-        settingsKeys.forEach(function (settingKey) {
-            var settingDescriptor = settingControls[settingKey],
-                settingModel = gpii.app.createSettingModel(settingKey, settingDescriptor);
-            settings.push(settingModel);
-        });
+        settings = fluid.values(
+            fluid.transform(settingControls, function (settingDescriptor, settingKey) {
+                return gpii.app.createSettingModel(settingKey, settingDescriptor);
+            })
+        );
 
         return {
             sets: fluid.keys(preferences.contexts),
@@ -378,9 +386,9 @@ gpii.app.extractPreferencesData = function (message) {
     }
 
     return {
-        sets: [],
-        activeSet: null,
-        settings: []
+        sets: sets,
+        activeSet: activeSet,
+        settings: settings
     };
 };
 
@@ -559,15 +567,9 @@ fluid.defaults("gpii.app.tray", {
         "tooltip": {
             target: "tooltip",
             singleTransform: {
-                type: "fluid.transforms.valueMapper",
-                defaultInput: "{that}.model.activePreferenceSet",
-                match: [{
-                    inputValue: null,
-                    outputValue: "{that}.options.labels.defaultTooltip"
-                }],
-                noMatch: {
-                    outputValue: "{that}.model.activePreferenceSet"
-                }
+                type: "fluid.transforms.free",
+                func: "gpii.app.getTrayIcon",
+                args: ["{that}.model.activePreferenceSet", "{that}.options.labels.defaultTooltip"]
             }
         }
     },
@@ -602,6 +604,17 @@ gpii.app.makeTray = function (icon, openPCP) {
     });
 
     return tray;
+};
+
+/**
+ * Returns the tooltip for the Electron Tray based on the active preference set (if any).
+ * @param activePreferenceSet {Object} An object describing the active preference set. It
+ * contains the path and the name of the preference set.
+ * @param defaultTooltip {String} A default tooltip text which should be used in case
+ * there is no active preference set (e.g. when there is no keyed-in user).
+ */
+gpii.app.getTrayIcon = function (activePreferenceSet, defaultTooltip) {
+    return activePreferenceSet ? activePreferenceSet.name : defaultTooltip;
 };
 
 /**
