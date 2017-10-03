@@ -232,19 +232,22 @@ gpii.app.exit = function (that) {
  */
 gpii.app.extractPreferencesData = function (message) {
     var value = message.value || {},
-        preferences = value.preferences,
-        activeContextName = value.activeContextName;
+        preferences = value.preferences || {},
+        contexts = preferences.contexts,
+        activeContextName = value.activeContextName,
+        sets = [],
+        activeSet = null;
 
-    if (preferences && preferences.contexts) {
-        return {
-            sets: fluid.keys(preferences.contexts),
-            activeSet: activeContextName
-        };
+    if (contexts) {
+        sets = fluid.hashToArray(contexts, "path");
+        activeSet = fluid.find_if(sets, function (preferenceSet) {
+            return preferenceSet.path === activeContextName;
+        });
     }
 
     return {
-        sets: [],
-        activeSet: null
+        sets: sets,
+        activeSet: activeSet
     };
 };
 
@@ -365,15 +368,9 @@ fluid.defaults("gpii.app.tray", {
         "tooltip": {
             target: "tooltip",
             singleTransform: {
-                type: "fluid.transforms.valueMapper",
-                defaultInput: "{that}.model.activePreferenceSet",
-                match: [{
-                    inputValue: null,
-                    outputValue: "{that}.options.labels.defaultTooltip"
-                }],
-                noMatch: {
-                    outputValue: "{that}.model.activePreferenceSet"
-                }
+                type: "fluid.transforms.free",
+                func: "gpii.app.getTrayIcon",
+                args: ["{that}.model.activePreferenceSet", "{that}.options.labels.defaultTooltip"]
             }
         }
     },
@@ -400,6 +397,17 @@ gpii.app.makeTray = function (icon) {
         tray.popUpContextMenu();
     });
     return tray;
+};
+
+/**
+ * Returns the tooltip for the Electron Tray based on the active preference set (if any).
+ * @param activePreferenceSet {Object} An object describing the active preference set. It
+ * contains the path and the name of the preference set.
+ * @param defaultTooltip {String} A default tooltip text which should be used in case
+ * there is no active preference set (e.g. when there is no keyed-in user).
+ */
+gpii.app.getTrayIcon = function (activePreferenceSet, defaultTooltip) {
+    return activePreferenceSet ? activePreferenceSet.name : defaultTooltip;
 };
 
 /**
