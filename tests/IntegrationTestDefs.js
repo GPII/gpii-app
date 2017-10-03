@@ -43,12 +43,12 @@ gpii.tests.app.testItem = function (item, label) {
 
 gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
     gpii.tests.app.testItem(infoItem, "Keyed in with Snapset_1a");
-    gpii.tests.app.testItem(keyoutItem, "Key out Snapset_1a");
+    gpii.tests.app.testItem(keyoutItem, "Key-out of GPII");
 };
 
 gpii.tests.app.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 1);
-    gpii.tests.app.testItem(menuTemplate[0], "Not keyed in");
+    gpii.tests.app.testItem(menuTemplate[0], "(No one keyed in)");
 };
 
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
@@ -132,15 +132,15 @@ gpii.tests.dev.testKeyInList = function (item) {
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 3);
-    gpii.tests.app.testItem(menuTemplate[0], "Not keyed in");
-    gpii.tests.dev.testKeyInList(menuTemplate[1]);
+    gpii.tests.dev.testKeyInList(menuTemplate[0]);
+    gpii.tests.app.testItem(menuTemplate[1], "(No one keyed in)");
     gpii.tests.app.testItem(menuTemplate[2], "Exit GPII");
 };
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 4);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[0], menuTemplate[1]);
-    gpii.tests.dev.testKeyInList(menuTemplate[2]);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[0], menuTemplate[2]);
+    gpii.tests.dev.testKeyInList(menuTemplate[1]);
     gpii.tests.app.testItem(menuTemplate[3], "Exit GPII");
 };
 
