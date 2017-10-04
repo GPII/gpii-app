@@ -744,16 +744,26 @@
     };
 
     /**
-     * Finds a preference set given its path.
-     * @param preferenceSets {Array} An array of preference sets objects.
-     * @param path {String} The path of the preference set to look up.
-     * @return {Object} The preference set which has the corresponding path or an
-     * empty object if there is no such set.
+     * Updates the passed DOM element to contain the name of the active preference
+     * set. If there is no currently active preference set (e.g. if there is no
+     * keyed-in user), nothing should be displayed.
+     * @param activeSetElement {Object} A jQuery object representing the DOM element
+     * whose text is to be updated.
+     * @param preferences {Object} An object containing all preference set, as well
+     * as information about the currently active preference set.
      */
-    gpii.pcp.findPreferenceSet = function (preferenceSets, path) {
-        return fluid.find_if(preferenceSets, function (preferenceSet) {
-            return preferenceSet.path === path;
-        }, {});
+    gpii.pcp.updateActiveSetElement = function (activeSetElement, preferences) {
+        var activePreferenceSet = fluid.find_if(preferences.sets,
+            function (preferenceSet) {
+                return preferenceSet.path === preferences.activeSet;
+            }
+        );
+
+        if (activePreferenceSet) {
+            activeSetElement.text(activePreferenceSet.name);
+        } else {
+            activeSetElement.empty();
+        }
     };
 
     /**
@@ -770,25 +780,12 @@
             preferences: {
                 sets: "{mainWindow}.model.preferences.sets",
                 activeSet: "{mainWindow}.model.preferences.activeSet"
-            },
-            activeSetPath: "{mainWindow}.model.preferences.activeSet.path"
-        },
-        modelRelay: {
-            "preferences.activeSet": {
-                target: "preferences.activeSet",
-                singleTransform: {
-                    type: "fluid.transforms.free",
-                    func: "gpii.pcp.findPreferenceSet",
-                    args: ["{that}.model.preferences.sets", "{that}.model.activeSetPath"]
-                },
-                excludeSource: "init"
             }
         },
         modelListeners: {
             "preferences.activeSet": {
-                this: "{that}.dom.activePreferenceSet",
-                method: "text",
-                args: "{change}.value.name",
+                funcName: "gpii.pcp.updateActiveSetElement",
+                args: ["{that}.dom.activePreferenceSet", "{that}.model.preferences"],
                 namespace: "updateElement"
             }
         },
@@ -811,7 +808,7 @@
                                 args: ["{header}.model.preferences.sets", "path"]
                             }
                         },
-                        selection: "{header}.model.activeSetPath"
+                        selection: "{header}.model.preferences.activeSet"
                     },
                     listeners: {
                         "onDestroy.removeOptions": {
@@ -846,7 +843,7 @@
         model: {
             preferences: {
                 sets: [],
-                activeSet: {},
+                activeSet: null,
                 settings: []
             }
         },

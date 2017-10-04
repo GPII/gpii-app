@@ -51,7 +51,7 @@ fluid.defaults("gpii.app", {
         showDialog: false,
         preferences: {
             sets: [],
-            activeSet: {}
+            activeSet: null
         }
     },
     components: {
@@ -363,17 +363,13 @@ gpii.app.extractPreferencesData = function (message) {
     var value = message.value || {},
         preferences = value.preferences || {},
         contexts = preferences.contexts,
-        activeContextName = value.activeContextName,
         settingControls = value.settingControls,
         sets = [],
-        activeSet = {},
+        activeSet = value.activeContextName || null,
         settings = [];
 
     if (contexts) {
         sets = fluid.hashToArray(contexts, "path");
-        activeSet = fluid.find_if(sets, function (preferenceSet) {
-            return preferenceSet.path === activeContextName;
-        }, activeSet);
     }
 
     if (settingControls) {
@@ -583,7 +579,7 @@ fluid.defaults("gpii.app.tray", {
     model: {
         keyedInUserToken: null,
         icon: "{that}.options.icons.keyedOut",
-        activePreferenceSet: "{app}.model.preferences.activeSet",
+        preferences: "{app}.model.preferences",
         tooltip: ""
     },
     modelRelay: {
@@ -605,7 +601,7 @@ fluid.defaults("gpii.app.tray", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.getTrayTooltip",
-                args: ["{that}.model.activePreferenceSet", "{that}.options.labels.defaultTooltip"]
+                args: ["{that}.model.preferences", "{that}.options.labels.defaultTooltip"]
             }
         }
     },
@@ -658,12 +654,18 @@ gpii.app.makeTray = function (icon, openPCP) {
 
 /**
  * Returns the tooltip for the Electron Tray based on the active preference set (if any).
- * @param activePreferenceSet {Object} An object describing the active preference set. It
- * contains the path and the name of the preference set.
+ * @param preferences {Object} An object describing the preference sets (including the
+ * active one) for the currently keyed-in user (if any).
  * @param defaultTooltip {String} A default tooltip text which should be used in case
- * there is no active preference set (e.g. when there is no keyed-in user).
+ * there is no active preference set.
+ * @return The tooltip label for the Electron Tray.
  */
-gpii.app.getTrayTooltip = function (activePreferenceSet, defaultTooltip) {
+gpii.app.getTrayTooltip = function (preferences, defaultTooltip) {
+    var activePreferenceSet = fluid.find_if(preferences.sets,
+        function (preferenceSet) {
+            return preferenceSet.path === preferences.activeSet;
+        }
+    );
     return activePreferenceSet ? activePreferenceSet.name : defaultTooltip;
 };
 
