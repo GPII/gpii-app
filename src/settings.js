@@ -6,9 +6,18 @@
 
     fluid.registerNamespace("gpii.pcp");
 
+    /**
+     * Registers callbacks to be invoked whenever the main electron
+     * process sends a corresponding message.
+     * @param that {Component} An instance of mainWindow.
+     */
     gpii.pcp.addCommunicationChannel = function (that) {
         ipcRenderer.on("keyIn", function (event, preferences) {
             that.updatePreferences(preferences);
+        });
+
+        ipcRenderer.on("updateSetting", function (event, settingData) {
+            that.events.onSettingUpdate.fire(settingData);
         });
 
         ipcRenderer.on("keyOut", function (event, preferences) {
@@ -17,6 +26,25 @@
         });
     };
 
+    /**
+     * A function which should be called whenever a settings is updated
+     * as a result of a user's input. Its purpose is to notify the main
+     * electron process for the change.
+     * @param path {String} The path of the updated setting.
+     * @param value {Any} The new, updated value for the setting. Can be
+     * of different type depending on the setting.
+     */
+    gpii.pcp.updateSetting = function (path, value) {
+        ipcRenderer.send("updateSetting", {
+            path: path,
+            value: value
+        });
+    };
+
+    /**
+     * A function which should be called when the PCP window needs to be
+     * closed. It simply notifies the main electron process for this.
+     */
     gpii.pcp.closeSettingsWindow = function () {
         ipcRenderer.send("closePCP");
     };
@@ -155,6 +183,20 @@
     };
 
     /**
+     * A listener which is called when a setting has its value changed from the outside,
+     * i.e. not by the user's input in the PCP.
+     * @param that {Component} An instance of singleSettingPresenter.
+     * @param path {String} The path indentifying the current setting.
+     * @param settingData {Object} An object describing what has been changed. It contains
+     * the path of the changed setting, as well as its new value.
+     */
+    gpii.pcp.onSettingUpdate = function (that, path, settingData) {
+        if (path === settingData.path) {
+            that.applier.change("value", settingData.value, null, "outer");
+        }
+    };
+
+    /**
      * A method responsible for showing a restart icon when the user changes a setting
      * which is not dynamic.
      * @param dynamic {Boolean} Whether the current setting is dynamic or not.
@@ -251,6 +293,10 @@
             }
         },
         listeners: {
+            "{mainWindow}.events.onSettingUpdate": {
+                funcName: "gpii.pcp.onSettingUpdate",
+                args: ["{that}", "{that}.model.path", "{arguments}.0"]
+            },
             "onCreate.setIcon": {
                 this: "{that}.dom.icon",
                 method: "attr",
@@ -438,7 +484,14 @@
                 container: "{arguments}.0",
                 options: {
                     widgetConfig: "{settingVisualizer}.options.widgetConfig",
-                    model: "{settingVisualizer}.options.setting"
+                    model: "{settingVisualizer}.options.setting",
+                    modelListeners: {
+                        value: {
+                            funcName: "gpii.pcp.updateSetting",
+                            args: ["{that}.model.path", "{change}.value"],
+                            excludeSource: ["init", "outer"]
+                        }
+                    }
                 }
             }
         }
@@ -837,6 +890,7 @@
         },
         events: {
             onPreferencesReceived: null,
+            onSettingUpdate: null,
             onKeyOut: null
         }
 

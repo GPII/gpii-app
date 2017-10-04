@@ -392,7 +392,8 @@ gpii.app.extractPreferencesData = function (message) {
 };
 
 /**
- * Opens connection to the PCP Channel WebSocket
+ * Opens a connection to the PCP Channel WebSocket. It also registers callbacks
+ * to be invoked whenever the PCP `BrowserWindow` sends the corresponding message.
  * @param that {Object} The app
  */
 gpii.app.addCommunicationChannel = function (that) {
@@ -409,6 +410,13 @@ gpii.app.addCommunicationChannel = function (that) {
                 preferences = gpii.app.extractPreferencesData(data);
                 that.updatePreferences(preferences);
                 that.pcp.notifyPCPWindow("keyIn", preferences);
+            } else {
+                var settingPath = path[path.length - 2],
+                    settingValue = data.value;
+                that.pcp.notifyPCPWindow("updateSetting", {
+                    path: settingPath,
+                    value: settingValue
+                });
             }
         } else if (operation === "DELETE") {
             preferences = gpii.app.extractPreferencesData(data);
@@ -424,6 +432,17 @@ gpii.app.addCommunicationChannel = function (that) {
     ipcMain.on("keyOut", function () {
         that.pcp.hide();
         that.keyOut(that.model.keyedInUserToken);
+    });
+
+    ipcMain.on("updateSetting", function (event, arg) {
+        var payload = JSON.stringify({
+            path: ["settingControls", arg.path],
+            type: "ADD",
+            value: arg.value
+        });
+
+        console.log("updateSetting#PAYLOAD", payload);
+        // socket.send(payload);
     });
 };
 
