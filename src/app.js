@@ -285,25 +285,12 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
         pcpWindow.hide();
     });
 
+    var url = fluid.stringTemplate("file://%dirName/html/settings.html", {
+        dirName: __dirname
+    });
+    pcpWindow.loadURL(url);
+
     return pcpWindow;
-};
-
-gpii.app.pcp.updatePCPWindowStyle = function (pcpWindow, keyedInUserToken) {
-    // In case no one is keyed in - use splash window
-    var windowStyle = keyedInUserToken ? "settings" : "settings";
-
-    /*
-     * keeps state
-     * avoid loading blinking
-     */
-    if (pcpWindow.getTitle() !== windowStyle) {
-        var url = fluid.stringTemplate("file://%dirName/html/%styleFile.html", {
-            dirName: __dirname,
-            styleFile: windowStyle
-        });
-        pcpWindow.loadURL(url);
-        pcpWindow.setTitle(windowStyle);
-    }
 };
 
 /**
@@ -527,6 +514,10 @@ fluid.defaults("gpii.app.pcp", {
         keyedInUserToken: null
     },
 
+    /*
+     * Options to be passed to the Electron `BrowserWindow`.
+     * Only not reserved options can be altered. See `reservedAttrs`.
+     */
     attrs: {
         width: 500,
         height: 600
@@ -538,13 +529,6 @@ fluid.defaults("gpii.app.pcp", {
                 funcName: "gpii.app.pcp.makePCPWindow",
                 args: ["{that}.options.attrs.width", "{that}.options.attrs.height"]
             }
-        }
-    },
-
-    modelListeners: {
-        "keyedInUserToken": {
-            funcName: "gpii.app.pcp.updatePCPWindowStyle",
-            args: ["{that}.pcpWindow", "{that}.model.keyedInUserToken"]
         }
     },
 

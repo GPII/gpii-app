@@ -1,5 +1,7 @@
 body {
     background-color: #71c5ef;
+    /* Temporal measure to hide scrolls on splash window */
+    overflow: hidden;
 }
 
 hr { 

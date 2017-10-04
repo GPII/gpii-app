@@ -804,7 +804,7 @@
             preferenceSetPicker: {
                 type: "@expand:gpii.pcp.getPreferenceSetPickerType({that}.model.preferences.sets)",
                 container: "{that}.dom.preferenceSetPicker",
-                createOnEvent: "{mainWindow}.events.onPreferencesReceived",
+                createOnEvent: "{mainWindow}.events.onPreferencesUpdated",
                 options: {
                     model: {
                         optionNames: {
@@ -836,12 +836,45 @@
                 method: "on",
                 args: ["click", "{mainWindow}.close"]
             },
-            "{mainWindow}.events.onPreferencesReceived": {
+            "{mainWindow}.events.onPreferencesUpdated": {
                 funcName: "gpii.pcp.updateHeader",
                 args: ["{that}.model.preferences.sets", "{that}.dom.preferenceSetPicker", "{that}.dom.activePreferenceSet"]
             }
         }
     });
+
+    fluid.defaults("gpii.pcp.splash", {
+        gradeNames: "fluid.viewComponent",
+        selectors: {
+            splash: ".flc-splash"
+        },
+        invokers: {
+            show: {
+                this: "{that}.dom.splash",
+                method: "show"
+            },
+            hide: {
+                this: "{that}.dom.splash",
+                method: "hide"
+            }
+        }
+    });
+
+    /**
+     * Whether shows or hides the splash window according to current
+     * preference sets. The splash window should only be hidden when
+     * there are no preference sets passed (the user is keyed out).
+     *
+     * @param splash {Object} The splash component
+     * @param sets {Object[]} The list of currently set components
+     */
+    gpii.pcp.splash.toggleSplashWindow = function (splash, sets) {
+        if (sets && sets.length > 0) {
+            splash.hide();
+        } else {
+            splash.show();
+        }
+    };
 
     /**
      * Responsible for drawing the settings list
@@ -863,6 +896,18 @@
             settingsList: "#flc-settingsList"
         },
         components: {
+            splash: {
+                type: "gpii.pcp.splash",
+                container: "{that}.container",
+                options: {
+                    listeners: {
+                        "{mainWindow}.events.onPreferencesUpdated": {
+                            funcName: "gpii.pcp.splash.toggleSplashWindow",
+                            args: ["{that}", "{mainWindow}.model.preferences.sets"]
+                        }
+                    }
+                }
+            },
             header: {
                 type: "gpii.pcp.header",
                 container: "{that}.dom.header"
@@ -871,7 +916,7 @@
             settingsPanel: {
                 type: "gpii.pcp.settingsPanel",
                 container: "{that}.dom.settingsList",
-                createOnEvent: "onPreferencesReceived",
+                createOnEvent: "{mainWindow}.events.onPreferencesUpdated",
                 options: {
                     model: {
                         settings: "{mainWindow}.model.preferences.settings"
@@ -880,7 +925,7 @@
             }
         },
         modelListeners: {
-            "preferences.sets": "{that}.events.onPreferencesReceived"
+            "preferences.sets": "{that}.events.onPreferencesUpdated"
         },
         listeners: {
             "onCreate.addCommunicationChannel": {
@@ -897,7 +942,7 @@
             "close": "gpii.pcp.closeSettingsWindow()"
         },
         events: {
-            onPreferencesReceived: null,
+            onPreferencesUpdated: null,
             onSettingUpdate: null,
             onKeyOut: null
         }
