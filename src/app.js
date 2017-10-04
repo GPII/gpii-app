@@ -440,6 +440,17 @@ gpii.app.addCommunicationChannel = function (that) {
         console.log("updateSetting#PAYLOAD", payload);
         // socket.send(payload);
     });
+
+    ipcMain.on("updateActivePreferenceSet", function (event, arg) {
+        var payload = JSON.stringify({
+            path: ["activeContextName"],
+            type: "ADD",
+            value: arg.value
+        });
+
+        console.log("updateActivePreferenceSet#PAYLOAD", payload);
+        // socket.send(payload);
+    });
 };
 
 /**

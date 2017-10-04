@@ -41,6 +41,12 @@
         });
     };
 
+    gpii.pcp.updateActivePreferenceSet = function (value) {
+        ipcRenderer.send("updateActivePreferenceSet", {
+            value: value
+        });
+    };
+
     /**
      * A function which should be called when the PCP window needs to be
      * closed. It simply notifies the main electron process for this.
@@ -783,11 +789,16 @@
             }
         },
         modelListeners: {
-            "preferences.activeSet": {
+            "preferences.activeSet": [{
+                funcName: "gpii.pcp.updateActivePreferenceSet",
+                args: ["{change}.value"],
+                excludeSource: ["init", "outer"],
+                namespace: "notifyMainProcess"
+            },{
                 funcName: "gpii.pcp.updateActiveSetElement",
                 args: ["{that}.dom.activePreferenceSet", "{that}.model.preferences"],
                 namespace: "updateElement"
-            }
+            }]
         },
         components: {
             preferenceSetPicker: {
