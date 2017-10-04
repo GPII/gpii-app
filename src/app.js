@@ -909,6 +909,11 @@ fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
     model: {
         //keyedInUserToken  // This comes from the app.
+        preferences: {
+            sets: "{app}.model.preferences.sets",
+            activeSet: "{app}.model.preferences.activeSet"
+        },
+        preferenceSetsMenuItems: [],
         keyedInUser: null,  // Must be updated when keyedInUserToken changes.
         keyOut: null        // May or may not be in the menu, must be updated when keyedInUserToken changes.
         //menuTemplate: []  // This is updated on change of keyedInUserToken.
@@ -948,12 +953,21 @@ fluid.defaults("gpii.app.menu", {
                 args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.pcp"]
             }
         },
+        "preferenceSetsMenuItems": {
+            target: "preferenceSetsMenuItems",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getPreferenceSetsMenuItems",
+                args: ["{that}.model.keyedInUserToken", "{that}.model.preferences.sets", "{that}.model.preferences.activeSet"]
+            },
+            priority: "after:keyedInUser"
+        },
         "menuTemplate": {
             target: "menuTemplate",
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.showPCP", "{that}.model.keyedInUser", "{that}.options.snapsets", "{that}.model.keyOut", "{that}.options.exit"]
+                args: ["{that}.model.showPCP", "{that}.model.keyedInUser", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
             },
             priority: "last"
         }
@@ -1032,6 +1046,38 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr, notKeyedInStr) 
 };
 
 /**
+ * Generates an array that represents the menu items related to a
+ * user's preference sets. The returned array can be used in the
+ * context menu of a {Tray} object.
+ * @param keyedInUserToken {String} The user token that is currently keyed in.
+ * @param preferenceSets {Array} An array of all preference sets for the user.
+ * @param activeSet {String} The path of the currently active preference set.
+ * @return An array representing the menu items related to a user's
+ * preference set.
+ */
+gpii.app.menu.getPreferenceSetsMenuItems = function (keyedInUserToken, preferenceSets, activeSet) {
+    var preferenceSetsLabels,
+        separator = {type: "separator"};
+
+    preferenceSetsLabels = preferenceSets.map(function (preferenceSet) {
+        return {
+            label: preferenceSet.name,
+            type: "radio",
+            token: keyedInUserToken,
+            path: preferenceSet.path,
+            checked: preferenceSet.path === activeSet
+        };
+    });
+
+    if (preferenceSetsLabels.length > 0) {
+        preferenceSetsLabels.unshift(separator);
+        preferenceSetsLabels.push(separator);
+    }
+
+    return preferenceSetsLabels;
+};
+
+/**
   * Generates an object that represents the menu items for opening the settings panel
   * @param keyedInUserToken {String} The user token that is currently keyed in.
   * @param openSettingsStr {String} The string to be displayed for the open setting panel menu item.
@@ -1054,7 +1100,11 @@ gpii.app.menu.generateMenuTemplate = function (/* all the items in the menu */) 
     var menuTemplate = [];
     fluid.each(arguments, function (item) {
         if (item) {
-            menuTemplate.push(item);
+            if (Array.isArray(item)) {
+                menuTemplate = menuTemplate.concat(item);
+            } else {
+                menuTemplate.push(item);
+            }
         }
     });
 
