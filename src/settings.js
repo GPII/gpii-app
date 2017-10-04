@@ -168,6 +168,13 @@
 
     fluid.registerNamespace("gpii.pcp.widgetExemplars");
 
+
+    /**
+     * Returns `gpii.pcp.exemplar` object for given schema (PCP channel type) type
+     * @param widgetExemplars {Object} The `gpii.pcp.widgetExemplar` object
+     * @param schemeType {String}
+     * @returns {Object} The matching `gpii.pcp.exemplar` object
+     */
     gpii.pcp.widgetExemplars.getExemplarBySchemeType = function (widgetExemplars, schemeType) {
         return fluid.values(widgetExemplars)
             .filter(fluid.isComponent)
@@ -598,6 +605,11 @@
 
     fluid.registerNamespace("gpii.pcp.settingsPanel");
 
+    /**
+     * Returns list of exemplars.
+     * @param exemplars {Object} The `gpii.pcp.widgetExemplars` object
+     * @returns {Object[]} A list of `gpii.pcp.exemplar` objects
+     */
     gpii.pcp.settingsPanel.getExemplarsList = function (exemplars) {
         return fluid.values(exemplars)
             .filter(fluid.isComponent);
