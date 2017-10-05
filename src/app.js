@@ -27,7 +27,7 @@ var ws = require("ws");
 require("./networkCheck.js");
 
 /**
- * Promise that resolves when the electon application is ready.
+ * Promise that resolves when the electron application is ready.
  * Required for testing multiple configs of the app.
  */
 gpii.app.appReady = fluid.promise();
@@ -40,6 +40,73 @@ gpii.app.electronAppListener = function () {
 };
 require("electron").app.on("ready", gpii.app.electronAppListener);
 
+
+/**
+ * Responsible for creation and housekeeping of the connection to the PCP Channel WebSocket
+ */
+fluid.defaults("gpii.app.gpiiConnector", {
+    gradeNames: "fluid.modelComponent",
+
+    // Configuration regarding the socket connection
+    config: {
+        gpiiWSUrl: "ws://localhost:8081/pcpChannel"
+    },
+
+    model: {
+        socket: "@expand:gpii.app.createGPIIConnection({that}, {app}, {that}.options.config)"
+    },
+
+    events: {
+        onPreferencesUpdate: null
+    },
+
+    invokers: {
+        updateSetting: {
+            funcName: "gpii.app.gpiiConnector.updateSetting",
+            args: ["{that}.model.socket", "{arguments}.0"]
+        },
+        updateActivePrefSet: {
+            funcName: "gpii.app.gpiiConnector.updateActivePrefSet",
+            args: ["{that}.model.socket", "{arguments}.0"]
+        }
+     // closeConnection
+    }
+});
+
+/**
+ * Sends setting update request to GPII over the socket.
+ *
+ * @param socket {Object} The already connected WebSocket instance
+ * @param setting {Object} The setting to be changed
+ * @param setting.path {String} The id of the setting
+ * @param setting.value {String} The new value of the setting
+ */
+gpii.app.gpiiConnector.updateSetting = function (socket, setting) {
+    var payload = JSON.stringify({
+        path: ["settingControls", setting.path],
+        type: "ADD",
+        value: setting.value
+    });
+
+    socket.send(payload);
+};
+
+
+/**
+ * Send active set change request to GPII.
+ *
+ * @param socket {Object} The already connected WebSocket instance
+ * @param newPrefSet {String} The id of the new preference set
+ */
+gpii.app.gpiiConnector.updateActivePrefSet = function (socket, newPrefSet) {
+    var payload = JSON.stringify({
+        path: ["activeContextName"],
+        type: "ADD",
+        value: newPrefSet
+    });
+
+    socket.send(payload);
+};
 
 /*
  ** Component to manage the app.
@@ -55,6 +122,18 @@ fluid.defaults("gpii.app", {
         }
     },
     components: {
+        gpiiConnector: {
+            type: "gpii.app.gpiiConnector",
+            createOnEvent: "onPrequisitesReady",
+            options: {
+                listeners: {
+                    "onPreferencesUpdate.updateSets": {
+                        listener: "{app}.updatePreferences",
+                        args: "{arguments}.0"
+                    }
+                }
+            }
+        },
         pcp: {
             type: "gpii.app.pcp",
             createOnEvent: "onPrequisitesReady",
@@ -121,10 +200,6 @@ fluid.defaults("gpii.app", {
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
-        },
-        "onCreate.addCommunicationChannel": {
-            listener: "{that}.addCommunicationChannel",
-            args: ["{that}"]
         }
     },
     invokers: {
@@ -147,9 +222,6 @@ fluid.defaults("gpii.app", {
         keyOut: {
             funcName: "gpii.app.keyOut",
             args: ["{arguments}.0"]
-        },
-        addCommunicationChannel: {
-            funcName: "gpii.app.addCommunicationChannel"
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -184,6 +256,7 @@ gpii.app.updateMenu = function (tray, menuTemplate, events) {
   * @param token {String} The token to key in with.
   */
 gpii.app.keyIn = function (token) {
+    // TODO keyout first
     request("http://localhost:8081/user/" + token + "/login", function (/*error, response*/) {
         //TODO Put in some error logging
     });
@@ -377,11 +450,14 @@ gpii.app.extractPreferencesData = function (message) {
 /**
  * Opens a connection to the PCP Channel WebSocket. It also registers callbacks
  * to be invoked whenever the PCP `BrowserWindow` sends the corresponding message.
- * @param that {Object} The app
+ * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` object
+ * @param app {Object} The app
+ * @param config {Object} The configuration for the WebSocket
  */
-gpii.app.addCommunicationChannel = function (that) {
-    var socket = new ws("ws://localhost:8081/pcpChannel"); // eslint-disable-line new-cap
+gpii.app.createGPIIConnection = function (gpiiConnector, app, config) {
+    var socket = new ws(config.gpiiWSUrl); // eslint-disable-line new-cap
 
+    // TODO extract elsewhere to avoid cycle dependencies
     socket.on("message", function (rawData) {
         var data = JSON.parse(rawData),
             operation = data.type,
@@ -391,51 +467,50 @@ gpii.app.addCommunicationChannel = function (that) {
         if (operation === "ADD") {
             if (path.length === 0) {
                 preferences = gpii.app.extractPreferencesData(data);
-                that.updatePreferences(preferences);
-                that.pcp.notifyPCPWindow("keyIn", preferences);
+                gpiiConnector.events.onPreferencesUpdate.fire(preferences);
+                app.pcp.notifyPCPWindow("keyIn", preferences);
             } else {
                 var settingPath = path[path.length - 2],
                     settingValue = data.value;
-                that.pcp.notifyPCPWindow("updateSetting", {
+                app.pcp.notifyPCPWindow("updateSetting", {
                     path: settingPath,
                     value: settingValue
                 });
             }
         } else if (operation === "DELETE") {
             preferences = gpii.app.extractPreferencesData(data);
-            that.updatePreferences(preferences);
-            that.pcp.notifyPCPWindow("keyOut", preferences);
+            gpiiConnector.events.onPreferencesUpdate.fire(preferences);
+            app.pcp.notifyPCPWindow("keyOut", preferences);
         }
     });
 
+    return socket;
+};
+
+
+/**
+ * Initialises the connection between the Electron process and
+ * the PCP's `BrowserWindow` instance
+ *
+ * @param pcp {Object} A `gpii.app.pcp` instance
+ * @param gpiiConnector {Object} A `gpii.app.gpiiConnector` instance
+ */
+gpii.app.initPCPWindowIPC = function (pcp, gpiiConnector) {
     ipcMain.on("closePCP", function () {
-        that.pcp.hide();
+        pcp.hide();
     });
 
     ipcMain.on("keyOut", function () {
-        that.pcp.hide();
-        that.keyOut(that.model.keyedInUserToken);
+        pcp.hide();
+        pcp.keyOut(pcp.model.keyedInUserToken);
     });
 
     ipcMain.on("updateSetting", function (event, arg) {
-        var payload = JSON.stringify({
-            path: ["settingControls", arg.path],
-            type: "ADD",
-            value: arg.value
-        });
-
-        console.log("updateSetting#PAYLOAD", payload);
-        // socket.send(payload);
+        gpiiConnector.updateSetting(arg);
     });
 
     ipcMain.on("updateActivePreferenceSet", function (event, arg) {
-        var payload = JSON.stringify({
-            path: ["activeContextName"],
-            type: "ADD",
-            value: arg.value
-        });
-
-        socket.send(payload);
+        gpiiConnector.updateActivePrefSet(arg);
     });
 };
 
@@ -530,7 +605,12 @@ fluid.defaults("gpii.app.pcp", {
             }
         }
     },
-
+    listeners: {
+        "onCreate.initPCPWindowIPC": {
+            listener: "gpii.app.initPCPWindowIPC",
+            args: ["{that}", "{gpiiConnector}"]
+        }
+    },
     invokers: {
         show: {
             funcName: "gpii.app.pcp.showPCPWindow",
@@ -778,6 +858,15 @@ fluid.defaults("gpii.app.menuInApp", {
         }
     },
     listeners: {
+        "onPCP.performPCP": {
+            listener: "{pcp}.show"
+        },
+
+        "onActivePrefSetUpdate.performActiveSetChange": {
+            listener: "{gpiiConnector}.updateActivePrefSet",
+            args: "{arguments}.0"
+        },
+
         // onKeyIn event is fired when a new user keys in through the task tray.
         // This should result in:
         // 1. key out the old keyed in user token
@@ -807,10 +896,6 @@ fluid.defaults("gpii.app.menuInApp", {
         // onExit
         "onExit.performExit": {
             listener: "{app}.exit"
-        },
-
-        "onPCP.performPCP": {
-            listener: "{app}.pcp.show"
         }
     }
 });
@@ -876,6 +961,10 @@ fluid.defaults("gpii.app.menuInAppDev", {
             label: "Dark Magnifier 200%",
             click: "onKeyIn",
             token: "snapset_4d"
+        }, {
+            label: "Multi pref sets; Magnifier",
+            click: "onKeyIn",
+            token: "context1"
         }]
     },
     exit: {
@@ -941,7 +1030,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getPreferenceSetsMenuItems",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.preferences.sets", "{that}.model.preferences.activeSet"]
+                args: ["{that}.model.preferences.sets", "{that}.model.preferences.activeSet"]
             },
             priority: "after:keyedInUser"
         },
@@ -960,14 +1049,19 @@ fluid.defaults("gpii.app.menu", {
         keyedIn: "Keyed in with %userTokenName",    // string template
         keyOut: "Key-out of GPII",
         notKeyedIn: "(No one keyed in)",
+
+        // XXX DEV items
         exit: "Exit GPII",
         keyIn: "Key in ..."
     },
     events: {
-        onKeyIn: null,
+        onPCP: null,
+        onActivePrefSetUpdate: null,
         onKeyOut: null,
-        onExit: null,
-        onPCP: null
+
+        // XXX DEV items
+        onKeyIn: null,
+        onExit: null
     }
 });
 
@@ -1032,13 +1126,12 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr, notKeyedInStr) 
  * Generates an array that represents the menu items related to a
  * user's preference sets. The returned array can be used in the
  * context menu of a {Tray} object.
- * @param keyedInUserToken {String} The user token that is currently keyed in.
  * @param preferenceSets {Array} An array of all preference sets for the user.
  * @param activeSet {String} The path of the currently active preference set.
  * @return An array representing the menu items related to a user's
  * preference set.
  */
-gpii.app.menu.getPreferenceSetsMenuItems = function (keyedInUserToken, preferenceSets, activeSet) {
+gpii.app.menu.getPreferenceSetsMenuItems = function (preferenceSets, activeSet) {
     var preferenceSetsLabels,
         separator = {type: "separator"};
 
@@ -1046,8 +1139,8 @@ gpii.app.menu.getPreferenceSetsMenuItems = function (keyedInUserToken, preferenc
         return {
             label: preferenceSet.name,
             type: "radio",
-            token: keyedInUserToken,
-            path: preferenceSet.path,
+            token: preferenceSet.path,
+            click: "onActivePrefSetUpdate",
             checked: preferenceSet.path === activeSet
         };
     });
