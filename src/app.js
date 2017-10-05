@@ -358,7 +358,7 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
         pcpWindow.hide();
     });
 
-    var url = fluid.stringTemplate("file://%dirName/html/settings.html", {
+    var url = fluid.stringTemplate("file://%dirName/pcp/index.html", {
         dirName: __dirname
     });
     pcpWindow.loadURL(url);
@@ -786,7 +786,7 @@ gpii.app.makeWaitDialog = function () {
         y: screenSize.height - 600 // because the default height is 600
     });
 
-    var url = fluid.stringTemplate("file://%dirName/html/message.html", {
+    var url = fluid.stringTemplate("file://%dirName/pcp/html/message.html", {
         dirName: __dirname
     });
     dialog.loadURL(url);
