@@ -22,7 +22,6 @@
 
         ipcRenderer.on("keyOut", function (event, preferences) {
             that.updatePreferences(preferences);
-            that.events.onKeyOut.fire();
         });
     };
 
@@ -465,10 +464,6 @@
         },
 
         listeners: {
-            "{mainWindow}.events.onKeyOut": {
-                "this": "{that}",
-                method: "destroy"
-            },
             "onDestroy": {
                 funcName: "gpii.pcp.onSettingRowDestroy",
                 args: ["{mainWindow}.container", "{that}.settingRenderer.model.settingContainer"]
@@ -937,7 +932,7 @@
             }
         },
         modelListeners: {
-            "preferences.sets": "{that}.events.onPreferencesUpdated"
+            "preferences": "{that}.events.onPreferencesUpdated"
         },
         listeners: {
             "onCreate.addCommunicationChannel": {
@@ -955,8 +950,7 @@
         },
         events: {
             onPreferencesUpdated: null,
-            onSettingUpdate: null,
-            onKeyOut: null
+            onSettingUpdate: null
         }
 
     });

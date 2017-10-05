@@ -435,8 +435,7 @@ gpii.app.addCommunicationChannel = function (that) {
             value: arg.value
         });
 
-        console.log("updateActivePreferenceSet#PAYLOAD", payload);
-        // socket.send(payload);
+        socket.send(payload);
     });
 };
 
