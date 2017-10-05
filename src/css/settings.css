@@ -1,7 +1,5 @@
 body {
     background-color: #71c5ef;
-    /* Temporal measure to hide scrolls on splash window */
-    overflow: hidden;
 }
 
 hr { 
@@ -39,6 +37,35 @@ hr {
 
 .clear-both {
     clear: both;
+}
+
+#fl-contentWrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#flc-settingsList {
+    flex: 1;
+    overflow: auto;
+}
+
+#flc-settingsFooter {
+    display: flex;
+}
+
+#flc-settingsFooter .fl-button {
+    box-sizing: border-box;
+    width: 95px;
+    height: 80px;
+    padding: 5px;
+    margin: auto;
+    border: 2px solid rgb(35, 160, 165);
+
+    line-height: 70px;
+    text-align: center;
+    user-select: none;
+    cursor: pointer;
 }
 
 .flc-restartIcon {

@@ -2,7 +2,8 @@
 (function () {
     var fluid = window.fluid,
         gpii = fluid.registerNamespace("gpii"),
-        ipcRenderer = require("electron").ipcRenderer;
+        ipcRenderer = require("electron").ipcRenderer,
+        shell = require("electron").shell;
 
     fluid.registerNamespace("gpii.pcp");
 
@@ -40,10 +41,23 @@
         });
     };
 
+    /**
+     * A function which should be called when the active preference set
+     * has been changed as a result of a user's input. It will notify
+     * the main electron process for the change.
+     * @param value {String} The path of the new active preference set.
+     */
     gpii.pcp.updateActivePreferenceSet = function (value) {
         ipcRenderer.send("updateActivePreferenceSet", {
             value: value
         });
+    };
+
+    /**
+     * Notifies the main electron process that the user must be keyed out.
+     */
+    gpii.pcp.keyOut = function () {
+        ipcRenderer.send("keyOut");
     };
 
     /**
@@ -52,6 +66,15 @@
      */
     gpii.pcp.closeSettingsWindow = function () {
         ipcRenderer.send("closePCP");
+    };
+
+    /**
+     * Opens the passed url externally using the default browser for the
+     * OS (or set by the user).
+     * @param url {String} The url to open externally.
+     */
+    gpii.pcp.openUrl = function (url) {
+        shell.openExternal(url);
     };
 
     /**
@@ -883,6 +906,56 @@
         }
     };
 
+    fluid.defaults("gpii.pcp.footer", {
+        gradeNames: ["fluid.viewComponent"],
+        selectors: {
+            keyOutBtn: ".flc-keyOutBtn",
+            openPmtBtn: ".flc-openPmtBtn",
+            helpBtn: ".flc-helpBtn"
+        },
+        components: {
+            keyOutBtn: {
+                type: "gpii.pcp.widgets.button",
+                container: "{that}.dom.keyOutBtn",
+                options: {
+                    label: "{footer}.options.labels.keyOut",
+                    invokers: {
+                        "onClick": "gpii.pcp.keyOut"
+                    }
+                }
+            },
+            openPmtBtn: {
+                type: "gpii.pcp.widgets.button",
+                container: "{that}.dom.openPmtBtn",
+                options: {
+                    label: "{footer}.options.labels.pmt",
+                    invokers: {
+                        "onClick": "gpii.pcp.openUrl({footer}.options.urls.pmt)"
+                    }
+                }
+            },
+            helpBtn: {
+                type: "gpii.pcp.widgets.button",
+                container: "{that}.dom.helpBtn",
+                options: {
+                    label: "{footer}.options.labels.help",
+                    invokers: {
+                        "onClick": "gpii.pcp.openUrl({footer}.options.urls.help)"
+                    }
+                }
+            }
+        },
+        urls: {
+            pmt: "http://pmt.gpii.org",
+            help: "http://pmt.gpii.org/help"
+        },
+        labels: {
+            keyOut: "Key Out",
+            pmt: "Open PMT",
+            help: "Help"
+        }
+    });
+
     /**
      * Responsible for drawing the settings list
      *
@@ -900,7 +973,8 @@
         },
         selectors: {
             header: "#flc-settingsHeader",
-            settingsList: "#flc-settingsList"
+            settingsList: "#flc-settingsList",
+            footer: "#flc-settingsFooter"
         },
         components: {
             splash: {
@@ -929,6 +1003,10 @@
                         settings: "{mainWindow}.model.preferences.settings"
                     }
                 }
+            },
+            footer: {
+                type: "gpii.pcp.footer",
+                container: "{that}.dom.footer"
             }
         },
         modelListeners: {
@@ -952,7 +1030,6 @@
             onPreferencesUpdated: null,
             onSettingUpdate: null
         }
-
     });
 
     $(function () {
