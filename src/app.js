@@ -495,14 +495,14 @@ gpii.app.createGPIIConnection = function (gpiiConnector, app, config) {
  * @param pcp {Object} A `gpii.app.pcp` instance
  * @param gpiiConnector {Object} A `gpii.app.gpiiConnector` instance
  */
-gpii.app.initPCPWindowIPC = function (pcp, gpiiConnector) {
+gpii.app.initPCPWindowIPC = function (app, pcp, gpiiConnector) {
     ipcMain.on("closePCP", function () {
         pcp.hide();
     });
 
     ipcMain.on("keyOut", function () {
         pcp.hide();
-        pcp.keyOut(pcp.model.keyedInUserToken);
+        app.keyOut(pcp.model.keyedInUserToken);
     });
 
     ipcMain.on("updateSetting", function (event, arg) {
@@ -510,7 +510,7 @@ gpii.app.initPCPWindowIPC = function (pcp, gpiiConnector) {
     });
 
     ipcMain.on("updateActivePreferenceSet", function (event, arg) {
-        gpiiConnector.updateActivePrefSet(arg);
+        gpiiConnector.updateActivePrefSet(arg.value);
     });
 };
 
@@ -608,7 +608,7 @@ fluid.defaults("gpii.app.pcp", {
     listeners: {
         "onCreate.initPCPWindowIPC": {
             listener: "gpii.app.initPCPWindowIPC",
-            args: ["{that}", "{gpiiConnector}"]
+            args: ["{app}", "{that}", "{gpiiConnector}"]
         }
     },
     invokers: {
