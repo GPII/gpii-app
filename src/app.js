@@ -864,7 +864,7 @@ fluid.defaults("gpii.app.menuInApp", {
 
         "onActivePrefSetUpdate.performActiveSetChange": {
             listener: "{gpiiConnector}.updateActivePrefSet",
-            args: "{arguments}.0"
+            args: "{arguments}.0.path"
         },
 
         // onKeyIn event is fired when a new user keys in through the task tray.
@@ -880,7 +880,7 @@ fluid.defaults("gpii.app.menuInApp", {
         },
         "onKeyIn.performKeyIn": {
             listener: "{app}.keyIn",
-            args: ["{arguments}.0"],
+            args: ["{arguments}.0.token"],
             priority: "after:performKeyOut"
         },
         // onKeyOut event is fired when a keyed-in user keys out through the task tray.
@@ -890,7 +890,7 @@ fluid.defaults("gpii.app.menuInApp", {
         //    b) update the menu
         "onKeyOut.performKeyOut": {
             listener: "{app}.keyOut",
-            args: ["{arguments}.0"]
+            args: ["{arguments}.0.token"]
         },
 
         // onExit
@@ -920,51 +920,75 @@ fluid.defaults("gpii.app.menuInAppDev", {
         submenu: [{
             label: "Larger 125%",
             click: "onKeyIn",
-            token: "snapset_1a"
+            args: {
+                token: "snapset_1a"
+            }
         }, {
             label: "Larger 150%",
             click: "onKeyIn",
-            token: "snapset_1b"
+            args: {
+                token: "snapset_1b"
+            }
         }, {
             label: "Larger 175%",
             click: "onKeyIn",
-            token: "snapset_1c"
+            args: {
+                token: "snapset_1c"
+            }
         }, {
             label: "Dark & Larger 125%",
             click: "onKeyIn",
-            token: "snapset_2a"
+            args: {
+                token: "snapset_2a"
+            }
         }, {
             label: "Dark & Larger 150%",
             click: "onKeyIn",
-            token: "snapset_2b"
+            args: {
+                token: "snapset_2b"
+            }
         }, {
             label: "Dark & Larger 175%",
             click: "onKeyIn",
-            token: "snapset_2c"
+            args: {
+                token: "snapset_2c"
+            }
         }, {
             label: "Read To Me",
             click: "onKeyIn",
-            token: "snapset_3"
+            args: {
+                token: "snapset_3"
+            }
         }, {
             label: "Magnifier 200%",
             click: "onKeyIn",
-            token: "snapset_4a"
+            args: {
+                token: "snapset_4a"
+            }
         }, {
             label: "Magnifier 400%",
             click: "onKeyIn",
-            token: "snapset_4b"
+            args: {
+                token: "snapset_4b"
+            }
         }, {
             label: "Magnifier 200% & Display Scaling 175%",
             click: "onKeyIn",
-            token: "snapset_4c"
+            args: {
+                token: "snapset_4c"
+            }
         }, {
             label: "Dark Magnifier 200%",
             click: "onKeyIn",
-            token: "snapset_4d"
+            args: {
+                token: "snapset_4d"
+            }
         }, {
             label: "Multi pref sets; Magnifier",
             click: "onKeyIn",
-            token: "context1"
+            args: {
+                token: "context1"
+            }
         }]
     },
     exit: {
@@ -1109,7 +1133,9 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr, notKeyedInStr) 
         keyOut = {
             label: keyOutStr,
             click: "onKeyOut",
-            token: keyedInUserToken,
+            args: {
+                token: keyedInUserToken
+            },
             enabled: true
         };
     } else {
@@ -1139,7 +1165,9 @@ gpii.app.menu.getPreferenceSetsMenuItems = function (preferenceSets, activeSet) 
         return {
             label: preferenceSet.name,
             type: "radio",
-            token: preferenceSet.path,
+            args: {
+                path: preferenceSet.path
+            },
             click: "onActivePrefSetUpdate",
             checked: preferenceSet.path === activeSet
         };
@@ -1163,7 +1191,9 @@ gpii.app.menu.getShowPCP = function (keyedInUserToken, openSettingsStr) {
     return {
         label: openSettingsStr,
         click: "onPCP",
-        token: keyedInUserToken
+        args: {
+            token: keyedInUserToken
+        }
     };
 };
 
@@ -1199,7 +1229,7 @@ gpii.app.menu.expandMenuTemplate = function (menuTemplate, events) {
         if (typeof menuItem.click === "string") {
             var evtName = menuItem.click;
             menuItem.click = function () {
-                events[evtName].fire(menuItem.token);
+                events[evtName].fire(menuItem.args);
             };
         }
         if (menuItem.submenu) {
