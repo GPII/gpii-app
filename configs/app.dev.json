@@ -1,5 +1,5 @@
 {
-    "type": "gpii.appWithTaskTray",
+    "type": "gpii.appDevWithTaskTray",
     "options": {
         "gradeNames": ["fluid.component"],
         "distributeOptions": {

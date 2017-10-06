@@ -8,6 +8,7 @@ Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
 You may obtain a copy of the License at
 https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
+/* eslint-env node */
 "use strict";
 
 var fluid = require("infusion"),
@@ -18,12 +19,12 @@ var fluid = require("infusion"),
 require("universal");
 
 // Check that we are not running another instance of GPII-App.
-const appIsRunning = app.makeSingleInstance((commandLine, workingDirectory) => {
+var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirectory*/) {
     // TODO: Properly log or handle it.
-    console.log("A second instance of GPII-App tried to be executed.")
+    console.log("Attempt to start a second instance of GPII-App failed.");
 });
 // Check if any instance of GPII is running.
-const gpiiIsRunning = !gpii.singleInstance.registerInstance();
+var gpiiIsRunning = !gpii.singleInstance.registerInstance();
 if (appIsRunning || gpiiIsRunning) {
     app.quit();
 }
@@ -32,11 +33,7 @@ require("gpii-windows/index.js");
 require("./src/logging.js");
 require("./src/app.js");
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-app.on("ready", function () {
-    kettle.config.loadConfig({
-        configName: kettle.config.getConfigName("app"),
-        configPath: kettle.config.getConfigPath(__dirname + "/configs")
-    });
+kettle.config.loadConfig({
+    configName: kettle.config.getConfigName("app"),
+    configPath: kettle.config.getConfigPath(__dirname + "/configs")
 });

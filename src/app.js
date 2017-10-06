@@ -23,51 +23,74 @@ var path = require("path");
 var request = require("request");
 require("./networkCheck.js");
 
+/**
+ * Promise that resolves when the electon application is ready.
+ * Required for testing multiple configs of the app.
+ */
+gpii.app.appReady = fluid.promise();
+
+/**
+ * Listens for the electron 'ready' event and resolves the promise accordingly.
+ */
+gpii.app.electronAppListener = function () {
+    gpii.app.appReady.resolve(true);
+};
+require("electron").app.on("ready", gpii.app.electronAppListener);
+
+
 /*
  ** Component to manage the app.
  */
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
-        keyedInUserToken: null
-    },
-    members: {
-        dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
-        dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
-        tray: {
-            expander: {
-                funcName: "gpii.app.makeTray",
-                args: ["{that}.options.icon"]
-            },
-            createOnEvent: "onGPIIReady"
-        },
-        dialog: {
-            expander: {
-                funcName: "gpii.app.makeWaitDialog",
-                args: ["{that}"]
-            },
-            createOnEvent: "onGPIIReady"
-        }
+        keyedInUserToken: null,
+        showDialog: false
     },
     components: {
-        menu: {
-            type: "gpii.app.menuInApp",
-            createOnEvent: "onGPIIReady"
+        tray: {
+            type: "gpii.app.tray",
+            createOnEvent: "onPrequisitesReady",
+            options: {
+                model: {
+                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken"
+                }
+            }
+        },
+        dialog: {
+            type: "gpii.app.dialog",
+            createOnEvent: "onPrequisitesReady",
+            options: {
+                model: {
+                    showDialog: "{gpii.app}.model.showDialog"
+                }
+            }
         },
         networkCheck: { // Network check component to meet GPII-2349
             type: "gpii.app.networkCheck"
         }
     },
     events: {
-        onGPIIReady: null
+        onPrequisitesReady: {
+            events: {
+                onGPIIReady: "onGPIIReady",
+                onAppReady: "onAppReady"
+            }
+        },
+        onGPIIReady: null,
+        onAppReady: null
     },
     modelListeners: {
         "{lifecycleManager}.model.logonChange": {
-            funcName: "gpii.app.logonChangeListener",
-            args: [ "{that}", "{change}.value" ]
+            funcName: "{that}.updateShowDialog",
+            args: ["{change}.value.inProgress"]
         }
     },
     listeners: {
+        "onCreate.appReady": {
+            listener: "gpii.app.fireAppReady",
+            args: ["{that}.events.onAppReady.fire"]
+        },
         "{kettle.server}.events.onListen": {
             "this": "{that}.events.onGPIIReady",
             method: "fire"
@@ -80,16 +103,15 @@ fluid.defaults("gpii.app", {
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
-        },
-        "onCreate.addTooltip": {
-            "this": "{that}.tray",
-            method: "setToolTip",
-            args: ["{that}.options.labels.tooltip"]
         }
     },
     invokers: {
         updateKeyedInUserToken: {
             changePath: "keyedInUserToken",
+            value: "{arguments}.0"
+        },
+        updateShowDialog: {
+            changePath: "showDialog",
             value: "{arguments}.0"
         },
         keyIn: {
@@ -108,47 +130,12 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.handleUncaughtException",
             args: ["{that}", "{arguments}.0"]
         }
-    },
-    icon: "icons/gpii.ico",
-    labels: {
-        tooltip: "GPII"
     }
 });
 
-/**
-  * Creates the Electron Tray
-  * @param icon {String} Path to the icon that represents the GPII in the task tray.
-  */
-gpii.app.makeTray = function (icon) {
-    var tray = new Tray(path.join(__dirname, icon));
-    tray.on("click", function () {
-        tray.popUpContextMenu();
-    });
-    return tray;
-};
 
-/**
-  * Creates a dialog. This is done up front to avoid the delay from creating a new
-  * dialog every time a new message should be displayed.
-  */
-gpii.app.makeWaitDialog = function () {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
-
-    var dialog = new BrowserWindow({
-        show: false,
-        frame: false,
-        transparent: true,
-        alwaysOnTop: true,
-        skipTaskBar: true,
-        x: screenSize.width - 900, // because the default width is 800
-        y: screenSize.height - 600 // because the default height is 600
-    });
-
-    var url = fluid.stringTemplate("file://%dirName/html/message.html", {
-        dirName: __dirname
-    });
-    dialog.loadURL(url);
-    return dialog;
+gpii.app.fireAppReady = function (fireFn) {
+    gpii.app.appReady.then(fireFn);
 };
 
 /**
@@ -182,10 +169,12 @@ gpii.app.keyIn = function (token) {
   */
 gpii.app.keyOut = function (token) {
     var togo = fluid.promise();
-    request("http://localhost:8081/user/" + token + "/logout", function (error/*, response, body*/) {
+    request("http://localhost:8081/user/" + token + "/logout", function (error, response, body) {
         //TODO Put in some error logging
         if (error) {
             togo.reject(error);
+            fluid.log(response);
+            fluid.log(body);
         } else {
             togo.resolve();
         }
@@ -223,12 +212,211 @@ gpii.app.exit = function (that) {
     }
 };
 
+
 /**
- * Listens to any changes in the lifecycle managers logonChange model and calls the
- * appropriate functions in gpii-app for notifying of the current user state
+ * Handles when a user token is keyed out through other means besides the task tray key out feature.
+ * @param that {Component} An instance of gpii.app
+ * @param keyedOutUserToken {String} The token that was keyed out.
  */
-gpii.app.logonChangeListener = function (that, model) {
-    model.inProgress ? gpii.app.displayWaitDialog(that) : gpii.app.dismissWaitDialog(that);
+gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
+    var currentKeyedInUserToken = that.model.keyedInUserToken;
+
+    if (keyedOutUserToken !== currentKeyedInUserToken) {
+        console.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
+    } else {
+        that.updateKeyedInUserToken(null);
+    }
+};
+
+/**
+ * Listen on uncaught exceptions and display it to the user is if it's interesting.
+ * @param that {Component} An instance of gpii.app.
+ */
+gpii.app.handleUncaughtException = function (that, err) {
+    var tray = that.components.tray.tray;
+    var handledErrors = {
+        "EADDRINUSE": {
+            message: "There is another application listening on port " + err.port,
+            fatal: true
+        }
+    };
+
+    if (err.code) {
+        var error = handledErrors[err.code];
+        if (error) {
+            tray.displayBalloon({
+                title: error.title || "GPII Error",
+                content: error.message || err.message,
+                icon: path.join(__dirname, "icons/gpii-icon-balloon.png")
+            });
+            if (error.fatal) {
+                var timeout;
+                var quit = function () {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                        that.exit();
+                    }
+                };
+                // Exit when the balloon is dismissed.
+                tray.on("balloon-closed", quit);
+                tray.on("balloon-click", quit);
+                // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
+                // TODO: See GPII-2348 about this.
+                timeout = setTimeout(quit, 12000);
+            }
+        }
+    }
+};
+
+fluid.onUncaughtException.addListener(function (err) {
+    var app = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app");
+    if (app.length > 0) {
+        app[0].handleUncaughtException(err);
+    }
+}, "gpii.app", "last");
+
+/**
+ * Component that contains an Electron Tray.
+ */
+fluid.defaults("gpii.app.tray", {
+    gradeNames: "fluid.modelComponent",
+    members: {
+        tray: {
+            expander: {
+                funcName: "gpii.app.makeTray",
+                args: ["{that}.model.icon"]
+            }
+        }
+    },
+    icons: {
+        keyedIn: "icons/gpii-color.ico",
+        keyedOut: "icons/gpii.ico"
+    },
+    components: {
+        menu: {
+            type: "gpii.app.menuInApp"
+        }
+    },
+    model: {
+        keyedInUserToken: null,
+        icon: "{that}.options.icons.keyedOut"
+    },
+    modelRelay: {
+        "icon": {
+            target: "icon",
+            singleTransform: {
+                type: "fluid.transforms.valueMapper",
+                defaultInput: "{that}.model.keyedInUserToken",
+                match: [{
+                    inputValue: null,
+                    outputValue: "{that}.options.icons.keyedOut"
+                }],
+                noMatch: "{that}.options.icons.keyedIn"
+            }
+        }
+    },
+    modelListeners: {
+        "icon": {
+            funcName: "gpii.app.tray.setTrayIcon",
+            args: ["{that}.tray", "{change}.value"],
+            excludeSource: "init"
+        }
+    },
+    listeners: {
+        "onCreate.addTooltip": {
+            "this": "{that}.tray",
+            method: "setToolTip",
+            args: ["{that}.options.labels.tooltip"]
+        }
+    },
+    labels: {
+        tooltip: "GPII"
+    }
+});
+
+/**
+  * Sets the icon for the Electron Tray which represents the GPII application.
+  * @param tray {Object} An instance of an Electron Tray.
+  * @param icon {String} The simple path to the icon file.
+  */
+gpii.app.tray.setTrayIcon = function (tray, icon) {
+    var iconPath = path.join(__dirname, icon);
+    tray.setImage(iconPath);
+};
+
+/**
+  * Creates the Electron Tray
+  * @param icon {String} Path to the icon that represents the GPII in the task tray.
+  */
+gpii.app.makeTray = function (icon) {
+    var tray = new Tray(path.join(__dirname, icon));
+    tray.on("click", function () {
+        tray.popUpContextMenu();
+    });
+    return tray;
+};
+
+/**
+ * Component that contains an Electron Dialog.
+ */
+
+fluid.defaults("gpii.app.dialog", {
+    gradeNames: "fluid.modelComponent",
+    model: {
+        showDialog: false,
+        dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
+        dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
+        timeout: 0
+    },
+    members: {
+        dialog: {
+            expander: {
+                funcName: "gpii.app.makeWaitDialog"
+            }
+        }
+    },
+    modelListeners: {
+        "showDialog": {
+            funcName: "gpii.app.showHideWaitDialog",
+            args: ["{that}", "{change}.value"]
+        }
+    },
+    listeners: {
+        "onDestroy": {
+            funcName: "clearTimeout",
+            args: ["{that.model.timeout}"]
+        }
+    }
+});
+
+/**
+ * Creates a dialog. This is done up front to avoid the delay from creating a new
+ * dialog every time a new message should be displayed.
+ */
+gpii.app.makeWaitDialog = function () {
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+
+    var dialog = new BrowserWindow({
+        show: false,
+        frame: false,
+        transparent: true,
+        alwaysOnTop: true,
+        skipTaskBar: true,
+        x: screenSize.width - 900, // because the default width is 800
+        y: screenSize.height - 600 // because the default height is 600
+    });
+
+    var url = fluid.stringTemplate("file://%dirName/html/message.html", {
+        dirName: __dirname
+    });
+    dialog.loadURL(url);
+    return dialog;
+};
+
+
+gpii.app.showHideWaitDialog = function (that, showDialog) {
+    showDialog ? gpii.app.displayWaitDialog(that) : gpii.app.dismissWaitDialog(that);
 };
 
 /**
@@ -251,7 +439,7 @@ gpii.app.displayWaitDialog = function (that) {
         that.dialog.setAlwaysOnTop(true);
     }, 100);
 
-    that.dialogStartTime = Date.now();
+    that.model.dialogStartTime = Date.now();
 };
 
 /**
@@ -262,10 +450,10 @@ gpii.app.displayWaitDialog = function (that) {
  */
 gpii.app.dismissWaitDialog = function (that) {
     // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
-    var remainingDisplayTime = (that.dialogStartTime + that.dialogMinDisplayTime) - Date.now();
+    var remainingDisplayTime = (that.model.dialogStartTime + that.model.dialogMinDisplayTime) - Date.now();
 
     if (remainingDisplayTime > 0) {
-        setTimeout(function () {
+        that.model.timeout = setTimeout(function () {
             that.dialog.hide();
         }, remainingDisplayTime);
     } else {
@@ -273,67 +461,6 @@ gpii.app.dismissWaitDialog = function (that) {
     }
 };
 
-/**
- * Handles when a user token is keyed out through other means besides the task tray key out feature.
- * @param that {Component} An instance of gpii.app
- * @param keyedOutUserToken {String} The token that was keyed out.
- */
-gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
-    var currentKeyedInUserToken = that.model.keyedInUserToken;
-
-    if (keyedOutUserToken !== currentKeyedInUserToken) {
-        console.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
-    } else {
-        that.updateKeyedInUserToken(null);
-    }
-};
-
-/**
- * Listen on uncaught exceptions and display it to the user is if it's interesting.
- * @param that {Component} An instance of gpii.app.
- */
-gpii.app.handleUncaughtException = function (that, err) {
-    var handledErrors = {
-        "EADDRINUSE": {
-            message: "There is another application listening on port " + err.port,
-            fatal: true
-        }
-    };
-
-    if (err.code) {
-        var error = handledErrors[err.code];
-        if (error) {
-            that.tray.displayBalloon({
-                title: error.title || "GPII Error",
-                content: error.message || err.message,
-                icon: path.join(__dirname, "icons/gpii-icon-balloon.png")
-            });
-            if (error.fatal) {
-                var timeout;
-                var quit = function () {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                        timeout = null;
-                        that.exit();
-                    }
-                };
-                // Exit when the balloon is dismissed.
-                that.tray.on("balloon-closed", quit);
-                that.tray.on("balloon-click", quit);
-                // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
-                // TODO: See GPII-2348 about this.
-                timeout = setTimeout(quit, 12000);
-            }
-        }
-    }
-};
-
-fluid.onUncaughtException.addListener(function (err) {
-    var app = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app");
-    if (app.length > 0) {
-        app[0].handleUncaughtException(err);
-    }
-}, "gpii.app", "last");
 
 /*
  ** Configuration for using the menu in the app.
@@ -348,7 +475,7 @@ fluid.defaults("gpii.app.menuInApp", {
         "menuTemplate": {
             namespace: "updateMenu",
             funcName: "gpii.app.updateMenu",
-            args: ["{app}.tray", "{that}.model.menuTemplate", "{that}.events"]
+            args: ["{tray}.tray", "{that}.model.menuTemplate", "{that}.events"]
         }
     },
     listeners: {
@@ -385,39 +512,67 @@ fluid.defaults("gpii.app.menuInApp", {
     }
 });
 
+/**
+  * Refreshes the task tray menu for the GPII Application using the menu in the model
+  * @param tray {Object} An Electron 'Tray' object.
+  * @param menuTemplate {Array} A nested array that is the menu template for the GPII Application.
+  * @param events {Object} An object containing the events that may be fired by items in the menu.
+  */
+gpii.app.updateMenu = function (tray, menuTemplate, events) {
+    menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
+
+    tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
+};
+
 fluid.defaults("gpii.app.menuInAppDev", {
     gradeNames: "gpii.app.menuInApp",
     // The list of the default snapsets shown on the task tray menu for key-in
     snapsets: {
         label: "{that}.options.menuLabels.keyIn",
         submenu: [{
-            label: "Alice",
+            label: "Larger 125%",
             click: "onKeyIn",
-            token: "alice"
+            token: "snapset_1a"
         }, {
-            label: "Davey",
+            label: "Larger 150%",
             click: "onKeyIn",
-            token: "davey"
+            token: "snapset_1b"
         }, {
-            label: "David",
+            label: "Larger 175%",
             click: "onKeyIn",
-            token: "david"
+            token: "snapset_1c"
         }, {
-            label: "Elaine",
+            label: "Dark & Larger 125%",
             click: "onKeyIn",
-            token: "elaine"
+            token: "snapset_2a"
         }, {
-            label: "Elmer",
+            label: "Dark & Larger 150%",
             click: "onKeyIn",
-            token: "elmer"
+            token: "snapset_2b"
         }, {
-            label: "Elod",
+            label: "Dark & Larger 175%",
             click: "onKeyIn",
-            token: "elod"
+            token: "snapset_2c"
         }, {
-            label: "Livia",
+            label: "Read To Me",
             click: "onKeyIn",
-            token: "livia"
+            token: "snapset_3"
+        }, {
+            label: "Magnifier 200%",
+            click: "onKeyIn",
+            token: "snapset_4a"
+        }, {
+            label: "Magnifier 400%",
+            click: "onKeyIn",
+            token: "snapset_4b"
+        }, {
+            label: "Magnifier 200% & Display Scaling 175%",
+            click: "onKeyIn",
+            token: "snapset_4c"
+        }, {
+            label: "Dark Magnifier 200%",
+            click: "onKeyIn",
+            token: "snapset_4d"
         }]
     },
     exit: {
@@ -454,7 +609,7 @@ fluid.defaults("gpii.app.menu", {
             target: "keyedInUser.label",
             singleTransform: {
                 type: "fluid.transforms.free",
-                func: "gpii.app.menu.getNameLabel",
+                func: "gpii.app.menu.getKeyedInLabel",
                 args: ["{that}.model.userName", "{that}.options.menuLabels.keyedIn", "{that}.options.menuLabels.notKeyedIn"]
             },
             priority: "after:userName"
@@ -468,7 +623,7 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "after:userName"
         },
-        "menuTemplate:": {
+        "menuTemplate": {
             target: "menuTemplate",
             singleTransform: {
                 type: "fluid.transforms.free",
@@ -502,8 +657,13 @@ gpii.app.menu.getUserName = function (userToken) {
     return name;
 };
 
-// I think this can be moved into configuration.
-gpii.app.menu.getNameLabel = function (name, keyedInStrTemp, notKeyedInStr) {
+/**
+  * Generates a label based on whether or not a user name is present.
+  * @param name {String} The name of the user who is keyed in.
+  * @param keyedInStrTemp {String} The string template for the label when a user is keyed in.
+  * @param notKeyedInStr {String} The string when a user is not keyed in.
+  */
+gpii.app.menu.getKeyedInLabel = function (name, keyedInStrTemp, notKeyedInStr) {
     return name ? fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}) : notKeyedInStr;
 };
 
@@ -516,7 +676,7 @@ gpii.app.menu.getNameLabel = function (name, keyedInStrTemp, notKeyedInStr) {
 gpii.app.menu.getKeyOut = function (keyedInUserToken, name, keyOutStrTemp) {
     var keyOut = null;
 
-    if (name) {
+    if (keyedInUserToken) {
         keyOut = { // TODO: probably should put at least the structure of this into configuration
             label: fluid.stringTemplate(keyOutStrTemp, {"userTokenName": name}),
             click: "onKeyOut",

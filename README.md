@@ -4,11 +4,13 @@ gpii-app is an Electron-based application wrapper for the GPII autopersonalizati
 
 It currently only supports Windows.
 
+
 ## Using a Windows VM
 
-It is possible to provision a Windows VM for development and testing purposes. Please ensure you have met [these VM requirements](https://github.com/GPII/qi-development-environments/#requirements) before proceeding. 
+It is possible to provision a Windows VM for development and testing purposes. Please ensure you have met [these VM requirements](https://github.com/GPII/qi-development-environments/#requirements) before proceeding.
 
 ### Creating and removing the VM
+
 
 After that you can use the `vagrant up` command to create an instance of a [Windows 10 Evaluation VM](https://github.com/idi-ops/packer-windows) which will boot an instance of the Windows 10 VM, pull in the GPII Framework's npm dependencies, and then build it. Once it has finished building, either restart the VM, or open a Command Line or PowerShell and type the following command inside the VM: `refreshenv`
 
@@ -24,8 +26,16 @@ cd c:\vagrant\
 npm start
 ```
 
+Alternatively, running the application in development mode will give you a list of snapsets in the task tray menu:
+```
+npm run dev
+```
+
 ### Running the Tests in a VM
 
-Ensure that your virtual box is up and running, then go to the folder with gpii-app and run:
+Ensure that your virtual box is up and running, then open a terminal (in the VM), go to the folder with gpii-app and run the test script:
 
-`npm test`
+```
+cd c:\vagrant
+npm test
+```
