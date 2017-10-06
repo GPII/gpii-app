@@ -366,7 +366,8 @@ fluid.defaults("gpii.app.dialog", {
     model: {
         showDialog: false,
         dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
-        dialogStartTime: 0 // timestamp recording when the dialog was displayed to know when we can dismiss it again
+        dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
+        timeout: 0
     },
     members: {
         dialog: {
@@ -379,6 +380,12 @@ fluid.defaults("gpii.app.dialog", {
         "showDialog": {
             funcName: "gpii.app.showHideWaitDialog",
             args: ["{that}", "{change}.value"]
+        }
+    },
+    listeners: {
+        "onDestroy": {
+            funcName: "clearTimeout",
+            args: ["{that.model.timeout}"]
         }
     }
 });
@@ -446,7 +453,7 @@ gpii.app.dismissWaitDialog = function (that) {
     var remainingDisplayTime = (that.model.dialogStartTime + that.model.dialogMinDisplayTime) - Date.now();
 
     if (remainingDisplayTime > 0) {
-        setTimeout(function () {
+        that.model.timeout = setTimeout(function () {
             that.dialog.hide();
         }, remainingDisplayTime);
     } else {
