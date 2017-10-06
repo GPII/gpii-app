@@ -57,8 +57,41 @@
     });
 
     fluid.defaults("gpii.pcp.widgets.switch", {
-        gradeNames: ["fluid.switchUI"]
+        gradeNames: ["fluid.switchUI"],
+        mergePolicy: {
+            "modelListeners.enabled": "replace"
+        },
+        strings: {
+            on: "On",
+            off: "Off"
+        },
+        attrs: {
+            role: "button"
+        },
+        modelListeners: {
+            enabled: {
+                funcName: "gpii.pcp.widgets.onSwitchChange",
+                args: [
+                    "{change}.value",
+                    "{that}.dom.control",
+                    "{that}.dom.on",
+                    "{that}.dom.off"
+                ]
+            }
+        }
     });
+
+    gpii.pcp.widgets.onSwitchChange = function (enabled, control, onLabel, offLabel) {
+        control.attr("aria-pressed", enabled);
+
+        if (enabled) {
+            onLabel.show();
+            offLabel.hide();
+        } else {
+            onLabel.hide();
+            offLabel.show();
+        }
+    };
 
     fluid.defaults("gpii.pcp.widgets.slider", {
         gradeNames: ["fluid.textfieldSlider"],
