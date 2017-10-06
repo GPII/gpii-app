@@ -383,12 +383,14 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     listeners: {
-        "onDestroy": {
-            funcName: "clearTimeout",
-            args: ["{that.model.timeout}"]
-        }
+        "onDestroy.clearTimers": "gpii.app.clearTimers({that})"
     }
 });
+
+gpii.app.clearTimers = function (that) {
+    clearTimeout(that.dismissWaitTimeout);
+    clearInterval(that.displayWaitInterval);
+};
 
 /**
  * Creates a dialog. This is done up front to avoid the delay from creating a new
@@ -424,7 +426,7 @@ gpii.app.showHideWaitDialog = function (that, showDialog) {
  * Records the time it was shown in `dialogStartTime` which we need when
  * dismissing it (checking whether it's been displayed for the minimum amount of time)
  *
- * @param that {Object} the app module
+ * @param that {Component} the gpii.app instance
  */
 gpii.app.displayWaitDialog = function (that) {
     that.dialog.show();
@@ -432,9 +434,13 @@ gpii.app.displayWaitDialog = function (that) {
     // otherwise want to be on top
     // see amongst other: https://blogs.msdn.microsoft.com/oldnewthing/20110310-00/?p=11253/
     // and https://github.com/electron/electron/issues/2097
-    var interval = setInterval(function () {
+    if (that.displayWaitInterval) {
+        clearInterval(that.displayWaitInterval);
+        that.displayWaitInterval = 0;
+    }
+    that.displayWaitInterval = setInterval(function () {
         if (!that.dialog.isVisible()) {
-            clearInterval(interval);
+            clearInterval(that.displayWaitInterval);
         };
         that.dialog.setAlwaysOnTop(true);
     }, 100);
@@ -446,14 +452,14 @@ gpii.app.displayWaitDialog = function (that) {
  * Dismisses the dialog. If less than `that.dialogMinDisplayTime` ms have passed since we first displayed
  * the window, the function waits until `dialogMinDisplayTime` has passed before dismissing it.
  *
- * @param that {Object} the app
+ * @param that {Component} the gpii.app instance
  */
 gpii.app.dismissWaitDialog = function (that) {
     // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
     var remainingDisplayTime = (that.model.dialogStartTime + that.model.dialogMinDisplayTime) - Date.now();
 
     if (remainingDisplayTime > 0) {
-        that.model.timeout = setTimeout(function () {
+        that.dismissWaitTimeout = setTimeout(function () {
             that.dialog.hide();
         }, remainingDisplayTime);
     } else {
