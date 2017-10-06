@@ -53,14 +53,24 @@ fluid.defaults("gpii.app.gpiiConnector", {
     },
 
     model: {
-        socket: "@expand:gpii.app.createGPIIConnection({that}, {app}, {that}.options.config)"
+        socket: "@expand:gpii.app.createGPIIConnection({that}.options.config)"
     },
 
     events: {
         onPreferencesUpdate: null
     },
 
+    listeners: {
+        "onDestroy.closeConnection": {
+            listener: "{that}.closeConnection"
+        }
+    },
+
     invokers: {
+        registerPCPListener: {
+            funcName: "gpii.app.registerPCPListener",
+            args: ["{that}.model.socket", "{that}", "{arguments}.0"]
+        },
         updateSetting: {
             funcName: "gpii.app.gpiiConnector.updateSetting",
             args: ["{that}.model.socket", "{arguments}.0"]
@@ -68,8 +78,13 @@ fluid.defaults("gpii.app.gpiiConnector", {
         updateActivePrefSet: {
             funcName: "gpii.app.gpiiConnector.updateActivePrefSet",
             args: ["{that}.model.socket", "{arguments}.0"]
+        },
+        closeConnection: {
+            this: "{that}.model.socket",
+            method: "close",
+            // for ref https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
+            args: [1000]
         }
-     // closeConnection
     }
 });
 
@@ -140,8 +155,15 @@ fluid.defaults("gpii.app", {
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
+                },
+                listeners: {
+                    "onCreate.registerWithConnector": {
+                        funcName: "{gpiiConnector}.registerPCPListener",
+                        args: "{that}"
+                    }
                 }
-            }
+            },
+            priority: "after:gpiiConnector"
         },
         tray: {
             type: "gpii.app.tray",
@@ -221,7 +243,7 @@ fluid.defaults("gpii.app", {
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
-            args: ["{arguments}.0"]
+            args: "{that}.model.keyedInUserToken"
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -305,7 +327,7 @@ gpii.app.performQuit = function () {
 gpii.app.exit = function (that) {
     if (that.model.keyedInUserToken) {
         fluid.promise.sequence([
-            gpii.rejectToLog(that.keyOut(that.model.keyedInUserToken), "Couldn't logout current user"),
+            gpii.rejectToLog(that.keyOut(), "Couldn't logout current user"),
             gpii.app.performQuit
         ]);
     } else {
@@ -367,17 +389,16 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
 };
 
 /**
- * Shows the passed Electron `BrowserWindow`
+ * Shows the passed Electron `BrowserWindow`.
+ * In case the window is already opened, it is focused.
  *
  * @param pcpWindow {Object} An Electron `BrowserWindow`.
  */
 gpii.app.pcp.showPCPWindow = function (pcpWindow) {
-    if (pcpWindow.isVisible()) {
-        return;
+    if (!pcpWindow.isVisible()) {
+        pcpWindow.show();
     }
 
-    // XXX problem with loading - previous view is not cleared before the window is shown
-    pcpWindow.show();
     pcpWindow.focus();
 };
 
@@ -447,17 +468,14 @@ gpii.app.extractPreferencesData = function (message) {
     };
 };
 
-/**
- * Opens a connection to the PCP Channel WebSocket. It also registers callbacks
- * to be invoked whenever the PCP `BrowserWindow` sends the corresponding message.
- * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` object
- * @param app {Object} The app
- * @param config {Object} The configuration for the WebSocket
- */
-gpii.app.createGPIIConnection = function (gpiiConnector, app, config) {
-    var socket = new ws(config.gpiiWSUrl); // eslint-disable-line new-cap
 
-    // TODO extract elsewhere to avoid cycle dependencies
+/**
+ * Register listeners for messages from the GPII socket connection.
+ * @param socket {Object} The connected gpii socket
+ * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` instance
+ * @param pcp {Object} The `gpii.app.pcp` instance
+ */
+gpii.app.registerPCPListener = function (socket, gpiiConnector, pcp) {
     socket.on("message", function (rawData) {
         var data = JSON.parse(rawData),
             operation = data.type,
@@ -466,13 +484,19 @@ gpii.app.createGPIIConnection = function (gpiiConnector, app, config) {
 
         if (operation === "ADD") {
             if (path.length === 0) {
+                /*
+                 * "Keyed in" data has been received
+                 */
                 preferences = gpii.app.extractPreferencesData(data);
                 gpiiConnector.events.onPreferencesUpdate.fire(preferences);
-                app.pcp.notifyPCPWindow("keyIn", preferences);
+                pcp.notifyPCPWindow("keyIn", preferences);
             } else {
+                /*
+                 * Setting change update has been received
+                 */
                 var settingPath = path[path.length - 2],
                     settingValue = data.value;
-                app.pcp.notifyPCPWindow("updateSetting", {
+                pcp.notifyPCPWindow("updateSetting", {
                     path: settingPath,
                     value: settingValue
                 });
@@ -480,11 +504,17 @@ gpii.app.createGPIIConnection = function (gpiiConnector, app, config) {
         } else if (operation === "DELETE") {
             preferences = gpii.app.extractPreferencesData(data);
             gpiiConnector.events.onPreferencesUpdate.fire(preferences);
-            app.pcp.notifyPCPWindow("keyOut", preferences);
+            pcp.notifyPCPWindow("keyOut", preferences);
         }
     });
+};
 
-    return socket;
+/**
+ * Opens a connection to the PCP Channel WebSocket.
+ * @param config {Object} The configuration for the WebSocket
+ */
+gpii.app.createGPIIConnection = function (config) {
+    return new ws(config.gpiiWSUrl); // eslint-disable-line new-cap
 };
 
 
@@ -501,8 +531,9 @@ gpii.app.initPCPWindowIPC = function (app, pcp, gpiiConnector) {
     });
 
     ipcMain.on("keyOut", function () {
+        console.log('HERE');
         pcp.hide();
-        app.keyOut(pcp.model.keyedInUserToken);
+        app.keyOut();
     });
 
     ipcMain.on("updateSetting", function (event, arg) {
@@ -614,8 +645,7 @@ fluid.defaults("gpii.app.pcp", {
     invokers: {
         show: {
             funcName: "gpii.app.pcp.showPCPWindow",
-            // XXX avoid app usage
-            args: ["{that}.pcpWindow", "{that}", "{app}.model.keyedInUserToken"]
+            args: ["{that}.pcpWindow"]
         },
         hide: {
             "this": "{that}.pcpWindow",
@@ -875,8 +905,7 @@ fluid.defaults("gpii.app.menuInApp", {
         //   b) fire a model change to set the new model.keyedInUserToken
         //   c) update the menu
         "onKeyIn.performKeyOut": {
-            listener: "{app}.keyOut",
-            args: "{that}.model.keyedInUserToken"
+            listener: "{app}.keyOut"
         },
         "onKeyIn.performKeyIn": {
             listener: "{app}.keyIn",
@@ -889,8 +918,7 @@ fluid.defaults("gpii.app.menuInApp", {
         //    a) change model.keyedInUserToken
         //    b) update the menu
         "onKeyOut.performKeyOut": {
-            listener: "{app}.keyOut",
-            args: ["{arguments}.0.token"]
+            listener: "{app}.keyOut"
         },
 
         // onExit
