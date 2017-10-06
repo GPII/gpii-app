@@ -1,0 +1,19 @@
+{
+    "type": "gpii.appDevWithTaskTray",
+    "options": {
+        "gradeNames": ["fluid.component"],
+        "distributeOptions": {
+            "distributeTaskTray": {
+                "record": "gpii.appWrapper",
+                "target": "{that flowManager}.options.gradeNames"
+            },
+            "distributeMenuDisplay": {
+                "record": "gpii.app.menuInAppDev",
+                "target": "{that menu}.options.gradeNames"
+            }
+        }
+    },
+    "mergeConfigs": [
+        "../node_modules/universal/gpii/configs/gpii.config.development.all.local.json"
+     ]
+}
