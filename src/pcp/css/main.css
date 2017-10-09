@@ -13,6 +13,14 @@ hr {
     border-width: 2px;
 }
 
+.fl-dropdownContainer {
+    margin-bottom: 0;
+}
+
+.fl-dropdownContainer select {
+    cursor: pointer;
+}
+
 .flc-solutionName:not(:empty):after {
     content: ":";
 }

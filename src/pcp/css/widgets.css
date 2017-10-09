@@ -7,11 +7,6 @@
     cursor: pointer;
 }
 
-.flc-widget select {
-    width: 100%;
-    cursor: pointer;
-}
-
 .flc-multipickerItem {
     display: block;
     cursor: pointer;
