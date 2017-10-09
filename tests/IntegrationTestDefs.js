@@ -70,8 +70,8 @@ gpii.tests.app.testMenu = function (menuTemplate) {
 };
 
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 3);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[2]);
+    gpii.tests.app.testTemplateExists(menuTemplate, 6);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[5]);
     gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
 };
 
@@ -114,7 +114,11 @@ gpii.tests.app.testDefs = {
         args: "snapset_1a"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        path: "menuTemplate",
+        // XXX {{1}} as `keyedInUserToken` and `preferences` are updated in different time (toke is first),
+        // if we have listener for `menuTemplate` update, the `preferenceSetsMenuItems` update won't be present
+        // at the time of the event firing
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenuSnapsetKeyedIn"
     }, { // Test key in attempt while someone is keyed in
         func: "{that}.app.keyIn",
@@ -124,11 +128,12 @@ gpii.tests.app.testDefs = {
         listener: "gpii.tests.app.testMenuSnapsetKeyedIn",
         args: ["{that}.app.tray.menu.model.menuTemplate"]
     }, { // Test menu after key out
-        func: "{that}.app.keyOut",
-        args: "snapset_1a"
+        func: "{that}.app.keyOut"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        path: "menuTemplate",
+        // XXX {{1}} see above
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenu"
     }]
 };
@@ -144,7 +149,7 @@ gpii.tests.dev.testKeyInList = function (item) {
     jqUnit.assertEquals("Item is 'Key In' List", "Key in ...", item.label);
     var submenu = item.submenu;
     jqUnit.assertValue("Item has submenu", submenu);
-    jqUnit.assertEquals("Key in list has 11 items", 11, submenu.length);
+    jqUnit.assertEquals("Key in list has 12 items", 12, submenu.length);
 
     gpii.tests.app.testItem(submenu[0], "Larger 125%");
     gpii.tests.app.testItem(submenu[1], "Larger 150%");
@@ -157,6 +162,7 @@ gpii.tests.dev.testKeyInList = function (item) {
     gpii.tests.app.testItem(submenu[8], "Magnifier 400%");
     gpii.tests.app.testItem(submenu[9], "Magnifier 200% & Display Scaling 175%");
     gpii.tests.app.testItem(submenu[10], "Dark Magnifier 200%");
+    gpii.tests.app.testItem(submenu[11], "Multi pref sets; Magnifier");
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
@@ -168,11 +174,11 @@ gpii.tests.dev.testMenu = function (menuTemplate) {
 };
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 5);
+    gpii.tests.app.testTemplateExists(menuTemplate, 8);
     gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
     gpii.tests.dev.testKeyInList(menuTemplate[2]);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[3]);
-    gpii.tests.app.testItem(menuTemplate[4], "Exit GPII");
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[6]);
+    gpii.tests.app.testItem(menuTemplate[7], "Exit GPII");
 };
 
 gpii.tests.dev.testTrayKeyedOut = function (tray) {
@@ -190,7 +196,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 107,
+    expect: 113,
     config: {
         configName: "app.dev",
         configPath: "configs"
@@ -214,17 +220,20 @@ gpii.tests.dev.testDefs = {
         args: "snapset_1a"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        path: "menuTemplate",
+        // XXX {{1}}
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMenuSnapsetKeyedIn"
     }, {
         func: "gpii.tests.dev.testTrayKeyedIn",
         args: "{that}.app.tray"
     }, { // Test menu after key out
-        func: "{that}.app.keyOut",
-        args: "snapset_1a"
+        func: "{that}.app.keyOut"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        path: "menuTemplate",
+        // XXX {{1}}
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMenu"
     }, {
         func: "gpii.tests.dev.testTrayKeyedOut",

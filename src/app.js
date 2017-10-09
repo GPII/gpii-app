@@ -529,7 +529,6 @@ gpii.app.initPCPWindowIPC = function (app, pcp, gpiiConnector) {
     });
 
     ipcMain.on("keyOut", function () {
-        console.log('HERE');
         pcp.hide();
         app.keyOut();
     });
@@ -889,7 +888,11 @@ gpii.app.dismissWaitDialog = function (that) {
 fluid.defaults("gpii.app.menuInApp", {
     gradeNames: "gpii.app.menu",
     model: {
-        keyedInUserToken: "{app}.model.keyedInUserToken"
+        keyedInUserToken: "{app}.model.keyedInUserToken",
+        preferences: {
+            sets: "{app}.model.preferences.sets",
+            activeSet: "{app}.model.preferences.activeSet"
+        }
     },
     modelListeners: {
         "menuTemplate": {
@@ -1043,15 +1046,17 @@ fluid.defaults("gpii.app.menuInAppDev", {
 fluid.defaults("gpii.app.menu", {
     gradeNames: "fluid.modelComponent",
     model: {
-        //keyedInUserToken  // This comes from the app.
-        preferences: {
-            sets: "{app}.model.preferences.sets",
-            activeSet: "{app}.model.preferences.activeSet"
-        },
-        preferenceSetsMenuItems: [],
-        keyedInUser: null,  // Must be updated when keyedInUserToken changes.
-        keyOut: null        // May or may not be in the menu, must be updated when keyedInUserToken changes.
-        //menuTemplate: []  // This is updated on change of keyedInUserToken.
+        // Expected as configuration
+        //keyedInUserToken: null,
+        //preferences: {
+        //    sets: null,
+        //    activeSet: null
+        //},
+        // locally updated
+        preferenceSetsMenuItems: [],  // Updated on `preferences` changed.
+        keyedInUser: null,            // Must be updated when keyedInUserToken changes.
+        keyOut: null,                 // May or may not be in the menu, must be updated when keyedInUserToken changes.
+        menuTemplate: []              // This is updated on change of keyedInUserToken.
     },
     modelRelay: {
         "userName": {
