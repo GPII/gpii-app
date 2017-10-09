@@ -81,6 +81,16 @@
         }
     });
 
+    /**
+     * A listener which is called whenever the model related to a switch UI component
+     * changes. It takes case of setting the "aria-pressed" attibute of the element,
+     * as well as of showing/hiding the appropriate "On" or "Off" label.
+     * @param enabled {Boolean} Whether the switch is in an enabled state or not.
+     * @param control {Object} A jQuery object representing the control element of the
+     * switch component
+     * @param onLabel {Object} A jQuery object representing the associated "On" label.
+     * @param offLabel {Object} A jQuery object representing the associated "Off" label.
+     */
     gpii.pcp.widgets.onSwitchChange = function (enabled, control, onLabel, offLabel) {
         control.attr("aria-pressed", enabled);
 

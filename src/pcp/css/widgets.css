@@ -1,21 +1,19 @@
-input[type="range"] {
+.flc-widget input[type="range"] {
     display: inline-block;
     width: auto;
-}
+    max-width: 110px;
 
-.fl-radioToggleLabel {
+    vertical-align: middle;
     cursor: pointer;
 }
 
-.fl-radioToggleLabel + .fl-radioToggleLabel {
-    margin-left: 10px;
+.flc-widget select {
+    width: 100%;
+    cursor: pointer;
 }
 
 .flc-multipickerItem {
     display: block;
-}
-
-.flc-multipickerItem {
     cursor: pointer;
 }
 
