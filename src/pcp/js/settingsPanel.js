@@ -7,34 +7,6 @@
 
 
     /**
-     * A listener which is invoked whenever a setting row is destroyed. This function
-     * simply removes the container of the destroyed dynamic component from the DOM.
-     * @param mainWindowContainer {Object} A jQuery object representing the container
-     * of the settings window
-     * @param settingRowContainer {String} A unique selector identifying the container
-     * of the setting row that has been removed.
-     */
-    gpii.pcp.onSettingRowDestroy = function (mainWindowContainer, settingRowContainer) {
-        if (settingRowContainer) {
-            mainWindowContainer.find(settingRowContainer).remove();
-        }
-    };
-
-    /**
-     * A listener which is called when a setting has its value changed from the outside,
-     * i.e. not by the user's input in the PCP.
-     * @param that {Component} An instance of singleSettingPresenter.
-     * @param path {String} The path indentifying the current setting.
-     * @param settingData {Object} An object describing what has been changed. It contains
-     * the path of the changed setting, as well as its new value.
-     */
-    gpii.pcp.onSettingUpdate = function (that, path, settingData) {
-        if (path === settingData.path) {
-            that.applier.change("value", settingData.value, null, "outer");
-        }
-    };
-
-    /**
      * Creates the binding with the already rendered DOM elements.
      * Expects: widget configuration and model
      */
@@ -76,7 +48,7 @@
         },
         listeners: {
             "{mainWindow}.events.onSettingUpdate": {
-                funcName: "gpii.pcp.onSettingUpdate",
+                funcName: "gpii.pcp.settingPresenter.onSettingUpdate",
                 args: ["{that}", "{that}.model.path", "{arguments}.0"]
             },
             "onCreate.setIcon": {
@@ -100,6 +72,21 @@
             }
         }
     });
+
+    /**
+     * A listener which is called when a setting has its value changed from the outside,
+     * i.e. not by the user's input in the PCP.
+     * @param that {Component} An instance of singleSettingPresenter.
+     * @param path {String} The path indentifying the current setting.
+     * @param settingData {Object} An object describing what has been changed. It contains
+     * the path of the changed setting, as well as its new value.
+     */
+    gpii.pcp.settingPresenter.onSettingUpdate = function (that, path, settingData) {
+        if (path === settingData.path) {
+            that.applier.change("value", settingData.value, null, "outer");
+        }
+    };
+
 
     /**
      * Renders all related markup for a setting:
@@ -235,7 +222,7 @@
 
         listeners: {
             "onDestroy": {
-                funcName: "gpii.pcp.onSettingRowDestroy",
+                funcName: "gpii.pcp.settingVisualizer.onSettingRowDestroy",
                 args: ["{mainWindow}.container", "{that}.settingRenderer.model.settingContainer"]
             }
         },
@@ -276,39 +263,18 @@
     });
 
 
-    fluid.registerNamespace("gpii.pcp.settingsVisualizer");
-
-
     /**
-     * Constructs the markup for the indexed container - sets proper index.
-     *
-     * @param markup {Object}
-     * @param markup.containerClassPrefix {String} The class prefix for the indexed container.
-     *   Should have a `id` interpolated expression.
-     * @param markup.container {String} The markup which is to be interpolated with the container index.
-     *   Should have a `containerClass` interpolated expression.
-     * @param containerIndex {Number} The index for the container
-     * @returns {String}
+     * A listener which is invoked whenever a setting row is destroyed. This function
+     * simply removes the container of the destroyed dynamic component from the DOM.
+     * @param mainWindowContainer {Object} A jQuery object representing the container
+     * of the settings window
+     * @param settingRowContainer {String} A unique selector identifying the container
+     * of the setting row that has been removed.
      */
-    gpii.pcp.settingsVisualizer.getIndexedContainerMarkup = function (markup, containerIndex) {
-        // Remove the "." prefix
-        var containerClass = fluid.stringTemplate(markup.containerClassPrefix, { id: containerIndex });
-        return fluid.stringTemplate(markup.container, { containerClass: containerClass });
-    };
-
-    /**
-     * Simple getter for the property that supports complex keys containing '.' (dots).
-     */
-    gpii.pcp.getProperty = function (obj, property) {
-        return obj && obj[property];
-    };
-
-
-    gpii.pcp.settingsVisualizer.updateSettingsPresentations = function (that, settings) {
-        // TODO improve
-        settings.forEach(function (setting, settingIndex) {
-            that.events.onSettingCreated.fire(settingIndex, setting);
-        });
+    gpii.pcp.settingVisualizer.onSettingRowDestroy = function (mainWindowContainer, settingRowContainer) {
+        if (settingRowContainer) {
+            mainWindowContainer.find(settingRowContainer).remove();
+        }
     };
 
     /*
@@ -366,6 +332,40 @@
             }
         }
     });
+
+    /**
+     * Constructs the markup for the indexed container - sets proper index.
+     *
+     * @param markup {Object}
+     * @param markup.containerClassPrefix {String} The class prefix for the indexed container.
+     *   Should have a `id` interpolated expression.
+     * @param markup.container {String} The markup which is to be interpolated with the container index.
+     *   Should have a `containerClass` interpolated expression.
+     * @param containerIndex {Number} The index for the container
+     * @returns {String}
+     */
+    gpii.pcp.settingsVisualizer.getIndexedContainerMarkup = function (markup, containerIndex) {
+        // Remove the "." prefix
+        var containerClass = fluid.stringTemplate(markup.containerClassPrefix, { id: containerIndex });
+        return fluid.stringTemplate(markup.container, { containerClass: containerClass });
+    };
+
+    /**
+     * Simple getter for the property that supports complex keys containing '.' (dots).
+     */
+    gpii.pcp.getProperty = function (obj, property) {
+        return obj && obj[property];
+    };
+
+
+    gpii.pcp.settingsVisualizer.updateSettingsPresentations = function (that, settings) {
+        // TODO improve
+        settings.forEach(function (setting, settingIndex) {
+            that.events.onSettingCreated.fire(settingIndex, setting);
+        });
+    };
+
+
 
     /**
      * The top most component for representation of list of settings.
