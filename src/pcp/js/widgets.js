@@ -33,6 +33,9 @@
     fluid.defaults("gpii.pcp.widgets.button", {
         gradeNames: ["fluid.viewComponent"],
         label: null,
+        selectors: {
+            label: ".fl-btnLabel"
+        },
         listeners: {
             "onCreate.bindClickEvt": {
                 "this": "{that}.container",
@@ -40,7 +43,7 @@
                 args: ["{that}.onClick"]
             },
             "onCreate.initText": {
-                "this": "{that}.container",
+                "this": "{that}.dom.label",
                 method: "text",
                 args: ["{that}.options.label"]
             }

@@ -66,5 +66,15 @@
 
 .fl-switchUI-control[aria-checked=true] .fl-switchUI-controlKnob {
     left: 27px;
-    background-color: white;
+    background-color: #ffffff;
+}
+
+.fl-btn {
+    position: relative;
+}
+
+.fl-btnLabel {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
 }

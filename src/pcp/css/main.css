@@ -18,6 +18,7 @@ hr {
 }
 
 .fl-dropdownContainer select {
+    border: 3px solid #999999;
     cursor: pointer;
 }
 
@@ -51,7 +52,7 @@ hr {
 }
 
 *[class*="flc-settingListRow"] {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .flc-prefSetPicker {
@@ -78,22 +79,11 @@ hr {
     overflow: auto;
 }
 
-#flc-settingsFooter {
-    display: flex;
-}
+#flc-settingsFooter .btn {
+    width: 106px;
+    height: 75px;
 
-#flc-settingsFooter .fl-button {
-    box-sizing: border-box;
-    width: 95px;
-    height: 80px;
-    padding: 5px;
-    margin: auto;
-    border: 2px solid rgb(35, 160, 165);
-
-    line-height: 70px;
-    text-align: center;
-    user-select: none;
-    cursor: pointer;
+    border-width: 3px;
 }
 
 .flc-restartIcon {
