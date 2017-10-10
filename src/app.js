@@ -1099,8 +1099,7 @@ fluid.defaults("gpii.app.menu", {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getPreferenceSetsMenuItems",
                 args: ["{that}.model.preferences.sets", "{that}.model.preferences.activeSet"]
-            },
-            priority: "after:keyedInUser"
+            }
         },
         "menuTemplate": {
             target: "menuTemplate",

@@ -140,6 +140,17 @@ gpii.tests.app.testDefs = {
 
 fluid.registerNamespace("gpii.tests.dev");
 
+var prefSetsInDevStartIdx = 4;
+gpii.tests.dev.testContext1KeyedIn = function (menuTemplate, activeSetIdx) {
+    gpii.tests.app.testItem(menuTemplate[1], "Keyed in with Context1");
+    gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx], "Default preferences");
+    gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 1], "bright");
+    gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 2], "noise");
+    gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 3], "bright and noise");
+
+    jqUnit.assertTrue("Active set is marked in the menu", menuTemplate[activeSetIdx].checked);
+};
+
 gpii.tests.dev.testInitialMenu = function (menu) {
     var menuTemplate = menu.model.menuTemplate;
     gpii.tests.dev.testMenu(menuTemplate);
@@ -191,12 +202,36 @@ gpii.tests.dev.testTrayKeyedIn = function (tray) {
     jqUnit.assertValue("No user keyed-in icon", tray.options.icons.keyedIn, tray.model.icon);
 };
 
+gpii.tests.dev.testMultiPrefSetMenu = function (menuTemplate) {
+    gpii.tests.app.testTemplateExists(menuTemplate, 11);
+    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    // the default pref set should be set
+    gpii.tests.dev.testContext1KeyedIn(menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
+    gpii.tests.app.testItem(menuTemplate[9], "Key-out of GPII");
+    gpii.tests.app.testItem(menuTemplate[10], "Exit GPII");
+};
+
+gpii.tests.dev.testChangedActivePrefSetMenu = function (menuTemplate, prefSetClickedIdx) {
+    gpii.tests.dev.testContext1KeyedIn(menuTemplate,
+                      /*activeSetIdx=*/prefSetClickedIdx);
+};
+
+gpii.tests.dev.testActiveSetChanged = function (menuTemplate, prefSetItemClickedIdx, preferences) {
+    // Changed in menu
+    gpii.tests.dev.testChangedActivePrefSetMenu(menuTemplate, prefSetItemClickedIdx);
+
+    // Changed in component
+    jqUnit.assertEquals("Active preference set changed properly in component",
+        menuTemplate[prefSetItemClickedIdx].args.path,
+        preferences.activeSet);
+};
+
 fluid.registerNamespace("gpii.tests.dev.testDefs");
 
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 113,
+    expect: 144,
     config: {
         configName: "app.dev",
         configPath: "configs"
@@ -238,5 +273,27 @@ gpii.tests.dev.testDefs = {
     }, {
         func: "gpii.tests.dev.testTrayKeyedOut",
         args: "{that}.app.tray"
-    }]
+    }, { // test active set change
+        func: "{that}.app.keyIn",
+        args: "context1"
+    }, {
+        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
+        // XXX {{1}}
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray.menu.model.menuTemplate"],
+        listener: "gpii.tests.dev.testMultiPrefSetMenu"
+    }, { // simulate choosing different pref set
+        func: "{that}.app.tray.menu.model.menuTemplate.6.click"
+    }, { // test Active Pref Set changed
+        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
+        path: "menuTemplate",
+        args: [
+            "{that}.app.tray.menu.model.menuTemplate",
+            /*prefSetItemClickedIdx=*/6,
+            "{that}.app.model.preferences"
+        ],
+        listener: "gpii.tests.dev.testActiveSetChanged"
+    }
+        // tooltip
+    ]
 };
