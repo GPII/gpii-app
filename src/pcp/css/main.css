@@ -94,3 +94,8 @@ hr {
 .flc-memoryIcon {
     display: none;
 }
+
+#flc-settingsFooter .flc-helpBtn {
+    float: right;
+    margin-right: 0;
+}

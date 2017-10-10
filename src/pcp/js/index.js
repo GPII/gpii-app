@@ -296,7 +296,6 @@
         gradeNames: ["fluid.viewComponent"],
         selectors: {
             keyOutBtn: ".flc-keyOutBtn",
-            openPmtBtn: ".flc-openPmtBtn",
             helpBtn: ".flc-helpBtn"
         },
         components: {
@@ -307,16 +306,6 @@
                     label: "{footer}.options.labels.keyOut",
                     invokers: {
                         "onClick": "gpii.pcp.keyOut"
-                    }
-                }
-            },
-            openPmtBtn: {
-                type: "gpii.pcp.widgets.button",
-                container: "{that}.dom.openPmtBtn",
-                options: {
-                    label: "{footer}.options.labels.pmt",
-                    invokers: {
-                        "onClick": "gpii.pcp.openUrl({footer}.options.urls.pmt)"
                     }
                 }
             },
@@ -332,12 +321,10 @@
             }
         },
         urls: {
-            pmt: "http://pmt.gpii.org",
             help: "http://pmt.gpii.org/help"
         },
         labels: {
             keyOut: "Key Out",
-            pmt: "Open PMT",
             help: "Help"
         }
     });
