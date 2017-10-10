@@ -1,25 +1,16 @@
 body {
     margin: 8px;
-    background-color: #71c5ef;
+    background-color: #0078d7;
+    color: #ffffff;
+
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 hr { 
     display: block;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    margin-left: auto;
-    margin-right: auto;
-    border-style: inset;
-    border-width: 2px;
-}
-
-.fl-dropdownContainer {
-    margin-bottom: 0;
-}
-
-.fl-dropdownContainer select {
-    border: 3px solid #999999;
-    cursor: pointer;
+    margin: 0.5em auto;
+    border: 2px solid #1061b4;
 }
 
 .flc-solutionName:not(:empty):after {
@@ -49,10 +40,11 @@ hr {
 .flc-widget {
     padding-left: 10px;
     text-align: center;
+    color: #000000;
 }
 
 *[class*="flc-settingListRow"] {
-    margin-bottom: 20px;
+    margin-bottom: 1.25em;
 }
 
 .flc-prefSetPicker {
@@ -61,7 +53,20 @@ hr {
 
 .flc-closeBtn {
     float: right;
-    cursor: pointer;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+
+    font-size: 20px;
+
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.flc-closeBtn:hover,
+.flc-closeBtn:focus {
+    color: #ffffff;
 }
 
 .clear-both {
@@ -72,18 +77,13 @@ hr {
     height: 100%;
     display: flex;
     flex-direction: column;
+
+    font-size: 20px;
 }
 
 #flc-settingsList {
     flex: 1;
     overflow: auto;
-}
-
-#flc-settingsFooter .btn {
-    width: 106px;
-    height: 75px;
-
-    border-width: 3px;
 }
 
 .flc-restartIcon {

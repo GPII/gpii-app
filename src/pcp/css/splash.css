@@ -10,12 +10,7 @@
      * Same as for `body`;
      * Needed to hide the other content
      */
-    background-color: #71c5ef;
-}
-
-.logo h3,
-.logo p {
-    text-align: center;
+    background-color: #0078d7;
 }
 
 .flc-splash .logo {
@@ -26,8 +21,11 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    text-align: center;
 }
 
 .flc-splash .logo img {
     width: 100%;
+    margin-top: 20px;
 }

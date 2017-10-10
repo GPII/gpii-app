@@ -373,7 +373,7 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
         y: screenSize.height - height,
 
         // Make the app feel more native
-        backgroundColor: "#71c5ef"
+        backgroundColor: "#0078d7"
     });
 
     pcpWindow.on("blur", function () {
@@ -420,7 +420,7 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
 
         title: schema.title,
         description: schema.description,
-        icon: "../icons/gear-cloud-black.png",
+        icon: "../icons/gear-cloud-white.png",
         dynamic: false,
         isPersisted: true,
 

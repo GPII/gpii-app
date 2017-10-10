@@ -1,0 +1,22 @@
+.fl-dropdownContainer {
+    margin-bottom: 0;
+}
+
+.fl-dropdownContainer select {
+    padding-top: 0;
+
+    background-color: rgba(255, 255, 255, 0.6);
+    border-color: #ffffff;
+    color: #000000;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+.fl-dropdownContainer select:hover,
+.fl-dropdownContainer select:focus {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-color: #ffffff;
+    color: #000000;
+}
