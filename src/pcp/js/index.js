@@ -39,7 +39,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         ipcRenderer.on("updateSetting", function (event, settingData) {
-            that.events.onSettingUpdate.fire(settingData);
+            that.updateSetting(settingData.path, settingData.value);
         });
 
         ipcRenderer.on("keyOut", function (event, preferences) {
@@ -416,13 +416,47 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 value: "{arguments}.0",
                 source: "outer"
             },
+            "updateSetting": {
+                funcName: "gpii.pcp.mainWindow.updateSetting",
+                args: [
+                    "{that}.applier",
+                    "{that}.model.preferences.settings",
+                    "{arguments}.0",
+                    "{arguments}.1"
+                ]
+            },
             "close": "gpii.pcp.closeSettingsWindow()"
         },
         events: {
-            onPreferencesUpdated: null,
-            onSettingUpdate: null
+            onPreferencesUpdated: null
         }
     });
+
+    /**
+     * Update a setting of the existing settings list from the outside. It notifies
+     * observers of the change.
+     *
+     * @param applier {Object} An applier, used to apply the change in order to have
+     * all the dependent observers notified
+     * @param settings {Object[]} The list of settings
+     * @param path {String} The path of the value to be changed
+     * @param newValue {String|Number} The new value for the setting
+     */
+    gpii.pcp.mainWindow.updateSetting = function (applier, settings, path, newValue) {
+        var alteredSettingIdx = settings.findIndex(function (setting) {
+                return setting.path === path;
+            }),
+            changePath;
+
+        if (alteredSettingIdx > -1) {
+            // XXX in order to notify observers, use the applier
+            changePath = fluid.stringTemplate("preferences.settings.%settingIdx.value",
+                { settingIdx: alteredSettingIdx });
+            applier.change(changePath, newValue);
+        } else {
+            console.error("Setting not present in the current list: ", path);
+        }
+    };
 
     $(function () {
         gpii.pcp.mainWindow("#flc-body");

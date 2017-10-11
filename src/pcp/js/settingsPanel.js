@@ -88,10 +88,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         listeners: {
-            "{mainWindow}.events.onSettingUpdate": {
-                funcName: "gpii.pcp.settingPresenter.onSettingUpdate",
-                args: ["{that}", "{that}.model.path", "{arguments}.0"]
-            },
             "onCreate.setIcon": {
                 this: "{that}.dom.icon",
                 method: "attr",
@@ -115,25 +111,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     /**
-     * A listener which is called when a setting has its value changed from the outside,
-     * i.e. not by the user's input in the PCP.
-     * @param that {Component} An instance of singleSettingPresenter.
-     * @param path {String} The path indentifying the current setting.
-     * @param settingData {Object} An object describing what has been changed. It contains
-     * the path of the changed setting, as well as its new value.
-     */
-    gpii.pcp.settingPresenter.onSettingUpdate = function (that, path, settingData) {
-        if (path === settingData.path) {
-            that.applier.change("value", settingData.value, null, "outer");
-        }
-    };
-
-
-    /**
      * Renders all related markup for a setting:
      * - container;
      * - setting markup;
      * - widget markup
+     * It also removes the injected markup on destroy
      * Expects: markup
      * Saves the newly created setting outer container internally
      */
