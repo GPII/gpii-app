@@ -99,15 +99,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     /**
-     * Utility function for retrieving the last sub-element of a container
-     * @param container {Object} The jQuery container object
-     * @returns {Object} A jQuery container object
-     */
-    gpii.pcp.getContainerLastChild = function (container) {
-        return container.children().last();
-    };
-
-    /**
      * A method responsible for showing a restart icon when the user changes a setting
      * which is not dynamic.
      * @param dynamic {Boolean} Whether the current setting is dynamic or not.

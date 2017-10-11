@@ -25,7 +25,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var gpii = fluid.registerNamespace("gpii");
 
     fluid.registerNamespace("gpii.pcp");
+    fluid.registerNamespace("gpii.pcp.utils");
 
+
+    /**
+     * Utility function for retrieving the last sub-element of a container
+     * @param container {Object} The jQuery container object
+     * @returns {Object} A jQuery container object
+     */
+    gpii.pcp.utils.getContainerLastChild = function (container) {
+        return container.children().last();
+    };
+
+    /**
+     * A simple wrapper for the remove function
+     * @param container {Object} A jQuery object
+     */
+    gpii.pcp.utils.removeContainer = function (container) {
+        if (container) {
+            container.remove();
+        }
+    };
 
     /**
      * Creates the binding with the already rendered DOM elements.
@@ -135,6 +155,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onSettingMarkupRendered: null,
             onWidgetMarkupRendered: null
         },
+        listeners: {
+            "onDestroy.clearInjectedMarkup": {
+                funcName: "gpii.pcp.utils.removeContainer",
+                args: "{that}.model.settingContainer"
+            }
+        },
         components: {
             /*
              * Render the outer most container for the setting
@@ -152,7 +178,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         },
                         "onCreate.updateContainer": {
                             funcName: "{settingRenderer}.setContainer",
-                            args: "@expand:gpii.pcp.getContainerLastChild({that}.container)",
+                            args: "@expand:gpii.pcp.utils.getContainerLastChild({that}.container)",
                             priority: "after:render"
                         },
                         "onCreate.notify": {
@@ -241,13 +267,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onSettingRendered: null
         },
 
-        listeners: {
-            "onDestroy": {
-                funcName: "gpii.pcp.settingVisualizer.onSettingRowDestroy",
-                args: ["{mainWindow}.container", "{that}.settingRenderer.model.settingContainer"]
-            }
-        },
-
         components: {
             settingRenderer: {
                 type: "gpii.pcp.settingRenderer",
@@ -283,20 +302,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-
-    /**
-     * A listener which is invoked whenever a setting row is destroyed. This function
-     * simply removes the container of the destroyed dynamic component from the DOM.
-     * @param mainWindowContainer {Object} A jQuery object representing the container
-     * of the settings window
-     * @param settingRowContainer {String} A unique selector identifying the container
-     * of the setting row that has been removed.
-     */
-    gpii.pcp.settingVisualizer.onSettingRowDestroy = function (mainWindowContainer, settingRowContainer) {
-        if (settingRowContainer) {
-            mainWindowContainer.find(settingRowContainer).remove();
-        }
-    };
 
     /*
      * With markup given, visualizes the list of settings passed - rendering and binding of each.
