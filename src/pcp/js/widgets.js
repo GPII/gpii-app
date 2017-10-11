@@ -56,7 +56,19 @@
     });
 
     fluid.defaults("gpii.pcp.widgets.textfield", {
-        gradeNames: ["fluid.textfield"]
+        gradeNames: ["fluid.viewComponent"],
+        selectors: {
+            input: ".flc-textfieldInput"
+        },
+        components: {
+            textfield: {
+                type: "fluid.textfield",
+                container: "{that}.dom.input",
+                options: {
+                    model: "{gpii.pcp.widgets.textfield}.model"
+                }
+            }
+        }
     });
 
     fluid.defaults("gpii.pcp.widgets.switch", {
