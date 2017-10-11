@@ -6,6 +6,8 @@
     background-color: rgba(255, 255, 255, 0.6);
     border: 1px solid #ffffff;
     color: #000000;
+
+    line-height: 36px;
 }
 
 .fl-textfield:hover {

@@ -1097,7 +1097,7 @@ fluid.defaults("gpii.app.menu", {
         }
     },
     menuLabels: {
-        pcp: "Open PCP",
+        pcp: "Open PSP",
         keyedIn: "Keyed in with %userTokenName",    // string template
         keyOut: "Key-out of GPII",
         notKeyedIn: "(No one keyed in)",

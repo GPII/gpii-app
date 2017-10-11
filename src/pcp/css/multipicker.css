@@ -1,0 +1,19 @@
+.fl-multipicker label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+
+    color: #ffffff;
+}
+
+.fl-multipicker label input ~ span::before,
+.fl-multipicker:hover label input ~ span::before {
+    border-color: #ffffff;
+}
+
+.fl-multipicker label input:checked ~ span::before,
+.fl-multipicker:hover label input:checked ~ span::before {
+    background-color: #ffffff;
+    border-color: rgba(0, 120, 215, 0.4);
+    color: #0078d7;
+}

@@ -1,4 +1,4 @@
-.flc-stepper input[type=range] {
+.fl-stepper input[type=range] {
     display: inline-block;
     width: auto;
     max-width: 110px;
@@ -9,32 +9,32 @@
     cursor: pointer;
 }
 
-.flc-stepper input[type=range]:focus {
+.fl-stepper input[type=range]:focus {
     outline: none;
 }
 
-.flc-stepper input[type=range]::-webkit-slider-runnable-track {
+.fl-stepper input[type=range]::-webkit-slider-runnable-track {
     width: 100%;
     height: 3px;
     cursor: pointer;
     background: #66aee6;
 }
 
-.flc-stepper input[type=range]::-webkit-slider-thumb {
+.fl-stepper input[type=range]::-webkit-slider-thumb {
     height: 30px;
     width: 10px;
     border-radius: 5px;
-    background: #0087f0;
+    background: #005ba6;
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -13.5px;
 }
 
-.flc-stepper input[type=range]:focus::-webkit-slider-thumb {
+.fl-stepper input[type=range]:focus::-webkit-slider-thumb {
     background: #ffffff;
 }
 
-.flc-stepper .fl-stepperBtn {
+.fl-stepper .fl-stepperBtn {
     display: inline-block;
     margin: 0 5px;
 
@@ -45,11 +45,11 @@
     cursor: pointer;
 }
 
-.flc-stepper .fl-stepperBtn:hover {
+.fl-stepper .fl-stepperBtn:hover {
     color: #ffffff;
 }
 
-.flc-stepper .fl-textfield {
+.fl-stepper .fl-textfield {
     max-width: 50px;
     padding: 2px;
 

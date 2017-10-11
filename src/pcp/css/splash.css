@@ -14,7 +14,7 @@
 }
 
 .flc-splash .logo {
-    max-width: 20em;
+    width: 65%;
     
     /* vertical align */
     position: absolute;
@@ -28,4 +28,9 @@
 .flc-splash .logo img {
     width: 100%;
     margin-top: 20px;
+}
+
+.flc-splashMsg {
+    font-size: 18px;
+    font-style: italic;
 }

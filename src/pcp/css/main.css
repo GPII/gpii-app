@@ -7,6 +7,22 @@ body {
     user-select: none;
 }
 
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 4px;
+    border-radius: 5px;
+    background-color: #66aee6;
+    box-shadow: none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #ffffff;
+}
+
 hr { 
     display: block;
     margin: 0.5em auto;
@@ -83,7 +99,12 @@ hr {
 
 #flc-settingsList {
     flex: 1;
-    overflow: auto;
+
+    /* Needed in order to have some spacing between the scrollbar
+       and the content of the text. */
+    margin-right: -8px;
+    padding-right: 8px;
+    overflow-y: scroll;
 }
 
 .flc-restartIcon {
