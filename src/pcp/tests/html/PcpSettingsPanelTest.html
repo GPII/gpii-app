@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>GPII PSP Client Tests</title>
+
+        <!--  This is the jqUnit test css file -->
+        <link rel="stylesheet" media="screen" href="../../../../node_modules/infusion/tests/lib/qunit/css/qunit.css" />
+
+        <!-- This file verifies that the Renderer still basically functions in the absence of the IoC framework -->
+            <!-- TODO use the big js file? -->
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/lib/jquery/ui/js/jquery-ui.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/Fluid.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/FluidIoC.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/ResourceLoader.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/FluidDocument.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/FluidDebugging.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/ModelTransformation.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/ModelTransformationTransforms.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/DataBinding.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/FluidView.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/FluidDOMUtilities.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/FluidRequests.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/JavaProperties.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/lib/fastXmlPull/js/fastXmlPull.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/renderer/js/fluidParser.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/renderer/js/fluidRenderer.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/renderer/js/RendererUtilities.js"></script>
+
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/core/js/jquery.keyboard-a11y.js"></script>
+        <!-- for fluid.iota TODO needed? -->
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/components/switch/js/Switch.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/components/textFieldControl/js/Textfield.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/components/textFieldControl/js/TextfieldSlider.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/components/textFieldControl/js/TextfieldStepper.js"></script>
+
+        <!--  These are the jqUnit test js files -->
+        <script type="text/javascript" src="../../../../node_modules/infusion/tests/lib/qunit/js/qunit.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/tests/test-core/jqUnit/js/jqUnit.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/tests/test-core/jqUnit/js/jqUnit-browser.js"></script>
+
+        <script type="text/javascript" src="../../../../node_modules/infusion/src/framework/enhancement/js/ContextAwareness.js"></script>
+        <script type="text/javascript" src="../../../../node_modules/infusion/tests/test-core/utils/js/IoCTestUtils.js"></script>
+
+        <!-- These are the files to be tested -->
+        <script type="text/javascript" src="../../js/widgets.js"></script>
+        <script type="text/javascript" src="../../js/exemplars.js"></script>
+        <script type="text/javascript" src="../../js/settingsPanel.js"></script>
+
+
+        <!--  These are tests that have been written using this page as data -->
+        <script type="text/javascript" src="../js/PcpSettingsPanelTests.js"></script>
+
+    </head>
+
+    <body id="body">
+        <h1 id="qunit-header">GPII PSP Tests</h1>
+        <h2 id="qunit-banner"></h2>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests"></ol>
+
+        <!-- Panel related markup -->
+        <div class="flc-settingsPanel1"></div>
+    </body>
+</html>
