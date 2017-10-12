@@ -7,10 +7,6 @@ body {
     user-select: none;
 }
 
-body.theme-alt {
-    background-color: #1f1f1f;
-}
-
 ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 5px;
@@ -21,76 +17,6 @@ body.theme-alt {
     border-radius: 5px;
     background-color: #005ba6;
     box-shadow: none;
-}
-
-.theme-alt ::-webkit-scrollbar-thumb {
-    background-color: #797979;
-}
-
-hr { 
-    display: block;
-    margin: 0.5em auto;
-    border: 2px solid #005ba6;
-}
-
-.theme-alt hr {
-    border-color: #797979;
-}
-
-.flc-solutionName:not(:empty):after {
-    content: ":";
-}
-
-.flc-setting {
-    display: flex;
-}
-
-.flc-setting > * {
-    flex: 1;
-}
-
-.flc-icon {
-    position: relative;
-    top: 5px;
-
-    float: left;
-    margin-right: 10px;
-}
-
-.fl-settingLabel {
-    overflow: hidden;
-}
-
-.flc-widget {
-    padding-left: 10px;
-    text-align: center;
-    color: #000000;
-}
-
-*[class*="flc-settingListRow"] {
-    margin-bottom: 1.25em;
-}
-
-.flc-prefSetPicker {
-    float: left;
-}
-
-.flc-closeBtn {
-    float: right;
-    min-width: 0;
-    padding: 0;
-    margin: 0;
-
-    font-size: 20px;
-
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.flc-closeBtn:hover,
-.flc-closeBtn:focus {
-    color: #ffffff;
 }
 
 .clear-both {
@@ -105,6 +31,38 @@ hr {
     font-size: 20px;
 }
 
+/* Header styles */
+
+#flc-settingsHeader hr { 
+    display: block;
+    margin: 0.5em auto;
+    border: 2px solid #005ba6;
+}
+
+#flc-settingsHeader .flc-prefSetPicker {
+    float: left;
+}
+
+#flc-settingsHeader .flc-closeBtn {
+    float: right;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+
+    font-size: 20px;
+
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#flc-settingsHeader .flc-closeBtn:hover,
+#flc-settingsHeader .flc-closeBtn:focus {
+    color: #ffffff;
+}
+
+/* Settings list styles */
+
 #flc-settingsList {
     flex: 1;
 
@@ -115,16 +73,65 @@ hr {
     overflow-y: overlay;
 }
 
-.flc-restartIcon {
+#flc-settingsList > *[class*="flc-settingListRow"] {
+    margin-bottom: 1.25em;
+}
+
+#flc-settingsList .flc-setting {
+    display: flex;
+}
+
+#flc-settingsList .flc-setting > * {
+    flex: 1;
+}
+
+#flc-settingsList .flc-setting .flc-icon {
+    position: relative;
+    top: 5px;
+
+    float: left;
+    margin-right: 10px;
+}
+
+#flc-settingsList .flc-setting .fl-settingLabel {
+    overflow: hidden;
+}
+
+#flc-settingsList .flc-setting .fl-settingLabel .flc-solutionName:not(:empty):after {
+    content: ":";
+}
+
+#flc-settingsList .flc-setting .flc-widget {
+    padding-left: 10px;
+    text-align: center;
+    color: #000000;
+}
+
+#flc-settingsList .flc-setting .fl-settingLabel .flc-restartIcon {
     display: none;
     font-weight: bold;
 }
 
-.flc-memoryIcon {
+#flc-settingsList .flc-setting .fl-settingLabel .flc-memoryIcon {
     display: none;
 }
+
+/* Footer styles */
 
 #flc-settingsFooter .flc-helpBtn {
     float: right;
     margin-right: 0;
+}
+
+/* Styles for alt theme */
+body.theme-alt {
+    background-color: #1f1f1f;
+}
+
+.theme-alt ::-webkit-scrollbar-thumb {
+    background-color: #797979;
+}
+
+.theme-alt #flc-settingsHeader hr {
+    border-color: #797979;
 }
