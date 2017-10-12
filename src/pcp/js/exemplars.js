@@ -36,7 +36,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         mergePolicy: {
             widgetOptions: "noexpand"
         },
-        template: null,
+
+        resourceDir: "./html", // a "home" dir for the resources
+        resourceName: null,    // should be altered
+        template: {
+            expander: {
+                funcName: "fluid.stringTemplate",
+                args: [
+                    "%resourceDir/%resourceName",
+                    {
+                        resourceDir: "{that}.options.resourceDir",
+                        resourceName: "{that}.options.resourceName"
+                    }
+                ]
+            }
+        },
+
         grade: null,
         schemeType: null,
         widgetOptions: {
@@ -49,13 +64,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("gpii.pcp.exemplar.settingsVisualizer", {
         gradeNames: "gpii.pcp.exemplar",
 
-        template: "html/settingRow.html",
+        resourceName: "settingRow.html",
         grade: "gpii.pcp.settingsVisualizer"
     });
 
     fluid.defaults("gpii.pcp.exemplar.multipicker", {
         gradeNames: "gpii.pcp.exemplar",
-        template: "html/multipicker.html",
+        resourceName: "multipicker.html",
         grade: "gpii.pcp.widgets.multipicker",
         schemeType: "array",
         widgetOptions: {
@@ -72,7 +87,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("gpii.pcp.exemplar.switch", {
         gradeNames: "gpii.pcp.exemplar",
-        template: "html/switch.html",
+        resourceName: "switch.html",
         grade: "gpii.pcp.widgets.switch",
         schemeType: "boolean",
         widgetOptions: {
@@ -87,7 +102,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("gpii.pcp.exemplar.dropdown", {
         gradeNames: "gpii.pcp.exemplar",
-        template: "html/dropdown.html",
+        resourceName: "dropdown.html",
         grade: "gpii.pcp.widgets.dropdown",
         schemeType: "string",
         widgetOptions: {
@@ -101,7 +116,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("gpii.pcp.exemplar.stepper", {
         gradeNames: "gpii.pcp.exemplar",
-        template: "html/stepper.html",
+        resourceName: "stepper.html",
         grade: "gpii.pcp.widgets.stepper",
         schemeType: "number",
         widgetOptions: {
@@ -118,7 +133,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("gpii.pcp.exemplar.textfield", {
         gradeNames: "gpii.pcp.exemplar",
-        template: "html/textfield.html",
+        resourceName: "textfield.html",
         grade: "gpii.pcp.widgets.textfield",
         schemeType: "text",
         widgetOptions: {

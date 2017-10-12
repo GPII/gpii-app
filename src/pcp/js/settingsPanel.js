@@ -104,11 +104,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: "{that}.model.title"
             },
             "onCreate.setMemoryIcon": {
-                funcName: "gpii.pcp.showMemoryIcon",
+                funcName: "gpii.pcp.settingPresenter.showMemoryIcon",
                 args: ["{that}.model.isPersisted", "{that}.dom.memoryIcon"]
             }
         }
     });
+
+
+    /**
+     * A method responsible for showing a memory icon if the setting will be persisted
+     * after a user has changed it.
+     * @param isPersisted {Boolean} Whether the current setting will be persisted or not.
+     * @param memoryIcon {Object} A jQuery object representing the memory icon.
+     */
+    gpii.pcp.settingPresenter.showMemoryIcon = function (isPersisted, memoryIcon) {
+        if (isPersisted) {
+            memoryIcon.show();
+        }
+    };
+
+
 
     /**
      * Renders all related markup for a setting:
