@@ -1,8 +1,7 @@
 /* eslint-env node */
 "use strict";
 
-var fluid = require("universal");
-
+require("universal");
 require("gpii-windows/index.js");
 
 // Run the GPII tests
