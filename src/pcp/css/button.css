@@ -1,3 +1,4 @@
+/* Default (dark) theme styles */
 .fl-btn {
     position: relative;
     width: 106px;
@@ -28,4 +29,22 @@
 
     text-align: left;
     white-space: normal;
+}
+
+/* Styles for alt theme */
+.theme-alt .fl-btn {
+    background-color: #0b93ff;
+    border-color: transparent;
+    color: #ffffff;
+}
+
+.theme-alt .fl-btn:hover {
+    background-color: #0086f1;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.theme-alt .fl-btn:focus,
+.theme-alt .fl-btn:active {
+    background-color: #0b93ff;
+    border-color: rgba(255, 255, 255, 0.4);
 }

@@ -1,3 +1,4 @@
+/* Default (dark) theme styles */
 .flc-splash {
     position: absolute;
     top: 0;
@@ -33,4 +34,9 @@
 .flc-splashMsg {
     font-size: 18px;
     font-style: italic;
+}
+
+/* Styles for alt theme */
+.theme-alt .flc-splash {
+    background-color: #1f1f1f;
 }

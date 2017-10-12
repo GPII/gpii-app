@@ -1,3 +1,4 @@
+/* Default (dark) theme styles */
 .fl-switchUI {
     min-width: 80px;
     margin-top: 10px;
@@ -47,4 +48,14 @@
 .fl-switchUI-control[aria-checked=true] .fl-switchUI-controlKnob {
     left: 27px;
     background-color: #e6e6e6;
+}
+
+/* Styles for alt theme */
+.theme-alt .fl-switchUI-control[aria-checked=true] { 
+    background-color: #0078d7;
+    border-color: transparent;
+}
+
+.theme-alt .fl-switchUI-control[aria-checked=true] .fl-switchUI-controlKnob {
+    background-color: #ffffff;
 }
