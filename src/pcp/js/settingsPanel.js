@@ -100,7 +100,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             "onCreate.setTitle": {
                 this: "{that}.dom.title",
-                method: "append",
+                method: "text",
                 args: "{that}.model.title"
             },
             "onCreate.setMemoryIcon": {
