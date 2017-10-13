@@ -19,6 +19,15 @@ body {
     box-shadow: none;
 }
 
+.btn-regular {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+
+    background: transparent;
+    border: none;
+}
+
 .clear-both {
     clear: both;
 }
@@ -45,14 +54,8 @@ body {
 
 #flc-settingsHeader .flc-closeBtn {
     float: right;
-    min-width: 0;
-    padding: 0;
-    margin: 0;
 
     font-size: 20px;
-
-    background: transparent;
-    border: none;
     color: rgba(255, 255, 255, 0.6);
 }
 
@@ -86,11 +89,8 @@ body {
 }
 
 #flc-settingsList .flc-setting .flc-icon {
-    position: relative;
-    top: 5px;
-
     float: left;
-    margin-right: 10px;
+    margin: 9px 10px 0 0;
 }
 
 #flc-settingsList .flc-setting .fl-settingLabel {
@@ -103,7 +103,6 @@ body {
 
 #flc-settingsList .flc-setting .flc-widget {
     padding-left: 10px;
-    text-align: center;
     color: #000000;
 }
 

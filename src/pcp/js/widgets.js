@@ -36,7 +36,15 @@
         selectors: {
             label: ".fl-btnLabel"
         },
+        attrs: {
+            // user provided attributes
+        },
         listeners: {
+            "onCreate.addAttrs": {
+                "this": "{that}.container",
+                method: "attr",
+                args: ["{that}.options.attrs"]
+            },
             "onCreate.bindClickEvt": {
                 "this": "{that}.container",
                 method: "click",

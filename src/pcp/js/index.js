@@ -244,14 +244,21 @@
                         }
                     }
                 }
+            },
+            closeBtn: {
+                type: "gpii.pcp.widgets.button",
+                container: "{that}.dom.closeBtn",
+                options: {
+                    attrs: {
+                        "aria-label": "Close"
+                    },
+                    invokers: {
+                        "onClick": "{mainWindow}.close"
+                    }
+                }
             }
         },
         listeners: {
-            "onCreate.initCloseBtn": {
-                "this": "{that}.dom.closeBtn",
-                method: "on",
-                args: ["click", "{mainWindow}.close"]
-            },
             "{mainWindow}.events.onPreferencesUpdated": {
                 funcName: "gpii.pcp.updateHeader",
                 args: ["{that}.model.preferences.sets", "{that}.dom.preferenceSetPicker", "{that}.dom.activePreferenceSet"]
