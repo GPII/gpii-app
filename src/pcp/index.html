@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="../../node_modules/winstrap/dist/css/winstrap.min.css">
+        <link rel="stylesheet" href="css/button.css">
+        <link rel="stylesheet" href="css/dropdown.css">
+        <link rel="stylesheet" href="css/multipicker.css">
+        <link rel="stylesheet" href="css/slider.css">
+        <link rel="stylesheet" href="css/switch.css">
+        <link rel="stylesheet" href="css/textfield.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/splash.css">
+        <script type="text/javascript" src="../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../node_modules/infusion/dist/infusion-all.js"></script>
+        <script type="text/javascript" src="../../node_modules/winstrap/dist/js/vendor/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/widgets.js"></script>
+        <script type="text/javascript" src="js/exemplars.js"></script>
+        <script type="text/javascript" src="js/settingsPanel.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </head>
+    <body id="flc-body" class="theme-alt">
+        <div class="flc-splash">
+            <div class="logo">
+                <div class="flc-splashMsg">Not keyed in</div>
+                <img src="../icons/gpii-icon-balloon.png">
+                <h3>GPII - Personal Settings Panel</h3>
+            </div>
+        </div>
+
+        <div id="fl-contentWrapper">
+            <div id="flc-settingsHeader">
+                <div class="flc-prefSetPicker form-group fl-dropdown">
+                    <div class="combobox">
+                        <select class="flc-dropdown-options form-control"></select>
+                    </div>
+                </div>
+                <span class="flc-activePreferenceSet"></span>
+                <button class="flc-closeBtn btn btn-regular">&#x2715;</button>
+                <div class="clear-both"></div>
+                <hr>
+            </div>
+
+            <div id="flc-settingsList"></div>
+
+            <div id="flc-settingsFooter" class="btn-group">
+                <button class="flc-keyOutBtn btn fl-btn">
+                    <span class="fl-btnIcon glyph glyph-import-mirrored"></span>
+                    <span class="fl-btnLabel"></span>
+                </button>
+                <button class="flc-helpBtn btn fl-btn">
+                    <span class="fl-btnIcon glyph glyph-help"></span>
+                    <span class="fl-btnLabel"></span>
+                </button>
+            </div>
+        </div>
+    </body>
+</html>

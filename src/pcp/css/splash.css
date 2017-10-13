@@ -1,0 +1,42 @@
+/* Default (dark) theme styles */
+.flc-splash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+
+    /*
+     * Same as for `body`;
+     * Needed to hide the other content
+     */
+    background-color: #0078d7;
+}
+
+.flc-splash .logo {
+    width: 65%;
+    
+    /* vertical align */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    text-align: center;
+}
+
+.flc-splash .logo img {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.flc-splashMsg {
+    font-size: 18px;
+    font-style: italic;
+}
+
+/* Styles for alt theme */
+.theme-alt .flc-splash {
+    background-color: #1f1f1f;
+}
