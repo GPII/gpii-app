@@ -262,6 +262,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             // XXX not quite valid naming as the widget component (in settingPresenter) also renders
             onSettingRendered: null
+            // onSettingAltered: null  // passed from parent
         },
 
         components: {
@@ -289,7 +290,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{settingVisualizer}.options.setting",
                     modelListeners: {
                         value: {
-                            funcName: "gpii.pcp.updateSetting",
+                            funcName: "{settingVisualizer}.events.onSettingAltered.fire",
                             args: ["{that}.model.path", "{change}.value"],
                             excludeSource: ["init", "outer"]
                         }
@@ -344,6 +345,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     settingIndex: "{arguments}.0",
                     setting: "{arguments}.1",
+
+                    events: {
+                        "onSettingAltered": "{settingsPanel}.events.onSettingAltered"
+                    },
 
                     widgetConfig: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemeType({that}.options.setting.type)",
                     markup: {
@@ -400,7 +405,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         model: {
             settings: []
         },
-
         components: {
             settingsExemplars: {
                 type: "fluid.component",
@@ -442,7 +446,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         events: {
-            onTemplatesLoaded: null
+            onTemplatesLoaded: null,
+            onSettingAltered: null
         }
     });
 

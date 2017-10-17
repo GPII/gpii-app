@@ -370,7 +370,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             header: {
                 type: "gpii.pcp.header",
                 container: "{that}.dom.header"
-                // TODO send options
             },
             settingsPanel: {
                 type: "gpii.pcp.settingsPanel",
@@ -379,6 +378,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: {
                         settings: "{mainWindow}.model.preferences.settings"
+                    },
+                    listeners: {
+                        "onSettingAltered.notifyIRC": {
+                            funcName: "gpii.pcp.updateSetting",
+                            args: ["{arguments}.0", "{arguments}.1"]
+                        }
                     }
                 }
             },

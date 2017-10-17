@@ -27,24 +27,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /* TODO
      *
      * FOR EACH
-     * dynamic flag is shown
-     * title is shown
-     * on click handler is triggered
-     * icon is shown
-     * m flag is shown
-     *
+     * (2)dynamic flag is shown
+     * (2)m flag is shown
+     * (3) on click handler is triggered
+     * (3) rendered on update
      *
      * async update of solutionName
+     *
      * WIDGETS
      *  * simulate value change by user
+     *  * simulate API change (model)
+     *  * doc tests
+     *
+     * DIFFERENT FIXTURES
+     *  * same type widget >1
+     *  * less settings
+     *  * `undefined` options?
+     *
+     * MainWindow
+     *   On pref set changed
+     *    * remove drawn elements
+     *    * draw new elements
      */
 
-    /*
-     * Pattern followed:
-     *  * gpii.tests.pcp
-     */
-
-    var allSettingsFixutre = [ {
+    var allSettingTypesFixture = [ {
         solutionName: "solutions1",
         path: "settingOnePath",
         type: "string",
@@ -100,6 +106,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     }];
 
 
+    fluid.registerNamespace("gpii.tests.pcp.utils");
+
+    gpii.tests.pcp.utils.getSubcomponents = function (component) {
+        return fluid.values(component)
+            .filter(fluid.isComponent);
+    };
+
+    gpii.tests.pcp.utils.testContainerEmpty = function (containerClass) {
+        jqUnit.assertTrue(
+            "DOM container is empty",
+            $(containerClass).empty()
+        );
+    };
+
+
     fluid.defaults("gpii.tests.pcp.settingsPanelTests", {
         gradeNames: ["fluid.test.testEnvironment"],
         components: {
@@ -114,13 +135,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-
-    fluid.registerNamespace("gpii.tests.pcp.utils");
-
-    gpii.tests.pcp.utils.getSubcomponents = function (component) {
-        return fluid.values(component)
-            .filter(fluid.isComponent);
-    };
 
     gpii.tests.pcp.testSwitch = function (container, setting) {
         jqUnit.assertEquals(
@@ -211,7 +225,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             })
             .toArray();
 
-        // Check the list of options
         jqUnit.assertDeepEq(
             "Widgets: Dropdown - should have proper options list rendered",
             setting.values,
@@ -270,28 +283,93 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    gpii.tests.pcp.testSettingsCount = function (panel) {
-        jqUnit.assertEquals("SettingsPanel should have valid number of subcomponents",
-            allSettingsFixutre.length,
-            gpii.tests.pcp.utils.getSubcomponents(panel.settingsVisualizer).length
+    gpii.tests.pcp.testSettingPanelConstruction = function (settingsPanel) {
+        // should have all resources loaded - n + 1 (exemplars count)
+        //
+        // should have n setting components
+        // ev. setting -> setting-idx
+        // settingVisualizer[i].model === ?
+        // settingPresentation[i].model === setting[i]
+        //
+        var widgetsCount = 5;
+        jqUnit.assertEquals("SettingsPanel should have proper number of loaded resources",
+            widgetsCount + 1,
+            fluid.values(settingsPanel.resourcesLoader.resources).length
         );
+
+        var settingComponents = gpii.tests.pcp.utils.getSubcomponents(settingsPanel.settingsVisualizer);
+        jqUnit.assertEquals("SettingsPanel should have valid number of subcomponents",
+            allSettingTypesFixture.length,
+            settingComponents.length
+        );
+
+        settingComponents.forEach(function (settingContainer, idx) {
+            jqUnit.assertEquals("SettingsPanel setting containers should have proper identifiers",
+                "flc-settingListRow-" + idx,
+                settingComponents[idx].settingPresenter.container.attr("class")
+            );
+
+            jqUnit.assertLeftHand("SettingsPanel subelements should have proper model values",
+                allSettingTypesFixture[idx],
+                settingComponents[idx].settingPresenter.model
+            );
+        });
     };
 
     fluid.defaults("gpii.tests.pcp.settingsPanelTester", {
+        // TODO use with different fixtures
+        // model: { settings },
         gradeNames: "fluid.test.testCaseHolder",
         modules: [{
             name: "Test PCP SettingsPanel",
+            //TODO
             tests: [{
-                name: "Test elements initialisation",
+                // Test all components construction
+                name: "Test components constucted properly",
+                expect: 14,
+                sequence: [{
+                    event: "{settingsPanelMock settingsVisualizer}.events.onCreate",
+                    listener: "gpii.tests.pcp.testSettingPanelConstruction",
+                    args: "{settingsPanel}"
+                    // }, {
+                    //     // check if IRC is notified
+                }
+                ]
+            }, {
+                // Test all visible markup
+                name: "Test elements rendered properly",
                 expect: 33,
                 sequence: [{
                     event: "{settingsPanelMock settingsVisualizer}.events.onCreate",
-                    listener: "gpii.tests.pcp.testSettingsCount",
-                    args: "{settingsPanel}"
-                }, {
                     func: "gpii.tests.pcp.testSettingsRendered",
-                    args: [".flc-settingsPanel1", allSettingsFixutre]
+                    args: [".flc-settingsPanel1", allSettingTypesFixture]
+                }, {
+                    // XXX separate component
+                    func: "{settingsPanelMock}.destroy"
+                }, { // Dom cleared with component destruction
+                    event: "{settingsPanelMock}.events.onDestroy",
+                    listener: "gpii.tests.pcp.utils.testContainerEmpty",
+                    args: ".flc-settingsPanel1"
                 }]
+          //  }, {
+          //      name: "Test mixed functionality",
+          //      expect: 15,
+          //      sequence: [
+          //          { // simulate setting from pcp update
+          //              event: "{settingsPanelMock}.events.onCreate",
+          //              funcName: "{settingsPanelMock}.applier.change",
+          //              args: ["{settingsPanelMock}.model.settings.0", "c"]
+          //          }, {
+          //              // Test some if rendered item updated
+          //          }
+          //      ]
+
+                //     // Test combined elements
+                //     // * update val from dom
+                //     //   * button.click
+                //     //   * onSettingAltered
+                //     // * update val from model
+                //     //   * check rendered
             }]
         }]
     });
@@ -306,7 +384,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
 
         model: {
-            settings: allSettingsFixutre
+            settings: allSettingTypesFixture
         }
     });
 
