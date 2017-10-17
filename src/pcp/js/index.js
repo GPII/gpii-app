@@ -244,14 +244,21 @@
                         }
                     }
                 }
+            },
+            closeBtn: {
+                type: "gpii.pcp.widgets.button",
+                container: "{that}.dom.closeBtn",
+                options: {
+                    attrs: {
+                        "aria-label": "Close"
+                    },
+                    invokers: {
+                        "onClick": "{mainWindow}.close"
+                    }
+                }
             }
         },
         listeners: {
-            "onCreate.initCloseBtn": {
-                "this": "{that}.dom.closeBtn",
-                method: "on",
-                args: ["click", "{mainWindow}.close"]
-            },
             "{mainWindow}.events.onPreferencesUpdated": {
                 funcName: "gpii.pcp.updateHeader",
                 args: ["{that}.model.preferences.sets", "{that}.dom.preferenceSetPicker", "{that}.dom.activePreferenceSet"]
@@ -296,7 +303,6 @@
         gradeNames: ["fluid.viewComponent"],
         selectors: {
             keyOutBtn: ".flc-keyOutBtn",
-            openPmtBtn: ".flc-openPmtBtn",
             helpBtn: ".flc-helpBtn"
         },
         components: {
@@ -307,16 +313,6 @@
                     label: "{footer}.options.labels.keyOut",
                     invokers: {
                         "onClick": "gpii.pcp.keyOut"
-                    }
-                }
-            },
-            openPmtBtn: {
-                type: "gpii.pcp.widgets.button",
-                container: "{that}.dom.openPmtBtn",
-                options: {
-                    label: "{footer}.options.labels.pmt",
-                    invokers: {
-                        "onClick": "gpii.pcp.openUrl({footer}.options.urls.pmt)"
                     }
                 }
             },
@@ -332,12 +328,10 @@
             }
         },
         urls: {
-            pmt: "http://pmt.gpii.org",
             help: "http://pmt.gpii.org/help"
         },
         labels: {
             keyOut: "Key Out",
-            pmt: "Open PMT",
             help: "Help"
         }
     });

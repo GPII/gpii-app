@@ -1,38 +1,31 @@
 body {
-    background-color: #71c5ef;
+    margin: 8px;
+    background-color: #0078d7;
+    color: #ffffff;
+
+    -webkit-user-select: none;
+    user-select: none;
 }
 
-hr { 
-    display: block;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    margin-left: auto;
-    margin-right: auto;
-    border-style: inset;
-    border-width: 2px;
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 5px;
 }
 
-.flc-solutionName:not(:empty):after {
-    content: ":";
+::-webkit-scrollbar-thumb {
+    width: 5px;
+    border-radius: 5px;
+    background-color: #005ba6;
+    box-shadow: none;
 }
 
-.flc-setting {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
+.btn-regular {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
 
-*[class*="flc-settingListRow"] {
-    margin-bottom: 15px;
-}
-
-.flc-prefSetPicker {
-    float: left;
-}
-
-.flc-closeBtn {
-    float: right;
+    background: transparent;
+    border: none;
 }
 
 .clear-both {
@@ -43,36 +36,101 @@ hr {
     height: 100%;
     display: flex;
     flex-direction: column;
+
+    font-size: 20px;
 }
+
+/* Header styles */
+
+#flc-settingsHeader hr { 
+    display: block;
+    margin: 0.5em auto;
+    border: 2px solid #005ba6;
+}
+
+#flc-settingsHeader .flc-prefSetPicker {
+    float: left;
+}
+
+#flc-settingsHeader .flc-closeBtn {
+    float: right;
+
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+#flc-settingsHeader .flc-closeBtn:hover,
+#flc-settingsHeader .flc-closeBtn:focus {
+    color: #ffffff;
+}
+
+/* Settings list styles */
 
 #flc-settingsList {
     flex: 1;
-    overflow: auto;
+
+    /* Needed in order to have some spacing between the scrollbar
+       and the content of the text. */
+    margin-right: -8px;
+    padding-right: 8px;
+    overflow-y: overlay;
 }
 
-#flc-settingsFooter {
+#flc-settingsList > *[class*="flc-settingListRow"] {
+    margin-bottom: 1.25em;
+}
+
+#flc-settingsList .flc-setting {
     display: flex;
 }
 
-#flc-settingsFooter .fl-button {
-    box-sizing: border-box;
-    width: 95px;
-    height: 80px;
-    padding: 5px;
-    margin: auto;
-    border: 2px solid rgb(35, 160, 165);
-
-    line-height: 70px;
-    text-align: center;
-    user-select: none;
-    cursor: pointer;
+#flc-settingsList .flc-setting > * {
+    flex: 1;
 }
 
-.flc-restartIcon {
+#flc-settingsList .flc-setting .flc-icon {
+    float: left;
+    margin: 9px 10px 0 0;
+}
+
+#flc-settingsList .flc-setting .fl-settingLabel {
+    overflow: hidden;
+}
+
+#flc-settingsList .flc-setting .fl-settingLabel .flc-solutionName:not(:empty):after {
+    content: ":";
+}
+
+#flc-settingsList .flc-setting .flc-widget {
+    padding-left: 10px;
+    color: #000000;
+}
+
+#flc-settingsList .flc-setting .fl-settingLabel .flc-restartIcon {
     display: none;
     font-weight: bold;
 }
 
-.flc-memoryIcon {
+#flc-settingsList .flc-setting .fl-settingLabel .flc-memoryIcon {
     display: none;
+}
+
+/* Footer styles */
+
+#flc-settingsFooter .flc-helpBtn {
+    float: right;
+    margin-right: 0;
+}
+
+/* Styles for alt theme */
+body.theme-alt {
+    background-color: #1f1f1f;
+}
+
+.theme-alt ::-webkit-scrollbar-thumb {
+    background-color: #797979;
+}
+
+.theme-alt #flc-settingsHeader hr {
+    border-color: #797979;
 }

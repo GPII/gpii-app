@@ -85,7 +85,7 @@
         schemeType: "number",
         widgetOptions: {
             model: {
-                value: "{settingPresenter}.model.value",
+                number: "{settingPresenter}.model.value",
                 step: "{settingPresenter}.model.divisibleBy",
                 range: {
                     min: "{settingPresenter}.model.min",
