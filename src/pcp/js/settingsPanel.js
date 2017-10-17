@@ -21,6 +21,7 @@
             widget: ".flc-widget"
         },
         model: {
+            path: null,
             icon: null,
             solutionName: null,
             title: null,
@@ -65,6 +66,11 @@
                 this: "{that}.dom.title",
                 method: "append",
                 args: "{that}.model.title"
+            },
+            "onCreate.setLabelId": {
+                this: "{that}.dom.title",
+                method: "attr",
+                args: ["id", "{that}.model.path"]
             },
             "onCreate.setMemoryIcon": {
                 funcName: "gpii.pcp.showMemoryIcon",

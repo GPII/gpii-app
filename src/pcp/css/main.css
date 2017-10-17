@@ -97,6 +97,10 @@ body {
     overflow: hidden;
 }
 
+#flc-settingsList .flc-setting .fl-settingLabel  .flc-title {
+    font-weight: normal;
+}
+
 #flc-settingsList .flc-setting .fl-settingLabel .flc-solutionName:not(:empty):after {
     content: ":";
 }

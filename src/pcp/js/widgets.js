@@ -17,6 +17,9 @@
             optionList: [],
             selection: null
         },
+        attrs: {
+            "aria-labelledby": "{that}.model.path"
+        },
         selectors: {
             options: ".flc-dropdown-options"
         },
@@ -25,6 +28,13 @@
                 optionnames: "${optionNames}",
                 optionlist: "${optionList}",
                 selection: "${selection}"
+            }
+        },
+        listeners: {
+            "onCreate.addAttrs": {
+                "this": "{that}.dom.options",
+                method: "attr",
+                args: ["{that}.options.attrs"]
             }
         },
         renderOnInit: true
@@ -73,7 +83,10 @@
                 type: "fluid.textfield",
                 container: "{that}.dom.input",
                 options: {
-                    model: "{gpii.pcp.widgets.textfield}.model"
+                    model: "{gpii.pcp.widgets.textfield}.model",
+                    attrs: {
+                        "aria-labelledby": "{gpii.pcp.widgets.textfield}.model.path"
+                    }
                 }
             }
         }
@@ -81,50 +94,14 @@
 
     fluid.defaults("gpii.pcp.widgets.switch", {
         gradeNames: ["fluid.switchUI"],
-        mergePolicy: {
-            "modelListeners.enabled": "replace"
+        attrs: {
+            "aria-labelledby": "{that}.model.path"
         },
         strings: {
             on: "On",
             off: "Off"
-        },
-        attrs: {
-            role: "button"
-        },
-        modelListeners: {
-            enabled: {
-                funcName: "gpii.pcp.widgets.onSwitchChange",
-                args: [
-                    "{change}.value",
-                    "{that}.dom.control",
-                    "{that}.dom.on",
-                    "{that}.dom.off"
-                ]
-            }
         }
     });
-
-    /**
-     * A listener which is called whenever the model related to a switch UI component
-     * changes. It takes case of setting the "aria-pressed" attibute of the element,
-     * as well as of showing/hiding the appropriate "On" or "Off" label.
-     * @param enabled {Boolean} Whether the switch is in an enabled state or not.
-     * @param control {Object} A jQuery object representing the control element of the
-     * switch component
-     * @param onLabel {Object} A jQuery object representing the associated "On" label.
-     * @param offLabel {Object} A jQuery object representing the associated "Off" label.
-     */
-    gpii.pcp.widgets.onSwitchChange = function (enabled, control, onLabel, offLabel) {
-        control.attr("aria-pressed", enabled);
-
-        if (enabled) {
-            onLabel.show();
-            offLabel.hide();
-        } else {
-            onLabel.hide();
-            offLabel.show();
-        }
-    };
 
     /**
      * A function which is executed while the user is dragging the
@@ -182,7 +159,10 @@
      */
     fluid.defaults("gpii.pcp.widgets.stepper", {
         gradeNames: ["fluid.textfieldStepper"],
-        scale: 1,
+        scale: 2,
+        attrs: {
+            "aria-labelledby": "{that}.model.path"
+        },
         modelRelay: {
             "value": {
                 target: "value",
@@ -208,7 +188,8 @@
                     scale: "{stepper}.options.scale",
                     selectors: {
                         textfield: ".flc-textfieldStepper-field"
-                    }
+                    },
+                    attrs: "{stepper}.options.attrs"
                 }
             },
             textfield: {
@@ -222,31 +203,41 @@
     fluid.defaults("gpii.pcp.widgets.multipicker", {
         gradeNames: ["fluid.rendererComponent"],
         model: {
+            path: null,
             values: [],
             names: [],
             value: null
         },
         attrs: {
-            // it is mandatory to specify "name" here!
+            "aria-labelledby": "{that}.model.path"
         },
         selectors: {
+            inputGroup: ".flc-multipicker",
             item: ".flc-multipickerItem",
             input: ".flc-multipickerInput",
             label: ".flc-multipickerLabel"
         },
         repeatingSelectors: ["item"],
+        selectorsToIgnore: ["inputGroup"],
         protoTree: {
             expander: {
                 type: "fluid.renderer.selection.inputs",
                 rowID: "item",
                 inputID: "input",
                 labelID: "label",
-                selectID: "{that}.options.attrs.name",
+                selectID: "{that}.model.path",
                 tree: {
                     optionnames: "${names}",
                     optionlist: "${values}",
                     selection: "${value}"
                 }
+            }
+        },
+        listeners: {
+            "onCreate.addAttrs": {
+                "this": "{that}.dom.inputGroup",
+                method: "attr",
+                args: ["{that}.options.attrs"]
             }
         },
         renderOnInit: true

@@ -11,7 +11,7 @@
 }
 
 .fl-stepper input[type=range]:focus {
-    outline: none;
+    outline-color: rgba(255, 255, 255, 0.6);
 }
 
 .fl-stepper input[type=range]::-webkit-slider-runnable-track {
@@ -57,6 +57,10 @@
 }
 
 /* Styles for alt theme */
+.theme-alt .fl-stepper input[type=range]:focus {
+    outline-color: #0078d7;
+}
+
 .theme-alt .fl-stepper input[type=range]::-webkit-slider-runnable-track {
     background-color: #797979;
 }
