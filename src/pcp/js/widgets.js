@@ -17,6 +17,13 @@
             optionList: [],
             selection: null
         },
+        modelListeners: {
+            "*": {
+                this: "{that}",
+                method: "refreshView",
+                excludeSource: "init"
+            }
+        },
         selectors: {
             options: ".flc-dropdown-options"
         },
@@ -225,6 +232,13 @@
             values: [],
             names: [],
             value: null
+        },
+        modelListeners: {
+            "*": {
+                this: "{that}",
+                method: "refreshView",
+                excludeSource: "init"
+            }
         },
         attrs: {
             // it is mandatory to specify "name" here!
