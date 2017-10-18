@@ -530,56 +530,58 @@ gpii.app.updateMenu = function (tray, menuTemplate, events) {
     tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
 };
 
+gpii.app.snapsetsMenu = [{
+        label: "Larger 125%",
+        click: "onKeyIn",
+        token: "snapset_1a"
+    }, {
+        label: "Larger 150%",
+        click: "onKeyIn",
+        token: "snapset_1b"
+    }, {
+        label: "Larger 175%",
+        click: "onKeyIn",
+        token: "snapset_1c"
+    }, {
+        label: "Dark & Larger 125%",
+        click: "onKeyIn",
+        token: "snapset_2a"
+    }, {
+        label: "Dark & Larger 150%",
+        click: "onKeyIn",
+        token: "snapset_2b"
+    }, {
+        label: "Dark & Larger 175%",
+        click: "onKeyIn",
+        token: "snapset_2c"
+    }, {
+        label: "Read To Me",
+        click: "onKeyIn",
+        token: "snapset_3"
+    }, {
+        label: "Magnifier 200%",
+        click: "onKeyIn",
+        token: "snapset_4a"
+    }, {
+        label: "Magnifier 400%",
+        click: "onKeyIn",
+        token: "snapset_4b"
+    }, {
+        label: "Magnifier 200% & Display Scaling 175%",
+        click: "onKeyIn",
+        token: "snapset_4c"
+    }, {
+        label: "Dark Magnifier 200%",
+        click: "onKeyIn",
+        token: "snapset_4d"
+}];
+
 fluid.defaults("gpii.app.menuInAppDev", {
     gradeNames: "gpii.app.menuInApp",
     // The list of the default snapsets shown on the task tray menu for key-in
     snapsets: {
         label: "{that}.options.menuLabels.keyIn",
-        submenu: [{
-            label: "Larger 125%",
-            click: "onKeyIn",
-            token: "snapset_1a"
-        }, {
-            label: "Larger 150%",
-            click: "onKeyIn",
-            token: "snapset_1b"
-        }, {
-            label: "Larger 175%",
-            click: "onKeyIn",
-            token: "snapset_1c"
-        }, {
-            label: "Dark & Larger 125%",
-            click: "onKeyIn",
-            token: "snapset_2a"
-        }, {
-            label: "Dark & Larger 150%",
-            click: "onKeyIn",
-            token: "snapset_2b"
-        }, {
-            label: "Dark & Larger 175%",
-            click: "onKeyIn",
-            token: "snapset_2c"
-        }, {
-            label: "Read To Me",
-            click: "onKeyIn",
-            token: "snapset_3"
-        }, {
-            label: "Magnifier 200%",
-            click: "onKeyIn",
-            token: "snapset_4a"
-        }, {
-            label: "Magnifier 400%",
-            click: "onKeyIn",
-            token: "snapset_4b"
-        }, {
-            label: "Magnifier 200% & Display Scaling 175%",
-            click: "onKeyIn",
-            token: "snapset_4c"
-        }, {
-            label: "Dark Magnifier 200%",
-            click: "onKeyIn",
-            token: "snapset_4d"
-        }]
+        submenu: gpii.app.snapsetsMenu
     },
     exit: {
         label: "{that}.options.menuLabels.exit",
@@ -659,8 +661,22 @@ fluid.defaults("gpii.app.menu", {
   */
 gpii.app.menu.getUserName = function (userToken) {
     // TODO: Name should actually be stored by the GPII along with the user token.
-    var name = userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
-    return name;
+    return userToken? gpii.app.menu.getFriendlyUserName(userToken): "";
+};
+
+/**
+  * Generates a friendly user name in case is a well-known snapset.
+  * @param userToken {String} A user token.
+  */
+gpii.app.menu.getFriendlyUserName = function (userToken) {
+    // TODO: This is a temporary workaround for GPII-2644 and must be removed
+    // once the GPII is able to provide user friendly names of NP sets.
+    var friendlyName = fluid.find(gpii.app.snapsetsMenu, function (snapset) {
+        if (snapset.token == userToken) {
+            return snapset.label;
+        }
+    });
+    return friendlyName? friendlyName: userToken.charAt(0).toUpperCase() + userToken.substr(1);
 };
 
 /**
