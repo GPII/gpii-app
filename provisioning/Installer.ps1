@@ -84,6 +84,14 @@ Invoke-Command "electron-packager.cmd" "$preStagingDir --platform=win32 --arch=i
 $packagedAppDir = (Join-Path $packagerDir "gpii-app-win32-ia32")
 Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
 
+# Build the Windows Service
+$serviceDir = $(Join-Path $preStagingDir "node_modules\gpii-windows\gpii\node_modules\windowsService\service")
+Invoke-Command "npm" "install --production" $serviceDir
+Invoke-Command "npm" "install pkg -g" $serviceDir
+Invoke-Command "pkg" "package.json --output $(Join-Path $stagingWindowsDir "gpii-service.exe")" $serviceDir
+Get-ChildItem "$serviceDir\*.node" -Recurse | Move-Item -Destination $stagingWindowsDir
+
+
 # We are exiting with as a successful value if robocopy error is less or equal to 3
 # to avoid interruption. http://ss64.com/nt/robocopy-exit.html
 Invoke-Command "robocopy" "..\node_modules\gpii-windows\listeners $(Join-Path $stagingWindowsDir "listeners") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
