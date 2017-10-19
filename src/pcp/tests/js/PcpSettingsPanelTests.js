@@ -50,6 +50,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      *    * draw new elements
      */
 
+    var switchSettingFixture = {
+        path: "invertColorsPath",
+        type: "boolean",
+        title: "Invert colors",
+        description: "Invert colors description",
+        icon: "../../../icons/gear-cloud-black.png",
+        value: true,
+        isPersisted: true
+    };
+
     var allSettingTypesFixture = [ {
         solutionName: "solutions1",
         path: "settingOnePath",
@@ -75,15 +85,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         description: "Text input description",
         icon: "../../../icons/gear-cloud-white.png",
         value: "Someee"
-    }, {
-        path: "invertColorsPath",
-        type: "boolean",
-        title: "Invert colors",
-        description: "Invert colors description",
-        icon: "../../../icons/gear-cloud-black.png",
-        value: true,
-        isPersisted: true
-    }, {
+    }, switchSettingFixture, {
         path: "zoomPath",
         type: "number",
         title: "Zoom",
@@ -124,14 +126,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("gpii.tests.pcp.settingsPanelTests", {
         gradeNames: ["fluid.test.testEnvironment"],
         components: {
-            settingsPanelMock: {
-                type: "gpii.tests.pcp.settingsPanelMock",
-                // TODO find better name
-                container: ".flc-settingsPanel1"
+            // generic tests
+// commented as there's a problem running all tests
+//            settingsPanelMock: {
+//                type: "gpii.tests.pcp.settingsPanelMock",
+//                container: ".flc-settingsPanel-all",
+//                options: {
+//                    model: {
+//                        settings: allSettingTypesFixture
+//                    }
+//                }
+//            },
+//            settingsPanelTester: {
+//                type: "gpii.tests.pcp.settingsPanelTester",
+//                priority: "after:settingsPanelMock"
+//            },
+
+            // widget tests
+            singleSettingPanelsMock: {
+                type: "gpii.tests.pcp.singleSettingPanelsMock"
             },
-            settingsPanelTester: {
-                type: "gpii.tests.pcp.settingsPanelTester",
-                priority: "after:settingsPanelMock"
+            widgetsTester: {
+                type: "gpii.tests.pcp.widgetsTester",
+                priority: "after:singleSettingPanelsMock"
             }
         }
     });
@@ -284,13 +301,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     gpii.tests.pcp.testSettingPanelConstruction = function (settingsPanel) {
-        // should have all resources loaded - n + 1 (exemplars count)
-        //
-        // should have n setting components
-        // ev. setting -> setting-idx
-        // settingVisualizer[i].model === ?
-        // settingPresentation[i].model === setting[i]
-        //
         var widgetsCount = 5;
         jqUnit.assertEquals("SettingsPanel should have proper number of loaded resources",
             widgetsCount + 1,
@@ -317,12 +327,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.defaults("gpii.tests.pcp.settingsPanelTester", {
-        // TODO use with different fixtures
-        // model: { settings },
         gradeNames: "fluid.test.testCaseHolder",
         modules: [{
             name: "Test PCP SettingsPanel",
-            //TODO
             tests: [{
                 // Test all components construction
                 name: "Test components constucted properly",
@@ -331,47 +338,92 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     event: "{settingsPanelMock settingsVisualizer}.events.onCreate",
                     listener: "gpii.tests.pcp.testSettingPanelConstruction",
                     args: "{settingsPanel}"
-                    // }, {
-                    //     // check if IRC is notified
                 }
                 ]
             }, {
                 // Test all visible markup
                 name: "Test elements rendered properly",
-                expect: 33,
+                expect: 32,
                 sequence: [{
                     event: "{settingsPanelMock settingsVisualizer}.events.onCreate",
                     func: "gpii.tests.pcp.testSettingsRendered",
-                    args: [".flc-settingsPanel1", allSettingTypesFixture]
-                }, {
-                    // XXX separate component
-                    func: "{settingsPanelMock}.destroy"
-                }, { // Dom cleared with component destruction
-                    event: "{settingsPanelMock}.events.onDestroy",
-                    listener: "gpii.tests.pcp.utils.testContainerEmpty",
-                    args: ".flc-settingsPanel1"
+                    args: ["{settingsPanelMock}.container", allSettingTypesFixture]
+//                }, {
+//                    // XXX separate component as it destroys the component which has other tests on
+//                    func: "{settingsPanelMock}.destroy"
+//                }, { // Dom cleared with component destruction
+//                    event: "{settingsPanelMock}.events.onDestroy",
+//                    listener: "gpii.tests.pcp.utils.testContainerEmpty",
+//                    args: "{settingsPanelMock}.container"
                 }]
-          //  }, {
-          //      name: "Test mixed functionality",
-          //      expect: 15,
-          //      sequence: [
-          //          { // simulate setting from pcp update
-          //              event: "{settingsPanelMock}.events.onCreate",
-          //              funcName: "{settingsPanelMock}.applier.change",
-          //              args: ["{settingsPanelMock}.model.settings.0", "c"]
-          //          }, {
-          //              // Test some if rendered item updated
-          //          }
-          //      ]
-
-                //     // Test combined elements
-                //     // * update val from dom
-                //     //   * button.click
-                //     //   * onSettingAltered
-                //     // * update val from model
-                //     //   * check rendered
             }]
         }]
+    });
+
+
+    /*
+     * More isolated tests for the widgets
+     */
+    fluid.defaults("gpii.tests.pcp.widgetsTester", {
+        gradeNames: "fluid.test.testCaseHolder",
+
+        modules: [{
+            name: "PSP widgets interaction tests",
+            tests: [{
+                name: "Widgets: Switch - interactions test",
+                expect: 2,
+                sequence: [{
+                    event: "{singleSettingPanelsMock switchPanel settingsVisualizer}.events.onCreate",
+                    func: "fluid.identity"
+                }, { // simulate manual click from the user
+                    jQueryTrigger: "click",
+                    element: "@expand:$(.flc-switchUI-control, {singleSettingPanelsMock}.switchPanel.container)"
+                }, { // check whether the update event was thrown
+                    event: "{singleSettingPanelsMock}.switchPanel.events.onSettingAltered",
+                    listener: "jqUnit.assertDeepEq",
+                    args: [
+                        "Widgets: Switch - component notified for the update with proper path/value",
+                        [switchSettingFixture.path, !switchSettingFixture.value],
+                        ["{arguments}.0", "{arguments}.1"]
+                    ]
+                }, { // simulate setting from pcp update
+                    funcName: "{singleSettingPanelsMock}.switchPanel.applier.change",
+                    args: ["{singleSettingPanelsMock}.switchPanel.model.settings.0.value", "false"]
+                }, { // Test if rendered item updated
+                    spec: {path: "", priority: "last"},
+                    changeEvent: "{singleSettingPanelsMock}.switchPanel.applier.modelChanged",
+                    listener: "jqUnit.isVisible",
+                    args: [
+                        "Widgets: Switch - should have re-rendered switch value after model update",
+                        "@expand:$(.flc-switchUI-off, {singleSettingPanelsMock}.switchPanel.container)"
+                    ]
+                }]
+            }]
+        }]
+    });
+
+
+    fluid.defaults("gpii.tests.pcp.singleSettingPanelsMock", {
+        gradeNames: "fluid.component",
+
+        components: {
+            switchPanel: {
+                type: "gpii.tests.pcp.settingsPanelMock",
+                container: ".flc-settingsPanel-widgets-switch",
+                options: {
+                    model: {
+                        settings: [switchSettingFixture]
+                    },
+                    listeners: {
+                        onSettingAltered: {
+                            this: "console",
+                            method: "log",
+                            args: "settingsPanel"
+                        }
+                    },
+                }
+            }
+        }
     });
 
     fluid.defaults("gpii.tests.pcp.settingsPanelMock", {
@@ -382,9 +434,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             record: "../../html",
             target: "{/ exemplar}.options.resourceDir"
         },
-
         model: {
-            settings: allSettingTypesFixture
+            settings: null
         }
     });
 

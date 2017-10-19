@@ -81,11 +81,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         modelListeners: {
-            value: {
-                funcName: "gpii.pcp.showRestartIcon",
+            value: [{
+                funcName: "gpii.pcp.settingPresenter.showRestartIcon",
                 args: ["{that}.model.dynamic", "{that}.dom.restartIcon"],
                 excludeSource: "init"
-            }
+            }, {
+                funcName: "{that}.events.onSettingAltered.fire",
+                args: ["{that}.model.path", "{change}.value"],
+                excludeSource: ["init", "outer"]
+            }]
         },
         listeners: {
             "onCreate.setIcon": {
@@ -110,6 +114,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    /**
+     * A method responsible for showing a restart icon when the user changes a setting
+     * which is not dynamic.
+     * @param dynamic {Boolean} Whether the current setting is dynamic or not.
+     * @param restartIcon {Object} A jQuery object representing the restart icon.
+     */
+    gpii.pcp.settingPresenter.showRestartIcon = function (dynamic, restartIcon) {
+        if (!dynamic) {
+            restartIcon.show();
+        }
+    };
 
     /**
      * A method responsible for showing a memory icon if the setting will be persisted
@@ -288,12 +303,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     widgetConfig: "{settingVisualizer}.options.widgetConfig",
                     model: "{settingVisualizer}.options.setting",
-                    modelListeners: {
-                        value: {
-                            funcName: "{settingVisualizer}.events.onSettingAltered.fire",
-                            args: ["{that}.model.path", "{change}.value"],
-                            excludeSource: ["init", "outer"]
-                        }
+                    events: {
+                        onSettingAltered: "{settingVisualizer}.events.onSettingAltered"
                     }
                 }
             }
@@ -347,7 +358,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     setting: "{arguments}.1",
 
                     events: {
-                        "onSettingAltered": "{settingsPanel}.events.onSettingAltered"
+                        onSettingAltered: "{settingsPanel}.events.onSettingAltered"
                     },
 
                     widgetConfig: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemeType({that}.options.setting.type)",

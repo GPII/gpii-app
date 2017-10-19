@@ -99,18 +99,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     /**
-     * A method responsible for showing a restart icon when the user changes a setting
-     * which is not dynamic.
-     * @param dynamic {Boolean} Whether the current setting is dynamic or not.
-     * @param restartIcon {Object} A jQuery object representing the restart icon.
-     */
-    gpii.pcp.showRestartIcon = function (dynamic, restartIcon) {
-        if (!dynamic) {
-            restartIcon.show();
-        }
-    };
-
-    /**
      * A function which checks if an array object holds more than one element.
      * @param arr {Array} The array to be checked.
      * @return {Boolean} Whether the array has more than one element.
