@@ -242,6 +242,9 @@
                             funcName: "gpii.pcp.onPreferenceSetPickerDestroy",
                             args: ["{that}.container"]
                         }
+                    },
+                    attrs: {
+                        "aria-label": "Preference set"
                     }
                 }
             },

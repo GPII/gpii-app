@@ -20,8 +20,7 @@
         schemeType: null,
         widgetOptions: {
             // proper model bindings and options
-            model: null,
-            attrs: {}
+            model: null
         }
     });
 
@@ -39,12 +38,10 @@
         schemeType: "array",
         widgetOptions: {
             model: {
+                path: "{settingPresenter}.model.path",
                 values: "{settingPresenter}.model.values",
                 names: "{settingPresenter}.model.values",
                 value: "{settingPresenter}.model.value"
-            },
-            attrs: {
-                name: "{settingPresenter}.model.path"
             }
         }
     });
@@ -56,10 +53,10 @@
         schemeType: "boolean",
         widgetOptions: {
             model: {
+                path: "{settingPresenter}.model.path",
+                name: "{settingPresenter}.model.path",
+                title: "{settingPresenter}.model.title",
                 enabled: "{settingPresenter}.model.value"
-            },
-            attrs: {
-                name: "{settingPresenter}.model.path"
             }
         }
     });
@@ -71,6 +68,7 @@
         schemeType: "string",
         widgetOptions: {
             model: {
+                path: "{settingPresenter}.model.path",
                 optionNames: "{settingPresenter}.model.values",
                 optionList: "{settingPresenter}.model.values",
                 selection: "{settingPresenter}.model.value"
@@ -85,6 +83,7 @@
         schemeType: "number",
         widgetOptions: {
             model: {
+                path: "{settingPresenter}.model.path",
                 number: "{settingPresenter}.model.value",
                 step: "{settingPresenter}.model.divisibleBy",
                 range: {
@@ -102,6 +101,7 @@
         schemeType: "text",
         widgetOptions: {
             model: {
+                path: "{settingPresenter}.model.path",
                 value: "{settingPresenter}.model.value"
             }
         }

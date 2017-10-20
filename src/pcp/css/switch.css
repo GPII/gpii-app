@@ -1,4 +1,4 @@
-/* Default (dark) theme styles */
+ /* Default (dark) theme styles */
 .fl-switchUI {
     min-width: 80px;
     margin-top: 10px;
@@ -15,6 +15,12 @@
     background-color: transparent;
     border: 2px solid #ffffff;
     border-radius: 10px;
+
+    cursor: pointer;
+}
+
+.fl-switchUI-control:focus {
+    outline-color: #0078d7;
 }
 
 .fl-switchUILabel {
@@ -48,6 +54,14 @@
 .fl-switchUI-control[aria-checked=true] .fl-switchUI-controlKnob {
     left: 27px;
     background-color: #e6e6e6;
+}
+
+.fl-switchUI-control[aria-checked=true] .flc-switchUI-off {
+    display: none;
+}
+
+.fl-switchUI-control[aria-checked=false] .flc-switchUI-on {
+    display: none;
 }
 
 /* Styles for alt theme */
