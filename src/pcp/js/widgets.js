@@ -17,6 +17,13 @@
             optionList: [],
             selection: null
         },
+        modelListeners: {
+            "*": {
+                this: "{that}",
+                method: "refreshView",
+                excludeSource: "init"
+            }
+        },
         attrs: {
             "aria-labelledby": "{that}.model.path"
         },
@@ -207,6 +214,13 @@
             values: [],
             names: [],
             value: null
+        },
+        modelListeners: {
+            "*": {
+                this: "{that}",
+                method: "refreshView",
+                excludeSource: "init"
+            }
         },
         attrs: {
             "aria-labelledby": "{that}.model.path"
