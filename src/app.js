@@ -541,6 +541,10 @@ gpii.app.initPCPWindowIPC = function (app, pcp, gpiiConnector) {
     ipcMain.on("updateActivePreferenceSet", function (event, arg) {
         gpiiConnector.updateActivePrefSet(arg.value);
     });
+
+    ipcMain.on("contentHeightChanged", function (event, contentHeight) {
+        pcp.resize(contentHeight);
+    });
 };
 
 /**
@@ -606,6 +610,26 @@ fluid.onUncaughtException.addListener(function (err) {
     }
 }, "gpii.app", "last");
 
+/**
+ * Resizes the PCP window and positions it appropriately based on the new height
+ * of its content. Makes sure that the window is no higher than the available
+ * height of the work are in the primary display.
+ * @param pcpWindow {BrowserWindow} The PCP BrowserWindow.
+ * @param contentHeight {Number} The new height of the BrowserWindow's content.
+ * @param minHeight {Number} The minimum height which the BrowserWindow must have. 
+ */
+gpii.app.pcp.resize = function (pcpWindow, contentHeight, minHeight) {
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+        windowSize = pcpWindow.getSize(),
+        windowWidth = windowSize[0],
+        windowHeight = Math.min(screenSize.height, Math.max(contentHeight, minHeight)),
+        windowPosition = pcpWindow.getPosition(),
+        windowX = windowPosition[0],
+        windowY = screenSize.height - windowHeight;
+
+    pcpWindow.setPosition(windowX, windowY);
+    pcpWindow.setSize(windowWidth, windowHeight);
+};
 
 /**
  * Handles logic for the PCP window.
@@ -652,6 +676,10 @@ fluid.defaults("gpii.app.pcp", {
         notifyPCPWindow: {
             funcName: "gpii.app.pcp.notifyPCPWindow",
             args: ["{that}.pcpWindow", "{arguments}.0", "{arguments}.1"]
+        },
+        resize: {
+            funcName: "gpii.app.pcp.resize",
+            args: ["{that}.pcpWindow", "{arguments}.0", "{that}.options.attrs.height"]
         }
     }
 });
