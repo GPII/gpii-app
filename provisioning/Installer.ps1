@@ -85,7 +85,7 @@ $packagedAppDir = (Join-Path $packagerDir "gpii-app-win32-ia32")
 Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
 
 # Build the Windows Service
-$serviceDir = $(Join-Path $preStagingDir "node_modules\gpii-windows\gpii\node_modules\windowsService\service")
+$serviceDir = $(Join-Path $preStagingDir "node_modules\gpii-windows\service")
 Invoke-Command "npm" "install --production" $serviceDir
 Invoke-Command "npm" "install pkg -g" $serviceDir
 Invoke-Command "pkg" "package.json --output $(Join-Path $stagingWindowsDir "gpii-service.exe")" $serviceDir
