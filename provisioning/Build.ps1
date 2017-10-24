@@ -53,6 +53,9 @@ try {
 $npm = "npm" -f $env:SystemDrive
 Invoke-Command $npm "install" $mainDir
 
+$serviceDir = $(Join-Path $mainDir "node_modules\gpii-windows\service")
+Invoke-Command "npm" "install" $serviceDir
+
 try {
     $tests = Join-Path $originalBuildScriptPath "Tests.ps1"
     $fullPath = Join-Path $originalBuildScriptPath "../node_modules/gpii-windows/provisioning/"
