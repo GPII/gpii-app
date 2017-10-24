@@ -419,8 +419,8 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
         title: schema.title,
         description: schema.description,
         icon: "../icons/gear-cloud-white.png",
-        dynamic: false,
-        isPersisted: true,
+        dynamic: true,
+        isPersisted: false,
 
         type: schema.type,
         min: schema.min,
