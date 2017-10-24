@@ -648,7 +648,7 @@ fluid.onUncaughtException.addListener(function (err) {
  * Resizes the PCP window and positions it appropriately based on the new height
  * of its content. Makes sure that the window is no higher than the available
  * height of the work are in the primary display.
- * @param pcpWindow {BrowserWindow} The PCP BrowserWindow.
+ * @param pcp {Object} A `gpii.app.pcp` instance.
  * @param contentHeight {Number} The new height of the BrowserWindow's content.
  * @param minHeight {Number} The minimum height which the BrowserWindow must have.
  */
@@ -658,13 +658,37 @@ gpii.app.pcp.resize = function (pcp, contentHeight, minHeight) {
         screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
         windowSize = pcpWindow.getSize(),
         windowWidth = windowSize[0],
+        initialHeight = windowSize[1],
         windowHeight = Math.min(screenSize.height, Math.max(contentHeight, minHeight));
 
+    if (initialHeight === windowHeight) {
+        return;
+    }
+
+    if (wasShown) {
+        pcp.hide();
+    }
     pcpWindow.setSize(windowWidth, windowHeight);
 
-    // Adjusts the x and y position of the PCP window if it was previously shown.
+    // Adjusts the x and y position of the PCP window if it was previously shown. The
+    // timeout is needed in order to prevent the flickering when the user switches
+    // between different preference sets.
     if (wasShown) {
-        pcp.show();
+        pcp.resizeTimeout = setTimeout(function () {
+            pcp.show();
+            pcp.resizeTimeout = null;
+        }, 500);
+    }
+};
+
+/**
+ * Clears all timers associated with the PCP component. Useful when the PCP
+ * component is destroyed.
+ * @param pcp {Object} A `gpii.app.pcp` instance.
+ */
+gpii.app.clearPCPTimers = function (pcp) {
+    if (pcp.resizeTimeout) {
+        clearTimeout(pcp.resizeTimeout);
     }
 };
 
@@ -702,6 +726,10 @@ fluid.defaults("gpii.app.pcp", {
         },
         "onCreate.initBlurListener": {
             listener: "gpii.app.initBlurListener",
+            args: ["{that}"]
+        },
+        "onDestroy.clearTimers": {
+            listener: "gpii.app.clearPCPTimers",
             args: ["{that}"]
         }
     },
@@ -870,11 +898,11 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     listeners: {
-        "onDestroy.clearTimers": "gpii.app.clearTimers({that})"
+        "onDestroy.clearTimers": "gpii.app.clearDialogTimers({that})"
     }
 });
 
-gpii.app.clearTimers = function (that) {
+gpii.app.clearDialogTimers = function (that) {
     clearTimeout(that.dismissWaitTimeout);
     clearInterval(that.displayWaitInterval);
 };
