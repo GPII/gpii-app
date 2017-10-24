@@ -358,24 +358,18 @@ gpii.app.pcp.notifyPCPWindow = function (pcpWindow, messageChannel, message) {
  * @returns {Object} The created Electron `BrowserWindow`
  */
 gpii.app.pcp.makePCPWindow = function (width, height) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
     // TODO Make window size relative to the screen size
     var pcpWindow = new BrowserWindow({
         width: width,
         height: height,
-        show: false,
         frame: false,
         fullscreenable: false,
         resizable: false,
         alwaysOnTop: true,
         skipTaskbar: true,
-        x: screenSize.width - width,
-        y: screenSize.height - height,
+        x: -width,
+        y: -height,
         backgroundColor: "transparent"
-    });
-
-    pcpWindow.on("blur", function () {
-        pcpWindow.hide();
     });
 
     var url = fluid.stringTemplate("file://%dirName/pcp/index.html", {
@@ -387,17 +381,57 @@ gpii.app.pcp.makePCPWindow = function (width, height) {
 };
 
 /**
- * Shows the passed Electron `BrowserWindow`.
- * In case the window is already opened, it is focused.
- *
+ * A function which should be called to init the blur listener for the PCP
+ * window. When the window loses focus, it should be hidden.
+ * @param pcp {Object} The `gpii.app.pcp` instance
+ */
+gpii.app.initBlurListener = function (pcp) {
+    var pcpWindow = pcp.pcpWindow;
+    pcpWindow.on("blur", function () {
+        pcp.hide();
+    });
+};
+
+/**
+ * This function checks whether the PCP window is shown.
+ * @param pcpWindow {Object} An Electron `BrowserWindow`
+ * @return {Boolean} `true` if the PCP window is shown and `false` otherwise.
+ */
+gpii.app.pcp.isPCPWindowShown = function (pcpWindow) {
+    var position = pcpWindow.getPosition(),
+        x = position[0],
+        y = position[1];
+    return x >= 0 && y >= 0;
+};
+
+/**
+ * Shows the PCP window in the lower part of the primary display and focuses it.
+ * Actually, the PCP window is always shown but it may be positioned off the screen.
+ * This is a workaround for the flickering issue observed when the content displayed in
+ * the PCP window changes. (Electron does not rerender web pages when the
+ * `BrowserWindow` is hidden).
  * @param pcpWindow {Object} An Electron `BrowserWindow`.
  */
 gpii.app.pcp.showPCPWindow = function (pcpWindow) {
-    if (!pcpWindow.isVisible()) {
-        pcpWindow.show();
-    }
-
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+        windowSize = pcpWindow.getSize(),
+        windowX = screenSize.width - windowSize[0],
+        windowY = screenSize.height - windowSize[1];
+    pcpWindow.setPosition(windowX, windowY);
     pcpWindow.focus();
+};
+
+/**
+ * Hides the PCP window by moving it to a non-visible part of the screen. This function
+ * in conjunction with `gpii.app.pcp.showPCPWindow` help avoid the flickering issue when
+ * the content of the PCP window changes.
+ * @param pcpWindow {Object} An Electron `BrowserWindow`.
+ */
+gpii.app.pcp.hidePCPWindow = function (pcpWindow) {
+    var windowSize = pcpWindow.getSize(),
+        width = windowSize[0],
+        height = windowSize[1];
+    pcpWindow.setPosition(-width, -height);
 };
 
 /**
@@ -616,19 +650,22 @@ fluid.onUncaughtException.addListener(function (err) {
  * height of the work are in the primary display.
  * @param pcpWindow {BrowserWindow} The PCP BrowserWindow.
  * @param contentHeight {Number} The new height of the BrowserWindow's content.
- * @param minHeight {Number} The minimum height which the BrowserWindow must have. 
+ * @param minHeight {Number} The minimum height which the BrowserWindow must have.
  */
-gpii.app.pcp.resize = function (pcpWindow, contentHeight, minHeight) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+gpii.app.pcp.resize = function (pcp, contentHeight, minHeight) {
+    var pcpWindow = pcp.pcpWindow,
+        wasShown = pcp.isShown(),
+        screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
         windowSize = pcpWindow.getSize(),
         windowWidth = windowSize[0],
-        windowHeight = Math.min(screenSize.height, Math.max(contentHeight, minHeight)),
-        windowPosition = pcpWindow.getPosition(),
-        windowX = windowPosition[0],
-        windowY = screenSize.height - windowHeight;
+        windowHeight = Math.min(screenSize.height, Math.max(contentHeight, minHeight));
 
-    pcpWindow.setPosition(windowX, windowY);
     pcpWindow.setSize(windowWidth, windowHeight);
+
+    // Adjusts the x and y position of the PCP window if it was previously shown.
+    if (wasShown) {
+        pcp.show();
+    }
 };
 
 /**
@@ -662,6 +699,10 @@ fluid.defaults("gpii.app.pcp", {
         "onCreate.initPCPWindowIPC": {
             listener: "gpii.app.initPCPWindowIPC",
             args: ["{app}", "{that}", "{gpiiConnector}"]
+        },
+        "onCreate.initBlurListener": {
+            listener: "gpii.app.initBlurListener",
+            args: ["{that}"]
         }
     },
     invokers: {
@@ -670,8 +711,12 @@ fluid.defaults("gpii.app.pcp", {
             args: ["{that}.pcpWindow"]
         },
         hide: {
-            "this": "{that}.pcpWindow",
-            method: "hide"
+            funcName: "gpii.app.pcp.hidePCPWindow",
+            args: ["{that}.pcpWindow"]
+        },
+        isShown: {
+            funcName: "gpii.app.pcp.isPCPWindowShown",
+            args: ["{that}.pcpWindow"]
         },
         notifyPCPWindow: {
             funcName: "gpii.app.pcp.notifyPCPWindow",
@@ -679,7 +724,7 @@ fluid.defaults("gpii.app.pcp", {
         },
         resize: {
             funcName: "gpii.app.pcp.resize",
-            args: ["{that}.pcpWindow", "{arguments}.0", "{that}.options.attrs.height"]
+            args: ["{that}", "{arguments}.0", "{that}.options.attrs.height"]
         }
     }
 });
