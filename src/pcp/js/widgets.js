@@ -25,7 +25,7 @@
             }
         },
         attrs: {
-            "aria-labelledby": "{that}.model.path"
+            //"aria-labelledby": null
         },
         selectors: {
             options: ".flc-dropdown-options"
@@ -91,9 +91,7 @@
                 container: "{that}.dom.input",
                 options: {
                     model: "{gpii.pcp.widgets.textfield}.model",
-                    attrs: {
-                        "aria-labelledby": "{gpii.pcp.widgets.textfield}.model.path"
-                    }
+                    attrs: "{gpii.pcp.widgets.textfield}.options.attrs"
                 }
             }
         }
@@ -102,7 +100,7 @@
     fluid.defaults("gpii.pcp.widgets.switch", {
         gradeNames: ["fluid.switchUI"],
         attrs: {
-            "aria-labelledby": "{that}.model.path"
+            // "aria-labelledby": null
         },
         strings: {
             on: "On",
@@ -168,7 +166,7 @@
         gradeNames: ["fluid.textfieldStepper"],
         scale: 2,
         attrs: {
-            "aria-labelledby": "{that}.model.path"
+            // "aria-labelledby": null
         },
         modelRelay: {
             "value": {
@@ -210,7 +208,6 @@
     fluid.defaults("gpii.pcp.widgets.multipicker", {
         gradeNames: ["fluid.rendererComponent"],
         model: {
-            path: null,
             values: [],
             names: [],
             value: null
@@ -223,7 +220,8 @@
             }
         },
         attrs: {
-            "aria-labelledby": "{that}.model.path"
+            // "aria-labelledby": null
+            // name: null
         },
         selectors: {
             inputGroup: ".flc-multipicker",
@@ -239,7 +237,7 @@
                 rowID: "item",
                 inputID: "input",
                 labelID: "label",
-                selectID: "{that}.model.path",
+                selectID: "{that}.options.attrs.name",
                 tree: {
                     optionnames: "${names}",
                     optionlist: "${values}",
@@ -251,6 +249,7 @@
             "onCreate.addAttrs": {
                 "this": "{that}.dom.inputGroup",
                 method: "attr",
+                // may apply additional unused attributes
                 args: ["{that}.options.attrs"]
             }
         },

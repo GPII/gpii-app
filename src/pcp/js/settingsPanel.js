@@ -28,16 +28,20 @@
             values: null,
             value: null
         },
-        widgetConfig: {
-            widgetOptions: null,
-            grade: null
-        },
 
         components: {
+            // The configuration exemplar
+            // widgetExemplar: null, // passed from parent
             widget: {
-                type: "{that}.options.widgetConfig.options.grade",
+                type: "{that}.widgetExemplar.options.grade",
                 container: "{that}.dom.widget",
-                options: "{settingPresenter}.options.widgetConfig.options.widgetOptions"
+                options: {
+                    // XXX abuses a misbehavior of expanding the `model` options, even if there's been expansion
+                    // in previous step
+                    model: "@expand:fluid.expandOptions({settingPresenter}.widgetExemplar.options.widgetOptions.model, {that})",
+                    // just pass the expanded attrs as two way binding is needed
+                    attrs: "@expand:fluid.expandOptions({settingPresenter}.widgetExemplar.options.widgetOptions.attrs, {that})"
+                }
             }
         },
         modelListeners: {
@@ -208,13 +212,12 @@
 
     /**
      * Handles visualization of single setting.
-     * Expects: markup for the all containers and the widget; widgetConfig needed for the setting; the setting
+     * Expects: markup for the all containers and the widget; widgetExemplar needed for the setting; the setting
      */
     fluid.defaults("gpii.pcp.settingVisualizer",  {
         gradeNames: "fluid.viewComponent",
 
         setting: null,
-        widgetConfig: null,
         markup: {
             container: null,
             setting: null,
@@ -234,6 +237,7 @@
         },
 
         components: {
+            //widgetExemplar: null, // passed from parent
             settingRenderer: {
                 type: "gpii.pcp.settingRenderer",
                 container: "{that}.container",
@@ -254,7 +258,9 @@
                 createOnEvent: "onSettingRendered",
                 container: "{arguments}.0",
                 options: {
-                    widgetConfig: "{settingVisualizer}.options.widgetConfig",
+                    components: {
+                        widgetExemplar: "{settingVisualizer}.widgetExemplar",
+                    },
                     model: "{settingVisualizer}.options.setting",
                     modelListeners: {
                         value: {
@@ -328,11 +334,14 @@
                     settingIndex: "{arguments}.0",
                     setting: "{arguments}.1",
 
-                    widgetConfig: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemeType({that}.options.setting.type)",
+                    components: {
+                        // an `Exemplar` object
+                        widgetExemplar: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemaType({that}.options.setting.type)",
+                    },
                     markup: {
                         container: "@expand:gpii.pcp.settingsVisualizer.getIndexedContainerMarkup({settingsVisualizer}.options.dynamicContainerMarkup, {that}.options.settingIndex)",
                         setting: "{settingsVisualizer}.options.markup.setting", // markup.setting",
-                        widget: "@expand:gpii.pcp.getProperty({settingsVisualizer}.options.markup, {that}.options.widgetConfig.options.grade)"
+                        widget: "@expand:gpii.pcp.getProperty({settingsVisualizer}.options.markup, {that}.widgetExemplar.options.grade)"
                     }
                 }
             }

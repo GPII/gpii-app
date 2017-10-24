@@ -17,10 +17,11 @@
         },
         template: null,
         grade: null,
-        schemeType: null,
+        schemaType: null,
         widgetOptions: {
             // proper model bindings and options
-            model: null
+            model: null,
+            // attrs: null
         }
     });
 
@@ -35,13 +36,16 @@
         gradeNames: "gpii.pcp.exemplar",
         template: "html/multipicker.html",
         grade: "gpii.pcp.widgets.multipicker",
-        schemeType: "array",
+        schemaType: "array",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
                 values: "{settingPresenter}.model.values",
                 names: "{settingPresenter}.model.values",
                 value: "{settingPresenter}.model.value"
+            },
+            attrs: {
+                "aria-labelledby": "{settingPresenter}.model.path",
+                name: "{settingPresenter}.model.path"
             }
         }
     });
@@ -50,13 +54,15 @@
         gradeNames: "gpii.pcp.exemplar",
         template: "html/switch.html",
         grade: "gpii.pcp.widgets.switch",
-        schemeType: "boolean",
+        schemaType: "boolean",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
                 name: "{settingPresenter}.model.path",
                 title: "{settingPresenter}.model.title",
                 enabled: "{settingPresenter}.model.value"
+            },
+            attrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -65,13 +71,15 @@
         gradeNames: "gpii.pcp.exemplar",
         template: "html/dropdown.html",
         grade: "gpii.pcp.widgets.dropdown",
-        schemeType: "string",
+        schemaType: "string",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
                 optionNames: "{settingPresenter}.model.values",
                 optionList: "{settingPresenter}.model.values",
                 selection: "{settingPresenter}.model.value"
+            },
+            attrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -80,16 +88,18 @@
         gradeNames: "gpii.pcp.exemplar",
         template: "html/stepper.html",
         grade: "gpii.pcp.widgets.stepper",
-        schemeType: "number",
+        schemaType: "number",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
                 number: "{settingPresenter}.model.value",
                 step: "{settingPresenter}.model.divisibleBy",
                 range: {
                     min: "{settingPresenter}.model.min",
                     max: "{settingPresenter}.model.max"
                 }
+            },
+            attrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -98,11 +108,13 @@
         gradeNames: "gpii.pcp.exemplar",
         template: "html/textfield.html",
         grade: "gpii.pcp.widgets.textfield",
-        schemeType: "text",
+        schemaType: "text",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
                 value: "{settingPresenter}.model.value"
+            },
+            attrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -131,8 +143,8 @@
             }
         },
         invokers: {
-            getExemplarBySchemeType: {
-                funcName: "gpii.pcp.widgetExemplars.getExemplarBySchemeType",
+            getExemplarBySchemaType: {
+                funcName: "gpii.pcp.widgetExemplars.getExemplarBySchemaType",
                 args: ["{that}", "{arguments}.0"]
             }
         }
@@ -142,12 +154,12 @@
     /**
      * Returns `gpii.pcp.exemplar` object for given schema (PCP channel type) type
      * @param widgetExemplars {Object} The `gpii.pcp.widgetExemplar` object
-     * @param schemeType {String}
+     * @param schemaType {String}
      * @returns {Object} The matching `gpii.pcp.exemplar` object
      */
-    gpii.pcp.widgetExemplars.getExemplarBySchemeType = function (widgetExemplars, schemeType) {
+    gpii.pcp.widgetExemplars.getExemplarBySchemaType = function (widgetExemplars, schemaType) {
         return fluid.values(widgetExemplars)
             .filter(fluid.isComponent)
-            .find(function matchType(exemplar) { return exemplar.options.schemeType === schemeType; });
+            .find(function matchType(exemplar) { return exemplar.options.schemaType === schemaType; });
     };
 })();
