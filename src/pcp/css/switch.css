@@ -65,8 +65,12 @@
 }
 
 /* Styles for alt theme */
+.theme-alt .fl-switchUI-control:focus {
+    outline-color: var(--main-color);
+}
+
 .theme-alt .fl-switchUI-control[aria-checked=true] { 
-    background-color: #0078d7;
+    background-color: var(--main-color);
     border-color: transparent;
 }
 

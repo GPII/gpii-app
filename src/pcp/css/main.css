@@ -138,3 +138,7 @@ body.theme-alt {
 .theme-alt #flc-settingsHeader hr {
     border-color: #797979;
 }
+
+.theme-alt #flc-settingsFooter button {
+    background-color: var(--main-color);
+}

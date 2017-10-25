@@ -17,12 +17,14 @@ var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
 var path = require("path");
 var request = require("request");
+var os = require("os");
 
 var BrowserWindow = electron.BrowserWindow,
     Menu = electron.Menu,
     Tray = electron.Tray,
     globalShortcut = electron.globalShortcut,
-    ipcMain = electron.ipcMain;
+    ipcMain = electron.ipcMain,
+    systemPreferences = electron.systemPreferences;
 var ws = require("ws");
 require("./networkCheck.js");
 
@@ -469,6 +471,40 @@ gpii.app.extractPreferencesData = function (message) {
     };
 };
 
+/**
+ * Returns whether the underlying OS is Windows 10 or not.
+ * @return {Boolean} `true` if the underlying OS is Windows 10 or
+ * `false` otherwise.
+ */
+gpii.app.isWin10OS = function () {
+    var osRelease = os.release(),
+        delimiter = osRelease.indexOf("."),
+        majorVersion = osRelease.slice(0, delimiter);
+    return majorVersion === "10";
+};
+
+/**
+ * This function takes care of notifying the PCP window whenever the
+ * user changes the accent color of the OS theme. Available only if
+ * the application is used on Windows 10.
+ * @param pcp {Object} The `gpii.app.pcp` instance
+ */
+gpii.app.registerAccentColorListener = function (pcp) {
+    if (gpii.app.isWin10OS()) {
+        // Notify the `BrowserWindow` about the current accent color
+        // only when it is ready to show. Otherwise, the change may
+        // not be propagated. The "accent-color-changed" event does
+        // not fire initially.
+        pcp.pcpWindow.once("ready-to-show", function () {
+            pcp.notifyPCPWindow("accentColorChanged", systemPreferences.getAccentColor());
+        });
+
+        systemPreferences.on("accent-color-changed", function (event, accentColor) {
+            pcp.notifyPCPWindow("accentColorChanged", accentColor);
+        });
+    }
+};
+
 
 /**
  * Register listeners for messages from the GPII socket connection.
@@ -651,6 +687,10 @@ fluid.defaults("gpii.app.pcp", {
         "onCreate.initPCPWindowIPC": {
             listener: "gpii.app.initPCPWindowIPC",
             args: ["{app}", "{that}", "{gpiiConnector}"]
+        },
+        "onCreate.registerAccentColorListener": {
+            listener: "gpii.app.registerAccentColorListener",
+            args: ["{that}"]
         }
     },
     invokers: {

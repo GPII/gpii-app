@@ -58,7 +58,7 @@
 
 /* Styles for alt theme */
 .theme-alt .fl-stepper input[type=range]:focus {
-    outline-color: #0078d7;
+    outline-color: var(--main-color);
 }
 
 .theme-alt .fl-stepper input[type=range]::-webkit-slider-runnable-track {
@@ -66,5 +66,5 @@
 }
 
 .theme-alt .fl-stepper input[type=range]::-webkit-slider-thumb {
-    background-color: #0087f0;
+    background-color: var(--main-color);
 }
