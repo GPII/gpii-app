@@ -31,21 +31,21 @@ gpii.tests.app.testInitialMenu = function (menu) {
     gpii.tests.app.testMenu(menuTemplate);
 };
 
-// Test regarding the PCP window
+// Test regarding the PSP window
 fluid.registerNamespace("gpii.tests.app.pcp");
 
-gpii.tests.app.pcp.testPCPWindowIsShown = function (pcpWindow) {
-    jqUnit.assertTrue("The PCP Window is shown", pcpWindow.isVisible());
+gpii.tests.app.pcp.testPSPWindowIsShown = function (pcpWindow) {
+    jqUnit.assertTrue("The PSP Window is shown", pcpWindow.isVisible());
 };
 
-gpii.tests.app.pcp.testPCPWindowIsHidden = function (pcpWindow) {
-    jqUnit.assertFalse("The PCP Window is hidden", pcpWindow.isVisible());
+gpii.tests.app.pcp.testPSPWindowIsHidden = function (pcpWindow) {
+    jqUnit.assertFalse("The PSP Window is hidden", pcpWindow.isVisible());
 };
 
-gpii.tests.app.pcp.testInitialPCPWindow = function (pcp) {
-    jqUnit.assertNotUndefined("The PCP was instantiated", pcp);
-    jqUnit.assertNotUndefined("The PCP Electron window was instantiated", pcp.pcpWindow);
-    gpii.tests.app.pcp.testPCPWindowIsHidden(pcp.pcpWindow);
+gpii.tests.app.pcp.testInitialPSPWindow = function (pcp) {
+    jqUnit.assertNotUndefined("The PSP was instantiated", pcp);
+    jqUnit.assertNotUndefined("The PSP Electron window was instantiated", pcp.pcpWindow);
+    gpii.tests.app.pcp.testPSPWindowIsHidden(pcp.pcpWindow);
 };
 
 gpii.tests.app.testTemplateExists = function (template, expectedLength) {
@@ -65,14 +65,14 @@ gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
 
 gpii.tests.app.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 2);
-    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     gpii.tests.app.testItem(menuTemplate[1], "(No one keyed in)");
 };
 
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 6);
     gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[5]);
-    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
 };
 
 gpii.tests.app.receiveApp = function (testCaseHolder, app) {
@@ -99,14 +99,14 @@ gpii.tests.app.testDefs = {
     sequence: [{ // Test the menu that will be rendered
         event: "{that gpii.app.menu}.events.onCreate",
         listener: "gpii.tests.app.testInitialMenu"
-    }, [ // PCP window tests
+    }, [ // PSP window tests
         { // pcpWindow should've been created by now
-            funcName: "gpii.tests.app.pcp.testInitialPCPWindow",
+            funcName: "gpii.tests.app.pcp.testInitialPSPWindow",
             args: ["{that}.app.pcp"]
         }, {
             func: "{that}.app.pcp.show"
         }, {
-            funcName: "gpii.tests.app.pcp.testPCPWindowIsShown",
+            funcName: "gpii.tests.app.pcp.testPSPWindowIsShown",
             args: ["{that}.app.pcp.pcpWindow"]
         }
     ], { // Test menu after key in
@@ -178,7 +178,7 @@ gpii.tests.dev.testKeyInList = function (item) {
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 4);
-    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     gpii.tests.dev.testKeyInList(menuTemplate[1]);
     gpii.tests.app.testItem(menuTemplate[2], "(No one keyed in)");
     gpii.tests.app.testItem(menuTemplate[3], "Exit GPII");
@@ -186,7 +186,7 @@ gpii.tests.dev.testMenu = function (menuTemplate) {
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 8);
-    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     gpii.tests.dev.testKeyInList(menuTemplate[2]);
     gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[6]);
     gpii.tests.app.testItem(menuTemplate[7], "Exit GPII");
@@ -204,7 +204,7 @@ gpii.tests.dev.testTrayKeyedIn = function (tray) {
 
 gpii.tests.dev.testMultiPrefSetMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 11);
-    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     // the default pref set should be set
     gpii.tests.dev.testContext1KeyedIn(menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
     gpii.tests.app.testItem(menuTemplate[9], "Key-out of GPII");
