@@ -50,6 +50,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      *    * draw new elements
      */
 
+    var dropdownSettingFixture = {
+        solutionName: "solutions1",
+        path: "settingOnePath",
+        type: "string",
+        values: ["a", "b", "c", "d"],
+        title: "Setting one title",
+        description: "Setting one description",
+        icon: "../../../icons/gear-cloud-black.png",
+        value: "b"
+    };
+
+    var textfieldSettingFixture = {
+        path: "textfieldPath",
+        type: "text",
+        title: "Text input",
+        description: "Text input description",
+        icon: "../../../icons/gear-cloud-white.png",
+        value: "Someee"
+    };
+
     var switchSettingFixture = {
         path: "invertColorsPath",
         type: "boolean",
@@ -60,32 +80,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         isPersisted: true
     };
 
-    var allSettingTypesFixture = [ {
-        solutionName: "solutions1",
-        path: "settingOnePath",
-        type: "string",
-        values: ["a", "b", "c", "d"],
-        title: "Setting one title",
-        description: "Setting one description",
-        icon: "../../../icons/gear-cloud-black.png",
-        value: "b"
-    }, {
-        solutionName: "solutions2",
-        path: "settingTwoPath",
-        type: "string",
-        values: ["b", "c", "d", "e"],
-        title: "Setting two title",
-        description: "Setting two description",
-        icon: "../../../icons/gear-cloud-black.png",
-        value: "c"
-    }, {
-        path: "textfieldPath",
-        type: "text",
-        title: "Text input",
-        description: "Text input description",
-        icon: "../../../icons/gear-cloud-white.png",
-        value: "Someee"
-    }, switchSettingFixture, {
+    var stepperSettingFixture = {
         path: "zoomPath",
         type: "number",
         title: "Zoom",
@@ -96,7 +91,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         max: 4,
         divisibleBy: 0.1,
         isPersisted: true
-    }, {
+    };
+
+    var allSettingTypesFixture = [dropdownSettingFixture, {
+        solutionName: "solutions2",
+        path: "settingTwoPath",
+        type: "string",
+        values: ["b", "c", "d", "e"],
+        title: "Setting two title",
+        description: "Setting two description",
+        icon: "../../../icons/gear-cloud-black.png",
+        value: "c"
+    }, textfieldSettingFixture, switchSettingFixture, stepperSettingFixture, {
         path: "ttsTrackingPath",
         type: "array",
         title: "TTS tracking mode",
@@ -369,6 +375,46 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }]
     });
 
+    gpii.tests.pcp.testStepperModelInteraction = function (container, value) {
+        var textfield = $(".flc-textfieldStepper-field", container);
+        jqUnit.assertEquals(
+            "Widgets: Stepper - text input has correct value after model update",
+            value.toString(),
+            textfield.val()
+        );
+
+        var slider = $(".flc-textfieldSlider-slider", container);
+        jqUnit.assertEquals(
+            "Widgets: Stepper - slider input has correct value after model update",
+            value.toString(),
+            slider.val()
+        );
+    };
+
+    gpii.tests.pcp.testTextfieldModelInteraction = function (container, value) {
+        var textfield = $(".flc-textfieldInput", container);
+        jqUnit.assertEquals(
+            "Widgets: Textfield - text input has correct value after model update",
+            value,
+            textfield.val()
+        );
+    };
+
+    gpii.tests.pcp.changeDropdownValue = function (container, value) {
+        $(".flc-dropdown-options", container)
+            .find("option[value=" + value + "]")
+            .prop("selected", true)
+            .trigger("change");
+    };
+
+    gpii.tests.pcp.testDropdownModelInteraction = function (container, value) {
+        var select = $(".flc-dropdown-options", container);
+        jqUnit.assertEquals(
+            "Widgets: Dropdown - select input has correct value after model update",
+            value,
+            select.val()
+        );
+    };
 
     /*
      * More isolated tests for the widgets
@@ -399,17 +445,118 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ], [ // Test model interaction
                     { // simulate setting from pcp update
                         funcName: "{singleSettingPanelsMock}.switchPanel.applier.change",
-                        args: ["{singleSettingPanelsMock}.switchPanel.model.settings.0.value", "false"]
+                        args: ["settings[0].value", true]
                     }, { // Test if rendered item updated
                         spec: {path: "", priority: "last"},
                         changeEvent: "{singleSettingPanelsMock}.switchPanel.applier.modelChanged",
                         listener: "jqUnit.isVisible",
                         args: [
                             "Widgets: Switch - should have re-rendered switch value after model update",
-                            "@expand:$(.flc-switchUI-off, {singleSettingPanelsMock}.switchPanel.container)"
+                            "@expand:$(.flc-switchUI-on, {singleSettingPanelsMock}.switchPanel.container)"
                         ]
                     }]
                 ]
+            }, {
+                name: "Widgets: Stepper - interactions test",
+                expect: 4,
+                sequence: [{
+                    funcName: "{singleSettingPanelsMock}.stepperPanel.events.onTemplatesLoaded.fire"
+                }, [
+                    {
+                        jQueryTrigger: "click",
+                        element: "@expand:$(.flc-textfieldStepper-increase, {singleSettingPanelsMock}.stepperPanel.container)"
+                    }, {
+                        event: "{singleSettingPanelsMock}.stepperPanel.events.onSettingAltered",
+                        listener: "jqUnit.assertDeepEq",
+                        args: [
+                            "Widgets: Stepper - component is notified when increasing for the update with proper path/value",
+                            [stepperSettingFixture.path, stepperSettingFixture.value + stepperSettingFixture.divisibleBy],
+                            ["{arguments}.0", "{arguments}.1"]
+                        ]
+                    }, {
+                        jQueryTrigger: "click",
+                        element: "@expand:$(.flc-textfieldStepper-decrease, {singleSettingPanelsMock}.stepperPanel.container)"
+                    }, {
+                        event: "{singleSettingPanelsMock}.stepperPanel.events.onSettingAltered",
+                        listener: "jqUnit.assertDeepEq",
+                        args: [
+                            "Widgets: Stepper - component is notified when decreasing for the update with proper path/value",
+                            [stepperSettingFixture.path, stepperSettingFixture.value],
+                            ["{arguments}.0", "{arguments}.1"]
+                        ]
+                    }
+                ], [
+                    {
+                        funcName: "{singleSettingPanelsMock}.stepperPanel.applier.change",
+                        args: ["settings[0].value", stepperSettingFixture.value + stepperSettingFixture.divisibleBy]
+                    },
+                    {
+                        spec: {path: "", priority: "last"},
+                        changeEvent: "{singleSettingPanelsMock}.stepperPanel.applier.modelChanged",
+                        listener: "gpii.tests.pcp.testStepperModelInteraction",
+                        args: ["{singleSettingPanelsMock}.stepperPanel.container", stepperSettingFixture.value + stepperSettingFixture.divisibleBy]
+                    }
+                ]]
+            }, {
+                name: "Widgets: Textfield - interactions test",
+                expect: 2,
+                sequence: [{
+                    funcName: "{singleSettingPanelsMock}.textfieldPanel.events.onTemplatesLoaded.fire"
+                }, [
+                    {
+                        funcName: "fluid.changeElementValue",
+                        args: ["@expand:$(.flc-textfieldInput, {singleSettingPanelsMock}.textfieldPanel.container)", "Test value"]
+                    }, {
+                        event: "{singleSettingPanelsMock}.textfieldPanel.events.onSettingAltered",
+                        listener: "jqUnit.assertDeepEq",
+                        args: [
+                            "Widgets: Textfield - component notified for the update with proper path/value",
+                            [textfieldSettingFixture.path, "Test value"],
+                            ["{arguments}.0", "{arguments}.1"]
+                        ]
+                    }
+                ], [
+                    {
+                        funcName: "{singleSettingPanelsMock}.textfieldPanel.applier.change",
+                        args: ["settings[0].value", textfieldSettingFixture.value]
+                    },
+                    {
+                        spec: {path: "", priority: "last"},
+                        changeEvent: "{singleSettingPanelsMock}.textfieldPanel.applier.modelChanged",
+                        listener: "gpii.tests.pcp.testTextfieldModelInteraction",
+                        args: ["{singleSettingPanelsMock}.textfieldPanel.container", textfieldSettingFixture.value]
+                    }
+                ]]
+            }, {
+                name: "Widgets: Dropdown - interactions test",
+                expect: 1,
+                sequence: [{
+                    funcName: "{singleSettingPanelsMock}.dropdownPanel.events.onTemplatesLoaded.fire"
+                }, [
+                    {
+                        funcName: "gpii.tests.pcp.changeDropdownValue",
+                        args: ["{singleSettingPanelsMock}.dropdownPanel.container", dropdownSettingFixture.values[2]]
+                    }, {
+                        event: "{singleSettingPanelsMock}.dropdownPanel.events.onSettingAltered",
+                        listener: "jqUnit.assertDeepEq",
+                        args: [
+                            "Widgets: Dropdown - component notified for the update with proper path/value",
+                            [dropdownSettingFixture.path, dropdownSettingFixture.values[2]],
+                            ["{arguments}.0", "{arguments}.1"]
+                        ]
+                    }
+                ], [
+                    {
+                        funcName: "{singleSettingPanelsMock}.dropdownPanel.applier.change",
+                        args: ["settings[0].value", dropdownSettingFixture.value]
+                    },
+                    {
+                        spec: {path: "", priority: "last"},
+                        changeEvent: "{singleSettingPanelsMock}.dropdownPanel.applier.modelChanged",
+                        listener: "gpii.tests.pcp.testDropdownModelInteraction",
+                        args: ["{singleSettingPanelsMock}.dropdownPanel.container", dropdownSettingFixture.value]
+                    }
+                ]]
             }]
         }]
     });
@@ -419,12 +566,39 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: "fluid.component",
 
         components: {
+            dropdownPanel: {
+                type: "gpii.tests.pcp.settingsPanelMock",
+                container: ".flc-settingsPanel-widgets-dropdown",
+                options: {
+                    model: {
+                        settings: [dropdownSettingFixture]
+                    }
+                }
+            },
+            textfieldPanel: {
+                type: "gpii.tests.pcp.settingsPanelMock",
+                container: ".flc-settingsPanel-widgets-textfield",
+                options: {
+                    model: {
+                        settings: [textfieldSettingFixture]
+                    }
+                }
+            },
             switchPanel: {
                 type: "gpii.tests.pcp.settingsPanelMock",
                 container: ".flc-settingsPanel-widgets-switch",
                 options: {
                     model: {
                         settings: [switchSettingFixture]
+                    }
+                }
+            },
+            stepperPanel: {
+                type: "gpii.tests.pcp.settingsPanelMock",
+                container: ".flc-settingsPanel-widgets-stepper",
+                options: {
+                    model: {
+                        settings: [stepperSettingFixture]
                     }
                 }
             }
