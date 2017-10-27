@@ -18,6 +18,7 @@ fluid.loadTestingSupport();
 var jqUnit = fluid.require("node-jqunit");
 
 require("../src/app.js");
+fluid.registerNamespace("gpii.tests.app");
 
 jqUnit.module("GPII Application Tests");
 
@@ -57,6 +58,22 @@ jqUnit.test("Tray.getTrayTooltip", function () {
     );
 });
 
+jqUnit.test("Menu.getShowPCP", function () {
+    jqUnit.expect(6);
+
+    var showPCPEvent = "onPCP",
+        showPCPLabel = "Open PSP",
+        showPCPObj = gpii.app.menu.getShowPCP(null, showPCPLabel);
+
+    jqUnit.assertTrue("Show PCP object exists when there is no user", showPCPObj);
+    jqUnit.assertEquals("Show PCP is bound to onClick when there is no user", showPCPEvent, showPCPObj.click);
+    jqUnit.assertEquals("Label is set in the show PCP object when there is no user", showPCPLabel, showPCPObj.label);
+
+    showPCPObj = gpii.app.menu.getShowPCP("alice", showPCPLabel);
+    jqUnit.assertTrue("Show PCP object exists when there is user", showPCPObj);
+    jqUnit.assertEquals("Show PCP is bound to onClick when there is user", showPCPEvent, showPCPObj.click);
+    jqUnit.assertEquals("Label is set in the show PCP object when there is user", showPCPLabel, showPCPObj.label);
+});
 
 jqUnit.test("Menu.getUserName", function () {
     jqUnit.expect(4);
@@ -67,25 +84,31 @@ jqUnit.test("Menu.getUserName", function () {
     jqUnit.assertEquals("No change in name when token is numeric.", "1234", gpii.app.menu.getUserName("1234"));
 });
 
+gpii.tests.app.testPrefSetMenuItem = function (item, label, checked) {
+    var prefSetMenuItemEvent = "onActivePrefSetUpdate";
+    jqUnit.assertEquals("Pref set menu item has proper click handler", prefSetMenuItemEvent, item.click);
+
+    var prefSetMenuType = "radio";
+    jqUnit.assertEquals("Pref set menu item has proper type", prefSetMenuType, item.type);
+
+    jqUnit.assertEquals("Pref set menu item has proper label", label, item.label);
+    jqUnit.assertEquals("Pref set menu item has proper (un)checked state", checked, item.checked);
+}
+
 jqUnit.test("Menu.getPreferenceSetsMenuItems", function () {
     var emptyPrefSetList = gpii.app.menu.getPreferenceSetsMenuItems([], null);
     var prefSetList = gpii.app.menu.getPreferenceSetsMenuItems(keyedInPrefSets.sets, prefSet2.path);
     var prefSetMenuItemEvent = "onActivePrefSetUpdate";
+    var prefSetMenuType = "radio";
 
-    jqUnit.expect(7);
+    jqUnit.expect(10);
 
     jqUnit.assertEquals("Pref set menu items list is empty", 0, emptyPrefSetList.length);
     // Note: +2 for separators
     jqUnit.assertEquals("Pref set menu items list", 4, prefSetList.length);
 
-    jqUnit.assertTrue("Pref set menu second item is checked", prefSetList[2].checked);
-    jqUnit.assertFalse("Pref set menu first item is NOT checked", prefSetList[1].checked);
-
-    jqUnit.assertDeepEq("Pref set menu items have proper click handler",
-        [prefSetMenuItemEvent, prefSetMenuItemEvent],
-        [prefSetList[1].click, prefSetList[2].click]);
-    jqUnit.assertEquals("Pref set menu items has proper label", keyedInPrefSets.sets[0].name, prefSetList[1].label);
-    jqUnit.assertEquals("Pref set menu items has proper label", keyedInPrefSets.sets[1].name, prefSetList[2].label);
+    gpii.tests.app.testPrefSetMenuItem(prefSetList[1], keyedInPrefSets.sets[0].name, false);
+    gpii.tests.app.testPrefSetMenuItem(prefSetList[2], keyedInPrefSets.sets[1].name, true);
 });
 
 jqUnit.test("Menu.getKeyedInUser", function () {
