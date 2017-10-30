@@ -256,8 +256,25 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.handleUncaughtException",
             args: ["{that}", "{arguments}.0"]
         }
+    },
+    distributeOptions: {
+        target: "{flowManager requests stateChangeHandler}.options.listeners.onError",
+        record: "gpii.app.onKeyInError"
     }
 });
+
+/**
+ * A function which is called whenever an error occurs while keying in. Note that a real error
+ * would have its `isError` property set to true.
+ * @param error {Object} The error which has occurred.
+ */
+gpii.app.onKeyInError = function (error) {
+    if (error.isError) {
+        fluid.onUncaughtException.fire({
+            code: "EKEYINFAIL"
+        });
+    }
+};
 
 gpii.app.fireAppReady = function (fireFn) {
     gpii.app.appReady.then(fireFn);
@@ -281,9 +298,8 @@ gpii.app.updateMenu = function (tray, menuTemplate, events) {
   * @param token {String} The token to key in with.
   */
 gpii.app.keyIn = function (token) {
-    // TODO keyout first
-    request("http://localhost:8081/user/" + token + "/login", function (/*error, response*/) {
-        //TODO Put in some error logging
+    request("http://localhost:8081/user/" + token + "/login", function (/* error, response */) {
+        // empty
     });
 };
 
@@ -607,8 +623,18 @@ gpii.app.handleUncaughtException = function (that, err) {
         "EADDRINUSE": {
             message: "There is another application listening on port " + err.port,
             fatal: true
+        },
+        "EKEYINFAIL": {
+            message: "Unable to key in. Please try again.",
+            fatal: false
         }
     };
+
+    // Update the showDialog model in order for the dialog to show for the
+    // next user who tries to key in.
+    that.updateShowDialog(false);
+    // Immediately hide the loading dialog.
+    that.dialog.dialog.hide();
 
     if (err.code) {
         var error = handledErrors[err.code];
@@ -1097,6 +1123,12 @@ fluid.defaults("gpii.app.menuInAppDev", {
             click: "onKeyIn",
             args: {
                 token: "context1"
+            }
+        }, {
+            label: "Invalid user",
+            click: "onKeyIn",
+            args: {
+                token: "danailbd"
             }
         }]
     },
