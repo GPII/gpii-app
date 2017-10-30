@@ -56,8 +56,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         schemaType: null,
         widgetOptions: {
             // proper model bindings and options
-            model: null,
-            // attrs: null
+            model: null
+            // rawAttrs: null
         }
     });
 
@@ -79,7 +79,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 names: "{settingPresenter}.model.values",
                 value: "{settingPresenter}.model.value"
             },
-            attrs: {
+            rawAttrs: {
                 "aria-labelledby": "{settingPresenter}.model.path",
                 name: "{settingPresenter}.model.path"
             }
@@ -97,7 +97,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 title: "{settingPresenter}.model.title",
                 enabled: "{settingPresenter}.model.value"
             },
-            attrs: {
+            rawAttrs: {
                 "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
@@ -114,7 +114,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 optionList: "{settingPresenter}.model.values",
                 selection: "{settingPresenter}.model.value"
             },
-            attrs: {
+            rawAttrs: {
                 "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
@@ -134,7 +134,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     max: "{settingPresenter}.model.max"
                 }
             },
-            attrs: {
+            rawAttrs: {
                 "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
@@ -149,7 +149,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             model: {
                 value: "{settingPresenter}.model.value"
             },
-            attrs: {
+            rawAttrs: {
                 "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
