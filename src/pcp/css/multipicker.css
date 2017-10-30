@@ -37,8 +37,8 @@
 }
 
 .theme-alt .fl-multipicker .checkbox label input:checked ~ span::before {
-    background-color: #0078d7;
-    border-color: #0078d7;
+    background-color: var(--main-color);
+    border-color: var(--main-color);
     color: #ffffff;
 }
 
@@ -47,7 +47,7 @@
 }
 
 .theme-alt .fl-multipicker .checkbox:hover label input:checked ~ span::before {
-    background-color: #0078d7;
+    background-color: var(--main-color);
     border-color: #ffffff;
     color: #ffffff;
 }

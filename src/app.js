@@ -17,12 +17,14 @@ var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
 var path = require("path");
 var request = require("request");
+var os = require("os");
 
 var BrowserWindow = electron.BrowserWindow,
     Menu = electron.Menu,
     Tray = electron.Tray,
     globalShortcut = electron.globalShortcut,
-    ipcMain = electron.ipcMain;
+    ipcMain = electron.ipcMain,
+    systemPreferences = electron.systemPreferences;
 var ws = require("ws");
 require("./networkCheck.js");
 
@@ -254,8 +256,25 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.handleUncaughtException",
             args: ["{that}", "{arguments}.0"]
         }
+    },
+    distributeOptions: {
+        target: "{flowManager requests stateChangeHandler}.options.listeners.onError",
+        record: "gpii.app.onKeyInError"
     }
 });
+
+/**
+ * A function which is called whenever an error occurs while keying in. Note that a real error
+ * would have its `isError` property set to true.
+ * @param error {Object} The error which has occurred.
+ */
+gpii.app.onKeyInError = function (error) {
+    if (error.isError) {
+        fluid.onUncaughtException.fire({
+            code: "EKEYINFAIL"
+        });
+    }
+};
 
 gpii.app.fireAppReady = function (fireFn) {
     gpii.app.appReady.then(fireFn);
@@ -279,9 +298,8 @@ gpii.app.updateMenu = function (tray, menuTemplate, events) {
   * @param token {String} The token to key in with.
   */
 gpii.app.keyIn = function (token) {
-    // TODO keyout first
-    request("http://localhost:8081/user/" + token + "/login", function (/*error, response*/) {
-        //TODO Put in some error logging
+    request("http://localhost:8081/user/" + token + "/login", function (/* error, response */) {
+        // empty
     });
 };
 
@@ -469,6 +487,40 @@ gpii.app.extractPreferencesData = function (message) {
     };
 };
 
+/**
+ * Returns whether the underlying OS is Windows 10 or not.
+ * @return {Boolean} `true` if the underlying OS is Windows 10 or
+ * `false` otherwise.
+ */
+gpii.app.isWin10OS = function () {
+    var osRelease = os.release(),
+        delimiter = osRelease.indexOf("."),
+        majorVersion = osRelease.slice(0, delimiter);
+    return majorVersion === "10";
+};
+
+/**
+ * This function takes care of notifying the PCP window whenever the
+ * user changes the accent color of the OS theme. Available only if
+ * the application is used on Windows 10.
+ * @param pcp {Object} The `gpii.app.pcp` instance
+ */
+gpii.app.registerAccentColorListener = function (pcp) {
+    if (gpii.app.isWin10OS()) {
+        // Notify the `BrowserWindow` about the current accent color
+        // only when it is ready to show. Otherwise, the change may
+        // not be propagated. The "accent-color-changed" event does
+        // not fire initially.
+        pcp.pcpWindow.once("ready-to-show", function () {
+            pcp.notifyPCPWindow("accentColorChanged", systemPreferences.getAccentColor());
+        });
+
+        systemPreferences.on("accent-color-changed", function (event, accentColor) {
+            pcp.notifyPCPWindow("accentColorChanged", accentColor);
+        });
+    }
+};
+
 
 /**
  * Register listeners for messages from the GPII socket connection.
@@ -570,8 +622,18 @@ gpii.app.handleUncaughtException = function (that, err) {
         "EADDRINUSE": {
             message: "There is another application listening on port " + err.port,
             fatal: true
+        },
+        "EKEYINFAIL": {
+            message: "Unable to key in. Please try again.",
+            fatal: false
         }
     };
+
+    // Update the showDialog model in order for the dialog to show for the
+    // next user who tries to key in.
+    that.updateShowDialog(false);
+    // Immediately hide the loading dialog.
+    that.dialog.dialog.hide();
 
     if (err.code) {
         var error = handledErrors[err.code];
@@ -650,6 +712,10 @@ fluid.defaults("gpii.app.pcp", {
         "onCreate.initPCPWindowIPC": {
             listener: "gpii.app.initPCPWindowIPC",
             args: ["{app}", "{that}", "{gpiiConnector}"]
+        },
+        "onCreate.registerAccentColorListener": {
+            listener: "gpii.app.registerAccentColorListener",
+            args: ["{that}"]
         }
     },
     invokers: {
@@ -1060,6 +1126,12 @@ fluid.defaults("gpii.app.menuInAppDev", {
             click: "onKeyIn",
             args: {
                 token: "context1"
+            }
+        }, {
+            label: "Invalid user",
+            click: "onKeyIn",
+            args: {
+                token: "danailbd"
             }
         }]
     },

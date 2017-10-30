@@ -45,6 +45,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         ipcRenderer.on("keyOut", function (event, preferences) {
             that.updatePreferences(preferences);
         });
+
+        ipcRenderer.on("accentColorChanged", function (event, accentColor) {
+            var mainColor = "#" + accentColor.slice(0, 6),
+                theme = ":root{ --main-color: " + mainColor + "; }";
+            that.updateTheme(theme);
+        });
     };
 
     /**
@@ -341,6 +347,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         selectors: {
+            theme: "#flc-theme",
             header: "#flc-settingsHeader",
             settingsList: "#flc-settingsList",
             footer: "#flc-settingsFooter"
@@ -406,6 +413,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     "{arguments}.0",
                     "{arguments}.1"
                 ]
+            },
+            "updateTheme": {
+                "this": "{that}.dom.theme",
+                method: "text",
+                args: ["{arguments}.0"]
             },
             "close": "gpii.pcp.closeSettingsWindow()"
         },
