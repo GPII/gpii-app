@@ -75,6 +75,22 @@
     };
 
     /**
+     * A function which should be called whenever the total height of the document
+     * assuming that the settings panel is displayed fully, without the need for it
+     * to scroll (i.e. if there is enough vertical space for the whole document),
+     * changes.
+     * @param mainWindow {Object} A jQuery object representing the mainWindow.
+     * @param content {Object} A jQuery object representing the content of the
+     * document between the header and footer. This container is scrollable.
+     * @param settingsList {Object} A jQuery object representing the container in
+     * which the various widgets will have their containers inserted.
+     */
+    gpii.pcp.onContentHeightChanged = function (mainWindow, content, settingsList) {
+        var height = mainWindow.outerHeight(true) - content.height() + settingsList.height();
+        ipcRenderer.send("contentHeightChanged", height);
+    };
+
+    /**
      * Opens the passed url externally using the default browser for the
      * OS (or set by the user).
      * @param url {String} The url to open externally.
@@ -346,6 +362,24 @@
     });
 
     /**
+     * Responsible for detecting height changes in the element in which
+     * the component's container is nested.
+     */
+    fluid.defaults("gpii.pcp.heightChangeListener", {
+        gradeNames: ["fluid.viewComponent"],
+        listeners: {
+            "onCreate.initResizeListener": {
+                "this": "@expand:$({that}.container.0.contentWindow)",
+                method: "on",
+                args: ["resize", "{that}.onHeightChanged"]
+            }
+        },
+        invokers: {
+            onHeightChanged: null
+        }
+    });
+
+    /**
      * Responsible for drawing the settings list
      *
      * TODO support redrawing of settings
@@ -362,9 +396,11 @@
         },
         selectors: {
             theme: "#flc-theme",
-            header: "#flc-settingsHeader",
+            header: "#flc-header",
+            content: "#flc-content",
+            footer: "#flc-footer",
             settingsList: "#flc-settingsList",
-            footer: "#flc-settingsFooter"
+            heightChangeListener: "#flc-heightChangeListener"
         },
         components: {
             splash: {
@@ -397,6 +433,15 @@
             footer: {
                 type: "gpii.pcp.footer",
                 container: "{that}.dom.footer"
+            },
+            heightChangeListener: {
+                type: "gpii.pcp.heightChangeListener",
+                container: "{that}.dom.heightChangeListener",
+                options: {
+                    invokers: {
+                        onHeightChanged: "{mainWindow}.onContentHeightChanged"
+                    }
+                }
             }
         },
         modelListeners: {
@@ -418,6 +463,14 @@
                 "this": "{that}.dom.theme",
                 method: "text",
                 args: ["{arguments}.0"]
+            },
+            "onContentHeightChanged": {
+                funcName: "gpii.pcp.onContentHeightChanged",
+                args: [
+                    "{that}.container",
+                    "{that}.dom.content",
+                    "{that}.dom.settingsList"
+                ]
             },
             "close": "gpii.pcp.closeSettingsWindow()"
         },

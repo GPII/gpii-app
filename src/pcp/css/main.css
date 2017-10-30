@@ -42,31 +42,31 @@ body {
 
 /* Header styles */
 
-#flc-settingsHeader hr { 
+#flc-header hr { 
     display: block;
     margin: 0.5em auto;
     border: 2px solid #005ba6;
 }
 
-#flc-settingsHeader .flc-prefSetPicker {
+#flc-header .flc-prefSetPicker {
     float: left;
 }
 
-#flc-settingsHeader .flc-closeBtn {
+#flc-header .flc-closeBtn {
     float: right;
 
     font-size: 20px;
     color: rgba(255, 255, 255, 0.6);
 }
 
-#flc-settingsHeader .flc-closeBtn:hover,
-#flc-settingsHeader .flc-closeBtn:focus {
+#flc-header .flc-closeBtn:hover,
+#flc-header .flc-closeBtn:focus {
     color: #ffffff;
 }
 
-/* Settings list styles */
+/* Content body styles */
 
-#flc-settingsList {
+#flc-content {
     flex: 1;
 
     /* Needed in order to have some spacing between the scrollbar
@@ -76,8 +76,30 @@ body {
     overflow-y: overlay;
 }
 
-#flc-settingsList > *[class*="flc-settingListRow"] {
+#flc-settingsList {
+    position: relative;
+    float: left;
+    width: 100%;
+}
+
+#flc-settingsList > iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 100%;
+
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#flc-settingsList > *[class^="flc-settingListRow"] {
     margin-bottom: 1.25em;
+}
+
+#flc-settingsList > *[class^="flc-settingListRow"]:last-child {
+    margin-bottom: 0.25em;
 }
 
 #flc-settingsList .flc-setting {
@@ -97,7 +119,8 @@ body {
     overflow: hidden;
 }
 
-#flc-settingsList .flc-setting .fl-settingLabel  .flc-title {
+#flc-settingsList .flc-setting .fl-settingLabel .flc-title {
+    display: inline;
     font-weight: normal;
 }
 
@@ -121,7 +144,7 @@ body {
 
 /* Footer styles */
 
-#flc-settingsFooter .flc-helpBtn {
+#flc-footer .flc-helpBtn {
     float: right;
     margin-right: 0;
 }
@@ -135,10 +158,10 @@ body.theme-alt {
     background-color: #797979;
 }
 
-.theme-alt #flc-settingsHeader hr {
+.theme-alt #flc-header hr {
     border-color: #797979;
 }
 
-.theme-alt #flc-settingsFooter button {
+.theme-alt #flc-footer button {
     background-color: var(--main-color);
 }
