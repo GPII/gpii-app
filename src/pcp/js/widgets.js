@@ -38,6 +38,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             optionList: [],
             selection: null
         },
+        modelListeners: {
+            "*": {
+                this: "{that}",
+                method: "refreshView",
+                excludeSource: "init"
+            }
+        },
+        attrs: {
+            //"aria-labelledby": null
+        },
         selectors: {
             options: ".flc-dropdown-options"
         },
@@ -46,6 +56,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 optionnames: "${optionNames}",
                 optionlist: "${optionList}",
                 selection: "${selection}"
+            }
+        },
+        listeners: {
+            "onCreate.addAttrs": {
+                "this": "{that}.dom.options",
+                method: "attr",
+                args: ["{that}.options.attrs"]
             }
         },
         renderOnInit: true
@@ -94,7 +111,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.textfield",
                 container: "{that}.dom.input",
                 options: {
-                    model: "{gpii.pcp.widgets.textfield}.model"
+                    model: "{gpii.pcp.widgets.textfield}.model",
+                    attrs: "{gpii.pcp.widgets.textfield}.options.attrs"
                 }
             }
         }
@@ -102,50 +120,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("gpii.pcp.widgets.switch", {
         gradeNames: ["fluid.switchUI"],
-        mergePolicy: {
-            "modelListeners.enabled": "replace"
+        attrs: {
+            // "aria-labelledby": null
         },
         strings: {
             on: "On",
             off: "Off"
-        },
-        attrs: {
-            role: "button"
-        },
-        modelListeners: {
-            enabled: {
-                funcName: "gpii.pcp.widgets.onSwitchChange",
-                args: [
-                    "{change}.value",
-                    "{that}.dom.control",
-                    "{that}.dom.on",
-                    "{that}.dom.off"
-                ]
-            }
         }
     });
-
-    /**
-     * A listener which is called whenever the model related to a switch UI component
-     * changes. It takes case of setting the "aria-pressed" attibute of the element,
-     * as well as of showing/hiding the appropriate "On" or "Off" label.
-     * @param enabled {Boolean} Whether the switch is in an enabled state or not.
-     * @param control {Object} A jQuery object representing the control element of the
-     * switch component
-     * @param onLabel {Object} A jQuery object representing the associated "On" label.
-     * @param offLabel {Object} A jQuery object representing the associated "Off" label.
-     */
-    gpii.pcp.widgets.onSwitchChange = function (enabled, control, onLabel, offLabel) {
-        control.attr("aria-pressed", enabled);
-
-        if (enabled) {
-            onLabel.show();
-            offLabel.hide();
-        } else {
-            onLabel.hide();
-            offLabel.show();
-        }
-    };
 
     /**
      * A function which is executed while the user is dragging the
@@ -203,7 +185,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      */
     fluid.defaults("gpii.pcp.widgets.stepper", {
         gradeNames: ["fluid.textfieldStepper"],
-        scale: 1,
+        scale: 2,
+        attrs: {
+            // "aria-labelledby": null
+        },
         modelRelay: {
             "value": {
                 target: "value",
@@ -229,7 +214,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     scale: "{stepper}.options.scale",
                     selectors: {
                         textfield: ".flc-textfieldStepper-field"
-                    }
+                    },
+                    attrs: "{stepper}.options.attrs"
                 }
             },
             textfield: {
@@ -247,15 +233,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             names: [],
             value: null
         },
+        modelListeners: {
+            "*": {
+                this: "{that}",
+                method: "refreshView",
+                excludeSource: "init"
+            }
+        },
         attrs: {
-            // it is mandatory to specify "name" here!
+            // "aria-labelledby": null
+            // name: null
         },
         selectors: {
+            inputGroup: ".flc-multipicker",
             item: ".flc-multipickerItem",
             input: ".flc-multipickerInput",
             label: ".flc-multipickerLabel"
         },
         repeatingSelectors: ["item"],
+        selectorsToIgnore: ["inputGroup"],
         protoTree: {
             expander: {
                 type: "fluid.renderer.selection.inputs",
@@ -268,6 +264,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     optionlist: "${values}",
                     selection: "${value}"
                 }
+            }
+        },
+        listeners: {
+            "onCreate.addAttrs": {
+                "this": "{that}.dom.inputGroup",
+                method: "attr",
+                // may apply additional unused attributes
+                args: ["{that}.options.attrs"]
             }
         },
         renderOnInit: true

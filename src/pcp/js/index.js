@@ -228,6 +228,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             funcName: "gpii.pcp.onPreferenceSetPickerDestroy",
                             args: ["{that}.container"]
                         }
+                    },
+                    attrs: {
+                        "aria-label": "Preference set"
                     }
                 }
             },

@@ -57,27 +57,33 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             icon: ".flc-icon",
             solutionName: ".flc-solutionName",
             title: ".flc-title",
+            titleLabel: ".flc-titleLabel",
             memoryIcon: ".flc-memoryIcon",
             restartIcon: ".flc-restartIcon",
             widget: ".flc-widget"
         },
         model: {
+            path: null,
             icon: null,
             solutionName: null,
             title: null,
             values: null,
             value: null
         },
-        widgetConfig: {
-            widgetOptions: null,
-            grade: null
-        },
 
         components: {
+            // The configuration exemplar
+            // widgetExemplar: null, // passed from parent
             widget: {
-                type: "{that}.options.widgetConfig.options.grade",
+                type: "{that}.widgetExemplar.options.grade",
                 container: "{that}.dom.widget",
-                options: "{settingPresenter}.options.widgetConfig.options.widgetOptions"
+                options: {
+                    // XXX abuses a misbehavior of expanding the `model` options, even if there's been expansion
+                    // in previous step
+                    model: "@expand:fluid.expandOptions({settingPresenter}.widgetExemplar.options.widgetOptions.model, {that})",
+                    // just pass the expanded attrs as two way binding is needed
+                    attrs: "@expand:fluid.expandOptions({settingPresenter}.widgetExemplar.options.widgetOptions.attrs, {that})"
+                }
             }
         },
         modelListeners: {
@@ -106,6 +112,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 this: "{that}.dom.title",
                 method: "text",
                 args: "{that}.model.title"
+            },
+            "onCreate.setLabelId": {
+                this: "{that}.dom.titleLabel",
+                method: "attr",
+                args: ["id", "{that}.model.path"]
             },
             "onCreate.setMemoryIcon": {
                 funcName: "gpii.pcp.settingPresenter.showMemoryIcon",
@@ -261,13 +272,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     /**
      * Handles visualization of single setting.
-     * Expects: markup for the all containers and the widget; widgetConfig needed for the setting; the setting
+     * Expects: markup for the all containers and the widget; widgetExemplar needed for the setting; the setting
      */
     fluid.defaults("gpii.pcp.settingVisualizer",  {
         gradeNames: "fluid.viewComponent",
 
         setting: null,
-        widgetConfig: null,
         markup: {
             container: null,
             setting: null,
@@ -281,6 +291,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
 
         components: {
+            //widgetExemplar: null, // passed from parent
             settingRenderer: {
                 type: "gpii.pcp.settingRenderer",
                 container: "{that}.container",
@@ -301,7 +312,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 createOnEvent: "onSettingRendered",
                 container: "{arguments}.0",
                 options: {
-                    widgetConfig: "{settingVisualizer}.options.widgetConfig",
+                    components: {
+                        widgetExemplar: "{settingVisualizer}.widgetExemplar",
+                    },
                     model: "{settingVisualizer}.options.setting",
                     events: {
                         onSettingAltered: "{settingVisualizer}.events.onSettingAltered"
@@ -361,11 +374,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onSettingAltered: "{settingsPanel}.events.onSettingAltered"
                     },
 
-                    widgetConfig: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemeType({that}.options.setting.type)",
+                    components: {
+                        // an `Exemplar` object
+                        widgetExemplar: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemaType({that}.options.setting.type)"
+                    },
                     markup: {
                         container: "@expand:gpii.pcp.settingsVisualizer.getIndexedContainerMarkup({settingsVisualizer}.options.dynamicContainerMarkup, {that}.options.settingIndex)",
                         setting: "{settingsVisualizer}.options.markup.setting", // markup.setting",
-                        widget: "@expand:gpii.pcp.getProperty({settingsVisualizer}.options.markup, {that}.options.widgetConfig.options.grade)"
+                        widget: "@expand:gpii.pcp.getProperty({settingsVisualizer}.options.markup, {that}.widgetExemplar.options.grade)"
                     }
                 }
             }

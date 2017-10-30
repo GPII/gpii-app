@@ -53,11 +53,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
 
         grade: null,
-        schemeType: null,
+        schemaType: null,
         widgetOptions: {
             // proper model bindings and options
             model: null,
-            attrs: {}
+            // attrs: null
         }
     });
 
@@ -72,7 +72,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: "gpii.pcp.exemplar",
         resourceName: "multipicker.html",
         grade: "gpii.pcp.widgets.multipicker",
-        schemeType: "array",
+        schemaType: "array",
         widgetOptions: {
             model: {
                 values: "{settingPresenter}.model.values",
@@ -80,6 +80,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 value: "{settingPresenter}.model.value"
             },
             attrs: {
+                "aria-labelledby": "{settingPresenter}.model.path",
                 name: "{settingPresenter}.model.path"
             }
         }
@@ -89,13 +90,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: "gpii.pcp.exemplar",
         resourceName: "switch.html",
         grade: "gpii.pcp.widgets.switch",
-        schemeType: "boolean",
+        schemaType: "boolean",
         widgetOptions: {
             model: {
+                name: "{settingPresenter}.model.path",
+                title: "{settingPresenter}.model.title",
                 enabled: "{settingPresenter}.model.value"
             },
             attrs: {
-                name: "{settingPresenter}.model.path"
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -104,12 +107,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: "gpii.pcp.exemplar",
         resourceName: "dropdown.html",
         grade: "gpii.pcp.widgets.dropdown",
-        schemeType: "string",
+        schemaType: "string",
         widgetOptions: {
             model: {
                 optionNames: "{settingPresenter}.model.values",
                 optionList: "{settingPresenter}.model.values",
                 selection: "{settingPresenter}.model.value"
+            },
+            attrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -118,7 +124,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: "gpii.pcp.exemplar",
         resourceName: "stepper.html",
         grade: "gpii.pcp.widgets.stepper",
-        schemeType: "number",
+        schemaType: "number",
         widgetOptions: {
             model: {
                 number: "{settingPresenter}.model.value",
@@ -127,6 +133,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     min: "{settingPresenter}.model.min",
                     max: "{settingPresenter}.model.max"
                 }
+            },
+            attrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -135,10 +144,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: "gpii.pcp.exemplar",
         resourceName: "textfield.html",
         grade: "gpii.pcp.widgets.textfield",
-        schemeType: "text",
+        schemaType: "text",
         widgetOptions: {
             model: {
                 value: "{settingPresenter}.model.value"
+            },
+            attrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -167,8 +179,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         invokers: {
-            getExemplarBySchemeType: {
-                funcName: "gpii.pcp.widgetExemplars.getExemplarBySchemeType",
+            getExemplarBySchemaType: {
+                funcName: "gpii.pcp.widgetExemplars.getExemplarBySchemaType",
                 args: ["{that}", "{arguments}.0"]
             }
         }
@@ -178,12 +190,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /**
      * Returns `gpii.pcp.exemplar` object for given schema (PCP channel type) type
      * @param widgetExemplars {Object} The `gpii.pcp.widgetExemplar` object
-     * @param schemeType {String}
+     * @param schemaType {String}
      * @returns {Object} The matching `gpii.pcp.exemplar` object
      */
-    gpii.pcp.widgetExemplars.getExemplarBySchemeType = function (widgetExemplars, schemeType) {
+    gpii.pcp.widgetExemplars.getExemplarBySchemaType = function (widgetExemplars, schemaType) {
         return fluid.values(widgetExemplars)
             .filter(fluid.isComponent)
-            .find(function matchType(exemplar) { return exemplar.options.schemeType === schemeType; });
+            .find(function matchType(exemplar) { return exemplar.options.schemaType === schemaType; });
     };
 })(fluid);

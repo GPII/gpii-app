@@ -27,6 +27,10 @@
     color: #0078d7;
 }
 
+.fl-multipicker .checkbox label input:focus ~ span::before {
+    border-color: #ffffff;
+}
+
 /* Styles for alt theme */
 .theme-alt .fl-multipicker .checkbox label input ~ span::before {
     border-color: rgba(255, 255, 255, 0.8);
@@ -36,6 +40,10 @@
     background-color: #0078d7;
     border-color: #0078d7;
     color: #ffffff;
+}
+
+.theme-alt .fl-multipicker .checkbox label input:focus ~ span::before {
+    border-color: #ffffff;
 }
 
 .theme-alt .fl-multipicker .checkbox:hover label input:checked ~ span::before {
