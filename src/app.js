@@ -665,30 +665,10 @@ gpii.app.pcp.resize = function (pcp, contentHeight, minHeight) {
         return;
     }
 
-    if (wasShown) {
-        pcp.hide();
-    }
     pcpWindow.setSize(windowWidth, windowHeight);
 
-    // Adjusts the x and y position of the PCP window if it was previously shown. The
-    // timeout is needed in order to prevent the flickering when the user switches
-    // between different preference sets.
     if (wasShown) {
-        pcp.resizeTimeout = setTimeout(function () {
-            pcp.show();
-            pcp.resizeTimeout = null;
-        }, 500);
-    }
-};
-
-/**
- * Clears all timers associated with the PCP component. Useful when the PCP
- * component is destroyed.
- * @param pcp {Object} A `gpii.app.pcp` instance.
- */
-gpii.app.clearPCPTimers = function (pcp) {
-    if (pcp.resizeTimeout) {
-        clearTimeout(pcp.resizeTimeout);
+        pcp.show();
     }
 };
 
@@ -726,10 +706,6 @@ fluid.defaults("gpii.app.pcp", {
         },
         "onCreate.initBlurListener": {
             listener: "gpii.app.initBlurListener",
-            args: ["{that}"]
-        },
-        "onDestroy.clearTimers": {
-            listener: "gpii.app.clearPCPTimers",
             args: ["{that}"]
         }
     },
