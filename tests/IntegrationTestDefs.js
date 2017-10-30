@@ -31,21 +31,21 @@ gpii.tests.app.testInitialMenu = function (menu) {
     gpii.tests.app.testMenu(menuTemplate);
 };
 
-// Test regarding the PCP window
+// Test regarding the PSP window
 fluid.registerNamespace("gpii.tests.app.pcp");
 
-gpii.tests.app.pcp.testPCPWindowIsShown = function (pcpWindow) {
-    jqUnit.assertTrue("The PCP Window is shown", pcpWindow.isVisible());
+gpii.tests.app.pcp.testPSPWindowIsShown = function (pcp) {
+    jqUnit.assertTrue("The PSP Window is shown", pcp.isShown());
 };
 
-gpii.tests.app.pcp.testPCPWindowIsHidden = function (pcpWindow) {
-    jqUnit.assertFalse("The PCP Window is hidden", pcpWindow.isVisible());
+gpii.tests.app.pcp.testPSPWindowIsHidden = function (pcp) {
+    jqUnit.assertFalse("The PSP Window is hidden", pcp.isShown());
 };
 
-gpii.tests.app.pcp.testInitialPCPWindow = function (pcp) {
-    jqUnit.assertNotUndefined("The PCP was instantiated", pcp);
-    jqUnit.assertNotUndefined("The PCP Electron window was instantiated", pcp.pcpWindow);
-    gpii.tests.app.pcp.testPCPWindowIsHidden(pcp.pcpWindow);
+gpii.tests.app.pcp.testInitialPSPWindow = function (pcp) {
+    jqUnit.assertNotUndefined("The PSP was instantiated", pcp);
+    jqUnit.assertNotUndefined("The PSP Electron window was instantiated", pcp.pcpWindow);
+    gpii.tests.app.pcp.testPSPWindowIsHidden(pcp);
 };
 
 gpii.tests.app.testTemplateExists = function (template, expectedLength) {
@@ -65,14 +65,14 @@ gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
 
 gpii.tests.app.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 2);
-    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     gpii.tests.app.testItem(menuTemplate[1], "(No one keyed in)");
 };
 
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 3);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[2]);
-    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testTemplateExists(menuTemplate, 6);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[5]);
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
 };
 
 gpii.tests.app.receiveApp = function (testCaseHolder, app) {
@@ -99,22 +99,26 @@ gpii.tests.app.testDefs = {
     sequence: [{ // Test the menu that will be rendered
         event: "{that gpii.app.menu}.events.onCreate",
         listener: "gpii.tests.app.testInitialMenu"
-    }, [ // PCP window tests
+    }, [ // PSP window tests
         { // pcpWindow should've been created by now
-            funcName: "gpii.tests.app.pcp.testInitialPCPWindow",
+            funcName: "gpii.tests.app.pcp.testInitialPSPWindow",
             args: ["{that}.app.pcp"]
         }, {
             func: "{that}.app.pcp.show"
         }, {
-            funcName: "gpii.tests.app.pcp.testPCPWindowIsShown",
-            args: ["{that}.app.pcp.pcpWindow"]
+            funcName: "gpii.tests.app.pcp.testPSPWindowIsShown",
+            args: ["{that}.app.pcp"]
         }
     ], { // Test menu after key in
         func: "{that}.app.keyIn",
         args: "snapset_1a"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        path: "menuTemplate",
+        // XXX {{1}} as `keyedInUserToken` and `preferences` are updated in different time (toke is first),
+        // if we have listener for `menuTemplate` update, the `preferenceSetsMenuItems` update won't be present
+        // at the time of the event firing
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenuSnapsetKeyedIn"
     }, { // Test key in attempt while someone is keyed in
         func: "{that}.app.keyIn",
@@ -124,16 +128,29 @@ gpii.tests.app.testDefs = {
         listener: "gpii.tests.app.testMenuSnapsetKeyedIn",
         args: ["{that}.app.tray.menu.model.menuTemplate"]
     }, { // Test menu after key out
-        func: "{that}.app.keyOut",
-        args: "snapset_1a"
+        func: "{that}.app.keyOut"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        path: "menuTemplate",
+        // XXX {{1}} see above
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenu"
     }]
 };
 
 fluid.registerNamespace("gpii.tests.dev");
+
+var prefSetsInDevStartIdx = 4;
+gpii.tests.dev.testContext1KeyedIn = function (tray, menuTemplate, activeSetIdx) {
+    gpii.tests.app.testItem(menuTemplate[1], "Keyed in with Context1");
+    gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx], "Default preferences");
+    gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 1], "bright");
+    gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 2], "noise");
+    gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 3], "bright and noise");
+
+    jqUnit.assertTrue("Active set is marked in the menu", menuTemplate[activeSetIdx].checked);
+    gpii.tests.dev.testTrayTooltip(tray, menuTemplate[activeSetIdx].label);
+};
 
 gpii.tests.dev.testInitialMenu = function (menu) {
     var menuTemplate = menu.model.menuTemplate;
@@ -144,7 +161,7 @@ gpii.tests.dev.testKeyInList = function (item) {
     jqUnit.assertEquals("Item is 'Key In' List", "Key in ...", item.label);
     var submenu = item.submenu;
     jqUnit.assertValue("Item has submenu", submenu);
-    jqUnit.assertEquals("Key in list has 11 items", 11, submenu.length);
+    jqUnit.assertEquals("Key in list has 12 items", 13, submenu.length);
 
     gpii.tests.app.testItem(submenu[0], "Larger 125%");
     gpii.tests.app.testItem(submenu[1], "Larger 150%");
@@ -157,32 +174,64 @@ gpii.tests.dev.testKeyInList = function (item) {
     gpii.tests.app.testItem(submenu[8], "Magnifier 400%");
     gpii.tests.app.testItem(submenu[9], "Magnifier 200% & Display Scaling 175%");
     gpii.tests.app.testItem(submenu[10], "Dark Magnifier 200%");
+    gpii.tests.app.testItem(submenu[11], "Multi pref sets; Magnifier");
+    gpii.tests.app.testItem(submenu[12], "Invalid user");
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 4);
-    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     gpii.tests.dev.testKeyInList(menuTemplate[1]);
     gpii.tests.app.testItem(menuTemplate[2], "(No one keyed in)");
     gpii.tests.app.testItem(menuTemplate[3], "Exit GPII");
 };
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 5);
-    gpii.tests.app.testItem(menuTemplate[0], "Open PCP");
+    gpii.tests.app.testTemplateExists(menuTemplate, 8);
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     gpii.tests.dev.testKeyInList(menuTemplate[2]);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[3]);
-    gpii.tests.app.testItem(menuTemplate[4], "Exit GPII");
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[6]);
+    gpii.tests.app.testItem(menuTemplate[7], "Exit GPII");
+};
+
+gpii.tests.dev.testTrayTooltip = function (tray, expectedTooltip) {
+    jqUnit.assertEquals("Tray tooltip label", expectedTooltip, tray.model.tooltip);
 };
 
 gpii.tests.dev.testTrayKeyedOut = function (tray) {
     jqUnit.assertValue("Tray is available", tray);
-    jqUnit.assertValue("No user keyed-in icon", tray.options.icons.keyedOut, tray.model.icon);
+    jqUnit.assertEquals("No user keyed-in icon", tray.options.icons.keyedOut, tray.model.icon);
+    gpii.tests.dev.testTrayTooltip(tray, tray.options.labels.defaultTooltip);
 };
 
-gpii.tests.dev.testTrayKeyedIn = function (tray) {
+gpii.tests.dev.testTrayKeyedIn = function (tray, expectedTooltip) {
     jqUnit.assertValue("Tray is available", tray);
-    jqUnit.assertValue("No user keyed-in icon", tray.options.icons.keyedIn, tray.model.icon);
+    jqUnit.assertEquals("Keyed-in user icon", tray.options.icons.keyedIn, tray.model.icon);
+    gpii.tests.dev.testTrayTooltip(tray, expectedTooltip);
+};
+
+gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {
+    gpii.tests.app.testTemplateExists(menuTemplate, 11);
+    gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
+    // the default pref set should be set
+    gpii.tests.dev.testContext1KeyedIn(tray, menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
+    gpii.tests.app.testItem(menuTemplate[9], "Key-out of GPII");
+    gpii.tests.app.testItem(menuTemplate[10], "Exit GPII");
+};
+
+gpii.tests.dev.testChangedActivePrefSetMenu = function (tray, menuTemplate, prefSetClickedIdx) {
+    gpii.tests.dev.testContext1KeyedIn(tray, menuTemplate,
+                      /*activeSetIdx=*/prefSetClickedIdx);
+};
+
+gpii.tests.dev.testActiveSetChanged = function (tray, menuTemplate, prefSetItemClickedIdx, preferences) {
+    // Changed in menu
+    gpii.tests.dev.testChangedActivePrefSetMenu(tray, menuTemplate, prefSetItemClickedIdx);
+
+    // Changed in component
+    jqUnit.assertEquals("Active preference set changed properly in component",
+        menuTemplate[prefSetItemClickedIdx].args.path,
+        preferences.activeSet);
 };
 
 fluid.registerNamespace("gpii.tests.dev.testDefs");
@@ -190,7 +239,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 107,
+    expect: 155,
     config: {
         configName: "app.dev",
         configPath: "configs"
@@ -214,20 +263,46 @@ gpii.tests.dev.testDefs = {
         args: "snapset_1a"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        path: "menuTemplate",
+        // XXX {{1}}
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMenuSnapsetKeyedIn"
     }, {
         func: "gpii.tests.dev.testTrayKeyedIn",
-        args: "{that}.app.tray"
+        args: ["{that}.app.tray", "Default preferences"]
     }, { // Test menu after key out
-        func: "{that}.app.keyOut",
-        args: "snapset_1a"
+        func: "{that}.app.keyOut"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        path: "menuTemplate",
+        // XXX {{1}}
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMenu"
     }, {
         func: "gpii.tests.dev.testTrayKeyedOut",
         args: "{that}.app.tray"
-    }]
+    }, { // test active set change
+        func: "{that}.app.keyIn",
+        args: "context1"
+    }, {
+        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
+        // XXX {{1}}
+        path: "preferenceSetsMenuItems",
+        args: ["{that}.app.tray", "{that}.app.tray.menu.model.menuTemplate"],
+        listener: "gpii.tests.dev.testMultiPrefSetMenu"
+    }, { // simulate choosing different pref set
+        func: "{that}.app.tray.menu.model.menuTemplate.6.click"
+    }, { // test Active Pref Set changed
+        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
+        path: "menuTemplate",
+        args: [
+            "{that}.app.tray",
+            "{that}.app.tray.menu.model.menuTemplate",
+            /*prefSetItemClickedIdx=*/6,
+            "{that}.app.model.preferences"
+        ],
+        listener: "gpii.tests.dev.testActiveSetChanged"
+    }
+        // tooltip
+    ]
 };

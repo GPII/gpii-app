@@ -18,10 +18,62 @@ fluid.loadTestingSupport();
 var jqUnit = fluid.require("node-jqunit");
 
 require("../src/app.js");
+fluid.registerNamespace("gpii.tests.app");
 
 jqUnit.module("GPII Application Tests");
 
 // Unit test the functions in gpii.app.menu
+
+var prefSet1 = {
+        path: "a",
+        name: "not used"
+    },
+    prefSet2 = {
+        path: "b",
+        name: "used"
+    },
+    emptyPrefSets = {
+        sets: [],
+        activeSet: null
+    },
+    keyedInPrefSets = {
+        sets: [prefSet1, prefSet2],
+        activeSet: prefSet2.path
+    };
+
+
+jqUnit.test("Tray.getTrayTooltip", function () {
+    var defaultTooltip = "def";
+
+    jqUnit.expect(2);
+
+    jqUnit.assertEquals("The tooltip is default when user is not keyedIn",
+        defaultTooltip,
+        gpii.app.getTrayTooltip(emptyPrefSets, defaultTooltip)
+    );
+
+    jqUnit.assertEquals("The tooltip is active pref set name when user is keyedIn",
+        prefSet2.name,
+        gpii.app.getTrayTooltip(keyedInPrefSets, defaultTooltip)
+    );
+});
+
+jqUnit.test("Menu.getShowPCP", function () {
+    jqUnit.expect(6);
+
+    var showPCPEvent = "onPCP",
+        showPCPLabel = "Open PSP",
+        showPCPObj = gpii.app.menu.getShowPCP(null, showPCPLabel);
+
+    jqUnit.assertTrue("Show PCP object exists when there is no user", showPCPObj);
+    jqUnit.assertEquals("Show PCP is bound to onClick when there is no user", showPCPEvent, showPCPObj.click);
+    jqUnit.assertEquals("Label is set in the show PCP object when there is no user", showPCPLabel, showPCPObj.label);
+
+    showPCPObj = gpii.app.menu.getShowPCP("alice", showPCPLabel);
+    jqUnit.assertTrue("Show PCP object exists when there is user", showPCPObj);
+    jqUnit.assertEquals("Show PCP is bound to onClick when there is user", showPCPEvent, showPCPObj.click);
+    jqUnit.assertEquals("Label is set in the show PCP object when there is user", showPCPLabel, showPCPObj.label);
+});
 
 jqUnit.test("Menu.getUserName", function () {
     jqUnit.expect(4);
@@ -30,6 +82,33 @@ jqUnit.test("Menu.getUserName", function () {
     jqUnit.assertEquals("Generated name is empty when no name provided.", "", gpii.app.menu.getUserName(""));
     jqUnit.assertEquals("Name should be capitilized.", "Alice", gpii.app.menu.getUserName("alice"));
     jqUnit.assertEquals("No change in name when token is numeric.", "1234", gpii.app.menu.getUserName("1234"));
+});
+
+gpii.tests.app.testPrefSetMenuItem = function (item, label, checked) {
+    var prefSetMenuItemEvent = "onActivePrefSetUpdate";
+    jqUnit.assertEquals("Pref set menu item has proper click handler", prefSetMenuItemEvent, item.click);
+
+    var prefSetMenuType = "radio";
+    jqUnit.assertEquals("Pref set menu item has proper type", prefSetMenuType, item.type);
+
+    jqUnit.assertEquals("Pref set menu item has proper label", label, item.label);
+    jqUnit.assertEquals("Pref set menu item has proper (un)checked state", checked, item.checked);
+}
+
+jqUnit.test("Menu.getPreferenceSetsMenuItems", function () {
+    var emptyPrefSetList = gpii.app.menu.getPreferenceSetsMenuItems([], null);
+    var prefSetList = gpii.app.menu.getPreferenceSetsMenuItems(keyedInPrefSets.sets, prefSet2.path);
+    var prefSetMenuItemEvent = "onActivePrefSetUpdate";
+    var prefSetMenuType = "radio";
+
+    jqUnit.expect(10);
+
+    jqUnit.assertEquals("Pref set menu items list is empty", 0, emptyPrefSetList.length);
+    // Note: +2 for separators
+    jqUnit.assertEquals("Pref set menu items list", 4, prefSetList.length);
+
+    gpii.tests.app.testPrefSetMenuItem(prefSetList[1], keyedInPrefSets.sets[0].name, false);
+    gpii.tests.app.testPrefSetMenuItem(prefSetList[2], keyedInPrefSets.sets[1].name, true);
 });
 
 jqUnit.test("Menu.getKeyedInUser", function () {
@@ -64,23 +143,34 @@ jqUnit.test("Menu.getKeyOut", function () {
     jqUnit.assertTrue("Key out object exists", keyOutObj);
     jqUnit.assertTrue("Key out object is enabled when a token is provided", keyOutObj.enabled);
     jqUnit.assertEquals("Key out is bound to onClick", "onKeyOut", keyOutObj.click);
-    jqUnit.assertEquals("Token is set in the key out object", token, keyOutObj.token);
+    jqUnit.assertEquals("Token is set in the key out object", token, keyOutObj.args.token);
     jqUnit.assertEquals("Label is set in the key out object", keyOutStr, keyOutObj.label);
 
 });
 
 var item1 = {label: "Item 1", enabled: false};
 var item2 = {label: "Item 2"};
-var item3 = {label: "Item 3", click: "onKeyIn", token: "3"};
+var item3 = {label: "Item 3", click: "onKeyIn", args: {token: "3"}};
 var submenu = {label: "submenu", submenu: [item3]};
 
 jqUnit.test("Menu.expandMenuTemplate", function () {
-    jqUnit.expect(3);
+    jqUnit.expect(4);
+
+    // A mocked event
+    var events = {
+        onKeyIn: {
+            fire: function (args) {
+                jqUnit.assertEquals("Menu item was \"clicked\" with proper arguments", item3.args, args);
+            }
+        }
+    };
+
     var menuTemplate = gpii.app.menu.generateMenuTemplate(item1, item2, submenu);
     jqUnit.assertEquals("There are 3 items in the menuTemplate after generation", 3, menuTemplate.length);
 
-    menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate);
+    menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
     jqUnit.assertEquals("There are 3 items in the menuTemplate after expansion", 3, menuTemplate.length);
     jqUnit.assertEquals("The click string has been expanded into a function", "function", typeof menuTemplate[2].submenu[0].click);
 
+    menuTemplate[2].submenu[0].click();
 });
