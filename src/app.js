@@ -403,14 +403,22 @@ gpii.app.pcp.makePCPWindow = function (windowOptions) {
 };
 
 /**
- * A function which should be called to init the blur listener for the PCP
- * window. When the window loses focus, it should be hidden.
+ * A function which should be called to init various listeners related to
+ * the PCP window.
  * @param pcp {Object} The `gpii.app.pcp` instance
  */
-gpii.app.initBlurListener = function (pcp) {
+gpii.app.initPCPWindowListeners = function (pcp) {
     var pcpWindow = pcp.pcpWindow;
     pcpWindow.on("blur", function () {
         pcp.hide();
+    });
+
+    electron.screen.on("display-metrics-changed", function (event, display, changedMetrics) {
+        if (changedMetrics.indexOf("workArea") > -1) {
+            var windowSize = pcpWindow.getSize(),
+                contentHeight = windowSize[1];
+            pcp.resize(contentHeight, true);
+        }
     });
 };
 
@@ -713,12 +721,17 @@ fluid.onUncaughtException.addListener(function (err) {
 /**
  * Resizes the PCP window and positions it appropriately based on the new height
  * of its content. Makes sure that the window is no higher than the available
- * height of the work are in the primary display.
+ * height of the work area in the primary display. The window will not be resized
+ * if its current height is the same as the new height. This behaviour can be
+ * overridden using the `forceResize` parameter.
  * @param pcp {Object} A `gpii.app.pcp` instance.
  * @param contentHeight {Number} The new height of the BrowserWindow's content.
  * @param minHeight {Number} The minimum height which the BrowserWindow must have.
+ * @param forceResize {Boolean} Whether to resize the window even if the current
+ * height of the `BrowserWindow` is the same as the new one. Useful when screen
+ * DPI is changed as a result of the application of a user's preferences.
  */
-gpii.app.pcp.resize = function (pcp, contentHeight, minHeight) {
+gpii.app.pcp.resize = function (pcp, contentHeight, minHeight, forceResize) {
     var pcpWindow = pcp.pcpWindow,
         wasShown = pcp.isShown(),
         screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
@@ -727,7 +740,7 @@ gpii.app.pcp.resize = function (pcp, contentHeight, minHeight) {
         initialHeight = windowSize[1],
         windowHeight = Math.min(screenSize.height, Math.max(contentHeight, minHeight));
 
-    if (initialHeight === windowHeight) {
+    if (initialHeight === windowHeight && !forceResize) {
         return;
     }
 
@@ -783,8 +796,8 @@ fluid.defaults("gpii.app.pcp", {
             listener: "gpii.app.registerAccentColorListener",
             args: ["{that}"]
         },
-        "onCreate.initBlurListener": {
-            listener: "gpii.app.initBlurListener",
+        "onCreate.initPCPWindowListeners": {
+            listener: "gpii.app.initPCPWindowListeners",
             args: ["{that}"]
         }
     },
@@ -811,7 +824,7 @@ fluid.defaults("gpii.app.pcp", {
         },
         resize: {
             funcName: "gpii.app.pcp.resize",
-            args: ["{that}", "{arguments}.0", "{that}.options.attrs.height"]
+            args: ["{that}", "{arguments}.0", "{that}.options.attrs.height", "{arguments}.1"]
         }
     }
 });
