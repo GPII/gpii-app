@@ -490,8 +490,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onTemplatesLoaded: null,
-            onSettingAltered: null
-            // onSettingUpdated: null // passed from outside
+            onSettingAltered: null,
+            onSettingUpdated: null // passed from outside
         }
     });
 

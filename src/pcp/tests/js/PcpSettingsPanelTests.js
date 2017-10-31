@@ -128,15 +128,61 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     /**
+     * A wrapper component that ensures synchronous environment for `gpii.pcp.settingsPanel` related tests.
+     * Needed in order to ensure that the underlying `gpii.pcp.settingsPanel`-s will be created with
+     * corresponding resources loaded, when tests are run.
+     */
+    fluid.defaults("gpii.tests.pcp.settingsPanelTestsWrapper", {
+        gradeNames: "fluid.component",
+        components: {
+            settingsPanelMock: {
+                type: "gpii.tests.pcp.settingsPanelMock",
+                container: ".flc-settingsPanel-all",
+                options: {
+                    model: {
+                        settings: allSettingTypesFixture
+                    }
+                }
+            },
+            settingsPanelTests: {
+                type: "gpii.tests.pcp.settingsPanelTests",
+                createOnEvent: "{settingsPanelMock}.resourcesLoader.events.onResourcesLoaded",
+                options: {
+                    components: {
+                        settingsPanelMock: "{settingsPanelMock}"
+                    }
+                }
+            },
+
+            // widget tests
+            singleSettingPanelsMock: {
+                type: "gpii.tests.pcp.singleSettingPanelsMock"
+            },
+            widgetsTests: {
+                type: "gpii.tests.pcp.widgetsTests",
+                createOnEvent: "{singleSettingPanelsMock}.events.onResourcesLoaded",
+                options: {
+                    components: {
+                        singleSettingPanelsMock: "{singleSettingPanelsMock}"
+                    },
+                    listeners: {
+                        "onCreate.log": {
+                            this: "console",
+                            method: "log",
+                            args: ["HERE"]
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    /**
      * More or less isolated tests for the different widgets
      */
     fluid.defaults("gpii.tests.pcp.widgetsTests", {
         gradeNames: "fluid.test.testEnvironment",
         components: {
-            // widget tests
-            singleSettingPanelsMock: {
-                type: "gpii.tests.pcp.singleSettingPanelsMock"
-            },
             widgetsTester: {
                 type: "gpii.tests.pcp.widgetsTester",
                 priority: "after:singleSettingPanelsMock"
@@ -150,18 +196,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("gpii.tests.pcp.settingsPanelTests", {
         gradeNames: ["fluid.test.testEnvironment"],
         components: {
-            settingsPanelMock: {
-                type: "gpii.tests.pcp.settingsPanelMock",
-                container: ".flc-settingsPanel-all",
-                options: {
-                    model: {
-                        settings: allSettingTypesFixture
-                    }
-                }
-            },
             settingsPanelTester: {
-                type: "gpii.tests.pcp.settingsPanelTester",
-                priority: "after:settingsPanelMock"
+                type: "gpii.tests.pcp.settingsPanelTester"
             }
         }
     });
@@ -170,7 +206,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertEquals(
             "Widgets: Switch - should have proper value rendered",
             setting.value.toString(),
-            $(".flc-switchUI-control", container).attr("aria-pressed")
+            $(".flc-switchUI-control", container).attr("aria-checked")
         );
     };
 
@@ -416,6 +452,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         );
     };
 
+    gpii.tests.pcp.testSwitchInteraction = function (container, expected) {
+        jqUnit.assertEquals(
+            "Widgets: Switch - should have re-rendered switch value after model update",
+            expected.toString(),
+            $(".flc-switchUI-control", container).attr("aria-checked")
+        );
+    };
+
     /*
      * More isolated tests for the widgets
      */
@@ -442,18 +486,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             ["{arguments}.0", "{arguments}.1"]
                         ]
                     }
-                ], [ // Test model interaction
-                    { // simulate setting from pcp update
-                        funcName: "{singleSettingPanelsMock}.switchPanel.applier.change",
-                        args: ["settings[0].value", true]
+                ], [ // Test model interaction (settingsVisualizer is already created)
+                    { // simulate setting from PCP update
+                        funcName: "{singleSettingPanelsMock}.switchPanel.events.onSettingUpdated.fire",
+                        args: [switchSettingFixture.path, switchSettingFixture.value]
                     }, { // Test if rendered item updated
-                        spec: {path: "", priority: "last"},
-                        changeEvent: "{singleSettingPanelsMock}.switchPanel.applier.modelChanged",
-                        listener: "jqUnit.isVisible",
-                        args: [
-                            "Widgets: Switch - should have re-rendered switch value after model update",
-                            "@expand:$(.flc-switchUI-on, {singleSettingPanelsMock}.switchPanel.container)"
-                        ]
+                        event: "{singleSettingPanelsMock}.switchPanel.events.onSettingUpdated",
+                        listener: "gpii.tests.pcp.testSwitchInteraction",
+                        args: ["{singleSettingPanelsMock}.switchPanel.container", true]
                     }]
                 ]
             }, {
@@ -487,12 +527,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 ], [
                     {
-                        funcName: "{singleSettingPanelsMock}.stepperPanel.applier.change",
-                        args: ["settings[0].value", stepperSettingFixture.value + stepperSettingFixture.divisibleBy]
+                        funcName: "{singleSettingPanelsMock}.stepperPanel.events.onSettingUpdated.fire",
+                        args: [stepperSettingFixture.path, stepperSettingFixture.value + stepperSettingFixture.divisibleBy]
                     },
                     {
-                        spec: {path: "", priority: "last"},
-                        changeEvent: "{singleSettingPanelsMock}.stepperPanel.applier.modelChanged",
+                        event: "{singleSettingPanelsMock}.stepperPanel.events.onSettingUpdated",
                         listener: "gpii.tests.pcp.testStepperModelInteraction",
                         args: ["{singleSettingPanelsMock}.stepperPanel.container", stepperSettingFixture.value + stepperSettingFixture.divisibleBy]
                     }
@@ -517,19 +556,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 ], [
                     {
-                        funcName: "{singleSettingPanelsMock}.textfieldPanel.applier.change",
-                        args: ["settings[0].value", textfieldSettingFixture.value]
+                        funcName: "{singleSettingPanelsMock}.textfieldPanel.events.onSettingUpdated.fire",
+                        args: [textfieldSettingFixture.path, textfieldSettingFixture.value]
                     },
                     {
-                        spec: {path: "", priority: "last"},
-                        changeEvent: "{singleSettingPanelsMock}.textfieldPanel.applier.modelChanged",
+                        event: "{singleSettingPanelsMock}.textfieldPanel.events.onSettingUpdated",
                         listener: "gpii.tests.pcp.testTextfieldModelInteraction",
                         args: ["{singleSettingPanelsMock}.textfieldPanel.container", textfieldSettingFixture.value]
                     }
                 ]]
             }, {
                 name: "Widgets: Dropdown - interactions test",
-                expect: 1,
+                expect: 2,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.dropdownPanel.events.onTemplatesLoaded.fire"
                 }, [
@@ -547,12 +585,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 ], [
                     {
-                        funcName: "{singleSettingPanelsMock}.dropdownPanel.applier.change",
-                        args: ["settings[0].value", dropdownSettingFixture.value]
+                        funcName: "{singleSettingPanelsMock}.dropdownPanel.events.onSettingUpdated.fire",
+                        args: [dropdownSettingFixture.path, dropdownSettingFixture.value]
                     },
                     {
-                        spec: {path: "", priority: "last"},
-                        changeEvent: "{singleSettingPanelsMock}.dropdownPanel.applier.modelChanged",
+                        event: "{singleSettingPanelsMock}.dropdownPanel.events.onSettingUpdated",
                         listener: "gpii.tests.pcp.testDropdownModelInteraction",
                         args: ["{singleSettingPanelsMock}.dropdownPanel.container", dropdownSettingFixture.value]
                     }
@@ -565,6 +602,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("gpii.tests.pcp.singleSettingPanelsMock", {
         gradeNames: "fluid.component",
 
+        events: {
+            onDropdownPanelLoaded: null,
+            onTextfieldPanelLoaded: null,
+            onSwitchPanelLoaded: null,
+            onStepperPanelLoaded: null,
+
+            onResourcesLoaded: {
+                events: {
+                    onDropdownPanelLoaded: "onDropdownPanelLoaded",
+                    onTextfieldPanelLoaded: "onTextfieldPanelLoaded",
+                    onSwitchPanelLoaded: "onSwitchPanelLoaded",
+                    onStepperPanelLoaded: "onStepperPanelLoaded"
+                }
+            }
+        },
+
         components: {
             dropdownPanel: {
                 type: "gpii.tests.pcp.settingsPanelMock",
@@ -572,6 +625,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: {
                         settings: [dropdownSettingFixture]
+                    },
+                    listeners: {
+                        "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onDropdownPanelLoaded"
                     }
                 }
             },
@@ -581,6 +637,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: {
                         settings: [textfieldSettingFixture]
+                    },
+                    listeners: {
+                        "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onTextfieldPanelLoaded"
                     }
                 }
             },
@@ -590,6 +649,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: {
                         settings: [switchSettingFixture]
+                    },
+                    listeners: {
+                        "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onSwitchPanelLoaded"
                     }
                 }
             },
@@ -599,6 +661,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: {
                         settings: [stepperSettingFixture]
+                    },
+                    listeners: {
+                        "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onStepperPanelLoaded"
                     }
                 }
             }
@@ -629,7 +694,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.tests.pcp.widgetsTests", {
+    fluid.defaults("gpii.tests.pcp.isolatedWidgetsTests", {
         gradeNames: ["fluid.test.testEnvironment"],
 
         components: {
@@ -691,9 +756,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     $(document).ready(function () {
-        //gpii.tests.pcp.settingsPanelTests();
-        //gpii.tests.pcp.widgetsTests();
-
-        gpii.tests.pcp.widgetsTests();
+        gpii.tests.pcp.settingsPanelTestsWrapper();
+        gpii.tests.pcp.isolatedWidgetsTests();
     });
 })(fluid, jqUnit);
