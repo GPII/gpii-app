@@ -109,32 +109,6 @@
     };
 
     /**
-     * A method responsible for showing a restart icon when the user changes a setting
-     * which is not dynamic.
-     * @param dynamic {Boolean} Whether the current setting is dynamic or not.
-     * @param restartIcon {Object} A jQuery object representing the restart icon.
-     */
-    gpii.pcp.showRestartIcon = function (dynamic, restartIcon) {
-        if (!dynamic) {
-            restartIcon.show();
-        }
-    };
-
-    /**
-     * A method responsible for showing a memory icon if the setting will be persisted
-     * after a user has changed it.
-     * @param isPersisted {Boolean} Whether the current setting will be persisted or not.
-     * @param memoryIcon {Object} A jQuery object representing the memory icon.
-     */
-    gpii.pcp.showMemoryIcon = function (isPersisted, memoryIcon) {
-        if (isPersisted) {
-            memoryIcon.show();
-        }
-    };
-
-
-
-    /**
      * A function which checks if an array object holds more than one element.
      * @param arr {Array} The array to be checked.
      * @return {Boolean} Whether the array has more than one element.
