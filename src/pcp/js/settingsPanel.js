@@ -75,11 +75,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             grade: null
         },
 
+        events: {
+            onSettingUpdated: null,
+            onSettingAltered: null
+        },
+
         components: {
             widget: {
                 type: "{that}.options.widgetConfig.options.grade",
                 container: "{that}.dom.widget",
-                // XXX currently, we abuse a misbehavior of expanding the `model` options, even if there's been expansion
+                // XXX currently, we exploit a misbehavior of expanding the `model` options, even if there's been expansion
                 options: "{settingPresenter}.options.widgetConfig.options.widgetOptions"
             }
         },
@@ -118,9 +123,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "onCreate.setMemoryIcon": {
                 funcName: "gpii.pcp.settingPresenter.showMemoryIcon",
                 args: ["{that}.model.isPersisted", "{that}.dom.memoryIcon"]
+            },
+            // Update value locally in order for the corresponding
+            //   DOM elements to be notifier, and thus updated
+            "onSettingUpdated": {
+                funcName: "gpii.pcp.settingPresenter.updateModelIfNeeded",
+                args: ["{that}", "{arguments}.0", "{arguments}.1"]
             }
         }
     });
+
+    /**
+     * Notifies the corresponding widget components about an update on the setting
+     * in case the update is reffering current setting
+     */
+    gpii.pcp.settingPresenter.updateModelIfNeeded = function (that, path, newValue) {
+        if (path === that.model.path) {
+            that.applier.change("value", newValue, null, "outer");
+        }
+    };
 
     /**
      * A method responsible for showing a restart icon when the user changes a setting
@@ -284,8 +305,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         events: {
             // XXX not quite valid naming as the widget component (in settingPresenter) also renders
-            onSettingRendered: null
-            // onSettingAltered: null  // passed from parent
+            onSettingRendered: null,
+            onSettingAltered: null  // passed from parent
+            // onSettingUpdated: null  // passed from parent
         },
 
         components: {
@@ -312,7 +334,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     widgetConfig: "{settingVisualizer}.options.widgetConfig",
                     model: "{settingVisualizer}.options.setting",
                     events: {
-                        onSettingAltered: "{settingVisualizer}.events.onSettingAltered"
+                        onSettingAltered: "{settingVisualizer}.events.onSettingAltered",
+                        onSettingUpdated: "{settingVisualizer}.events.onSettingUpdated"
                     }
                 }
             }
@@ -366,7 +389,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     setting: "{arguments}.1",
 
                     events: {
-                        onSettingAltered: "{settingsPanel}.events.onSettingAltered"
+                        onSettingAltered: "{settingsPanel}.events.onSettingAltered",
+                        onSettingUpdated: "{settingsPanel}.events.onSettingUpdated"
                     },
 
                     widgetConfig: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemaType({that}.options.setting.type)",
@@ -467,6 +491,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onTemplatesLoaded: null,
             onSettingAltered: null
+            // onSettingUpdated: null // passed from outside
         }
     });
 

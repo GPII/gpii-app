@@ -38,6 +38,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.updatePreferences(preferences);
         });
 
+        setTimeout(function () {
+            that.updateSetting("http://registry\\.gpii\\.net/common/DPIScale", 2);
+            console.log('here');
+        }, 10000);
+
         ipcRenderer.on("updateSetting", function (event, settingData) {
             that.updateSetting(settingData.path, settingData.value);
         });
@@ -61,7 +66,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * @param value {Any} The new, updated value for the setting. Can be
      * of different type depending on the setting.
      */
-    gpii.pcp.updateSetting = function (path, value) {
+    gpii.pcp.notifySettingUpdate = function (path, value) {
         ipcRenderer.send("updateSetting", {
             path: path,
             value: value
@@ -377,11 +382,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: {
                         settings: "{mainWindow}.model.preferences.settings"
                     },
-                    listeners: {
-                        "onSettingAltered.notifyIRC": {
-                            funcName: "gpii.pcp.updateSetting",
-                            args: ["{arguments}.0", "{arguments}.1"]
-                        }
+                    events: {
+                        onSettingAltered: "{mainWindow}.events.onSettingAltered",
+                        onSettingUpdated: "{mainWindow}.events.onSettingUpdated"
                     }
                 }
             },
@@ -397,6 +400,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "onCreate.addCommunicationChannel": {
                 funcName: "gpii.pcp.addCommunicationChannel",
                 args: ["{that}"]
+            },
+
+            "onSettingAltered.notifyIPC": {
+                funcName: "gpii.pcp.notifySettingUpdate",
+                args: ["{arguments}.0", "{arguments}.1"]
             }
         },
         invokers: {
@@ -406,10 +414,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 source: "outer"
             },
             "updateSetting": {
-                funcName: "gpii.pcp.mainWindow.updateSetting",
+                // TODO just fire because... (redrawing)
+                func: "{that}.events.onSettingUpdated.fire",
                 args: [
-                    "{that}.applier",
-                    "{that}.model.preferences.settings",
                     "{arguments}.0",
                     "{arguments}.1"
                 ]
@@ -422,35 +429,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "close": "gpii.pcp.closeSettingsWindow()"
         },
         events: {
-            onPreferencesUpdated: null
+            onPreferencesUpdated: null,
+
+            onSettingAltered: null, // the setting was altered by the user
+            onSettingUpdated: null  // setting update is present from the API
         }
     });
-
-    /**
-     * Update a setting of the existing settings list from the outside. It notifies
-     * observers of the change.
-     *
-     * @param applier {Object} An applier, used to apply the change in order to have
-     * all the dependent observers notified
-     * @param settings {Object[]} The list of settings
-     * @param path {String} The path of the value to be changed
-     * @param newValue {String|Number} The new value for the setting
-     */
-    gpii.pcp.mainWindow.updateSetting = function (applier, settings, path, newValue) {
-        var alteredSettingIdx = settings.findIndex(function (setting) {
-                return setting.path === path;
-            }),
-            changePath;
-
-        if (alteredSettingIdx > -1) {
-            // XXX in order to notify observers, use the applier
-            changePath = fluid.stringTemplate("preferences.settings.%settingIdx.value",
-                { settingIdx: alteredSettingIdx });
-            applier.change(changePath, newValue);
-        } else {
-            console.error("Setting not present in the current list: ", path);
-        }
-    };
 
     $(function () {
         gpii.pcp.mainWindow("#flc-body");
