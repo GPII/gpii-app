@@ -34,18 +34,18 @@ gpii.tests.app.testInitialMenu = function (menu) {
 // Test regarding the PSP window
 fluid.registerNamespace("gpii.tests.app.pcp");
 
-gpii.tests.app.pcp.testPSPWindowIsShown = function (pcpWindow) {
-    jqUnit.assertTrue("The PSP Window is shown", pcpWindow.isVisible());
+gpii.tests.app.pcp.testPSPWindowIsShown = function (pcp) {
+    jqUnit.assertTrue("The PSP Window is shown", pcp.isShown());
 };
 
-gpii.tests.app.pcp.testPSPWindowIsHidden = function (pcpWindow) {
-    jqUnit.assertFalse("The PSP Window is hidden", pcpWindow.isVisible());
+gpii.tests.app.pcp.testPSPWindowIsHidden = function (pcp) {
+    jqUnit.assertFalse("The PSP Window is hidden", pcp.isShown());
 };
 
 gpii.tests.app.pcp.testInitialPSPWindow = function (pcp) {
     jqUnit.assertNotUndefined("The PSP was instantiated", pcp);
     jqUnit.assertNotUndefined("The PSP Electron window was instantiated", pcp.pcpWindow);
-    gpii.tests.app.pcp.testPSPWindowIsHidden(pcp.pcpWindow);
+    gpii.tests.app.pcp.testPSPWindowIsHidden(pcp);
 };
 
 gpii.tests.app.testTemplateExists = function (template, expectedLength) {
@@ -107,7 +107,7 @@ gpii.tests.app.testDefs = {
             func: "{that}.app.pcp.show"
         }, {
             funcName: "gpii.tests.app.pcp.testPSPWindowIsShown",
-            args: ["{that}.app.pcp.pcpWindow"]
+            args: ["{that}.app.pcp"]
         }
     ], { // Test menu after key in
         func: "{that}.app.keyIn",
@@ -161,7 +161,7 @@ gpii.tests.dev.testKeyInList = function (item) {
     jqUnit.assertEquals("Item is 'Key In' List", "Key in ...", item.label);
     var submenu = item.submenu;
     jqUnit.assertValue("Item has submenu", submenu);
-    jqUnit.assertEquals("Key in list has 12 items", 12, submenu.length);
+    jqUnit.assertEquals("Key in list has 12 items", 13, submenu.length);
 
     gpii.tests.app.testItem(submenu[0], "Larger 125%");
     gpii.tests.app.testItem(submenu[1], "Larger 150%");
@@ -175,6 +175,7 @@ gpii.tests.dev.testKeyInList = function (item) {
     gpii.tests.app.testItem(submenu[9], "Magnifier 200% & Display Scaling 175%");
     gpii.tests.app.testItem(submenu[10], "Dark Magnifier 200%");
     gpii.tests.app.testItem(submenu[11], "Multi pref sets; Magnifier");
+    gpii.tests.app.testItem(submenu[12], "Invalid user");
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
@@ -238,7 +239,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 149,
+    expect: 155,
     config: {
         configName: "app.dev",
         configPath: "configs"

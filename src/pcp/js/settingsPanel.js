@@ -27,7 +27,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.registerNamespace("gpii.pcp");
     fluid.registerNamespace("gpii.pcp.utils");
 
-
     /**
      * Utility function for retrieving the last sub-element of a container
      * @param container {Object} The jQuery container object
@@ -62,6 +61,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             restartIcon: ".flc-restartIcon",
             widget: ".flc-widget"
         },
+        styles: {
+            osRestartIcon: "fl-icon-alertTriangle",
+            applicationRestartIcon: "fl-icon-alertCircle"
+        },
         model: {
             path: null,
             icon: null,
@@ -91,7 +94,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         modelListeners: {
             value: [{
                 funcName: "gpii.pcp.settingPresenter.showRestartIcon",
-                args: ["{that}.model.dynamic", "{that}.dom.restartIcon"],
+                args: ["{that}.model.dynamicity", "{that}.dom.restartIcon", "{that}.options.styles"],
                 excludeSource: "init"
             }, {
                 funcName: "{that}.events.onSettingAltered.fire",
@@ -144,14 +147,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     /**
-     * A method responsible for showing a restart icon when the user changes a setting
-     * which is not dynamic.
-     * @param dynamic {Boolean} Whether the current setting is dynamic or not.
+     * A method responsible for showing and styling the restart icon when the user
+     * changes a setting which is not dynamic.
+     * @param dynamicity {String} The type of dynamicity for the current setting. Can
+     * be "none", "application" or "os".
      * @param restartIcon {Object} A jQuery object representing the restart icon.
+     * @param styles {Object}
      */
-    gpii.pcp.settingPresenter.showRestartIcon = function (dynamic, restartIcon) {
-        if (!dynamic) {
-            restartIcon.show();
+    gpii.pcp.settingPresenter.showRestartIcon = function (dynamicity, restartIcon, styles) {
+        if (dynamicity === "application" || dynamicity === "os") {
+            var iconClass = dynamicity === "application" ? styles.applicationRestartIcon : styles.osRestartIcon;
+            restartIcon.addClass(iconClass);
+            // cannot use $.show() because it will make the display "inline"
+            restartIcon.css("display", "inline-block");
         }
     };
 
