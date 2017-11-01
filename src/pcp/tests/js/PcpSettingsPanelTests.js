@@ -24,32 +24,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function (fluid, jqUnit) {
     var gpii = fluid.registerNamespace("gpii");
 
-    /* TODO Remove when dev finished
-     *
-     * FOR EACH
-     * (2)dynamic flag is shown
-     * (2)m flag is shown
-     * (3) on click handler is triggered
-     * (3) rendered on update
-     *
-     * async update of solutionName
-     *
-     * WIDGETS
-     *  * simulate value change by user
-     *  * simulate API change (model)
-     *  * doc tests
-     *
-     * DIFFERENT FIXTURES
-     *  * same type widget >1
-     *  * less settings
-     *  * `undefined` options?
-     *
-     * MainWindow
-     *   On pref set changed
-     *    * remove drawn elements
-     *    * draw new elements
-     */
-
     var dropdownSettingFixture = {
         solutionName: "solutions1",
         path: "settingOnePath",
@@ -166,13 +140,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     components: {
                         singleSettingPanelsMock: "{singleSettingPanelsMock}"
-                    },
-                    listeners: {
-                        "onCreate.log": {
-                            this: "console",
-                            method: "log",
-                            args: ["HERE"]
-                        }
                     }
                 }
             }
