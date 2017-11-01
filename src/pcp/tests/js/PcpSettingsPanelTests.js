@@ -735,69 +735,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.tests.pcp.isolatedWidgetsTests", {
-        gradeNames: ["fluid.test.testEnvironment"],
-
-        components: {
-            switchWidgetMock: {
-                type: "gpii.tests.pcp.switchWidgetMock",
-                container: ".flc-widgets-switch"
-            },
-            switchWidgetTester: {
-                type: "gpii.tests.pcp.switchWidgetTester"
-            }
-        }
-    });
-
-    fluid.defaults("gpii.tests.pcp.switchWidgetTester", {
-        gradeNames: ["fluid.test.testCaseHolder"],
-
-        modules: [{
-            name: "Widget test: Switch",
-            tests: [{
-                expect: 1,
-                name: "Test attrs expansion",
-                type: "test",
-                funcName: "jqUnit.assertEquals",
-                args: [
-                    "Widget should have proper attrs",
-                    // TODO merge with fluid.defaults("fluid.switchUI").attrs
-                    { role: "switch", tabindex: 0, a: 1 },
-                    "{switchWidgetMock}.switchWidget.options.attrs"
-                ]
-            }]
-        }]
-    });
-
-
-    fluid.defaults("gpii.tests.pcp.switchWidgetMock", {
-        gradeNames: ["fluid.viewComponent"],
-
-        mergePolicy: {
-            rawAttrsMock: "noexpand"
-        },
-
-        attrs: {
-            a: 1
-        },
-
-        rawAttrsMock: {
-            a: "{switchWidgetMock}.options.attrs.a"
-        },
-
-        components: {
-            switchWidget: {
-                type: "gpii.pcp.widgets.switch",
-                container: "{that}.container",
-                options: {
-                    rawAttrs: "{switchWidgetMock}.options.rawAttrsMock"
-                }
-            }
-        }
-    });
-
     $(document).ready(function () {
         gpii.tests.pcp.settingsPanelTestsWrapper();
-        gpii.tests.pcp.isolatedWidgetsTests();
     });
 })(fluid, jqUnit);

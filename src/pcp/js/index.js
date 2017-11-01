@@ -38,11 +38,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.updatePreferences(preferences);
         });
 
-        setTimeout(function () {
-            that.updateSetting("http://registry\\.gpii\\.net/common/DPIScale", 2);
-            console.log('here');
-        }, 10000);
-
         ipcRenderer.on("updateSetting", function (event, settingData) {
             that.updateSetting(settingData.path, settingData.value);
         });
