@@ -5,6 +5,34 @@
 
     fluid.registerNamespace("gpii.pcp");
 
+    /**
+     * A method responsible for showing and styling the restart icon when the user
+     * changes a setting which is not dynamic.
+     * @param dynamicity {String} The type of dynamicity for the current setting. Can
+     * be "none", "application" or "os".
+     * @param restartIcon {Object} A jQuery object representing the restart icon.
+     * @param styles {Object}
+     */
+    gpii.pcp.showRestartIcon = function (dynamicity, restartIcon, styles) {
+        if (dynamicity === "application" || dynamicity === "os") {
+            var iconClass = dynamicity === "application" ? styles.applicationRestartIcon : styles.osRestartIcon;
+            restartIcon.addClass(iconClass);
+            // cannot use $.show() because it will make the display "inline"
+            restartIcon.css("display", "inline-block");
+        }
+    };
+
+    /**
+     * A method responsible for showing a memory icon if the setting will be persisted
+     * after a user has changed it.
+     * @param isPersisted {Boolean} Whether the current setting will be persisted or not.
+     * @param memoryIcon {Object} A jQuery object representing the memory icon.
+     */
+    gpii.pcp.showMemoryIcon = function (isPersisted, memoryIcon) {
+        if (isPersisted) {
+            memoryIcon.show();
+        }
+    };
 
     /**
      * Creates the binding with the already rendered DOM elements.
@@ -19,6 +47,10 @@
             memoryIcon: ".flc-memoryIcon",
             restartIcon: ".flc-restartIcon",
             widget: ".flc-widget"
+        },
+        styles: {
+            osRestartIcon: "fl-icon-alertTriangle",
+            applicationRestartIcon: "fl-icon-alertCircle"
         },
         model: {
             path: null,
@@ -47,7 +79,7 @@
         modelListeners: {
             value: {
                 funcName: "gpii.pcp.showRestartIcon",
-                args: ["{that}.model.dynamic", "{that}.dom.restartIcon"],
+                args: ["{that}.model.dynamicity", "{that}.dom.restartIcon", "{that}.options.styles"],
                 excludeSource: "init"
             }
         },

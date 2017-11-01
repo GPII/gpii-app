@@ -119,6 +119,10 @@ body {
     overflow: hidden;
 }
 
+#flc-settingsList .flc-setting .fl-settingLabel label {
+    vertical-align: top;
+}
+
 #flc-settingsList .flc-setting .fl-settingLabel .flc-title {
     display: inline;
     font-weight: normal;
@@ -135,11 +139,12 @@ body {
 
 #flc-settingsList .flc-setting .fl-settingLabel .flc-restartIcon {
     display: none;
-    font-weight: bold;
+    margin-top: 5px;
 }
 
 #flc-settingsList .flc-setting .fl-settingLabel .flc-memoryIcon {
     display: none;
+    vertical-align: 5px;
 }
 
 /* Footer styles */
