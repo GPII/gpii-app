@@ -93,6 +93,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         isPersisted: true
     };
 
+    var multipickerSettingFixture = {
+        path: "ttsTrackingPath",
+        type: "array",
+        title: "TTS tracking mode",
+        description: "TTS tracking mode description",
+        icon: "../../../icons/gear-cloud-white.png",
+        values:  ["mouse", "caret", "focus"],
+        value: ["mouse", "focus"],
+        dynamic: true
+    };
+
     var allSettingTypesFixture = [dropdownSettingFixture, {
         solutionName: "solutions2",
         path: "settingTwoPath",
@@ -102,16 +113,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         description: "Setting two description",
         icon: "../../../icons/gear-cloud-black.png",
         value: "c"
-    }, textfieldSettingFixture, switchSettingFixture, stepperSettingFixture, {
-        path: "ttsTrackingPath",
-        type: "array",
-        title: "TTS tracking mode",
-        description: "TTS tracking mode description",
-        icon: "../../../icons/gear-cloud-white.png",
-        values:  ["mouse", "caret", "focus"],
-        value: ["mouse", "focus"],
-        dynamic: true
-    }];
+    }, textfieldSettingFixture, switchSettingFixture, stepperSettingFixture, multipickerSettingFixture];
 
     fluid.registerNamespace("gpii.tests.pcp.utils");
 
@@ -411,27 +413,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }]
     });
 
-    gpii.tests.pcp.testStepperModelInteraction = function (container, value) {
+    gpii.tests.pcp.testStepperModelInteraction = function (container, expected) {
         var textfield = $(".flc-textfieldStepper-field", container);
         jqUnit.assertEquals(
             "Widgets: Stepper - text input has correct value after model update",
-            value.toString(),
+            expected.toString(),
             textfield.val()
         );
 
         var slider = $(".flc-textfieldSlider-slider", container);
         jqUnit.assertEquals(
             "Widgets: Stepper - slider input has correct value after model update",
-            value.toString(),
+            expected.toString(),
             slider.val()
         );
     };
 
-    gpii.tests.pcp.testTextfieldModelInteraction = function (container, value) {
+    gpii.tests.pcp.testTextfieldModelInteraction = function (container, expected) {
         var textfield = $(".flc-textfieldInput", container);
         jqUnit.assertEquals(
             "Widgets: Textfield - text input has correct value after model update",
-            value,
+            expected,
             textfield.val()
         );
     };
@@ -443,11 +445,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             .trigger("change");
     };
 
-    gpii.tests.pcp.testDropdownModelInteraction = function (container, value) {
+    gpii.tests.pcp.testDropdownModelInteraction = function (container, expected) {
         var select = $(".flc-dropdown-options", container);
         jqUnit.assertEquals(
             "Widgets: Dropdown - select input has correct value after model update",
-            value,
+            expected,
             select.val()
         );
     };
@@ -457,6 +459,35 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "Widgets: Switch - should have re-rendered switch value after model update",
             expected.toString(),
             $(".flc-switchUI-control", container).attr("aria-checked")
+        );
+    };
+
+    gpii.tests.pcp.changeMultipickerValues = function (container, values) {
+        $("input[type=checkbox]", container)
+            .prop("checked", false)
+            .each(function () {
+                var inputValue = $(this).prop("value");
+                if (values.indexOf(inputValue) > -1) {
+                    $(this).prop("checked", true);
+                }
+            })
+            .change();
+    };
+
+    gpii.tests.pcp.testMultipickerModelInteraction = function (container, expected) {
+        var values = $("input[type=checkbox]", container)
+            .filter(function () {
+                return $(this).prop("checked");
+            })
+            .map (function () {
+                return $(this).prop("value");
+            })
+            .toArray();
+
+        jqUnit.assertDeepEq(
+            "Widgets: Multipicker - should have re-rendered switch value after model update",
+            expected,
+            values
         );
     };
 
@@ -594,6 +625,35 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         args: ["{singleSettingPanelsMock}.dropdownPanel.container", dropdownSettingFixture.value]
                     }
                 ]]
+            }, {
+                name: "Widgets: Multipicker - interactions test",
+                expect: 2,
+                sequence: [{
+                    funcName: "{singleSettingPanelsMock}.multipickerPanel.events.onTemplatesLoaded.fire"
+                }, [
+                    {
+                        funcName: "gpii.tests.pcp.changeMultipickerValues",
+                        args: ["{singleSettingPanelsMock}.multipickerPanel.container", [multipickerSettingFixture.values[1]]]
+                    }, {
+                        event: "{singleSettingPanelsMock}.multipickerPanel.events.onSettingAltered",
+                        listener: "jqUnit.assertDeepEq",
+                        args: [
+                            "Widgets: Multipicker - component notified for the update with proper path/value",
+                            [multipickerSettingFixture.path, [multipickerSettingFixture.values[1]]],
+                            ["{arguments}.0", "{arguments}.1"]
+                        ]
+                    }
+                ], [
+                    {
+                        funcName: "{singleSettingPanelsMock}.multipickerPanel.events.onSettingUpdated.fire",
+                        args: [multipickerSettingFixture.path, multipickerSettingFixture.value]
+                    },
+                    {
+                        event: "{singleSettingPanelsMock}.multipickerPanel.events.onSettingUpdated",
+                        listener: "gpii.tests.pcp.testMultipickerModelInteraction",
+                        args: ["{singleSettingPanelsMock}.multipickerPanel.container", multipickerSettingFixture.value]
+                    }
+                ]]
             }]
         }]
     });
@@ -607,13 +667,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTextfieldPanelLoaded: null,
             onSwitchPanelLoaded: null,
             onStepperPanelLoaded: null,
+            onMultipickerPanelLoaded: null,
 
             onResourcesLoaded: {
                 events: {
                     onDropdownPanelLoaded: "onDropdownPanelLoaded",
                     onTextfieldPanelLoaded: "onTextfieldPanelLoaded",
                     onSwitchPanelLoaded: "onSwitchPanelLoaded",
-                    onStepperPanelLoaded: "onStepperPanelLoaded"
+                    onStepperPanelLoaded: "onStepperPanelLoaded",
+                    onMultipickerPanelLoaded: "onMultipickerPanelLoaded"
                 }
             }
         },
@@ -664,6 +726,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     listeners: {
                         "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onStepperPanelLoaded"
+                    }
+                }
+            },
+            multipickerPanel: {
+                type: "gpii.tests.pcp.settingsPanelMock",
+                container: ".flc-settingsPanel-widgets-multipicker",
+                options: {
+                    model: {
+                        settings: [multipickerSettingFixture]
+                    },
+                    listeners: {
+                        "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onMultipickerPanelLoaded"
                     }
                 }
             }
