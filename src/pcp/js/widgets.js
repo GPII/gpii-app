@@ -107,6 +107,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             input: ".flc-textfieldInput"
         },
+        attrs: {
+            "aria-labelledby": "{that}.model.path"
+        },
         components: {
             textfield: {
                 type: "fluid.textfield",

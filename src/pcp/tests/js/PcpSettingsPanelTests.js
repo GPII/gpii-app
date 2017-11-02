@@ -380,6 +380,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }]
     });
 
+    gpii.tests.pcp.testWidgetAccessibility = function (elements, ariaLabelledBy) {
+        fluid.each(elements, function (element) {
+            jqUnit.assertEquals(
+                "Widgets: Widget element has correct aria-labelledby attribute",
+                ariaLabelledBy,
+                element.attr("aria-labelledby")
+            );
+        });
+    };
+
     gpii.tests.pcp.testStepperModelInteraction = function (container, expected) {
         var textfield = $(".flc-textfieldStepper-field", container);
         jqUnit.assertEquals(
@@ -468,9 +478,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             name: "PSP widgets interaction tests",
             tests: [{
                 name: "Widgets: Switch - interactions test",
-                expect: 2,
+                expect: 3,
                 sequence: [{ // initiate `settingsVisualizer` creation
                     funcName: "{singleSettingPanelsMock}.switchPanel.events.onTemplatesLoaded.fire"
+                }, {
+                    funcName: "gpii.tests.pcp.testWidgetAccessibility",
+                    args: [
+                        ["@expand:$(.flc-switchUI-control, {singleSettingPanelsMock}.switchPanel.container)"],
+                        switchSettingFixture.path
+                    ]
                 }, [ // Test DOM interaction
                     { // simulate manual click from the user
                         jQueryTrigger: "click",
@@ -496,9 +512,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ]
             }, {
                 name: "Widgets: Stepper - interactions test",
-                expect: 4,
+                expect: 6,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.stepperPanel.events.onTemplatesLoaded.fire"
+                }, {
+                    funcName: "gpii.tests.pcp.testWidgetAccessibility",
+                    args: [
+                        ["@expand:$(.flc-textfieldSlider-slider, {singleSettingPanelsMock}.stepperPanel.container)",
+                         "@expand:$(.flc-textfieldStepper-field, {singleSettingPanelsMock}.stepperPanel.container)"],
+                        stepperSettingFixture.path
+                    ]
                 }, [
                     {
                         jQueryTrigger: "click",
@@ -536,9 +559,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ]]
             }, {
                 name: "Widgets: Textfield - interactions test",
-                expect: 2,
+                expect: 3,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.textfieldPanel.events.onTemplatesLoaded.fire"
+                }, {
+                    funcName: "gpii.tests.pcp.testWidgetAccessibility",
+                    args: [
+                        ["@expand:$(.flc-textfieldInput, {singleSettingPanelsMock}.textfieldPanel.container)"],
+                        textfieldSettingFixture.path
+                    ]
                 }, [
                     {
                         funcName: "fluid.changeElementValue",
@@ -565,9 +594,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ]]
             }, {
                 name: "Widgets: Dropdown - interactions test",
-                expect: 2,
+                expect: 3,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.dropdownPanel.events.onTemplatesLoaded.fire"
+                }, {
+                    funcName: "gpii.tests.pcp.testWidgetAccessibility",
+                    args: [
+                        ["@expand:$(.flc-dropdown-options, {singleSettingPanelsMock}.dropdownPanel.container)"],
+                        dropdownSettingFixture.path
+                    ]
                 }, [
                     {
                         funcName: "gpii.tests.pcp.changeDropdownValue",
