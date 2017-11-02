@@ -146,6 +146,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+
     /**
      * More or less isolated tests for the different widgets
      */
@@ -519,7 +520,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     funcName: "gpii.tests.pcp.testWidgetAccessibility",
                     args: [
                         ["@expand:$(.flc-textfieldSlider-slider, {singleSettingPanelsMock}.stepperPanel.container)",
-                         "@expand:$(.flc-textfieldStepper-field, {singleSettingPanelsMock}.stepperPanel.container)"],
+                            "@expand:$(.flc-textfieldStepper-field, {singleSettingPanelsMock}.stepperPanel.container)"],
                         stepperSettingFixture.path
                     ]
                 }, [
@@ -671,6 +672,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStepperPanelLoaded: null,
             onMultipickerPanelLoaded: null,
 
+            // a compound event thrown once all subcomponents have finished
+            // fetching their resources (possibly async work)
             onResourcesLoaded: {
                 events: {
                     onDropdownPanelLoaded: "onDropdownPanelLoaded",
@@ -749,7 +752,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("gpii.tests.pcp.settingsPanelMock", {
         gradeNames: "gpii.pcp.settingsPanel",
 
-        // XXX some dark magic
+        // set proper path for the resources
         distributeOptions: {
             record: "../../html",
             target: "{/ exemplar}.options.resourceDir"
@@ -771,6 +774,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     $(document).ready(function () {
-        gpii.tests.pcp.settingsPanelTestsWrapper();
+        fluid.test.runTests([
+            "gpii.tests.pcp.settingsPanelTestsWrapper"
+        ]);
     });
 })(fluid, jqUnit);

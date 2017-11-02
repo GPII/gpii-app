@@ -30,7 +30,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // A function that does nothing.
     };
 
-    // TODO handle empty array (add expander)
+    /**
+     * XXX currently, we abuse a misbehavior of expanding the `model` options, even if there's been expansion
+     * Manual expansion of the attrs is needed, as this "misbehaviour" only applies for the `model`
+     */
+    fluid.defaults("gpii.pcp.widgets.attrsExpander", {
+        gradeName: "fluid.viewComponent",
+
+        rawAttrs: null,
+
+        // Currently if the used IoC expression string is passed directly to the `attrs`
+        // (see `gpii.pcp.settingsPresenter` under the `widget` subcomponent), the expression
+        // is left unexpanded, thus resulting in improper `attrs` state.
+        // Ensure `attrs` receives expanded options properly through the `rawAttrs` property
+        // before merging takes place (FLUID-6219)
+        distributeOptions: {
+            target: "{that}.options.attrs",
+            record: "@expand:fluid.expandOptions({that}.options.rawAttrs, {that})"
+        }
+    });
+
     fluid.defaults("gpii.pcp.widgets.dropdown", {
         gradeNames: ["fluid.rendererComponent"],
         model: {
