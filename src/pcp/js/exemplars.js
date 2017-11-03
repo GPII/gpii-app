@@ -57,6 +57,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         widgetOptions: {
             // proper model bindings and options
             model: null
+            // rawAttrs: null
         }
     });
 
@@ -74,11 +75,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         schemaType: "array",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
-                name: "{settingPresenter}.model.path",
                 values: "{settingPresenter}.model.values",
                 names: "{settingPresenter}.model.values",
                 value: "{settingPresenter}.model.value"
+            },
+            rawAttrs: {
+                "aria-labelledby": "{settingPresenter}.model.path",
+                name: "{settingPresenter}.model.path"
             }
         }
     });
@@ -90,10 +93,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         schemaType: "boolean",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
                 name: "{settingPresenter}.model.path",
                 title: "{settingPresenter}.model.title",
                 enabled: "{settingPresenter}.model.value"
+            },
+            rawAttrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -105,10 +110,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         schemaType: "string",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
                 optionNames: "{settingPresenter}.model.values",
                 optionList: "{settingPresenter}.model.values",
                 selection: "{settingPresenter}.model.value"
+            },
+            rawAttrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -120,13 +127,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         schemaType: "number",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
                 number: "{settingPresenter}.model.value",
                 step: "{settingPresenter}.model.divisibleBy",
                 range: {
                     min: "{settingPresenter}.model.min",
                     max: "{settingPresenter}.model.max"
                 }
+            },
+            rawAttrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });
@@ -138,8 +147,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         schemaType: "text",
         widgetOptions: {
             model: {
-                path: "{settingPresenter}.model.path",
                 value: "{settingPresenter}.model.value"
+            },
+            rawAttrs: {
+                "aria-labelledby": "{settingPresenter}.model.path"
             }
         }
     });

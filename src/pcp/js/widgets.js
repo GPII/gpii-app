@@ -35,7 +35,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * Manual expansion of the attrs is needed, as this "misbehaviour" only applies for the `model`
      */
     fluid.defaults("gpii.pcp.widgets.attrsExpander", {
-        gradeName: "fluid.viewComponent",
+        gradeName: "fluid.component",
 
         rawAttrs: null,
 
@@ -51,9 +51,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.defaults("gpii.pcp.widgets.dropdown", {
-        gradeNames: ["fluid.rendererComponent"],
+        gradeNames: ["fluid.rendererComponent", "gpii.pcp.widgets.attrsExpander"],
         model: {
-            path: null,
             optionNames: [],
             optionList: [],
             selection: null
@@ -66,7 +65,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         attrs: {
-            "aria-labelledby": "{that}.model.path"
+            //"aria-labelledby": null
         },
         selectors: {
             options: ".flc-dropdown-options"
@@ -122,7 +121,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.defaults("gpii.pcp.widgets.textfield", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.pcp.widgets.attrsExpander"],
         selectors: {
             input: ".flc-textfieldInput"
         },
@@ -142,9 +141,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.defaults("gpii.pcp.widgets.switch", {
-        gradeNames: ["fluid.switchUI"],
+        gradeNames: ["fluid.switchUI", "gpii.pcp.widgets.attrsExpander"],
         attrs: {
-            "aria-labelledby": "{that}.model.path"
+            // "aria-labelledby": null
         },
         strings: {
             on: "On",
@@ -208,10 +207,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * outer components.
      */
     fluid.defaults("gpii.pcp.widgets.stepper", {
-        gradeNames: ["fluid.textfieldStepper"],
+        gradeNames: ["gpii.pcp.widgets.attrsExpander", "fluid.textfieldStepper"],
         scale: 2,
         attrs: {
-            "aria-labelledby": "{that}.model.path"
+            // "aria-labelledby": null
         },
         modelRelay: {
             "value": {
@@ -251,9 +250,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.defaults("gpii.pcp.widgets.multipicker", {
-        gradeNames: ["fluid.rendererComponent"],
+        gradeNames: ["fluid.rendererComponent", "gpii.pcp.widgets.attrsExpander"],
         model: {
-            path: null,
             values: [],
             names: [],
             value: null
@@ -266,8 +264,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         attrs: {
-            "aria-labelledby": "{that}.model.path",
-            "name": "{that}.model.path"
+            // "aria-labelledby": null
+            // name: null
         },
         selectors: {
             inputGroup: ".flc-multipicker",

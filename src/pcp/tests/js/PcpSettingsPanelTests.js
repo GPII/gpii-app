@@ -773,9 +773,78 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    fluid.defaults("gpii.tests.pcp.attrsExpanderTests", {
+        gradeNames: ["fluid.test.testEnvironment"],
+
+        components: {
+            attrsExpanderWrapperMock: {
+                type: "gpii.tests.pcp.attrsExpanderWrapperMock"
+            },
+            attrsExpanderTester: {
+                type: "gpii.tests.pcp.attrsExpanderTester"
+            }
+        }
+    });
+
+    fluid.defaults("gpii.tests.pcp.attrsExpanderTester", {
+        gradeNames: ["fluid.test.testCaseHolder"],
+
+        modules: [{
+            name: "AttrsExpander tests",
+            tests: [{
+                expect: 1,
+                name: "Test attrs field expansion",
+                type: "test",
+                funcName: "jqUnit.assertDeepEq",
+                args: [
+                    {
+                        specific: "some specific property",
+                        pathMaybe: "some/path"
+                    },
+                    "{attrsExpanderWrapperMock}.switchWidget.options.attrs"
+                ]
+            }]
+        }]
+    });
+
+    fluid.defaults("gpii.tests.pcp.attrsExpanderMock", {
+        gradeNames: ["fluid.component", "gpii.pcp.widgets.attrsExpander"],
+
+        attrs: {
+            specific: "some specific property"
+        }
+    });
+
+    fluid.defaults("gpii.tests.pcp.attrsExpanderWrapperMock", {
+        gradeNames: ["fluid.modelComponent"],
+
+        mergePolicy: {
+            rawAttrsMock: "noexpand"
+        },
+
+        attrs: {
+            path: "some/path"
+        },
+
+        // unexpanded IoC string holder
+        widgetOptions: {
+            rawAttrs: {
+                pathMaybe: "{attrsExpanderWrapperMock}.options.attrs.path"
+            }
+        },
+
+        components: {
+            attrsExpander: {
+                type: "gpii.tests.pcp.attrsExpanderMock",
+                options: "{attrsExpanderWrapperMock}.options.widgetOptions"
+            }
+        }
+    });
+
     $(document).ready(function () {
-        fluid.test.runTests([
-            "gpii.tests.pcp.settingsPanelTestsWrapper"
-        ]);
+       fluid.test.runTests([
+           "gpii.tests.pcp.attrsExpanderTests",
+           "gpii.tests.pcp.settingsPanelTestsWrapper"
+       ]);
     });
 })(fluid, jqUnit);
