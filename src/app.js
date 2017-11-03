@@ -1054,6 +1054,11 @@ gpii.app.displayWaitDialog = function (that) {
  * @param that {Component} the gpii.app instance
  */
 gpii.app.dismissWaitDialog = function (that) {
+    if (that.dismissWaitTimeout) {
+        clearTimeout(that.dismissWaitTimeout);
+        that.dismissWaitTimeout = null;
+    }
+
     // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
     var remainingDisplayTime = (that.model.dialogStartTime + that.model.dialogMinDisplayTime) - Date.now();
 
