@@ -37,7 +37,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("gpii.pcp.widgets.attrsExpander", {
         gradeName: "fluid.component",
 
-        rawAttrs: null,
+        // in case property is not passed, ensure 
+        // it has won't affect the merged `attrs` property
+        rawAttrs: {},
 
         // Currently if the used IoC expression string is passed directly to the `attrs`
         // (see `gpii.pcp.settingsPresenter` under the `widget` subcomponent), the expression
