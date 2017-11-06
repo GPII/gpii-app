@@ -28,14 +28,14 @@
     mask-image: url("../icons/help-circle.svg");
 }
 
-.fl-icon-alertCircle {
-    -webkit-mask-image: url("../icons/alert-circle.svg");
-    mask-image: url("../icons/alert-circle.svg");
+.fl-icon-appRestart {
+    -webkit-mask-image: url("../icons/info.svg");
+    mask-image: url("../icons/info.svg");
 }
 
-.fl-icon-alertTriangle {
-    -webkit-mask-image: url("../icons/alert-triangle.svg");
-    mask-image: url("../icons/alert-triangle.svg");
+.fl-icon-osRestart {
+    -webkit-mask-image: url("../icons/info-triangle.svg");
+    mask-image: url("../icons/info-triangle.svg");
 }
 
 .theme-alt .fl-icon {

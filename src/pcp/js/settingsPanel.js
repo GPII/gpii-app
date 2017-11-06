@@ -62,8 +62,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             widget: ".flc-widget"
         },
         styles: {
-            osRestartIcon: "fl-icon-alertTriangle",
-            applicationRestartIcon: "fl-icon-alertCircle"
+            osRestartIcon: "fl-icon-osRestart",
+            applicationRestartIcon: "fl-icon-appRestart"
         },
         model: {
             path: null,
