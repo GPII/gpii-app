@@ -550,11 +550,14 @@ gpii.app.isWin10OS = function () {
  */
 gpii.app.registerAccentColorListener = function (pcp) {
     if (gpii.app.isWin10OS()) {
-        // Notify the `BrowserWindow` about the current accent color
-        // only when it is ready to show. Otherwise, the change may
-        // not be propagated. The "accent-color-changed" event does
-        // not fire initially.
-        pcp.pcpWindow.once("ready-to-show", function () {
+        // Ideally when the PCP window is created, it should be notified about
+        // the current accent color. Possible events which can be used for this
+        // purpose are "ready-to-show" or "show". However, as the window is drawn
+        // off screen, registering the listeners will happen after the corresponding
+        // event has been fired. That is why the PCP window should be notified every
+        // time it is focused (only the first time is insufficient because showing
+        // the window (even off screen) automatically focuses it).
+        pcp.pcpWindow.on("focus", function () {
             pcp.notifyPCPWindow("accentColorChanged", systemPreferences.getAccentColor());
         });
 
