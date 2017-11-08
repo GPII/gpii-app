@@ -1,21 +1,12 @@
-/*
+/*!
+Copyright 2017 Raising the Floor - International
 
-Copyright 2013-2017 OCAD University
-
-
-
-Licensed under the Educational Community License (ECL), Version 2.0 or the New
-
-BSD license. You may not use this file except in compliance with one these
-
-Licenses.
-
-
-
-You may obtain a copy of the ECL 2.0 License and BSD License at
-
-https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
-
+Licensed under the New BSD license. You may not use this file except in
+compliance with this License.
+The research leading to these results has received funding from the European Union's
+Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+You may obtain a copy of the License at
+https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 
 /* global fluid */
@@ -26,10 +17,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.registerNamespace("gpii.pcp.widgets");
 
-    gpii.pcp.widgets.noop = function () {
-        // A function that does nothing.
-    };
-
     /**
      * XXX currently, we abuse a misbehavior of expanding the `model` options, even if there's been expansion
      * Manual expansion of the attrs is needed, as this "misbehaviour" only applies for the `model`
@@ -37,7 +24,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("gpii.pcp.widgets.attrsExpander", {
         gradeName: "fluid.component",
 
-        // in case property is not passed, ensure 
+        // in case property is not passed, ensure
         // it has won't affect the merged `attrs` property
         rawAttrs: {},
 
@@ -53,7 +40,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.defaults("gpii.pcp.widgets.dropdown", {
-        gradeNames: ["fluid.rendererComponent", "gpii.pcp.widgets.attrsExpander"],
+        gradeNames: ["gpii.pcp.widgets.attrsExpander", "fluid.rendererComponent"],
         model: {
             optionNames: [],
             optionList: [],
@@ -117,7 +104,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         invokers: {
             onClick: {
-                funcName: "gpii.pcp.noop"
+                funcName: "fluid.notImplemented"
             }
         }
     });
@@ -157,7 +144,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * A function which is executed while the user is dragging the
      * thumb of a slider.
      * @param that {Component} An instance of a slider component.
-     * @param container {Object} The jQuery object representing the
+     * @param container {jQuery} The jQuery object representing the
      * slider input.
      */
     gpii.pcp.widgets.onSlide = function (that, container) {

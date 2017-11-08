@@ -1,21 +1,12 @@
-/*
+/*!
+Copyright 2017 Raising the Floor - International
 
-Copyright 2013-2017 OCAD University
-
-
-
-Licensed under the Educational Community License (ECL), Version 2.0 or the New
-
-BSD license. You may not use this file except in compliance with one these
-
-Licenses.
-
-
-
-You may obtain a copy of the ECL 2.0 License and BSD License at
-
-https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
-
+Licensed under the New BSD license. You may not use this file except in
+compliance with this License.
+The research leading to these results has received funding from the European Union's
+Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+You may obtain a copy of the License at
+https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 
 /* global fluid, jqUnit */
@@ -25,68 +16,91 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var gpii = fluid.registerNamespace("gpii");
 
     var dropdownSettingFixture = {
-        solutionName: "solutions1",
         path: "settingOnePath",
-        type: "string",
-        values: ["a", "b", "c", "d"],
-        title: "Setting one title",
-        description: "Setting one description",
+        value: "b",
+        solutionName: "solutions1",
+
         icon: "../../../icons/gear-cloud-black.png",
-        value: "b"
+
+        schema: {
+            type: "string",
+            "enum": ["a", "b", "c", "d"],
+            title: "Setting one title",
+            description: "Setting one description"
+        }
     };
 
     var textfieldSettingFixture = {
         path: "textfieldPath",
-        type: "text",
-        title: "Text input",
-        description: "Text input description",
+        value: "Someee",
+
         icon: "../../../icons/gear-cloud-white.png",
-        value: "Someee"
+
+        schema: {
+            type: "text",
+            title: "Text input",
+            description: "Text input description"
+        }
     };
 
     var switchSettingFixture = {
         path: "invertColorsPath",
-        type: "boolean",
-        title: "Invert colors",
-        description: "Invert colors description",
-        icon: "../../../icons/gear-cloud-black.png",
         value: true,
-        isPersisted: true
+
+        icon: "../../../icons/gear-cloud-black.png",
+        isPersisted: true,
+
+        schema: {
+            type: "boolean",
+            title: "Invert colors",
+            description: "Invert colors description"
+        }
     };
 
     var stepperSettingFixture = {
         path: "zoomPath",
-        type: "number",
-        title: "Zoom",
-        description: "Zoom description",
-        icon: "../../../icons/gear-cloud-black.png",
         value: 1,
-        min: 0.5,
-        max: 4,
-        divisibleBy: 0.1,
-        isPersisted: true
+
+        icon: "../../../icons/gear-cloud-black.png",
+        isPersisted: true,
+
+        schema: {
+            type: "number",
+            title: "Zoom",
+            description: "Zoom description",
+            min: 0.5,
+            max: 4,
+            divisibleBy: 0.1
+        }
     };
 
     var multipickerSettingFixture = {
         path: "ttsTrackingPath",
-        type: "array",
-        title: "TTS tracking mode",
-        description: "TTS tracking mode description",
-        icon: "../../../icons/gear-cloud-white.png",
-        values:  ["mouse", "caret", "focus"],
         value: ["mouse", "focus"],
-        dynamic: true
+
+        icon: "../../../icons/gear-cloud-white.png",
+        dynamic: true,
+        schema: {
+            type: "array",
+            title: "TTS tracking mode",
+            description: "TTS tracking mode description",
+            "enum":  ["mouse", "caret", "focus"]
+        }
     };
 
     var allSettingTypesFixture = [dropdownSettingFixture, {
-        solutionName: "solutions2",
         path: "settingTwoPath",
-        type: "string",
-        values: ["b", "c", "d", "e"],
-        title: "Setting two title",
-        description: "Setting two description",
+        value: "c",
+        solutionName: "solutions2",
+
         icon: "../../../icons/gear-cloud-black.png",
-        value: "c"
+
+        schema: {
+            type: "string",
+            "enum": ["b", "c", "d", "e"],
+            title: "Setting two title",
+            description: "Setting two description"
+        }
     }, textfieldSettingFixture, switchSettingFixture, stepperSettingFixture, multipickerSettingFixture];
 
     fluid.registerNamespace("gpii.tests.pcp.utils");
@@ -197,13 +211,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         jqUnit.assertDeepEq(
             "Widgets: Multipicker - should have proper list of rendered option labels",
-            setting.values,
+            setting.schema["enum"],
             renderedMultipickerLabels
         );
 
         jqUnit.assertEquals(
             "Widgets: Multipicker - should have proper number of checkbox inputs",
-            setting.values.length,
+            setting.schema["enum"].length,
             $("input[type=checkbox] ~ span", container).length
         );
 
@@ -228,13 +242,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         );
         jqUnit.assertEquals(
             "Widgets: Stepper - slider min should be proper",
-            setting.min.toString(),
+            setting.schema.min.toString(),
             slider.attr("min")
         );
         jqUnit.assertEquals(
             "Widgets: Stepper - slider min should be proper",
-            setting.max.toString(),
+            setting.schema.max.toString(),
             slider.attr("max")
+        );
+        jqUnit.assertEquals(
+            "Widgets: Stepper - slider step should be proper",
+            setting.schema.divisibleBy.toString(),
+            slider.attr("step")
         );
 
         // Test stepper
@@ -243,13 +262,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "Widgets: Stepper - stepper value should be proper",
             setting.value.toString(),
             stepper.val()
-        );
-
-        var stepperButtons = $(".fl-stepperBtn", container);
-        jqUnit.assertEquals(
-            "Widgets: Stepper - has two buttons to it",
-            2,
-            stepperButtons.length
         );
     };
 
@@ -266,7 +278,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         jqUnit.assertDeepEq(
             "Widgets: Dropdown - should have proper options list rendered",
-            setting.values,
+            setting.schema["enum"],
             renderedOptions
         );
 
@@ -296,7 +308,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         settingContainers.each(function (idx, settingContainer) {
             jqUnit.assertEquals(
                 "Setting element should have title",
-                setting[idx].title,
+                setting[idx].schema.title,
                 $(".flc-title", settingContainer).text().trim()
             );
 
@@ -313,7 +325,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 $(".flc-icon", settingContainer).attr("src")
             );
 
-            widgetCheckersMap[setting[idx].type](
+            widgetCheckersMap[setting[idx].schema.type](
                 settingContainers[idx],
                 setting[idx]
             );
@@ -532,7 +544,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         listener: "jqUnit.assertDeepEq",
                         args: [
                             "Widgets: Stepper - component is notified when increasing for the update with proper path/value",
-                            [stepperSettingFixture.path, stepperSettingFixture.value + stepperSettingFixture.divisibleBy],
+                            [stepperSettingFixture.path, stepperSettingFixture.value + stepperSettingFixture.schema.divisibleBy],
                             ["{arguments}.0", "{arguments}.1"]
                         ]
                     }, {
@@ -550,12 +562,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ], [
                     {
                         funcName: "{singleSettingPanelsMock}.stepperPanel.events.onSettingUpdated.fire",
-                        args: [stepperSettingFixture.path, stepperSettingFixture.value + stepperSettingFixture.divisibleBy]
+                        args: [stepperSettingFixture.path, stepperSettingFixture.value + stepperSettingFixture.schema.divisibleBy]
                     },
                     {
                         event: "{singleSettingPanelsMock}.stepperPanel.events.onSettingUpdated",
                         listener: "gpii.tests.pcp.testStepperModelInteraction",
-                        args: ["{singleSettingPanelsMock}.stepperPanel.container", stepperSettingFixture.value + stepperSettingFixture.divisibleBy]
+                        args: ["{singleSettingPanelsMock}.stepperPanel.container", stepperSettingFixture.value + stepperSettingFixture.schema.divisibleBy]
                     }
                 ]]
             }, {
@@ -607,13 +619,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }, [
                     {
                         funcName: "gpii.tests.pcp.changeDropdownValue",
-                        args: ["{singleSettingPanelsMock}.dropdownPanel.container", dropdownSettingFixture.values[2]]
+                        args: ["{singleSettingPanelsMock}.dropdownPanel.container", dropdownSettingFixture.schema["enum"][2]]
                     }, {
                         event: "{singleSettingPanelsMock}.dropdownPanel.events.onSettingAltered",
                         listener: "jqUnit.assertDeepEq",
                         args: [
                             "Widgets: Dropdown - component notified for the update with proper path/value",
-                            [dropdownSettingFixture.path, dropdownSettingFixture.values[2]],
+                            [dropdownSettingFixture.path, dropdownSettingFixture.schema["enum"][2]],
                             ["{arguments}.0", "{arguments}.1"]
                         ]
                     }
@@ -636,13 +648,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }, [
                     {
                         funcName: "gpii.tests.pcp.changeMultipickerValues",
-                        args: ["{singleSettingPanelsMock}.multipickerPanel.container", [multipickerSettingFixture.values[1]]]
+                        args: ["{singleSettingPanelsMock}.multipickerPanel.container", [multipickerSettingFixture.schema["enum"][1]]]
                     }, {
                         event: "{singleSettingPanelsMock}.multipickerPanel.events.onSettingAltered",
                         listener: "jqUnit.assertDeepEq",
                         args: [
                             "Widgets: Multipicker - component notified for the update with proper path/value",
-                            [multipickerSettingFixture.path, [multipickerSettingFixture.values[1]]],
+                            [multipickerSettingFixture.path, [multipickerSettingFixture.schema["enum"][1]]],
                             ["{arguments}.0", "{arguments}.1"]
                         ]
                     }
@@ -842,9 +854,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     $(document).ready(function () {
-       fluid.test.runTests([
-           "gpii.tests.pcp.attrsExpanderTests",
-           "gpii.tests.pcp.settingsPanelTestsWrapper"
-       ]);
+        fluid.test.runTests([
+            "gpii.tests.pcp.attrsExpanderTests",
+            "gpii.tests.pcp.settingsPanelTestsWrapper"
+        ]);
     });
 })(fluid, jqUnit);

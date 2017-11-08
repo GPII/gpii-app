@@ -93,13 +93,11 @@ gpii.tests.app.testPrefSetMenuItem = function (item, label, checked) {
 
     jqUnit.assertEquals("Pref set menu item has proper label", label, item.label);
     jqUnit.assertEquals("Pref set menu item has proper (un)checked state", checked, item.checked);
-}
+};
 
 jqUnit.test("Menu.getPreferenceSetsMenuItems", function () {
     var emptyPrefSetList = gpii.app.menu.getPreferenceSetsMenuItems([], null);
     var prefSetList = gpii.app.menu.getPreferenceSetsMenuItems(keyedInPrefSets.sets, prefSet2.path);
-    var prefSetMenuItemEvent = "onActivePrefSetUpdate";
-    var prefSetMenuType = "radio";
 
     jqUnit.expect(10);
 

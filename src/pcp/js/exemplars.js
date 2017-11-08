@@ -1,21 +1,12 @@
-/*
+/*!
+Copyright 2017 Raising the Floor - International
 
-Copyright 2013-2017 OCAD University
-
-
-
-Licensed under the Educational Community License (ECL), Version 2.0 or the New
-
-BSD license. You may not use this file except in compliance with one these
-
-Licenses.
-
-
-
-You may obtain a copy of the ECL 2.0 License and BSD License at
-
-https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
-
+Licensed under the New BSD license. You may not use this file except in
+compliance with this License.
+The research leading to these results has received funding from the European Union's
+Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+You may obtain a copy of the License at
+https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 
 /* global fluid */
@@ -28,36 +19,42 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
     /**
-     * Represents an "exemplar" (configuration) for a component.
+     * Represents an "exemplar" (configuration) for a somehow dynamic component.
      * A good place to keep a *related template resource* path.
      */
     fluid.defaults("gpii.pcp.exemplar", {
         gradeNames: "fluid.component",
+        /*
+         * We want to be able to pass unexpanded IoC expressions, which to be
+         * processed by the user of the exemplar
+         */
         mergePolicy: {
             widgetOptions: "noexpand"
         },
 
-        resourceDir: "./html", // a "home" dir for the resources
-        resourceName: null,    // should be altered
-        template: {
+        grade: null,            // the grade of the dynamic component as string
+
+        resourceDir:  "./html", // a "home" dir for the desired resources
+        resourceName: null,     // filename of the resource;
+        template: {             // the whole resource path
             expander: {
                 funcName: "fluid.stringTemplate",
                 args: [
                     "%resourceDir/%resourceName",
                     {
-                        resourceDir: "{that}.options.resourceDir",
+                        resourceDir:  "{that}.options.resourceDir",
                         resourceName: "{that}.options.resourceName"
                     }
                 ]
             }
         },
-
-        grade: null,
-        schemaType: null,
-        widgetOptions: {
-            // proper model bindings and options
-            model: null
-            // rawAttrs: null
+        /*
+         * Options regarding Widget Exemplars.
+         */
+        schemaType: null,       // schema type of the widget;
+        widgetOptions: {        // options for the widget
+            model: null         // model binding options   (IoC string)
+            // rawAttrs: null   // computed widget options (IoC string)
         }
     });
 
@@ -75,8 +72,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         schemaType: "array",
         widgetOptions: {
             model: {
-                values: "{settingPresenter}.model.values",
-                names: "{settingPresenter}.model.values",
+                values: "{settingPresenter}.model.schema.enum",
+                names: "{settingPresenter}.model.schema.enum",
                 value: "{settingPresenter}.model.value"
             },
             rawAttrs: {
@@ -94,7 +91,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         widgetOptions: {
             model: {
                 name: "{settingPresenter}.model.path",
-                title: "{settingPresenter}.model.title",
                 enabled: "{settingPresenter}.model.value"
             },
             rawAttrs: {
@@ -110,8 +106,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         schemaType: "string",
         widgetOptions: {
             model: {
-                optionNames: "{settingPresenter}.model.values",
-                optionList: "{settingPresenter}.model.values",
+                optionNames: "{settingPresenter}.model.schema.enum",
+                optionList: "{settingPresenter}.model.schema.enum",
                 selection: "{settingPresenter}.model.value"
             },
             rawAttrs: {
@@ -128,10 +124,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         widgetOptions: {
             model: {
                 number: "{settingPresenter}.model.value",
-                step: "{settingPresenter}.model.divisibleBy",
+                step: "{settingPresenter}.model.schema.divisibleBy",
                 range: {
-                    min: "{settingPresenter}.model.min",
-                    max: "{settingPresenter}.model.max"
+                    min: "{settingPresenter}.model.schema.min",
+                    max: "{settingPresenter}.model.schema.max"
                 }
             },
             rawAttrs: {

@@ -85,9 +85,9 @@ gpii.tests.app.bootstrapServer = function (testDefs, transformer) {
 };
 
 gpii.tests.app.bootstrapServer([
-    /* 
+    /*
      * XXX Commented in order to avoid strange behaviour resulting
-     *  in the test process not finishing (even after all tests have passed) 
+     *  in the test process not finishing (even after all tests have passed)
      *  It appears to be a bug in the `node-jqunit` and should be uncommented
      *  once the problem is removed
      */

@@ -33,10 +33,10 @@ var multiPrefSetsFixture = {
     "value":{
         "userToken":"context1",
         "activeContextName":"gpii-default",
-        "settingControls":{  
-           "http://registry\\.gpii\\.net/common/magnification":{  
+        "settingControls":{
+            "http://registry\\.gpii\\.net/common/magnification":{
                 "value":1.5,
-                "schema":{  
+                "schema":{
                     "title":"Magnification",
                     "description":"Level of magnification",
                     "type":"number",
@@ -44,9 +44,9 @@ var multiPrefSetsFixture = {
                     "divisibleBy":0.1
                 }
             },
-            "http://registry\\.gpii\\.net/common/magnifierPosition":{  
+            "http://registry\\.gpii\\.net/common/magnifierPosition":{
                 "value":"Lens",
-                "schema":{  
+                "schema":{
                     "title":"Magnifier position",
                     "description":"Position of the magnified area",
                     "type":"string",
@@ -61,25 +61,25 @@ var multiPrefSetsFixture = {
                     ]
                 }
             },
-            "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled":{  
+            "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled":{
                 "value":true,
-                "schema":{  
+                "schema":{
                     "title":"High Contrast",
                     "description":"Whether to enable/disable High Contrast",
                     "type":"boolean"
                 },
                 "solutionName":"Windows High Contrast"
             },
-            "http://registry\\.gpii\\.net/common/tracking":{  
+            "http://registry\\.gpii\\.net/common/tracking":{
                 "value":[
                     "mouse",
                     "caret"
                 ],
-                "schema":{  
+                "schema":{
                     "title":"Tracking",
                     "description":"Tracking mode of the screen magnifier",
                     "type":"array",
-                    "enum":[  
+                    "enum":[
                         "mouse",
                         "caret",
                         "focus"
@@ -87,18 +87,18 @@ var multiPrefSetsFixture = {
                 }
             }
         },
-       "preferences":{  
-            "contexts":{  
-                "gpii-default":{  
+        "preferences":{
+            "contexts":{
+                "gpii-default":{
                     "name":"Default preferences"
                 },
-                "bright":{  
+                "bright":{
                     "name":"bright"
                 },
-                "noise":{  
+                "noise":{
                     "name":"noise"
                 },
-                "brightandnoise":{  
+                "brightandnoise":{
                     "name":"bright and noise"
                 }
             }
@@ -138,40 +138,48 @@ jqUnit.test("Parse multiple preference sets message", function () {
     jqUnit.assertEquals("There are 4 settings in the active set", 4, preferences.settings.length);
 
     jqUnit.assertLeftHand("Slider (number) setting is correctly parsed", {
-        path: 'http://registry\\.gpii\\.net/common/magnification',
+        path: "http://registry\\.gpii\\.net/common/magnification",
         value: 1.5,
-        title: 'Magnification',
-        description: 'Level of magnification',
-        type: 'number',
-        min: 1,
-        divisibleBy: 0.1
+        schema: {
+            title: "Magnification",
+            description: "Level of magnification",
+            type: "number",
+            min: 1,
+            divisibleBy: 0.1
+        }
     }, preferences.settings[0]);
 
     jqUnit.assertLeftHand("Dropdown (string) setting is correctly parsed", {
-        path: 'http://registry\\.gpii\\.net/common/magnifierPosition',
-        value: 'Lens',
-        title: 'Magnifier position',
-        description: 'Position of the magnified area',
-        type: 'string',
-        values: ["FullScreen", "Lens", "LeftHalf", "RightHalf", "TopHalf", "BottomHalf", "Custom"]
+        path: "http://registry\\.gpii\\.net/common/magnifierPosition",
+        value: "Lens",
+        schema: {
+            title: "Magnifier position",
+            description: "Position of the magnified area",
+            type: "string",
+            "enum": ["FullScreen", "Lens", "LeftHalf", "RightHalf", "TopHalf", "BottomHalf", "Custom"]
+        }
     }, preferences.settings[1]);
 
     jqUnit.assertLeftHand("Switch (boolean) setting is correctly parsed", {
-        path: 'http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled',
+        path: "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled",
         value: true,
-        solutionName: 'Windows High Contrast',
-        title: 'High Contrast',
-        description: 'Whether to enable/disable High Contrast',
-        type: 'boolean',
+        solutionName: "Windows High Contrast",
+        schema: {
+            title: "High Contrast",
+            description: "Whether to enable/disable High Contrast",
+            type: "boolean"
+        }
     }, preferences.settings[2]);
 
     jqUnit.assertLeftHand("Multipicker (array) setting is correctly parsed", {
-        path: 'http://registry\\.gpii\\.net/common/tracking',
+        path: "http://registry\\.gpii\\.net/common/tracking",
         value: ["mouse", "caret"],
-        title: 'Tracking',
-        description: 'Tracking mode of the screen magnifier',
-        type: 'array',
-        values: ["mouse", "caret", "focus"]
+        schema: {
+            title: "Tracking",
+            description: "Tracking mode of the screen magnifier",
+            type: "array",
+            "enum": ["mouse", "caret", "focus"]
+        }
     }, preferences.settings[3]);
 });
 
