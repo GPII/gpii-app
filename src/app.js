@@ -567,11 +567,11 @@ gpii.app.snapsetsMenu = [{
         click: "onKeyIn",
         token: "snapset_4b"
     }, {
-        label: "Magnifier 200% & Display Scaling 175%",
+        label: "Large + Magnifier 200%",
         click: "onKeyIn",
         token: "snapset_4c"
     }, {
-        label: "Dark Magnifier 200%",
+        label: "Magnifier Dark 200%",
         click: "onKeyIn",
         token: "snapset_4d"
 }];
