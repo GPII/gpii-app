@@ -78,7 +78,7 @@ fluid.defaults("gpii.app.gpiiConnector", {
  */
 gpii.app.gpiiConnector.updateSetting = function (socket, setting) {
     var payload = JSON.stringify({
-        path: ["settingControls", setting.path],
+        path: ["settingControls", setting.path, "value"],
         type: "ADD",
         value: setting.value
     });
