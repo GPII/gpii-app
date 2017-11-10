@@ -15,13 +15,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-    fluid.registerNamespace("gpii.pcp.widgets");
+    fluid.registerNamespace("gpii.psp.widgets");
 
     /**
      * XXX currently, we abuse a misbehavior of expanding the `model` options, even if there's been expansion
      * Manual expansion of the attrs is needed, as this "misbehaviour" only applies for the `model`
      */
-    fluid.defaults("gpii.pcp.widgets.attrsExpander", {
+    fluid.defaults("gpii.psp.widgets.attrsExpander", {
         gradeName: "fluid.component",
 
         // in case property is not passed, ensure
@@ -29,7 +29,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         rawAttrs: {},
 
         // Currently if the used IoC expression string is passed directly to the `attrs`
-        // (see `gpii.pcp.settingsPresenter` under the `widget` subcomponent), the expression
+        // (see `gpii.psp.settingsPresenter` under the `widget` subcomponent), the expression
         // is left unexpanded, thus resulting in improper `attrs` state.
         // Ensure `attrs` receives expanded options properly through the `rawAttrs` property
         // before merging takes place (FLUID-6219)
@@ -39,8 +39,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.pcp.widgets.dropdown", {
-        gradeNames: ["gpii.pcp.widgets.attrsExpander", "fluid.rendererComponent"],
+    fluid.defaults("gpii.psp.widgets.dropdown", {
+        gradeNames: ["gpii.psp.widgets.attrsExpander", "fluid.rendererComponent"],
         model: {
             optionNames: [],
             optionList: [],
@@ -76,7 +76,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         renderOnInit: true
     });
 
-    fluid.defaults("gpii.pcp.widgets.button", {
+    fluid.defaults("gpii.psp.widgets.button", {
         gradeNames: ["fluid.viewComponent"],
         label: null,
         selectors: {
@@ -109,8 +109,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.pcp.widgets.textfield", {
-        gradeNames: ["fluid.viewComponent", "gpii.pcp.widgets.attrsExpander"],
+    fluid.defaults("gpii.psp.widgets.textfield", {
+        gradeNames: ["fluid.viewComponent", "gpii.psp.widgets.attrsExpander"],
         selectors: {
             input: ".flc-textfieldInput"
         },
@@ -122,15 +122,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 type: "fluid.textfield",
                 container: "{that}.dom.input",
                 options: {
-                    model: "{gpii.pcp.widgets.textfield}.model",
-                    attrs: "{gpii.pcp.widgets.textfield}.options.attrs"
+                    model: "{gpii.psp.widgets.textfield}.model",
+                    attrs: "{gpii.psp.widgets.textfield}.options.attrs"
                 }
             }
         }
     });
 
-    fluid.defaults("gpii.pcp.widgets.switch", {
-        gradeNames: ["fluid.switchUI", "gpii.pcp.widgets.attrsExpander"],
+    fluid.defaults("gpii.psp.widgets.switch", {
+        gradeNames: ["fluid.switchUI", "gpii.psp.widgets.attrsExpander"],
         attrs: {
             // "aria-labelledby": null
         },
@@ -147,12 +147,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param container {jQuery} The jQuery object representing the
      * slider input.
      */
-    gpii.pcp.widgets.onSlide = function (that, container) {
+    gpii.psp.widgets.onSlide = function (that, container) {
         var value = container.val();
         that.applier.change("stringValue", value, null, "slide");
     };
 
-    fluid.defaults("gpii.pcp.widgets.slider", {
+    fluid.defaults("gpii.psp.widgets.slider", {
         gradeNames: ["fluid.textfieldSlider"],
         components: {
             slider: {
@@ -171,7 +171,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     },
                     invokers: {
                         onSlide: {
-                            funcName: "gpii.pcp.widgets.onSlide",
+                            funcName: "gpii.psp.widgets.onSlide",
                             args: ["{that}", "{that}.container"]
                         },
                         onSlideEnd: {
@@ -195,8 +195,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * be used if changes to the actual model value should be observed from
      * outer components.
      */
-    fluid.defaults("gpii.pcp.widgets.stepper", {
-        gradeNames: ["gpii.pcp.widgets.attrsExpander", "fluid.textfieldStepper"],
+    fluid.defaults("gpii.psp.widgets.stepper", {
+        gradeNames: ["gpii.psp.widgets.attrsExpander", "fluid.textfieldStepper"],
         scale: 2,
         attrs: {
             // "aria-labelledby": null
@@ -219,7 +219,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
         components: {
             slider: {
-                type: "gpii.pcp.widgets.slider",
+                type: "gpii.psp.widgets.slider",
                 container: "{that}.container",
                 options: {
                     model: "{stepper}.model",
@@ -238,8 +238,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.pcp.widgets.multipicker", {
-        gradeNames: ["fluid.rendererComponent", "gpii.pcp.widgets.attrsExpander"],
+    fluid.defaults("gpii.psp.widgets.multipicker", {
+        gradeNames: ["fluid.rendererComponent", "gpii.psp.widgets.attrsExpander"],
         model: {
             values: [],
             names: [],

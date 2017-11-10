@@ -17,7 +17,7 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.loadTestingSupport();
 var jqUnit = fluid.require("node-jqunit");
 
-require("../src/app.js");
+require("../src/main/app.js");
 fluid.registerNamespace("gpii.tests.app");
 
 jqUnit.module("GPII Preferences Parsing Tests");

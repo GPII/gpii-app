@@ -18,7 +18,7 @@ var ws    = require("ws");
 var gpii = fluid.registerNamespace("gpii");
 
 /**
- * Responsible for creation and housekeeping of the connection to the PCP Channel WebSocket
+ * Responsible for creation and housekeeping of the connection to the PSP Channel WebSocket
  */
 fluid.defaults("gpii.app.gpiiConnector", {
     gradeNames: "fluid.component",
@@ -39,7 +39,7 @@ fluid.defaults("gpii.app.gpiiConnector", {
 
     listeners: {
         "onCreate.register": {
-            funcName: "{gpiiConnector}.registerPCPListener"
+            funcName: "{gpiiConnector}.registerPSPListener"
         },
         "onDestroy.closeConnection": {
             listener: "{that}.closeConnection"
@@ -47,8 +47,8 @@ fluid.defaults("gpii.app.gpiiConnector", {
     },
 
     invokers: {
-        registerPCPListener: {
-            funcName: "gpii.app.gpiiConnector.registerPCPListener",
+        registerPSPListener: {
+            funcName: "gpii.app.gpiiConnector.registerPSPListener",
             args: ["{that}.socket", "{that}"]
         },
         updateSetting: {
@@ -87,7 +87,7 @@ gpii.app.gpiiConnector.updateSetting = function (socket, setting) {
 };
 
 /**
- * Opens a connection to the PCP Channel WebSocket.
+ * Opens a connection to the PSP Channel WebSocket.
  * @param config {Object} The configuration for the WebSocket
  */
 gpii.app.gpiiConnector.createGPIIConnection = function (config) {
@@ -99,7 +99,7 @@ gpii.app.gpiiConnector.createGPIIConnection = function (config) {
  * @param socket {Object} The connected gpii socket
  * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` instance
  */
-gpii.app.gpiiConnector.registerPCPListener = function (socket, gpiiConnector) {
+gpii.app.gpiiConnector.registerPSPListener = function (socket, gpiiConnector) {
     socket.on("message", function (rawData) {
         var data = JSON.parse(rawData),
             operation = data.type,
@@ -161,7 +161,7 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
         schema: settingDescriptor.schema,
 
         // XXX hardcoded as they're not currently supported by the API (pcpChannel)
-        icon: "../icons/gear-cloud-white.png",
+        icon: "../../icons/gear-cloud-white.png",
         dynamicity: "none", // "none", "application" or "os"
         isPersisted: false
     };

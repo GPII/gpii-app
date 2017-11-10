@@ -15,7 +15,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-    fluid.defaults("gpii.pcp.header", {
+    fluid.defaults("gpii.psp.header", {
         gradeNames: ["fluid.viewComponent"],
         selectors: {
             preferenceSetPicker: ".flc-prefSetPicker",
@@ -30,22 +30,22 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
         events: {
             onPreferencesUpdated: null,
-            onPCPClose: null,
+            onPSPClose: null,
             onActivePreferenceSetAltered: null
         },
         modelListeners: {
             "preferences.activeSet": [{
                 funcName: "{that}.events.onActivePreferenceSetAltered.fire",
                 args: ["{change}.value"],
-                excludeSource: ["init", "pcp.mainWindow"]
+                excludeSource: ["init", "psp.mainWindow"]
             },{
-                funcName: "gpii.pcp.updateActiveSetElement",
+                funcName: "gpii.psp.updateActiveSetElement",
                 args: ["{that}.dom.activePreferenceSet", "{that}.model.preferences"]
             }]
         },
         components: {
             preferenceSetPicker: {
-                type: "@expand:gpii.pcp.getPreferenceSetPickerType({that}.model.preferences.sets)",
+                type: "@expand:gpii.psp.getPreferenceSetPickerType({that}.model.preferences.sets)",
                 container: "{that}.dom.preferenceSetPicker",
                 createOnEvent: "onPreferencesUpdated",
                 options: {
@@ -66,7 +66,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     },
                     listeners: {
                         "onDestroy.removeOptions": {
-                            funcName: "gpii.pcp.onPreferenceSetPickerDestroy",
+                            funcName: "gpii.psp.onPreferenceSetPickerDestroy",
                             args: ["{that}.container"]
                         }
                     },
@@ -76,21 +76,21 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             },
             closeBtn: {
-                type: "gpii.pcp.widgets.button",
+                type: "gpii.psp.widgets.button",
                 container: "{that}.dom.closeBtn",
                 options: {
                     attrs: {
                         "aria-label": "Close"
                     },
                     invokers: {
-                        "onClick": "{header}.events.onPCPClose.fire"
+                        "onClick": "{header}.events.onPSPClose.fire"
                     }
                 }
             }
         },
         listeners: {
             onPreferencesUpdated: {
-                funcName: "gpii.pcp.updateHeader",
+                funcName: "gpii.psp.updateHeader",
                 args: ["{that}.model.preferences.sets", "{that}.dom.preferenceSetPicker", "{that}.dom.activePreferenceSet"]
             }
         }
@@ -105,7 +105,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param preferences {Object} An object containing all preference set, as well
      * as information about the currently active preference set.
      */
-    gpii.pcp.updateActiveSetElement = function (activeSetElement, preferences) {
+    gpii.psp.updateActiveSetElement = function (activeSetElement, preferences) {
         var activePreferenceSet = fluid.find_if(preferences.sets,
             function (preferenceSet) {
                 return preferenceSet.path === preferences.activeSet;
@@ -124,7 +124,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param arr {Array} The array to be checked.
      * @return {Boolean} Whether the array has more than one element.
      */
-    gpii.pcp.hasMultipleItems = function (arr) {
+    gpii.psp.hasMultipleItems = function (arr) {
         return arr && arr.length > 1;
     };
 
@@ -136,8 +136,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param preferenceSets {Array} An array of the current preference sets.
      * @return {String} The type of the preferenceSetPicker subcomponent.
      */
-    gpii.pcp.getPreferenceSetPickerType = function (preferenceSets) {
-        return gpii.pcp.hasMultipleItems(preferenceSets) ? "gpii.pcp.widgets.dropdown" : "fluid.emptySubcomponent";
+    gpii.psp.getPreferenceSetPickerType = function (preferenceSets) {
+        return gpii.psp.hasMultipleItems(preferenceSets) ? "gpii.psp.widgets.dropdown" : "fluid.emptySubcomponent";
     };
 
     /**
@@ -151,8 +151,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * preference set label (in case there is a single preference set it should be
      * show, otherwise it should be hidden).
      */
-    gpii.pcp.updateHeader = function (preferenceSets, preferenceSetPickerElem, activePreferenceSetElem) {
-        if (gpii.pcp.hasMultipleItems(preferenceSets)) {
+    gpii.psp.updateHeader = function (preferenceSets, preferenceSetPickerElem, activePreferenceSetElem) {
+        if (gpii.psp.hasMultipleItems(preferenceSets)) {
             preferenceSetPickerElem.show();
             activePreferenceSetElem.hide();
         } else {
@@ -168,7 +168,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param container {jQuery} A jQuery object representing the parent container
      * of the preference set picker.
      */
-    gpii.pcp.onPreferenceSetPickerDestroy = function (container) {
+    gpii.psp.onPreferenceSetPickerDestroy = function (container) {
         container.find("option").remove();
     };
 })(fluid);

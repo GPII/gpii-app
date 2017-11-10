@@ -21,7 +21,7 @@ var request = require("request");
 require("./gpiiConnector.js");
 require("./menu.js"); // menuInApp, menuInAppDev
 require("./tray.js");
-require("./pcp.js");
+require("./psp.js");
 require("./waitDialog.js");
 
 require("./networkCheck.js");
@@ -56,8 +56,8 @@ fluid.defaults("gpii.app", {
     },
     // prerequisites
     components: {
-        pcp: {
-            type: "gpii.app.pcp",
+        psp: {
+            type: "gpii.app.psp",
             createOnEvent: "onPrerequisitesReady",
             options: {
                 model: {
@@ -68,7 +68,7 @@ fluid.defaults("gpii.app", {
         gpiiConnector: {
             type: "gpii.app.gpiiConnector",
             createOnEvent: "onPrerequisitesReady",
-            priority: "after:pcp",
+            priority: "after:psp",
             options: {
                 listeners: {
                     "onPreferencesUpdated.updateSets": {
@@ -80,29 +80,29 @@ fluid.defaults("gpii.app", {
         },
         /*
          * A helper component used as mediator for handling communication
-         * between the PCP and gpiiConnector components.
+         * between the PSP and gpiiConnector components.
          */
-        pcpMediator: {
+        pspMediator: {
             type: "fluid.component",
             createOnEvent: "onPrerequisitesReady",
             priority: "after:gpiiConnector",
             options: {
                 listeners: {
-                    "{pcp}.events.onSettingAltered": {
+                    "{psp}.events.onSettingAltered": {
                         listener: "{gpiiConnector}.updateSetting",
                         args: ["{arguments}.0"]
                     },
-                    "{pcp}.events.onActivePreferenceSetAltered": {
+                    "{psp}.events.onActivePreferenceSetAltered": {
                         listener: "{gpiiConnector}.updateActivePrefSet",
                         args: ["{arguments}.0"]
                     },
 
                     "{gpiiConnector}.events.onPreferencesUpdated": {
-                        listener: "{pcp}.notifyPCPWindow",
+                        listener: "{psp}.notifyPSPWindow",
                         args: ["onPreferencesUpdated", "{arguments}.0"]
                     },
                     "{gpiiConnector}.events.onSettingUpdated": {
-                        listener: "{pcp}.notifyPCPWindow",
+                        listener: "{psp}.notifyPSPWindow",
                         args: ["onSettingUpdated", "{arguments}.0"]
                     }
                 }
@@ -116,8 +116,8 @@ fluid.defaults("gpii.app", {
                     keyedInUserToken: "{gpii.app}.model.keyedInUserToken"
                 }
             },
-            // needed as the pcp window is used by the tray
-            priority: "after:pcp"
+            // needed as the psp window is used by the tray
+            priority: "after:psp"
         },
         dialog: {
             type: "gpii.app.dialog",
@@ -326,7 +326,7 @@ gpii.app.handleUncaughtException = function (that, err) {
             tray.displayBalloon({
                 title: error.title || "GPII Error",
                 content: error.message || err.message,
-                icon: path.join(__dirname, "icons/gpii-icon-balloon.png")
+                icon: path.join(__dirname, "../icons/gpii-icon-balloon.png")
             });
             if (error.fatal) {
                 var timeout;

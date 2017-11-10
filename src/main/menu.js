@@ -38,8 +38,8 @@ fluid.defaults("gpii.app.menuInApp", {
         }
     },
     listeners: {
-        "onPCP.performPCP": {
-            listener: "{pcp}.show"
+        "onPSP.performPSP": {
+            listener: "{psp}.show"
         },
 
         "onActivePrefSetUpdate.performActiveSetChange": {
@@ -227,12 +227,12 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "after:userName"
         },
-        "showPCP": {
-            target: "showPCP",
+        "showPSP": {
+            target: "showPSP",
             singleTransform: {
                 type: "fluid.transforms.free",
-                func: "gpii.app.menu.getShowPCP",
-                args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.pcp"]
+                func: "gpii.app.menu.getShowPSP",
+                args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.psp"]
             }
         },
         "preferenceSetsMenuItems": {
@@ -248,13 +248,13 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.showPCP", "{that}.model.keyedInUser", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
+                args: ["{that}.model.showPSP", "{that}.model.keyedInUser", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
             },
             priority: "last"
         }
     },
     menuLabels: {
-        pcp: "Open PSP",
+        psp: "Open PSP",
         keyedIn: "Keyed in with %userTokenName",    // string template
         keyOut: "Key-out of GPII",
         notKeyedIn: "(No one keyed in)",
@@ -264,7 +264,7 @@ fluid.defaults("gpii.app.menu", {
         keyIn: "Key in ..."
     },
     events: {
-        onPCP: null,
+        onPSP: null,
         onActivePrefSetUpdate: null,
         onKeyOut: null,
 
@@ -387,10 +387,10 @@ gpii.app.menu.getPreferenceSetsMenuItems = function (preferenceSets, activeSet) 
   * @param openSettingsStr {String} The string to be displayed for the open setting panel menu item.
   * @returns {ElectronMenuItem}
   */
-gpii.app.menu.getShowPCP = function (keyedInUserToken, openSettingsStr) {
+gpii.app.menu.getShowPSP = function (keyedInUserToken, openSettingsStr) {
     return {
         label: openSettingsStr,
-        click: "onPCP",
+        click: "onPSP",
         args: {
             token: keyedInUserToken
         }

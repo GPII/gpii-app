@@ -13,9 +13,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 "use strict";
 (function (fluid) {
-    fluid.registerNamespace("gpii.pcp");
+    fluid.registerNamespace("gpii.psp");
 
-    fluid.defaults("gpii.pcp.splash", {
+    fluid.defaults("gpii.psp.splash", {
         gradeNames: "fluid.viewComponent",
         selectors: {
             splash: ".flc-splash"

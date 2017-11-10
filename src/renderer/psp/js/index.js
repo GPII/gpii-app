@@ -14,13 +14,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
-    fluid.registerNamespace("gpii.pcp");
+    fluid.registerNamespace("gpii.psp");
 
-    fluid.defaults("gpii.pcp", {
+    fluid.defaults("gpii.psp", {
         gradeNames: ["fluid.component"],
         components: {
             clientChannel: {
-                type: "gpii.pcp.clientChannel",
+                type: "gpii.psp.clientChannel",
                 options: {
                     listeners: {
                         onPreferencesUpdated: {
@@ -37,11 +37,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             },
 
             mainWindow: {
-                type: "gpii.pcp.mainWindow",
+                type: "gpii.psp.mainWindow",
                 container: "#flc-body",
                 options: {
                     listeners: {
-                        onPCPClose: "{clientChannel}.close",
+                        onPSPClose: "{clientChannel}.close",
                         onKeyOut: "{clientChannel}.keyOut",
                         onSettingAltered: "{clientChannel}.alterSetting",
                         onActivePreferenceSetAltered: "{clientChannel}.alterActivePreferenceSet",
@@ -53,6 +53,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     });
 
     $(function () {
-        gpii.pcp();
+        gpii.psp();
     });
 })(fluid);

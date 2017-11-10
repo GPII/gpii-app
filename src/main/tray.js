@@ -29,13 +29,13 @@ fluid.defaults("gpii.app.tray", {
         tray: {
             expander: {
                 funcName: "gpii.app.makeTray",
-                args: ["{that}.options.icons.keyedOut", "{pcp}.show"]
+                args: ["{that}.options.icons.keyedOut", "{psp}.show"]
             }
         }
     },
     icons: {
-        keyedIn: "icons/gpii-color.ico",
-        keyedOut: "icons/gpii.ico"
+        keyedIn: "../icons/gpii-color.ico",
+        keyedOut: "../icons/gpii.ico"
     },
     components: {
         menu: {
@@ -101,18 +101,18 @@ gpii.app.tray.setTrayIcon = function (tray, icon) {
 /**
   * Creates the Electron Tray
   * @param icon {String} Path to the icon that represents the GPII in the task tray.
-  * @param openPCP {Function} A function for showing the PCP window. Should be called
-  * whenever the user left clicks on the tray icon or uses the PCP window shortcut.
+  * @param openPSP {Function} A function for showing the PSP window. Should be called
+  * whenever the user left clicks on the tray icon or uses the PSP window shortcut.
   */
-gpii.app.makeTray = function (icon, openPCP) {
+gpii.app.makeTray = function (icon, openPSP) {
     var tray = new Tray(path.join(__dirname, icon));
 
     tray.on("click", function () {
-        openPCP();
+        openPSP();
     });
 
     globalShortcut.register("Super+CmdOrCtrl+Alt+U", function () {
-        openPCP();
+        openPSP();
     });
 
     return tray;

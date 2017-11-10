@@ -23,10 +23,10 @@ var gpii              = fluid.registerNamespace("gpii");
 require("./utils.js");
 
 /**
- * Handles logic for the PCP window.
+ * Handles logic for the PSP window.
  * Creates an Electron `BrowserWindow` and manages it
  */
-fluid.defaults("gpii.app.pcp", {
+fluid.defaults("gpii.app.psp", {
     gradeNames: "fluid.modelComponent",
 
     model:  {
@@ -49,165 +49,165 @@ fluid.defaults("gpii.app.pcp", {
     },
 
     members: {
-        pcpWindow: "@expand:gpii.app.pcp.makePCPWindow({that}.options.attrs)"
+        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs)"
     },
     events: {
         onSettingAltered: null,
         onActivePreferenceSetAltered: null
     },
     listeners: {
-        "onCreate.initPCPWindowIPC": {
-            listener: "gpii.app.initPCPWindowIPC",
+        "onCreate.initPSPWindowIPC": {
+            listener: "gpii.app.initPSPWindowIPC",
             args: ["{app}", "{that}", "{gpiiConnector}"]
         },
         "onCreate.registerAccentColorListener": {
-            listener: "gpii.app.pcp.registerAccentColorListener",
+            listener: "gpii.app.psp.registerAccentColorListener",
             args: ["{that}"]
         },
-        "onCreate.initPCPWindowListeners": {
-            listener: "gpii.app.pcp.initPCPWindowListeners",
+        "onCreate.initPSPWindowListeners": {
+            listener: "gpii.app.psp.initPSPWindowListeners",
             args: ["{that}"]
         }
     },
     invokers: {
         show: {
-            funcName: "gpii.app.pcp.showPCPWindow",
-            args: ["{that}.pcpWindow"]
+            funcName: "gpii.app.psp.showPSPWindow",
+            args: ["{that}.pspWindow"]
         },
         hide: {
-            funcName: "gpii.app.pcp.hidePCPWindow",
-            args: ["{that}.pcpWindow"]
+            funcName: "gpii.app.psp.hidePSPWindow",
+            args: ["{that}.pspWindow"]
         },
         isShown: {
-            funcName: "gpii.app.pcp.isPCPWindowShown",
-            args: ["{that}.pcpWindow"]
+            funcName: "gpii.app.psp.isPSPWindowShown",
+            args: ["{that}.pspWindow"]
         },
-        notifyPCPWindow: {
-            funcName: "gpii.app.pcp.notifyPCPWindow",
-            args: ["{that}.pcpWindow", "{arguments}.0", "{arguments}.1"]
+        notifyPSPWindow: {
+            funcName: "gpii.app.psp.notifyPSPWindow",
+            args: ["{that}.pspWindow", "{arguments}.0", "{arguments}.1"]
         },
         getWindowPosition: {
             funcName: "gpii.app.getWindowPosition",
             args: ["{that}.options.attrs.width", "{that}.options.attrs.height"]
         },
         resize: {
-            funcName: "gpii.app.pcp.resize",
+            funcName: "gpii.app.psp.resize",
             args: ["{that}", "{arguments}.0", "{that}.options.attrs.height", "{arguments}.1"]
         }
     }
 });
 
 /**
- * This function checks whether the PCP window is shown.
- * @param pcpWindow {Object} An Electron `BrowserWindow`
- * @return {Boolean} `true` if the PCP window is shown and `false` otherwise.
+ * This function checks whether the PSP window is shown.
+ * @param pspWindow {Object} An Electron `BrowserWindow`
+ * @return {Boolean} `true` if the PSP window is shown and `false` otherwise.
  */
-gpii.app.pcp.isPCPWindowShown = function (pcpWindow) {
-    var position = pcpWindow.getPosition(),
+gpii.app.psp.isPSPWindowShown = function (pspWindow) {
+    var position = pspWindow.getPosition(),
         x = position[0],
         y = position[1];
     return x >= 0 && y >= 0;
 };
 
 /**
- * Shows the PCP window in the lower part of the primary display and focuses it.
- * Actually, the PCP window is always shown but it may be positioned off the screen.
+ * Shows the PSP window in the lower part of the primary display and focuses it.
+ * Actually, the PSP window is always shown but it may be positioned off the screen.
  * This is a workaround for the flickering issue observed when the content displayed in
- * the PCP window changes. (Electron does not rerender web pages when the
+ * the PSP window changes. (Electron does not rerender web pages when the
  * `BrowserWindow` is hidden).
- * @param pcpWindow {Object} An Electron `BrowserWindow`.
+ * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
-gpii.app.pcp.showPCPWindow = function (pcpWindow) {
+gpii.app.psp.showPSPWindow = function (pspWindow) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-        windowSize = pcpWindow.getSize(),
+        windowSize = pspWindow.getSize(),
         windowX = screenSize.width - windowSize[0],
         windowY = screenSize.height - windowSize[1];
-    pcpWindow.setPosition(windowX, windowY);
-    pcpWindow.focus();
+    pspWindow.setPosition(windowX, windowY);
+    pspWindow.focus();
 };
 
 
 /**
  * A function which should be called to init various listeners related to
- * the PCP window.
- * @param pcp {Object} The `gpii.app.pcp` instance
+ * the PSP window.
+ * @param psp {Object} The `gpii.app.psp` instance
  */
-gpii.app.pcp.initPCPWindowListeners = function (pcp) {
-    var pcpWindow = pcp.pcpWindow;
-    pcpWindow.on("blur", function () {
-        pcp.hide();
+gpii.app.psp.initPSPWindowListeners = function (psp) {
+    var pspWindow = psp.pspWindow;
+    pspWindow.on("blur", function () {
+        psp.hide();
     });
 
     electron.screen.on("display-metrics-changed", function (event, display, changedMetrics) {
         if (changedMetrics.indexOf("workArea") > -1) {
-            var windowSize = pcpWindow.getSize(),
+            var windowSize = pspWindow.getSize(),
                 contentHeight = windowSize[1];
-            pcp.resize(contentHeight, true);
+            psp.resize(contentHeight, true);
         }
     });
 };
 
 /**
  * Initialises the connection between the Electron process and
- * the PCP's `BrowserWindow` instance
+ * the PSP's `BrowserWindow` instance
  *
- * @param pcp {Object} A `gpii.app.pcp` instance
+ * @param psp {Object} A `gpii.app.psp` instance
  */
-gpii.app.initPCPWindowIPC = function (app, pcp) {
-    ipcMain.on("onPCPClose", function () {
-        pcp.hide();
+gpii.app.initPSPWindowIPC = function (app, psp) {
+    ipcMain.on("onPSPClose", function () {
+        psp.hide();
     });
 
     ipcMain.on("onKeyOut", function () {
-        pcp.hide();
+        psp.hide();
         app.keyOut();
     });
 
     ipcMain.on("onSettingAltered", function (event, arg) {
-        pcp.events.onSettingAltered.fire(arg);
+        psp.events.onSettingAltered.fire(arg);
     });
 
     ipcMain.on("onActivePreferenceSetAltered", function (event, arg) {
-        pcp.events.onActivePreferenceSetAltered.fire(arg.value);
+        psp.events.onActivePreferenceSetAltered.fire(arg.value);
     });
 
     ipcMain.on("onContentHeightChanged", function (event, contentHeight) {
-        pcp.resize(contentHeight);
+        psp.resize(contentHeight);
     });
 };
 
 
 /**
- * Hides the PCP window by moving it to a non-visible part of the screen. This function
- * in conjunction with `gpii.app.pcp.showPCPWindow` help avoid the flickering issue when
- * the content of the PCP window changes.
- * @param pcpWindow {Object} An Electron `BrowserWindow`.
+ * Hides the PSP window by moving it to a non-visible part of the screen. This function
+ * in conjunction with `gpii.app.psp.showPSPWindow` help avoid the flickering issue when
+ * the content of the PSP window changes.
+ * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
-gpii.app.pcp.hidePCPWindow = function (pcpWindow) {
-    var windowSize = pcpWindow.getSize(),
+gpii.app.psp.hidePSPWindow = function (pspWindow) {
+    var windowSize = pspWindow.getSize(),
         width = windowSize[0],
         height = windowSize[1];
-    pcpWindow.setPosition(-width, -height);
+    pspWindow.setPosition(-width, -height);
 };
 
 /**
- * Resizes the PCP window and positions it appropriately based on the new height
+ * Resizes the PSP window and positions it appropriately based on the new height
  * of its content. Makes sure that the window is no higher than the available
  * height of the work area in the primary display. The window will not be resized
  * if its current height is the same as the new height. This behaviour can be
  * overridden using the `forceResize` parameter.
- * @param pcp {Object} A `gpii.app.pcp` instance.
+ * @param psp {Object} A `gpii.app.psp` instance.
  * @param contentHeight {Number} The new height of the BrowserWindow's content.
  * @param minHeight {Number} The minimum height which the BrowserWindow must have.
  * @param forceResize {Boolean} Whether to resize the window even if the current
  * height of the `BrowserWindow` is the same as the new one. Useful when screen
  * DPI is changed as a result of the application of a user's preferences.
  */
-gpii.app.pcp.resize = function (pcp, contentHeight, minHeight, forceResize) {
-    var pcpWindow = pcp.pcpWindow,
-        wasShown = pcp.isShown(),
+gpii.app.psp.resize = function (psp, contentHeight, minHeight, forceResize) {
+    var pspWindow = psp.pspWindow,
+        wasShown = psp.isShown(),
         screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-        windowSize = pcpWindow.getSize(),
+        windowSize = pspWindow.getSize(),
         windowWidth = windowSize[0],
         initialHeight = windowSize[1],
         windowHeight = Math.min(screenSize.height, Math.max(contentHeight, minHeight));
@@ -216,65 +216,65 @@ gpii.app.pcp.resize = function (pcp, contentHeight, minHeight, forceResize) {
         return;
     }
 
-    pcpWindow.setSize(windowWidth, windowHeight);
+    pspWindow.setSize(windowWidth, windowHeight);
 
     if (wasShown) {
-        pcp.show();
+        psp.show();
     }
 };
 
 /**
  * Sends a message to the given window
  *
- * @param pcpWindow {Object} An Electron `BrowserWindow` object
+ * @param pspWindow {Object} An Electron `BrowserWindow` object
  * @param messageChannel {String} The channel to which the message to be sent
  * @param message {String}
  */
-gpii.app.pcp.notifyPCPWindow = function (pcpWindow, messageChannel, message) {
-    if (pcpWindow) {
-        pcpWindow.webContents.send(messageChannel, message);
+gpii.app.psp.notifyPSPWindow = function (pspWindow, messageChannel, message) {
+    if (pspWindow) {
+        pspWindow.webContents.send(messageChannel, message);
     }
 };
 
 /**
- * Creates an Electron `BrowserWindow` that is to be used as the PCP window
+ * Creates an Electron `BrowserWindow` that is to be used as the PSP window
  *
  * @param {Object} windowOptions Raw options to be passed to the `BrowserWindow`
  * @returns {Object} The created Electron `BrowserWindow`
  */
-gpii.app.pcp.makePCPWindow = function (windowOptions) {
+gpii.app.psp.makePSPWindow = function (windowOptions) {
     // TODO Make window size relative to the screen size
-    var pcpWindow = new BrowserWindow(windowOptions);
+    var pspWindow = new BrowserWindow(windowOptions);
 
-    var url = fluid.stringTemplate("file://%gpii-app/src/pcp/index.html", fluid.module.terms());
-    pcpWindow.loadURL(url);
+    var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
+    pspWindow.loadURL(url);
 
-    gpii.app.pcp.hidePCPWindow(pcpWindow);
+    gpii.app.psp.hidePSPWindow(pspWindow);
 
-    return pcpWindow;
+    return pspWindow;
 };
 
 /**
- * This function takes care of notifying the PCP window whenever the
+ * This function takes care of notifying the PSP window whenever the
  * user changes the accent color of the OS theme. Available only if
  * the application is used on Windows 10.
- * @param pcp {Object} The `gpii.app.pcp` instance
+ * @param psp {Object} The `gpii.app.psp` instance
  */
-gpii.app.pcp.registerAccentColorListener = function (pcp) {
+gpii.app.psp.registerAccentColorListener = function (psp) {
     if (gpii.app.isWin10OS()) {
-        // Ideally when the PCP window is created, it should be notified about
+        // Ideally when the PSP window is created, it should be notified about
         // the current accent color. Possible events which can be used for this
         // purpose are "ready-to-show" or "show". However, as the window is drawn
         // off screen, registering the listeners will happen after the corresponding
-        // event has been fired. That is why the PCP window should be notified every
+        // event has been fired. That is why the PSP window should be notified every
         // time it is focused (only the first time is insufficient because showing
         // the window (even off screen) automatically focuses it).
-        pcp.pcpWindow.on("focus", function () {
-            pcp.notifyPCPWindow("onAccentColorChanged", systemPreferences.getAccentColor());
+        psp.pspWindow.on("focus", function () {
+            psp.notifyPSPWindow("onAccentColorChanged", systemPreferences.getAccentColor());
         });
 
         systemPreferences.on("accent-color-changed", function (event, accentColor) {
-            pcp.notifyPCPWindow("onAccentColorChanged", accentColor);
+            psp.notifyPSPWindow("onAccentColorChanged", accentColor);
         });
     }
 };

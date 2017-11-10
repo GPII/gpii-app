@@ -85,7 +85,7 @@ gpii.app.dialog.makeWaitDialog = function (windowOptions, position) {
     var dialog = new BrowserWindow(windowOptions);
     dialog.setPosition(position.x, position.y);
 
-    var url = fluid.stringTemplate("file://%gpii-app/src/pcp/html/message.html", fluid.module.terms());
+    var url = fluid.stringTemplate("file://%gpii-app/src/renderer/waitDialog/index.html", fluid.module.terms());
     dialog.loadURL(url);
     return dialog;
 };

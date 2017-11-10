@@ -21,7 +21,7 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
 require("../node_modules/kettle/lib/test/KettleTestUtils.http.js");
-require("../src/app.js");
+require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.app");
 
@@ -32,20 +32,20 @@ gpii.tests.app.testInitialMenu = function (menu) {
 };
 
 // Test regarding the PSP window
-fluid.registerNamespace("gpii.tests.app.pcp");
+fluid.registerNamespace("gpii.tests.app.psp");
 
-gpii.tests.app.pcp.testPSPWindowIsShown = function (pcp) {
-    jqUnit.assertTrue("The PSP Window is shown", pcp.isShown());
+gpii.tests.app.psp.testPSPWindowIsShown = function (psp) {
+    jqUnit.assertTrue("The PSP Window is shown", psp.isShown());
 };
 
-gpii.tests.app.pcp.testPSPWindowIsHidden = function (pcp) {
-    jqUnit.assertFalse("The PSP Window is hidden", pcp.isShown());
+gpii.tests.app.psp.testPSPWindowIsHidden = function (psp) {
+    jqUnit.assertFalse("The PSP Window is hidden", psp.isShown());
 };
 
-gpii.tests.app.pcp.testInitialPSPWindow = function (pcp) {
-    jqUnit.assertNotUndefined("The PSP was instantiated", pcp);
-    jqUnit.assertNotUndefined("The PSP Electron window was instantiated", pcp.pcpWindow);
-    gpii.tests.app.pcp.testPSPWindowIsHidden(pcp);
+gpii.tests.app.psp.testInitialPSPWindow = function (psp) {
+    jqUnit.assertNotUndefined("The PSP was instantiated", psp);
+    jqUnit.assertNotUndefined("The PSP Electron window was instantiated", psp.pspWindow);
+    gpii.tests.app.psp.testPSPWindowIsHidden(psp);
 };
 
 gpii.tests.app.testTemplateExists = function (template, expectedLength) {
@@ -100,14 +100,14 @@ gpii.tests.app.testDefs = {
         event: "{that gpii.app.menu}.events.onCreate",
         listener: "gpii.tests.app.testInitialMenu"
     }, [ // PSP window tests
-        { // pcpWindow should've been created by now
-            funcName: "gpii.tests.app.pcp.testInitialPSPWindow",
-            args: ["{that}.app.pcp"]
+        { // pspWindow should've been created by now
+            funcName: "gpii.tests.app.psp.testInitialPSPWindow",
+            args: ["{that}.app.psp"]
         }, {
-            func: "{that}.app.pcp.show"
+            func: "{that}.app.psp.show"
         }, {
-            funcName: "gpii.tests.app.pcp.testPSPWindowIsShown",
-            args: ["{that}.app.pcp"]
+            funcName: "gpii.tests.app.psp.testPSPWindowIsShown",
+            args: ["{that}.app.psp"]
         }
     ], { // Test menu after key in
         func: "{that}.app.keyIn",

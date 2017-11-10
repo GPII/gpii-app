@@ -15,14 +15,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-    fluid.registerNamespace("gpii.pcp");
+    fluid.registerNamespace("gpii.psp");
 
 
     /**
      * Represents an "exemplar" (configuration) for a somehow dynamic component.
      * A good place to keep a *related template resource* path.
      */
-    fluid.defaults("gpii.pcp.exemplar", {
+    fluid.defaults("gpii.psp.exemplar", {
         gradeNames: "fluid.component",
         /*
          * We want to be able to pass unexpanded IoC expressions, which to be
@@ -58,17 +58,17 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.pcp.exemplar.settingsVisualizer", {
-        gradeNames: "gpii.pcp.exemplar",
+    fluid.defaults("gpii.psp.exemplar.settingsVisualizer", {
+        gradeNames: "gpii.psp.exemplar",
 
         resourceName: "settingRow.html",
-        grade: "gpii.pcp.settingsVisualizer"
+        grade: "gpii.psp.settingsVisualizer"
     });
 
-    fluid.defaults("gpii.pcp.exemplar.multipicker", {
-        gradeNames: "gpii.pcp.exemplar",
+    fluid.defaults("gpii.psp.exemplar.multipicker", {
+        gradeNames: "gpii.psp.exemplar",
         resourceName: "multipicker.html",
-        grade: "gpii.pcp.widgets.multipicker",
+        grade: "gpii.psp.widgets.multipicker",
         schemaType: "array",
         widgetOptions: {
             model: {
@@ -83,10 +83,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.pcp.exemplar.switch", {
-        gradeNames: "gpii.pcp.exemplar",
+    fluid.defaults("gpii.psp.exemplar.switch", {
+        gradeNames: "gpii.psp.exemplar",
         resourceName: "switch.html",
-        grade: "gpii.pcp.widgets.switch",
+        grade: "gpii.psp.widgets.switch",
         schemaType: "boolean",
         widgetOptions: {
             model: {
@@ -99,10 +99,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.pcp.exemplar.dropdown", {
-        gradeNames: "gpii.pcp.exemplar",
+    fluid.defaults("gpii.psp.exemplar.dropdown", {
+        gradeNames: "gpii.psp.exemplar",
         resourceName: "dropdown.html",
-        grade: "gpii.pcp.widgets.dropdown",
+        grade: "gpii.psp.widgets.dropdown",
         schemaType: "string",
         widgetOptions: {
             model: {
@@ -116,10 +116,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.pcp.exemplar.stepper", {
-        gradeNames: "gpii.pcp.exemplar",
+    fluid.defaults("gpii.psp.exemplar.stepper", {
+        gradeNames: "gpii.psp.exemplar",
         resourceName: "stepper.html",
-        grade: "gpii.pcp.widgets.stepper",
+        grade: "gpii.psp.widgets.stepper",
         schemaType: "number",
         widgetOptions: {
             model: {
@@ -136,10 +136,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.pcp.exemplar.textfield", {
-        gradeNames: "gpii.pcp.exemplar",
+    fluid.defaults("gpii.psp.exemplar.textfield", {
+        gradeNames: "gpii.psp.exemplar",
         resourceName: "textfield.html",
-        grade: "gpii.pcp.widgets.textfield",
+        grade: "gpii.psp.widgets.textfield",
         schemaType: "text",
         widgetOptions: {
             model: {
@@ -155,28 +155,28 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * Represents an container for all exemplars for widgets
      * N.B. Sub components should be used as immutable objects!
      */
-    fluid.defaults("gpii.pcp.widgetExemplars", {
+    fluid.defaults("gpii.psp.widgetExemplars", {
         gradeNames: "fluid.component",
         components: {
             multipicker: {
-                type: "gpii.pcp.exemplar.multipicker"
+                type: "gpii.psp.exemplar.multipicker"
             },
             switch: {
-                type: "gpii.pcp.exemplar.switch"
+                type: "gpii.psp.exemplar.switch"
             },
             dropdown: {
-                type: "gpii.pcp.exemplar.dropdown"
+                type: "gpii.psp.exemplar.dropdown"
             },
             stepper: {
-                type: "gpii.pcp.exemplar.stepper"
+                type: "gpii.psp.exemplar.stepper"
             },
             textfield: {
-                type: "gpii.pcp.exemplar.textfield"
+                type: "gpii.psp.exemplar.textfield"
             }
         },
         invokers: {
             getExemplarBySchemaType: {
-                funcName: "gpii.pcp.widgetExemplars.getExemplarBySchemaType",
+                funcName: "gpii.psp.widgetExemplars.getExemplarBySchemaType",
                 args: ["{that}", "{arguments}.0"]
             }
         }
@@ -184,12 +184,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 
     /**
-     * Returns `gpii.pcp.exemplar` object for given schema (PCP channel type) type
-     * @param widgetExemplars {Object} The `gpii.pcp.widgetExemplar` object
+     * Returns `gpii.psp.exemplar` object for given schema (PSP channel type) type
+     * @param widgetExemplars {Object} The `gpii.psp.widgetExemplar` object
      * @param schemaType {String}
-     * @returns {Object} The matching `gpii.pcp.exemplar` object
+     * @returns {Object} The matching `gpii.psp.exemplar` object
      */
-    gpii.pcp.widgetExemplars.getExemplarBySchemaType = function (widgetExemplars, schemaType) {
+    gpii.psp.widgetExemplars.getExemplarBySchemaType = function (widgetExemplars, schemaType) {
         return fluid.values(widgetExemplars)
             .filter(fluid.isComponent)
             .find(function matchType(exemplar) { return exemplar.options.schemaType === schemaType; });

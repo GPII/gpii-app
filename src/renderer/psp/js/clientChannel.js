@@ -15,20 +15,20 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii"),
         ipcRenderer = require("electron").ipcRenderer;
-    fluid.registerNamespace("gpii.pcp.clientChannel");
+    fluid.registerNamespace("gpii.psp.clientChannel");
 
     /**
-     * A function which should be called when the PCP window needs to be
+     * A function which should be called when the PSP window needs to be
      * closed. It simply notifies the main electron process for this.
      */
-    gpii.pcp.clientChannel.closePCP = function () {
-        ipcRenderer.send("onPCPClose");
+    gpii.psp.clientChannel.closePSP = function () {
+        ipcRenderer.send("onPSPClose");
     };
 
     /**
      * Notifies the main electron process that the user must be keyed out.
      */
-    gpii.pcp.clientChannel.keyOut = function () {
+    gpii.psp.clientChannel.keyOut = function () {
         ipcRenderer.send("onKeyOut");
     };
 
@@ -40,7 +40,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param value {Any} The new, updated value for the setting. Can be
      * of different type depending on the setting.
      */
-    gpii.pcp.clientChannel.alterSetting = function (path, value) {
+    gpii.psp.clientChannel.alterSetting = function (path, value) {
         ipcRenderer.send("onSettingAltered", {
             path: path,
             value: value
@@ -53,7 +53,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * the main electron process for the change.
      * @param value {String} The path of the new active preference set.
      */
-    gpii.pcp.clientChannel.alterActivePreferenceSet = function (value) {
+    gpii.psp.clientChannel.alterActivePreferenceSet = function (value) {
         ipcRenderer.send("onActivePreferenceSetAltered", {
             value: value
         });
@@ -64,7 +64,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * PSP `BrowserWindow` changes.
      * @param height {Number} The new height of the PSP `BrowserWindow`.
      */
-    gpii.pcp.clientChannel.changeContentHeight = function (height) {
+    gpii.psp.clientChannel.changeContentHeight = function (height) {
         ipcRenderer.send("onContentHeightChanged", height);
     };
 
@@ -73,7 +73,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * for various messages sent by the main process.
      * @param clientChannel {Component} The `clientChannel` component.
      */
-    gpii.pcp.clientChannel.initialize = function (clientChannel) {
+    gpii.psp.clientChannel.initialize = function (clientChannel) {
         ipcRenderer.on("onPreferencesUpdated", function (event, preferences) {
             clientChannel.events.onPreferencesUpdated.fire(preferences);
         });
@@ -91,7 +91,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * Responsible for communication between the main and the renderer
      * processes.
      */
-    fluid.defaults("gpii.pcp.clientChannel", {
+    fluid.defaults("gpii.psp.clientChannel", {
         gradeNames: ["fluid.component"],
         events: {
             onPreferencesUpdated: null,
@@ -100,25 +100,25 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
         listeners: {
             "onCreate.initClientChannel": {
-                funcName: "gpii.pcp.clientChannel.initialize",
+                funcName: "gpii.psp.clientChannel.initialize",
                 args: ["{that}"]
             }
         },
         invokers: {
             close: {
-                funcName: "gpii.pcp.clientChannel.closePCP"
+                funcName: "gpii.psp.clientChannel.closePSP"
             },
             keyOut: {
-                funcName: "gpii.pcp.clientChannel.keyOut"
+                funcName: "gpii.psp.clientChannel.keyOut"
             },
             alterSetting: {
-                funcName: "gpii.pcp.clientChannel.alterSetting"
+                funcName: "gpii.psp.clientChannel.alterSetting"
             },
             alterActivePreferenceSet: {
-                funcName: "gpii.pcp.clientChannel.alterActivePreferenceSet"
+                funcName: "gpii.psp.clientChannel.alterActivePreferenceSet"
             },
             changeContentHeight: {
-                funcName: "gpii.pcp.clientChannel.changeContentHeight"
+                funcName: "gpii.psp.clientChannel.changeContentHeight"
             }
         }
     });

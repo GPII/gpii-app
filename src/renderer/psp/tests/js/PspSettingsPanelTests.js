@@ -103,14 +103,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     }, textfieldSettingFixture, switchSettingFixture, stepperSettingFixture, multipickerSettingFixture];
 
-    fluid.registerNamespace("gpii.tests.pcp.utils");
+    fluid.registerNamespace("gpii.tests.psp.utils");
 
-    gpii.tests.pcp.utils.getSubcomponents = function (component) {
+    gpii.tests.psp.utils.getSubcomponents = function (component) {
         return fluid.values(component)
             .filter(fluid.isComponent);
     };
 
-    gpii.tests.pcp.utils.testContainerEmpty = function (containerClass) {
+    gpii.tests.psp.utils.testContainerEmpty = function (containerClass) {
         jqUnit.assertTrue(
             "DOM container is empty",
             $(containerClass).is(":empty")
@@ -118,15 +118,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     };
 
     /**
-     * A wrapper component that ensures synchronous environment for `gpii.pcp.settingsPanel` related tests.
-     * Needed in order to ensure that the underlying `gpii.pcp.settingsPanel`-s will be created with
+     * A wrapper component that ensures synchronous environment for `gpii.psp.settingsPanel` related tests.
+     * Needed in order to ensure that the underlying `gpii.psp.settingsPanel`-s will be created with
      * corresponding resources loaded, when tests are run.
      */
-    fluid.defaults("gpii.tests.pcp.settingsPanelTestsWrapper", {
+    fluid.defaults("gpii.tests.psp.settingsPanelTestsWrapper", {
         gradeNames: "fluid.component",
         components: {
             settingsPanelMock: {
-                type: "gpii.tests.pcp.settingsPanelMock",
+                type: "gpii.tests.psp.settingsPanelMock",
                 container: ".flc-settingsPanel-all",
                 options: {
                     model: {
@@ -135,7 +135,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             },
             settingsPanelTests: {
-                type: "gpii.tests.pcp.settingsPanelTests",
+                type: "gpii.tests.psp.settingsPanelTests",
                 createOnEvent: "{settingsPanelMock}.resourcesLoader.events.onResourcesLoaded",
                 options: {
                     components: {
@@ -146,10 +146,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
             // widget tests
             singleSettingPanelsMock: {
-                type: "gpii.tests.pcp.singleSettingPanelsMock"
+                type: "gpii.tests.psp.singleSettingPanelsMock"
             },
             widgetsTests: {
-                type: "gpii.tests.pcp.widgetsTests",
+                type: "gpii.tests.psp.widgetsTests",
                 createOnEvent: "{singleSettingPanelsMock}.events.onResourcesLoaded",
                 options: {
                     components: {
@@ -164,11 +164,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     /**
      * More or less isolated tests for the different widgets
      */
-    fluid.defaults("gpii.tests.pcp.widgetsTests", {
+    fluid.defaults("gpii.tests.psp.widgetsTests", {
         gradeNames: "fluid.test.testEnvironment",
         components: {
             widgetsTester: {
-                type: "gpii.tests.pcp.widgetsTester",
+                type: "gpii.tests.psp.widgetsTester",
                 priority: "after:singleSettingPanelsMock"
             }
         }
@@ -177,16 +177,16 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     /**
      * Generic (end-to-end) tests for the visualization of settings
      */
-    fluid.defaults("gpii.tests.pcp.settingsPanelTests", {
+    fluid.defaults("gpii.tests.psp.settingsPanelTests", {
         gradeNames: ["fluid.test.testEnvironment"],
         components: {
             settingsPanelTester: {
-                type: "gpii.tests.pcp.settingsPanelTester"
+                type: "gpii.tests.psp.settingsPanelTester"
             }
         }
     });
 
-    gpii.tests.pcp.testSwitch = function (container, setting) {
+    gpii.tests.psp.testSwitch = function (container, setting) {
         jqUnit.assertEquals(
             "Widgets: Switch - should have proper value rendered",
             setting.value.toString(),
@@ -194,7 +194,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         );
     };
 
-    gpii.tests.pcp.testTextfield = function (container, setting) {
+    gpii.tests.psp.testTextfield = function (container, setting) {
         jqUnit.assertEquals(
             "Widgets: Textfield - should have proper value",
             setting.value,
@@ -202,7 +202,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         );
     };
 
-    gpii.tests.pcp.testMultipicker = function (container, setting) {
+    gpii.tests.psp.testMultipicker = function (container, setting) {
         var renderedMultipickerLabels = $(".flc-multipickerLabel", container)
             .map(function (idx, label) {
                 return label.innerText;
@@ -232,7 +232,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         );
     };
 
-    gpii.tests.pcp.testStepper = function (container, setting) {
+    gpii.tests.psp.testStepper = function (container, setting) {
         // Test slider
         var slider = $(".flc-textfieldSlider-slider", container);
         jqUnit.assertEquals(
@@ -265,7 +265,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         );
     };
 
-    gpii.tests.pcp.testDropdownWidget = function (container, setting) {
+    gpii.tests.psp.testDropdownWidget = function (container, setting) {
         /*
          * We expect fot the dropdown element to use use `<option>` tags.
          * We validate these tags with the expected.
@@ -289,7 +289,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         );
     };
 
-    gpii.tests.pcp.testSettingsRendered = function (containerClass, setting) {
+    gpii.tests.psp.testSettingsRendered = function (containerClass, setting) {
         // Search for such element
         var settingContainers = $(".flc-setting", containerClass); // get the list of all settings
 
@@ -298,11 +298,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
          * Type - schemaType:checker
          */
         var widgetCheckersMap = {
-            "string": gpii.tests.pcp.testDropdownWidget,
-            "number": gpii.tests.pcp.testStepper,
-            "array": gpii.tests.pcp.testMultipicker,
-            "text": gpii.tests.pcp.testTextfield,
-            "boolean": gpii.tests.pcp.testSwitch
+            "string": gpii.tests.psp.testDropdownWidget,
+            "number": gpii.tests.psp.testStepper,
+            "array": gpii.tests.psp.testMultipicker,
+            "text": gpii.tests.psp.testTextfield,
+            "boolean": gpii.tests.psp.testSwitch
         };
 
         settingContainers.each(function (idx, settingContainer) {
@@ -332,14 +332,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         });
     };
 
-    gpii.tests.pcp.testSettingPanelConstruction = function (settingsPanel) {
+    gpii.tests.psp.testSettingPanelConstruction = function (settingsPanel) {
         var widgetsCount = 5;
         jqUnit.assertEquals("SettingsPanel should have proper number of loaded resources",
             widgetsCount + 1,
             fluid.values(settingsPanel.resourcesLoader.resources).length
         );
 
-        var settingComponents = gpii.tests.pcp.utils.getSubcomponents(settingsPanel.settingsVisualizer);
+        var settingComponents = gpii.tests.psp.utils.getSubcomponents(settingsPanel.settingsVisualizer);
         jqUnit.assertEquals("SettingsPanel should have valid number of subcomponents",
             allSettingTypesFixture.length,
             settingComponents.length
@@ -358,10 +358,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         });
     };
 
-    fluid.defaults("gpii.tests.pcp.settingsPanelTester", {
+    fluid.defaults("gpii.tests.psp.settingsPanelTester", {
         gradeNames: "fluid.test.testCaseHolder",
         modules: [{
-            name: "Test PCP SettingsPanel",
+            name: "Test PSP SettingsPanel",
             tests: [{
                 // Test all components construction
                 name: "Test components constucted properly",
@@ -369,7 +369,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 sequence: [{ // initiate `settingsVisualizer` creation
                     funcName: "{settingsPanelMock}.events.onTemplatesLoaded.fire"
                 }, {
-                    funcName: "gpii.tests.pcp.testSettingPanelConstruction",
+                    funcName: "gpii.tests.psp.testSettingPanelConstruction",
                     args: "{settingsPanel}"
                 }]
             }, {
@@ -377,7 +377,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 name: "Test elements rendered properly",
                 expect: 33,
                 sequence: [{
-                    funcName: "gpii.tests.pcp.testSettingsRendered",
+                    funcName: "gpii.tests.psp.testSettingsRendered",
                     args: ["{settingsPanelMock}.container", allSettingTypesFixture]
                 }, {
                     // NOTE - a destructive step
@@ -386,14 +386,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     func: "{settingsPanelMock}.destroy"
                 }, { // Dom cleared with component destruction
                     event: "{settingsPanelMock}.events.onDestroy",
-                    listener: "gpii.tests.pcp.utils.testContainerEmpty",
+                    listener: "gpii.tests.psp.utils.testContainerEmpty",
                     args: "{settingsPanelMock}.container"
                 }]
             }]
         }]
     });
 
-    gpii.tests.pcp.testWidgetAccessibility = function (elements, ariaLabelledBy) {
+    gpii.tests.psp.testWidgetAccessibility = function (elements, ariaLabelledBy) {
         fluid.each(elements, function (element) {
             jqUnit.assertEquals(
                 "Widgets: Widget element has correct aria-labelledby attribute",
@@ -403,7 +403,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         });
     };
 
-    gpii.tests.pcp.testStepperModelInteraction = function (container, expected) {
+    gpii.tests.psp.testStepperModelInteraction = function (container, expected) {
         var textfield = $(".flc-textfieldStepper-field", container);
         jqUnit.assertEquals(
             "Widgets: Stepper - text input has correct value after model update",
@@ -419,7 +419,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         );
     };
 
-    gpii.tests.pcp.testTextfieldModelInteraction = function (container, expected) {
+    gpii.tests.psp.testTextfieldModelInteraction = function (container, expected) {
         var textfield = $(".flc-textfieldInput", container);
         jqUnit.assertEquals(
             "Widgets: Textfield - text input has correct value after model update",
@@ -428,14 +428,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         );
     };
 
-    gpii.tests.pcp.changeDropdownValue = function (container, value) {
+    gpii.tests.psp.changeDropdownValue = function (container, value) {
         $(".flc-dropdown-options", container)
             .find("option[value=" + value + "]")
             .prop("selected", true)
             .trigger("change");
     };
 
-    gpii.tests.pcp.testDropdownModelInteraction = function (container, expected) {
+    gpii.tests.psp.testDropdownModelInteraction = function (container, expected) {
         var select = $(".flc-dropdown-options", container);
         jqUnit.assertEquals(
             "Widgets: Dropdown - select input has correct value after model update",
@@ -444,7 +444,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         );
     };
 
-    gpii.tests.pcp.testSwitchInteraction = function (container, expected) {
+    gpii.tests.psp.testSwitchInteraction = function (container, expected) {
         jqUnit.assertEquals(
             "Widgets: Switch - should have re-rendered switch value after model update",
             expected.toString(),
@@ -452,7 +452,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         );
     };
 
-    gpii.tests.pcp.changeMultipickerValues = function (container, values) {
+    gpii.tests.psp.changeMultipickerValues = function (container, values) {
         $("input[type=checkbox]", container)
             .prop("checked", false)
             .each(function () {
@@ -464,7 +464,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             .change();
     };
 
-    gpii.tests.pcp.testMultipickerModelInteraction = function (container, expected) {
+    gpii.tests.psp.testMultipickerModelInteraction = function (container, expected) {
         var values = $("input[type=checkbox]", container)
             .filter(function () {
                 return $(this).prop("checked");
@@ -484,7 +484,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     /*
      * More isolated tests for the widgets
      */
-    fluid.defaults("gpii.tests.pcp.widgetsTester", {
+    fluid.defaults("gpii.tests.psp.widgetsTester", {
         gradeNames: "fluid.test.testCaseHolder",
 
         modules: [{
@@ -495,7 +495,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 sequence: [{ // initiate `settingsVisualizer` creation
                     funcName: "{singleSettingPanelsMock}.switchPanel.events.onTemplatesLoaded.fire"
                 }, {
-                    funcName: "gpii.tests.pcp.testWidgetAccessibility",
+                    funcName: "gpii.tests.psp.testWidgetAccessibility",
                     args: [
                         ["@expand:$(.flc-switchUI-control, {singleSettingPanelsMock}.switchPanel.container)"],
                         switchSettingFixture.path
@@ -514,12 +514,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         ]
                     }
                 ], [ // Test model interaction (settingsVisualizer is already created)
-                    { // simulate setting from PCP update
+                    { // simulate setting from PSP update
                         funcName: "{singleSettingPanelsMock}.switchPanel.events.onSettingUpdated.fire",
                         args: [switchSettingFixture.path, switchSettingFixture.value]
                     }, { // Test if rendered item updated
                         event: "{singleSettingPanelsMock}.switchPanel.events.onSettingUpdated",
-                        listener: "gpii.tests.pcp.testSwitchInteraction",
+                        listener: "gpii.tests.psp.testSwitchInteraction",
                         args: ["{singleSettingPanelsMock}.switchPanel.container", true]
                     }]
                 ]
@@ -529,7 +529,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.stepperPanel.events.onTemplatesLoaded.fire"
                 }, {
-                    funcName: "gpii.tests.pcp.testWidgetAccessibility",
+                    funcName: "gpii.tests.psp.testWidgetAccessibility",
                     args: [
                         ["@expand:$(.flc-textfieldSlider-slider, {singleSettingPanelsMock}.stepperPanel.container)",
                             "@expand:$(.flc-textfieldStepper-field, {singleSettingPanelsMock}.stepperPanel.container)"],
@@ -566,7 +566,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     },
                     {
                         event: "{singleSettingPanelsMock}.stepperPanel.events.onSettingUpdated",
-                        listener: "gpii.tests.pcp.testStepperModelInteraction",
+                        listener: "gpii.tests.psp.testStepperModelInteraction",
                         args: ["{singleSettingPanelsMock}.stepperPanel.container", stepperSettingFixture.value + stepperSettingFixture.schema.divisibleBy]
                     }
                 ]]
@@ -576,7 +576,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.textfieldPanel.events.onTemplatesLoaded.fire"
                 }, {
-                    funcName: "gpii.tests.pcp.testWidgetAccessibility",
+                    funcName: "gpii.tests.psp.testWidgetAccessibility",
                     args: [
                         ["@expand:$(.flc-textfieldInput, {singleSettingPanelsMock}.textfieldPanel.container)"],
                         textfieldSettingFixture.path
@@ -601,7 +601,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     },
                     {
                         event: "{singleSettingPanelsMock}.textfieldPanel.events.onSettingUpdated",
-                        listener: "gpii.tests.pcp.testTextfieldModelInteraction",
+                        listener: "gpii.tests.psp.testTextfieldModelInteraction",
                         args: ["{singleSettingPanelsMock}.textfieldPanel.container", textfieldSettingFixture.value]
                     }
                 ]]
@@ -611,14 +611,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.dropdownPanel.events.onTemplatesLoaded.fire"
                 }, {
-                    funcName: "gpii.tests.pcp.testWidgetAccessibility",
+                    funcName: "gpii.tests.psp.testWidgetAccessibility",
                     args: [
                         ["@expand:$(.flc-dropdown-options, {singleSettingPanelsMock}.dropdownPanel.container)"],
                         dropdownSettingFixture.path
                     ]
                 }, [
                     {
-                        funcName: "gpii.tests.pcp.changeDropdownValue",
+                        funcName: "gpii.tests.psp.changeDropdownValue",
                         args: ["{singleSettingPanelsMock}.dropdownPanel.container", dropdownSettingFixture.schema["enum"][2]]
                     }, {
                         event: "{singleSettingPanelsMock}.dropdownPanel.events.onSettingAltered",
@@ -636,7 +636,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     },
                     {
                         event: "{singleSettingPanelsMock}.dropdownPanel.events.onSettingUpdated",
-                        listener: "gpii.tests.pcp.testDropdownModelInteraction",
+                        listener: "gpii.tests.psp.testDropdownModelInteraction",
                         args: ["{singleSettingPanelsMock}.dropdownPanel.container", dropdownSettingFixture.value]
                     }
                 ]]
@@ -647,7 +647,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     funcName: "{singleSettingPanelsMock}.multipickerPanel.events.onTemplatesLoaded.fire"
                 }, [
                     {
-                        funcName: "gpii.tests.pcp.changeMultipickerValues",
+                        funcName: "gpii.tests.psp.changeMultipickerValues",
                         args: ["{singleSettingPanelsMock}.multipickerPanel.container", [multipickerSettingFixture.schema["enum"][1]]]
                     }, {
                         event: "{singleSettingPanelsMock}.multipickerPanel.events.onSettingAltered",
@@ -665,7 +665,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     },
                     {
                         event: "{singleSettingPanelsMock}.multipickerPanel.events.onSettingUpdated",
-                        listener: "gpii.tests.pcp.testMultipickerModelInteraction",
+                        listener: "gpii.tests.psp.testMultipickerModelInteraction",
                         args: ["{singleSettingPanelsMock}.multipickerPanel.container", multipickerSettingFixture.value]
                     }
                 ]]
@@ -674,7 +674,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     });
 
 
-    fluid.defaults("gpii.tests.pcp.singleSettingPanelsMock", {
+    fluid.defaults("gpii.tests.psp.singleSettingPanelsMock", {
         gradeNames: "fluid.component",
 
         events: {
@@ -699,7 +699,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         components: {
             dropdownPanel: {
-                type: "gpii.tests.pcp.settingsPanelMock",
+                type: "gpii.tests.psp.settingsPanelMock",
                 container: ".flc-settingsPanel-widgets-dropdown",
                 options: {
                     model: {
@@ -711,7 +711,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             },
             textfieldPanel: {
-                type: "gpii.tests.pcp.settingsPanelMock",
+                type: "gpii.tests.psp.settingsPanelMock",
                 container: ".flc-settingsPanel-widgets-textfield",
                 options: {
                     model: {
@@ -723,7 +723,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             },
             switchPanel: {
-                type: "gpii.tests.pcp.settingsPanelMock",
+                type: "gpii.tests.psp.settingsPanelMock",
                 container: ".flc-settingsPanel-widgets-switch",
                 options: {
                     model: {
@@ -735,7 +735,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             },
             stepperPanel: {
-                type: "gpii.tests.pcp.settingsPanelMock",
+                type: "gpii.tests.psp.settingsPanelMock",
                 container: ".flc-settingsPanel-widgets-stepper",
                 options: {
                     model: {
@@ -747,7 +747,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             },
             multipickerPanel: {
-                type: "gpii.tests.pcp.settingsPanelMock",
+                type: "gpii.tests.psp.settingsPanelMock",
                 container: ".flc-settingsPanel-widgets-multipicker",
                 options: {
                     model: {
@@ -761,8 +761,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.tests.pcp.settingsPanelMock", {
-        gradeNames: "gpii.pcp.settingsPanel",
+    fluid.defaults("gpii.tests.psp.settingsPanelMock", {
+        gradeNames: "gpii.psp.settingsPanel",
 
         // set proper path for the resources
         distributeOptions: {
@@ -785,20 +785,20 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    fluid.defaults("gpii.tests.pcp.attrsExpanderTests", {
+    fluid.defaults("gpii.tests.psp.attrsExpanderTests", {
         gradeNames: ["fluid.test.testEnvironment"],
 
         components: {
             attrsExpanderWrapperMock: {
-                type: "gpii.tests.pcp.attrsExpanderWrapperMock"
+                type: "gpii.tests.psp.attrsExpanderWrapperMock"
             },
             attrsExpanderTester: {
-                type: "gpii.tests.pcp.attrsExpanderTester"
+                type: "gpii.tests.psp.attrsExpanderTester"
             }
         }
     });
 
-    fluid.defaults("gpii.tests.pcp.attrsExpanderTester", {
+    fluid.defaults("gpii.tests.psp.attrsExpanderTester", {
         gradeNames: ["fluid.test.testCaseHolder"],
 
         modules: [{
@@ -819,15 +819,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }]
     });
 
-    fluid.defaults("gpii.tests.pcp.attrsExpanderMock", {
-        gradeNames: ["fluid.component", "gpii.pcp.widgets.attrsExpander"],
+    fluid.defaults("gpii.tests.psp.attrsExpanderMock", {
+        gradeNames: ["fluid.component", "gpii.psp.widgets.attrsExpander"],
 
         attrs: {
             specific: "some specific property"
         }
     });
 
-    fluid.defaults("gpii.tests.pcp.attrsExpanderWrapperMock", {
+    fluid.defaults("gpii.tests.psp.attrsExpanderWrapperMock", {
         gradeNames: ["fluid.modelComponent"],
 
         mergePolicy: {
@@ -847,7 +847,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         components: {
             attrsExpander: {
-                type: "gpii.tests.pcp.attrsExpanderMock",
+                type: "gpii.tests.psp.attrsExpanderMock",
                 options: "{attrsExpanderWrapperMock}.options.widgetOptions"
             }
         }
@@ -855,8 +855,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
     $(document).ready(function () {
         fluid.test.runTests([
-            "gpii.tests.pcp.attrsExpanderTests",
-            "gpii.tests.pcp.settingsPanelTestsWrapper"
+            "gpii.tests.psp.attrsExpanderTests",
+            "gpii.tests.psp.settingsPanelTestsWrapper"
         ]);
     });
 })(fluid, jqUnit);

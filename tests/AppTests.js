@@ -17,7 +17,7 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.loadTestingSupport();
 var jqUnit = fluid.require("node-jqunit");
 
-require("../src/app.js");
+require("../src/main/app.js");
 fluid.registerNamespace("gpii.tests.app");
 
 jqUnit.module("GPII Application Tests");
@@ -58,21 +58,21 @@ jqUnit.test("Tray.getTrayTooltip", function () {
     );
 });
 
-jqUnit.test("Menu.getShowPCP", function () {
+jqUnit.test("Menu.getShowPSP", function () {
     jqUnit.expect(6);
 
-    var showPCPEvent = "onPCP",
-        showPCPLabel = "Open PSP",
-        showPCPObj = gpii.app.menu.getShowPCP(null, showPCPLabel);
+    var showPSPEvent = "onPSP",
+        showPSPLabel = "Open PSP",
+        showPSPObj = gpii.app.menu.getShowPSP(null, showPSPLabel);
 
-    jqUnit.assertTrue("Show PCP object exists when there is no user", showPCPObj);
-    jqUnit.assertEquals("Show PCP is bound to onClick when there is no user", showPCPEvent, showPCPObj.click);
-    jqUnit.assertEquals("Label is set in the show PCP object when there is no user", showPCPLabel, showPCPObj.label);
+    jqUnit.assertTrue("Show PSP object exists when there is no user", showPSPObj);
+    jqUnit.assertEquals("Show PSP is bound to onClick when there is no user", showPSPEvent, showPSPObj.click);
+    jqUnit.assertEquals("Label is set in the show PSP object when there is no user", showPSPLabel, showPSPObj.label);
 
-    showPCPObj = gpii.app.menu.getShowPCP("alice", showPCPLabel);
-    jqUnit.assertTrue("Show PCP object exists when there is user", showPCPObj);
-    jqUnit.assertEquals("Show PCP is bound to onClick when there is user", showPCPEvent, showPCPObj.click);
-    jqUnit.assertEquals("Label is set in the show PCP object when there is user", showPCPLabel, showPCPObj.label);
+    showPSPObj = gpii.app.menu.getShowPSP("alice", showPSPLabel);
+    jqUnit.assertTrue("Show PSP object exists when there is user", showPSPObj);
+    jqUnit.assertEquals("Show PSP is bound to onClick when there is user", showPSPEvent, showPSPObj.click);
+    jqUnit.assertEquals("Label is set in the show PSP object when there is user", showPSPLabel, showPSPObj.label);
 });
 
 jqUnit.test("Menu.getUserName", function () {

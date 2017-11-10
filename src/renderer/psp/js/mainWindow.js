@@ -14,7 +14,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
-    fluid.registerNamespace("gpii.pcp");
+    fluid.registerNamespace("gpii.psp");
 
     /**
      * A function which should be called whenever the total height of the document
@@ -28,7 +28,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param settingsList {jQuery} A jQuery object representing the container in
      * which the various widgets will have their containers inserted.
      */
-    gpii.pcp.onContentHeightChanged = function (mainWindow, container, content, settingsList) {
+    gpii.psp.onContentHeightChanged = function (mainWindow, container, content, settingsList) {
         var height = container.outerHeight(true) - content.height() + settingsList.height();
         mainWindow.events.onContentHeightChanged.fire(height);
     };
@@ -41,7 +41,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param splash {Object} The splash component
      * @param sets {Object[]} The current preference sets
      */
-    gpii.pcp.toggleSplashWindow = function (splash, sets) {
+    gpii.psp.toggleSplashWindow = function (splash, sets) {
         if (sets && sets.length > 0) {
             splash.hide();
         } else {
@@ -57,7 +57,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * theme definitions.
      * @param accentColor {String} The accent color used in the user's OS.
      */
-    gpii.pcp.updateTheme = function (theme, accentColor) {
+    gpii.psp.updateTheme = function (theme, accentColor) {
         var mainColor = "#" + accentColor.slice(0, 6),
             themeRules = ":root{ --main-color: " + mainColor + "; }";
         theme.text(themeRules);
@@ -67,7 +67,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * Responsible for detecting height changes in the element in which
      * the component's container is nested.
      */
-    fluid.defaults("gpii.pcp.heightChangeListener", {
+    fluid.defaults("gpii.psp.heightChangeListener", {
         gradeNames: ["fluid.viewComponent"],
         listeners: {
             "onCreate.initResizeListener": {
@@ -87,7 +87,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * TODO support redrawing of settings
      * currently only single update of available setting is supported
      */
-    fluid.defaults("gpii.pcp.mainWindow", {
+    fluid.defaults("gpii.psp.mainWindow", {
         gradeNames: ["fluid.viewComponent"],
         model: {
             preferences: {
@@ -106,19 +106,19 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
         components: {
             splash: {
-                type: "gpii.pcp.splash",
+                type: "gpii.psp.splash",
                 container: "{that}.container",
                 options: {
                     listeners: {
                         "{mainWindow}.events.onPreferencesUpdated": {
-                            funcName: "gpii.pcp.toggleSplashWindow",
+                            funcName: "gpii.psp.toggleSplashWindow",
                             args: ["{that}", "{mainWindow}.model.preferences.sets"]
                         }
                     }
                 }
             },
             header: {
-                type: "gpii.pcp.header",
+                type: "gpii.psp.header",
                 container: "{that}.dom.header",
                 options: {
                     model: {
@@ -132,12 +132,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         onActivePreferenceSetAltered: "{mainWindow}.events.onActivePreferenceSetAltered"
                     },
                     listeners: {
-                        "onPCPClose": "{mainWindow}.events.onPCPClose"
+                        "onPSPClose": "{mainWindow}.events.onPSPClose"
                     }
                 }
             },
             settingsPanel: {
-                type: "gpii.pcp.settingsPanel",
+                type: "gpii.psp.settingsPanel",
                 container: "{that}.dom.settingsList",
                 createOnEvent: "{mainWindow}.events.onPreferencesUpdated",
                 options: {
@@ -151,7 +151,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             },
             footer: {
-                type: "gpii.pcp.footer",
+                type: "gpii.psp.footer",
                 container: "{that}.dom.footer",
                 options: {
                     events: {
@@ -160,7 +160,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             },
             heightChangeListener: {
-                type: "gpii.pcp.heightChangeListener",
+                type: "gpii.psp.heightChangeListener",
                 container: "{that}.dom.heightChangeListener",
                 options: {
                     invokers: {
@@ -176,7 +176,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             "updatePreferences": {
                 changePath: "preferences",
                 value: "{arguments}.0",
-                source: "pcp.mainWindow"
+                source: "psp.mainWindow"
             },
             "updateSetting": {
                 // TODO just fire because... (redrawing)
@@ -187,11 +187,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 ]
             },
             "updateTheme": {
-                funcName: "gpii.pcp.updateTheme",
+                funcName: "gpii.psp.updateTheme",
                 args: ["{that}.dom.theme", "{arguments}.0"]
             },
             "onContentHeightChanged": {
-                funcName: "gpii.pcp.onContentHeightChanged",
+                funcName: "gpii.psp.onContentHeightChanged",
                 args: ["{that}", "{that}.container", "{that}.dom.content", "{that}.dom.settingsList"]
             }
         },
@@ -201,7 +201,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             onSettingAltered: null, // the setting was altered by the user
             onSettingUpdated: null,  // setting update is present from the API
 
-            onPCPClose: null,
+            onPSPClose: null,
             onKeyOut: null,
             onActivePreferenceSetAltered: null,
             onContentHeightChanged: null

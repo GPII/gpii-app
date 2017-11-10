@@ -16,7 +16,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell;
 
-    fluid.defaults("gpii.pcp.footer", {
+    fluid.defaults("gpii.psp.footer", {
         gradeNames: ["fluid.viewComponent"],
         selectors: {
             keyOutBtn: ".flc-keyOutBtn",
@@ -27,7 +27,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
         components: {
             keyOutBtn: {
-                type: "gpii.pcp.widgets.button",
+                type: "gpii.psp.widgets.button",
                 container: "{that}.dom.keyOutBtn",
                 options: {
                     label: "{footer}.options.labels.keyOut",
@@ -37,12 +37,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             },
             helpBtn: {
-                type: "gpii.pcp.widgets.button",
+                type: "gpii.psp.widgets.button",
                 container: "{that}.dom.helpBtn",
                 options: {
                     label: "{footer}.options.labels.help",
                     invokers: {
-                        "onClick": "gpii.pcp.openUrl({footer}.options.urls.help)"
+                        "onClick": "gpii.psp.openUrl({footer}.options.urls.help)"
                     }
                 }
             }
@@ -61,7 +61,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * OS (or set by the user).
      * @param url {String} The url to open externally.
      */
-    gpii.pcp.openUrl = function (url) {
+    gpii.psp.openUrl = function (url) {
         shell.openExternal(url);
     };
 })(fluid);
