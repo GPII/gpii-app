@@ -54,7 +54,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
         styles: {
             osRestartIcon: "fl-icon-osRestart",
-            applicationRestartIcon: "fl-icon-appRestart"
+            applicationRestartIcon: "fl-icon-appRestart",
+            valueChanged: "fl-icon-filled"
         },
         model: {
             path: null,
@@ -84,8 +85,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         modelListeners: {
             value: [{
                 funcName: "gpii.psp.settingPresenter.showRestartIcon",
-                args: ["{that}.model.dynamicity", "{that}.dom.restartIcon", "{that}.options.styles"],
-                excludeSource: "init"
+                args: ["{change}", "{that}.model.dynamicity", "{that}.dom.restartIcon", "{that}.options.styles"]
             }, {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model.path", "{change}.value"],
@@ -139,18 +139,22 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     /**
      * A method responsible for showing and styling the restart icon when the user
      * changes a setting which is not dynamic.
+     * @param change {Object} An object containing the previous and the new value for
+     * the corresponding setting.
      * @param dynamicity {String} The type of dynamicity for the current setting. Can
      * be "none", "application" or "os".
      * @param restartIcon {jQuery} A jQuery object representing the restart icon.
      * @param styles {Object} An object containing classes to be applied to the restart
      * icon depending on the setting's dynamicity.
      */
-    gpii.psp.settingPresenter.showRestartIcon = function (dynamicity, restartIcon, styles) {
+    gpii.psp.settingPresenter.showRestartIcon = function (change, dynamicity, restartIcon, styles) {
         if (dynamicity === "application" || dynamicity === "os") {
             var iconClass = dynamicity === "application" ? styles.applicationRestartIcon : styles.osRestartIcon;
             restartIcon.addClass(iconClass);
-            // cannot use $.show() because it will make the display "inline"
-            restartIcon.css("display", "inline-block");
+            if (fluid.isValue(change.oldValue)) {
+                restartIcon.addClass(styles.valueChanged);
+            }
+            restartIcon.show();
         }
     };
 
