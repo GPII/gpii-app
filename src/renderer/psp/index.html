@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="css/switch.css">
         <link rel="stylesheet" href="css/textfield.css">
         <link rel="stylesheet" href="css/icons.css">
+        <link rel="stylesheet" href="css/restartWarning.css">
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/splash.css">
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
@@ -18,6 +19,7 @@
         <script type="text/javascript" src="js/settingsPanel.js"></script>
         <script type="text/javascript" src="js/splash.js"></script>
         <script type="text/javascript" src="js/header.js"></script>
+        <script type="text/javascript" src="js/restartWarning.js"></script>
         <script type="text/javascript" src="js/footer.js"></script>
         <script type="text/javascript" src="js/clientChannel.js"></script>
         <script type="text/javascript" src="js/mainWindow.js"></script>
@@ -56,14 +58,32 @@
                 </div>
             </div>
 
+            <div id="flc-restartWarning">
+                <div>
+                    <span class="fl-icon fl-icon-appRestart"></span>
+                    <div class="flc-restartText fl-restartText"></div>
+                </div>
+                <div class="fl-restartControls">
+                    <button class="flc-restartCancel btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                    <button class="flc-restartNow btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                    <button class="flc-restartLater btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                </div>
+            </div>
+
             <div id="flc-footer" class="btn-group">
                 <button class="flc-keyOutBtn btn fl-btn">
                     <span class="fl-btnIcon fl-icon fl-icon-logOut"></span>
-                    <span class="fl-btnLabel"></span>
+                    <span class="flc-btnLabel fl-btnLabel"></span>
                 </button>
                 <button class="flc-helpBtn btn fl-btn">
                     <span class="fl-btnIcon fl-icon fl-icon-help"></span>
-                    <span class="fl-btnLabel"></span>
+                    <span class="flc-btnLabel fl-btnLabel"></span>
                 </button>
             </div>
         </div>

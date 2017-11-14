@@ -99,7 +99,7 @@ body {
 }
 
 #flc-settingsList > *[class^="flc-settingListRow"]:last-child {
-    margin-bottom: 0.25em;
+    margin-bottom: 0.75em;
 }
 
 #flc-settingsList .flc-setting {
@@ -148,6 +148,10 @@ body {
 
 /* Footer styles */
 
+#flc-footer {
+    margin-top: 0;
+}
+
 #flc-footer .flc-helpBtn {
     float: right;
     margin-right: 0;
@@ -164,8 +168,4 @@ body.theme-alt {
 
 .theme-alt #flc-header hr {
     border-color: #797979;
-}
-
-.theme-alt #flc-footer button {
-    background-color: var(--main-color);
 }

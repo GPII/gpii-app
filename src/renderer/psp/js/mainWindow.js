@@ -102,7 +102,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             content: "#flc-content",
             footer: "#flc-footer",
             settingsList: "#flc-settingsList",
-            heightChangeListener: "#flc-heightChangeListener"
+            heightChangeListener: "#flc-heightChangeListener",
+            restartWarning: "#flc-restartWarning"
         },
         components: {
             splash: {
@@ -149,6 +150,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         onSettingUpdated: "{mainWindow}.events.onSettingUpdated"
                     }
                 }
+            },
+            restartWarning: {
+                type: "gpii.psp.restartWarning",
+                container: "{that}.dom.restartWarning"
             },
             footer: {
                 type: "gpii.psp.footer",
