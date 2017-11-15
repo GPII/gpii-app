@@ -153,7 +153,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             },
             restartWarning: {
                 type: "gpii.psp.restartWarning",
-                container: "{that}.dom.restartWarning"
+                container: "{that}.dom.restartWarning",
+                options: {
+                    model: {
+                        settings: "{mainWindow}.model.preferences.settings"
+                    },
+                    events: {
+                        onSettingAltered: "{mainWindow}.events.onSettingAltered"
+                    }
+                }
             },
             footer: {
                 type: "gpii.psp.footer",

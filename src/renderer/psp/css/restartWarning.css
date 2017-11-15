@@ -1,5 +1,6 @@
 #flc-restartWarning {
     display: none;
+    margin-top: 10px;
 }
 
 #flc-restartWarning .fl-icon-appRestart {

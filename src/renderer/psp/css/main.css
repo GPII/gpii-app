@@ -99,7 +99,7 @@ body {
 }
 
 #flc-settingsList > *[class^="flc-settingListRow"]:last-child {
-    margin-bottom: 0.75em;
+    margin-bottom: 0.25em;
 }
 
 #flc-settingsList .flc-setting {
@@ -142,8 +142,8 @@ body {
     margin-top: 6px;
 }
 
-#flc-settingsList .flc-setting .fl-settingLabel .fl-icon:not(:first-child) {
-    margin-right: 6px;
+#flc-settingsList .flc-setting .fl-settingLabel .fl-icon:first-child {
+    margin-left: 6px;
 }
 
 /* Footer styles */
