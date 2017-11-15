@@ -11,6 +11,7 @@ You may obtain a copy of the License at
 https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
+require("./utils.js");
 
 var fluid = require("infusion");
 var ws    = require("ws");
@@ -34,7 +35,8 @@ fluid.defaults("gpii.app.gpiiConnector", {
 
     events: {
         onPreferencesUpdated: null,
-        onSettingUpdated: null
+        onSettingUpdated: null,
+        onSnapsetNameUpdated: null
     },
 
     listeners: {
@@ -111,6 +113,9 @@ gpii.app.gpiiConnector.registerPSPListener = function (socket, gpiiConnector) {
             /*
              * Preferences change update has been received
              */
+            var snapsetName = gpii.app.extractSnapsetName(data);
+            gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
+
             preferences = gpii.app.extractPreferencesData(data);
             gpiiConnector.events.onPreferencesUpdated.fire(preferences);
         } else if (operation === "ADD") {
@@ -169,8 +174,9 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
 
 /**
  * Extracts data for the user's preference sets (including the active preference
- * set and the applicable settings) from the message received when the user keys in.
- * @param message {Object} The message sent when the user keys is (a JSON
+ * set and the applicable settings) from the message received when the user keys in
+ * or out.
+ * @param message {Object} The message sent when the user keys is or out (a JSON
  * object).
  * @return {Object} An object containing all preference sets, the active preference
  * set and the corresponding settings.
@@ -201,4 +207,17 @@ gpii.app.extractPreferencesData = function (message) {
         activeSet: activeSet,
         settings: settings
     };
+};
+
+/**
+ * Extracts the user-friendly snapset name form the message received when the user
+ * keys in or out.
+ * @param message {Object} The message sent when the user keys is or out (a JSON
+ * object).
+ * @return {String} The user-friendly snapset name.
+ */
+gpii.app.extractSnapsetName = function (message) {
+    var value = message.value || {};
+    // TODO: Change this when the API supports user-friendly snapset names.
+    return gpii.app.capitalize(value.userToken);
 };

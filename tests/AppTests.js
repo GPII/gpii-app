@@ -75,15 +75,6 @@ jqUnit.test("Menu.getShowPSP", function () {
     jqUnit.assertEquals("Label is set in the show PSP object when there is user", showPSPLabel, showPSPObj.label);
 });
 
-jqUnit.test("Menu.getUserName", function () {
-    jqUnit.expect(4);
-
-    jqUnit.assertEquals("Generated name is empty when no name provided.", "", gpii.app.menu.getUserName());
-    jqUnit.assertEquals("Generated name is empty when no name provided.", "", gpii.app.menu.getUserName(""));
-    jqUnit.assertEquals("Name should be capitilized.", "Alice", gpii.app.menu.getUserName("alice"));
-    jqUnit.assertEquals("No change in name when token is numeric.", "1234", gpii.app.menu.getUserName("1234"));
-});
-
 gpii.tests.app.testPrefSetMenuItem = function (item, label, checked) {
     var prefSetMenuItemEvent = "onActivePrefSetUpdate";
     jqUnit.assertEquals("Pref set menu item has proper click handler", prefSetMenuItemEvent, item.click);
@@ -109,21 +100,21 @@ jqUnit.test("Menu.getPreferenceSetsMenuItems", function () {
     gpii.tests.app.testPrefSetMenuItem(prefSetList[2], keyedInPrefSets.sets[1].name, true);
 });
 
-jqUnit.test("Menu.getKeyedInUser", function () {
+jqUnit.test("Menu.getKeyedInSnapset", function () {
     jqUnit.expect(4);
 
     var token = "alice";
-    var name = "Alice";
-    var keyedInStrTemp = "Keyed in with %userTokenName";    // string template
+    var snapsetName = "Snapset_1";
+    var keyedInStrTemp = "Keyed in with %snapsetName";    // string template
 
-    var keyedInUserObject = gpii.app.menu.getKeyedInUser(null, null, keyedInStrTemp);
-    jqUnit.assertFalse("Keyed in user object is not created when no token is provided.", keyedInUserObject);
+    var keyedInObject = gpii.app.menu.getKeyedInSnapset(null, null, keyedInStrTemp);
+    jqUnit.assertFalse("Keyed in user object is not created when no token is provided.", keyedInObject);
 
-    keyedInUserObject = gpii.app.menu.getKeyedInUser(token, name, keyedInStrTemp);
-    jqUnit.assertTrue("Keyed in user object is created when there is a token", keyedInUserObject);
-    jqUnit.assertFalse("Keyed in user object is disabled", keyedInUserObject.enabled);
+    keyedInObject = gpii.app.menu.getKeyedInSnapset(token, snapsetName, keyedInStrTemp);
+    jqUnit.assertTrue("Keyed in user object is created when there is a token", keyedInObject);
+    jqUnit.assertFalse("Keyed in user object is disabled", keyedInObject.enabled);
     jqUnit.assertEquals("Label is set in the keyed in user object",
-        fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}), keyedInUserObject.label);
+        fluid.stringTemplate(keyedInStrTemp, {"snapsetName": snapsetName}), keyedInObject.label);
 });
 
 jqUnit.test("Menu.getKeyOut", function () {

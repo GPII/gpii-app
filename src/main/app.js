@@ -48,6 +48,7 @@ fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
         keyedInUserToken: null,
+        snapsetName: null,
         showDialog: false,
         preferences: {
             sets: [],
@@ -71,10 +72,8 @@ fluid.defaults("gpii.app", {
             priority: "after:psp",
             options: {
                 listeners: {
-                    "onPreferencesUpdated.updateSets": {
-                        listener: "{app}.updatePreferences",
-                        args: "{arguments}.0"
-                    }
+                    "onPreferencesUpdated.updateSets": "{app}.updatePreferences",
+                    "onSnapsetNameUpdated.updateSnapsetName": "{app}.updateSnapsetName"
                 }
             }
         },
@@ -178,6 +177,10 @@ fluid.defaults("gpii.app", {
         },
         updatePreferences: {
             changePath: "preferences",
+            value: "{arguments}.0"
+        },
+        updateSnapsetName: {
+            changePath: "snapsetName",
             value: "{arguments}.0"
         },
         keyIn: {
