@@ -49,7 +49,6 @@ gpii.tests.app.testDefToCaseHolder = function (configurationName, testDefIn) {
     // as well as the server
     // sequence.unshift.apply(sequence, kettle.test.startServerSequence);
     sequence.unshift.apply(sequence, gpii.tests.app.startSequence);
-    sequence.push.apply(sequence, kettle.test.stopServerSequence);
     testDef.modules = [{
         name: configurationName + " tests",
         tests: [{
@@ -91,6 +90,6 @@ gpii.tests.app.bootstrapServer([
      *  It appears to be a bug in the `node-jqunit` and should be uncommented
      *  once the problem is removed
      */
-//    fluid.copy(gpii.tests.app.testDefs),
+    fluid.copy(gpii.tests.app.testDefs),
     fluid.copy(gpii.tests.dev.testDefs)
 ]);

@@ -83,6 +83,12 @@ fluid.defaults("gpii.app.tray", {
             args: "{that}.model.tooltip"
         }
     },
+    listeners: {
+        "onDestroy.cleanupElectron": {
+            this: "{that}.tray",
+            method: "destroy"
+        }
+    },
     labels: {
         defaultTooltip: "(No one keyed in)"
     }

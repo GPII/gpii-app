@@ -302,7 +302,5 @@ gpii.tests.dev.testDefs = {
             "{that}.app.model.preferences"
         ],
         listener: "gpii.tests.dev.testActiveSetChanged"
-    }
-        // tooltip
-    ]
+    }]
 };

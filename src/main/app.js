@@ -40,6 +40,8 @@ gpii.app.electronAppListener = function () {
     gpii.app.appReady.resolve(true);
 };
 require("electron").app.on("ready", gpii.app.electronAppListener);
+// Override default behaviour - don't exit process once all windows are closed
+require("electron").app.on("window-all-closed", fluid.identity);
 
 /*
  ** Component to manage the app.
@@ -164,6 +166,10 @@ fluid.defaults("gpii.app", {
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
+        },
+
+        "onDestroy.beforeExit": {
+            listener: "{that}.keyOut"
         }
     },
     invokers: {
