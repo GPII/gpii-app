@@ -22,6 +22,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             restartText: ""
         },
         modelRelay: {
+            restartIcon: {
+                target: "restartIcon",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.psp.restartWarning.getRestartIcon",
+                    args: ["{that}.model.solutionNames", "{that}.options.styles"]
+                }
+            },
             restartText: {
                 target: "restartText",
                 singleTransform: {
@@ -40,6 +48,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 funcName: "gpii.psp.restartWarning.toggleVisibility",
                 args: ["{that}.container", "{change}.value"]
             },
+            restartIcon: {
+                funcName: "gpii.psp.restartWarning.updateIcon",
+                args: ["{that}.dom.restartIcon", "{change}.value", "{that}.options.styles"]
+            },
             restartText: {
                 this: "{that}.dom.restartText",
                 method: "text",
@@ -47,6 +59,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         selectors: {
+            restartIcon: ".flc-restartIcon",
             restartText: ".flc-restartText",
             cancel: ".flc-restartCancel",
             restartNow: ".flc-restartNow",
@@ -93,6 +106,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 args: ["{that}", "{that}.model.settings", "{arguments}.0"]
             }
         },
+        styles: {
+            osRestartIcon: "fl-icon-osRestart",
+            applicationRestartIcon: "fl-icon-appRestart"
+        },
         labels: {
             restartText: "To apply your changes, the following applications need to restart: ",
             cancel: "Cancel\n(Undo Changes)",
@@ -105,6 +122,19 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         if (settings.length === 0) {
             restartWarning.applier.change("solutionNames", []);
         }
+    };
+
+    gpii.psp.restartWarning.getRestartIcon = function (solutionNames, styles) {
+        if (solutionNames[0] === "Windows") {
+            return styles.osRestartIcon;
+        }
+        return styles.applicationRestartIcon;
+    };
+
+    gpii.psp.restartWarning.updateIcon = function (restartIcon, restartIconClass, styles) {
+        restartIcon.removeClass(styles.applicationRestartIcon)
+            .removeClass(styles.applicationRestartIcon)
+            .addClass(restartIconClass);
     };
 
     gpii.psp.restartWarning.alterSolutionNames = function (restartWarning, settings, path) {
