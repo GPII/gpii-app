@@ -25,6 +25,7 @@ fluid.defaults("gpii.app.menuInApp", {
     gradeNames: "gpii.app.menu",
     model: {
         keyedInUserToken: "{app}.model.keyedInUserToken",
+        snapsetName: "{app}.model.snapsetName",
         preferences: {
             sets: "{app}.model.preferences.sets",
             activeSet: "{app}.model.preferences.activeSet"
@@ -190,33 +191,25 @@ fluid.defaults("gpii.app.menu", {
     model: {
         // Expected as configuration
         //keyedInUserToken: null,
+        //snapsetName: null,
         //preferences: {
         //    sets: null,
         //    activeSet: null
         //},
         // locally updated
         preferenceSetsMenuItems: [],  // Updated on `preferences` changed.
-        keyedInUser: null,            // Must be updated when keyedInUserToken changes.
+        keyedInSnapset: null,        // Must be updated when keyedInUserToken changes.
         keyOut: null,                 // May or may not be in the menu, must be updated when keyedInUserToken changes.
         menuTemplate: []              // This is updated on change of keyedInUserToken.
     },
     modelRelay: {
-        "userName": {
-            target: "userName",
+        "keyedInSnapset": {
+            target: "keyedInSnapset",
             singleTransform: {
                 type: "fluid.transforms.free",
-                func: "gpii.app.menu.getUserName",
-                args: ["{that}.model.keyedInUserToken"]
+                func: "gpii.app.menu.getKeyedInSnapset",
+                args: ["{that}.model.keyedInUserToken", "{that}.model.snapsetName", "{that}.options.menuLabels.keyedIn"]
             }
-        },
-        "keyedInUser": {
-            target: "keyedInUser",
-            singleTransform: {
-                type: "fluid.transforms.free",
-                func: "gpii.app.menu.getKeyedInUser",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.userName", "{that}.options.menuLabels.keyedIn"]
-            },
-            priority: "after:userName"
         },
         "keyOut": {
             target: "keyOut",
@@ -224,8 +217,7 @@ fluid.defaults("gpii.app.menu", {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyOut",
                 args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.keyOut", "{that}.options.menuLabels.notKeyedIn"]
-            },
-            priority: "after:userName"
+            }
         },
         "showPSP": {
             target: "showPSP",
@@ -248,14 +240,14 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.showPSP", "{that}.model.keyedInUser", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
+                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
             },
             priority: "last"
         }
     },
     menuLabels: {
         psp: "Open PSP",
-        keyedIn: "Keyed in with %userTokenName",    // string template
+        keyedIn: "Keyed in with %snapsetName",    // string template
         keyOut: "Key-out of GPII",
         notKeyedIn: "(No one keyed in)",
 
@@ -275,17 +267,6 @@ fluid.defaults("gpii.app.menu", {
 });
 
 /**
-  * Generates a user name to be displayed based on the user token.
-  * @param userToken {String} A user token.
-  */
-gpii.app.menu.getUserName = function (userToken) {
-    // TODO: Name should actually be stored by the GPII along with the user token.
-    var name = userToken ? userToken.charAt(0).toUpperCase() + userToken.substr(1) : "";
-    return name;
-};
-
-
-/**
 *  Object representing options for a `Electron` `ContextMenu` item.
  * @typedef {Object} ElectronMenuItem
  * @property {String} label The label that will be visualized in the menu
@@ -301,16 +282,16 @@ gpii.app.menu.getUserName = function (userToken) {
 /**
   * Generates an object that represents the menu item for keying in.
   * @param keyedInUserToken {String} The user token that is currently keyed in.
-  * @param name {String} The name of the user who is keyed in.
+  * @param name {String} The user-friendly name of the keyed in snapset.
   * @param keyedInStrTemp {String} The string template for the label when a user is keyed in.
   * @return {ElectronMenuItem}
   */
-gpii.app.menu.getKeyedInUser = function (keyedInUserToken, name, keyedInStrTemp) {
+gpii.app.menu.getKeyedInSnapset = function (keyedInUserToken, snapsetName, keyedInStrTemp) {
     var keyedInUser = null;
 
     if (keyedInUserToken) {
         keyedInUser = {
-            label: fluid.stringTemplate(keyedInStrTemp, {"userTokenName": name}),
+            label: fluid.stringTemplate(keyedInStrTemp, {"snapsetName": snapsetName}),
             enabled: false
         };
     }

@@ -40,6 +40,8 @@ gpii.app.electronAppListener = function () {
     gpii.app.appReady.resolve(true);
 };
 require("electron").app.on("ready", gpii.app.electronAppListener);
+// Override default behaviour - don't exit process once all windows are closed
+require("electron").app.on("window-all-closed", fluid.identity);
 
 /*
  ** Component to manage the app.
@@ -48,6 +50,7 @@ fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
         keyedInUserToken: null,
+        snapsetName: null,
         showDialog: false,
         preferences: {
             sets: [],
@@ -71,10 +74,8 @@ fluid.defaults("gpii.app", {
             priority: "after:psp",
             options: {
                 listeners: {
-                    "onPreferencesUpdated.updateSets": {
-                        listener: "{app}.updatePreferences",
-                        args: "{arguments}.0"
-                    }
+                    "onPreferencesUpdated.updateSets": "{app}.updatePreferences",
+                    "onSnapsetNameUpdated.updateSnapsetName": "{app}.updateSnapsetName"
                 }
             }
         },
@@ -165,6 +166,10 @@ fluid.defaults("gpii.app", {
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
+        },
+
+        "onDestroy.beforeExit": {
+            listener: "{that}.keyOut"
         }
     },
     invokers: {
@@ -178,6 +183,10 @@ fluid.defaults("gpii.app", {
         },
         updatePreferences: {
             changePath: "preferences",
+            value: "{arguments}.0"
+        },
+        updateSnapsetName: {
+            changePath: "snapsetName",
             value: "{arguments}.0"
         },
         keyIn: {

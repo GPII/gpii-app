@@ -67,6 +67,11 @@ fluid.defaults("gpii.app.psp", {
         "onCreate.initPSPWindowListeners": {
             listener: "gpii.app.psp.initPSPWindowListeners",
             args: ["{that}"]
+        },
+
+        "onDestroy.cleanupElectron": {
+            this: "{that}.pspWindow",
+            method: "destroy"
         }
     },
     invokers: {

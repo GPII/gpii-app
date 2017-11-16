@@ -59,7 +59,11 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     listeners: {
-        "onDestroy.clearTimers": "gpii.app.dialog.clearTimers({that})"
+        "onDestroy.clearTimers": "gpii.app.dialog.clearTimers({that})",
+        "onDestroy.cleanupElectron": {
+            this: "{that}.dialog",
+            method: "destroy"
+        }
     },
     invokers: {
         getWindowPosition: {
