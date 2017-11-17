@@ -40,10 +40,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param value {Any} The new, updated value for the setting. Can be
      * of different type depending on the setting.
      */
-    gpii.psp.clientChannel.alterSetting = function (path, value) {
+    gpii.psp.clientChannel.alterSetting = function (path, value, oldValue, liveness, solutionName) {
         ipcRenderer.send("onSettingAltered", {
             path: path,
-            value: value
+            value: value,
+            oldValue: oldValue,
+            liveness: liveness,
+            solutionName: solutionName
         });
     };
 
@@ -85,6 +88,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         ipcRenderer.on("onAccentColorChanged", function (event, accentColor) {
             clientChannel.events.onAccentColorChanged.fire(accentColor);
         });
+
+        ipcRenderer.on("onRestartRequired", function (event, solutionNames) {
+            clientChannel.events.onRestartRequired.fire(solutionNames);
+        });
     };
 
     /**
@@ -96,7 +103,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         events: {
             onPreferencesUpdated: null,
             onSettingUpdated: null,
-            onAccentColorChanged: null
+            onAccentColorChanged: null,
+            onRestartRequired: null
         },
         listeners: {
             "onCreate.initClientChannel": {

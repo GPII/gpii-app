@@ -17,7 +17,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     fluid.defaults("gpii.psp.restartWarning", {
         gradeNames: ["fluid.viewComponent"],
         model: {
-            settings: [],
             solutionNames: [],
             restartText: ""
         },
@@ -40,10 +39,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         modelListeners: {
-            settings: {
-                funcName: "gpii.psp.restartWarning.onSettingsChanged",
-                args: ["{that}", "{change}.value"]
-            },
             solutionNames: {
                 funcName: "gpii.psp.restartWarning.toggleVisibility",
                 args: ["{that}.container", "{change}.value"]
@@ -100,12 +95,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         events: {
             onSettingAltered: null
         },
-        listeners: {
-            onSettingAltered: {
-                funcName: "gpii.psp.restartWarning.alterSolutionNames",
-                args: ["{that}", "{that}.model.settings", "{arguments}.0"]
-            }
-        },
         styles: {
             osRestartIcon: "fl-icon-osRestart",
             applicationRestartIcon: "fl-icon-appRestart"
@@ -118,12 +107,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    gpii.psp.restartWarning.onSettingsChanged = function (restartWarning, settings) {
-        if (settings.length === 0) {
-            restartWarning.applier.change("solutionNames", []);
-        }
-    };
-
     gpii.psp.restartWarning.getRestartIcon = function (solutionNames, styles) {
         if (solutionNames[0] === "Windows") {
             return styles.osRestartIcon;
@@ -135,28 +118,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         restartIcon.removeClass(styles.applicationRestartIcon)
             .removeClass(styles.applicationRestartIcon)
             .addClass(restartIconClass);
-    };
-
-    gpii.psp.restartWarning.alterSolutionNames = function (restartWarning, settings, path) {
-        var solutionNames = restartWarning.model.solutionNames,
-            setting = fluid.find_if(settings, function (setting) {
-                return setting.path === path;
-            }),
-            dynamicity = setting.dynamicity,
-            solutionName = setting.solutionName;
-
-        if (!fluid.isValue(dynamicity) || dynamicity === "none" || solutionNames[0] === "Windows") {
-            return;
-        }
-
-        if (setting.dynamicity === "os") {
-            solutionNames = ["Windows"];
-        } else if (fluid.isValue(solutionName) && solutionNames.indexOf(solutionName) < 0) {
-            solutionNames = fluid.copy(solutionNames);
-            solutionNames.push(solutionName);
-        }
-
-        restartWarning.applier.change("solutionNames", solutionNames);
     };
 
     gpii.psp.restartWarning.getRestartText = function (prefix, solutionNames) {

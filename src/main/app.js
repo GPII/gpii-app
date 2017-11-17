@@ -18,6 +18,7 @@ var path    = require("path");
 var request = require("request");
 
 
+require("./settingsBroker.js");
 require("./gpiiConnector.js");
 require("./menu.js"); // menuInApp, menuInAppDev
 require("./tray.js");
@@ -86,7 +87,18 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-
+        settingsBroker: {
+            type: "gpii.app.settingsBroker",
+            createOnEvent: "onPrerequisitesReady",
+            priority: "after:gpiiConnector",
+            options: {
+                listeners: {
+                    "{psp}.events.onSettingAltered": {
+                        listener: "{that}.enqueue"
+                    }
+                }
+            }
+        },
         /*
          * A helper component used as mediator for handling communication
          * between the PSP and gpiiConnector components.
@@ -94,13 +106,18 @@ fluid.defaults("gpii.app", {
         channelMediator: {
             type: "fluid.component",
             createOnEvent: "onPrerequisitesReady",
-            priority: "after:gpiiConnector",
+            priority: "after:settingsBroker",
             options: {
                 listeners: {
-                    "{psp}.events.onSettingAltered": {
+                    "{settingsBroker}.events.onSettingApplied": {
                         listener: "{gpiiConnector}.updateSetting",
                         args: ["{arguments}.0"]
                     },
+                    "{settingsBroker}.events.onRestartRequired": {
+                        listener: "{psp}.notifyPSPWindow",
+                        args: ["onRestartRequired", "{arguments}.0"]
+                    },
+
                     "{psp}.events.onActivePreferenceSetAltered": {
                         listener: "{gpiiConnector}.updateActivePrefSet",
                         args: ["{arguments}.0"]

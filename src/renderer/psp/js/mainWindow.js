@@ -94,7 +94,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 sets: [],
                 activeSet: null,
                 settings: []
-            }
+            },
+            solutionNames: []
         },
         selectors: {
             theme: "#flc-theme",
@@ -156,10 +157,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 container: "{that}.dom.restartWarning",
                 options: {
                     model: {
-                        settings: "{mainWindow}.model.preferences.settings"
-                    },
-                    events: {
-                        onSettingAltered: "{mainWindow}.events.onSettingAltered"
+                        solutionNames: "{mainWindow}.model.solutionNames"
                     }
                 }
             },
@@ -206,6 +204,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             "onContentHeightChanged": {
                 funcName: "gpii.psp.onContentHeightChanged",
                 args: ["{that}", "{that}.container", "{that}.dom.content", "{that}.dom.settingsList"]
+            },
+            "updateSolutionNames": {
+                changePath: "solutionNames",
+                value: "{arguments}.0"
             }
         },
         events: {

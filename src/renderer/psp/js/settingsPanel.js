@@ -62,7 +62,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             icon: null,
             solutionName: null,
             value: null,
-            schema: null
+            schema: null,
+            liveness: null, // "live", "liveRestart", "manualRestart", "OSRestart"
+            memory: null
         },
         widgetConfig: {
             widgetOptions: null,
@@ -85,10 +87,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         modelListeners: {
             value: [{
                 funcName: "gpii.psp.settingPresenter.showRestartIcon",
-                args: ["{change}", "{that}.model.dynamicity", "{that}.dom.restartIcon", "{that}.options.styles"]
+                args: ["{change}", "{that}.model.liveness", "{that}.dom.restartIcon", "{that}.options.styles"]
             }, {
                 funcName: "{that}.events.onSettingAltered.fire",
-                args: ["{that}.model.path", "{change}.value"],
+                args: ["{that}.model.path", "{change}.value", "{change}.oldValue", "{that}.model.liveness", "{that}.model.solutionName"],
                 excludeSource: ["init", "psp.mainWindow"]
             }]
         },
@@ -115,7 +117,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             },
             "onCreate.setMemoryIcon": {
                 funcName: "gpii.psp.settingPresenter.showMemoryIcon",
-                args: ["{that}.model.isPersisted", "{that}.dom.memoryIcon"]
+                args: ["{that}.model.memory", "{that}.dom.memoryIcon"]
             },
             // Update value locally in order for the corresponding
             //   DOM elements to be notifier, and thus updated
@@ -141,15 +143,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * changes a setting which is not dynamic.
      * @param change {Object} An object containing the previous and the new value for
      * the corresponding setting.
-     * @param dynamicity {String} The type of dynamicity for the current setting. Can
+     * @param liveness {String} The type of liveness for the current setting. Can
      * be "none", "application" or "os".
      * @param restartIcon {jQuery} A jQuery object representing the restart icon.
      * @param styles {Object} An object containing classes to be applied to the restart
-     * icon depending on the setting's dynamicity.
+     * icon depending on the setting's liveness.
      */
-    gpii.psp.settingPresenter.showRestartIcon = function (change, dynamicity, restartIcon, styles) {
-        if (dynamicity === "application" || dynamicity === "os") {
-            var iconClass = dynamicity === "application" ? styles.applicationRestartIcon : styles.osRestartIcon;
+    gpii.psp.settingPresenter.showRestartIcon = function (change, liveness, restartIcon, styles) {
+        if (liveness === "manualRestart" || liveness === "OSRestart") {
+            var iconClass = liveness === "manualRestart" ? styles.applicationRestartIcon : styles.osRestartIcon;
             restartIcon.addClass(iconClass);
             if (fluid.isValue(change.oldValue)) {
                 restartIcon.addClass(styles.valueChanged);
@@ -161,11 +163,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     /**
      * A method responsible for showing a memory icon if the setting will be persisted
      * after a user has changed it.
-     * @param isPersisted {Boolean} Whether the current setting will be persisted or not.
+     * @param memory {Boolean} Whether the current setting will be memorized or not.
      * @param memoryIcon {jQuery} A jQuery object representing the memory icon.
      */
-    gpii.psp.settingPresenter.showMemoryIcon = function (isPersisted, memoryIcon) {
-        if (isPersisted) {
+    gpii.psp.settingPresenter.showMemoryIcon = function (memory, memoryIcon) {
+        if (memory) {
             memoryIcon.show();
         }
     };

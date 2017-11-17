@@ -48,7 +48,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         value: true,
 
         icon: "../../../icons/gear-cloud-black.png",
-        isPersisted: true,
+        memory: true,
 
         schema: {
             type: "boolean",
@@ -62,7 +62,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         value: 1,
 
         icon: "../../../icons/gear-cloud-black.png",
-        isPersisted: true,
+        memory: true,
 
         schema: {
             type: "number",

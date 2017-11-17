@@ -195,8 +195,8 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
 
         // XXX hardcoded as they're not currently supported by the API (pcpChannel)
         icon: "../../icons/gear-cloud-white.png",
-        dynamicity: "none", // "none", "application" or "os"
-        isPersisted: false
+        liveness: "manualRestart",
+        memory: false
     };
 };
 
