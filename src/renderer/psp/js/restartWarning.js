@@ -173,4 +173,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             container.show();
         }
     };
+
+    var ipcRenderer = require("electron").ipcRenderer;
+
+    ipcRenderer.on("onSolutionsUpdated", function (event, data) {
+        console.log("Some data came by: ", data);
+    });
 })(fluid);

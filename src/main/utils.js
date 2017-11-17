@@ -56,3 +56,16 @@ app.capitalize = function (text) {
         return text.charAt(0).toUpperCase() + text.slice(1);
     }
 };
+
+/**
+ * Sends a message to the given window
+ *
+ * @param window {Object} An Electron `BrowserWindow` object
+ * @param messageChannel {String} The channel to which the message to be sent
+ * @param message {String}
+ */
+app.notifyWindow = function (window, messageChannel, message) {
+    if (window) {
+        window.webContents.send(messageChannel, message);
+    }
+};

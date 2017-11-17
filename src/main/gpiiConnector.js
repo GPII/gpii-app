@@ -36,7 +36,9 @@ fluid.defaults("gpii.app.gpiiConnector", {
     events: {
         onPreferencesUpdated: null,
         onSettingUpdated: null,
-        onSnapsetNameUpdated: null
+        onSnapsetNameUpdated: null,
+
+        onRestartRequired: null
     },
 
     listeners: {
@@ -55,10 +57,15 @@ fluid.defaults("gpii.app.gpiiConnector", {
         },
         updateSetting: {
             funcName: "gpii.app.gpiiConnector.updateSetting",
-            args: ["{that}.socket", "{arguments}.0"]
+            args: ["{that}.socket", "{arguments}.0", "{that}"]
         },
         updateActivePrefSet: {
             funcName: "gpii.app.gpiiConnector.updateActivePrefSet",
+            args: ["{that}.socket", "{arguments}.0"]
+        },
+
+        undoSettingChanges: {
+            funcName: "gpii.app.gpiiConnector.undoSettingChanges",
             args: ["{that}.socket", "{arguments}.0"]
         },
         closeConnection: {
@@ -70,6 +77,16 @@ fluid.defaults("gpii.app.gpiiConnector", {
     }
 });
 
+gpii.app.gpiiConnector.undoSettingChanges = function (socket, path) {
+    /// TODO just a temp version
+    // integrate with API once rdy
+    var payload = JSON.stringify({
+        path: ["settingControls", path, "value"],
+        type: "DELETE"
+    });
+    socket.send(payload);
+}
+
 /**
  * Sends setting update request to GPII over the socket.
  *
@@ -78,12 +95,20 @@ fluid.defaults("gpii.app.gpiiConnector", {
  * @param setting.path {String} The id of the setting
  * @param setting.value {String} The new value of the setting
  */
-gpii.app.gpiiConnector.updateSetting = function (socket, setting) {
+gpii.app.gpiiConnector.updateSetting = function (socket, setting, gpiiConnector) {
+
     var payload = JSON.stringify({
         path: ["settingControls", setting.path, "value"],
         type: "ADD",
         value: setting.value
     });
+
+
+    // XXX remove this logic once the api support restart logic
+    setTimeout(function () {
+        console.log("restart fire!");
+        gpiiConnector.events.onRestartRequired.fire([setting.path]);
+    }, 5000);
 
     socket.send(payload);
 };
@@ -101,6 +126,7 @@ gpii.app.gpiiConnector.createGPIIConnection = function (config) {
  * @param socket {Object} The connected gpii socket
  * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` instance
  */
+// TODO rename
 gpii.app.gpiiConnector.registerPSPListener = function (socket, gpiiConnector) {
     socket.on("message", function (rawData) {
         var data = JSON.parse(rawData),
@@ -129,6 +155,8 @@ gpii.app.gpiiConnector.registerPSPListener = function (socket, gpiiConnector) {
                 path: settingPath,
                 value: settingValue
             });
+
+            // TODO add better mocked logic
         }
     });
 };

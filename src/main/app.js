@@ -23,6 +23,7 @@ require("./menu.js"); // menuInApp, menuInAppDev
 require("./tray.js");
 require("./psp.js");
 require("./waitDialog.js");
+require("./restartDialog.js");
 
 require("./networkCheck.js");
 
@@ -68,6 +69,12 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        // TODO
+        restartDialog: {
+            type: "gpii.app.dialog.restartDialog",
+            createOnEvent: "onPrerequisitesReady",
+            priority: "after:psp"
+        },
         gpiiConnector: {
             type: "gpii.app.gpiiConnector",
             createOnEvent: "onPrerequisitesReady",
@@ -79,11 +86,12 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+
         /*
          * A helper component used as mediator for handling communication
          * between the PSP and gpiiConnector components.
          */
-        pspMediator: {
+        channelMediator: {
             type: "fluid.component",
             createOnEvent: "onPrerequisitesReady",
             priority: "after:gpiiConnector",
@@ -105,6 +113,12 @@ fluid.defaults("gpii.app", {
                     "{gpiiConnector}.events.onSettingUpdated": {
                         listener: "{psp}.notifyPSPWindow",
                         args: ["onSettingUpdated", "{arguments}.0"]
+                    },
+
+                    // TODO move
+                    "{gpiiConnector}.events.onRestartRequired": {
+                        listener: "gpii.app.showRestartWarning",
+                        args: ["{restartDialog}", "{arguments}.0"]
                     }
                 }
             }
@@ -211,6 +225,13 @@ fluid.defaults("gpii.app", {
         record: "gpii.app.onKeyInError"
     }
 });
+
+gpii.app.showRestartWarning = function (restartWindow, affectedSolutions) {
+    // if (psp is shown) -> send notification
+    // if pcp is close show notification
+    restartWindow.dialogChannel.updateSolutions(affectedSolutions);
+    restartWindow.applier.change("showDialog", true);
+};
 
 /**
  * A function which is called whenever an error occurs while keying in. Note that a real error

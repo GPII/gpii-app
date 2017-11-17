@@ -88,7 +88,7 @@ fluid.defaults("gpii.app.psp", {
             args: ["{that}.pspWindow"]
         },
         notifyPSPWindow: {
-            funcName: "gpii.app.psp.notifyPSPWindow",
+            funcName: "gpii.app.notifyWindow",
             args: ["{that}.pspWindow", "{arguments}.0", "{arguments}.1"]
         },
         getWindowPosition: {
@@ -225,19 +225,6 @@ gpii.app.psp.resize = function (psp, contentHeight, minHeight, forceResize) {
 
     if (wasShown) {
         psp.show();
-    }
-};
-
-/**
- * Sends a message to the given window
- *
- * @param pspWindow {Object} An Electron `BrowserWindow` object
- * @param messageChannel {String} The channel to which the message to be sent
- * @param message {String}
- */
-gpii.app.psp.notifyPSPWindow = function (pspWindow, messageChannel, message) {
-    if (pspWindow) {
-        pspWindow.webContents.send(messageChannel, message);
     }
 };
 

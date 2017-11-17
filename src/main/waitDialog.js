@@ -26,14 +26,26 @@ require("./utils.js");
 fluid.defaults("gpii.app.dialog", {
     gradeNames: "fluid.modelComponent",
 
-    attrs: {
-        width: 800,
-        height: 600,
-        show: false,
-        frame: false,
-        transparent: true,
-        alwaysOnTop: true,
-        skipTaskBar: true
+
+    config: {
+        attrs: {
+            width: 800,
+            height: 600,
+            show: false,
+            frame: false,
+            transparent: true,
+            alwaysOnTop: true,
+            skipTaskBar: true
+        },
+        url: {
+            expander: {
+                funcName: "fluid.stringTemplate",
+                args: [
+                    "file://%gpii-app/src/renderer/waitDialog/index.html",
+                    "@expand:fluid.module.terms()"
+                ]
+            }
+        }
     },
     model: {
         showDialog: false,
@@ -46,8 +58,9 @@ fluid.defaults("gpii.app.dialog", {
             expander: {
                 funcName: "gpii.app.dialog.makeWaitDialog",
                 args: [
-                    "{that}.options.attrs",
-                    "@expand:{that}.getWindowPosition()"
+                    "{that}.options.config.attrs",
+                    "@expand:{that}.getWindowPosition()",
+                    "{that}.options.config.url"
                 ]
             }
         }
@@ -69,8 +82,8 @@ fluid.defaults("gpii.app.dialog", {
         getWindowPosition: {
             funcName: "gpii.app.getWindowPosition",
             args: [
-                "{that}.options.attrs.width",
-                "{that}.options.attrs.height"
+                "{that}.options.config.attrs.width",
+                "{that}.options.config.attrs.height"
             ]
         }
     }
@@ -85,17 +98,17 @@ gpii.app.dialog.clearTimers = function (that) {
  * Creates a dialog. This is done up front to avoid the delay from creating a new
  * dialog every time a new message should be displayed.
  */
-gpii.app.dialog.makeWaitDialog = function (windowOptions, position) {
+gpii.app.dialog.makeWaitDialog = function (windowOptions, position, url) {
     var dialog = new BrowserWindow(windowOptions);
     dialog.setPosition(position.x, position.y);
 
-    var url = fluid.stringTemplate("file://%gpii-app/src/renderer/waitDialog/index.html", fluid.module.terms());
     dialog.loadURL(url);
     return dialog;
 };
 
 
 gpii.app.dialog.showHideWaitDialog = function (that, showDialog) {
+    console.log("HERE: ", showDialog);
     showDialog ? gpii.app.dialog.displayWaitDialog(that) : gpii.app.dialog.dismissWaitDialog(that);
 };
 
