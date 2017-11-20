@@ -17,25 +17,36 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     fluid.defaults("gpii.psp.restartWarning", {
         gradeNames: ["fluid.viewComponent"],
         model: {
+            pendingChanges: [],
             solutionNames: [],
             restartText: ""
         },
         modelRelay: {
+            solutionNames: {
+                target: "solutionNames",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.psp.restartWarning.getSolutionsNames",
+                    args: ["{that}", "{that}.model.pendingChanges"]
+                }
+            },
             restartIcon: {
                 target: "restartIcon",
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.restartWarning.getRestartIcon",
-                    args: ["{that}.model.solutionNames", "{that}.options.styles"]
-                }
+                    args: ["{that}", "{that}.model.solutionNames", "{that}.options.styles"]
+                },
+                priority: "after:solutionNames"
             },
             restartText: {
                 target: "restartText",
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.restartWarning.getRestartText",
-                    args: ["{that}.options.labels.restartText", "{that}.model.solutionNames"]
-                }
+                    args: ["{that}", "{that}.model.solutionNames"]
+                },
+                priority: "after:solutionNames"
             }
         },
         modelListeners: {
@@ -92,6 +103,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 }
             }
         },
+        invokers: {
+            updatePendingChanges: {
+                changePath: "pendingChanges",
+                value: "{arguments}.0"
+            }
+        },
         events: {
             onSettingAltered: null,
 
@@ -104,6 +121,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             applicationRestartIcon: "fl-icon-appRestart"
         },
         labels: {
+            os: "Windows",
+            osRestartText: "Windows needs to restart to apply your changes",
             restartText: "To apply your changes, the following applications need to restart: ",
             cancel: "Cancel\n(Undo Changes)",
             restartNow: "Restart Now",
@@ -111,8 +130,26 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    gpii.psp.restartWarning.getRestartIcon = function (solutionNames, styles) {
-        if (solutionNames[0] === "Windows") {
+    gpii.psp.restartWarning.getSolutionsNames = function (restartWarning, pendingChanges) {
+        var isOSRestartNeeded = fluid.find(pendingChanges, function (pendingChange) {
+            return pendingChange.liveness === "OSRestart";
+        });
+
+        if (isOSRestartNeeded) {
+            return [restartWarning.options.labels.os];
+        }
+
+        return fluid.accumulate(pendingChanges, function (pendingChange, solutionNames) {
+            var solutionName = pendingChange.solutionName;
+            if (fluid.isValue(solutionName) && solutionNames.indexOf(solutionName) < 0) {
+                solutionNames.push(solutionName);
+            }
+            return solutionNames;
+        }, []);
+    };
+
+    gpii.psp.restartWarning.getRestartIcon = function (restartWarning, solutionNames, styles) {
+        if (solutionNames[0] === restartWarning.options.labels.os) {
             return styles.osRestartIcon;
         }
         return styles.applicationRestartIcon;
@@ -124,11 +161,16 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             .addClass(restartIconClass);
     };
 
-    gpii.psp.restartWarning.getRestartText = function (prefix, solutionNames) {
+    gpii.psp.restartWarning.getRestartText = function (restartWarning, solutionNames) {
         if (solutionNames.length === 0) {
             return "";
         }
-        return prefix + solutionNames.join(", ");
+
+        if (solutionNames[0] === restartWarning.options.labels.os) {
+            return restartWarning.options.labels.osRestartText;
+        }
+
+        return restartWarning.options.labels.restartText + solutionNames.join(", ");
     };
 
     gpii.psp.restartWarning.toggleVisibility = function (container, solutionNames) {

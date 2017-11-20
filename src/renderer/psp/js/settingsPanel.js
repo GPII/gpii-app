@@ -74,7 +74,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         events: {
             onSettingUpdated: null,
             onSettingAltered: null,
-            onSettingApplied: null
+            onRestartRequired: null
         },
 
         components: {
@@ -88,15 +88,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         modelListeners: {
             value: [{
                 funcName: "{that}.showRestartIcon",
-                includeSource: ["init", "psp.mainWindow"]
+                includeSource: ["init"]
             }, {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model.path", "{change}.value", "{change}.oldValue", "{that}.model.liveness", "{that}.model.solutionName"],
-                excludeSource: ["init", "psp.mainWindow"]
-            }, {
-                this: "{that}.dom.restartIcon",
-                method: "addClass",
-                args: ["{that}.options.styles.valueChanged"],
                 excludeSource: ["init", "psp.mainWindow"]
             }]
         },
@@ -131,7 +126,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 funcName: "gpii.psp.settingPresenter.updateModelIfNeeded",
                 args: ["{that}", "{arguments}.0", "{arguments}.1"]
             },
-            "onSettingApplied": "{that}.showRestartIcon"
+            "onRestartRequired": {
+                funcName: "gpii.psp.settingPresenter.updateRestartIcon",
+                args: ["{that}.model.path", "{arguments}.0", "{that}.dom.restartIcon", "{that}.options.styles"]
+            }
         },
         invokers: {
             showRestartIcon: {
@@ -163,8 +161,19 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         if (liveness === "manualRestart" || liveness === "OSRestart") {
             var iconClass = liveness === "manualRestart" ? styles.applicationRestartIcon : styles.osRestartIcon;
             restartIcon.addClass(iconClass);
-            restartIcon.removeClass(styles.valueChanged);
             restartIcon.show();
+        }
+    };
+
+    gpii.psp.settingPresenter.updateRestartIcon = function (path, pendingChanges, restartIcon, styles) {
+        var isPending = fluid.find_if(pendingChanges, function (pendingChange) {
+            return pendingChange.path === path;
+        });
+
+        if (isPending) {
+            restartIcon.addClass(styles.valueChanged);
+        } else {
+            restartIcon.removeClass(styles.valueChanged);
         }
     };
 
@@ -321,7 +330,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             onSettingRendered: null,
             onSettingAltered: null,  // passed from parent
             // onSettingUpdated: null  // passed from parent
-            onSettingApplied: null
+            onRestartRequired: null
         },
 
         components: {
@@ -350,7 +359,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     events: {
                         onSettingAltered: "{settingVisualizer}.events.onSettingAltered",
                         onSettingUpdated: "{settingVisualizer}.events.onSettingUpdated",
-                        onSettingApplied: "{settingVisualizer}.events.onSettingApplied"
+                        onRestartRequired: "{settingVisualizer}.events.onRestartRequired"
                     }
                 }
             }
@@ -406,7 +415,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     events: {
                         onSettingAltered: "{settingsPanel}.events.onSettingAltered",
                         onSettingUpdated: "{settingsPanel}.events.onSettingUpdated",
-                        onSettingApplied: "{settingsPanel}.events.onSettingApplied"
+                        onRestartRequired: "{settingsPanel}.events.onRestartRequired"
                     },
 
                     widgetConfig: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemaType({that}.options.setting.schema.type)",
@@ -508,7 +517,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             onTemplatesLoaded: null,
             onSettingAltered: null,
             onSettingUpdated: null, // passed from outside
-            onSettingApplied: null
+            onRestartRequired: null
         }
     });
 

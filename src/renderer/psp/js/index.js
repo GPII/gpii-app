@@ -33,7 +33,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                             funcName: "{mainWindow}.updateSetting"
                         },
                         onRestartRequired: {
-                            funcName: "{mainWindow}.updateSolutionNames"
+                            funcName: "{mainWindow}.events.onRestartRequired.fire"
                         }
                     }
                 }

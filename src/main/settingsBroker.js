@@ -18,25 +18,20 @@ var gpii  = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.settingsBroker", {
     gradeNames: ["fluid.modelComponent"],
     model: {
-        pendingChanges: [],
-        solutionNames: []
-    },
-    modelRelay: {
-        solutionNames: {
-            target: "solutionNames",
-            singleTransform: {
-                type: "fluid.transforms.free",
-                func: "gpii.app.settingsBroker.getSolutionsNames",
-                args: ["{that}", "{that}.model.pendingChanges"]
-            }
-        }
+        keyedInUserToken: null,
+        pendingChanges: []
     },
     modelListeners: {
-        solutionNames: {
+        keyedInUserToken: {
+            funcName: "gpii.app.settingsBroker.onUserTokenChanged",
+            args: ["{that}", "{change}.value"],
+            excludeSource: ["init"]
+        },
+        pendingChanges: {
             this: "{that}.events.onRestartRequired",
             method: "fire",
             args: ["{change}.value"],
-            excludeSource: ["init", "keyOut"]
+            excludeSource: ["init"]
         }
     },
     invokers: {
@@ -69,29 +64,8 @@ fluid.defaults("gpii.app.settingsBroker", {
     events: {
         onSettingApplied: null,
         onRestartRequired: null
-    },
-    labels: {
-        os: "Windows"
     }
 });
-
-gpii.app.settingsBroker.getSolutionsNames = function (settingsBroker, pendingChanges) {
-    var isOSRestartNeeded = fluid.find(pendingChanges, function (pendingChange) {
-        return pendingChange.liveness === "OSRestart";
-    });
-
-    if (isOSRestartNeeded) {
-        return [settingsBroker.options.labels.os];
-    }
-
-    return fluid.accumulate(pendingChanges, function (pendingChange, solutionNames) {
-        var solutionName = pendingChange.solutionName;
-        if (fluid.isValue(solutionName) && solutionNames.indexOf(solutionName) < 0) {
-            solutionNames.push(solutionName);
-        }
-        return solutionNames;
-    }, []);
-};
 
 gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
     if (setting.liveness === "live" || setting.liveness === "liveRestart") {
@@ -132,6 +106,12 @@ gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, pendingCh
         settingsBroker.applySetting(pendingChange);
     });
     settingsBroker.clearPendingChanges();
+};
+
+gpii.app.settingsBroker.onUserTokenChanged = function (settingsBroker, keyedInUserToken) {
+    if (!fluid.isValue(keyedInUserToken)) {
+        settingsBroker.clearPendingChanges();
+    }
 };
 
 gpii.app.settingsBroker.hasPendingChanges = function (pendingChanges) {

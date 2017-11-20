@@ -92,6 +92,9 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPrerequisitesReady",
             priority: "after:gpiiConnector",
             options: {
+                model: {
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                },
                 listeners: {
                     "{psp}.events.onSettingAltered": {
                         listener: "{that}.enqueue"
@@ -101,6 +104,9 @@ fluid.defaults("gpii.app", {
                     },
                     "{psp}.events.onUndoChanges": {
                         listener: "{that}.undoPendingChanges"
+                    },
+                    "{psp}.events.onActivePreferenceSetAltered": {
+                        listener: "{that}.clearPendingChanges"
                     }
                 }
             }

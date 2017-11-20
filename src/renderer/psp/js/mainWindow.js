@@ -94,8 +94,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 sets: [],
                 activeSet: null,
                 settings: []
-            },
-            solutionNames: []
+            }
         },
         selectors: {
             theme: "#flc-theme",
@@ -149,7 +148,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     events: {
                         onSettingAltered: "{mainWindow}.events.onSettingAltered",
                         onSettingUpdated: "{mainWindow}.events.onSettingUpdated",
-                        onSettingApplied: "{mainWindow}.events.onRestartNow"
+                        onRestartRequired: "{mainWindow}.events.onRestartRequired"
                     }
                 }
             },
@@ -157,8 +156,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 type: "gpii.psp.restartWarning",
                 container: "{that}.dom.restartWarning",
                 options: {
-                    model: {
-                        solutionNames: "{mainWindow}.model.solutionNames"
+                    listeners: {
+                        "{mainWindow}.events.onRestartRequired": {
+                            funcName: "{that}.updatePendingChanges"
+                        }
                     },
                     events: {
                         onRestartNow: "{mainWindow}.events.onRestartNow",
@@ -210,10 +211,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             "onContentHeightChanged": {
                 funcName: "gpii.psp.onContentHeightChanged",
                 args: ["{that}", "{that}.container", "{that}.dom.content", "{that}.dom.settingsList"]
-            },
-            "updateSolutionNames": {
-                changePath: "solutionNames",
-                value: "{arguments}.0"
             }
         },
         events: {
@@ -227,6 +224,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             onActivePreferenceSetAltered: null,
             onContentHeightChanged: null,
 
+            onRestartRequired: null,
             onRestartNow: null,
             onRestartLater: null,
             onUndoChanges: null
