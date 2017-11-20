@@ -53,7 +53,9 @@ fluid.defaults("gpii.app.psp", {
     },
     events: {
         onSettingAltered: null,
-        onActivePreferenceSetAltered: null
+        onActivePreferenceSetAltered: null,
+
+        onRestartNow: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -178,6 +180,11 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
 
     ipcMain.on("onContentHeightChanged", function (event, contentHeight) {
         psp.resize(contentHeight);
+    });
+
+    ipcMain.on("onRestartNow", function () {
+        psp.hide();
+        psp.events.onRestartNow.fire();
     });
 };
 

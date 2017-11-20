@@ -158,6 +158,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 options: {
                     model: {
                         solutionNames: "{mainWindow}.model.solutionNames"
+                    },
+                    events: {
+                        onRestartNow: "{mainWindow}.events.onRestartNow",
+                        onRestartLater: "{mainWindow}.events.onRestartLater",
+                        onUndoChanges: "{mainWindow}.events.onUndoChanges"
                     }
                 }
             },
@@ -219,7 +224,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             onPSPClose: null,
             onKeyOut: null,
             onActivePreferenceSetAltered: null,
-            onContentHeightChanged: null
+            onContentHeightChanged: null,
+
+            onRestartNow: null,
+            onRestartLater: null,
+            onUndoChanges: null
         }
     });
 })(fluid);

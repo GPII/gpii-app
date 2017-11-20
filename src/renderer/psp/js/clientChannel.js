@@ -71,6 +71,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         ipcRenderer.send("onContentHeightChanged", height);
     };
 
+    gpii.psp.clientChannel.restartNow = function () {
+        ipcRenderer.send("onRestartNow");
+    };
+
     /**
      * Initializes the `clientChannel` component by registering listeners
      * for various messages sent by the main process.
@@ -127,6 +131,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             },
             changeContentHeight: {
                 funcName: "gpii.psp.clientChannel.changeContentHeight"
+            },
+            restartNow: {
+                funcName: "gpii.psp.clientChannel.restartNow"
             }
         }
     });

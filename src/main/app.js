@@ -95,6 +95,9 @@ fluid.defaults("gpii.app", {
                 listeners: {
                     "{psp}.events.onSettingAltered": {
                         listener: "{that}.enqueue"
+                    },
+                    "{psp}.events.onRestartNow": {
+                        listener: "{that}.flushPendingChanges"
                     }
                 }
             }

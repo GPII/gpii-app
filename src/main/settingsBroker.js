@@ -54,8 +54,8 @@ fluid.defaults("gpii.app.settingsBroker", {
             args: ["{that}", "{that}.model.pendingChanges"]
         },
         clearPendingChanges: {
-            changePath: "pendingChanges",
-            value: "[]"
+            funcName: "gpii.app.settingsBroker.clearPendingChanges",
+            args: ["{that}"]
         },
         hasPendingChanges: {
             funcName: "gpii.app.settingsBroker.hasPendingChanges",
@@ -107,6 +107,10 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
     }
 
     settingsBroker.applier.change("pendingChanges", pendingChanges);
+};
+
+gpii.app.settingsBroker.clearPendingChanges = function (settingsBroker) {
+    settingsBroker.applier.change("pendingChanges", []);
 };
 
 gpii.app.settingsBroker.flushPendingChanges = function (settingsBroker, pendingChanges) {

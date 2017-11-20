@@ -77,7 +77,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 options: {
                     label: "{restartWarning}.options.labels.restartNow",
                     invokers: {
-                        onClick: fluid.identity
+                        onClick: "{restartWarning}.events.onRestartNow.fire"
                     }
                 }
             },
@@ -93,7 +93,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         events: {
-            onSettingAltered: null
+            onSettingAltered: null,
+
+            onRestartNow: null,
+            onRestartLater: null,
+            onUndoChanges: null
         },
         styles: {
             osRestartIcon: "fl-icon-osRestart",
