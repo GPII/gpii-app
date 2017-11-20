@@ -50,7 +50,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         onActivePreferenceSetAltered: "{clientChannel}.alterActivePreferenceSet",
                         onContentHeightChanged: "{clientChannel}.changeContentHeight",
 
-                        onRestartNow: "{clientChannel}.restartNow"
+                        onRestartNow: "{clientChannel}.restartNow",
+                        onRestartLater: "{clientChannel}.restartLater",
+                        onUndoChanges: "{clientChannel}.undoChanges"
                     }
                 }
             }

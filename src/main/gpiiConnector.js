@@ -96,6 +96,11 @@ gpii.app.gpiiConnector.undoSettingChanges = function (socket, path) {
  * @param setting.value {String} The new value of the setting
  */
 gpii.app.gpiiConnector.updateSetting = function (socket, setting, gpiiConnector) {
+    // Do not send a request for update if the new and the old value coincide.
+    if (fluid.isValue(setting.oldValue) && JSON.stringify(setting.oldValue) === JSON.stringify(setting.value)) {
+        console.log("old value coincides with new one for", setting.path);
+        return;
+    }
 
     var payload = JSON.stringify({
         path: ["settingControls", setting.path, "value"],

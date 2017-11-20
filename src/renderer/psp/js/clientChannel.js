@@ -75,6 +75,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         ipcRenderer.send("onRestartNow");
     };
 
+    gpii.psp.clientChannel.restartLater = function () {
+        ipcRenderer.send("onRestartLater");
+    };
+
+    gpii.psp.clientChannel.undoChanges = function () {
+        ipcRenderer.send("onUndoChanges");
+    };
+
     /**
      * Initializes the `clientChannel` component by registering listeners
      * for various messages sent by the main process.
@@ -134,6 +142,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             },
             restartNow: {
                 funcName: "gpii.psp.clientChannel.restartNow"
+            },
+            restartLater: {
+                funcName: "gpii.psp.clientChannel.restartLater"
+            },
+            undoChanges: {
+                funcName: "gpii.psp.clientChannel.undoChanges"
             }
         }
     });

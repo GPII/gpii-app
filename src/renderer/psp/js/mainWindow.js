@@ -148,7 +148,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     },
                     events: {
                         onSettingAltered: "{mainWindow}.events.onSettingAltered",
-                        onSettingUpdated: "{mainWindow}.events.onSettingUpdated"
+                        onSettingUpdated: "{mainWindow}.events.onSettingUpdated",
+                        onSettingApplied: "{mainWindow}.events.onRestartNow"
                     }
                 }
             },

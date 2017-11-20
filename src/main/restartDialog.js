@@ -60,11 +60,11 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
         affectedSolutions: []
     },
 
-    listeners: {
-        "onCreate.log": {
-            func: "{that}.show"
-        }
-    },
+    // listeners: {
+    //     "onCreate.log": {
+    //         func: "{that}.show"
+    //     }
+    // },
 
     invokers: {
         show: {

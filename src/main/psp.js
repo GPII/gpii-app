@@ -55,7 +55,8 @@ fluid.defaults("gpii.app.psp", {
         onSettingAltered: null,
         onActivePreferenceSetAltered: null,
 
-        onRestartNow: null
+        onRestartNow: null,
+        onUndoChanges: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -185,6 +186,14 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     ipcMain.on("onRestartNow", function () {
         psp.hide();
         psp.events.onRestartNow.fire();
+    });
+
+    ipcMain.on("onRestartLater", function () {
+        psp.hide();
+    });
+
+    ipcMain.on("onUndoChanges", function () {
+        psp.events.onUndoChanges.fire();
     });
 };
 

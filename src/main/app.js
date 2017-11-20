@@ -98,6 +98,9 @@ fluid.defaults("gpii.app", {
                     },
                     "{psp}.events.onRestartNow": {
                         listener: "{that}.flushPendingChanges"
+                    },
+                    "{psp}.events.onUndoChanges": {
+                        listener: "{that}.undoPendingChanges"
                     }
                 }
             }
@@ -112,10 +115,13 @@ fluid.defaults("gpii.app", {
             priority: "after:settingsBroker",
             options: {
                 listeners: {
-                    "{settingsBroker}.events.onSettingApplied": {
+                    "{settingsBroker}.events.onSettingApplied": [{
                         listener: "{gpiiConnector}.updateSetting",
                         args: ["{arguments}.0"]
-                    },
+                    }, {
+                        listener: "{psp}.notifyPSPWindow",
+                        args: ["onSettingUpdated", "{arguments}.0"]
+                    }],
                     "{settingsBroker}.events.onRestartRequired": {
                         listener: "{psp}.notifyPSPWindow",
                         args: ["onRestartRequired", "{arguments}.0"]

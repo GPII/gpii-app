@@ -73,7 +73,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         events: {
             onSettingUpdated: null,
-            onSettingAltered: null
+            onSettingAltered: null,
+            onSettingApplied: null
         },
 
         components: {
@@ -86,11 +87,16 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
         modelListeners: {
             value: [{
-                funcName: "gpii.psp.settingPresenter.showRestartIcon",
-                args: ["{change}", "{that}.model.liveness", "{that}.dom.restartIcon", "{that}.options.styles"]
+                funcName: "{that}.showRestartIcon",
+                includeSource: ["init", "psp.mainWindow"]
             }, {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model.path", "{change}.value", "{change}.oldValue", "{that}.model.liveness", "{that}.model.solutionName"],
+                excludeSource: ["init", "psp.mainWindow"]
+            }, {
+                this: "{that}.dom.restartIcon",
+                method: "addClass",
+                args: ["{that}.options.styles.valueChanged"],
                 excludeSource: ["init", "psp.mainWindow"]
             }]
         },
@@ -124,6 +130,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             "onSettingUpdated": {
                 funcName: "gpii.psp.settingPresenter.updateModelIfNeeded",
                 args: ["{that}", "{arguments}.0", "{arguments}.1"]
+            },
+            "onSettingApplied": "{that}.showRestartIcon"
+        },
+        invokers: {
+            showRestartIcon: {
+                funcName: "gpii.psp.settingPresenter.showRestartIcon",
+                args: ["{that}.model.liveness", "{that}.dom.restartIcon", "{that}.options.styles"]
             }
         }
     });
@@ -139,23 +152,18 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     };
 
     /**
-     * A method responsible for showing and styling the restart icon when the user
-     * changes a setting which is not dynamic.
-     * @param change {Object} An object containing the previous and the new value for
-     * the corresponding setting.
-     * @param liveness {String} The type of liveness for the current setting. Can
-     * be "none", "application" or "os".
+     * A method responsible for showing and styling the restart icon if the setting
+     * has a "manualRestart" or an "OSRestart" liveness.
+     * @param liveness {String} The type of liveness for the current setting.
      * @param restartIcon {jQuery} A jQuery object representing the restart icon.
      * @param styles {Object} An object containing classes to be applied to the restart
      * icon depending on the setting's liveness.
      */
-    gpii.psp.settingPresenter.showRestartIcon = function (change, liveness, restartIcon, styles) {
+    gpii.psp.settingPresenter.showRestartIcon = function (liveness, restartIcon, styles) {
         if (liveness === "manualRestart" || liveness === "OSRestart") {
             var iconClass = liveness === "manualRestart" ? styles.applicationRestartIcon : styles.osRestartIcon;
             restartIcon.addClass(iconClass);
-            if (fluid.isValue(change.oldValue)) {
-                restartIcon.addClass(styles.valueChanged);
-            }
+            restartIcon.removeClass(styles.valueChanged);
             restartIcon.show();
         }
     };
@@ -311,8 +319,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         events: {
             // XXX not quite valid naming as the widget component (in settingPresenter) also renders
             onSettingRendered: null,
-            onSettingAltered: null  // passed from parent
+            onSettingAltered: null,  // passed from parent
             // onSettingUpdated: null  // passed from parent
+            onSettingApplied: null
         },
 
         components: {
@@ -340,7 +349,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     model: "{settingVisualizer}.options.setting",
                     events: {
                         onSettingAltered: "{settingVisualizer}.events.onSettingAltered",
-                        onSettingUpdated: "{settingVisualizer}.events.onSettingUpdated"
+                        onSettingUpdated: "{settingVisualizer}.events.onSettingUpdated",
+                        onSettingApplied: "{settingVisualizer}.events.onSettingApplied"
                     }
                 }
             }
@@ -395,7 +405,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
                     events: {
                         onSettingAltered: "{settingsPanel}.events.onSettingAltered",
-                        onSettingUpdated: "{settingsPanel}.events.onSettingUpdated"
+                        onSettingUpdated: "{settingsPanel}.events.onSettingUpdated",
+                        onSettingApplied: "{settingsPanel}.events.onSettingApplied"
                     },
 
                     widgetConfig: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemaType({that}.options.setting.schema.type)",
@@ -496,7 +507,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         events: {
             onTemplatesLoaded: null,
             onSettingAltered: null,
-            onSettingUpdated: null // passed from outside
+            onSettingUpdated: null, // passed from outside
+            onSettingApplied: null
         }
     });
 

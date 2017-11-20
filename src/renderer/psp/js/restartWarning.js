@@ -67,7 +67,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 options: {
                     label: "{restartWarning}.options.labels.cancel",
                     invokers: {
-                        onClick: fluid.identity
+                        onClick: "{restartWarning}.events.onUndoChanges.fire"
                     }
                 }
             },
@@ -87,7 +87,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 options: {
                     label: "{restartWarning}.options.labels.restartLater",
                     invokers: {
-                        onClick: fluid.identity
+                        onClick: "{restartWarning}.events.onRestartLater.fire"
                     }
                 }
             }

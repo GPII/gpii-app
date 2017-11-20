@@ -57,6 +57,10 @@ fluid.defaults("gpii.app.settingsBroker", {
             funcName: "gpii.app.settingsBroker.clearPendingChanges",
             args: ["{that}"]
         },
+        undoPendingChanges: {
+            funcName: "gpii.app.settingsBroker.undoPendingChanges",
+            args: ["{that}", "{that}.model.pendingChanges"]
+        },
         hasPendingChanges: {
             funcName: "gpii.app.settingsBroker.hasPendingChanges",
             args: ["{that}.model.pendingChanges"]
@@ -115,6 +119,16 @@ gpii.app.settingsBroker.clearPendingChanges = function (settingsBroker) {
 
 gpii.app.settingsBroker.flushPendingChanges = function (settingsBroker, pendingChanges) {
     fluid.each(pendingChanges, function (pendingChange) {
+        settingsBroker.applySetting(pendingChange);
+    });
+    settingsBroker.clearPendingChanges();
+};
+
+gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, pendingChanges) {
+    fluid.each(pendingChanges, function (pendingChange) {
+        pendingChange = fluid.extend(true, pendingChange, {
+            value: pendingChange.oldValue
+        });
         settingsBroker.applySetting(pendingChange);
     });
     settingsBroker.clearPendingChanges();
