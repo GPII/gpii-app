@@ -67,7 +67,20 @@ fluid.defaults("gpii.app.settingsBroker", {
     }
 });
 
+/**
+ * Checks whether the old value and new value for a given setting are equal.
+ * Relies on the usage of `JSON.stringify` which means that if the values
+ * are arrays, the ordering of the objects within them matters.
+ * @param oldValue {Any} The old value for the setting.
+ * @param newValue {Any} The new value for the setting.
+ * @return `true` if the values are equal and `false` otherwise.
+ */
+gpii.app.settingsBroker.equals = function (oldValue, newValue) {
+    return JSON.stringify(oldValue) === JSON.stringify(newValue);
+};
+
 gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
+    // Apply the setting immediately, without queuing if it is live.
     if (setting.liveness === "live" || setting.liveness === "liveRestart") {
         settingsBroker.applySetting(setting);
         return;
@@ -79,8 +92,18 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
         });
 
     if (pendingChange) {
-        pendingChange.value = setting.value;
+        // If the new setting's value is simply the initial value for the setting,
+        // remove the pending changes for this setting altogether.
+        if (gpii.app.settingsBroker.equals(pendingChange.oldValue, setting.value)) {
+            pendingChanges = fluid.remove_if(pendingChanges, function (change) {
+                return change.path === setting.path;
+            });
+        } else {
+            // If this setting has already been queued, swap its value
+            pendingChange.value = setting.value;
+        }
     } else {
+        // The setting has been changed for the first time - queue it.
         pendingChanges.push(setting);
     }
 
