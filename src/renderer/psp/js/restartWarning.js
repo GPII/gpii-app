@@ -131,7 +131,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     });
 
     gpii.psp.restartWarning.getSolutionsNames = function (restartWarning, pendingChanges) {
-        var isOSRestartNeeded = fluid.find(pendingChanges, function (pendingChange) {
+        var isOSRestartNeeded = fluid.find_if(pendingChanges, function (pendingChange) {
             return pendingChange.liveness === "OSRestart";
         });
 

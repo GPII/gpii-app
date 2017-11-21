@@ -30,7 +30,8 @@ fluid.defaults("gpii.app.psp", {
     gradeNames: "fluid.modelComponent",
 
     model:  {
-        keyedInUserToken: null
+        keyedInUserToken: null,
+        isShown: false
     },
 
     /*
@@ -87,15 +88,11 @@ fluid.defaults("gpii.app.psp", {
     invokers: {
         show: {
             funcName: "gpii.app.psp.showPSPWindow",
-            args: ["{that}.pspWindow"]
+            args: ["{that}", "{that}.pspWindow"]
         },
         hide: {
             funcName: "gpii.app.psp.hidePSPWindow",
-            args: ["{that}.pspWindow"]
-        },
-        isShown: {
-            funcName: "gpii.app.psp.isPSPWindowShown",
-            args: ["{that}.pspWindow"]
+            args: ["{that}", "{that}.pspWindow"]
         },
         notifyPSPWindow: {
             funcName: "gpii.app.notifyWindow",
@@ -121,18 +118,6 @@ fluid.defaults("gpii.app.psp", {
 });
 
 /**
- * This function checks whether the PSP window is shown.
- * @param pspWindow {Object} An Electron `BrowserWindow`
- * @return {Boolean} `true` if the PSP window is shown and `false` otherwise.
- */
-gpii.app.psp.isPSPWindowShown = function (pspWindow) {
-    var position = pspWindow.getPosition(),
-        x = position[0],
-        y = position[1];
-    return x >= 0 && y >= 0;
-};
-
-/**
  * Shows the PSP window in the lower part of the primary display and focuses it.
  * Actually, the PSP window is always shown but it may be positioned off the screen.
  * This is a workaround for the flickering issue observed when the content displayed in
@@ -140,13 +125,14 @@ gpii.app.psp.isPSPWindowShown = function (pspWindow) {
  * `BrowserWindow` is hidden).
  * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
-gpii.app.psp.showPSPWindow = function (pspWindow) {
+gpii.app.psp.showPSPWindow = function (psp, pspWindow) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
         windowSize = pspWindow.getSize(),
         windowX = screenSize.width - windowSize[0],
         windowY = screenSize.height - windowSize[1];
     pspWindow.setPosition(windowX, windowY);
     pspWindow.focus();
+    psp.applier.change("isShown", true);
 };
 
 
@@ -222,11 +208,16 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
  * the content of the PSP window changes.
  * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
-gpii.app.psp.hidePSPWindow = function (pspWindow) {
+gpii.app.psp.hidePSPWindow = function (psp, pspWindow) {
     var windowSize = pspWindow.getSize(),
         width = windowSize[0],
         height = windowSize[1];
     pspWindow.setPosition(-width, -height);
+
+    // TODO: Find a way around this.
+    if (psp) {
+        psp.applier.change("isShown", false);
+    }
 };
 
 /**
@@ -244,7 +235,7 @@ gpii.app.psp.hidePSPWindow = function (pspWindow) {
  */
 gpii.app.psp.resize = function (psp, contentHeight, minHeight, forceResize) {
     var pspWindow = psp.pspWindow,
-        wasShown = psp.isShown(),
+        wasShown = psp.model.isShown,
         screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
         windowSize = pspWindow.getSize(),
         windowWidth = windowSize[0],
@@ -275,7 +266,7 @@ gpii.app.psp.makePSPWindow = function (windowOptions) {
     var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
     pspWindow.loadURL(url);
 
-    gpii.app.psp.hidePSPWindow(pspWindow);
+    gpii.app.psp.hidePSPWindow(null, pspWindow);
 
     return pspWindow;
 };

@@ -21,13 +21,6 @@ fluid.defaults("gpii.app.settingsBroker", {
         keyedInUserToken: null,
         pendingChanges: []
     },
-    listeners: {
-        "onRestartRequired.log": {
-            this: "console",
-            method: "log",
-            args: ["Pending: ", "{that}.model.solutionNames"]
-        }
-    },
     modelListeners: {
         keyedInUserToken: {
             funcName: "gpii.app.settingsBroker.onUserTokenChanged",
