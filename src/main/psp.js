@@ -158,7 +158,10 @@ gpii.app.psp.showPSPWindow = function (pspWindow) {
 gpii.app.psp.initPSPWindowListeners = function (psp) {
     var pspWindow = psp.pspWindow;
     pspWindow.on("blur", function () {        
-        psp.events.onClosed.fire();
+        psp.hide();
+        // XXX disable warningDialog show temporary
+        // to avoid missbehaviour with blur
+        // psp.events.onClosed.fire();
     });
 
     electron.screen.on("display-metrics-changed", function (event, display, changedMetrics) {
@@ -182,7 +185,7 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     });
 
     ipcMain.on("onKeyOut", function () {
-        psp.events.onClosed.fire();
+        psp.hide();
         app.keyOut();
     });
 

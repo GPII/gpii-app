@@ -161,8 +161,5 @@ gpii.app.dialog.restartDialog.show = function (restartDialog, pendingChanges) {
         // change according new solutions
         restartDialog.applier.change("pendingChanges", pendingChanges);
         restartDialog.dialog.focus();
-
-        // XXX TEST
-        restartDialog.dialog.webContents.openDevTools();
     }
 };
