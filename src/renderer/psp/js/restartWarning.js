@@ -36,8 +36,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     type: "fluid.transforms.free",
                     func: "gpii.psp.restartWarning.getRestartIcon",
                     args: ["{that}", "{that}.model.solutionNames", "{that}.options.styles"]
-                },
-                priority: "after:solutionNames"
+                }
             },
             restartText: {
                 target: "restartText",
@@ -45,8 +44,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     type: "fluid.transforms.free",
                     func: "gpii.psp.restartWarning.getRestartText",
                     args: ["{that}", "{that}.model.solutionNames"]
-                },
-                priority: "after:solutionNames"
+                }
             }
         },
         modelListeners: {
@@ -156,7 +154,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     };
 
     gpii.psp.restartWarning.updateIcon = function (restartIcon, restartIconClass, styles) {
-        restartIcon.removeClass(styles.applicationRestartIcon)
+        restartIcon
+            .removeClass(styles.osRestartIcon)
             .removeClass(styles.applicationRestartIcon)
             .addClass(restartIconClass);
     };
