@@ -12,65 +12,92 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
 
-var fluid = require("infusion");
-var gpii  = fluid.registerNamespace("gpii");
+var fluid   = require("infusion");
+var gpii    = fluid.registerNamespace("gpii");
+var ipcMain = require("electron").ipcMain;
 
 require("./utils.js");
 
 // TODO extract to separate dialog
 require("./waitDialog.js");
 
+/**
+ * A component that serves as simple interface for communication with the
+ * electron `BrowserWindow` restart dialog.
+ */
 fluid.defaults("gpii.app.dialog.restartDialog.channel", {
     gradeNames: ["fluid.component"],
 
     events: {
-        // onRestart: null,
-        // onClose: null,
-            // TODO probably not needed
+        // onRestartNow: null,
+        // onClosed: null,
         // onRestartLater: null
     },
 
-        // TODO register for messages from window
-    // listeners: {
-    //     "onCreate.registerChannel": {
-    //         funcName: "gpii.app.dialog.registerWarningDialogChannel",
-    //         args: "{dialog}.dialog"
-    //     }
-    // },
+    listeners: {
+        "onCreate.registerChannel": {
+            funcName: "gpii.app.dialog.restartDialog.channel.register",
+            args: ["{that}.events", "{that}.options.source"]
+        }
+    },
 
     invokers: {
-        updateSolutions: {
+        updatePendingChanges: {
             // TODO rename function
             funcName: "gpii.app.notifyWindow",
             args: [
                 "{dialog}.dialog",
-                // TODO create 
-                "onSolutionsUpdated", // rethink channel name
+                "onRestartRequired", // rethink channel name
                 "{arguments}.0"
             ]
         }
     }
 });
 
+gpii.app.dialog.restartDialog.channel.register = function (events, source) {
+    // TODO unite with PSP channel?
+    ipcMain.on("onRestartNow", function (event, message) {
+        events.onRestartNow.fire();
+    });
 
+    ipcMain.on("onRestartLater", function (event, message) {
+        events.onClosed.fire();
+    });
+
+    ipcMain.on("onClosed", function (event, message) {
+        events.onClosed.fire();
+    });
+
+    ipcMain.on("onUndoChanges", function (event, message) {
+        events.onUndoChanges.fire();
+    });
+};
+
+
+/**
+ * TODO
+ */
 fluid.defaults("gpii.app.dialog.restartDialog", {
     gradeNames: ["gpii.app.dialog"],
 
     model: {
-        affectedSolutions: []
+        pendingChanges: []
     },
-
-    // listeners: {
-    //     "onCreate.log": {
-    //         func: "{that}.show"
-    //     }
-    // },
 
     invokers: {
         show: {
+            funcName: "gpii.app.dialog.restartDialog.show",
+            args: ["{that}", "{arguments}.0"]
+        },
+        hide: {
             changePath: "showDialog",
-            value: true
-        }
+            value: false
+        },
+        //        TODO not used
+//        isShown: {
+//            this: "{that}.dialog",
+//            method: "isVisible"
+//        }
     },
 
     config: {
@@ -89,31 +116,33 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
             }
         }
     },
+
     events: {
-        onRestart: null,
-        onClose: null,
+        onRestartNow: null,
+        onClosed: null,
         // TODO probably not needed
-        onRestartLater: null
+        onRestartLater: null,
+        onUndoChanges: null
     },
 
     components: {
         dialogChannel: {
             // TODO pass {that}?
             type: "gpii.app.dialog.restartDialog.channel",
-            // createOnEvent: "onDialogCreated", // TODO
+            // createOnEvent: "{restartDialog}.events.onCreate", // TODO
             options: {
                 events: {
-                    onRestart: "{restartDialog}.events.onRestart",
-                    onClose: "{restartDialog}.events.onClose",
+                    onRestartNow: "{restartDialog}.events.onRestartNow",
+                    onClosed: "{restartDialog}.events.onClosed",
                     // TODO probably not needed
-                    onRestartLater: "{restartDialog}.events.onRestartLater"
-
+                    onRestartLater: "{restartDialog}.events.onRestartLater",
+                    onUndoChanges: "{restartDialog}.events.onUndoChanges"
                 },
 
                 // XXX find a better way
                 modelListeners: {
-                    "{restartDialog}.model.affectedSolutions": {
-                        func: "{dialogChannel}.updateSolutions",
+                    "{restartDialog}.model.pendingChanges": {
+                        func: "{dialogChannel}.updatePendingChanges",
                         args: "{change}.value"
                     }
                 }
@@ -121,3 +150,19 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
         }
     }
 });
+
+gpii.app.dialog.restartDialog.show = function (restartDialog, pendingChanges) {
+
+    if (pendingChanges.length > 0) {
+        // finally, show the dialog
+        // TODO improve mechanism?
+        restartDialog.applier.change("showDialog", true);
+
+        // change according new solutions
+        restartDialog.applier.change("pendingChanges", pendingChanges);
+        restartDialog.dialog.focus();
+
+        // XXX TEST
+        restartDialog.dialog.webContents.openDevTools();
+    }
+};

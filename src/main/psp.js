@@ -56,7 +56,10 @@ fluid.defaults("gpii.app.psp", {
         onActivePreferenceSetAltered: null,
 
         onRestartNow: null,
-        onUndoChanges: null
+        onUndoChanges: null,
+
+        onClosed: null,
+        onRestartLater: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -75,6 +78,10 @@ fluid.defaults("gpii.app.psp", {
         "onDestroy.cleanupElectron": {
             this: "{that}.pspWindow",
             method: "destroy"
+        },
+
+        "onClosed.closePsp": {
+            func: "{psp}.hide"
         }
     },
     invokers: {
@@ -101,6 +108,14 @@ fluid.defaults("gpii.app.psp", {
         resize: {
             funcName: "gpii.app.psp.resize",
             args: ["{that}", "{arguments}.0", "{that}.options.attrs.height", "{arguments}.1"]
+        },
+        showRestartWarning: {
+            func: "{psp}.notifyPSPWindow",
+            args: ["onRestartRequired", "{arguments}.0"]
+        },
+        hideRestartWarning: {
+            func: "{psp}.notifyPSPWindow",
+            args: ["onRestartRequired", []]
         }
     }
 });
@@ -142,8 +157,8 @@ gpii.app.psp.showPSPWindow = function (pspWindow) {
  */
 gpii.app.psp.initPSPWindowListeners = function (psp) {
     var pspWindow = psp.pspWindow;
-    pspWindow.on("blur", function () {
-        psp.hide();
+    pspWindow.on("blur", function () {        
+        psp.events.onClosed.fire();
     });
 
     electron.screen.on("display-metrics-changed", function (event, display, changedMetrics) {
@@ -163,11 +178,11 @@ gpii.app.psp.initPSPWindowListeners = function (psp) {
  */
 gpii.app.initPSPWindowIPC = function (app, psp) {
     ipcMain.on("onPSPClose", function () {
-        psp.hide();
+        psp.events.onClosed.fire();
     });
 
     ipcMain.on("onKeyOut", function () {
-        psp.hide();
+        psp.events.onClosed.fire();
         app.keyOut();
     });
 

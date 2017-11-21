@@ -101,8 +101,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             clientChannel.events.onAccentColorChanged.fire(accentColor);
         });
 
-        ipcRenderer.on("onRestartRequired", function (event, solutionNames) {
-            clientChannel.events.onRestartRequired.fire(solutionNames);
+        ipcRenderer.on("onRestartRequired", function (event, pendingChanges) {
+            clientChannel.events.onRestartRequired.fire(pendingChanges);
         });
     };
 

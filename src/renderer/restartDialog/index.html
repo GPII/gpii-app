@@ -4,20 +4,28 @@
         <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
         <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="css/restartDialog.css">
+
+
+        <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+        <script type="text/javascript" src="../psp/js/widgets.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
     </head>
     <body>
         <div class="fl-popup theme-alt">
             <div class="fl-popup-contentWrapper">
                 <div class="fl-popup-header">
                     GPII Auto Personalization
-                    <button class="fl-popup-closeBtn">&#x2715;</button>
+                    <button class="flc-close fl-popup-closeBtn">
+                        &#x2715;
+                        <span class="flc-btnLabel"></span> <!-- TODO remove (reusing component) -->
+                    </button>
                 </div>
                 <div class="fl-popup-content">
                     <img class="fl-popup-contentImage" src="../../icons/gpii-color.ico">
                     <div class="fl-popup-contentText">
-                        <h3>Changes require restart</h3>
-                        <p>In order to be applied, some of the changes you made require the following applications to restart: Windows</p>
-                        <p>What would you like to do?</p>
+                        <h3 class="flc-popup-title"></h3>
+                        <p class="flc-popup-bodyText"></p>
                     </div>
                     <div class="fl-popup-controls">
                         <button class="flc-restartCancel btn fl-btn">
@@ -37,5 +45,50 @@
                 </div>
             </div>
         </div>
+
+    <script>
+        $(function () {
+            var restartDialog = fluid.registerNamespace("gpii.restartDialog");
+
+            var ipcRenderer = require("electron").ipcRenderer;
+            restartDialog.restartNow = function () {
+                ipcRenderer.send("onRestartNow");
+            };
+
+            restartDialog.undoChanges = function () {
+                ipcRenderer.send("onUndoChanges");
+            };
+
+            restartDialog.restartLater = function () {
+                ipcRenderer.send("onRestartLater");
+            };
+
+            restartDialog.close = function () {
+                ipcRenderer.send("onClosed");
+            };
+
+            // TODO
+            ipcRenderer.on("onRestartRequired", function (event, pendingChanges) {
+                console.log("Pending Changes: ", pendingChanges)
+            });
+
+            gpii.restartDialog(".fl-popup-contentWrapper", {
+                listeners: {
+                    onRestartNow: {
+                        funcName: "gpii.restartDialog.restartNow"
+                    },
+                    onClosed: {
+                        funcName: "gpii.restartDialog.close"
+                    },
+                    onRestartLater: {
+                        funcName: "gpii.restartDialog.restartLater"
+                    },
+                    onUndoChanges: {
+                        funcName: "gpii.restartDialog.undoChanges"
+                    }
+                }
+            });
+        });
+    </script>
     </body>
 </html>

@@ -98,6 +98,10 @@ body {
     height: 50px;
 }
 
+.fl-popup .fl-popup-controls button span {
+    white-space: pre-wrap;
+}
+
 .fl-popup .fl-popup-controls button:last-child {
     margin-right: 0;
 }
