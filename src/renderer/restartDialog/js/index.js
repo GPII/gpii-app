@@ -34,7 +34,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             solutionNames: {
                 this: "{that}.dom.body",
                 method: "text",
-                args: "{that}.options.labels.restartBody"
+                args: "@expand:gpii.restartDialog.generateRestartBody({that}.options.labels.restartBody, {that}.model.solutionNames)"
             }
         },
 
@@ -43,12 +43,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 this: "{that}.dom.title",
                 method: "text",
                 args: "{that}.options.labels.restartTitle"
-            },
-            "onCreate.log": {
-                this: "console",
-                method: "log",
-                args: ["{that}.dom.body", "{that}.options.labels.restartBody"],
-                priority: "last"
             }
         },
 
@@ -103,17 +97,17 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
         labels: {
             restartTitle: "Changes require restart",
-            restartBody: "In order to be applied, some of the changes you made require the following applications to restart: %solutions \n What would you like to do?",
+            restartBody: "In order to be applied, some of the changes you made require the following applications to restart: %solutions \n\n What would you like to do?",
             cancel: "Cancel\n(Undo Changes)",
             restartNow: "Restart Now",
             restartLater: "Close and\nRestart Later"
         }
     });
 
-    gpii.restartDialog.getRestartText = function (prefix, solutionNames) {
+    gpii.restartDialog.generateRestartBody= function (template, solutionNames) {
         if (solutionNames.length === 0) {
             return "";
         }
-        return prefix + solutionNames.join(", ");
+        return fluid.stringTemplate(template, { solutions: solutionNames.join(", ")});
     };
 })(fluid);

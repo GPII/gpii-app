@@ -67,13 +67,22 @@
                 ipcRenderer.send("onClosed");
             };
 
-            // TODO
-            ipcRenderer.on("onRestartRequired", function (event, pendingChanges) {
-                console.log("Pending Changes: ", pendingChanges)
-            });
+
+            restartDialog.registerChannel = function (restartWarning) {
+                ipcRenderer.on("onRestartRequired", function (event, pendingChanges) {
+                    console.log("Pending changes: ", pendingChanges);
+                    restartWarning.applier.change("solutionNames",
+                        fluid.getMembers(pendingChanges, "solutionName"));
+                });
+            }
 
             gpii.restartDialog(".fl-popup-contentWrapper", {
                 listeners: {
+                    "onCreate.registerChannel": {
+                        funcName: "gpii.restartDialog.registerChannel",
+                        args: "{that}"
+                    },
+
                     onRestartNow: {
                         funcName: "gpii.restartDialog.restartNow"
                     },

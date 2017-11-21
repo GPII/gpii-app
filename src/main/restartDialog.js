@@ -102,8 +102,8 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
 
     config: {
         attrs: {
-            // width: 300,
-            // height: 200
+            width: 500,
+            height: 400
         },
         // TODO extract somehow?
         url: {
@@ -125,6 +125,14 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
         onUndoChanges: null
     },
 
+    // XXX find a better way
+    modelListeners: {
+        "pendingChanges": [{
+            func: "{dialogChannel}.updatePendingChanges",
+            args: "{that}.model.pendingChanges"
+        }]
+    },
+
     components: {
         dialogChannel: {
             // TODO pass {that}?
@@ -137,14 +145,6 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
                     // TODO probably not needed
                     onRestartLater: "{restartDialog}.events.onRestartLater",
                     onUndoChanges: "{restartDialog}.events.onUndoChanges"
-                },
-
-                // XXX find a better way
-                modelListeners: {
-                    "{restartDialog}.model.pendingChanges": {
-                        func: "{dialogChannel}.updatePendingChanges",
-                        args: "{change}.value"
-                    }
                 }
             }
         }
@@ -159,7 +159,8 @@ gpii.app.dialog.restartDialog.show = function (restartDialog, pendingChanges) {
         restartDialog.applier.change("showDialog", true);
 
         // change according new solutions
-        restartDialog.applier.change("pendingChanges", pendingChanges);
+        console.log("update pending changes");
+        restartDialog.dialogChannel.updatePendingChanges(pendingChanges);
         restartDialog.dialog.focus();
     }
 };
