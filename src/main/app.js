@@ -99,12 +99,6 @@ fluid.defaults("gpii.app", {
                     "{psp}.events.onSettingAltered": {
                         listener: "{that}.enqueue"
                     },
-                    "{psp}.events.onRestartNow": {
-                        listener: "{that}.flushPendingChanges"
-                    },
-                    "{psp}.events.onUndoChanges": {
-                        listener: "{that}.undoPendingChanges"
-                    },
                     "{psp}.events.onActivePreferenceSetAltered": {
                         listener: "{that}.clearPendingChanges"
                     }
@@ -150,25 +144,39 @@ fluid.defaults("gpii.app", {
          * as a dialog, or in the psp
          */
         restartWarningController: {
-            type: "fluid.component",
+            type: "fluid.modelComponent",
             createOnEvent: "onPrerequisitesReady",
             priority: "after:restartDialog",
             options: {
+                model: {
+                    isPspShown: "{psp}.model.isShown"
+                },
+                modelListeners: {
+                    // Hide restart dialog whenever PSP is shown
+                    "isPspShown": {
+                        func: "{that}.hideRestarDialogIfNeeded",
+                        args: "{change}.value"
+                    }
+                },
+
                 listeners: {
                     "{psp}.events.onClosed": {
                         func: "{restartDialog}.show",
                         args: [
-                            "{settingsBroker}.model.pendingChanges",
+                            "{settingsBroker}.model.pendingChanges"
                         ]
                     },
-                    "{restartDialog}.events.onRestartNow":{
-                        func: "{settingsBroker}.flushPendingChanges"
-                        // this will trigger toggleRestartWarning
-                    },
-                    "{restartDialog}.events.onUndoChanges":{
-                        func: "{settingsBroker}.undoPendingChanges"
-                        // this will trigger toggleRestartWarning
-                    },
+                    "{psp}.events.onRestartNow": [{
+                        func: "{restartDialog}.hide"
+                    }, {
+                        listener: "{settingsBroker}.flushPendingChanges"
+                    }],
+                    "{psp}.events.onUndoChanges": [{
+                        func: "{restartDialog}.hide"
+                    }, {
+                        listener: "{settingsBroker}.undoPendingChanges"
+                    }],
+
 
                     "{restartDialog}.events.onRestartLater": {
                         func: "{restartDialog}.hide"
@@ -185,9 +193,9 @@ fluid.defaults("gpii.app", {
                 },
 
                 invokers: {
-                    showRestartWarning: {
-                        funcName: "gpii.app.showRestartWarning",
-                        args: ["{psp}", "{restartDialog}", "{arguments}.0"]
+                    hideRestarDialogIfNeeded: {
+                        funcName: "gpii.app.hideRestarDialogIfNeeded",
+                        args: ["{restartDialog}", "{arguments}.0"]
                     }
                 }
             }
@@ -297,6 +305,9 @@ fluid.defaults("gpii.app", {
     }
 });
 
+/**
+ * TODO
+ */
 gpii.app.toggleRestartWarning = function (pspWindow, restartDialog, pendingSettings) {
 
     if (pendingSettings.length === 0) {
@@ -310,16 +321,16 @@ gpii.app.toggleRestartWarning = function (pspWindow, restartDialog, pendingSetti
     pspWindow.showRestartWarning(pendingSettings);
 };
 
-gpii.app.showRestartWarning = function (pspWindow, restartDialog, source, pendingSettings) {
-    // if (psp is shown) -> send notification
-    // if pcp is close show notification
-
-    if (pendingSettings.length === 0) {
-        return;
+/**
+ * TODO
+ */
+gpii.app.hideRestarDialogIfNeeded = function (restartDialog, isPspShown) {
+    console.log("Hidden!", isPspShown);
+    if (isPspShown) {
+        // ensure the dialog is hidden
+        // NOTE: this may have no effect in case the dialog is already hidden
+        restartDialog.hide();
     }
-
-    // always update the message
-    psp.showRestartWarning(pendingSettings);
 };
 
 /**
