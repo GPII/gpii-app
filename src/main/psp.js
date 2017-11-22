@@ -143,11 +143,10 @@ gpii.app.psp.showPSPWindow = function (psp, pspWindow) {
  */
 gpii.app.psp.initPSPWindowListeners = function (psp) {
     var pspWindow = psp.pspWindow;
-    pspWindow.on("blur", function () {        
-        psp.hide();
-        // XXX disable warningDialog show temporary
-        // to avoid missbehaviour with blur
-        // psp.events.onClosed.fire();
+    pspWindow.on("blur", function () {
+        if (psp.model.isShown) {
+            psp.events.onClosed.fire();
+        }
     });
 
     electron.screen.on("display-metrics-changed", function (event, display, changedMetrics) {
