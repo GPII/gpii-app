@@ -64,24 +64,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     };
 
     /**
-     * Responsible for detecting height changes in the element in which
-     * the component's container is nested.
-     */
-    fluid.defaults("gpii.psp.heightChangeListener", {
-        gradeNames: ["fluid.viewComponent"],
-        listeners: {
-            "onCreate.initResizeListener": {
-                "this": "@expand:$({that}.container.0.contentWindow)",
-                method: "on",
-                args: ["resize", "{that}.onHeightChanged"]
-            }
-        },
-        invokers: {
-            onHeightChanged: fluid.notImplemented
-        }
-    });
-
-    /**
      * Responsible for drawing the settings list
      *
      * TODO support redrawing of settings
@@ -102,7 +84,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             content: "#flc-content",
             footer: "#flc-footer",
             settingsList: "#flc-settingsList",
-            heightChangeListener: "#flc-heightChangeListener",
+            heightChangeListener: "#flc-contentHeightChangeListener",
             restartWarning: "#flc-restartWarning"
         },
         components: {
@@ -157,6 +139,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 container: "{that}.dom.restartWarning",
                 options: {
                     listeners: {
+                        onContentHeightChanged: {
+                            funcName: "{mainWindow}.onContentHeightChanged"
+                        },
                         "{mainWindow}.events.onRestartRequired": {
                             funcName: "{that}.updatePendingChanges"
                         }

@@ -82,7 +82,7 @@ body {
     width: 100%;
 }
 
-#flc-settingsList > iframe {
+iframe.fl-heightChangeListener {
     position: absolute;
     top: 0;
     left: 0;
@@ -144,6 +144,11 @@ body {
 
 #flc-settingsList .flc-setting .fl-settingLabel .fl-icon:first-child {
     margin-left: 6px;
+}
+
+#flc-restartWarning {
+    position: relative;
+    width: 100%;
 }
 
 /* Footer styles */

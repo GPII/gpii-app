@@ -22,6 +22,7 @@
         <script type="text/javascript" src="js/restartWarning.js"></script>
         <script type="text/javascript" src="js/footer.js"></script>
         <script type="text/javascript" src="js/clientChannel.js"></script>
+        <script type="text/javascript" src="js/heightChangeListener.js"></script>
         <script type="text/javascript" src="js/mainWindow.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
     </head>
@@ -54,11 +55,12 @@
 
             <div id="flc-content">
                 <div id="flc-settingsList">
-                    <iframe id="flc-heightChangeListener"></iframe>
+                    <iframe id="flc-contentHeightChangeListener" class="fl-heightChangeListener"></iframe>
                 </div>
             </div>
 
             <div id="flc-restartWarning">
+                <iframe id="flc-restartHeightChangeListener" class="fl-heightChangeListener"></iframe>
                 <div>
                     <span class="flc-restartIcon fl-restartIcon fl-icon"></span>
                     <div class="flc-restartText fl-restartText"></div>

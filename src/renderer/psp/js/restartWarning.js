@@ -50,7 +50,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         modelListeners: {
             solutionNames: {
                 funcName: "gpii.psp.restartWarning.toggleVisibility",
-                args: ["{that}.container", "{change}.value"]
+                args: ["{that}", "{that}.container", "{change}.value"]
             },
             restartIcon: {
                 funcName: "gpii.psp.restartWarning.updateIcon",
@@ -67,9 +67,19 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             restartText: ".flc-restartText",
             cancel: ".flc-restartCancel",
             restartNow: ".flc-restartNow",
-            restartLater: ".flc-restartLater"
+            restartLater: ".flc-restartLater",
+            heightChangeListener: "#flc-restartHeightChangeListener"
         },
         components: {
+            heightChangeListener: {
+                type: "gpii.psp.heightChangeListener",
+                container: "{that}.dom.heightChangeListener",
+                options: {
+                    invokers: {
+                        onHeightChanged: "{restartWarning}.events.onContentHeightChanged.fire"
+                    }
+                }
+            },
             cancelBtn: {
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.cancel",
@@ -108,7 +118,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         events: {
-            onSettingAltered: null,
+            onContentHeightChanged: null,
 
             onRestartNow: null,
             onRestartLater: null,
@@ -173,12 +183,16 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         return labels.restartText + solutionNames.join(", ");
     };
 
-    gpii.psp.restartWarning.toggleVisibility = function (container, solutionNames) {
+    gpii.psp.restartWarning.toggleVisibility = function (that, container, solutionNames) {
         if (solutionNames.length === 0) {
             container.hide();
         } else {
             container.show();
         }
+
+        // Fire manually the height changed event because the listener is not
+        // triggered when the warning has already been hidden.
+        that.events.onContentHeightChanged.fire();
     };
 
     var ipcRenderer = require("electron").ipcRenderer;
