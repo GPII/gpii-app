@@ -46,7 +46,6 @@ fluid.defaults("gpii.app.tray", {
     model: {
         keyedInUserToken: null,
         pendingChanges: [],
-        isPSPShown: null,
         icon: "{that}.options.icons.keyedOut",
         preferences: "{app}.model.preferences",
         tooltip: ""
@@ -57,7 +56,7 @@ fluid.defaults("gpii.app.tray", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.getTrayIcon",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.isPSPShown", "{that}.model.pendingChanges", "{that}.options.icons"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.pendingChanges", "{that}.options.icons"]
             }
         },
         "tooltip": {
@@ -65,7 +64,7 @@ fluid.defaults("gpii.app.tray", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.getTrayTooltip",
-                args: ["{that}.model.preferences", "{that}.model.isPSPShown", "{that}.model.pendingChanges", "{that}.options.tooltips"]
+                args: ["{that}.model.preferences", "{that}.model.pendingChanges", "{that}.options.tooltips"]
             }
         }
     },
@@ -123,8 +122,8 @@ gpii.app.makeTray = function (icon, openPSP) {
     return tray;
 };
 
-gpii.app.getTrayIcon = function (keyedInUserToken, isPSPShown, pendingChanges, icons) {
-    if (!isPSPShown && pendingChanges.length > 0) {
+gpii.app.getTrayIcon = function (keyedInUserToken, pendingChanges, icons) {
+    if (pendingChanges && pendingChanges.length > 0) {
         return icons.pendingChanges;
     }
 
@@ -139,8 +138,8 @@ gpii.app.getTrayIcon = function (keyedInUserToken, isPSPShown, pendingChanges, i
  * there is no active preference set.
  * @return The tooltip label for the Electron Tray.
  */
-gpii.app.getTrayTooltip = function (preferences, isPSPShown, pendingChanges, tooltips) {
-    if (!isPSPShown && pendingChanges.length > 0) {
+gpii.app.getTrayTooltip = function (preferences, pendingChanges, tooltips) {
+    if (pendingChanges && pendingChanges.length > 0) {
         return tooltips.pendingChanges;
     }
 

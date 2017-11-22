@@ -199,8 +199,7 @@ fluid.defaults("gpii.app", {
             options: {
                 model: {
                     keyedInUserToken: "{gpii.app}.model.keyedInUserToken",
-                    pendingChanges: "{settingsBroker}.model.pendingChanges",
-                    isPSPShown: "{psp}.model.isShown"
+                    pendingChanges: "{settingsBroker}.model.pendingChanges"
                 }
             },
             // needed as the psp window is used by the tray
