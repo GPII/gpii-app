@@ -34,7 +34,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             solutionNames: {
                 this: "{that}.dom.body",
                 method: "text",
-                args: "@expand:gpii.restartDialog.generateRestartBody({that}.options.labels.restartBody, {that}.model.solutionNames)"
+                args: "@expand:gpii.restartDialog.generateRestartBody({that}.options.labels, {that}.model.solutionNames)"
             }
         },
 
@@ -96,6 +96,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             onClosed: null
         },
         labels: {
+            os: "Windows",
             restartTitle: "Changes require restart",
             restartBody: "In order to be applied, some of the changes you made require the following applications to restart: %solutions \n\n What would you like to do?",
             cancel: "Cancel\n(Undo Changes)",
@@ -104,10 +105,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    gpii.restartDialog.generateRestartBody= function (template, solutionNames) {
-        if (solutionNames.length === 0) {
-            return "";
-        }
-        return fluid.stringTemplate(template, { solutions: solutionNames.join(", ")});
+    gpii.restartDialog.generateRestartBody = function (labels, solutionNames) {
+        return fluid.stringTemplate(labels.restartBody, { solutions: solutionNames.join(", ")});
     };
 })(fluid);

@@ -67,12 +67,31 @@
                 ipcRenderer.send("onClosed");
             };
 
+            restartDialog.extractSolutionNames = function (pendingChanges, osLabel) {
+                var isOSRestartNeeded = fluid.find_if(pendingChanges, function (pendingChange) {
+                    return pendingChange.liveness === "OSRestart";
+                });
+
+                if (isOSRestartNeeded) {
+                    return [osLabel];
+                }
+
+                return fluid.accumulate(pendingChanges, function (pendingChange, solutionNames) {
+                    var solutionName = pendingChange.solutionName;
+                    if (fluid.isValue(solutionName) && solutionNames.indexOf(solutionName) < 0) {
+                        solutionNames.push(solutionName);
+                    }
+                    return solutionNames;
+                }, []);
+            }
 
             restartDialog.registerChannel = function (restartWarning) {
                 ipcRenderer.on("onRestartRequired", function (event, pendingChanges) {
-                    console.log("Pending changes: ", pendingChanges);
-                    restartWarning.applier.change("solutionNames",
-                        fluid.getMembers(pendingChanges, "solutionName"));
+                    var solutionNames = gpii.restartDialog.extractSolutionNames(
+                        pendingChanges,
+                        restartWarning.options.labels.os
+                    );
+                    restartWarning.applier.change("solutionNames", solutionNames);
                 });
             }
 
