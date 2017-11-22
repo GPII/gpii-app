@@ -40,13 +40,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param value {Any} The new, updated value for the setting. Can be
      * of different type depending on the setting.
      */
-    gpii.psp.clientChannel.alterSetting = function (path, value, oldValue, liveness, solutionName) {
+    gpii.psp.clientChannel.alterSetting = function (path, value, oldValue, liveness, solutionName, title) {
         ipcRenderer.send("onSettingAltered", {
             path: path,
             value: value,
             oldValue: oldValue,
             liveness: liveness,
-            solutionName: solutionName
+            solutionName: solutionName,
+            title: title
         });
     };
 

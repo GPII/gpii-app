@@ -138,7 +138,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
 
         return fluid.accumulate(pendingChanges, function (pendingChange, solutionNames) {
-            var solutionName = pendingChange.solutionName;
+            var solutionName = fluid.isValue(pendingChange.solutionName) ?
+                                    pendingChange.solutionName : pendingChange.title;
             if (fluid.isValue(solutionName) && solutionNames.indexOf(solutionName) < 0) {
                 solutionNames.push(solutionName);
             }
