@@ -64,9 +64,9 @@ app.capitalize = function (text) {
  * @param messageChannel {String} The channel to which the message to be sent
  * @param message {String}
  */
-app.notifyWindow = function (window, messageChannel, message) {
-    if (window) {
-        window.webContents.send(messageChannel, message);
+app.notifyWindow = function (browserWindow, messageChannel, message) {
+    if (browserWindow) {
+        browserWindow.webContents.send(messageChannel, message);
     }
 };
 

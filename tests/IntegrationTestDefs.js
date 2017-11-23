@@ -35,11 +35,11 @@ gpii.tests.app.testInitialMenu = function (menu) {
 fluid.registerNamespace("gpii.tests.app.psp");
 
 gpii.tests.app.psp.testPSPWindowIsShown = function (psp) {
-    jqUnit.assertTrue("The PSP Window is shown", psp.isShown());
+    jqUnit.assertTrue("The PSP Window is shown", psp.model.isShown);
 };
 
 gpii.tests.app.psp.testPSPWindowIsHidden = function (psp) {
-    jqUnit.assertFalse("The PSP Window is hidden", psp.isShown());
+    jqUnit.assertFalse("The PSP Window is hidden", psp.model.isShown);
 };
 
 gpii.tests.app.psp.testInitialPSPWindow = function (psp) {
@@ -201,7 +201,7 @@ gpii.tests.dev.testTrayTooltip = function (tray, expectedTooltip) {
 gpii.tests.dev.testTrayKeyedOut = function (tray) {
     jqUnit.assertValue("Tray is available", tray);
     jqUnit.assertEquals("No user keyed-in icon", tray.options.icons.keyedOut, tray.model.icon);
-    gpii.tests.dev.testTrayTooltip(tray, tray.options.labels.defaultTooltip);
+    gpii.tests.dev.testTrayTooltip(tray, tray.options.tooltips.defaultTooltip);
 };
 
 gpii.tests.dev.testTrayKeyedIn = function (tray, expectedTooltip) {

@@ -510,7 +510,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Switch - component notified for the update with proper path/value",
                             [switchSettingFixture.path, !switchSettingFixture.value],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }
                 ], [ // Test model interaction (settingsVisualizer is already created)
@@ -545,7 +545,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Stepper - component is notified when increasing for the update with proper path/value",
                             [stepperSettingFixture.path, stepperSettingFixture.value + stepperSettingFixture.schema.divisibleBy],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }, {
                         jQueryTrigger: "click",
@@ -556,7 +556,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Stepper - component is notified when decreasing for the update with proper path/value",
                             [stepperSettingFixture.path, stepperSettingFixture.value],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }
                 ], [
@@ -591,7 +591,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Textfield - component notified for the update with proper path/value",
                             [textfieldSettingFixture.path, "Test value"],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }
                 ], [
@@ -626,7 +626,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Dropdown - component notified for the update with proper path/value",
                             [dropdownSettingFixture.path, dropdownSettingFixture.schema["enum"][2]],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }
                 ], [
@@ -655,7 +655,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Multipicker - component notified for the update with proper path/value",
                             [multipickerSettingFixture.path, [multipickerSettingFixture.schema["enum"][1]]],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }
                 ], [
