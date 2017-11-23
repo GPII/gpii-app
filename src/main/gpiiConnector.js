@@ -36,9 +36,7 @@ fluid.defaults("gpii.app.gpiiConnector", {
     events: {
         onPreferencesUpdated: null,
         onSettingUpdated: null,
-        onSnapsetNameUpdated: null,
-
-        onRestartRequired: null
+        onSnapsetNameUpdated: null
     },
 
     listeners: {
@@ -57,15 +55,10 @@ fluid.defaults("gpii.app.gpiiConnector", {
         },
         updateSetting: {
             funcName: "gpii.app.gpiiConnector.updateSetting",
-            args: ["{that}.socket", "{arguments}.0", "{that}"]
+            args: ["{that}.socket", "{arguments}.0"]
         },
         updateActivePrefSet: {
             funcName: "gpii.app.gpiiConnector.updateActivePrefSet",
-            args: ["{that}.socket", "{arguments}.0"]
-        },
-
-        undoSettingChanges: {
-            funcName: "gpii.app.gpiiConnector.undoSettingChanges",
             args: ["{that}.socket", "{arguments}.0"]
         },
         closeConnection: {
@@ -77,28 +70,20 @@ fluid.defaults("gpii.app.gpiiConnector", {
     }
 });
 
-gpii.app.gpiiConnector.undoSettingChanges = function (socket, path) {
-    /// TODO just a temp version
-    // integrate with API once rdy
-    var payload = JSON.stringify({
-        path: ["settingControls", path, "value"],
-        type: "DELETE"
-    });
-    socket.send(payload);
-}
-
 /**
- * Sends setting update request to GPII over the socket.
+ * Sends setting update request to GPII over the socket if necessary.
+ * A request will not be sent if the current and the previous values
+ * of the setting coincide.
  *
  * @param socket {Object} The already connected WebSocket instance
  * @param setting {Object} The setting to be changed
  * @param setting.path {String} The id of the setting
  * @param setting.value {String} The new value of the setting
+ * @param setting.oldValue {String} Optional - the previous value of
+ * the setting
  */
-gpii.app.gpiiConnector.updateSetting = function (socket, setting, gpiiConnector) {
-    // Do not send a request for update if the new and the old value coincide.
-    if (fluid.isValue(setting.oldValue) && JSON.stringify(setting.oldValue) === JSON.stringify(setting.value)) {
-        console.log("old value coincides with new one for", setting.path);
+gpii.app.gpiiConnector.updateSetting = function (socket, setting) {
+    if (fluid.isValue(setting.oldValue) && gpii.app.equalsAsJSON(setting.oldValue, setting.value)) {
         return;
     }
 
@@ -107,13 +92,6 @@ gpii.app.gpiiConnector.updateSetting = function (socket, setting, gpiiConnector)
         type: "ADD",
         value: setting.value
     });
-
-
-    // XXX remove this logic once the api support restart logic
-    setTimeout(function () {
-        console.log("restart fire!");
-        gpiiConnector.events.onRestartRequired.fire([setting.path]);
-    }, 5000);
 
     socket.send(payload);
 };

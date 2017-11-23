@@ -99,14 +99,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 includeSource: ["init"]
             }, {
                 funcName: "{that}.events.onSettingAltered.fire",
-                args: [
-                    "{that}.model.path",
-                    "{change}.value",
-                    "{change}.oldValue",
-                    "{that}.model.liveness",
-                    "{that}.model.solutionName",
-                    "{that}.model.schema.title"
-                ],
+                args: ["{that}.model", "{change}.oldValue"],
                 excludeSource: ["init", "psp.mainWindow"]
             }]
         },

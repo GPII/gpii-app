@@ -123,6 +123,7 @@ fluid.defaults("gpii.app.psp", {
  * This is a workaround for the flickering issue observed when the content displayed in
  * the PSP window changes. (Electron does not rerender web pages when the
  * `BrowserWindow` is hidden).
+ * @param psp {Component} The `gpii.app.psp` instance.
  * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
 gpii.app.psp.showPSPWindow = function (psp, pspWindow) {
@@ -139,7 +140,7 @@ gpii.app.psp.showPSPWindow = function (psp, pspWindow) {
 /**
  * A function which should be called to init various listeners related to
  * the PSP window.
- * @param psp {Object} The `gpii.app.psp` instance
+ * @param psp {Component} The `gpii.app.psp` instance.
  */
 gpii.app.psp.initPSPWindowListeners = function (psp) {
     var pspWindow = psp.pspWindow;
@@ -161,8 +162,8 @@ gpii.app.psp.initPSPWindowListeners = function (psp) {
 /**
  * Initialises the connection between the Electron process and
  * the PSP's `BrowserWindow` instance
- *
- * @param psp {Object} A `gpii.app.psp` instance
+ * @param app {Component} The `gpii.app` instance.
+ * @param psp {Component} The `gpii.app.psp` instance.
  */
 gpii.app.initPSPWindowIPC = function (app, psp) {
     ipcMain.on("onPSPClose", function () {
@@ -179,7 +180,7 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     });
 
     ipcMain.on("onActivePreferenceSetAltered", function (event, arg) {
-        psp.events.onActivePreferenceSetAltered.fire(arg.value);
+        psp.events.onActivePreferenceSetAltered.fire(arg);
     });
 
     ipcMain.on("onContentHeightChanged", function (event, contentHeight) {
@@ -205,6 +206,7 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
  * Hides the PSP window by moving it to a non-visible part of the screen. This function
  * in conjunction with `gpii.app.psp.showPSPWindow` help avoid the flickering issue when
  * the content of the PSP window changes.
+ * @param psp {Component} The `gpii.app.psp` instance.
  * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
 gpii.app.psp.hidePSPWindow = function (psp, pspWindow) {

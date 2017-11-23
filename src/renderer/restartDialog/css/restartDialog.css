@@ -12,7 +12,7 @@ body {
 .fl-popup {
     position: absolute;
     bottom: 22px;
-    right: 10;
+    right: 10px;
 
     background-color: #83CBEF;
 }

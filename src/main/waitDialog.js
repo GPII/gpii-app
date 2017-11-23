@@ -108,7 +108,6 @@ gpii.app.dialog.makeWaitDialog = function (windowOptions, position, url) {
 
 
 gpii.app.dialog.showHideWaitDialog = function (that, showDialog) {
-    console.log("HERE: ", showDialog);
     showDialog ? gpii.app.dialog.displayWaitDialog(that) : gpii.app.dialog.dismissWaitDialog(that);
 };
 

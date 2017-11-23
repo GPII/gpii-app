@@ -14,6 +14,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
+    /**
+     * A component used at the bottom of the PSP (between the settings list and
+     * the footer) to indicate that there are pending setting changes. Includes
+     * logic for displaying the names of the applications which require a restart,
+     * as well as for showing/hiding itself and firing the appropriate events
+     * when the user presses either of the three action buttons.
+     */
     fluid.defaults("gpii.psp.restartWarning", {
         gradeNames: ["fluid.viewComponent"],
         model: {
@@ -138,6 +145,18 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
+    /**
+     * Returns the solution names (i.e. the names of the applications which should
+     * be restarted) that correspond to the currently pending setting changes. If
+     * a given setting does not have a solution name, its title will be used instead.
+     * If there is at least one setting which requires the OS to be restarted, then
+     * the only solution name that will be returned will be the OS name.
+     * @param labels {Object} An object containing various labels used throughout
+     * the component.
+     * @param pendingChanges {Array} An array containing all pending setting changes.
+     * @returns the solutions names or titles corresponding to the applications
+     * that need to be restarted.
+     */
     gpii.psp.restartWarning.getSolutionsNames = function (labels, pendingChanges) {
         var isOSRestartNeeded = fluid.find_if(pendingChanges, function (pendingChange) {
             return pendingChange.liveness === "OSRestart";
@@ -149,7 +168,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         return fluid.accumulate(pendingChanges, function (pendingChange, solutionNames) {
             var solutionName = fluid.isValue(pendingChange.solutionName) ?
-                                    pendingChange.solutionName : pendingChange.title;
+                                    pendingChange.solutionName : pendingChange.schema.title;
             if (fluid.isValue(solutionName) && solutionNames.indexOf(solutionName) < 0) {
                 solutionNames.push(solutionName);
             }
@@ -157,13 +176,26 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }, []);
     };
 
+    /**
+     * Returns the CSS class which is to be applied to the icon in the component based
+     * on whether an application or the whole OS needs to be restarted.
+     * @param labels {Object} An object containing various labels used throughout
+     * the component.
+     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * applications that need to be restarted.
+     * @param styles {Object} An object containing the CSS classes used in the component.
+     * @return the CSS class to be applied to the icon.
+     */
     gpii.psp.restartWarning.getRestartIcon = function (labels, solutionNames, styles) {
-        if (solutionNames[0] === labels.os) {
-            return styles.osRestartIcon;
-        }
-        return styles.applicationRestartIcon;
+        return solutionNames[0] === labels.os ? styles.osRestartIcon : styles.applicationRestartIcon;
     };
 
+    /**
+     * Updates the icon in the component based on the passed CSS class.
+     * @param restartIcon {jQuery} A jQuery object corresponding to the restart icon.
+     * @param restartIconClass {String} the CSS class to be applied to the icon.
+     * @param styles {Object} An object containing the CSS classes used in the component.
+     */
     gpii.psp.restartWarning.updateIcon = function (restartIcon, restartIconClass, styles) {
         restartIcon
             .removeClass(styles.osRestartIcon)
@@ -171,6 +203,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             .addClass(restartIconClass);
     };
 
+    /**
+     * Returns the text which is to be displayed in the component based on the solution
+     * names corresponding to the pending setting changes.
+     * @param labels {Object} An object containing various labels used throughout
+     * the component.
+     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * applications that need to be restarted.
+     * @returns the text which is to be displayed in the component.
+     */
     gpii.psp.restartWarning.getRestartText = function (labels, solutionNames) {
         if (solutionNames.length === 0) {
             return "";
@@ -183,7 +224,16 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         return labels.restartText + solutionNames.join(", ");
     };
 
-    gpii.psp.restartWarning.toggleVisibility = function (that, container, solutionNames) {
+    /**
+     * Shows or hides the restart warning based on whether there is at least one solution
+     * name available. Also, it notifies that the height of the component has changed.
+     * @param restartWarning {Component} The `gpii.psp.restartWarning` instance.
+     * @param container {jQuery} The jQuery object representing the container of the
+     * restart warning.
+     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * applications that need to be restarted.
+     */
+    gpii.psp.restartWarning.toggleVisibility = function (restartWarning, container, solutionNames) {
         if (solutionNames.length === 0) {
             container.hide();
         } else {
@@ -192,12 +242,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         // Fire manually the height changed event because the listener is not
         // triggered when the warning has already been hidden.
-        that.events.onContentHeightChanged.fire();
+        restartWarning.events.onContentHeightChanged.fire();
     };
-
-    var ipcRenderer = require("electron").ipcRenderer;
-
-    ipcRenderer.on("onSolutionsUpdated", function (event, data) {
-        console.log("Some data came by: ", data);
-    });
 })(fluid);

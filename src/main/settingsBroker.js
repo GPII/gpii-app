@@ -11,10 +11,23 @@ You may obtain a copy of the License at
 https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
+require("./utils.js");
 
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
+/**
+ * A component which orchestrates the modification of user settings. There are two
+ * groups of settings - the first consists of settings for which value changes are
+ * immediately reflected. They have "liveness" which is either "live" or "liveRestart".
+ * The second group houses settings whose value modifications will be applied in the
+ * future after an explicit user confirmation. They have liveness which is either
+ * "manualRestart" (i.e. the corresponding application must be restarted in order for
+ * the setting to be applied) or "OSRestart" (the whole OS must be restarted).
+ *
+ * The `pendingChanges` array in the component's model contains descriptors of settings
+ * from the second group (i.e. whose application is delayed).
+ */
 fluid.defaults("gpii.app.settingsBroker", {
     gradeNames: ["fluid.modelComponent"],
     model: {
@@ -49,16 +62,12 @@ fluid.defaults("gpii.app.settingsBroker", {
             args: ["{that}", "{that}.model.pendingChanges"]
         },
         clearPendingChanges: {
-            funcName: "gpii.app.settingsBroker.clearPendingChanges",
-            args: ["{that}"]
+            changePath: "pendingChanges",
+            value: []
         },
         undoPendingChanges: {
             funcName: "gpii.app.settingsBroker.undoPendingChanges",
             args: ["{that}", "{that}.model.pendingChanges"]
-        },
-        hasPendingChanges: {
-            funcName: "gpii.app.settingsBroker.hasPendingChanges",
-            args: ["{that}.model.pendingChanges"]
         }
     },
     events: {
@@ -68,17 +77,13 @@ fluid.defaults("gpii.app.settingsBroker", {
 });
 
 /**
- * Checks whether the old value and new value for a given setting are equal.
- * Relies on the usage of `JSON.stringify` which means that if the values
- * are arrays, the ordering of the objects within them matters.
- * @param oldValue {Any} The old value for the setting.
- * @param newValue {Any} The new value for the setting.
- * @return `true` if the values are equal and `false` otherwise.
+ * Queues a setting to be applied in the future. If the setting does not
+ * require an application or OS restart, it will be applied immediately.
+ * Otherwise, all queued settings will be applied once an explicit user
+ * instruction is received.
+ * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
+ * @param setting {Object} A descriptor of the setting which is to be applied.
  */
-gpii.app.settingsBroker.equals = function (oldValue, newValue) {
-    return JSON.stringify(oldValue) === JSON.stringify(newValue);
-};
-
 gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
     // Apply the setting immediately, without queuing if it is live.
     if (setting.liveness === "live" || setting.liveness === "liveRestart") {
@@ -94,7 +99,7 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
     if (pendingChange) {
         // If the new setting's value is simply the initial value for the setting,
         // remove the pending changes for this setting altogether.
-        if (gpii.app.settingsBroker.equals(pendingChange.oldValue, setting.value)) {
+        if (gpii.app.equalsAsJSON(pendingChange.oldValue, setting.value)) {
             pendingChanges = fluid.remove_if(pendingChanges, function (change) {
                 return change.path === setting.path;
             });
@@ -110,10 +115,11 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
     settingsBroker.applier.change("pendingChanges", pendingChanges);
 };
 
-gpii.app.settingsBroker.clearPendingChanges = function (settingsBroker) {
-    settingsBroker.applier.change("pendingChanges", []);
-};
-
+/**
+ * Applies all pending setting changes and clears the queue.
+ * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
+ * @param pendingChanges {Array} An array containing all pending setting changes.
+ */
 gpii.app.settingsBroker.flushPendingChanges = function (settingsBroker, pendingChanges) {
     fluid.each(pendingChanges, function (pendingChange) {
         settingsBroker.applySetting(pendingChange);
@@ -121,22 +127,37 @@ gpii.app.settingsBroker.flushPendingChanges = function (settingsBroker, pendingC
     settingsBroker.clearPendingChanges();
 };
 
+/**
+ * Cancels the application of pending changes and clears the queue. This
+ * function is responsible for firing the appropriate events so that the PSP
+ * interface can restore to its original state before the queueing of the
+ * setting changes.
+ * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
+ * @param pendingChanges {Array} An array containing all pending setting changes.
+ */
 gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, pendingChanges) {
     fluid.each(pendingChanges, function (pendingChange) {
         pendingChange = fluid.extend(true, pendingChange, {
             value: pendingChange.oldValue
         });
+        // Fire `onSettingApplied` so that the PSP UI can be updated accordingly.
+        // Note that the gpiiConnector will not propagate to the GPII core setting
+        // changes whose current and previous values coincide.
         settingsBroker.applySetting(pendingChange);
     });
     settingsBroker.clearPendingChanges();
 };
 
+/**
+ * A function which should be called whenever the `keyedInUserToken` changes.
+ * Basically, it clears the queue of pending setting changes when the user
+ * keyes out.
+ * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
+ * @param keyedInUserToken {String} The token of the currently keyed-in user
+ * or `null` if there is none.
+ */
 gpii.app.settingsBroker.onUserTokenChanged = function (settingsBroker, keyedInUserToken) {
     if (!fluid.isValue(keyedInUserToken)) {
         settingsBroker.clearPendingChanges();
     }
-};
-
-gpii.app.settingsBroker.hasPendingChanges = function (pendingChanges) {
-    return fluid.isArrayable(pendingChanges) && pendingChanges.length > 0;
 };

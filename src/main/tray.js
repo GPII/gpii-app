@@ -122,6 +122,15 @@ gpii.app.makeTray = function (icon, openPSP) {
     return tray;
 };
 
+/**
+ * Returns the path to the icon for the Electron Tray based on whether there is a
+ * keyed-in user and on the pending setting changes (if any).
+ * @param keyedInUserToken {String} The token if the keyed-in user or `null` if
+ * there is no such.
+ * @param pendingChanges {Array} An array containing all pending setting changes.
+ * @param icons {Object} An object containing all possible icon paths.
+ * @return The tooltip label for the Electron Tray.
+ */
 gpii.app.getTrayIcon = function (keyedInUserToken, pendingChanges, icons) {
     if (pendingChanges && pendingChanges.length > 0) {
         return icons.pendingChanges;
@@ -131,11 +140,12 @@ gpii.app.getTrayIcon = function (keyedInUserToken, pendingChanges, icons) {
 };
 
 /**
- * Returns the tooltip for the Electron Tray based on the active preference set (if any).
+ * Returns the tooltip for the Electron Tray based on the active preference set (if any)
+ * and the pending setting changes.
  * @param preferences {Object} An object describing the preference sets (including the
  * active one) for the currently keyed-in user (if any).
- * @param defaultTooltip {String} A default tooltip text which should be used in case
- * there is no active preference set.
+ * @param pendingChanges {Array} An array containing all pending setting changes.
+ * @param tooltips {Object} An object containing all possible tooltip texts.
  * @return The tooltip label for the Electron Tray.
  */
 gpii.app.getTrayTooltip = function (preferences, pendingChanges, tooltips) {
