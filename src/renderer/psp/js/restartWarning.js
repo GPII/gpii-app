@@ -14,14 +14,124 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
+
     /**
      * A component used at the bottom of the PSP (between the settings list and
-     * the footer) to indicate that there are pending setting changes. Includes
-     * logic for displaying the names of the applications which require a restart,
-     * as well as for showing/hiding itself and firing the appropriate events
-     * when the user presses either of the three action buttons.
+     * the footer) to indicate that there are pending setting changes. Has dynamic
+     * showing/hiding behaviour dependent on the list of pending changes.
+     * Currently it is shown always when there is at least one pending change.
      */
     fluid.defaults("gpii.psp.restartWarning", {
+        gradeNames: ["gpii.psp.genericRestartWarning"],
+
+        modelRelay: {
+            restartIcon: {
+                target: "restartIcon",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.psp.restartWarning.getRestartIcon",
+                    args: ["{that}.options.labels", "{that}.model.solutionNames", "{that}.options.styles"]
+                }
+            }
+        },
+
+        modelListeners: {
+            solutionNames: {
+                funcName: "gpii.psp.restartWarning.toggleVisibility",
+                args: ["{that}", "{that}.container", "{change}.value"]
+            },
+            restartIcon: {
+                funcName: "gpii.psp.restartWarning.updateIcon",
+                args: ["{that}.dom.restartIcon", "{change}.value", "{that}.options.styles"]
+            }
+        },
+
+        selectors: {
+            restartIcon: ".flc-restartIcon",
+            heightChangeListener: "#flc-restartHeightChangeListener"
+        },
+
+        components: {
+            heightChangeListener: {
+                type: "gpii.psp.heightChangeListener",
+                container: "{that}.dom.heightChangeListener",
+                options: {
+                    invokers: {
+                        onHeightChanged: "{restartWarning}.events.onContentHeightChanged.fire"
+                    }
+                }
+            }
+        },
+
+        events: {
+            onContentHeightChanged: null
+        },
+
+        styles: {
+            osRestartIcon: "fl-icon-osRestart",
+            applicationRestartIcon: "fl-icon-appRestart"
+        }
+    });
+
+    /**
+     * Shows or hides the restart warning based on whether there is at least one solution
+     * name available. Also, it notifies that the height of the component has changed.
+     * @param restartWarning {Component} The `gpii.psp.restartWarning` instance.
+     * @param container {jQuery} The jQuery object representing the container of the
+     * restart warning.
+     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * applications that need to be restarted.
+     */
+    gpii.psp.restartWarning.toggleVisibility = function (restartWarning, container, solutionNames) {
+        if (solutionNames.length === 0) {
+            container.hide();
+        } else {
+            container.show();
+        }
+
+        // Fire manually the height changed event because the listener is not
+        // triggered when the warning has already been hidden.
+        restartWarning.events.onContentHeightChanged.fire();
+    };
+
+    /**
+     * Returns the CSS class which is to be applied to the icon in the component based
+     * on whether an application or the whole OS needs to be restarted.
+     * @param labels {Object} An object containing various labels used throughout
+     * the component.
+     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * applications that need to be restarted.
+     * @param styles {Object} An object containing the CSS classes used in the component.
+     * @return the CSS class to be applied to the icon.
+     */
+    gpii.psp.restartWarning.getRestartIcon = function (labels, solutionNames, styles) {
+        return solutionNames[0] === labels.os ? styles.osRestartIcon : styles.applicationRestartIcon;
+    };
+
+    /**
+     * Updates the icon in the component based on the passed CSS class.
+     * @param restartIcon {jQuery} A jQuery object corresponding to the restart icon.
+     * @param restartIconClass {String} the CSS class to be applied to the icon.
+     * @param styles {Object} An object containing the CSS classes used in the component.
+     */
+    gpii.psp.restartWarning.updateIcon = function (restartIcon, restartIconClass, styles) {
+        restartIcon
+            .removeClass(styles.osRestartIcon)
+            .removeClass(styles.applicationRestartIcon)
+            .addClass(restartIconClass);
+    };
+
+
+    /**
+     * A generic component (controller) for display and handling of settings that require
+     * restart of application or the OS. Includes logic for displaying the names of the
+     * applications which require a restart and firing the appropriate events
+     * when the user presses either of the three action buttons.
+     * Includes three actions:
+     * Cancel (undo changes); Restart now; Close and Restart later
+     * See `labels` property for up-to-date list.
+     */
+    fluid.defaults("gpii.psp.genericRestartWarning", {
         gradeNames: ["fluid.viewComponent"],
         model: {
             pendingChanges: [],
@@ -37,14 +147,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     args: ["{that}.options.labels", "{that}.model.pendingChanges"]
                 }
             },
-            restartIcon: {
-                target: "restartIcon",
-                singleTransform: {
-                    type: "fluid.transforms.free",
-                    func: "gpii.psp.restartWarning.getRestartIcon",
-                    args: ["{that}.options.labels", "{that}.model.solutionNames", "{that}.options.styles"]
-                }
-            },
             restartText: {
                 target: "restartText",
                 singleTransform: {
@@ -55,14 +157,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         modelListeners: {
-            solutionNames: {
-                funcName: "gpii.psp.restartWarning.toggleVisibility",
-                args: ["{that}", "{that}.container", "{change}.value"]
-            },
-            restartIcon: {
-                funcName: "gpii.psp.restartWarning.updateIcon",
-                args: ["{that}.dom.restartIcon", "{change}.value", "{that}.options.styles"]
-            },
             restartText: {
                 this: "{that}.dom.restartText",
                 method: "text",
@@ -70,28 +164,17 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         selectors: {
-            restartIcon: ".flc-restartIcon",
             restartText: ".flc-restartText",
-            cancel: ".flc-restartCancel",
             restartNow: ".flc-restartNow",
             restartLater: ".flc-restartLater",
-            heightChangeListener: "#flc-restartHeightChangeListener"
+            undo: ".flc-restartUndo"
         },
         components: {
-            heightChangeListener: {
-                type: "gpii.psp.heightChangeListener",
-                container: "{that}.dom.heightChangeListener",
-                options: {
-                    invokers: {
-                        onHeightChanged: "{restartWarning}.events.onContentHeightChanged.fire"
-                    }
-                }
-            },
             cancelBtn: {
                 type: "gpii.psp.widgets.button",
-                container: "{that}.dom.cancel",
+                container: "{that}.dom.undo",
                 options: {
-                    label: "{restartWarning}.options.labels.cancel",
+                    label: "{restartWarning}.options.labels.undo",
                     invokers: {
                         onClick: "{restartWarning}.events.onUndoChanges.fire"
                     }
@@ -125,21 +208,16 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         events: {
-            onContentHeightChanged: null,
-
             onRestartNow: null,
             onRestartLater: null,
             onUndoChanges: null
-        },
-        styles: {
-            osRestartIcon: "fl-icon-osRestart",
-            applicationRestartIcon: "fl-icon-appRestart"
         },
         labels: {
             os: "Windows",
             osRestartText: "Windows needs to restart to apply your changes",
             restartText: "To apply your changes, the following applications need to restart: ",
-            cancel: "Cancel\n(Undo Changes)",
+
+            undo: "Cancel\n(Undo Changes)",
             restartNow: "Restart Now",
             restartLater: "Close and\nRestart Later"
         }
@@ -168,39 +246,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         return fluid.accumulate(pendingChanges, function (pendingChange, solutionNames) {
             var solutionName = fluid.isValue(pendingChange.solutionName) ?
-                                    pendingChange.solutionName : pendingChange.schema.title;
+                                    pendingChange.solutionName :
+                                    pendingChange.schema.title;
             if (fluid.isValue(solutionName) && solutionNames.indexOf(solutionName) < 0) {
                 solutionNames.push(solutionName);
             }
             return solutionNames;
         }, []);
-    };
-
-    /**
-     * Returns the CSS class which is to be applied to the icon in the component based
-     * on whether an application or the whole OS needs to be restarted.
-     * @param labels {Object} An object containing various labels used throughout
-     * the component.
-     * @param solutionNames {Array} the solutions names or titles corresponding to the
-     * applications that need to be restarted.
-     * @param styles {Object} An object containing the CSS classes used in the component.
-     * @return the CSS class to be applied to the icon.
-     */
-    gpii.psp.restartWarning.getRestartIcon = function (labels, solutionNames, styles) {
-        return solutionNames[0] === labels.os ? styles.osRestartIcon : styles.applicationRestartIcon;
-    };
-
-    /**
-     * Updates the icon in the component based on the passed CSS class.
-     * @param restartIcon {jQuery} A jQuery object corresponding to the restart icon.
-     * @param restartIconClass {String} the CSS class to be applied to the icon.
-     * @param styles {Object} An object containing the CSS classes used in the component.
-     */
-    gpii.psp.restartWarning.updateIcon = function (restartIcon, restartIconClass, styles) {
-        restartIcon
-            .removeClass(styles.osRestartIcon)
-            .removeClass(styles.applicationRestartIcon)
-            .addClass(restartIconClass);
     };
 
     /**
@@ -222,26 +274,5 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
 
         return labels.restartText + solutionNames.join(", ");
-    };
-
-    /**
-     * Shows or hides the restart warning based on whether there is at least one solution
-     * name available. Also, it notifies that the height of the component has changed.
-     * @param restartWarning {Component} The `gpii.psp.restartWarning` instance.
-     * @param container {jQuery} The jQuery object representing the container of the
-     * restart warning.
-     * @param solutionNames {Array} the solutions names or titles corresponding to the
-     * applications that need to be restarted.
-     */
-    gpii.psp.restartWarning.toggleVisibility = function (restartWarning, container, solutionNames) {
-        if (solutionNames.length === 0) {
-            container.hide();
-        } else {
-            container.show();
-        }
-
-        // Fire manually the height changed event because the listener is not
-        // triggered when the warning has already been hidden.
-        restartWarning.events.onContentHeightChanged.fire();
     };
 })(fluid);
