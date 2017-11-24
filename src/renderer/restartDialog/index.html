@@ -9,6 +9,8 @@
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
         <script type="text/javascript" src="../psp/js/widgets.js"></script>
+        <script type="text/javascript" src="../psp/js/restartWarning.js"></script>
+        <script type="text/javascript" src="js/restartDialog.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
     </head>
     <body>
@@ -18,7 +20,6 @@
                     GPII Auto Personalization
                     <button class="flc-close fl-popup-closeBtn">
                         &#x2715;
-                        <span class="flc-btnLabel"></span> <!-- TODO remove (reusing component) -->
                     </button>
                 </div>
                 <div class="fl-popup-content">
@@ -28,14 +29,14 @@
                         <p class="flc-popup-bodyText"></p>
                     </div>
                     <div class="fl-popup-controls">
-                        <button class="flc-restartCancel btn fl-btn">
-                            <span class="flc-btnLabel">Cancel<br>(Undo Changes)</span>
+                        <button class="flc-restartUndo btn fl-btn">
+                            <span class="flc-btnLabel"></span>
                         </button>
                         <button class="flc-restartNow btn fl-btn">
-                            <span class="flc-btnLabel">Restart Now</span>
+                            <span class="flc-btnLabel"></span>
                         </button>
                         <button class="flc-restartLater btn fl-btn">
-                            <span class="flc-btnLabel">Close and<br>Restart Later</span>
+                            <span class="flc-btnLabel"></span>
                         </button>
                     </div>
                 </div>
@@ -45,78 +46,5 @@
                 </div>
             </div>
         </div>
-
-    <script>
-        $(function () {
-            var restartDialog = fluid.registerNamespace("gpii.restartDialog");
-
-            var ipcRenderer = require("electron").ipcRenderer;
-            restartDialog.restartNow = function () {
-                ipcRenderer.send("onRestartNow");
-            };
-
-            restartDialog.undoChanges = function () {
-                ipcRenderer.send("onUndoChanges");
-            };
-
-            restartDialog.restartLater = function () {
-                ipcRenderer.send("onRestartLater");
-            };
-
-            restartDialog.close = function () {
-                ipcRenderer.send("onClosed");
-            };
-
-            restartDialog.extractSolutionNames = function (pendingChanges, osLabel) {
-                var isOSRestartNeeded = fluid.find_if(pendingChanges, function (pendingChange) {
-                    return pendingChange.liveness === "OSRestart";
-                });
-
-                if (isOSRestartNeeded) {
-                    return [osLabel];
-                }
-
-                return fluid.accumulate(pendingChanges, function (pendingChange, solutionNames) {
-                    var solutionName = pendingChange.solutionName;
-                    if (fluid.isValue(solutionName) && solutionNames.indexOf(solutionName) < 0) {
-                        solutionNames.push(solutionName);
-                    }
-                    return solutionNames;
-                }, []);
-            }
-
-            restartDialog.registerChannel = function (restartWarning) {
-                ipcRenderer.on("onRestartRequired", function (event, pendingChanges) {
-                    var solutionNames = gpii.restartDialog.extractSolutionNames(
-                        pendingChanges,
-                        restartWarning.options.labels.os
-                    );
-                    restartWarning.applier.change("solutionNames", solutionNames);
-                });
-            }
-
-            gpii.restartDialog(".fl-popup-contentWrapper", {
-                listeners: {
-                    "onCreate.registerChannel": {
-                        funcName: "gpii.restartDialog.registerChannel",
-                        args: "{that}"
-                    },
-
-                    onRestartNow: {
-                        funcName: "gpii.restartDialog.restartNow"
-                    },
-                    onClosed: {
-                        funcName: "gpii.restartDialog.close"
-                    },
-                    onRestartLater: {
-                        funcName: "gpii.restartDialog.restartLater"
-                    },
-                    onUndoChanges: {
-                        funcName: "gpii.restartDialog.undoChanges"
-                    }
-                }
-            });
-        });
-    </script>
     </body>
 </html>

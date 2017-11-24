@@ -22,7 +22,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * Currently it is shown always when there is at least one pending change.
      */
     fluid.defaults("gpii.psp.restartWarning", {
-        gradeNames: ["gpii.psp.genericRestartWarning"],
+        gradeNames: ["gpii.psp.baseRestartWarning"],
 
         modelRelay: {
             restartIcon: {
@@ -123,7 +123,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 
     /**
-     * A generic component (controller) for display and handling of settings that require
+     * A base component (controller) for display and handling of settings that require
      * restart of application or the OS. Includes logic for displaying the names of the
      * applications which require a restart and firing the appropriate events
      * when the user presses either of the three action buttons.
@@ -131,7 +131,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * Cancel (undo changes); Restart now; Close and Restart later
      * See `labels` property for up-to-date list.
      */
-    fluid.defaults("gpii.psp.genericRestartWarning", {
+    fluid.defaults("gpii.psp.baseRestartWarning", {
         gradeNames: ["fluid.viewComponent"],
         model: {
             pendingChanges: [],
@@ -151,7 +151,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 target: "restartText",
                 singleTransform: {
                     type: "fluid.transforms.free",
-                    func: "gpii.psp.restartWarning.getRestartText",
+                    func: "gpii.psp.restartWarning.generateRestartText",
                     args: ["{that}.options.labels", "{that}.model.solutionNames"]
                 }
             }
@@ -215,7 +215,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         labels: {
             os: "Windows",
             osRestartText: "Windows needs to restart to apply your changes",
-            restartText: "To apply your changes, the following applications need to restart: ",
+            restartText: "To apply your changes, the following applications need to restart: %solutions",
 
             undo: "Cancel\n(Undo Changes)",
             restartNow: "Restart Now",
@@ -262,17 +262,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * the component.
      * @param solutionNames {Array} the solutions names or titles corresponding to the
      * applications that need to be restarted.
-     * @returns the text which is to be displayed in the component.
+     * @returns {String} The text which is to be displayed in the component.
      */
-    gpii.psp.restartWarning.getRestartText = function (labels, solutionNames) {
-        if (solutionNames.length === 0) {
-            return "";
-        }
-
+    gpii.psp.restartWarning.generateRestartText = function (labels, solutionNames) {
         if (solutionNames[0] === labels.os) {
             return labels.osRestartText;
         }
 
-        return labels.restartText + solutionNames.join(", ");
+        return fluid.stringTemplate(labels.restartText, { solutions: solutionNames.join(", ")});
     };
 })(fluid);
