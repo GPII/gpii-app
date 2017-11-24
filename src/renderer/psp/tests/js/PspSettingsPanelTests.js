@@ -21,6 +21,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         solutionName: "solutions1",
 
         icon: "../../../icons/gear-cloud-black.png",
+        memory: false,
 
         schema: {
             type: "string",
@@ -79,7 +80,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         value: ["mouse", "focus"],
 
         icon: "../../../icons/gear-cloud-white.png",
-        dynamic: true,
         schema: {
             type: "array",
             title: "TTS tracking mode",
@@ -403,6 +403,23 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         });
     };
 
+    gpii.tests.psp.testWidgetMemoryIcon = function (container, memory, tooltip) {
+        var memoryIcon = container.find(".flc-memoryIcon");
+        jqUnit.assertEquals(
+            "Widgets: Widget is correctly (not) showing its memory icon",
+            memory,
+            memoryIcon.is(":visible")
+        );
+
+        if (memory) {
+            jqUnit.assertEquals(
+                "Widgets: Widget's memory icon has correct tooltip",
+                tooltip,
+                memoryIcon.attr("title")
+            );
+        }
+    };
+
     gpii.tests.psp.testStepperModelInteraction = function (container, expected) {
         var textfield = $(".flc-textfieldStepper-field", container);
         jqUnit.assertEquals(
@@ -491,7 +508,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             name: "PSP widgets interaction tests",
             tests: [{
                 name: "Widgets: Switch - interactions test",
-                expect: 3,
+                expect: 5,
                 sequence: [{ // initiate `settingsVisualizer` creation
                     funcName: "{singleSettingPanelsMock}.switchPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -499,6 +516,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     args: [
                         ["@expand:$(.flc-switchUI-control, {singleSettingPanelsMock}.switchPanel.container)"],
                         switchSettingFixture.path
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testWidgetMemoryIcon",
+                    args: [
+                        "{singleSettingPanelsMock}.switchPanel.container",
+                        switchSettingFixture.memory,
+                        "{singleSettingPanelsMock}.switchPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels.memory"
                     ]
                 }, [ // Test DOM interaction
                     { // simulate manual click from the user
@@ -607,7 +631,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 ]]
             }, {
                 name: "Widgets: Dropdown - interactions test",
-                expect: 3,
+                expect: 4,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.dropdownPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -615,6 +639,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     args: [
                         ["@expand:$(.flc-dropdown-options, {singleSettingPanelsMock}.dropdownPanel.container)"],
                         dropdownSettingFixture.path
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testWidgetMemoryIcon",
+                    args: [
+                        "{singleSettingPanelsMock}.dropdownPanel.container",
+                        dropdownSettingFixture.memory,
+                        "{singleSettingPanelsMock}.switchPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels.memory"
                     ]
                 }, [
                     {

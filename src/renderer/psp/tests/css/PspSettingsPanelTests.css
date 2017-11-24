@@ -1,0 +1,10 @@
+body {
+    background-color: white;
+}
+
+.fl-settingsList {
+    background-color: #0078d7;
+    width: 500px;
+
+    opacity: 0;
+}
