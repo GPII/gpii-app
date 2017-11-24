@@ -70,7 +70,6 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-        // TODO
         restartDialog: {
             type: "gpii.app.dialog.restartDialog",
             createOnEvent: "onPrerequisitesReady",
@@ -141,7 +140,7 @@ fluid.defaults("gpii.app", {
         },
         /**
          * Responsible for toggling the "need restart" warnings both
-         * as a dialog, or in the psp
+         * in the psp or as a dialog.
          */
         restartWarningController: {
             type: "fluid.modelComponent",
@@ -161,7 +160,8 @@ fluid.defaults("gpii.app", {
 
                 listeners: {
                     "{psp}.events.onClosed": {
-                        func: "{restartDialog}.show",
+                        // show if possible
+                        func: "{restartDialog}.showIfNeeded",
                         args: [
                             "{settingsBroker}.model.pendingChanges"
                         ]
@@ -214,7 +214,7 @@ fluid.defaults("gpii.app", {
             priority: "after:psp"
         },
         waitDialog: {
-            type: "gpii.app.dialog",
+            type: "gpii.app.waitDialog",
             createOnEvent: "onPrerequisitesReady",
             options: {
                 model: {
@@ -306,26 +306,28 @@ fluid.defaults("gpii.app", {
 });
 
 /**
- * TODO
+ * Either hides both warnings or enables the warning in the psp.
+ *
+ * @param psp {Component} The gpii.app.psp component
+ * @param restartDialog {Component} The gpii.app.restartDialog component
  */
-gpii.app.toggleRestartWarning = function (pspWindow, restartDialog, pendingSettings) {
+gpii.app.toggleRestartWarning = function (psp, restartDialog, pendingSettings) {
 
     if (pendingSettings.length === 0) {
         // Hide all warnings
-        pspWindow.hideRestartWarning();
+        psp.hideRestartWarning();
         restartDialog.hide(); // set items to []
         return;
     }
 
     // always update the message
-    pspWindow.showRestartWarning(pendingSettings);
+    psp.showRestartWarning(pendingSettings);
 };
 
 /**
  * TODO
  */
 gpii.app.hideRestarDialogIfNeeded = function (restartDialog, isPspShown) {
-    console.log("Hidden!", isPspShown);
     if (isPspShown) {
         // ensure the dialog is hidden
         // NOTE: this may have no effect in case the dialog is already hidden

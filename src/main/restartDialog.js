@@ -16,10 +16,7 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var ipcMain = require("electron").ipcMain;
 
-require("./utils.js");
-
-// TODO extract to separate dialog
-require("./waitDialog.js");
+require("./dialog.js");
 
 /**
  * A component that serves as simple interface for communication with the
@@ -83,20 +80,16 @@ gpii.app.dialog.restartDialog.channel.register = function (events) {
  * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.dialog.restartDialog", {
-    gradeNames: ["gpii.app.dialog"],
+    gradeNames: ["gpii.app.dialog", "fluid.modelComponent"],
 
     model: {
         pendingChanges: []
     },
 
     invokers: {
-        show: {
-            funcName: "gpii.app.dialog.restartDialog.show",
+        showIfNeeded: {
+            funcName: "gpii.app.dialog.restartDialog.showIfNeeded",
             args: ["{that}", "{arguments}.0"]
-        },
-        hide: {
-            changePath: "showDialog",
-            value: false
         },
         isShown: {
             this: "{that}.dialog",
@@ -109,16 +102,7 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
             width: 500,
             height: 400
         },
-        // TODO extract somehow?
-        url: {
-            expander: {
-                funcName: "fluid.stringTemplate",
-                args: [
-                    "file://%gpii-app/src/renderer/restartDialog/index.html",
-                    "@expand:fluid.module.terms()"
-                ]
-            }
-        }
+        fileSuffixPath: "restartDialog/index.html"
     },
 
     events: {
@@ -148,15 +132,13 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
  * @param restartDialog {Component} The `gpii.app.restartDialog` component.
  * @param pendingChanges {Object[]} The list of pending changes that are to be listed.
  */
-gpii.app.dialog.restartDialog.show = function (restartDialog, pendingChanges) {
+gpii.app.dialog.restartDialog.showIfNeeded = function (restartDialog, pendingChanges) {
     if (pendingChanges.length > 0) {
-        // finally, show the dialog
-
         // change according to the new solutions
         restartDialog.dialogChannel.updatePendingChanges(pendingChanges);
         restartDialog.dialog.focus();
 
-        // TODO improve mechanism?
-        restartDialog.applier.change("showDialog", true);
+        // finally, show the dialog
+        restartDialog.show();
     }
 };

@@ -12,40 +12,25 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
 
-var fluid         = require("infusion");
-var BrowserWindow = require("electron").BrowserWindow;
+var fluid = require("infusion");
 
 var gpii  = fluid.registerNamespace("gpii");
 
-require("./utils.js");
+require("./dialog.js");
 
 /**
  * Component that contains an Electron Dialog.
  */
 
-fluid.defaults("gpii.app.dialog", {
-    gradeNames: "fluid.modelComponent",
-
+fluid.defaults("gpii.app.waitDialog", {
+    gradeNames: ["gpii.app.dialog", "fluid.modelComponent"],
 
     config: {
         attrs: {
             width: 800,
-            height: 600,
-            show: false,
-            frame: false,
-            transparent: true,
-            alwaysOnTop: true,
-            skipTaskbar: true
+            height: 600
         },
-        url: {
-            expander: {
-                funcName: "fluid.stringTemplate",
-                args: [
-                    "file://%gpii-app/src/renderer/waitDialog/index.html",
-                    "@expand:fluid.module.terms()"
-                ]
-            }
-        }
+        fileSuffixPath: "waitDialog/index.html"
     },
     model: {
         showDialog: false,
@@ -53,62 +38,25 @@ fluid.defaults("gpii.app.dialog", {
         dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
         timeout: 0
     },
-    members: {
-        dialog: {
-            expander: {
-                funcName: "gpii.app.dialog.makeWaitDialog",
-                args: [
-                    "{that}.options.config.attrs",
-                    "@expand:{that}.getWindowPosition()",
-                    "{that}.options.config.url"
-                ]
-            }
-        }
-    },
     modelListeners: {
         "showDialog": {
-            funcName: "gpii.app.dialog.showHideWaitDialog",
+            funcName: "gpii.app.waitDialog.showHideWaitDialog",
             args: ["{that}", "{change}.value"]
         }
     },
     listeners: {
-        "onDestroy.clearTimers": "gpii.app.dialog.clearTimers({that})",
-        "onDestroy.cleanupElectron": {
-            this: "{that}.dialog",
-            method: "destroy"
-        }
-    },
-    invokers: {
-        getWindowPosition: {
-            funcName: "gpii.app.getWindowPosition",
-            args: [
-                "{that}.options.config.attrs.width",
-                "{that}.options.config.attrs.height"
-            ]
-        }
+        "onDestroy.clearTimers": "gpii.app.waitDialog.clearTimers({that})"
     }
 });
 
-gpii.app.dialog.clearTimers = function (that) {
+
+gpii.app.waitDialog.clearTimers = function (that) {
     clearTimeout(that.dismissWaitTimeout);
     clearInterval(that.displayWaitInterval);
 };
 
-/**
- * Creates a dialog. This is done up front to avoid the delay from creating a new
- * dialog every time a new message should be displayed.
- */
-gpii.app.dialog.makeWaitDialog = function (windowOptions, position, url) {
-    var dialog = new BrowserWindow(windowOptions);
-    dialog.setPosition(position.x, position.y);
-
-    dialog.loadURL(url);
-    return dialog;
-};
-
-
-gpii.app.dialog.showHideWaitDialog = function (that, showDialog) {
-    showDialog ? gpii.app.dialog.displayWaitDialog(that) : gpii.app.dialog.dismissWaitDialog(that);
+gpii.app.waitDialog.showHideWaitDialog = function (that, showDialog) {
+    showDialog ? gpii.app.waitDialog.show(that) : gpii.app.waitDialog.hide(that);
 };
 
 /**
@@ -118,7 +66,7 @@ gpii.app.dialog.showHideWaitDialog = function (that, showDialog) {
  *
  * @param that {Component} the gpii.app instance
  */
-gpii.app.dialog.displayWaitDialog = function (that) {
+gpii.app.waitDialog.show = function (that) {
     that.dialog.show();
     // Hack to ensure it stays on top, even as the GPII autoconfiguration starts applications, etc., that might
     // otherwise want to be on top
@@ -135,7 +83,7 @@ gpii.app.dialog.displayWaitDialog = function (that) {
         that.dialog.setAlwaysOnTop(true);
     }, 100);
 
-    that.model.dialogStartTime = Date.now();
+    that.model.waitDialogStartTime = Date.now();
 };
 
 /**
@@ -144,14 +92,14 @@ gpii.app.dialog.displayWaitDialog = function (that) {
  *
  * @param that {Component} the gpii.app instance
  */
-gpii.app.dialog.dismissWaitDialog = function (that) {
+gpii.app.waitDialog.hide = function (that) {
     if (that.dismissWaitTimeout) {
         clearTimeout(that.dismissWaitTimeout);
         that.dismissWaitTimeout = null;
     }
 
     // ensure we have displayed for a minimum amount of `dialogMinDisplayTime` secs to avoid confusing flickering
-    var remainingDisplayTime = (that.model.dialogStartTime + that.model.dialogMinDisplayTime) - Date.now();
+    var remainingDisplayTime = (that.model.waitDialogStartTime + that.model.dialogMinDisplayTime) - Date.now();
 
     if (remainingDisplayTime > 0) {
         that.dismissWaitTimeout = setTimeout(function () {
