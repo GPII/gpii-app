@@ -20,7 +20,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         value: "b",
         solutionName: "solutions1",
 
-        icon: "../../../icons/gear-cloud-black.png",
+        icon: "../../../../icons/gear-cloud-black.png",
+        liveness: "manualRestart",
         memory: false,
 
         schema: {
@@ -35,7 +36,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         path: "textfieldPath",
         value: "Someee",
 
-        icon: "../../../icons/gear-cloud-white.png",
+        icon: "../../../../icons/gear-cloud-white.png",
+        liveness: "live",
 
         schema: {
             type: "text",
@@ -48,7 +50,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         path: "invertColorsPath",
         value: true,
 
-        icon: "../../../icons/gear-cloud-black.png",
+        icon: "../../../../icons/gear-cloud-black.png",
+        liveness: "liveRestart",
         memory: true,
 
         schema: {
@@ -62,8 +65,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         path: "zoomPath",
         value: 1,
 
-        icon: "../../../icons/gear-cloud-black.png",
-        memory: true,
+        icon: "../../../../icons/gear-cloud-black.png",
+        liveness: "OSRestart",
 
         schema: {
             type: "number",
@@ -79,7 +82,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         path: "ttsTrackingPath",
         value: ["mouse", "focus"],
 
-        icon: "../../../icons/gear-cloud-white.png",
+        icon: "../../../../icons/gear-cloud-white.png",
         schema: {
             type: "array",
             title: "TTS tracking mode",
@@ -93,7 +96,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         value: "c",
         solutionName: "solutions2",
 
-        icon: "../../../icons/gear-cloud-black.png",
+        icon: "../../../../icons/gear-cloud-black.png",
 
         schema: {
             type: "string",
@@ -420,6 +423,49 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     };
 
+    gpii.tests.psp.testOSRestartIcon = function (container, isModified, styles, labels) {
+        var restartIcon = $(".flc-restartIcon", container);
+        jqUnit.assertTrue(
+            "Widgets: OS restart widget icon has the proper restart CSS class",
+            restartIcon.hasClass(styles.osRestartIcon)
+        );
+
+        jqUnit.assertFalse(
+            "Widgets: OS restart widget icon does not have the application restart CSS class",
+            restartIcon.hasClass(styles.appRestartIcon)
+        );
+
+        var label = isModified ? labels.osRestartRequired : labels.osRestart;
+        jqUnit.assertEquals(
+            "Widget: Os restart widget has correct tooltip text",
+            label,
+            restartIcon.attr("title")
+        );
+    };
+
+    gpii.tests.psp.testAppRestartIcon = function (container, isModified, fixture, styles, labels) {
+        var restartIcon = $(".flc-restartIcon", container);
+        jqUnit.assertTrue(
+            "Widgets: App restart widget icon has the proper CSS class",
+            restartIcon.hasClass(styles.appRestartIcon)
+        );
+
+        jqUnit.assertFalse(
+            "Widgets: App restart widget icon does not have the OS restart CSS class",
+            restartIcon.hasClass(styles.osRestartIcon)
+        );
+
+        var label = isModified ? labels.appRestartRequired : labels.appRestart;
+        label = fluid.stringTemplate(label, {
+            solutionName: fixture.solutionName
+        });
+        jqUnit.assertEquals(
+            "Widget: Os restart widget has correct tooltip text",
+            label,
+            restartIcon.attr("title")
+        );
+    };
+
     gpii.tests.psp.testStepperModelInteraction = function (container, expected) {
         var textfield = $(".flc-textfieldStepper-field", container);
         jqUnit.assertEquals(
@@ -549,7 +595,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 ]
             }, {
                 name: "Widgets: Stepper - interactions test",
-                expect: 6,
+                expect: 12,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.stepperPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -558,6 +604,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         ["@expand:$(.flc-textfieldSlider-slider, {singleSettingPanelsMock}.stepperPanel.container)",
                             "@expand:$(.flc-textfieldStepper-field, {singleSettingPanelsMock}.stepperPanel.container)"],
                         stepperSettingFixture.path
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testOSRestartIcon",
+                    args: [
+                        "{singleSettingPanelsMock}.stepperPanel.container",
+                        false,
+                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
+                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
                     ]
                 }, [
                     {
@@ -570,6 +624,22 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                             "Widgets: Stepper - component is notified when increasing for the update with proper path/value",
                             [stepperSettingFixture.path, stepperSettingFixture.value + stepperSettingFixture.schema.divisibleBy],
                             ["{arguments}.0.path", "{arguments}.0.value"]
+                        ]
+                    }, {
+                        // Fire this event manually in order not to introduce several other components in the tests
+                        // which would increase the complexity of the tests as a whole.
+                        func: "{singleSettingPanelsMock}.stepperPanel.events.onRestartRequired.fire",
+                        args: [
+                            [stepperSettingFixture]
+                        ]
+                    }, {
+                        event: "{singleSettingPanelsMock}.stepperPanel.events.onRestartRequired",
+                        listener: "gpii.tests.psp.testOSRestartIcon",
+                        args: [
+                            "{singleSettingPanelsMock}.stepperPanel.container",
+                            true,
+                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
+                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
                         ]
                     }, {
                         jQueryTrigger: "click",
@@ -631,7 +701,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 ]]
             }, {
                 name: "Widgets: Dropdown - interactions test",
-                expect: 4,
+                expect: 10,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.dropdownPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -639,6 +709,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     args: [
                         ["@expand:$(.flc-dropdown-options, {singleSettingPanelsMock}.dropdownPanel.container)"],
                         dropdownSettingFixture.path
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testAppRestartIcon",
+                    args: [
+                        "{singleSettingPanelsMock}.dropdownPanel.container",
+                        false,
+                        dropdownSettingFixture,
+                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
+                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
                     ]
                 }, {
                     funcName: "gpii.tests.psp.testWidgetMemoryIcon",
@@ -658,6 +737,21 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                             "Widgets: Dropdown - component notified for the update with proper path/value",
                             [dropdownSettingFixture.path, dropdownSettingFixture.schema["enum"][2]],
                             ["{arguments}.0.path", "{arguments}.0.value"]
+                        ]
+                    }, {
+                        func: "{singleSettingPanelsMock}.dropdownPanel.events.onRestartRequired.fire",
+                        args: [
+                            [dropdownSettingFixture]
+                        ]
+                    }, {
+                        event: "{singleSettingPanelsMock}.dropdownPanel.events.onRestartRequired",
+                        listener: "gpii.tests.psp.testAppRestartIcon",
+                        args: [
+                            "{singleSettingPanelsMock}.dropdownPanel.container",
+                            true,
+                            dropdownSettingFixture,
+                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
+                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
                         ]
                     }
                 ], [
