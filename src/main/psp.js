@@ -24,7 +24,7 @@ require("./utils.js");
 
 /**
  * Handles logic for the PSP window.
- * Creates an Electron `BrowserWindow` and manages it
+ * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.psp", {
     gradeNames: "fluid.modelComponent",

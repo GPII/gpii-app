@@ -43,7 +43,6 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
 
     invokers: {
         updatePendingChanges: {
-            // TODO rename function
             funcName: "gpii.app.notifyWindow",
             args: [
                 "{dialog}.dialog",
@@ -54,6 +53,9 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
     }
 });
 
+/**
+ * Register for events from the managed Electron `BrowserWindow` (the renderer process).
+ */
 gpii.app.dialog.restartDialog.channel.register = function (events) {
     // TODO unite with PSP channel?
     ipcMain.on("onRestartNow", function (/*event, message*/) {
@@ -77,7 +79,8 @@ gpii.app.dialog.restartDialog.channel.register = function (events) {
 
 
 /**
- * TODO
+ * Handles logic for the dialog popup for the "Restart required" functionality.
+ * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.dialog.restartDialog", {
     gradeNames: ["gpii.app.dialog"],
@@ -121,29 +124,17 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
     events: {
         onRestartNow: null,
         onClosed: null,
-        // TODO probably not needed
         onRestartLater: null,
         onUndoChanges: null
     },
 
-    // XXX find a better way
-    modelListeners: {
-        "pendingChanges": [{
-            func: "{dialogChannel}.updatePendingChanges",
-            args: "{that}.model.pendingChanges"
-        }]
-    },
-
     components: {
         dialogChannel: {
-            // TODO pass {that}?
             type: "gpii.app.dialog.restartDialog.channel",
-            // createOnEvent: "{restartDialog}.events.onCreate", // TODO
             options: {
                 events: {
                     onRestartNow: "{restartDialog}.events.onRestartNow",
                     onClosed: "{restartDialog}.events.onClosed",
-                    // TODO probably not needed
                     onRestartLater: "{restartDialog}.events.onRestartLater",
                     onUndoChanges: "{restartDialog}.events.onUndoChanges"
                 }
@@ -152,16 +143,20 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
     }
 });
 
+/**
+ * Defines the logic for showing the "Restart required" warning dialog.
+ * @param restartDialog {Component} The `gpii.app.restartDialog` component.
+ * @param pendingChanges {Object[]} The list of pending changes that are to be listed.
+ */
 gpii.app.dialog.restartDialog.show = function (restartDialog, pendingChanges) {
-
     if (pendingChanges.length > 0) {
         // finally, show the dialog
-        // TODO improve mechanism?
-        restartDialog.applier.change("showDialog", true);
 
-        // change according new solutions
-        console.log("update pending changes");
+        // change according to the new solutions
         restartDialog.dialogChannel.updatePendingChanges(pendingChanges);
         restartDialog.dialog.focus();
+
+        // TODO improve mechanism?
+        restartDialog.applier.change("showDialog", true);
     }
 };

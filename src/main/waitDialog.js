@@ -35,7 +35,7 @@ fluid.defaults("gpii.app.dialog", {
             frame: false,
             transparent: true,
             alwaysOnTop: true,
-            skipTaskBar: true
+            skipTaskbar: true
         },
         url: {
             expander: {
