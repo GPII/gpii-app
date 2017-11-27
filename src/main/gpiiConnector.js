@@ -109,7 +109,6 @@ gpii.app.gpiiConnector.createGPIIConnection = function (config) {
  * @param socket {Object} The connected gpii socket
  * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` instance
  */
-// TODO rename
 gpii.app.gpiiConnector.registerPSPListener = function (socket, gpiiConnector) {
     socket.on("message", function (rawData) {
         var data = JSON.parse(rawData),
@@ -138,8 +137,6 @@ gpii.app.gpiiConnector.registerPSPListener = function (socket, gpiiConnector) {
                 path: settingPath,
                 value: settingValue
             });
-
-            // TODO add better mocked logic
         }
     });
 };

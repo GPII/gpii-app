@@ -261,7 +261,6 @@ gpii.app.psp.resize = function (psp, contentHeight, minHeight, forceResize) {
  * @returns {Object} The created Electron `BrowserWindow`
  */
 gpii.app.psp.makePSPWindow = function (windowOptions) {
-    // TODO Make window size relative to the screen size
     var pspWindow = new BrowserWindow(windowOptions);
 
     var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());

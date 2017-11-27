@@ -282,7 +282,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 type: "fluid.viewComponent",
                 container: "{that}.container",
                 options: {
-                    // TODO extract as component -> container renderer?
                     listeners: {
                         "onCreate.render": {
                             this: "{that}.container",
@@ -505,13 +504,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 
     gpii.psp.settingsVisualizer.updateSettingsPresentations = function (that, settings) {
-        // TODO improve
         settings.forEach(function (setting, settingIndex) {
             that.events.onSettingCreated.fire(settingIndex, setting);
         });
     };
-
-
 
     /**
      * The top most component for representation of list of settings.

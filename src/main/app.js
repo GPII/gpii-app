@@ -153,7 +153,7 @@ fluid.defaults("gpii.app", {
                 modelListeners: {
                     // Hide restart dialog whenever PSP is shown
                     "isPspShown": {
-                        func: "{that}.hideRestarDialogIfNeeded",
+                        func: "{that}.hideRestartDialogIfNeeded",
                         args: "{change}.value"
                     }
                 },
@@ -186,16 +186,23 @@ fluid.defaults("gpii.app", {
                     },
 
                     // Handle setting interactions (undo, restart now, settings interaction)
-                    "{settingsBroker}.events.onRestartRequired" : {
-                        funcName: "gpii.app.toggleRestartWarning",
-                        args: ["{psp}", "{restartDialog}", "{arguments}.0"]
-                    }
+                    "{settingsBroker}.events.onRestartRequired" : [{
+                        func: "{that}.hideRestartDialogIfNeeded",
+                        args: ["{that}.model.isPspShown", "{arguments}.0"]
+                    },{
+                        func: "{that}.togglePspRestartWarning",
+                        args: ["{arguments}.0"]
+                    }]
                 },
 
                 invokers: {
-                    hideRestarDialogIfNeeded: {
-                        funcName: "gpii.app.hideRestarDialogIfNeeded",
-                        args: ["{restartDialog}", "{arguments}.0"]
+                    hideRestartDialogIfNeeded: {
+                        funcName: "gpii.app.hideRestartDialogIfNeeded",
+                        args: ["{restartDialog}", "{arguments}.0", "{arguments}.1"]
+                    },
+                    togglePspRestartWarning: {
+                        funcName: "gpii.app.togglePspRestartWarning",
+                        args: ["{psp}", "{arguments}.0"]
                     }
                 }
             }
@@ -306,29 +313,31 @@ fluid.defaults("gpii.app", {
 });
 
 /**
- * Either hides both warnings or enables the warning in the psp.
+ * Either hides or shows the warning in the PSP.
  *
- * @param psp {Component} The gpii.app.psp component
- * @param restartDialog {Component} The gpii.app.restartDialog component
+ * @param psp {Component} The `gpii.app.psp` component
+ * @param pendingChanges {Object[]} A list of the current state of pending changes
  */
-gpii.app.toggleRestartWarning = function (psp, restartDialog, pendingSettings) {
+gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
 
-    if (pendingSettings.length === 0) {
-        // Hide all warnings
+    if (pendingChanges.length === 0) {
         psp.hideRestartWarning();
-        restartDialog.hide(); // set items to []
-        return;
+    } else {
+        psp.showRestartWarning(pendingChanges);
     }
-
-    // always update the message
-    psp.showRestartWarning(pendingSettings);
 };
 
 /**
- * TODO
+ * Closes "Restart Dialog" in one of the following cases:
+ * - the PSP is being shown;
+ * - there are no pending changes any more
+ *
+ * @param restartDialog {Component} The `gpii.app.restartDialog` component
+ * @param isPspShown {Boolean} Whether the psp window is shown
+ * @param pendingChanges {Object[]} A list of the current state of pending changes
  */
-gpii.app.hideRestarDialogIfNeeded = function (restartDialog, isPspShown) {
-    if (isPspShown) {
+gpii.app.hideRestartDialogIfNeeded = function (restartDialog, isPspShown, pendingChanges) {
+    if (isPspShown || (pendingChanges && pendingChanges.length === 0)) {
         // ensure the dialog is hidden
         // NOTE: this may have no effect in case the dialog is already hidden
         restartDialog.hide();

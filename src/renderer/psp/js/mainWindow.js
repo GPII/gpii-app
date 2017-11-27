@@ -66,8 +66,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     /**
      * Responsible for drawing the settings list
      *
-     * TODO support redrawing of settings
-     * currently only single update of available setting is supported
+     * Note: currently only single update of available setting is supported
      */
     fluid.defaults("gpii.psp.mainWindow", {
         gradeNames: ["fluid.viewComponent"],
@@ -182,7 +181,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 source: "psp.mainWindow"
             },
             "updateSetting": {
-                // TODO just fire because... (redrawing)
                 func: "{that}.events.onSettingUpdated.fire",
                 args: [
                     "{arguments}.0",
