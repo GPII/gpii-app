@@ -47,7 +47,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             selection: null
         },
         modelListeners: {
-            "*": {
+            "": {
                 this: "{that}",
                 method: "refreshView",
                 excludeSource: "init"
@@ -246,7 +246,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             value: null
         },
         modelListeners: {
-            "*": {
+            "": {
                 this: "{that}",
                 method: "refreshView",
                 excludeSource: "init"

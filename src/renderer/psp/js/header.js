@@ -15,6 +15,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
+    /**
+     * A component responsible for showing the active preference set name for the
+     * currently keyed in user or a dropdown in case there are two or more available
+     * preference sets. When a dropdown is shown, the selected value by default is
+     * the name of the active set. If a new value is selected from the dropdown, the
+     * component fires an event which notifies that an update has occurred. The
+     * component also provides means for closing the PSP window.
+     */
     fluid.defaults("gpii.psp.header", {
         gradeNames: ["fluid.viewComponent"],
         selectors: {
