@@ -116,7 +116,8 @@ fluid.defaults("gpii.app", {
                 listeners: {
                     "{settingsBroker}.events.onSettingApplied": [{
                         listener: "{gpiiConnector}.updateSetting",
-                        args: ["{arguments}.0"]
+                        args: ["{arguments}.0"],
+                        excludeSource: ["settingsBroker.undo"]
                     }, {
                         listener: "{psp}.notifyPSPWindow",
                         args: ["onSettingUpdated", "{arguments}.0"]
@@ -169,18 +170,17 @@ fluid.defaults("gpii.app", {
                     "{psp}.events.onRestartNow": [{
                         func: "{restartDialog}.hide"
                     }, {
-                        listener: "{settingsBroker}.flushPendingChanges"
+                        listener: "{settingsBroker}.applyPendingChanges"
                     }],
                     "{psp}.events.onUndoChanges": [{
                         func: "{restartDialog}.hide"
                     }, {
                         listener: "{settingsBroker}.undoPendingChanges"
                     }],
-
-
-                    "{restartDialog}.events.onRestartLater": {
+                    "{psp}.events.onRestartLater": {
                         func: "{restartDialog}.hide"
                     },
+
                     "{restartDialog}.events.onClosed": {
                         func: "{restartDialog}.hide"
                     },

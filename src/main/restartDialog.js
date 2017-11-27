@@ -43,7 +43,7 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
             funcName: "gpii.app.notifyWindow",
             args: [
                 "{dialog}.dialog",
-                "onRestartRequired", // rethink channel name
+                "onRestartRequired",
                 "{arguments}.0"
             ]
         }
@@ -54,21 +54,6 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
  * Register for events from the managed Electron `BrowserWindow` (the renderer process).
  */
 gpii.app.dialog.restartDialog.channel.register = function (events) {
-    // TODO unite with PSP channel?
-    ipcMain.on("onRestartNow", function (/*event, message*/) {
-        // XXX currently handled by the PSP handler
-        // events.onRestartNow.fire();
-    });
-
-    ipcMain.on("onUndoChanges", function (/*event, message*/) {
-        // XXX currently handled by the PSP handler
-        // events.onUndoChanges.fire();
-    });
-
-    ipcMain.on("onRestartLater", function (/*event, message*/) {
-        events.onClosed.fire();
-    });
-
     ipcMain.on("onClosed", function (/*event, message*/) {
         events.onClosed.fire();
     });
@@ -80,11 +65,7 @@ gpii.app.dialog.restartDialog.channel.register = function (events) {
  * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.dialog.restartDialog", {
-    gradeNames: ["gpii.app.dialog", "fluid.modelComponent"],
-
-    model: {
-        pendingChanges: []
-    },
+    gradeNames: ["gpii.app.dialog"],
 
     invokers: {
         showIfNeeded: {

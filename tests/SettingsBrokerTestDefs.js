@@ -119,7 +119,7 @@ gpii.tests.settingsBroker.testNonLiveSettingEnqueue = function (settingsBroker, 
     gpii.tests.settingsBroker.testTrayIcon(tray, tray.options.icons.pendingChanges);
 };
 
-gpii.tests.settingsBroker.testFlushPendingChanges = function (expectedChanges, actualChanges) {
+gpii.tests.settingsBroker.testapplyPendingChanges = function (expectedChanges, actualChanges) {
     jqUnit.assertDeepEq("The flushed pending change is correct",
         expectedChanges, actualChanges);
 };
@@ -180,14 +180,14 @@ gpii.tests.settingsBroker.testDefs = {
         func: "gpii.tests.settingsBroker.testNonLiveSettingEnqueue",
         args: ["{that}.app.settingsBroker", "{that}.app.tray", [manualSettingChange, osSettingChange]]
     }, {
-        func: "{that}.app.settingsBroker.flushPendingChanges"
+        func: "{that}.app.settingsBroker.applyPendingChanges"
     }, {
         event: "{that}.app.settingsBroker.events.onSettingApplied",
-        listener: "gpii.tests.settingsBroker.testFlushPendingChanges",
+        listener: "gpii.tests.settingsBroker.testapplyPendingChanges",
         args: [manualSettingChange, "{arguments}.0"]
     }, {
         event: "{that}.app.settingsBroker.events.onSettingApplied",
-        listener: "gpii.tests.settingsBroker.testFlushPendingChanges",
+        listener: "gpii.tests.settingsBroker.testapplyPendingChanges",
         args: [osSettingChange, "{arguments}.0"]
     }, {
         changeEvent: "{that}.app.settingsBroker.applier.modelChanged",

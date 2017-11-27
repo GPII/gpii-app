@@ -93,15 +93,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         modelListeners: {
-            value: [{
-                funcName: "gpii.psp.settingPresenter.showRestartIcon",
-                args: ["{that}", "{that}.dom.restartIcon"],
-                includeSource: ["init"]
-            }, {
+            value: {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model", "{change}.oldValue"],
                 excludeSource: ["init", "psp.mainWindow"]
-            }]
+            }
         },
         listeners: {
             "onCreate.setIcon": {
@@ -124,9 +120,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 method: "attr",
                 args: ["id", "{that}.model.path"]
             },
-            "onCreate.setMemoryIcon": {
+            "onCreate.showMemoryIcon": {
                 funcName: "gpii.psp.settingPresenter.showMemoryIcon",
                 args: ["{that}", "{that}.dom.memoryIcon"]
+            },
+            "onCreate.showRestartIcon": {
+                funcName: "gpii.psp.settingPresenter.showRestartIcon",
+                args: ["{that}", "{that}.dom.restartIcon"]
             },
             // Update value locally in order for the corresponding
             //   DOM elements to be notifier, and thus updated

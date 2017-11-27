@@ -121,11 +121,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
 
         events: {
-            onClosed: null,
-
-            onRestartNow: null,
-            onRestartLater: null,
-            onUndoChanges: null
+            onClosed: null
         },
 
         listeners: {

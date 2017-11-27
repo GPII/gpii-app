@@ -36,8 +36,7 @@ fluid.defaults("gpii.app.settingsBroker", {
     },
     modelListeners: {
         keyedInUserToken: {
-            funcName: "gpii.app.settingsBroker.onUserTokenChanged",
-            args: ["{that}", "{change}.value"],
+            func: "{that}.clearPendingChanges",
             excludeSource: ["init"]
         },
         pendingChanges: {
@@ -57,8 +56,13 @@ fluid.defaults("gpii.app.settingsBroker", {
             method: "fire",
             args: ["{arguments}.0"]
         },
-        flushPendingChanges: {
-            funcName: "gpii.app.settingsBroker.flushPendingChanges",
+        undoSetting: {
+            this: "{that}.events.onSettingApplied",
+            method: "fire",
+            args: ["{arguments}.0", null, "settingsBroker.undo"]
+        },
+        applyPendingChanges: {
+            funcName: "gpii.app.settingsBroker.applyPendingChanges",
             args: ["{that}", "{that}.model.pendingChanges"]
         },
         clearPendingChanges: {
@@ -120,7 +124,7 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
  * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
  * @param pendingChanges {Array} An array containing all pending setting changes.
  */
-gpii.app.settingsBroker.flushPendingChanges = function (settingsBroker, pendingChanges) {
+gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, pendingChanges) {
     fluid.each(pendingChanges, function (pendingChange) {
         settingsBroker.applySetting(pendingChange);
     });
@@ -140,24 +144,7 @@ gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, pendingCh
         pendingChange = fluid.extend(true, pendingChange, {
             value: pendingChange.oldValue
         });
-        // Fire `onSettingApplied` so that the PSP UI can be updated accordingly.
-        // Note that the gpiiConnector will not propagate to the GPII core setting
-        // changes whose current and previous values coincide.
-        settingsBroker.applySetting(pendingChange);
+        settingsBroker.undoSetting(pendingChange);
     });
     settingsBroker.clearPendingChanges();
-};
-
-/**
- * A function which should be called whenever the `keyedInUserToken` changes.
- * Basically, it clears the queue of pending setting changes when the user
- * keyes out.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
- * @param keyedInUserToken {String} The token of the currently keyed-in user
- * or `null` if there is none.
- */
-gpii.app.settingsBroker.onUserTokenChanged = function (settingsBroker, keyedInUserToken) {
-    if (!fluid.isValue(keyedInUserToken)) {
-        settingsBroker.clearPendingChanges();
-    }
 };

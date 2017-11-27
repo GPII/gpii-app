@@ -83,16 +83,24 @@ fluid.defaults("gpii.app.psp", {
 
         "onClosed.closePsp": {
             func: "{psp}.hide"
+        },
+
+        "onRestartLater.closePsp": {
+            func: "{psp}.hide"
+        },
+
+        "onRestartNow.closePsp": {
+            func: "{psp}.hide"
         }
     },
     invokers: {
         show: {
-            funcName: "gpii.app.psp.showPSPWindow",
-            args: ["{that}", "{that}.pspWindow"]
+            funcName: "gpii.app.psp.show",
+            args: ["{that}"]
         },
         hide: {
-            funcName: "gpii.app.psp.hidePSPWindow",
-            args: ["{that}", "{that}.pspWindow"]
+            funcName: "gpii.app.psp.hide",
+            args: ["{that}"]
         },
         notifyPSPWindow: {
             funcName: "gpii.app.notifyWindow",
@@ -126,16 +134,31 @@ fluid.defaults("gpii.app.psp", {
  * @param psp {Component} The `gpii.app.psp` instance.
  * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
-gpii.app.psp.showPSPWindow = function (psp, pspWindow) {
+
+ /**
+ * Moves the PSP to the lower right part of the screen. This function in conjunction
+ * with `gpii.app.psp.moveOffScreen` help avoid the flickering issue when the content
+ * of the PSP window changes.
+ * @param pspWindow {Object} An Electron `BrowserWindow`.
+ */
+gpii.app.psp.moveToScreen = function (pspWindow) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
         windowSize = pspWindow.getSize(),
         windowX = screenSize.width - windowSize[0],
         windowY = screenSize.height - windowSize[1];
     pspWindow.setPosition(windowX, windowY);
-    pspWindow.focus();
-    psp.applier.change("isShown", true);
 };
 
+/**
+ * Shows the PSP window by moving it to the lower right part of the screen and changes
+ * the `isShown` model property accordingly.
+ * @param psp {Component} The `gpii.app.psp` instance.
+ */
+gpii.app.psp.show = function (psp) {
+    gpii.app.psp.moveToScreen(psp.pspWindow);
+    psp.pspWindow.focus();
+    psp.applier.change("isShown", true);
+};
 
 /**
  * A function which should be called to init various listeners related to
@@ -175,12 +198,12 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
         app.keyOut();
     });
 
-    ipcMain.on("onSettingAltered", function (event, arg) {
-        psp.events.onSettingAltered.fire(arg);
+    ipcMain.on("onSettingAltered", function (event, setting) {
+        psp.events.onSettingAltered.fire(setting);
     });
 
-    ipcMain.on("onActivePreferenceSetAltered", function (event, arg) {
-        psp.events.onActivePreferenceSetAltered.fire(arg);
+    ipcMain.on("onActivePreferenceSetAltered", function (event, activeSet) {
+        psp.events.onActivePreferenceSetAltered.fire(activeSet);
     });
 
     ipcMain.on("onContentHeightChanged", function (event, contentHeight) {
@@ -188,12 +211,11 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     });
 
     ipcMain.on("onRestartNow", function () {
-        psp.hide();
         psp.events.onRestartNow.fire();
     });
 
     ipcMain.on("onRestartLater", function () {
-        psp.hide();
+        psp.events.onRestartLater.fire();
     });
 
     ipcMain.on("onUndoChanges", function () {
@@ -203,22 +225,26 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
 
 
 /**
- * Hides the PSP window by moving it to a non-visible part of the screen. This function
- * in conjunction with `gpii.app.psp.showPSPWindow` help avoid the flickering issue when
- * the content of the PSP window changes.
- * @param psp {Component} The `gpii.app.psp` instance.
+ * Moves the PSP to a non-visible part of the screen. This function in conjunction
+ * with `gpii.app.psp.moveToScreen` help avoid the flickering issue when the content
+ * of the PSP window changes.
  * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
-gpii.app.psp.hidePSPWindow = function (psp, pspWindow) {
+gpii.app.psp.moveOffScreen = function (pspWindow) {
     var windowSize = pspWindow.getSize(),
         width = windowSize[0],
         height = windowSize[1];
     pspWindow.setPosition(-width, -height);
+};
 
-    // TODO: Find a way around this.
-    if (psp) {
-        psp.applier.change("isShown", false);
-    }
+/**
+ * Hides the PSP window by moving it off the screen and changes the `isShown` model
+ * property accordingly.
+ * @param psp {Component} The `gpii.app.psp` instance.
+ */
+gpii.app.psp.hide = function (psp) {
+    gpii.app.psp.moveOffScreen(psp.pspWindow);
+    psp.applier.change("isShown", false);
 };
 
 /**
@@ -266,7 +292,7 @@ gpii.app.psp.makePSPWindow = function (windowOptions) {
     var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
     pspWindow.loadURL(url);
 
-    gpii.app.psp.hidePSPWindow(null, pspWindow);
+    gpii.app.psp.moveOffScreen(pspWindow);
 
     return pspWindow;
 };
