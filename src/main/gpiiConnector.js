@@ -230,3 +230,39 @@ gpii.app.extractSnapsetName = function (message) {
         preferences = value.preferences || {};
     return preferences.name;
 };
+
+/**
+ * Extension of `gpiiController` used for dev purposes.
+ */
+fluid.defaults("gpii.app.dev.gpiiConnector", {
+    gradeNames: ["gpii.app.gpiiConnector"],
+
+    events: {
+        mockPrefSets: {
+            event: "onPreferencesUpdated",
+            args: "@expand:gpii.app.dev.gpiiConnector.mockPreferences({arguments}.0)"
+        }
+    }
+});
+
+
+/**
+ * A decorator for the extracted preferences that applies values that are to be used
+ * for development.
+ */
+gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
+    function applyManualLivenessFlag(settings) {
+        settings.forEach(function (setting) {
+            // XXX a workaround as the Magnifier settings are missing the `solutionName` property
+            if (setting.path.match("magnifi")) {
+                setting.liveness = "manualRestart";
+            }
+        });
+    }
+
+    if (preferences) {
+        applyManualLivenessFlag(preferences.settings);
+    }
+
+    return preferences;
+};
