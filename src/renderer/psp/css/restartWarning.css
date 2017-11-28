@@ -1,9 +1,12 @@
-#flc-restartWarning {
+.fl-restartWarning {
     display: none;
+
+    position: relative;
+    width: 100%;
     margin-top: 10px;
 }
 
-#flc-restartWarning .fl-restartIcon {
+.fl-restartWarning .fl-restartIcon {
     float: left;
 
     width: 44px;
@@ -11,27 +14,27 @@
     margin-right: 10px;
 }
 
-#flc-restartWarning .fl-restartText {
+.fl-restartWarning .fl-restartText {
     font-size: 18px;
     line-height: 1.25;
 }
 
-#flc-restartWarning .fl-restartControls {
+.fl-restartWarning .fl-restartControls {
     clear: both;
 
     display: flex;
     justify-content: space-between;
 }
 
-#flc-restartWarning button {
+.fl-restartWarning button {
     width: 140px;
     height: 50px;
 }
 
-#flc-restartWarning button span {
+.fl-restartWarning button span {
     white-space: pre-wrap;
 }
 
-#flc-restartWarning button:last-child {
+.fl-restartWarning button:last-child {
     margin-right: 0;
 }

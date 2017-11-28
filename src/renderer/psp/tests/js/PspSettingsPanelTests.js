@@ -83,6 +83,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         value: ["mouse", "focus"],
 
         icon: "../../../../icons/gear-cloud-white.png",
+        liveness: "manualRestart",
+
         schema: {
             type: "array",
             title: "TTS tracking mode",
@@ -978,9 +980,141 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
+    gpii.tests.psp.testRestartWarningVisibility = function (restartWarning, expectedVisibility) {
+        jqUnit.assertEquals("Restart warning has correct visibility",
+            expectedVisibility,
+            $(restartWarning.container).is(":visible"));
+    };
+
+    gpii.tests.psp.testRestartWarningText = function (restartWarning, solutionNames, osRestart) {
+        var restartText = $(".flc-restartText", restartWarning.container).text().trim();
+        if (osRestart) {
+            jqUnit.assertEquals("Restart warning has correct OS restart text message",
+                restartWarning.options.labels.osRestartText,
+                restartText);
+        } else {
+            var expectedTextSuffix = solutionNames.join(", ");
+            jqUnit.assertTrue("Restart warning has correct text message",
+                restartText.endsWith(expectedTextSuffix));
+        }
+    };
+
+    gpii.tests.psp.testRestartWarningIcon = function (restartWarning, osRestart) {
+        var restartIcon = $(".flc-restartIcon", restartWarning.container),
+            styles = restartWarning.options.styles,
+            iconClass = osRestart ? styles.osRestartIcon : styles.applicationRestartIcon;
+        jqUnit.assertTrue("Restart warning has correct icon",
+            restartIcon.hasClass(iconClass));
+    };
+
+    gpii.tests.psp.testRestartWarningMessage = function (restartWarning, solutionNames, osRestart) {
+        gpii.tests.psp.testRestartWarningVisibility(restartWarning, true);
+        gpii.tests.psp.testRestartWarningText(restartWarning, solutionNames, osRestart);
+        gpii.tests.psp.testRestartWarningIcon(restartWarning, osRestart);
+    };
+
+    fluid.defaults("gpii.tests.psp.restartWarningTester", {
+        gradeNames: ["fluid.test.testCaseHolder"],
+
+        modules: [{
+            name: "Restart warning tests",
+            tests:[
+                {
+                    name: "Restart warning text, icon and buttons tests",
+                    expect: 13,
+                    sequence: [
+                        {
+                            funcName: "gpii.tests.psp.testRestartWarningVisibility",
+                            args: ["{restartWarning}.container", false]
+                        }, {
+                            funcName: "{restartWarning}.updatePendingChanges",
+                            args: [
+                                [dropdownSettingFixture, multipickerSettingFixture]
+                            ]
+                        }, {
+                            event: "{restartWarning}.events.onContentHeightChanged",
+                            listener: "jqUnit.assert",
+                            args: ["When the restart warning is show, onContentHeightChanged event is fired"]
+                        }, {
+                            funcName: "gpii.tests.psp.testRestartWarningMessage",
+                            args: [
+                                "{restartWarning}",
+                                [dropdownSettingFixture.solutionName, multipickerSettingFixture.schema.title],
+                                false
+                            ]
+                        }, {
+                            funcName: "{restartWarning}.updatePendingChanges",
+                            args: [
+                                [dropdownSettingFixture, multipickerSettingFixture, stepperSettingFixture]
+                            ]
+                        }, {
+                            funcName: "gpii.tests.psp.testRestartWarningMessage",
+                            args: [
+                                "{restartWarning}",
+                                ["{restartWarning}.options.labels.os"],
+                                true
+                            ]
+                        },
+                        // The buttons in the restart warning simply fire the associated event.
+                        // They are not responsible for anything else (including clearing the
+                        // pending changes array within the model).
+                        {
+                            jQueryTrigger: "click",
+                            element: "@expand:$(.flc-restartUndo, {restartWarning}.container)"
+                        }, {
+                            event: "{restartWarning}.events.onUndoChanges",
+                            listener: "jqUnit.assert",
+                            args: ["Restart warning's undo button fires the correct event"]
+                        }, {
+                            jQueryTrigger: "click",
+                            element: "@expand:$(.flc-restartNow, {restartWarning}.container)"
+                        }, {
+                            event: "{restartWarning}.events.onRestartNow",
+                            listener: "jqUnit.assert",
+                            args: ["Restart warning's restart now button fires the correct event"]
+                        }, {
+                            jQueryTrigger: "click",
+                            element: "@expand:$(.flc-restartLater, {restartWarning}.container)"
+                        }, {
+                            event: "{restartWarning}.events.onRestartLater",
+                            listener: "jqUnit.assert",
+                            args: ["Restart warning's restart later button fires the correct event"]
+                        }, {
+                            funcName: "{restartWarning}.updatePendingChanges",
+                            args: [
+                                []
+                            ]
+                        }, {
+                            event: "{restartWarning}.events.onContentHeightChanged",
+                            listener: "jqUnit.assert",
+                            args: ["When the restart warning is hidden, onContentHeightChanged event is fired"]
+                        }, {
+                            funcName: "gpii.tests.psp.testRestartWarningVisibility",
+                            args: ["{restartWarning}.container", false]
+                        }
+                    ]
+                }
+            ]
+        }]
+    });
+
+    fluid.defaults("gpii.tests.psp.restartWarningTests", {
+        gradeNames: ["fluid.test.testEnvironment"],
+        components: {
+            restartWarning: {
+                type: "gpii.psp.restartWarning",
+                container: ".fl-restartWarning"
+            },
+            restartWarningTester: {
+                type: "gpii.tests.psp.restartWarningTester"
+            }
+        }
+    });
+
     $(document).ready(function () {
         fluid.test.runTests([
             "gpii.tests.psp.attrsExpanderTests",
+            "gpii.tests.psp.restartWarningTests",
             "gpii.tests.psp.settingsPanelTestsWrapper"
         ]);
     });

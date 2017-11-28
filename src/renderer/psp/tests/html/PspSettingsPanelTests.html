@@ -59,6 +59,8 @@
         <script type="text/javascript" src="../../js/widgets.js"></script>
         <script type="text/javascript" src="../../js/exemplars.js"></script>
         <script type="text/javascript" src="../../js/settingsPanel.js"></script>
+        <script type="text/javascript" src="../../js/heightChangeListener.js"></script>
+        <script type="text/javascript" src="../../js/restartWarning.js"></script>
 
 
         <!--  These are tests that have been written using this page as data -->
@@ -83,6 +85,25 @@
             <div class="flc-settingsPanel-widgets-switch"></div>
             <div class="flc-settingsPanel-widgets-stepper"></div>
             <div class="flc-settingsPanel-widgets-multipicker"></div>
+        </div>
+
+        <div class="fl-restartWarning">
+            <iframe id="flc-restartHeightChangeListener" class="fl-heightChangeListener"></iframe>
+            <div>
+                <span class="flc-restartIcon fl-restartIcon fl-icon"></span>
+                <div class="flc-restartText fl-restartText"></div>
+            </div>
+            <div class="fl-restartControls">
+                <button class="flc-restartUndo btn fl-btn">
+                    <span class="flc-btnLabel"></span>
+                </button>
+                <button class="flc-restartNow btn fl-btn">
+                    <span class="flc-btnLabel"></span>
+                </button>
+                <button class="flc-restartLater btn fl-btn">
+                    <span class="flc-btnLabel"></span>
+                </button>
+            </div>
         </div>
     </body>
 </html>
