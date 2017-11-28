@@ -44,15 +44,3 @@ app.getWindowPosition = function (width, height) {
         y: screenSize.height - height
     };
 };
-
-/**
- * A function which capitalizes its input text. It does nothing
- * if the provided argument is `null` or `undefined`.
- * @param text {String} The input text.
- * @return {String} the capitalized version of the input text.
- */
-app.capitalize = function (text) {
-    if (fluid.isValue(text)) {
-        return text.charAt(0).toUpperCase() + text.slice(1);
-    }
-};
