@@ -48,21 +48,6 @@ fluid.defaults("gpii.app.menuInApp", {
             args: "{arguments}.0.path"
         },
 
-        // onKeyIn event is fired when a new user keys in through the task tray.
-        // This should result in:
-        // 1. key out the old keyed in user token
-        // 2. key in the new user token
-        //   a) trigger GPII {lifecycleManager}.events.onSessionStart
-        //   b) fire a model change to set the new model.keyedInUserToken
-        //   c) update the menu
-        "onKeyIn.performKeyOut": {
-            listener: "{app}.keyOut"
-        },
-        "onKeyIn.performKeyIn": {
-            listener: "{app}.keyIn",
-            args: ["{arguments}.0.token"],
-            priority: "after:performKeyOut"
-        },
         // onKeyOut event is fired when a keyed-in user keys out through the task tray.
         // This should result in:
         // 1. key out the currently keyed in user
@@ -70,11 +55,6 @@ fluid.defaults("gpii.app.menuInApp", {
         //    b) update the menu
         "onKeyOut.performKeyOut": {
             listener: "{app}.keyOut"
-        },
-
-        // onExit
-        "onExit.performExit": {
-            listener: "{app}.exit"
         }
     }
 });
@@ -91,8 +71,59 @@ gpii.app.updateMenu = function (tray, menuTemplate, events) {
     tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
 };
 
+
+/**
+ * Extended menu version to support Dev functionality:
+ * - manual keyIn from a fixed snapsets
+ * - manual exit from the PSP
+ */
 fluid.defaults("gpii.app.menuInAppDev", {
     gradeNames: "gpii.app.menuInApp",
+
+    // Override menu list generation to include dev options
+    modelRelay: {
+        "menuTemplate": {
+            target: "menuTemplate",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.generateMenuTemplate",
+                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
+            },
+            priority: "last"
+        }
+    },
+    menuLabels: {
+        keyIn: "Key in ...",
+        exit: "Exit GPII"
+    },
+    events: {
+        onKeyIn: null,
+        onExit: null
+    },
+
+    listeners: {
+        // onKeyIn event is fired when a new user keys in through the task tray.
+        // This should result in:
+        // 1. key out the old keyed in user token
+        // 2. key in the new user token
+        //   a) trigger GPII {lifecycleManager}.events.onSessionStart
+        //   b) fire a model change to set the new model.keyedInUserToken
+        //   c) update the menu
+        "onKeyIn.performKeyOut": {
+            listener: "{app}.keyOut"
+        },
+        "onKeyIn.performKeyIn": {
+            listener: "{app}.keyIn",
+            args: ["{arguments}.0.token"],
+            priority: "after:performKeyOut"
+        },
+
+        // onExit
+        "onExit.performExit": {
+            listener: "{app}.exit"
+        }
+    },
+
     // The list of the default snapsets shown on the task tray menu for key-in
     snapsets: {
         label: "{that}.options.menuLabels.keyIn",
@@ -240,7 +271,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
+                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut"]
             },
             priority: "last"
         }
@@ -249,20 +280,12 @@ fluid.defaults("gpii.app.menu", {
         psp: "Open PSP",
         keyedIn: "Keyed in with %snapsetName",    // string template
         keyOut: "Key-out of GPII",
-        notKeyedIn: "(No one keyed in)",
-
-        // XXX DEV items
-        exit: "Exit GPII",
-        keyIn: "Key in ..."
+        notKeyedIn: "(No one keyed in)"
     },
     events: {
         onPSP: null,
         onActivePrefSetUpdate: null,
-        onKeyOut: null,
-
-        // XXX DEV items
-        onKeyIn: null,
-        onExit: null
+        onKeyOut: null
     }
 });
 
