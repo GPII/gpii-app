@@ -112,8 +112,9 @@ gpii.app.gpiiConnector.createGPIIConnection = function (config) {
 gpii.app.gpiiConnector.registerPSPListener = function (socket, gpiiConnector) {
     socket.on("message", function (rawData) {
         var data = JSON.parse(rawData),
-            operation = data.type,
-            path = data.path,
+            payload = data.payload || {},
+            operation = payload.type,
+            path = payload.path,
             preferences;
 
         if ((operation === "ADD" && path.length === 0) ||
@@ -121,17 +122,17 @@ gpii.app.gpiiConnector.registerPSPListener = function (socket, gpiiConnector) {
             /*
              * Preferences change update has been received
              */
-            var snapsetName = gpii.app.extractSnapsetName(data);
+            var snapsetName = gpii.app.extractSnapsetName(payload);
             gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
 
-            preferences = gpii.app.extractPreferencesData(data);
+            preferences = gpii.app.extractPreferencesData(payload);
             gpiiConnector.events.onPreferencesUpdated.fire(preferences);
         } else if (operation === "ADD") {
             /*
              * Setting change update has been received
              */
             var settingPath = path[path.length - 2],
-                settingValue = data.value;
+                settingValue = payload.value;
 
             gpiiConnector.events.onSettingUpdated.fire({
                 path: settingPath,
@@ -225,7 +226,7 @@ gpii.app.extractPreferencesData = function (message) {
  * @return {String} The user-friendly snapset name.
  */
 gpii.app.extractSnapsetName = function (message) {
-    var value = message.value || {};
-    // TODO: Change this when the API supports user-friendly snapset names.
-    return gpii.app.capitalize(value.userToken);
+    var value = message.value || {},
+        preferences = value.preferences || {};
+    return preferences.name;
 };
