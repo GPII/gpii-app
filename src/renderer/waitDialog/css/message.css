@@ -22,102 +22,12 @@
   padding-top: .25em;
   padding-right: .2em;
 }
-
-/* This is based on a spinner from cssload.net */
 .gpii-spinner {
   background-color: white;
-  padding: 1em 2em;
+  padding: .5em;
 }
 .spinner {
-  position: relative;
-  width: 6em;
-  height: 6em;
-  margin: auto;
-}
-.petal {
-  position: absolute;
-  width: .65em;
-  height: 1.7em;
-  border-radius: 3px;
-  animation-name: fade;
-  animation-duration: 1.2s;
-  animation-iteration-count: infinite;
-}
-.petal1 {
-  top: 0.3em;
-  right: 1.55em;
-  animation-delay: 0.1s;
-  transform: rotate(30deg);
-}
-.petal2 {
-  top: 1em;
-  right: 0.75em;
-  animation-delay: 0.2s;
-  transform: rotate(60deg);
-}
-.petal3 {
-  top: 2.15em;
-  right: 0.4em;
-  animation-delay: 0.3s;
-  transform: rotate(90deg);
-}
-.petal4 {
-  right: 0.75em;
-  bottom: 1em;
-  animation-delay: 0.4s;
-  transform: rotate(120deg);
-}
-.petal5 {
-  right: 1.55em;
-  bottom: 0.3em;
-  animation-delay: 0.5s;
-  transform: rotate(150deg);
-}
-.petal6 {
-  bottom: 0;
-  left: 2.66em;
-  animation-delay: 0.6s;
-}
-.petal7 {
-  left: 1.55em;
-  bottom: 0.3em;
-  animation-delay: 0.7s;
-  transform: rotate(30deg);
-}
-.petal8 {
-  left: 0.75em;
-  bottom: 1em;
-  animation-delay: 0.8s;
-  transform: rotate(60deg);
-}
-.petal9 {
-  top: 2.15em;
-  left: 0.4em;
-  animation-delay: 0.9s;
-  transform: rotate(90deg);
-}
-.petal10 {
-  top: 1em;
-  left: 0.75em;
-  animation-delay: 1s;
-  transform: rotate(120deg);
-}
-.petal11 {
-  top: 0.3em;
-  left: 1.55em;
-  animation-delay: 1.1s;
-  transform: rotate(150deg);
-}
-.petal12 {
-  top: 0;
-  left: 2.66em;
-}
-
-@keyframes fade {
-  0% {
-    background-color: #137CCE;
-  }
-  100%{
-    background-color: #CFE8FE;
-  }
+  background-image: url("../../../icons/Gear_Cloud_spinning_4s_cw.svg");
+  width: 12em;
+  height: 12em;
 }
