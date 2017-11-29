@@ -93,10 +93,14 @@ fluid.defaults("gpii.app.dialog", {
                 "{that}.options.config.attrs.height"
             ]
         },
+        resetWindowPosition: {
+            funcName: "gpii.app.setWindowPosition",
+            args: ["{that}.dialog", "@expand:{that}.getWindowPosition()"]
+        },
         // Simple default behaviour
         show: {
-            this: "{that}.dialog",
-            method: "show"
+            funcName: "gpii.app.dialog.show",
+            args: ["{that}"]
         },
         hide: {
             this: "{that}.dialog",
@@ -129,6 +133,12 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
 /**
  * Creates a dialog. This is done up front to avoid the delay from creating a new
  * dialog every time a new message should be displayed.
+ * @param windowOptions {Object} The raw Electron `BrowserWindow` settings
+ * @param position {Object} The desired position for the component
+ * @param positoins.x {Number}
+ * @param positoins.y {Number}
+ * @param url {String} The URL to be loaded in the `BrowserWindow`
+ * @return {BrowserWindow} The Electron `BrowserWindow` component
  */
 gpii.app.dialog.makeDialog = function (windowOptions, position, url) {
     var dialog = new BrowserWindow(windowOptions);
@@ -136,4 +146,15 @@ gpii.app.dialog.makeDialog = function (windowOptions, position, url) {
 
     dialog.loadURL(url);
     return dialog;
+};
+
+/**
+ * Resets the position and shows the current dialog (`BrowserWindow`).
+ * The reset is needed in order to handle cases such as resolution or
+ * DPI settings changes.
+ * @param dialog {Component} The diolog component to be shown
+ */
+gpii.app.dialog.show = function (dialog) {
+    dialog.resetWindowPosition();
+    dialog.dialog.show();
 };
