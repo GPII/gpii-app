@@ -20,11 +20,33 @@ var gpii  = fluid.registerNamespace("gpii");
 require("./utils.js");
 
 
+/**
+ * Base dialog component that supply initialization of
+ * an Electron `BrowserWindow` and the generation of
+ * the file URL that it to be loaded in the same `BrowserWindow`.
+ * NOTE: The generated URL is always relative to the working
+ * directory of the application (`module.terms()`)
+ *
+ * It also Supplies simple interface for show/hide operations of
+ * the window and handles Electron objects cleanup upon destruction.
+ *
+ * Requires:
+ * - (optional) `attrs` - used as raw options for `BrowserWindow` generation.
+ *   For full options list:  https://github.com/electron/electron/blob/master/docs/api/browser-window.md
+ * - relative path from the application's working directory
+ *    - `fileSuffixPath` - the suffix to the file
+ *    - `filePrefixPath` (optional) - the prefix to the file
+ *
+ *   For example a relative path such as `"/src/rendered/waitDialog/index.html"`,
+ *   might be split to:
+ *   `prefixPath = "src/renderer"`
+ *   `fileSuffixPath = "waitDialog/index.html"`
+ */
 fluid.defaults("gpii.app.dialog", {
     gradeNames: ["fluid.component"],
 
     config: {
-        attrs: {
+        attrs: {        // raw attributes used in `BrowserWindow` generation
             width: 800,
             height: 600,
             show: false,
@@ -34,7 +56,7 @@ fluid.defaults("gpii.app.dialog", {
             skipTaskbar: true
         },
         filePrefixPath: "src/renderer",
-        fileSuffixPath: null,
+        fileSuffixPath: null,           // e.g. "waitDialog/index.html"
         url: {
             expander: {
                 funcName: "gpii.app.dialog.buildFileUrl",
@@ -85,7 +107,7 @@ fluid.defaults("gpii.app.dialog", {
 
 
 /**
- * Builds a file URL inside the application working directory.
+ * Builds a file URL inside the application **Working Directory**.
  *
  * @param prefixPath {String} Prefix for the file path, e.g. "src/renderer"
  * @param suffixPath {String} Suffix for the file path, e.g. "index.html"
