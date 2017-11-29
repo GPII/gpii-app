@@ -26,9 +26,7 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
     gradeNames: ["fluid.component"],
 
     events: {
-        // onRestartNow: null,
-        // onClosed: null,
-        // onRestartLater: null
+        // onClosed: null
     },
 
     listeners: {
@@ -52,8 +50,15 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
 
 /**
  * Register for events from the managed Electron `BrowserWindow` (the renderer process).
+ * @param events {Objects} Events that are to be mapped to dialog actoins
  */
 gpii.app.dialog.restartDialog.channel.register = function (events) {
+    /*
+     * NOTE: all other dialog events - onRestartNow, onRestartLater, onUndoChnages
+     * are handled by the `gpii.app.psp` IPC handler as they share both share the same
+     * functionality and ipcMain channel.
+     */
+
     ipcMain.on("onClosed", function (/*event, message*/) {
         events.onClosed.fire();
     });
@@ -87,10 +92,12 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
     },
 
     events: {
-        onRestartNow: null,
         onClosed: null,
-        onRestartLater: null,
-        onUndoChanges: null
+        
+        // Handled by the `gpii.app.psp`
+        // onRestartNow: null,
+        // onRestartLater: null,
+        // onUndoChanges: null
     },
 
     components: {
@@ -98,10 +105,7 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
             type: "gpii.app.dialog.restartDialog.channel",
             options: {
                 events: {
-                    onRestartNow: "{restartDialog}.events.onRestartNow",
                     onClosed: "{restartDialog}.events.onClosed",
-                    onRestartLater: "{restartDialog}.events.onRestartLater",
-                    onUndoChanges: "{restartDialog}.events.onUndoChanges"
                 }
             }
         }

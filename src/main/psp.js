@@ -135,7 +135,7 @@ fluid.defaults("gpii.app.psp", {
  * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
 
- /**
+/**
  * Moves the PSP to the lower right part of the screen. This function in conjunction
  * with `gpii.app.psp.moveOffScreen` help avoid the flickering issue when the content
  * of the PSP window changes.
@@ -209,6 +209,10 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     ipcMain.on("onContentHeightChanged", function (event, contentHeight) {
         psp.resize(contentHeight);
     });
+
+    /*
+     * "Restart Required" functionality events
+     */
 
     ipcMain.on("onRestartNow", function () {
         psp.events.onRestartNow.fire();
