@@ -16,6 +16,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     var gpii = fluid.registerNamespace("gpii");
 
     $(function () {
-        gpii.psp();
+        gpii.restartDialog(".fl-popup-contentWrapper");
     });
 })(fluid);

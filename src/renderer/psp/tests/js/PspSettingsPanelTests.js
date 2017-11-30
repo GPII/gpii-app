@@ -20,7 +20,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         value: "b",
         solutionName: "solutions1",
 
-        icon: "../../../icons/gear-cloud-black.png",
+        icon: "../../../../icons/gear-cloud-black.png",
+        liveness: "manualRestart",
+        memory: false,
 
         schema: {
             type: "string",
@@ -34,7 +36,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         path: "textfieldPath",
         value: "Someee",
 
-        icon: "../../../icons/gear-cloud-white.png",
+        icon: "../../../../icons/gear-cloud-white.png",
+        liveness: "live",
 
         schema: {
             type: "text",
@@ -47,8 +50,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         path: "invertColorsPath",
         value: true,
 
-        icon: "../../../icons/gear-cloud-black.png",
-        isPersisted: true,
+        icon: "../../../../icons/gear-cloud-black.png",
+        liveness: "liveRestart",
+        memory: true,
 
         schema: {
             type: "boolean",
@@ -61,8 +65,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         path: "zoomPath",
         value: 1,
 
-        icon: "../../../icons/gear-cloud-black.png",
-        isPersisted: true,
+        icon: "../../../../icons/gear-cloud-black.png",
+        liveness: "OSRestart",
 
         schema: {
             type: "number",
@@ -78,8 +82,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         path: "ttsTrackingPath",
         value: ["mouse", "focus"],
 
-        icon: "../../../icons/gear-cloud-white.png",
-        dynamic: true,
+        icon: "../../../../icons/gear-cloud-white.png",
+        liveness: "manualRestart",
+
         schema: {
             type: "array",
             title: "TTS tracking mode",
@@ -93,7 +98,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         value: "c",
         solutionName: "solutions2",
 
-        icon: "../../../icons/gear-cloud-black.png",
+        icon: "../../../../icons/gear-cloud-black.png",
 
         schema: {
             type: "string",
@@ -403,6 +408,66 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         });
     };
 
+    gpii.tests.psp.testWidgetMemoryIcon = function (container, memory, tooltip) {
+        var memoryIcon = container.find(".flc-memoryIcon");
+        jqUnit.assertEquals(
+            "Widgets: Widget is correctly (not) showing its memory icon",
+            memory,
+            memoryIcon.is(":visible")
+        );
+
+        if (memory) {
+            jqUnit.assertEquals(
+                "Widgets: Widget's memory icon has correct tooltip",
+                tooltip,
+                memoryIcon.attr("title")
+            );
+        }
+    };
+
+    gpii.tests.psp.testOSRestartIcon = function (container, isModified, styles, labels) {
+        var restartIcon = $(".flc-restartIcon", container);
+        jqUnit.assertTrue(
+            "Widgets: OS restart widget icon has the proper restart CSS class",
+            restartIcon.hasClass(styles.osRestartIcon)
+        );
+
+        jqUnit.assertFalse(
+            "Widgets: OS restart widget icon does not have the application restart CSS class",
+            restartIcon.hasClass(styles.appRestartIcon)
+        );
+
+        var label = isModified ? labels.osRestartRequired : labels.osRestart;
+        jqUnit.assertEquals(
+            "Widget: Os restart widget has correct tooltip text",
+            label,
+            restartIcon.attr("title")
+        );
+    };
+
+    gpii.tests.psp.testAppRestartIcon = function (container, isModified, fixture, styles, labels) {
+        var restartIcon = $(".flc-restartIcon", container);
+        jqUnit.assertTrue(
+            "Widgets: App restart widget icon has the proper CSS class",
+            restartIcon.hasClass(styles.appRestartIcon)
+        );
+
+        jqUnit.assertFalse(
+            "Widgets: App restart widget icon does not have the OS restart CSS class",
+            restartIcon.hasClass(styles.osRestartIcon)
+        );
+
+        var label = isModified ? labels.appRestartRequired : labels.appRestart;
+        label = fluid.stringTemplate(label, {
+            solutionName: fixture.solutionName
+        });
+        jqUnit.assertEquals(
+            "Widget: Os restart widget has correct tooltip text",
+            label,
+            restartIcon.attr("title")
+        );
+    };
+
     gpii.tests.psp.testStepperModelInteraction = function (container, expected) {
         var textfield = $(".flc-textfieldStepper-field", container);
         jqUnit.assertEquals(
@@ -491,7 +556,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             name: "PSP widgets interaction tests",
             tests: [{
                 name: "Widgets: Switch - interactions test",
-                expect: 3,
+                expect: 5,
                 sequence: [{ // initiate `settingsVisualizer` creation
                     funcName: "{singleSettingPanelsMock}.switchPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -499,6 +564,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     args: [
                         ["@expand:$(.flc-switchUI-control, {singleSettingPanelsMock}.switchPanel.container)"],
                         switchSettingFixture.path
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testWidgetMemoryIcon",
+                    args: [
+                        "{singleSettingPanelsMock}.switchPanel.container",
+                        switchSettingFixture.memory,
+                        "{singleSettingPanelsMock}.switchPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels.memory"
                     ]
                 }, [ // Test DOM interaction
                     { // simulate manual click from the user
@@ -510,7 +582,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Switch - component notified for the update with proper path/value",
                             [switchSettingFixture.path, !switchSettingFixture.value],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }
                 ], [ // Test model interaction (settingsVisualizer is already created)
@@ -525,7 +597,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 ]
             }, {
                 name: "Widgets: Stepper - interactions test",
-                expect: 6,
+                expect: 12,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.stepperPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -534,6 +606,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         ["@expand:$(.flc-textfieldSlider-slider, {singleSettingPanelsMock}.stepperPanel.container)",
                             "@expand:$(.flc-textfieldStepper-field, {singleSettingPanelsMock}.stepperPanel.container)"],
                         stepperSettingFixture.path
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testOSRestartIcon",
+                    args: [
+                        "{singleSettingPanelsMock}.stepperPanel.container",
+                        false,
+                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
+                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
                     ]
                 }, [
                     {
@@ -545,7 +625,23 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Stepper - component is notified when increasing for the update with proper path/value",
                             [stepperSettingFixture.path, stepperSettingFixture.value + stepperSettingFixture.schema.divisibleBy],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
+                        ]
+                    }, {
+                        // Fire this event manually in order not to introduce several other components in the tests
+                        // which would increase the complexity of the tests as a whole.
+                        func: "{singleSettingPanelsMock}.stepperPanel.events.onRestartRequired.fire",
+                        args: [
+                            [stepperSettingFixture]
+                        ]
+                    }, {
+                        event: "{singleSettingPanelsMock}.stepperPanel.events.onRestartRequired",
+                        listener: "gpii.tests.psp.testOSRestartIcon",
+                        args: [
+                            "{singleSettingPanelsMock}.stepperPanel.container",
+                            true,
+                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
+                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
                         ]
                     }, {
                         jQueryTrigger: "click",
@@ -556,7 +652,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Stepper - component is notified when decreasing for the update with proper path/value",
                             [stepperSettingFixture.path, stepperSettingFixture.value],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }
                 ], [
@@ -591,7 +687,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Textfield - component notified for the update with proper path/value",
                             [textfieldSettingFixture.path, "Test value"],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }
                 ], [
@@ -607,7 +703,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 ]]
             }, {
                 name: "Widgets: Dropdown - interactions test",
-                expect: 3,
+                expect: 10,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.dropdownPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -615,6 +711,22 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     args: [
                         ["@expand:$(.flc-dropdown-options, {singleSettingPanelsMock}.dropdownPanel.container)"],
                         dropdownSettingFixture.path
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testAppRestartIcon",
+                    args: [
+                        "{singleSettingPanelsMock}.dropdownPanel.container",
+                        false,
+                        dropdownSettingFixture,
+                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
+                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testWidgetMemoryIcon",
+                    args: [
+                        "{singleSettingPanelsMock}.dropdownPanel.container",
+                        dropdownSettingFixture.memory,
+                        "{singleSettingPanelsMock}.switchPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels.memory"
                     ]
                 }, [
                     {
@@ -626,7 +738,22 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Dropdown - component notified for the update with proper path/value",
                             [dropdownSettingFixture.path, dropdownSettingFixture.schema["enum"][2]],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
+                        ]
+                    }, {
+                        func: "{singleSettingPanelsMock}.dropdownPanel.events.onRestartRequired.fire",
+                        args: [
+                            [dropdownSettingFixture]
+                        ]
+                    }, {
+                        event: "{singleSettingPanelsMock}.dropdownPanel.events.onRestartRequired",
+                        listener: "gpii.tests.psp.testAppRestartIcon",
+                        args: [
+                            "{singleSettingPanelsMock}.dropdownPanel.container",
+                            true,
+                            dropdownSettingFixture,
+                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
+                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
                         ]
                     }
                 ], [
@@ -655,7 +782,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         args: [
                             "Widgets: Multipicker - component notified for the update with proper path/value",
                             [multipickerSettingFixture.path, [multipickerSettingFixture.schema["enum"][1]]],
-                            ["{arguments}.0", "{arguments}.1"]
+                            ["{arguments}.0.path", "{arguments}.0.value"]
                         ]
                     }
                 ], [
@@ -853,9 +980,141 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
+    gpii.tests.psp.testRestartWarningVisibility = function (restartWarning, expectedVisibility) {
+        jqUnit.assertEquals("Restart warning has correct visibility",
+            expectedVisibility,
+            $(restartWarning.container).is(":visible"));
+    };
+
+    gpii.tests.psp.testRestartWarningText = function (restartWarning, solutionNames, osRestart) {
+        var restartText = $(".flc-restartText", restartWarning.container).text().trim();
+        if (osRestart) {
+            jqUnit.assertEquals("Restart warning has correct OS restart text message",
+                restartWarning.options.labels.osRestartText,
+                restartText);
+        } else {
+            var expectedTextSuffix = solutionNames.join(", ");
+            jqUnit.assertTrue("Restart warning has correct text message",
+                restartText.endsWith(expectedTextSuffix));
+        }
+    };
+
+    gpii.tests.psp.testRestartWarningIcon = function (restartWarning, osRestart) {
+        var restartIcon = $(".flc-restartIcon", restartWarning.container),
+            styles = restartWarning.options.styles,
+            iconClass = osRestart ? styles.osRestartIcon : styles.applicationRestartIcon;
+        jqUnit.assertTrue("Restart warning has correct icon",
+            restartIcon.hasClass(iconClass));
+    };
+
+    gpii.tests.psp.testRestartWarningMessage = function (restartWarning, solutionNames, osRestart) {
+        gpii.tests.psp.testRestartWarningVisibility(restartWarning, true);
+        gpii.tests.psp.testRestartWarningText(restartWarning, solutionNames, osRestart);
+        gpii.tests.psp.testRestartWarningIcon(restartWarning, osRestart);
+    };
+
+    fluid.defaults("gpii.tests.psp.restartWarningTester", {
+        gradeNames: ["fluid.test.testCaseHolder"],
+
+        modules: [{
+            name: "Restart warning tests",
+            tests:[
+                {
+                    name: "Restart warning text, icon and buttons tests",
+                    expect: 13,
+                    sequence: [
+                        {
+                            funcName: "gpii.tests.psp.testRestartWarningVisibility",
+                            args: ["{restartWarning}.container", false]
+                        }, {
+                            funcName: "{restartWarning}.updatePendingChanges",
+                            args: [
+                                [dropdownSettingFixture, multipickerSettingFixture]
+                            ]
+                        }, {
+                            event: "{restartWarning}.events.onContentHeightChanged",
+                            listener: "jqUnit.assert",
+                            args: ["When the restart warning is show, onContentHeightChanged event is fired"]
+                        }, {
+                            funcName: "gpii.tests.psp.testRestartWarningMessage",
+                            args: [
+                                "{restartWarning}",
+                                [dropdownSettingFixture.solutionName, multipickerSettingFixture.schema.title],
+                                false
+                            ]
+                        }, {
+                            funcName: "{restartWarning}.updatePendingChanges",
+                            args: [
+                                [dropdownSettingFixture, multipickerSettingFixture, stepperSettingFixture]
+                            ]
+                        }, {
+                            funcName: "gpii.tests.psp.testRestartWarningMessage",
+                            args: [
+                                "{restartWarning}",
+                                ["{restartWarning}.options.labels.os"],
+                                true
+                            ]
+                        },
+                        // The buttons in the restart warning simply fire the associated event.
+                        // They are not responsible for anything else (including clearing the
+                        // pending changes array within the model).
+                        {
+                            jQueryTrigger: "click",
+                            element: "@expand:$(.flc-restartUndo, {restartWarning}.container)"
+                        }, {
+                            event: "{restartWarning}.events.onUndoChanges",
+                            listener: "jqUnit.assert",
+                            args: ["Restart warning's undo button fires the correct event"]
+                        }, {
+                            jQueryTrigger: "click",
+                            element: "@expand:$(.flc-restartNow, {restartWarning}.container)"
+                        }, {
+                            event: "{restartWarning}.events.onRestartNow",
+                            listener: "jqUnit.assert",
+                            args: ["Restart warning's restart now button fires the correct event"]
+                        }, {
+                            jQueryTrigger: "click",
+                            element: "@expand:$(.flc-restartLater, {restartWarning}.container)"
+                        }, {
+                            event: "{restartWarning}.events.onRestartLater",
+                            listener: "jqUnit.assert",
+                            args: ["Restart warning's restart later button fires the correct event"]
+                        }, {
+                            funcName: "{restartWarning}.updatePendingChanges",
+                            args: [
+                                []
+                            ]
+                        }, {
+                            event: "{restartWarning}.events.onContentHeightChanged",
+                            listener: "jqUnit.assert",
+                            args: ["When the restart warning is hidden, onContentHeightChanged event is fired"]
+                        }, {
+                            funcName: "gpii.tests.psp.testRestartWarningVisibility",
+                            args: ["{restartWarning}.container", false]
+                        }
+                    ]
+                }
+            ]
+        }]
+    });
+
+    fluid.defaults("gpii.tests.psp.restartWarningTests", {
+        gradeNames: ["fluid.test.testEnvironment"],
+        components: {
+            restartWarning: {
+                type: "gpii.psp.restartWarning",
+                container: ".fl-restartWarning"
+            },
+            restartWarningTester: {
+                type: "gpii.tests.psp.restartWarningTester"
+            }
+        }
+    });
+
     $(document).ready(function () {
         fluid.test.runTests([
             "gpii.tests.psp.attrsExpanderTests",
+            "gpii.tests.psp.restartWarningTests",
             "gpii.tests.psp.settingsPanelTestsWrapper"
         ]);
     });

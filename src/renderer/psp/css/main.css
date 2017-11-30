@@ -32,7 +32,7 @@ body {
     clear: both;
 }
 
-#fl-contentWrapper {
+.fl-contentWrapper {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -42,31 +42,31 @@ body {
 
 /* Header styles */
 
-#flc-header hr { 
+.fl-header hr {
     display: block;
     margin: 0.5em auto;
     border: 2px solid #005ba6;
 }
 
-#flc-header .flc-prefSetPicker {
+.fl-header .flc-prefSetPicker {
     float: left;
 }
 
-#flc-header .flc-closeBtn {
+.fl-header .flc-closeBtn {
     float: right;
 
     font-size: 20px;
     color: rgba(255, 255, 255, 0.6);
 }
 
-#flc-header .flc-closeBtn:hover,
-#flc-header .flc-closeBtn:focus {
+.fl-header .flc-closeBtn:hover,
+.fl-header .flc-closeBtn:focus {
     color: #ffffff;
 }
 
 /* Content body styles */
 
-#flc-content {
+.fl-content {
     flex: 1;
 
     /* Needed in order to have some spacing between the scrollbar
@@ -76,13 +76,13 @@ body {
     overflow-y: overlay;
 }
 
-#flc-settingsList {
+.fl-settingsList {
     position: relative;
     float: left;
     width: 100%;
 }
 
-#flc-settingsList > iframe {
+iframe.fl-heightChangeListener {
     position: absolute;
     top: 0;
     left: 0;
@@ -94,61 +94,65 @@ body {
     pointer-events: none;
 }
 
-#flc-settingsList > *[class^="flc-settingListRow"] {
+.fl-settingsList *[class^="flc-settingListRow"] {
     margin-bottom: 1.25em;
 }
 
-#flc-settingsList > *[class^="flc-settingListRow"]:last-child {
+.fl-settingsList *[class^="flc-settingListRow"]:last-child {
     margin-bottom: 0.25em;
 }
 
-#flc-settingsList .flc-setting {
+.fl-settingsList .flc-setting {
     display: flex;
 }
 
-#flc-settingsList .flc-setting > * {
+.fl-settingsList .flc-setting > * {
     flex: 1;
 }
 
-#flc-settingsList .flc-setting .flc-icon {
+.fl-settingsList .flc-setting .flc-icon {
     float: left;
     margin: 9px 10px 0 0;
 }
 
-#flc-settingsList .flc-setting .fl-settingLabel {
+.fl-settingsList .flc-setting .fl-settingLabel {
     overflow: hidden;
 }
 
-#flc-settingsList .flc-setting .fl-settingLabel .flc-titleLabel {
+.fl-settingsList .flc-setting .fl-settingLabel .flc-titleLabel {
     display: inline;
     vertical-align: top;
 
     font-weight: normal;
 }
 
-#flc-settingsList .flc-setting .fl-settingLabel .flc-solutionName:not(:empty):after {
+.fl-settingsList .flc-setting .fl-settingLabel .flc-solutionName:not(:empty):after {
     content: ":";
 }
 
-#flc-settingsList .flc-setting .flc-widget {
+.fl-settingsList .flc-setting .flc-widget {
     padding-left: 10px;
     color: #000000;
 }
 
-#flc-settingsList .flc-setting .fl-settingLabel .flc-restartIcon {
+.fl-settingsList .flc-setting .fl-settingLabel .fl-icon {
     display: none;
 
-    position: relative;
-    top: 5px;
+    float: right;
+    margin-top: 6px;
 }
 
-#flc-settingsList .flc-setting .fl-settingLabel .flc-memoryIcon {
-    display: none;
+.fl-settingsList .flc-setting .fl-settingLabel .fl-icon:first-child {
+    margin-left: 6px;
 }
 
 /* Footer styles */
 
-#flc-footer .flc-helpBtn {
+.fl-footer {
+    margin-top: 0;
+}
+
+.fl-footer .flc-helpBtn {
     float: right;
     margin-right: 0;
 }
@@ -162,10 +166,6 @@ body.theme-alt {
     background-color: #797979;
 }
 
-.theme-alt #flc-header hr {
+.theme-alt .fl-header hr {
     border-color: #797979;
-}
-
-.theme-alt #flc-footer button {
-    background-color: var(--main-color);
 }

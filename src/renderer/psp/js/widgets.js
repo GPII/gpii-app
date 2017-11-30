@@ -80,7 +80,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         gradeNames: ["fluid.viewComponent"],
         label: null,
         selectors: {
-            label: ".fl-btnLabel"
+            label: ".flc-btnLabel"
         },
         attrs: {
             // user provided attributes

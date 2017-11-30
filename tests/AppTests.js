@@ -43,18 +43,62 @@ var prefSet1 = {
 
 
 jqUnit.test("Tray.getTrayTooltip", function () {
-    var defaultTooltip = "def";
+    var tooltips = {
+        pendingChanges: "There are pending changes",
+        defaultTooltip: "(No one keyed in)"
+    };
 
-    jqUnit.expect(2);
+    jqUnit.expect(3);
 
     jqUnit.assertEquals("The tooltip is default when user is not keyedIn",
-        defaultTooltip,
-        gpii.app.getTrayTooltip(emptyPrefSets, defaultTooltip)
+        tooltips.defaultTooltip,
+        gpii.app.getTrayTooltip(emptyPrefSets, [], tooltips)
     );
 
-    jqUnit.assertEquals("The tooltip is active pref set name when user is keyedIn",
+    jqUnit.assertEquals("The tooltip is active pref set name when user is keyed in and there is no pending setting change",
         prefSet2.name,
-        gpii.app.getTrayTooltip(keyedInPrefSets, defaultTooltip)
+        gpii.app.getTrayTooltip(keyedInPrefSets, [], tooltips)
+    );
+
+    var pendingChanges = [{
+        path: "magnification",
+        value: "2",
+        oldValue: "1.5"
+    }];
+    jqUnit.assertEquals("The tooltip indicates there are pending changes when such are indeed present",
+        tooltips.pendingChanges,
+        gpii.app.getTrayTooltip(keyedInPrefSets, pendingChanges, tooltips)
+    );
+});
+
+jqUnit.test("Tray.getTrayIcon", function () {
+    var icons = {
+        pendingChanges: "pendingChangesIcon",
+        keyedIn: "keyedInIcon",
+        keyedOut: "keyedOutIcon"
+    };
+
+    jqUnit.expect(3);
+
+    jqUnit.assertEquals("Tray icon is keyedOut icon when there is no keyed in user",
+        icons.keyedOut,
+        gpii.app.getTrayIcon(null, [], icons)
+    );
+
+    var keyedInUserToken = "alice";
+    jqUnit.assertEquals("Tray icon is keyedIn icon when user is keyed in and there is no pending setting change",
+        icons.keyedIn,
+        gpii.app.getTrayIcon(keyedInUserToken, [], icons)
+    );
+
+    var pendingChanges = [{
+        path: "magnification",
+        value: "2",
+        oldValue: "1.5"
+    }];
+    jqUnit.assertEquals("Tray icon is pendingChanges icon when there are pending changes present",
+        icons.pendingChanges,
+        gpii.app.getTrayIcon(keyedInUserToken, pendingChanges, icons)
     );
 });
 

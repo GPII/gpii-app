@@ -71,14 +71,22 @@ fluid.defaults("gpii.app.gpiiConnector", {
 });
 
 /**
- * Sends setting update request to GPII over the socket.
+ * Sends setting update request to GPII over the socket if necessary.
+ * A request will not be sent if the current and the previous values
+ * of the setting coincide.
  *
  * @param socket {Object} The already connected WebSocket instance
  * @param setting {Object} The setting to be changed
  * @param setting.path {String} The id of the setting
  * @param setting.value {String} The new value of the setting
+ * @param setting.oldValue {String} Optional - the previous value of
+ * the setting
  */
 gpii.app.gpiiConnector.updateSetting = function (socket, setting) {
+    if (fluid.isValue(setting.oldValue) && gpii.app.equalsAsJSON(setting.oldValue, setting.value)) {
+        return;
+    }
+
     var payload = JSON.stringify({
         path: ["settingControls", setting.path, "value"],
         type: "ADD",
@@ -168,8 +176,8 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
 
         // XXX hardcoded as they're not currently supported by the API (pcpChannel)
         icon: "../../icons/gear-cloud-white.png",
-        dynamicity: "none", // "none", "application" or "os"
-        isPersisted: false
+        liveness: settingDescriptor.liveness || "live",
+        memory: fluid.isValue(settingDescriptor.memory) ? settingDescriptor.memory : true
     };
 };
 
@@ -221,4 +229,49 @@ gpii.app.extractSnapsetName = function (message) {
     var value = message.value || {},
         preferences = value.preferences || {};
     return preferences.name;
+};
+
+/**
+ * Extension of `gpiiController` used for dev purposes.
+ */
+fluid.defaults("gpii.app.dev.gpiiConnector", {
+    gradeNames: ["gpii.app.gpiiConnector"],
+
+    events: {
+        mockPrefSets: {
+            event: "onPreferencesUpdated",
+            args: "@expand:gpii.app.dev.gpiiConnector.mockPreferences({arguments}.0)"
+        }
+    }
+});
+
+
+/**
+ * A decorator for the extracted preferences that applies values that are to be used
+ * for development.
+ */
+gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
+    function applyManualLivenessFlag(settings) {
+        settings.forEach(function (setting) {
+            // XXX a workaround as the Magnifier settings are missing the `solutionName` property
+            if (setting.path.match("common\/magnifi")) {
+                setting.liveness = "manualRestart";
+            }
+        });
+    }
+
+    function applyOsLivenessFlag(settings) {
+        settings.forEach(function (setting) {
+            if (setting.path.match("common\/speechControl")) {
+                setting.liveness = "OSRestart";
+            }
+        });
+    }
+
+    if (preferences) {
+        applyManualLivenessFlag(preferences.settings);
+        applyOsLivenessFlag(preferences.settings);
+    }
+
+    return preferences;
 };

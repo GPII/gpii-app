@@ -18,54 +18,29 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     fluid.registerNamespace("gpii.psp.clientChannel");
 
     /**
-     * A function which should be called when the PSP window needs to be
-     * closed. It simply notifies the main electron process for this.
+     * Sends asynchronously a message to the main process.
+     * @param channel {String} The channel via which the message will
+     * be sent
+     * @oaram message {Any} The actual message that is to be sent.
      */
-    gpii.psp.clientChannel.closePSP = function () {
-        ipcRenderer.send("onPSPClose");
-    };
-
-    /**
-     * Notifies the main electron process that the user must be keyed out.
-     */
-    gpii.psp.clientChannel.keyOut = function () {
-        ipcRenderer.send("onKeyOut");
+    gpii.psp.clientChannel.sendMessage = function (channel, message) {
+        ipcRenderer.send(channel, message);
     };
 
     /**
      * A function which should be called whenever a settings is updated
      * as a result of a user's input. Its purpose is to notify the main
      * electron process for the change.
-     * @param path {String} The path of the updated setting.
-     * @param value {Any} The new, updated value for the setting. Can be
-     * of different type depending on the setting.
+     * @param clientChannel {Component} The `gpii.psp.clientChannel`
+     * instance.
+     * @param setting {Object} The setting which has been updated.
+     * @param oldValue {Any} The old value of the setting.
      */
-    gpii.psp.clientChannel.alterSetting = function (path, value) {
-        ipcRenderer.send("onSettingAltered", {
-            path: path,
-            value: value
+    gpii.psp.clientChannel.alterSetting = function (clientChannel, setting, oldValue) {
+        setting = fluid.extend(true, setting, {
+            oldValue: oldValue
         });
-    };
-
-    /**
-     * A function which should be called when the active preference set
-     * has been changed as a result of a user's input. It will notify
-     * the main electron process for the change.
-     * @param value {String} The path of the new active preference set.
-     */
-    gpii.psp.clientChannel.alterActivePreferenceSet = function (value) {
-        ipcRenderer.send("onActivePreferenceSetAltered", {
-            value: value
-        });
-    };
-
-    /**
-     * A function which should be called whenever the total height of the
-     * PSP `BrowserWindow` changes.
-     * @param height {Number} The new height of the PSP `BrowserWindow`.
-     */
-    gpii.psp.clientChannel.changeContentHeight = function (height) {
-        ipcRenderer.send("onContentHeightChanged", height);
+        clientChannel.sendMessage("onSettingAltered", setting);
     };
 
     /**
@@ -85,6 +60,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         ipcRenderer.on("onAccentColorChanged", function (event, accentColor) {
             clientChannel.events.onAccentColorChanged.fire(accentColor);
         });
+
+        ipcRenderer.on("onRestartRequired", function (event, pendingChanges) {
+            clientChannel.events.onRestartRequired.fire(pendingChanges);
+        });
     };
 
     /**
@@ -96,7 +75,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         events: {
             onPreferencesUpdated: null,
             onSettingUpdated: null,
-            onAccentColorChanged: null
+            onAccentColorChanged: null,
+            onRestartRequired: null
         },
         listeners: {
             "onCreate.initClientChannel": {
@@ -105,20 +85,40 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         invokers: {
+            sendMessage: {
+                funcName: "gpii.psp.clientChannel.sendMessage"
+            },
             close: {
-                funcName: "gpii.psp.clientChannel.closePSP"
+                func: "{that}.sendMessage",
+                args: ["onPSPClose"]
             },
             keyOut: {
-                funcName: "gpii.psp.clientChannel.keyOut"
+                func: "{that}.sendMessage",
+                args: ["onKeyOut"]
             },
             alterSetting: {
-                funcName: "gpii.psp.clientChannel.alterSetting"
+                funcName: "gpii.psp.clientChannel.alterSetting",
+                args: ["{that}", "{arguments}.0", "{arguments}.1"]
             },
             alterActivePreferenceSet: {
-                funcName: "gpii.psp.clientChannel.alterActivePreferenceSet"
+                func: "{that}.sendMessage",
+                args: ["onActivePreferenceSetAltered", "{arguments}.0"]
             },
             changeContentHeight: {
-                funcName: "gpii.psp.clientChannel.changeContentHeight"
+                func: "{that}.sendMessage",
+                args: ["onContentHeightChanged", "{arguments}.0"]
+            },
+            restartNow: {
+                func: "{that}.sendMessage",
+                args: ["onRestartNow"]
+            },
+            restartLater: {
+                func: "{that}.sendMessage",
+                args: ["onRestartLater"]
+            },
+            undoChanges: {
+                func: "{that}.sendMessage",
+                args: ["onUndoChanges"]
             }
         }
     });

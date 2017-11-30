@@ -31,6 +31,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         },
                         onSettingUpdated: {
                             funcName: "{mainWindow}.updateSetting"
+                        },
+                        onRestartRequired: {
+                            funcName: "{mainWindow}.events.onRestartRequired.fire"
                         }
                     }
                 }
@@ -45,7 +48,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         onKeyOut: "{clientChannel}.keyOut",
                         onSettingAltered: "{clientChannel}.alterSetting",
                         onActivePreferenceSetAltered: "{clientChannel}.alterActivePreferenceSet",
-                        onContentHeightChanged: "{clientChannel}.changeContentHeight"
+                        onContentHeightChanged: "{clientChannel}.changeContentHeight",
+
+                        onRestartNow: "{clientChannel}.restartNow",
+                        onRestartLater: "{clientChannel}.restartLater",
+                        onUndoChanges: "{clientChannel}.undoChanges"
+
                     }
                 }
             }

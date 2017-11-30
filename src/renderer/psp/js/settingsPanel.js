@@ -54,14 +54,24 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
         styles: {
             osRestartIcon: "fl-icon-osRestart",
-            applicationRestartIcon: "fl-icon-appRestart"
+            appRestartIcon: "fl-icon-appRestart",
+            valueChanged: "fl-icon-filled"
+        },
+        labels: {
+            memory: "This control auto-saves",
+            osRestart: "To change this setting,\nWindows requires a restart.",
+            osRestartRequired: "You changed this setting, which\nrequires Windows to restart.",
+            appRestart: "%solutionName - To change this setting,\nthe app requires a restart.",
+            appRestartRequired: "%solutionName - You changed this setting,\nwhich requires the app to restart."
         },
         model: {
             path: null,
             icon: null,
             solutionName: null,
             value: null,
-            schema: null
+            schema: null,
+            liveness: null, // "live", "liveRestart", "manualRestart", "OSRestart"
+            memory: null
         },
         widgetConfig: {
             widgetOptions: null,
@@ -70,7 +80,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         events: {
             onSettingUpdated: null,
-            onSettingAltered: null
+            onSettingAltered: null,
+            onRestartRequired: null
         },
 
         components: {
@@ -82,15 +93,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         modelListeners: {
-            value: [{
-                funcName: "gpii.psp.settingPresenter.showRestartIcon",
-                args: ["{that}.model.dynamicity", "{that}.dom.restartIcon", "{that}.options.styles"],
-                excludeSource: "init"
-            }, {
+            value: {
                 funcName: "{that}.events.onSettingAltered.fire",
-                args: ["{that}.model.path", "{change}.value"],
+                args: ["{that}.model", "{change}.oldValue"],
                 excludeSource: ["init", "psp.mainWindow"]
-            }]
+            }
         },
         listeners: {
             "onCreate.setIcon": {
@@ -113,15 +120,23 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 method: "attr",
                 args: ["id", "{that}.model.path"]
             },
-            "onCreate.setMemoryIcon": {
+            "onCreate.showMemoryIcon": {
                 funcName: "gpii.psp.settingPresenter.showMemoryIcon",
-                args: ["{that}.model.isPersisted", "{that}.dom.memoryIcon"]
+                args: ["{that}", "{that}.dom.memoryIcon"]
+            },
+            "onCreate.showRestartIcon": {
+                funcName: "gpii.psp.settingPresenter.showRestartIcon",
+                args: ["{that}", "{that}.dom.restartIcon"]
             },
             // Update value locally in order for the corresponding
             //   DOM elements to be notifier, and thus updated
             "onSettingUpdated": {
                 funcName: "gpii.psp.settingPresenter.updateModelIfNeeded",
                 args: ["{that}", "{arguments}.0", "{arguments}.1"]
+            },
+            "onRestartRequired": {
+                funcName: "gpii.psp.settingPresenter.updateRestartIcon",
+                args: ["{that}", "{arguments}.0", "{that}.dom.restartIcon"]
             }
         }
     });
@@ -137,35 +152,93 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     };
 
     /**
-     * A method responsible for showing and styling the restart icon when the user
-     * changes a setting which is not dynamic.
-     * @param dynamicity {String} The type of dynamicity for the current setting. Can
-     * be "none", "application" or "os".
-     * @param restartIcon {jQuery} A jQuery object representing the restart icon.
-     * @param styles {Object} An object containing classes to be applied to the restart
-     * icon depending on the setting's dynamicity.
+     * Returns the appropriate tooltip label for the restart icon depending on whether the
+     * setting has has a "manualRestart" or an "OSRestart" liveness, and on whether the
+     * user has modified the setting's value.
+     * @param setting {Object} An object representing the setting.
+     * @param hasPendingChange {Boolean} Whether the user has modified the setting for which
+     * the restart icon tooltip label is to be calculated.
+     * @param labels {Object} A set of labels to choose from when calculating the restart icon
+     * tooltip label.
+     * @returns The tooltip label for the restart icon.
      */
-    gpii.psp.settingPresenter.showRestartIcon = function (dynamicity, restartIcon, styles) {
-        if (dynamicity === "application" || dynamicity === "os") {
-            var iconClass = dynamicity === "application" ? styles.applicationRestartIcon : styles.osRestartIcon;
-            restartIcon.addClass(iconClass);
-            // cannot use $.show() because it will make the display "inline"
-            restartIcon.css("display", "inline-block");
+    gpii.psp.settingPresenter.getRestartIconLabel = function (setting, hasPendingChange, labels) {
+        if (setting.liveness === "manualRestart") {
+            var label = hasPendingChange ? labels.appRestartRequired : labels.appRestart;
+            return fluid.stringTemplate(label, {
+                solutionName: fluid.isValue(setting.solutionName) ? setting.solutionName : setting.schema.title
+            });
+        }
+
+        if (setting.liveness === "OSRestart") {
+            return hasPendingChange ? labels.osRestartRequired : labels.osRestart;
         }
     };
 
     /**
-     * A method responsible for showing a memory icon if the setting will be persisted
-     * after a user has changed it.
-     * @param isPersisted {Boolean} Whether the current setting will be persisted or not.
-     * @param memoryIcon {jQuery} A jQuery object representing the memory icon.
+     * A function responsible for showing, styling and adding the appropriate tooltip to
+     * the restart icon if the setting has a "manualRestart" or an "OSRestart" liveness.
+     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
+     * @param restartIcon {jQuery} A jQuery object representing the restart icon.
      */
-    gpii.psp.settingPresenter.showMemoryIcon = function (isPersisted, memoryIcon) {
-        if (isPersisted) {
-            memoryIcon.show();
+    gpii.psp.settingPresenter.showRestartIcon = function (that, restartIcon) {
+        var liveness = that.model.liveness,
+            styles = that.options.styles,
+            labels = that.options.labels;
+
+        if (liveness === "manualRestart" || liveness === "OSRestart") {
+            var iconClass = liveness === "manualRestart" ? styles.appRestartIcon : styles.osRestartIcon,
+                label = gpii.psp.settingPresenter.getRestartIconLabel(that.model, false, labels);
+            restartIcon
+                .addClass(iconClass)
+                .attr("title", label)
+                .show();
         }
     };
 
+    /**
+     * A function responsible for restyling the restart icon and changing its tooltip when
+     * the user modifies the corresponding setting.
+     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
+     * @param pendingChanges {Array} An array of all pending setting changes that the user
+     * has made.
+     * @param restartIcon {jQuery} A jQuery object representing the restart icon.
+     */
+    gpii.psp.settingPresenter.updateRestartIcon = function (that, pendingChanges, restartIcon) {
+        var liveness = that.model.liveness,
+            path = that.model.path,
+            styles = that.options.styles,
+            labels = that.options.labels;
+
+        if (liveness === "manualRestart" || liveness === "OSRestart") {
+            var pendingChange = fluid.find_if(pendingChanges, function (change) {
+                return change.path === path;
+            });
+
+            if (pendingChange) {
+                restartIcon.addClass(styles.valueChanged);
+            } else {
+                restartIcon.removeClass(styles.valueChanged);
+            }
+
+            var label = gpii.psp.settingPresenter.getRestartIconLabel(that.model, pendingChange, labels);
+            restartIcon.attr("title", label);
+        }
+    };
+
+    /**
+     * A function responsible for showing and adding a tooltip to a memory icon
+     * if the setting will be persisted after a user has changed it.
+     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
+     * @param memoryIcon {jQuery} A jQuery object representing the memory icon.
+     */
+    gpii.psp.settingPresenter.showMemoryIcon = function (that, memoryIcon) {
+        if (that.model.memory) {
+            memoryIcon
+                .attr("title", that.options.labels.memory)
+                .show();
+        }
+    };
 
 
     /**
@@ -209,7 +282,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 type: "fluid.viewComponent",
                 container: "{that}.container",
                 options: {
-                    // TODO extract as component -> container renderer?
                     listeners: {
                         "onCreate.render": {
                             this: "{that}.container",
@@ -305,8 +377,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         events: {
             // XXX not quite valid naming as the widget component (in settingPresenter) also renders
             onSettingRendered: null,
-            onSettingAltered: null  // passed from parent
+            onSettingAltered: null,  // passed from parent
             // onSettingUpdated: null  // passed from parent
+            onRestartRequired: null
         },
 
         components: {
@@ -334,7 +407,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     model: "{settingVisualizer}.options.setting",
                     events: {
                         onSettingAltered: "{settingVisualizer}.events.onSettingAltered",
-                        onSettingUpdated: "{settingVisualizer}.events.onSettingUpdated"
+                        onSettingUpdated: "{settingVisualizer}.events.onSettingUpdated",
+                        onRestartRequired: "{settingVisualizer}.events.onRestartRequired"
                     }
                 }
             }
@@ -389,7 +463,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
                     events: {
                         onSettingAltered: "{settingsPanel}.events.onSettingAltered",
-                        onSettingUpdated: "{settingsPanel}.events.onSettingUpdated"
+                        onSettingUpdated: "{settingsPanel}.events.onSettingUpdated",
+                        onRestartRequired: "{settingsPanel}.events.onRestartRequired"
                     },
 
                     widgetConfig: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemaType({that}.options.setting.schema.type)",
@@ -429,13 +504,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 
     gpii.psp.settingsVisualizer.updateSettingsPresentations = function (that, settings) {
-        // TODO improve
         settings.forEach(function (setting, settingIndex) {
             that.events.onSettingCreated.fire(settingIndex, setting);
         });
     };
-
-
 
     /**
      * The top most component for representation of list of settings.
@@ -490,7 +562,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         events: {
             onTemplatesLoaded: null,
             onSettingAltered: null,
-            onSettingUpdated: null // passed from outside
+            onSettingUpdated: null, // passed from outside
+            onRestartRequired: null
         }
     });
 

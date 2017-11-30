@@ -34,6 +34,7 @@ fluid.defaults("gpii.app.tray", {
         }
     },
     icons: {
+        pendingChanges: "../icons/gpii-pending.png",
         keyedIn: "../icons/gpii-color.ico",
         keyedOut: "../icons/gpii.ico"
     },
@@ -44,6 +45,7 @@ fluid.defaults("gpii.app.tray", {
     },
     model: {
         keyedInUserToken: null,
+        pendingChanges: [],
         icon: "{that}.options.icons.keyedOut",
         preferences: "{app}.model.preferences",
         tooltip: ""
@@ -51,15 +53,10 @@ fluid.defaults("gpii.app.tray", {
     modelRelay: {
         "icon": {
             target: "icon",
-            source: "{that}.model.keyedInUserToken",
             singleTransform: {
-                type: "fluid.transforms.valueMapper",
-                defaultInputPath: "",
-                match: [{
-                    inputValue: null,
-                    outputValue: "{that}.options.icons.keyedOut"
-                }],
-                noMatch: "{that}.options.icons.keyedIn"
+                type: "fluid.transforms.free",
+                func: "gpii.app.getTrayIcon",
+                args: ["{that}.model.keyedInUserToken", "{that}.model.pendingChanges", "{that}.options.icons"]
             }
         },
         "tooltip": {
@@ -67,7 +64,7 @@ fluid.defaults("gpii.app.tray", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.getTrayTooltip",
-                args: ["{that}.model.preferences", "{that}.options.labels.defaultTooltip"]
+                args: ["{that}.model.preferences", "{that}.model.pendingChanges", "{that}.options.tooltips"]
             }
         }
     },
@@ -89,7 +86,8 @@ fluid.defaults("gpii.app.tray", {
             method: "destroy"
         }
     },
-    labels: {
+    tooltips: {
+        pendingChanges: "There are pending changes",
         defaultTooltip: "(No one keyed in)"
     }
 });
@@ -125,18 +123,41 @@ gpii.app.makeTray = function (icon, openPSP) {
 };
 
 /**
- * Returns the tooltip for the Electron Tray based on the active preference set (if any).
- * @param preferences {Object} An object describing the preference sets (including the
- * active one) for the currently keyed-in user (if any).
- * @param defaultTooltip {String} A default tooltip text which should be used in case
- * there is no active preference set.
+ * Returns the path to the icon for the Electron Tray based on whether there is a
+ * keyed-in user and on the pending setting changes (if any).
+ * @param keyedInUserToken {String} The token if the keyed-in user or `null` if
+ * there is no such.
+ * @param pendingChanges {Array} An array containing all pending setting changes.
+ * @param icons {Object} An object containing all possible icon paths.
  * @return The tooltip label for the Electron Tray.
  */
-gpii.app.getTrayTooltip = function (preferences, defaultTooltip) {
+gpii.app.getTrayIcon = function (keyedInUserToken, pendingChanges, icons) {
+    if (pendingChanges && pendingChanges.length > 0) {
+        return icons.pendingChanges;
+    }
+
+    return keyedInUserToken ? icons.keyedIn : icons.keyedOut;
+};
+
+/**
+ * Returns the tooltip for the Electron Tray based on the active preference set (if any)
+ * and the pending setting changes.
+ * @param preferences {Object} An object describing the preference sets (including the
+ * active one) for the currently keyed-in user (if any).
+ * @param pendingChanges {Array} An array containing all pending setting changes.
+ * @param tooltips {Object} An object containing all possible tooltip texts.
+ * @return The tooltip label for the Electron Tray.
+ */
+gpii.app.getTrayTooltip = function (preferences, pendingChanges, tooltips) {
+    if (pendingChanges && pendingChanges.length > 0) {
+        return tooltips.pendingChanges;
+    }
+
     var activePreferenceSet = fluid.find_if(preferences.sets,
         function (preferenceSet) {
             return preferenceSet.path === preferences.activeSet;
         }
     );
-    return activePreferenceSet ? activePreferenceSet.name : defaultTooltip;
+
+    return activePreferenceSet ? activePreferenceSet.name : tooltips.defaultTooltip;
 };

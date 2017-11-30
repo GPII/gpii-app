@@ -26,6 +26,7 @@ require("../node_modules/universal/gpii/node_modules/testing");
 gpii.loadTestingSupport();
 
 require("./IntegrationTestDefs.js");
+require("./SettingsBrokerTestDefs.js");
 
 fluid.registerNamespace("gpii.tests.app");
 
@@ -85,5 +86,6 @@ gpii.tests.app.bootstrapServer = function (testDefs, transformer) {
 
 gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.app.testDefs),
-    fluid.copy(gpii.tests.dev.testDefs)
+    fluid.copy(gpii.tests.dev.testDefs),
+    fluid.copy(gpii.tests.settingsBroker.testDefs)
 ]);

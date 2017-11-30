@@ -64,28 +64,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     };
 
     /**
-     * Responsible for detecting height changes in the element in which
-     * the component's container is nested.
-     */
-    fluid.defaults("gpii.psp.heightChangeListener", {
-        gradeNames: ["fluid.viewComponent"],
-        listeners: {
-            "onCreate.initResizeListener": {
-                "this": "@expand:$({that}.container.0.contentWindow)",
-                method: "on",
-                args: ["resize", "{that}.onHeightChanged"]
-            }
-        },
-        invokers: {
-            onHeightChanged: fluid.notImplemented
-        }
-    });
-
-    /**
      * Responsible for drawing the settings list
      *
-     * TODO support redrawing of settings
-     * currently only single update of available setting is supported
+     * Note: currently only single update of available setting is supported
      */
     fluid.defaults("gpii.psp.mainWindow", {
         gradeNames: ["fluid.viewComponent"],
@@ -102,7 +83,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             content: "#flc-content",
             footer: "#flc-footer",
             settingsList: "#flc-settingsList",
-            heightChangeListener: "#flc-heightChangeListener"
+            heightChangeListener: "#flc-contentHeightChangeListener",
+            restartWarning: "#flc-restartWarning"
         },
         components: {
             splash: {
@@ -146,7 +128,27 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                     },
                     events: {
                         onSettingAltered: "{mainWindow}.events.onSettingAltered",
-                        onSettingUpdated: "{mainWindow}.events.onSettingUpdated"
+                        onSettingUpdated: "{mainWindow}.events.onSettingUpdated",
+                        onRestartRequired: "{mainWindow}.events.onRestartRequired"
+                    }
+                }
+            },
+            restartWarning: {
+                type: "gpii.psp.restartWarning",
+                container: "{that}.dom.restartWarning",
+                options: {
+                    listeners: {
+                        onContentHeightChanged: {
+                            funcName: "{mainWindow}.onContentHeightChanged"
+                        },
+                        "{mainWindow}.events.onRestartRequired": {
+                            funcName: "{that}.updatePendingChanges"
+                        }
+                    },
+                    events: {
+                        onRestartNow: "{mainWindow}.events.onRestartNow",
+                        onRestartLater: "{mainWindow}.events.onRestartLater",
+                        onUndoChanges: "{mainWindow}.events.onUndoChanges"
                     }
                 }
             },
@@ -179,7 +181,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 source: "psp.mainWindow"
             },
             "updateSetting": {
-                // TODO just fire because... (redrawing)
                 func: "{that}.events.onSettingUpdated.fire",
                 args: [
                     "{arguments}.0",
@@ -204,7 +205,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             onPSPClose: null,
             onKeyOut: null,
             onActivePreferenceSetAltered: null,
-            onContentHeightChanged: null
+            onContentHeightChanged: null,
+
+            onRestartRequired: null,
+            onRestartNow: null,
+            onRestartLater: null,
+            onUndoChanges: null
         }
     });
 })(fluid);

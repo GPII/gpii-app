@@ -44,3 +44,49 @@ app.getWindowPosition = function (width, height) {
         y: screenSize.height - height
     };
 };
+
+/**
+ * Set the position of the Electorn `BrowserWindow` element.
+ * @param dialogWindow {BrowserWindow} The window which is to be positioned
+ * @param position {Object} The position where the window to be placed
+ * @param position.x {Number}
+ * @param position.y {Number}
+ */
+app.setWindowPosition = function (dialogWindow, position) {
+    dialogWindow.setPosition(position.x, position.y);
+};
+
+/**
+ * A function which capitalizes its input text. It does nothing
+ * if the provided argument is `null` or `undefined`.
+ * @param text {String} The input text.
+ * @return {String} the capitalized version of the input text.
+ */
+app.capitalize = function (text) {
+    if (fluid.isValue(text)) {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+};
+
+/**
+ * Sends a message to the given Electron `BrowserWindow`
+ *
+ * @param window {Object} An Electron `BrowserWindow` object
+ * @param messageChannel {String} The channel to which the message to be sent
+ * @param message {String}
+ */
+app.notifyWindow = function (browserWindow, messageChannel, message) {
+    if (browserWindow) {
+        browserWindow.webContents.send(messageChannel, message);
+    }
+};
+
+/**
+ * Checks whether two objects are equal by using `JSON.stringify` internally.
+ * This  means that if the compared values are arrays or objects, the ordering
+ * of the elements/properties within them matters.
+ * @return {Boolean} `true` if the values are equal and `false` otherwise.
+ */
+app.equalsAsJSON = function (obj1, obj2) {
+    return JSON.stringify(obj1) === JSON.stringify(obj2);
+};

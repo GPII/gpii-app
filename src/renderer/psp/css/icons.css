@@ -10,6 +10,9 @@
 
     -webkit-mask-position: 50% 50%;
     mask-position: 50% 50%;
+
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
 }
 
 .fl-icon-logOut {
@@ -38,6 +41,25 @@
     mask-image: url("../icons/info-triangle.svg");
 }
 
+.fl-icon-memory {
+    -webkit-mask-image: url("../icons/upload-cloud.svg");
+    mask-image: url("../icons/upload-cloud.svg");
+}
+
 .theme-alt .fl-icon {
     background-color: #ffffff;
+}
+
+.theme-alt .fl-icon.fl-icon-filled {
+    background-color: var(--main-color);
+}
+
+.theme-alt .fl-icon-appRestart.fl-icon-filled {
+    -webkit-mask-image: url("../icons/info-filled.svg");
+    mask-image: url("../icons/info-filled.svg");
+}
+
+.theme-alt .fl-icon-osRestart.fl-icon-filled {
+    -webkit-mask-image: url("../icons/info-triangle-filled.svg");
+    mask-image: url("../icons/info-triangle-filled.svg");
 }

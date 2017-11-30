@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="css/switch.css">
         <link rel="stylesheet" href="css/textfield.css">
         <link rel="stylesheet" href="css/icons.css">
+        <link rel="stylesheet" href="css/restartWarning.css">
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/splash.css">
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
@@ -18,8 +19,10 @@
         <script type="text/javascript" src="js/settingsPanel.js"></script>
         <script type="text/javascript" src="js/splash.js"></script>
         <script type="text/javascript" src="js/header.js"></script>
+        <script type="text/javascript" src="js/restartWarning.js"></script>
         <script type="text/javascript" src="js/footer.js"></script>
         <script type="text/javascript" src="js/clientChannel.js"></script>
+        <script type="text/javascript" src="js/heightChangeListener.js"></script>
         <script type="text/javascript" src="js/mainWindow.js"></script>
         <script type="text/javascript" src="js/psp.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
@@ -38,8 +41,8 @@
             </div>
         </div>
 
-        <div id="fl-contentWrapper">
-            <div id="flc-header">
+        <div class="fl-contentWrapper">
+            <div id="flc-header" class="fl-header">
                 <div class="flc-prefSetPicker form-group fl-dropdown">
                     <div class="combobox">
                         <select class="flc-dropdown-options form-control"></select>
@@ -51,20 +54,39 @@
                 <hr>
             </div>
 
-            <div id="flc-content">
-                <div id="flc-settingsList">
-                    <iframe id="flc-heightChangeListener"></iframe>
+            <div id="flc-content" class="fl-content">
+                <div id="flc-settingsList" class="fl-settingsList">
+                    <iframe id="flc-contentHeightChangeListener" class="fl-heightChangeListener"></iframe>
                 </div>
             </div>
 
-            <div id="flc-footer" class="btn-group">
+            <div id="flc-restartWarning" class="fl-restartWarning">
+                <iframe id="flc-restartHeightChangeListener" class="fl-heightChangeListener"></iframe>
+                <div>
+                    <span class="flc-restartIcon fl-restartIcon fl-icon"></span>
+                    <div class="flc-restartText fl-restartText"></div>
+                </div>
+                <div class="fl-restartControls">
+                    <button class="flc-restartUndo btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                    <button class="flc-restartNow btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                    <button class="flc-restartLater btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="flc-footer" class="fl-footer btn-group">
                 <button class="flc-keyOutBtn btn fl-btn">
                     <span class="fl-btnIcon fl-icon fl-icon-logOut"></span>
-                    <span class="fl-btnLabel"></span>
+                    <span class="flc-btnLabel fl-btnLabel"></span>
                 </button>
                 <button class="flc-helpBtn btn fl-btn">
                     <span class="fl-btnIcon fl-icon fl-icon-help"></span>
-                    <span class="fl-btnLabel"></span>
+                    <span class="flc-btnLabel fl-btnLabel"></span>
                 </button>
             </div>
         </div>
