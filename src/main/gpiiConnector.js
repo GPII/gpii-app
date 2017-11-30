@@ -254,14 +254,23 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
     function applyManualLivenessFlag(settings) {
         settings.forEach(function (setting) {
             // XXX a workaround as the Magnifier settings are missing the `solutionName` property
-            if (setting.path.match("magnifi")) {
+            if (setting.path.match("common\/magnifi")) {
                 setting.liveness = "manualRestart";
+            }
+        });
+    }
+
+    function applyOsLivenessFlag(settings) {
+        settings.forEach(function (setting) {
+            if (setting.path.match("common\/speechControl")) {
+                setting.liveness = "OSRestart";
             }
         });
     }
 
     if (preferences) {
         applyManualLivenessFlag(preferences.settings);
+        applyOsLivenessFlag(preferences.settings);
     }
 
     return preferences;

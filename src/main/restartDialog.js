@@ -92,8 +92,8 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
     },
 
     events: {
-        onClosed: null,
-        
+        onClosed: null
+
         // Handled by the `gpii.app.psp`
         // onRestartNow: null,
         // onRestartLater: null,
@@ -105,7 +105,7 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
             type: "gpii.app.dialog.restartDialog.channel",
             options: {
                 events: {
-                    onClosed: "{restartDialog}.events.onClosed",
+                    onClosed: "{restartDialog}.events.onClosed"
                 }
             }
         }

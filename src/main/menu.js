@@ -128,6 +128,12 @@ fluid.defaults("gpii.app.menuInAppDev", {
     snapsets: {
         label: "{that}.options.menuLabels.keyIn",
         submenu: [{
+            label: "Voice control wiht Increased Size",
+            click: "onKeyIn",
+            args: {
+                token: "snapset_5"
+            }
+        }, {
             label: "Larger 125%",
             click: "onKeyIn",
             args: {
@@ -194,10 +200,10 @@ fluid.defaults("gpii.app.menuInAppDev", {
                 token: "snapset_4d"
             }
         }, {
-            label: "Multi pref sets; Magnifier",
+            label: "Multiple pref sets. Magnifier & Volume Control",
             click: "onKeyIn",
             args: {
-                token: "context1"
+                token: "multi_context"
             }
         }, {
             label: "Invalid user",
