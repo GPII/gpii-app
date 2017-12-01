@@ -128,7 +128,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
     snapsets: {
         label: "{that}.options.menuLabels.keyIn",
         submenu: [{
-            label: "Voice control wiht Increased Size",
+            label: "Voice control with Increased Size",
             click: "onKeyIn",
             args: {
                 token: "snapset_5"

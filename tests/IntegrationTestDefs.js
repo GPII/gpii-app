@@ -59,7 +59,7 @@ gpii.tests.app.testItem = function (item, label) {
 };
 
 gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
-    gpii.tests.app.testItem(infoItem, "Keyed in with Snapset_1a");
+    gpii.tests.app.testItem(infoItem, "Keyed in with Larger 125%");
     gpii.tests.app.testItem(keyoutItem, "Key-out of GPII");
 };
 
@@ -141,8 +141,8 @@ gpii.tests.app.testDefs = {
 fluid.registerNamespace("gpii.tests.dev");
 
 var prefSetsInDevStartIdx = 4;
-gpii.tests.dev.testContext1KeyedIn = function (tray, menuTemplate, activeSetIdx) {
-    gpii.tests.app.testItem(menuTemplate[1], "Keyed in with Context1");
+gpii.tests.dev.testMultiContextKeyedIn = function (tray, menuTemplate, activeSetIdx) {
+    gpii.tests.app.testItem(menuTemplate[1], "Keyed in with Multiple Contexts");
     gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx], "Default preferences");
     gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 1], "bright");
     gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 2], "noise");
@@ -161,21 +161,22 @@ gpii.tests.dev.testKeyInList = function (item) {
     jqUnit.assertEquals("Item is 'Key In' List", "Key in ...", item.label);
     var submenu = item.submenu;
     jqUnit.assertValue("Item has submenu", submenu);
-    jqUnit.assertEquals("Key in list has 12 items", 13, submenu.length);
+    jqUnit.assertEquals("Key in list has 14 items", 14, submenu.length);
 
-    gpii.tests.app.testItem(submenu[0], "Larger 125%");
-    gpii.tests.app.testItem(submenu[1], "Larger 150%");
-    gpii.tests.app.testItem(submenu[2], "Larger 175%");
-    gpii.tests.app.testItem(submenu[3], "Dark & Larger 125%");
-    gpii.tests.app.testItem(submenu[4], "Dark & Larger 150%");
-    gpii.tests.app.testItem(submenu[5], "Dark & Larger 175%");
-    gpii.tests.app.testItem(submenu[6], "Read To Me");
-    gpii.tests.app.testItem(submenu[7], "Magnifier 200%");
-    gpii.tests.app.testItem(submenu[8], "Magnifier 400%");
-    gpii.tests.app.testItem(submenu[9], "Magnifier 200% & Display Scaling 175%");
-    gpii.tests.app.testItem(submenu[10], "Dark Magnifier 200%");
-    gpii.tests.app.testItem(submenu[11], "Multi pref sets; Magnifier");
-    gpii.tests.app.testItem(submenu[12], "Invalid user");
+    gpii.tests.app.testItem(submenu[0], "Voice control with Increased Size");
+    gpii.tests.app.testItem(submenu[1], "Larger 125%");
+    gpii.tests.app.testItem(submenu[2], "Larger 150%");
+    gpii.tests.app.testItem(submenu[3], "Larger 175%");
+    gpii.tests.app.testItem(submenu[4], "Dark & Larger 125%");
+    gpii.tests.app.testItem(submenu[5], "Dark & Larger 150%");
+    gpii.tests.app.testItem(submenu[6], "Dark & Larger 175%");
+    gpii.tests.app.testItem(submenu[7], "Read To Me");
+    gpii.tests.app.testItem(submenu[8], "Magnifier 200%");
+    gpii.tests.app.testItem(submenu[9], "Magnifier 400%");
+    gpii.tests.app.testItem(submenu[10], "Magnifier 200% & Display Scaling 175%");
+    gpii.tests.app.testItem(submenu[11], "Dark Magnifier 200%");
+    gpii.tests.app.testItem(submenu[12], "Multiple pref sets. Magnifier & Volume Control");
+    gpii.tests.app.testItem(submenu[13], "Invalid user");
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
@@ -214,13 +215,13 @@ gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 11);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     // the default pref set should be set
-    gpii.tests.dev.testContext1KeyedIn(tray, menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
+    gpii.tests.dev.testMultiContextKeyedIn(tray, menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
     gpii.tests.app.testItem(menuTemplate[9], "Key-out of GPII");
     gpii.tests.app.testItem(menuTemplate[10], "Exit GPII");
 };
 
 gpii.tests.dev.testChangedActivePrefSetMenu = function (tray, menuTemplate, prefSetClickedIdx) {
-    gpii.tests.dev.testContext1KeyedIn(tray, menuTemplate,
+    gpii.tests.dev.testMultiContextKeyedIn(tray, menuTemplate,
                       /*activeSetIdx=*/prefSetClickedIdx);
 };
 
@@ -239,7 +240,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 155,
+    expect: 161,
     config: {
         configName: "app.dev",
         configPath: "configs"
@@ -283,7 +284,7 @@ gpii.tests.dev.testDefs = {
         args: "{that}.app.tray"
     }, { // test active set change
         func: "{that}.app.keyIn",
-        args: "context1"
+        args: "multi_context"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         // XXX {{1}}
