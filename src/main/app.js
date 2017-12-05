@@ -23,6 +23,7 @@ require("./gpiiConnector.js");
 require("./menu.js"); // menuInApp, menuInAppDev
 require("./tray.js");
 require("./psp.js");
+require("./survey.js");
 require("./waitDialog.js");
 require("./restartDialog.js");
 
@@ -61,6 +62,15 @@ fluid.defaults("gpii.app", {
     },
     // prerequisites
     components: {
+        survey: {
+            type: "gpii.app.survey",
+            createOnEvent: "onPrerequisitesReady",
+            options: {
+                model: {
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                }
+            }
+        },
         psp: {
             type: "gpii.app.psp",
             createOnEvent: "onPrerequisitesReady",
