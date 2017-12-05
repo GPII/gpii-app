@@ -26,6 +26,59 @@ require("electron").app.on("certificate-error", function (event, webContents, ur
     callback(true);
 });
 
+fluid.defaults("gpii.app.surveyTriggerManager", {
+    gradeNames: [""],
+
+
+    invokers: {
+        // registerTrigger: {}
+    }
+});
+
+fluid.defaults("gpii.app.surveyManager", {
+    gradeNames: ["fluid.modelComponent"],
+
+    model: {
+        // TODO to be used with the survey
+        machineId: null,
+        userId: null
+    },
+
+
+    invokers: {
+        // showSurvey: {},  // parse, updates survey attrs, shows
+    },
+
+    listeners: {
+        "{channel}.events.onSurveyTriggerRecieved": null
+    },
+
+    events: {
+        onSurveyClosed: null,
+        onSurveySubmitted: null
+    },
+
+    components: {
+        // parser: {}
+        /*
+         * send some survey data to the channel
+         */
+        channel: null, // passed by implementor
+
+        surveyTriggersManager: null,
+
+        survey: {
+            type: "gpii.app.survey",
+            createOnEvent: "onPrerequisitesReady",
+            options: {
+                model: {
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                }
+            }
+        }
+    }
+});
+
 fluid.defaults("gpii.app.survey", {
     gradeNames: "fluid.modelComponent",
     attrs: {

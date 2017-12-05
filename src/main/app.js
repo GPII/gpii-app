@@ -62,12 +62,13 @@ fluid.defaults("gpii.app", {
     },
     // prerequisites
     components: {
-        survey: {
-            type: "gpii.app.survey",
+        surveyManager: {
+            type: "gpii.app.surveyManager",
             createOnEvent: "onPrerequisitesReady",
+            priority: "after:gpiiConnector",
             options: {
-                model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                components: {
+                    channel: "{gpiiConnector}"
                 }
             }
         },
