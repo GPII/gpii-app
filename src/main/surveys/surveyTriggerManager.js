@@ -35,7 +35,7 @@ fluid.defaults("gpii.app.surveyTriggersManager", {
             args: ["{that}", "{arguments}.0"]
         },
         clearTriggers: {
-            funcName: "gpii.app.surveyTriggersManager.clearTrigger",
+            funcName: "gpii.app.surveyTriggersManager.clearTriggers",
             args: ["{that}"]
         }
     }
@@ -43,14 +43,14 @@ fluid.defaults("gpii.app.surveyTriggersManager", {
 
 
 gpii.app.surveyTriggersManager.registerTrigger = function (that, triggerData) {
-    that.clearTimers();
+    that.clearTriggers();
 
-    if (!triggerData) {
+    if (!triggerData || !triggerData.conditions) {
         return;
     }
 
     var conditions = triggerData.conditions;
-    if (!conditions.length !== 1) {
+    if (conditions.length !== 1) {
         console.log("SurveyTriggerManager: Unsoported number of conditions: ", conditions.length);
         return;
     }
@@ -65,7 +65,7 @@ gpii.app.surveyTriggersManager.registerTrigger = function (that, triggerData) {
                 delete triggerData.conditions;
                 that.events.onTriggerOccurred.fire(triggerData);
             },
-            conditions[0].minutesSinceKeyIn * 10000
+            conditions[0].minutesSinceKeyIn * 1000
         );
         that.applier.change("activeTimer", timer);
     }

@@ -23,7 +23,7 @@ require("./gpiiConnector.js");
 require("./menu.js"); // menuInApp, menuInAppDev
 require("./tray.js");
 require("./psp.js");
-require("./survey.js");
+require("./surveys/survey.js");
 require("./waitDialog.js");
 require("./restartDialog.js");
 
@@ -64,13 +64,7 @@ fluid.defaults("gpii.app", {
     components: {
         surveyManager: {
             type: "gpii.app.surveyManager",
-            createOnEvent: "onPrerequisitesReady",
-            priority: "after:gpiiConnector",
-            options: {
-                components: {
-                    channel: "{gpiiConnector}"
-                }
-            }
+            createOnEvent: "onPrerequisitesReady"
         },
         psp: {
             type: "gpii.app.psp",
@@ -252,7 +246,9 @@ fluid.defaults("gpii.app", {
             }
         },
         onGPIIReady: null,
-        onAppReady: null
+        onAppReady: null,
+
+        onKeyedIn: null
     },
     modelListeners: {
         "{lifecycleManager}.model.logonChange": {
@@ -269,11 +265,15 @@ fluid.defaults("gpii.app", {
             "this": "{that}.events.onGPIIReady",
             method: "fire"
         },
-        "{lifecycleManager}.events.onSessionStart": {
+        "{lifecycleManager}.events.onSessionStart": [{
             listener: "{that}.updateKeyedInUserToken",
             args: ["{arguments}.1"],
             namespace: "onLifeCycleManagerUserKeyedIn"
-        },
+        }, {
+            listener: "{that}.events.onKeyedIn.fire",
+            args: "{arguments}.1",
+            namespace: "onLifeCycleManagerUserKeyedIn"
+        }],
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]

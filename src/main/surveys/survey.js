@@ -20,7 +20,7 @@ var BrowserWindow = electron.BrowserWindow,
     ipcMain = electron.ipcMain;
 
 require("../utils.js");
-require("./surveyTriggersManager.js");
+require("./surveyTriggerManager.js");
 require("./surveyConnector.js");
 
 require("electron").app.on("certificate-error", function (event, webContents, url, error, certificate, callback) {
@@ -45,6 +45,10 @@ fluid.defaults("gpii.app.surveyManager", {
             type: "gpii.app.surveyConnector",
             options: {
                 listeners: {
+                    "{app}.events.onKeyedIn": {
+                        func: "{that}.notifyKeyedIn"
+                    },
+
                     onSurveyRequired: {
                         func: "{survey}.show",
                         args: "{arguments}.0" // the raw payload
@@ -73,7 +77,6 @@ fluid.defaults("gpii.app.surveyManager", {
         // Dialog manager
         survey: {
             type: "gpii.app.survey",
-            createOnEvent: "onPrerequisitesReady",
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
@@ -112,17 +115,6 @@ fluid.defaults("gpii.app.survey", {
         url: "https://survey.az1.qualtrics.com/jfe/form/SV_7QWbGd4JuGmSu33"
     },
 
-    model: {
-        keyedInUserToken: null
-    },
-
-    modelListeners: {
-        keyedInUserToken: {
-            funcName: "gpii.app.showSampleSurvey",
-            args: ["{that}", "{that}.model.keyedInUserToken", "{that}.options.surveyParams.url"]
-        }
-    },
-
     listeners: {
         "onCreate.initSurveyWindowIPC": {
             listener: "gpii.app.initSurveyWindowIPC",
@@ -134,6 +126,10 @@ fluid.defaults("gpii.app.survey", {
         notifySurveyWindow: {
             funcName: "gpii.app.notifyWindow",
             args: ["{that}.surveyWindow", "{arguments}.0", "{arguments}.1"]
+        },
+        show: {
+            funcName: "gpii.app.showSampleSurvey",
+            args: ["{that}", "{arguments}.0", "{that}.options.surveyParams.url"]
         }
     }
 });
@@ -159,16 +155,14 @@ gpii.app.initSurveyWindowIPC = function (survey) {
 };
 
 gpii.app.showSampleSurvey = function (survey, keyedInUserToken, url) {
-    if (!keyedInUserToken) {
-        survey.surveyWindow.hide();
-        return;
-    }
+//    if (!keyedInUserToken) {
+//        survey.surveyWindow.hide();
+//        return;
+//    }
 
-    setTimeout(function () {
-        survey.notifySurveyWindow("openSurvey", {
-            url: url + "?keyedInUserToken=" + keyedInUserToken,
-            keyedInUserToken: keyedInUserToken
-        });
-        survey.surveyWindow.show();
-    }, 3000);
+    survey.notifySurveyWindow("openSurvey", {
+        url: url + "?keyedInUserToken=" + keyedInUserToken,
+        keyedInUserToken: keyedInUserToken
+    });
+    survey.surveyWindow.show();
 };

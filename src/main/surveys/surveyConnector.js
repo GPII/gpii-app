@@ -75,6 +75,10 @@ fluid.defaults("gpii.app.surveyConnector", {
                 // XXX {1}
                 "{that}"
             ]
+        },
+        notifyKeyedIn: {
+            funcName: "gpii.app.surveyConnector.notifyKeyedIn",
+            args: ["{that}.socket", "{that}.model", "{that}.events"]
         }
     }
 });
@@ -97,20 +101,6 @@ gpii.app.surveyConnector.requestTriggers = function (socket, payload) {
 gpii.app.surveyConnector.register = function (socket, events) {
     // socket.on("surveyPayload", events.onSurveyRequired.fire); // JSON.parse
     // socket.on("surveyTriggers", events.onTriggersReceived.fire);
-
-
-    var triggerFixture = {
-        surveyTrigger: {
-            conditions: [
-                {
-                    "minutesSinceKeyIn": 5
-                }
-            ],
-            id: "id",
-            urlTriggerHandler: "URL of the survey server to handle the surveyTriggerEvent"
-        }
-    };
-    events.onTriggersReceived.fire(triggerFixture);
 };
 
 
@@ -138,4 +128,22 @@ gpii.app.surveyConnector.notifyTriggerOccurred = function (socket, trigger, that
         }
     };
     that.events.onSurveyRequired.fire(surveyRawPayloadFixture);
+};
+
+
+gpii.app.surveyConnector.notifyKeyedIn  = function (socket, payload, events) {
+    // socket.send("keyedIn", payload);
+
+    var triggerFixture = {
+        surveyTrigger: {
+            conditions: [
+                {
+                    "minutesSinceKeyIn": 5
+                }
+            ],
+            id: "id",
+            urlTriggerHandler: "URL of the survey server to handle the surveyTriggerEvent"
+        }
+    };
+    events.onTriggersReceived.fire(triggerFixture.surveyTrigger);
 };
