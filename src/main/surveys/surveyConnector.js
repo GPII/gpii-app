@@ -138,7 +138,7 @@ gpii.app.surveyConnector.notifyKeyedIn  = function (socket, payload, events) {
         surveyTrigger: {
             conditions: [
                 {
-                    "minutesSinceKeyIn": 5
+                    "minutesSinceKeyIn": 3
                 }
             ],
             id: "id",

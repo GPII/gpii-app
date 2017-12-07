@@ -73,5 +73,8 @@ gpii.app.surveyTriggersManager.registerTrigger = function (that, triggerData) {
 
 
 gpii.app.surveyTriggersManager.clearTriggers = function (that) {
-    clearTimeout(that.model.activeTimer);
+    if (that.model.activeTimer) {
+        clearTimeout(that.model.activeTimer);
+        that.applier.change("activeTimer", null, "DELETE");
+    }
 };

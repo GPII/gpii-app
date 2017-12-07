@@ -23,7 +23,7 @@ require("./gpiiConnector.js");
 require("./menu.js"); // menuInApp, menuInAppDev
 require("./tray.js");
 require("./psp.js");
-require("./surveys/survey.js");
+require("./surveys/surveyManager.js");
 require("./waitDialog.js");
 require("./restartDialog.js");
 
@@ -272,7 +272,7 @@ fluid.defaults("gpii.app", {
         }, {
             listener: "{that}.events.onKeyedIn.fire",
             args: "{arguments}.1",
-            namespace: "onLifeCycleManagerUserKeyedIn"
+            namespace: "notifyUserKeyedIn"
         }],
         "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",

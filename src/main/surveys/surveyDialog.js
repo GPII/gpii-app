@@ -12,94 +12,36 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
 
-var fluid    = require("infusion");
-var electron = require("electron");
-
-var BrowserWindow = electron.BrowserWindow,
-    gpii = fluid.registerNamespace("gpii"),
-    ipcMain = electron.ipcMain;
-
-require("../utils.js");
-require("./surveyTriggerManager.js");
-require("./surveyConnector.js");
+var fluid = require("infusion"),
+    electron = require("electron"),
+    BrowserWindow = electron.BrowserWindow,
+    ipcMain = electron.ipcMain,
+    gpii = fluid.registerNamespace("gpii");
 
 require("electron").app.on("certificate-error", function (event, webContents, url, error, certificate, callback) {
     event.preventDefault();
     callback(true);
 });
 
-
-
-fluid.defaults("gpii.app.surveyManager", {
-    gradeNames: ["fluid.modelComponent"],
-
-    model: {
-        // TODO to be used with the survey
-        machineId: null,
-        userId: null
-    },
-
-
-    components: {
-        surveyConnector: {
-            type: "gpii.app.surveyConnector",
-            options: {
-                listeners: {
-                    "{app}.events.onKeyedIn": {
-                        func: "{that}.notifyKeyedIn"
-                    },
-
-                    onSurveyRequired: {
-                        func: "{survey}.show",
-                        args: "{arguments}.0" // the raw payload
-                    },
-
-                    onTriggersReceived: {
-                        func: "{surveyTriggersManager}.registerTrigger",
-                        args: ["{arguments}.0"]
-                    }
-                }
-            }
-        },
-
-        surveyTriggersManager: {
-            type: "gpii.app.surveyTriggersManager",
-            options: {
-                listeners: {
-                    onTriggerOccurred: {
-                        func: "{surveyConnector}.notifyTriggerOccurred",
-                        args: "{arguments}.0" // the trigger payload
-                    }
-                }
-            }
-        },
-
-        // Dialog manager
-        survey: {
-            type: "gpii.app.survey",
-            options: {
-                model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
-                }
-            }
-        }
-    }
-});
-
 fluid.defaults("gpii.app.survey", {
     gradeNames: "fluid.modelComponent",
     attrs: {
-        width: 800,
-        height: 800,
         show: false,
-
         skipTaskbar: false,
         frame: true,
-        fullscreenable: true,
+
+        width: 800,
+        height: 600,
         resizable: true,
-        minimizable: true,
-        maximizable: true,
+        fullscreenable: true,
+        closable: true,
+        minimizable: false,
+        maximizable: false,
         movable: true
+    },
+
+    model: {
+        keyedInUserToken: null
     },
 
     members: {
@@ -129,7 +71,7 @@ fluid.defaults("gpii.app.survey", {
         },
         show: {
             funcName: "gpii.app.showSampleSurvey",
-            args: ["{that}", "{arguments}.0", "{that}.options.surveyParams.url"]
+            args: ["{that}", "{that}.model.keyedInUserToken", "{that}.options.surveyParams.url"]
         }
     }
 });
