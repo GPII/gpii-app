@@ -24,7 +24,7 @@ require("electron").app.on("certificate-error", function (event, webContents, ur
 });
 
 fluid.defaults("gpii.app.survey", {
-    gradeNames: "fluid.modelComponent",
+    gradeNames: "fluid.component",
     attrs: {
         show: false,
         skipTaskbar: false,
@@ -38,10 +38,6 @@ fluid.defaults("gpii.app.survey", {
         minimizable: false,
         maximizable: false,
         movable: true
-    },
-
-    model: {
-        keyedInUserToken: null
     },
 
     members: {
@@ -70,8 +66,12 @@ fluid.defaults("gpii.app.survey", {
             args: ["{that}.surveyWindow", "{arguments}.0", "{arguments}.1"]
         },
         show: {
-            funcName: "gpii.app.showSampleSurvey",
-            args: ["{that}", "{that}.model.keyedInUserToken", "{that}.options.surveyParams.url"]
+            funcName: "gpii.app.survey.show",
+            args: ["{that}", "{arguments}.0"]
+        },
+        hide: {
+            this: "{that}.surveyWindow",
+            method: "hide"
         }
     }
 });
@@ -92,19 +92,11 @@ gpii.app.survey.makeSurveyWindow = function (windowOptions) {
 
 gpii.app.initSurveyWindowIPC = function (survey) {
     ipcMain.on("onSurveyClose", function () {
-        survey.surveyWindow.hide();
+        survey.hide();
     });
 };
 
-gpii.app.showSampleSurvey = function (survey, keyedInUserToken, url) {
-//    if (!keyedInUserToken) {
-//        survey.surveyWindow.hide();
-//        return;
-//    }
-
-    survey.notifySurveyWindow("openSurvey", {
-        url: url + "?keyedInUserToken=" + keyedInUserToken,
-        keyedInUserToken: keyedInUserToken
-    });
+gpii.app.survey.show = function (survey, options) {
+    survey.notifySurveyWindow("openSurvey", options);
     survey.surveyWindow.show();
 };

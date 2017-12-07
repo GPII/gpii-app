@@ -22,15 +22,17 @@ fluid.defaults("gpii.app.dialogManager", {
     model: {
         keyedInUserToken: null
     },
+    modelListeners: {
+        keyedInUserToken: {
+            funcName: "gpii.app.dialogManager.hideDialogsIfNeeded",
+            args: ["{that}", "{change}.value"],
+            excludeSource: "init"
+        }
+    },
 
     components: {
         survey: {
-            type: "gpii.app.survey",
-            options: {
-                model: {
-                    keyedInUserToken: "{dialogManager}.model.keyedInUserToken"
-                }
-            }
+            type: "gpii.app.survey"
         }
     },
 
@@ -50,23 +52,29 @@ fluid.defaults("gpii.app.dialogManager", {
     }
 });
 
-gpii.app.dialogManager.get = function (that, iocSelector) {
-    var dialogs = fluid.queryIoCSelector(that, iocSelector);
+gpii.app.dialogManager.get = function (dialogManager, iocSelector) {
+    var dialogs = fluid.queryIoCSelector(dialogManager, iocSelector);
     if (dialogs.length > 0) {
         return dialogs[0];
     }
 };
 
-gpii.app.dialogManager.show = function (that, iocSelector, options) {
-    var dialog = that.get(iocSelector);
+gpii.app.dialogManager.show = function (dialogManager, iocSelector, options) {
+    var dialog = dialogManager.get(iocSelector);
     if (dialog) {
         dialog.show(options);
     }
 };
 
-gpii.app.dialogManager.hide = function (that, iocSelector) {
-    var dialog = that.get(iocSelector);
+gpii.app.dialogManager.hide = function (dialogManager, iocSelector) {
+    var dialog = dialogManager.get(iocSelector);
     if (dialog) {
         dialog.hide();
+    }
+};
+
+gpii.app.dialogManager.hideDialogsIfNeeded = function (dialogManager, keyedInUserToken) {
+    if (!fluid.isValue(keyedInUserToken)) {
+        dialogManager.hide("survey");
     }
 };

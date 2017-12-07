@@ -17,6 +17,7 @@ var ws    = require("ws");
 
 var gpii = fluid.registerNamespace("gpii");
 
+require("./surveyParser.js");
 
 /**
  * Send/receive survey data to/from the survey server
@@ -34,6 +35,12 @@ fluid.defaults("gpii.app.surveyConnector", {
         // {1} - survey server implementation
         // TODO update when survey server is implemented
         surveyServerUrl: null
+    },
+
+    components: {
+        surveyParser: {
+            type: "gpii.app.surveyParser"
+        }
     },
 
     members: {
@@ -64,7 +71,8 @@ fluid.defaults("gpii.app.surveyConnector", {
             funcName: "gpii.app.surveyConnector.requestTriggers",
             args: [
                 "{that}.socket",
-                "{that}.model"
+                "{that}.model",
+                "{that}.events"
             ]
         },
         notifyTriggerOccurred: {
@@ -75,10 +83,6 @@ fluid.defaults("gpii.app.surveyConnector", {
                 // XXX {1}
                 "{that}"
             ]
-        },
-        notifyKeyedIn: {
-            funcName: "gpii.app.surveyConnector.notifyKeyedIn",
-            args: ["{that}.socket", "{that}.model", "{that}.events"]
         }
     }
 });
@@ -86,13 +90,6 @@ fluid.defaults("gpii.app.surveyConnector", {
 
 gpii.app.surveyConnector.connect = function (config) {
     return new ws(config.surveyServerUrl); // eslint-disable-line new-cap
-};
-
-/**
- * XXX {1} Placeholder
- */
-gpii.app.surveyConnector.requestTriggers = function (socket, payload) {
-    // socket.send("keyedIn", payload); // send `machineId` & `userId`
 };
 
 /**
@@ -112,7 +109,7 @@ gpii.app.surveyConnector.notifyTriggerOccurred = function (socket, trigger, that
     // XXX mocked behaviour
     var surveyRawPayloadFixture = {
         survey: {
-            "url": "https://www.example.com/surveyA/?safeid=longcodeA",
+            "url": "https://survey.az1.qualtrics.com/jfe/form/SV_7QWbGd4JuGmSu33",
             "window": {
                 "height": 600,  //optional
                 "width": 800,   //optional
@@ -127,11 +124,12 @@ gpii.app.surveyConnector.notifyTriggerOccurred = function (socket, trigger, that
             }
         }
     };
-    that.events.onSurveyRequired.fire(surveyRawPayloadFixture);
+    var surveyOptions = that.surveyParser.parseSurveyPayload(surveyRawPayloadFixture);
+    that.events.onSurveyRequired.fire(surveyOptions);
 };
 
 
-gpii.app.surveyConnector.notifyKeyedIn  = function (socket, payload, events) {
+gpii.app.surveyConnector.requestTriggers  = function (socket, payload, events) {
     // socket.send("keyedIn", payload);
 
     var triggerFixture = {

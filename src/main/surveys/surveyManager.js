@@ -35,12 +35,12 @@ fluid.defaults("gpii.app.surveyManager", {
             options: {
                 listeners: {
                     "{app}.events.onKeyedIn": {
-                        func: "{that}.notifyKeyedIn"
+                        func: "{that}.requestTriggers"
                     },
 
                     onSurveyRequired: {
                         func: "{dialogManager}.show",
-                        args: ["gpii.app.survey", "{arguments}.0"] // the raw payload
+                        args: ["survey", "{arguments}.0"] // the raw payload
                     },
 
                     onTriggersReceived: {
@@ -68,13 +68,6 @@ fluid.defaults("gpii.app.surveyManager", {
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
-                },
-                modelListeners: {
-                    keyedInUserToken: {
-                        this: "console",
-                        method: "log",
-                        args: ["keyedInUserToken", "{change}.value"]
-                    }
                 }
             }
         }
