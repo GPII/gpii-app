@@ -35,7 +35,7 @@ fluid.defaults("gpii.app.surveyManager", {
             options: {
                 listeners: {
                     "{app}.events.onKeyedIn": {
-                        func: "{that}.notifyKeyedIn"
+                        func: "{that}.requestTriggers"
                     },
 
                     onSurveyRequired: {
@@ -43,7 +43,7 @@ fluid.defaults("gpii.app.surveyManager", {
                         args: ["gpii.app.survey", "{arguments}.0"] // the raw payload
                     },
 
-                    onTriggersReceived: {
+                    onTriggerReceived: {
                         func: "{surveyTriggersManager}.registerTrigger",
                         args: ["{arguments}.0"]
                     }
