@@ -19,10 +19,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         });
     }
 
+    function isBreakOutLink(target) {
+        return target && target.nodeName === "A" && target.target === "_blank"
+                && target.classList.contains("flc-breakOut");
+    }
+
     function initExitAnchor() {
         document.body.addEventListener("click", function (e) {
-            var target = e.target;
-            if (target && target.nodeName === "A" && target.target === "_blank") {
+            if (isBreakOutLink(e.target)) {
                 ipcRenderer.sendToHost("onSurveyClose");
             }
         });

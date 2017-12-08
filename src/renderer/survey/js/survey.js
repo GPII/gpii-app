@@ -9,24 +9,32 @@ You may obtain a copy of the License at
 https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 
+/* global fluid */
+
 "use strict";
-(function () {
-    var shell = require("electron").shell,
-        ipcRenderer = require("electron").ipcRenderer;
-
-    $(function () {
-        var webview = $("webview")[0];
-
-        webview.getWebContents().on("new-window", function (event, url) {
-            shell.openExternal(url);
-        });
-
-        webview.addEventListener("ipc-message", function (event) {
-            ipcRenderer.send(event.channel, event.args);
-        });
-
-        ipcRenderer.on("openSurvey", function (event, surveyParams) {
-            webview.src = surveyParams.url;
-        });
+(function (fluid) {
+    fluid.defaults("gpii.survey", {
+        gradeNames: ["fluid.component"],
+        components: {
+            channel: {
+                type: "gpii.survey.channel",
+                options: {
+                    listeners: {
+                        openSurvey: {
+                            funcName: "{popup}.openSurvey"
+                        }
+                    }
+                }
+            },
+            popup: {
+                type: "gpii.survey.popup",
+                container: "#flc-survey",
+                options: {
+                    listeners: {
+                        onIPCMessage: "{channel}.sendMessage"
+                    }
+                }
+            }
+        }
     });
-})();
+})(fluid);
