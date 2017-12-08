@@ -41,31 +41,13 @@ fluid.defaults("gpii.app.survey", {
     },
 
     members: {
-        surveyWindow: {
-            expander: {
-                funcName: "gpii.app.survey.makeSurveyWindow",
-                args: ["{that}.options.attrs", "{that}.options.surveyParams"]
-            }
-        }
-    },
-
-    surveyParams: {
-        url: "https://survey.az1.qualtrics.com/jfe/form/SV_7QWbGd4JuGmSu33"
+        surveyWindow: null
     },
 
     listeners: {
         "onCreate.initSurveyWindowIPC": {
             listener: "gpii.app.survey.initSurveyWindowIPC",
             args: ["{that}"]
-        },
-        "onCreate.initCloseListener": {
-            listener: "gpii.app.survey.initCloseListener",
-            args: ["{that}", "{that}.surveyWindow"]
-        },
-
-        "onDestroy.cleanupElectron": {
-            this: "{that}.surveyWindow",
-            method: "destroy"
         }
     },
 
@@ -79,18 +61,28 @@ fluid.defaults("gpii.app.survey", {
             args: ["{that}", "{arguments}.0"]
         },
         hide: {
-            this: "{that}.surveyWindow",
-            method: "hide"
+            funcName: "gpii.app.survey.hide",
+            args: ["{that}.surveyWindow"]
         }
     }
 });
 
-gpii.app.survey.makeSurveyWindow = function (windowOptions) {
+gpii.app.survey.initSurveyWindowIPC = function (survey) {
+    ipcMain.on("onSurveyClose", function () {
+        survey.hide();
+    });
+};
+
+gpii.app.survey.create = function (windowOptions, callback) {
     var surveyWindow = new BrowserWindow(windowOptions),
         position = gpii.app.getWindowPosition(windowOptions.width, windowOptions.height);
 
     surveyWindow.setMenu(null);
     surveyWindow.setPosition(position.x, position.y);
+
+    surveyWindow.once("ready-to-show", function () {
+        callback();
+    });
 
     var url = fluid.stringTemplate("file://%gpii-app/src/renderer/survey/index.html", fluid.module.terms());
     surveyWindow.loadURL(url);
@@ -99,21 +91,23 @@ gpii.app.survey.makeSurveyWindow = function (windowOptions) {
     return surveyWindow;
 };
 
-gpii.app.survey.initSurveyWindowIPC = function (survey) {
-    ipcMain.on("onSurveyClose", function () {
-        survey.hide();
-    });
-};
-
-gpii.app.survey.initCloseListener = function (survey, surveyWindow) {
-    // Do not actually close the dialog, but instead - hide it.
-    surveyWindow.on("close", function (event) {
-        event.preventDefault();
-        survey.hide();
-    });
-};
-
 gpii.app.survey.show = function (survey, options) {
-    survey.notifySurveyWindow("openSurvey", options);
-    survey.surveyWindow.show();
+    survey.hide();
+
+    var windowOptions = fluid.extend(true, {}, survey.options.attrs, options.window || {}),
+        surveyWindow = gpii.app.survey.create(windowOptions, function () {
+            survey.surveyWindow = surveyWindow;
+            survey.notifySurveyWindow("openSurvey", options.url);
+            survey.surveyWindow.show();
+        });
+
+    surveyWindow.once("closed", function () {
+        survey.surveyWindow = null;
+    });
+};
+
+gpii.app.survey.hide = function (surveyWindow) {
+    if (surveyWindow) {
+        surveyWindow.close();
+    }
 };

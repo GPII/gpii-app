@@ -42,8 +42,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
-    gpii.survey.popup.openSurvey = function (webview, surveyParams) {
-        webview.src = surveyParams.url;
+    gpii.survey.popup.openSurvey = function (webview, surveyUrl) {
+        webview.src = surveyUrl;
     };
 
     gpii.survey.popup.initIPCListener = function (that, webview) {

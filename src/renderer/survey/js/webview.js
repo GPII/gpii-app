@@ -27,7 +27,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     function initExitAnchor() {
         document.body.addEventListener("click", function (e) {
             if (isBreakOutLink(e.target)) {
-                ipcRenderer.sendToHost("onSurveyClose");
+                // Needed so that the default action of the link can
+                // execute before the dialog is destroyed.
+                // TODO: Can the timeout be avoided.
+                setTimeout(function () {
+                    ipcRenderer.sendToHost("onSurveyClose");
+                });
             }
         });
     }
