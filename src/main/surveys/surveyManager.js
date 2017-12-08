@@ -43,7 +43,7 @@ fluid.defaults("gpii.app.surveyManager", {
                         args: ["survey", "{arguments}.0"] // the raw payload
                     },
 
-                    onTriggersReceived: {
+                    onTriggerReceived: {
                         func: "{surveyTriggersManager}.registerTrigger",
                         args: ["{arguments}.0"]
                     }

@@ -26,6 +26,6 @@ fluid.defaults("gpii.app.surveyParser", {
 
 gpii.app.surveyParser.parseSurveyPayload = function (payload) {
     return {
-        url: payload.survey.url
+        url: payload.url
     };
 };

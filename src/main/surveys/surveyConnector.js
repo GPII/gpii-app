@@ -12,12 +12,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
 
-var fluid = require("infusion");
-var ws    = require("ws");
+var fluid     = require("infusion");
+var WebSocket = require("ws");
 
 var gpii = fluid.registerNamespace("gpii");
 
 require("./surveyParser.js");
+
+// XXX TEST
+require("./surveyServer.js");
 
 /**
  * Send/receive survey data to/from the survey server
@@ -27,14 +30,15 @@ fluid.defaults("gpii.app.surveyConnector", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
-        machineId: null,
-        userId: null
+        machineId: "machine_id",
+        // TODO move
+        userId: "{app}.model.keyedInUserToken"
     },
 
     config: {
         // {1} - survey server implementation
         // TODO update when survey server is implemented
-        surveyServerUrl: null
+        surveyServerUrl: "ws://localhost:3333"
     },
 
     components: {
@@ -44,18 +48,18 @@ fluid.defaults("gpii.app.surveyConnector", {
     },
 
     members: {
-        // TODO update when survey server is implemented
-        socket: null // "@expand:gpii.app.surveyConnector.connect({that}.options.config)"
+        socket: "@expand:gpii.app.surveyConnector.connect({that}.options.config, {that}.events.onSocketOpened.fire)"
     },
 
     listeners: {
-        "onCreate.register": {
+        "onSocketOpened.register": {
             funcName: "gpii.app.surveyConnector.register",
-            args: ["{that}.socket", "{that}.events"]
+            args: ["{that}.socket", "{that}.events", "{surveyParser}"]
         }
     },
 
     events: {
+        onSocketOpened: null,
         /*
          * A survey payload is received.
          */
@@ -63,7 +67,7 @@ fluid.defaults("gpii.app.surveyConnector", {
         /*
          * A list of survey triggers that are to be registered
          */
-        onTriggersReceived: null
+        onTriggerReceived: null
     },
 
     invokers: {
@@ -79,69 +83,64 @@ fluid.defaults("gpii.app.surveyConnector", {
             funcName: "gpii.app.surveyConnector.notifyTriggerOccurred",
             args: [
                 "{that}.socket",
-                "{arguments}.0",
-                // XXX {1}
-                "{that}"
+                "{arguments}.0"
             ]
         }
     }
 });
 
 
-gpii.app.surveyConnector.connect = function (config) {
-    return new ws(config.surveyServerUrl); // eslint-disable-line new-cap
+/**
+ * TODO
+ */
+gpii.app.surveyConnector.connect = function (config, callback) {
+    var ws = new WebSocket(config.surveyServerUrl);
+    ws.on("open", callback);
+
+    return ws;
 };
 
 /**
- * XXX {1} Placeholder
+ * TODO
  */
-gpii.app.surveyConnector.register = function (socket, events) {
-    // socket.on("surveyPayload", events.onSurveyRequired.fire); // JSON.parse
-    // socket.on("surveyTriggers", events.onTriggersReceived.fire);
+gpii.app.surveyConnector.register = function (socket, events, surveyParser) {
+    socket.on("message", function (message) {
+        message = JSON.parse(message);
+        // Single key payload
+        var type = Object.keys(message)[0],
+            payload = message[type];
+
+        switch (type) {
+        case "survey":
+            var surveyOptions = surveyParser.parseSurveyPayload(payload);
+            events.onSurveyRequired.fire(surveyOptions);
+            break;
+        case "surveyTrigger":
+            events.onTriggerReceived.fire(payload);
+            break;
+        default:
+            console.log("SurveyConnector - Unrecognized message type: ", message);
+        }
+    });
 };
 
-
-gpii.app.surveyConnector.notifyTriggerOccurred = function (socket, trigger, that) {
-    // XXX {1} Posible implementation
-    // socket.send("surveyTrigger", { triggerId: trigger.id });
-
-    console.log("Survey Trigger Occured: ", trigger);
-    // XXX mocked behaviour
-    var surveyRawPayloadFixture = {
-        survey: {
-            "url": "https://survey.az1.qualtrics.com/jfe/form/SV_7QWbGd4JuGmSu33",
-            "window": {
-                "height": 600,  //optional
-                "width": 800,   //optional
-                "userResizable": true,
-                "titleBar": {
-                    "title": "GPII Auto-Personalization Survey",
-                    // "icon": "icon asset", //use gear-cloud icon by default
-                    "closeButton": true,     //default
-                    "minimizeButton": false, //default
-                    "maximizeButton": false  //default
-                }
-            }
-        }
-    };
-    var surveyOptions = that.surveyParser.parseSurveyPayload(surveyRawPayloadFixture);
-    that.events.onSurveyRequired.fire(surveyOptions);
+/**
+ * TODO
+ */
+gpii.app.surveyConnector.requestTriggers = function (socket, payload) {
+     // send `machineId` & `userId`
+    socket.send(JSON.stringify({
+        type: "triggersRequest",
+        payload: payload
+    }));
 };
 
-
-gpii.app.surveyConnector.requestTriggers  = function (socket, payload, events) {
-    // socket.send("keyedIn", payload);
-
-    var triggerFixture = {
-        surveyTrigger: {
-            conditions: [
-                {
-                    "minutesSinceKeyIn": 3
-                }
-            ],
-            id: "id",
-            urlTriggerHandler: "URL of the survey server to handle the surveyTriggerEvent"
-        }
-    };
-    events.onTriggersReceived.fire(triggerFixture.surveyTrigger);
+/**
+ * TODO
+ */
+gpii.app.surveyConnector.notifyTriggerOccurred = function (socket, trigger) {
+    socket.send(JSON.stringify({
+        type: "triggerOccurred",
+        payload: trigger
+    }));
 };
