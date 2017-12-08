@@ -55,8 +55,12 @@ fluid.defaults("gpii.app.survey", {
 
     listeners: {
         "onCreate.initSurveyWindowIPC": {
-            listener: "gpii.app.initSurveyWindowIPC",
+            listener: "gpii.app.survey.initSurveyWindowIPC",
             args: ["{that}"]
+        },
+        "onCreate.initCloseListener": {
+            listener: "gpii.app.survey.initCloseListener",
+            args: ["{that}", "{that}.surveyWindow"]
         }
     },
 
@@ -90,8 +94,16 @@ gpii.app.survey.makeSurveyWindow = function (windowOptions) {
     return surveyWindow;
 };
 
-gpii.app.initSurveyWindowIPC = function (survey) {
+gpii.app.survey.initSurveyWindowIPC = function (survey) {
     ipcMain.on("onSurveyClose", function () {
+        survey.hide();
+    });
+};
+
+gpii.app.survey.initCloseListener = function (survey, surveyWindow) {
+    // Do not actually close the dialog, but instead - hide it.
+    surveyWindow.on("close", function (event) {
+        event.preventDefault();
         survey.hide();
     });
 };

@@ -3,9 +3,11 @@ var WebSocket = require("ws");
 
 var wss = new WebSocket.Server({ port: 3333 });
 
-
 wss.on("connection", function connection(ws) {
+    var keyedInUserToken = null;
+
     function handleTriggersRequest(keyedInData) {
+        keyedInUserToken = keyedInData.userId;
         console.log("Survey Triggers Requested: ", keyedInData);
 
         var triggerFixture = {
@@ -28,7 +30,7 @@ wss.on("connection", function connection(ws) {
 
         var surveyRawPayloadFixture = {
             survey: {
-                "url": "https://survey.az1.qualtrics.com/jfe/form/SV_7QWbGd4JuGmSu33",
+                "url": "https://survey.az1.qualtrics.com/jfe/form/SV_7QWbGd4JuGmSu33?keyedInUserToken=" + keyedInUserToken,
                 "window": {
                     "height": 600,  //optional
                     "width": 800,   //optional
