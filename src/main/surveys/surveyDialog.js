@@ -61,6 +61,11 @@ fluid.defaults("gpii.app.survey", {
         "onCreate.initCloseListener": {
             listener: "gpii.app.survey.initCloseListener",
             args: ["{that}", "{that}.surveyWindow"]
+        },
+
+        "onDestroy.cleanupElectron": {
+            this: "{that}.surveyWindow",
+            method: "destroy"
         }
     },
 
