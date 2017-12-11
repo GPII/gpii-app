@@ -105,6 +105,10 @@ fluid.defaults("gpii.app.dialog", {
         hide: {
             this: "{that}.dialog",
             method: "hide"
+        },
+        close: {
+            this: "{that}.dialog",
+            method: "close"
         }
     }
 });

@@ -24,7 +24,7 @@ fluid.defaults("gpii.app.dialogManager", {
     },
     modelListeners: {
         keyedInUserToken: {
-            funcName: "gpii.app.dialogManager.hideDialogsIfNeeded",
+            funcName: "gpii.app.dialogManager.closeDialogsIfNeeded",
             args: ["{that}", "{change}.value"],
             excludeSource: "init"
         }
@@ -47,6 +47,10 @@ fluid.defaults("gpii.app.dialogManager", {
         },
         hide: {
             funcName: "gpii.app.dialogManager.hide",
+            args: ["{that}", "{arguments}.0"]
+        },
+        close: {
+            funcName: "gpii.app.dialogManager.close",
             args: ["{that}", "{arguments}.0"]
         }
     }
@@ -73,8 +77,15 @@ gpii.app.dialogManager.hide = function (dialogManager, iocSelector) {
     }
 };
 
-gpii.app.dialogManager.hideDialogsIfNeeded = function (dialogManager, keyedInUserToken) {
+gpii.app.dialogManager.close = function (dialogManager, iocSelector) {
+    var dialog = dialogManager.get(iocSelector);
+    if (dialog) {
+        dialog.close();
+    }
+};
+
+gpii.app.dialogManager.closeDialogsIfNeeded = function (dialogManager, keyedInUserToken) {
     if (!fluid.isValue(keyedInUserToken)) {
-        dialogManager.hide("survey");
+        dialogManager.close("survey");
     }
 };
