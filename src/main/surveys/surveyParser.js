@@ -25,8 +25,21 @@ fluid.defaults("gpii.app.surveyParser", {
 });
 
 gpii.app.surveyParser.parseSurveyPayload = function (payload) {
+    var windowParams = payload.window || {},
+        titlebarParams = windowParams.titleBar || {};
+
     return {
         url: payload.url,
-        window: {}
+        window: {
+            width: windowParams.width,
+            height: windowParams.height,
+            resizable: windowParams.userResizable,
+
+            title: titlebarParams.title,
+            icon: titlebarParams.icon,
+            closable: titlebarParams.closeButton,
+            minimizable: titlebarParams.minimizeButton,
+            maximizable: titlebarParams.maximizeButton
+        }
     };
 };

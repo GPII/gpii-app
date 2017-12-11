@@ -21,13 +21,13 @@ require("./utils.js");
 
 
 /**
- * Base dialog component that supply initialization of
+ * Base dialog component that provides initialization of
  * an Electron `BrowserWindow` and the generation of
- * the file URL that it to be loaded in the same `BrowserWindow`.
+ * the file URL that is to be loaded in the same `BrowserWindow`.
  * NOTE: The generated URL is always relative to the working
  * directory of the application (`module.terms()`)
  *
- * It also Supplies simple interface for show/hide operations of
+ * It also provides a simple interface for show/hide operations of
  * the window and handles Electron objects cleanup upon destruction.
  *
  * Requires:
@@ -37,8 +37,8 @@ require("./utils.js");
  *    - `fileSuffixPath` - the suffix to the file
  *    - `filePrefixPath` (optional) - the prefix to the file
  *
- *   For example a relative path such as `"/src/rendered/waitDialog/index.html"`,
- *   might be split to:
+ *   For example, a relative path such as `"/src/rendered/waitDialog/index.html"`,
+ *   might be split into:
  *   `prefixPath = "src/renderer"`
  *   `fileSuffixPath = "waitDialog/index.html"`
  */

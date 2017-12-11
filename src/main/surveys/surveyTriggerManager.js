@@ -21,13 +21,22 @@ fluid.defaults("gpii.app.surveyTriggersManager", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
+        keyedInUserToken: null,
         activeTimer: null
     },
 
+    modelListeners: {
+        keyedInUserToken: {
+            funcName: "gpii.app.surveyTriggersManager.clearTriggersIfNeeded",
+            args: ["{that}", "{change}.value"],
+            excludeSource: "init"
+        }
+    },
 
     events: {
         onTriggerOccurred: null
     },
+
 
     invokers: {
         registerTrigger: {
@@ -76,5 +85,11 @@ gpii.app.surveyTriggersManager.clearTriggers = function (that) {
     if (that.model.activeTimer) {
         clearTimeout(that.model.activeTimer);
         that.applier.change("activeTimer", null, "DELETE");
+    }
+};
+
+gpii.app.surveyTriggersManager.clearTriggersIfNeeded = function (that, keyedInUserToken) {
+    if (!fluid.isValue(keyedInUserToken)) {
+        that.clearTriggers();
     }
 };

@@ -54,6 +54,9 @@ fluid.defaults("gpii.app.surveyManager", {
         surveyTriggersManager: {
             type: "gpii.app.surveyTriggersManager",
             options: {
+                model: {
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                },
                 listeners: {
                     onTriggerOccurred: {
                         func: "{surveyConnector}.notifyTriggerOccurred",

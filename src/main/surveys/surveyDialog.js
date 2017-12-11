@@ -19,11 +19,28 @@ var fluid = require("infusion"),
 
 require("../dialog.js");
 
+// XXX: Needed to circumvent the certificate error for the "umd.edu" domain certificate
+// error. Should be removed before going to production.
 require("electron").app.on("certificate-error", function (event, webContents, url, error, certificate, callback) {
     event.preventDefault();
     callback(true);
 });
 
+/**
+ * A component which extends the base `gpii.app.dialog` by registering additional
+ * listeners. As the html markup of the loaded page within the `BrowserWindow`
+ * contains a webview tag, the component notifies the webview via the IPC mechanism
+ * about the survey URL which is to be loaded. This can happen only after the html
+ * file has been completely loaded (otherwise the IPC message will most probably be
+ * lost as there will be noone to handle it). On the other hand, the component
+ * can be notified by the webview if it needs to be closed. Once the `BrowserWindow`
+ * is closed, it cannot be interacted with and thus the component itself will also
+ * be destroyed.
+ *
+ * Please note that the communication between the Infusion component and the webview
+ * is not direct. The `BrowserWindow` acts as an itermediary and is responsible for
+ * forwarding the corresponding IPC messages.
+ */
 fluid.defaults("gpii.app.surveyDialog", {
     gradeNames: ["gpii.app.dialog"],
     config: {
@@ -32,15 +49,16 @@ fluid.defaults("gpii.app.surveyDialog", {
             skipTaskbar: false,
             frame: true,
             alwaysOnTop: false,
+            transparent: false, // needs to be false to enable resizing and maximizing
+            fullscreenable: true,
+            movable: true,
 
             width: 800,
             height: 600,
             resizable: true,
-            fullscreenable: true,
             closable: true,
             minimizable: false,
-            maximizable: false,
-            movable: true
+            maximizable: false
         },
         fileSuffixPath: "survey/index.html"
     },
@@ -90,6 +108,19 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
     });
 };
 
+/**
+ * A wrapper for the actual survey dialog. This component makes the instantiation
+ * of the actual dialog more elegant - the survey dialog is automatically created
+ * by the framework when the  `onDialogCreate` event is fired. Also, Infusion takes
+ * care of destroying any other instances of the survey dialog that may be present
+ * before actually creating a new one.
+ *
+ * Being a wrapper for the survey dialog component, this component has the same
+ * interface - it contains the `show`, `hide` and `close` invokers. The former is
+ * responsible for firing the event for creating the wrapped component, whereas the
+ * latter two simply delegate to the corresponding wrapped component's method (if
+ * the component exists).
+ */
 fluid.defaults("gpii.app.survey", {
     gradeNames: "fluid.component",
 
