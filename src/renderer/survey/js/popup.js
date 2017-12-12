@@ -33,17 +33,17 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         invokers: {
             openSurvey: {
                 funcName: "gpii.survey.popup.openSurvey",
-                args: ["{that}.dom.webview.0", "{arguments}.0"]
+                args: ["{that}.dom.webview", "{arguments}.0"]
             }
         },
         listeners: {
             "onCreate.addIPCListener": {
                 funcName: "gpii.survey.popup.addIPCListener",
-                args: ["{that}", "{that}.dom.webview.0"]
+                args: ["{that}", "{that}.dom.webview"]
             },
             "onCreate.addNewWindowListener": {
                 funcName: "gpii.survey.popup.addNewWindowListener",
-                args: ["{that}.dom.webview.0"]
+                args: ["{that}.dom.webview"]
             }
         }
     });
@@ -55,7 +55,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @params surveyUrl {String} The URL of the page to be loaded.
      */
     gpii.survey.popup.openSurvey = function (webview, surveyUrl) {
-        webview.src = surveyUrl;
+        webview.attr("src", surveyUrl);
     };
 
     /**
@@ -69,7 +69,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * webview element.
      */
     gpii.survey.popup.addIPCListener = function (that, webview) {
-        webview.addEventListener("ipc-message", function (event) {
+        webview[0].addEventListener("ipc-message", function (event) {
             that.events.onIPCMessage.fire(event.channel, event.args);
         });
     };
@@ -82,8 +82,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * webview element.
      */
     gpii.survey.popup.addNewWindowListener = function (webview) {
-        webview.getWebContents().on("new-window", function (event, url) {
-            shell.openExternal(url);
+        webview.one("dom-ready", function () {
+            this.getWebContents().on("new-window", function (event, url) {
+                shell.openExternal(url);
+            });
         });
     };
 })(fluid);

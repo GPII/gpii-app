@@ -79,6 +79,9 @@ fluid.defaults("gpii.app.surveyDialog", {
         "onCreate.initSurveyWindowIPC": {
             listener: "gpii.app.surveyDialog.initSurveyWindowIPC",
             args: ["{that}"]
+        },
+        "onDestroy.removeSurveyWindowIPC": {
+            listener: "gpii.app.surveyDialog.removeSurveyWindowIPC"
         }
     },
     invokers: {
@@ -130,6 +133,14 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
     ipcMain.on("onSurveyClose", function () {
         that.close();
     });
+};
+
+/**
+ * Removes the IPC listeners needed for the communication with the `BrowserWindow`
+ * when the latter is about to be destroyed.
+ */
+gpii.app.surveyDialog.removeSurveyWindowIPC = function () {
+    ipcMain.removeAllListeners("onSurveyClose");
 };
 
 /**
