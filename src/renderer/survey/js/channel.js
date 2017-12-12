@@ -16,6 +16,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     var gpii = fluid.registerNamespace("gpii"),
         ipcRenderer = require("electron").ipcRenderer;
 
+    /**
+     * Responsible for communication between the main and the renderer
+     * processes for survey related messages.
+     */
     fluid.defaults("gpii.survey.channel", {
         gradeNames: ["fluid.component"],
         events: {
@@ -34,13 +38,24 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         }
     });
 
+    /**
+     * Sends asynchronously a message to the main process.
+     * @param channel {String} The channel via which the message will
+     * be sent.
+     * @oaram message {Any} The actual message that is to be sent.
+     */
     gpii.survey.channel.sendMessage = function (channel, message) {
         ipcRenderer.send(channel, message);
     };
 
-    gpii.survey.channel.initialize = function (channel) {
+    /**
+     * Initializes the component by registering listeners for survey
+     * related messages sent by the main process.
+     * @param that {Component} The `gpii.survey.channel` instance.
+     */
+    gpii.survey.channel.initialize = function (that) {
         ipcRenderer.on("openSurvey", function (event, surveyParams) {
-            channel.events.openSurvey.fire(surveyParams);
+            that.events.openSurvey.fire(surveyParams);
         });
     };
 })(fluid);

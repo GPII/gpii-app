@@ -16,6 +16,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell;
 
+    /**
+     * A wrapper component for the webview. Provides means for setting the
+     * URL of the page which should be loaded in the webview, as well as
+     * handles messages sent by the webview and opens links in the OS
+     * browser if the corresponding event is triggered on the webview.
+     */
     fluid.defaults("gpii.survey.popup", {
         gradeNames: ["fluid.viewComponent"],
         selectors: {
@@ -31,28 +37,51 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         listeners: {
-            "onCreate.initIPCListener": {
-                funcName: "gpii.survey.popup.initIPCListener",
+            "onCreate.addIPCListener": {
+                funcName: "gpii.survey.popup.addIPCListener",
                 args: ["{that}", "{that}.dom.webview.0"]
             },
-            "onCreate.initNewWindowListener": {
-                funcName: "gpii.survey.popup.initNewWindowListener",
+            "onCreate.addNewWindowListener": {
+                funcName: "gpii.survey.popup.addNewWindowListener",
                 args: ["{that}.dom.webview.0"]
             }
         }
     });
 
+    /**
+     * Changes the URL of the page which is to be loaded in the webview.
+     * @params webview {jQuery} The jQuery object corresponding to the
+     * webview element.
+     * @params surveyUrl {String} The URL of the page to be loaded.
+     */
     gpii.survey.popup.openSurvey = function (webview, surveyUrl) {
         webview.src = surveyUrl;
     };
 
-    gpii.survey.popup.initIPCListener = function (that, webview) {
+    /**
+     * Registers a callback to be invoked whenever the webview sends
+     * a message to the host `BrowserWindow`. What this function does
+     * is to simply fire the `onIPCMessage` event (which will in fact
+     * forward the message via the corresponding channel to the main
+     * process).
+     * @param that {Component} The `gpii.survey.popup` instance.
+     * @params webview {jQuery} The jQuery object corresponding to the
+     * webview element.
+     */
+    gpii.survey.popup.addIPCListener = function (that, webview) {
         webview.addEventListener("ipc-message", function (event) {
             that.events.onIPCMessage.fire(event.channel, event.args);
         });
     };
 
-    gpii.survey.popup.initNewWindowListener = function (webview) {
+    /**
+     * Responsible for opening a link in the OS browser if the webview
+     * fires the `new-window` event. The latter happens when the user
+     * clicks on an anchor tag whose target is `_blank`.
+     * @params webview {jQuery} The jQuery object corresponding to the
+     * webview element.
+     */
+    gpii.survey.popup.addNewWindowListener = function (webview) {
         webview.getWebContents().on("new-window", function (event, url) {
             shell.openExternal(url);
         });

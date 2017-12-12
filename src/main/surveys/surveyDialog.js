@@ -19,8 +19,8 @@ var fluid = require("infusion"),
 
 require("../dialog.js");
 
-// XXX: Needed to circumvent the certificate error for the "umd.edu" domain certificate
-// error. Should be removed before going to production.
+// XXX: Needed to circumvent the certificate error for the "umd.edu" domain.Should
+// be removed before going to production.
 require("electron").app.on("certificate-error", function (event, webContents, url, error, certificate, callback) {
     event.preventDefault();
     callback(true);
@@ -89,6 +89,15 @@ fluid.defaults("gpii.app.surveyDialog", {
     }
 });
 
+/**
+ * Initializes the `ready-to-show` listener for the `BrowserWindow`. Only after
+ * the `BrowserWindow` has loaded the local html, can the webview be instructed
+ * to load the given survey url. As the `surveyDialog` component will be recreated
+ * once a new survey is to be shown, the `ready-to-show` listener should be
+ * executed only once.
+ * @param that {Component} The `gpii.app.surveyDialog` instance.
+ * @param surveyUrl {String} The url of the survey to be opened.
+ */
 gpii.app.surveyDialog.initReadyToShowListener = function (that, surveyUrl) {
     that.dialog.once("ready-to-show", function () {
         that.notifySurveyWindow("openSurvey", surveyUrl);
@@ -96,12 +105,27 @@ gpii.app.surveyDialog.initReadyToShowListener = function (that, surveyUrl) {
     });
 };
 
+/**
+ * Initializes the `closed` listener for the `BrowserWindow`. Whenever the window
+ * is closed, the `surveyDialog` should be destroyed, as it can no longer be shown,
+ * hidden or interacted with in any other way. Note that the `closed` event fires
+ * both when it is closed programatically or via the close button in the upper
+ * right corner.
+ * @param that {Component} The `gpii.app.surveyDialog` instance.
+ */
 gpii.app.surveyDialog.initClosedListener = function (that) {
     that.dialog.on("closed", function () {
         that.destroy();
     });
 };
 
+/**
+ * Initializes the IPC listeners needed for the communication with the `BrowserWindow`.
+ * Currently the only supported channel for exchanging messages is `onSurveyClose`.
+ * Messages via this channel are sent to the `surveyDialog` component whenever the
+ * user clicks on the 'break out' link within the survey.
+ * @param that {Component} The `gpii.app.surveyDialog` instance.
+ */
 gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
     ipcMain.on("onSurveyClose", function () {
         that.close();
@@ -111,7 +135,7 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
 /**
  * A wrapper for the actual survey dialog. This component makes the instantiation
  * of the actual dialog more elegant - the survey dialog is automatically created
- * by the framework when the  `onDialogCreate` event is fired. Also, Infusion takes
+ * by the framework when the `onDialogCreate` event is fired. Also, Infusion takes
  * care of destroying any other instances of the survey dialog that may be present
  * before actually creating a new one.
  *
@@ -157,18 +181,33 @@ fluid.defaults("gpii.app.survey", {
     }
 });
 
-gpii.app.survey.show = function (survey, options) {
-    survey.events.onDialogCreate.fire(options.url, options.window || {});
+/**
+ * Responsible for firing the `onDialogCreate` event which in turn creates the
+ * wrapped `surveyDialog` component.
+ * @param that {Component} The `gpii.app.survey` instance.
+ * @param options {Object} An object containing the various properties for the
+ * `surveyDialog` which is to be created.
+ */
+gpii.app.survey.show = function (that, options) {
+    that.events.onDialogCreate.fire(options.url, options.window);
 };
 
-gpii.app.survey.hide = function (survey) {
-    if (survey.surveyDialog) {
-        survey.surveyDialog.hide();
+/**
+ * Responsible for hiding the `surveyDialog` component if it exists.
+ * @param that {Component} The `gpii.app.survey` instance.
+ */
+gpii.app.survey.hide = function (that) {
+    if (that.surveyDialog) {
+        that.surveyDialog.hide();
     }
 };
 
-gpii.app.survey.close = function (survey) {
-    if (survey.surveyDialog) {
-        survey.surveyDialog.close();
+/**
+ * Responsible for closing the `surveyDialog` component if it exists.
+ * @param that {Component} The `gpii.app.survey` instance.
+ */
+gpii.app.survey.close = function (that) {
+    if (that.surveyDialog) {
+        that.surveyDialog.close();
     }
 };

@@ -12,6 +12,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 /* global fluid */
 
 "use strict";
+/**
+ * Initializes the `gpii.survey` component once the DOM has loaded.
+ */
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 

@@ -15,6 +15,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
+/**
+ * A component responsible for parsing various payloads related to the
+ * surveys (e.g. the payload for showing a particular survey pop-up).
+ */
 fluid.defaults("gpii.app.surveyParser", {
     gradeNames: ["fluid.component"],
     invokers: {
@@ -24,6 +28,12 @@ fluid.defaults("gpii.app.surveyParser", {
     }
 });
 
+/**
+ * A function responsible for correctly parsing the payload received by
+ * the survey server for showing a survey pop-up. Basically, this
+ * function converts from the server format of the options to the
+ * format expected by the `BrowserWindow`.
+ */
 gpii.app.surveyParser.parseSurveyPayload = function (payload) {
     var windowParams = payload.window || {},
         titlebarParams = windowParams.titleBar || {};

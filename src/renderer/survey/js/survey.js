@@ -12,6 +12,12 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 /* global fluid */
 
 "use strict";
+/**
+ * A wrapper component for the `gpii.survey.channel` (which handles the
+ * communication between the `BrowserWindow` and the main electron process)
+ * and the `gpii.survey.popup` (which wraps and serves as an intermediary
+ * for the webview).
+ */
 (function (fluid) {
     fluid.defaults("gpii.survey", {
         gradeNames: ["fluid.component"],

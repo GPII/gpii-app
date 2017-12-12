@@ -17,6 +17,17 @@ var fluid = require("infusion"),
 
 require("./surveyDialog.js");
 
+/**
+ * A component which provides means for showing, hiding and closing of dialogs
+ * throughout the PSP application. All dialogs that can be manipulated by this
+ * component need to be registered as its subcomponents. If a dialog cannot be
+ * created when the `dialogManager` is created, it can be wrapped in a component
+ * which will take care of the dialogs creation when it is needed (for reference,
+ * see the `gpii.app.survey` component which wraps the `gpii.app.surveyDialog` and
+ * creates it via an event).
+ * In order to show/hide/close a dialog, the IoCSS selector of the particular
+ * component needs to be provided as an argument of the corresponding function.
+ */
 fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {
@@ -24,7 +35,7 @@ fluid.defaults("gpii.app.dialogManager", {
     },
     modelListeners: {
         keyedInUserToken: {
-            funcName: "gpii.app.dialogManager.closeDialogsIfNeeded",
+            funcName: "gpii.app.dialogManager.closeDialogsOnKeyOut",
             args: ["{that}", "{change}.value"],
             excludeSource: "init"
         }
@@ -56,35 +67,64 @@ fluid.defaults("gpii.app.dialogManager", {
     }
 });
 
-gpii.app.dialogManager.get = function (dialogManager, iocSelector) {
-    var dialogs = fluid.queryIoCSelector(dialogManager, iocSelector);
+/**
+ * Retrieves a dialog component that is a subcomponent of the `dialogManager`
+ * given its IoCSS selector.
+ * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
+ * @param selector {String} The IoCSS selector of the component to be fetched.
+ * @return {Component} The dialog component corresponding to the given selector
+ * or `undefined` if no such is found.
+ */
+gpii.app.dialogManager.get = function (dialogManager, selector) {
+    var dialogs = fluid.queryIoCSelector(dialogManager, selector);
     if (dialogs.length > 0) {
         return dialogs[0];
     }
 };
 
-gpii.app.dialogManager.show = function (dialogManager, iocSelector, options) {
-    var dialog = dialogManager.get(iocSelector);
+/**
+ * Shows a dialog component given its IoCSS selector.
+ * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
+ * @param selector {String} The IoCSS selector of the component to be shown.
+ */
+gpii.app.dialogManager.show = function (dialogManager, selector, options) {
+    var dialog = dialogManager.get(selector);
     if (dialog) {
         dialog.show(options);
     }
 };
 
-gpii.app.dialogManager.hide = function (dialogManager, iocSelector) {
-    var dialog = dialogManager.get(iocSelector);
+/**
+ * Hides a dialog component given its IoCSS selector.
+ * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
+ * @param selector {String} The IoCSS selector of the component to be hidden.
+ */
+gpii.app.dialogManager.hide = function (dialogManager, selector) {
+    var dialog = dialogManager.get(selector);
     if (dialog) {
         dialog.hide();
     }
 };
 
-gpii.app.dialogManager.close = function (dialogManager, iocSelector) {
-    var dialog = dialogManager.get(iocSelector);
+/**
+ * Closes a dialog component given its IoCSS selector.
+ * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
+ * @param selector {String} The IoCSS selector of the component to be closed.
+ */
+gpii.app.dialogManager.close = function (dialogManager, selector) {
+    var dialog = dialogManager.get(selector);
     if (dialog) {
         dialog.close();
     }
 };
 
-gpii.app.dialogManager.closeDialogsIfNeeded = function (dialogManager, keyedInUserToken) {
+/**
+ * A function responsible for closing all dialogs which need to be closed
+ * whenever the user keyes out of the PSP.
+ * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
+ * @param keyedInUserToken {String} The token of the currently keyed in user.
+ */
+gpii.app.dialogManager.closeDialogsOnKeyOut = function (dialogManager, keyedInUserToken) {
     if (!fluid.isValue(keyedInUserToken)) {
         dialogManager.close("survey");
     }
