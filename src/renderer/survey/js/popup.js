@@ -37,6 +37,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             }
         },
         listeners: {
+            "onCreate.notifySurveyCreated": {
+                funcName: "{that}.events.onIPCMessage.fire",
+                args: ["onSurveyCreated"]
+            },
             "onCreate.addIPCListener": {
                 funcName: "gpii.survey.popup.addIPCListener",
                 args: ["{that}", "{that}.dom.webview"]

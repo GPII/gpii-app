@@ -68,17 +68,13 @@ fluid.defaults("gpii.app.surveyDialog", {
             method: "setMenu",
             args: [null]
         },
-        "onCreate.initReadyToShowListener": {
-            listener: "gpii.app.surveyDialog.initReadyToShowListener",
-            args: ["{that}", "{that}.options.config.surveyUrl"]
-        },
         "onCreate.initClosedListener": {
             listener: "gpii.app.surveyDialog.initClosedListener",
             args: ["{that}"]
         },
         "onCreate.initSurveyWindowIPC": {
             listener: "gpii.app.surveyDialog.initSurveyWindowIPC",
-            args: ["{that}"]
+            args: ["{that}", "{that}.options.config"]
         },
         "onDestroy.removeSurveyWindowIPC": {
             listener: "gpii.app.surveyDialog.removeSurveyWindowIPC"
@@ -91,22 +87,6 @@ fluid.defaults("gpii.app.surveyDialog", {
         }
     }
 });
-
-/**
- * Initializes the `ready-to-show` listener for the `BrowserWindow`. Only after
- * the `BrowserWindow` has loaded the local html, can the webview be instructed
- * to load the given survey url. As the `surveyDialog` component will be recreated
- * once a new survey is to be shown, the `ready-to-show` listener should be
- * executed only once.
- * @param that {Component} The `gpii.app.surveyDialog` instance.
- * @param surveyUrl {String} The url of the survey to be opened.
- */
-gpii.app.surveyDialog.initReadyToShowListener = function (that, surveyUrl) {
-    that.dialog.once("ready-to-show", function () {
-        that.notifySurveyWindow("openSurvey", surveyUrl);
-        that.show();
-    });
-};
 
 /**
  * Initializes the `closed` listener for the `BrowserWindow`. Whenever the window
@@ -124,13 +104,24 @@ gpii.app.surveyDialog.initClosedListener = function (that) {
 
 /**
  * Initializes the IPC listeners needed for the communication with the `BrowserWindow`.
- * Currently the only supported channel for exchanging messages is `onSurveyClose`.
- * Messages via this channel are sent to the `surveyDialog` component whenever the
- * user clicks on the 'break out' link within the survey.
  * @param that {Component} The `gpii.app.surveyDialog` instance.
+ * @param config {Object} The parameters for initializing the survey pop-up.
  */
-gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
-    ipcMain.on("onSurveyClose", function () {
+gpii.app.surveyDialog.initSurveyWindowIPC = function (that, config) {
+    // We need to ensure that the `BrowserWindow` has been completely created before
+    // trying to load a page in the webview element. It turned out that opening the
+    // survey when the built-in `ready-to-show` listener for the `BrowserWindow` is
+    // called is not sufficient as the webcontents object is sporadically not created.
+    // Thus it is better to rely on a message passed by the renderer process in order
+    // to determine when the actual survey content can be loaded.
+    ipcMain.once("onSurveyCreated", function () {
+        that.notifySurveyWindow("openSurvey", config.surveyUrl);
+        that.show();
+    });
+
+    // Messages via this channel are sent to the `surveyDialog` component whenever the
+    // user clicks on the 'break out' link within the survey.
+    ipcMain.once("onSurveyClose", function () {
         that.close();
     });
 };
@@ -140,6 +131,7 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
  * when the latter is about to be destroyed.
  */
 gpii.app.surveyDialog.removeSurveyWindowIPC = function () {
+    ipcMain.removeAllListeners("onSurveyCreated");
     ipcMain.removeAllListeners("onSurveyClose");
 };
 
