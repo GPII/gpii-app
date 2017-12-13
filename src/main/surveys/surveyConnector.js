@@ -17,8 +17,6 @@ var WebSocket = require("ws");
 
 var gpii = fluid.registerNamespace("gpii");
 
-require("./surveyParser.js");
-
 // XXX TEST
 require("./surveyServer.js");
 
@@ -41,12 +39,6 @@ fluid.defaults("gpii.app.surveyConnector", {
         surveyServerUrl: "ws://localhost:3333"
     },
 
-    components: {
-        surveyParser: {
-            type: "gpii.app.surveyParser"
-        }
-    },
-
     members: {
         socket: "@expand:gpii.app.surveyConnector.connect({that}.options.config, {that}.events.onSocketOpened.fire)"
     },
@@ -54,7 +46,7 @@ fluid.defaults("gpii.app.surveyConnector", {
     listeners: {
         "onSocketOpened.register": {
             funcName: "gpii.app.surveyConnector.register",
-            args: ["{that}.socket", "{that}.events", "{surveyParser}"]
+            args: ["{that}.socket", "{that}.events"]
         }
     },
 
@@ -103,7 +95,7 @@ gpii.app.surveyConnector.connect = function (config, callback) {
 /**
  * TODO
  */
-gpii.app.surveyConnector.register = function (socket, events, surveyParser) {
+gpii.app.surveyConnector.register = function (socket, events) {
     socket.on("message", function (message) {
         message = JSON.parse(message);
         // Single key payload
@@ -112,8 +104,7 @@ gpii.app.surveyConnector.register = function (socket, events, surveyParser) {
 
         switch (type) {
         case "survey":
-            var surveyOptions = surveyParser.parseSurveyPayload(payload);
-            events.onSurveyRequired.fire(surveyOptions);
+            events.onSurveyRequired.fire(payload);
             break;
         case "surveyTrigger":
             events.onTriggerReceived.fire(payload);

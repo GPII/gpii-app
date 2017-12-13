@@ -32,16 +32,15 @@ wss.on("connection", function connection(ws) {
             survey: {
                 "url": "https://survey.az1.qualtrics.com/jfe/form/SV_7QWbGd4JuGmSu33?keyedInUserToken=" + keyedInUserToken,
                 "window": {
-                    "height": 600,  //optional
                     "width": 800,   //optional
-                    "userResizable": true,
-                    "titleBar": {
-                        "title": "GPII Auto-Personalization Survey",
-                        // "icon": "icon asset", //use gear-cloud icon by default
-                        "closeButton": true,     //default
-                        "minimizeButton": false, //default
-                        "maximizeButton": false  //default
-                    }
+                    "height": 600,  //optional
+                    "resizable": true,
+
+                    "title": "GPII Auto-Personalization Survey",
+                    // "icon": "icon asset", //use gear-cloud icon by default
+                    "closable": true,     //default
+                    "minimizable": false, //default
+                    "maximizable": false  //default
                 }
             }
         };
