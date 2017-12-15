@@ -27,6 +27,7 @@
     "gpii-windows": "git://github.com/danailbd/windows.git#hst-2017",
     "infusion": "3.0.0-dev.20170830T182157Z.392b2f8",
     "node-jqunit": "1.1.7",
+    "node-machine-id": "^1.1.9",
     "request": "2.69.0",
     "winstrap": "0.5.11"
   }

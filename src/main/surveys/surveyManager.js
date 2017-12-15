@@ -20,19 +20,16 @@ require("./surveyConnector.js");
 require("./dialogManager.js");
 
 fluid.defaults("gpii.app.surveyManager", {
-    gradeNames: ["fluid.modelComponent"],
-
-    model: {
-        // TODO to be used with the survey
-        machineId: null,
-        userId: null
-    },
-
+    gradeNames: ["fluid.component"],
 
     components: {
         surveyConnector: {
             type: "gpii.app.surveyConnector",
             options: {
+                model: {
+                    machineId: "{app}.model.machineId",
+                    userId: "{app}.model.keyedInUserToken"
+                },
                 listeners: {
                     "{app}.events.onKeyedIn": {
                         func: "{that}.requestTriggers"

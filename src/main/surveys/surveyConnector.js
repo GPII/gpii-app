@@ -28,9 +28,8 @@ fluid.defaults("gpii.app.surveyConnector", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
-        machineId: "machine_id",
-        // TODO move
-        userId: "{app}.model.keyedInUserToken"
+        machineId: null,
+        userId: null
     },
 
     config: {
