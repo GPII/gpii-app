@@ -37,7 +37,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param oldValue {Any} The old value of the setting.
      */
     gpii.psp.clientChannel.alterSetting = function (clientChannel, setting, oldValue) {
-        setting = fluid.extend(true, setting, {
+        setting = fluid.extend(true, {}, setting, {
             oldValue: oldValue
         });
         clientChannel.sendMessage("onSettingAltered", setting);
