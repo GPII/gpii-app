@@ -66,10 +66,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * the survey should close automatically when it is submitted.
      */
     gpii.survey.popup.openSurvey = function (webview, options) {
-        webview.attr("src", options.surveyUrl);
-        webview.one("did-finish-load", function () {
+        webview.one("dom-ready", function () {
             this.send("openSurvey", options.closeOnSubmit);
         });
+        webview.attr("src", options.surveyUrl);
     };
 
     /**
