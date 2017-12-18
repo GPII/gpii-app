@@ -62,6 +62,10 @@ fluid.defaults("gpii.app.surveyDialog", {
         },
         fileSuffixPath: "survey/index.html"
     },
+    events: {
+        onSurveyCreated: null,
+        onSurveyClose: null
+    },
     listeners: {
         "onCreate.hideMenu": {
             this: "{that}.dialog",
@@ -74,7 +78,14 @@ fluid.defaults("gpii.app.surveyDialog", {
         },
         "onCreate.initSurveyWindowIPC": {
             listener: "gpii.app.surveyDialog.initSurveyWindowIPC",
-            args: ["{that}", "{that}.options.config"]
+            args: ["{that}"]
+        },
+        "onSurveyCreated.openSurvey": {
+            listener: "gpii.app.surveyDialog.openSurvey",
+            args: ["{that}", "{that}.options.config.surveyUrl"]
+        },
+        "onSurveyClose.closeSurvey": {
+            funcName: "{that}.close"
         },
         "onDestroy.removeSurveyWindowIPC": {
             listener: "gpii.app.surveyDialog.removeSurveyWindowIPC"
@@ -105,9 +116,8 @@ gpii.app.surveyDialog.initClosedListener = function (that) {
 /**
  * Initializes the IPC listeners needed for the communication with the `BrowserWindow`.
  * @param that {Component} The `gpii.app.surveyDialog` instance.
- * @param config {Object} The parameters for initializing the survey pop-up.
  */
-gpii.app.surveyDialog.initSurveyWindowIPC = function (that, config) {
+gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
     // We need to ensure that the `BrowserWindow` has been completely created before
     // trying to load a page in the webview element. It turned out that opening the
     // survey when the built-in `ready-to-show` listener for the `BrowserWindow` is
@@ -115,15 +125,24 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that, config) {
     // Thus it is better to rely on a message passed by the renderer process in order
     // to determine when the actual survey content can be loaded.
     ipcMain.once("onSurveyCreated", function () {
-        that.notifySurveyWindow("openSurvey", config.surveyUrl);
-        that.show();
+        that.events.onSurveyCreated.fire();
     });
 
     // Messages via this channel are sent to the `surveyDialog` component whenever the
     // user clicks on the 'break out' link within the survey.
     ipcMain.once("onSurveyClose", function () {
-        that.close();
+        that.events.onSurveyClose.fire();
     });
+};
+
+/**
+ * Notifies the survey pop-up that `surveyUrl` should be loaded in the webview.
+ * @param that {Component} The `gpii.app.surveyDialog` instance.
+ * @param surveyUrl {String} The url of the survey which is to be loaded.
+ */
+gpii.app.surveyDialog.openSurvey = function (that, surveyUrl) {
+    that.notifySurveyWindow("openSurvey", surveyUrl);
+    that.show();
 };
 
 /**
