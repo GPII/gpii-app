@@ -502,7 +502,7 @@ gpii.app.handleUncaughtException = function (that, err) {
             tray.displayBalloon({
                 title: error.title || "GPII Error",
                 content: error.message || err.message,
-                icon: path.join(__dirname, "../icons/gpii-icon-balloon.png")
+                icon: path.join(fluid.module.terms()["gpii-app"], "src/icons/gpii-icon-balloon.png")
             });
             if (error.fatal) {
                 var timeout;

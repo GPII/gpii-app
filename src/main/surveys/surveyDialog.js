@@ -45,6 +45,13 @@ fluid.defaults("gpii.app.surveyDialog", {
     gradeNames: ["gpii.app.dialog"],
     config: {
         attrs: {
+            icon: {
+                expander: {
+                    funcName: "fluid.stringTemplate",
+                    args: ["%gpii-app/src/icons/gpii-color.ico", "@expand:fluid.module.terms()"]
+                }
+            },
+
             show: false,
             skipTaskbar: false,
             frame: true,
