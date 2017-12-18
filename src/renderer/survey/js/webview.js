@@ -30,10 +30,20 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * application distinguish between regular links that should open in a
      * new browser window and the 'break out' link which should also
      * close the survey pop-up.
+     * @param target {Element} The DOM element to be checked.
      */
     function isBreakOutLink(target) {
         return target && target.nodeName === "A" && target.target === "_blank"
                 && target.classList.contains("flc-breakOut");
+    }
+
+    /**
+     * Checks whether a given DOM element is a close button within the
+     * survey's content.
+     * @param target {Element} The DOM element to be checked.
+     */
+    function isCloseButton(target) {
+        return target && target.classList.contains("flc-closeBtn");
     }
 
     /**
@@ -47,7 +57,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      */
     function addBreakOutLinkListener() {
         document.body.addEventListener("click", function (event) {
-            if (isBreakOutLink(event.target)) {
+            if (isBreakOutLink(event.target) || isCloseButton(event.target)) {
                 // Needed so that the default action of the link can
                 // execute before the dialog is closed and destroyed.
                 setTimeout(function () {
@@ -57,8 +67,37 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         });
     }
 
+    /**
+     * Sends an `onSurveyClose` IPC message to the host page automatically
+     * when the survey end has been reached. In order to do this, the webview
+     * registers a `MutationObserver` which listens for changes in the DOM
+     * of the whole page. Whenever such a change occurs, instead of iterating
+     * through the changes manually (using the argument passed to the callback
+     * function), an attempt to find an element with id `EndOfSurvey` is made.
+     * If such an element does exist, this means that the user has reached the
+     * end of the survey.
+     */
+    function addEndOfSurveyListener() {
+        new MutationObserver(function () {
+            var el = document.getElementById("EndOfSurvey");
+            if (el) {
+                this.disconnect();
+                ipcRenderer.sendToHost("onSurveyClose");
+            }
+        }).observe(document, {
+            subtree: true,
+            childList: true
+        });
+    }
+
     // Wait for the DOM to initialize and then attach necessary listeners.
     document.addEventListener("DOMContentLoaded", function () {
         addBreakOutLinkListener();
+    });
+
+    ipcRenderer.on("openSurvey", function (event, closeOnSubmit) {
+        if (closeOnSubmit) {
+            addEndOfSurveyListener();
+        }
     });
 })();

@@ -14,6 +14,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii"),
+        fs = require("fs"),
         shell = require("electron").shell;
 
     /**
@@ -41,6 +42,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 funcName: "{that}.events.onIPCMessage.fire",
                 args: ["onSurveyCreated"]
             },
+            "onCreate.injectCSS": {
+                funcName: "gpii.survey.popup.injectCSS",
+                args: ["{that}.dom.webview"]
+            },
             "onCreate.addIPCListener": {
                 funcName: "gpii.survey.popup.addIPCListener",
                 args: ["{that}", "{that}.dom.webview"]
@@ -56,10 +61,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * Changes the URL of the page which is to be loaded in the webview.
      * @params webview {jQuery} The jQuery object corresponding to the
      * webview element.
-     * @params surveyUrl {String} The URL of the page to be loaded.
+     * @params options {Object} An object containing configuration
+     * parameters for the page to be shown - such as its URL and whether
+     * the survey should close automatically when it is submitted.
      */
-    gpii.survey.popup.openSurvey = function (webview, surveyUrl) {
-        webview.attr("src", surveyUrl);
+    gpii.survey.popup.openSurvey = function (webview, options) {
+        webview.attr("src", options.surveyUrl);
+        webview.one("did-finish-load", function () {
+            this.send("openSurvey", options.closeOnSubmit);
+        });
     };
 
     /**
@@ -89,6 +99,22 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         webview.one("dom-ready", function () {
             this.getWebContents().on("new-window", function (event, url) {
                 shell.openExternal(url);
+            });
+        });
+    };
+
+    /**
+     * Injects custom CSS (asynchronously from a file on the file system)
+     * into the guest survey page when it has been fully loaded.
+     * @params webview {jQuery} The jQuery object corresponding to the
+     * webview element.
+     */
+    gpii.survey.popup.injectCSS = function (webview) {
+        webview.on("dom-ready", function () {
+            fs.readFile(__dirname + "/css/webview.css", "utf-8", function (error, data) {
+                if (!error) {
+                    webview[0].insertCSS(data);
+                }
             });
         });
     };

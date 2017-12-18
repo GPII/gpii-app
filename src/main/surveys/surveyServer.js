@@ -33,6 +33,7 @@ wss.on("connection", function connection(ws) {
         var surveyRawPayloadFixture = {
             survey: {
                 "url": "https://survey.az1.qualtrics.com/jfe/form/SV_7QWbGd4JuGmSu33?keyedInUserToken=" + keyedInUserToken + "&machineId=" + machineId,
+                "closeOnSubmit": true,
                 "window": {
                     "width": 800,   //optional
                     "height": 600,  //optional

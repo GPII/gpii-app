@@ -82,7 +82,7 @@ fluid.defaults("gpii.app.surveyDialog", {
         },
         "onSurveyCreated.openSurvey": {
             listener: "gpii.app.surveyDialog.openSurvey",
-            args: ["{that}", "{that}.options.config.surveyUrl"]
+            args: ["{that}", "{that}.options.config"]
         },
         "onSurveyClose.closeSurvey": {
             funcName: "{that}.close"
@@ -140,8 +140,11 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
  * @param that {Component} The `gpii.app.surveyDialog` instance.
  * @param surveyUrl {String} The url of the survey which is to be loaded.
  */
-gpii.app.surveyDialog.openSurvey = function (that, surveyUrl) {
-    that.notifySurveyWindow("openSurvey", surveyUrl);
+gpii.app.surveyDialog.openSurvey = function (that, config) {
+    that.notifySurveyWindow("openSurvey", {
+        surveyUrl: config.surveyUrl,
+        closeOnSubmit: config.closeOnSubmit
+    });
     that.show();
 };
 
@@ -177,7 +180,8 @@ fluid.defaults("gpii.app.survey", {
             options: {
                 config: {
                     surveyUrl: "{arguments}.0",
-                    attrs: "{arguments}.1"
+                    closeOnSubmit: "{arguments}.1",
+                    attrs: "{arguments}.2"
                 }
             }
         }
@@ -211,7 +215,7 @@ fluid.defaults("gpii.app.survey", {
  * `surveyDialog` which is to be created.
  */
 gpii.app.survey.show = function (that, options) {
-    that.events.onDialogCreate.fire(options.url, options.window);
+    that.events.onDialogCreate.fire(options.url, options.closeOnSubmit, options.window);
 };
 
 /**
