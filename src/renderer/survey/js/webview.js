@@ -84,7 +84,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * end of the survey.
      */
     function addEndOfSurveyListener() {
-        new MutationObserver(function () {
+        var observer = new MutationObserver(function () {
             // It is much faster to try to find an element by its id instead of
             // looking though the array of mutations which is passed as an
             // argument to the `MutationObserver` callback.
@@ -93,9 +93,18 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 this.disconnect(); // detach the `MutationObserver`
                 closeSurvey();
             }
-        }).observe(document, {
+        });
+
+        observer.observe(document, {
             subtree: true,
             childList: true
+        });
+
+        window.addEventListener("beforeunload", function () {
+            if (observer) {
+                observer.disconnect();
+                observer = null;
+            }
         });
     }
 
@@ -109,8 +118,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             addBreakOutLinkListener();
         });
 
-        ipcRenderer.on("openSurvey", function (event, closeOnSubmit) {
-            if (closeOnSubmit) {
+        ipcRenderer.on("openSurvey", function (event, options) {
+            if (options.closeOnSubmit) {
                 addEndOfSurveyListener();
             }
         });

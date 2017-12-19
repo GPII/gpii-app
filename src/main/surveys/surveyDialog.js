@@ -145,13 +145,11 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
 /**
  * Notifies the survey pop-up that `surveyUrl` should be loaded in the webview.
  * @param that {Component} The `gpii.app.surveyDialog` instance.
- * @param surveyUrl {String} The url of the survey which is to be loaded.
+ * @param config {Object} An object containing the configuration options for the
+ * survey to be shown.
  */
 gpii.app.surveyDialog.openSurvey = function (that, config) {
-    that.notifySurveyWindow("openSurvey", {
-        surveyUrl: config.surveyUrl,
-        closeOnSubmit: config.closeOnSubmit
-    });
+    that.notifySurveyWindow("openSurvey", config);
     that.show();
 };
 
