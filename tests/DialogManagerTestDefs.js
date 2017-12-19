@@ -22,6 +22,7 @@ var fluid = require("infusion"),
 
 require("../node_modules/kettle/lib/test/KettleTestUtils.http.js");
 require("../src/main/app.js");
+require("./SurveyServerMock.js");
 
 fluid.registerNamespace("gpii.tests.dialogManager.testDefs");
 
@@ -89,11 +90,17 @@ gpii.tests.dialogManager.testDefs = {
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     distributeOptions: {
-        record: {
-            funcName: "gpii.tests.dialogManager.receiveApp",
-            args: ["{testCaseHolder}", "{arguments}.0"]
+        receiveApp: {
+            record: {
+                funcName: "gpii.tests.dialogManager.receiveApp",
+                args: ["{testCaseHolder}", "{arguments}.0"]
+            },
+            target: "{that flowManager gpii.app}.options.listeners.onCreate"
         },
-        target: "{that flowManager gpii.app}.options.listeners.onCreate"
+        mockSurveyServer: {
+            record: "gpii.tests.mocks.surveyServerWrapper",
+            target: "{that gpii.app.surveyManager}.options.gradeNames"
+        }
     },
     sequence: [{
         event: "{that gpii.app.surveyManager}.events.onCreate",

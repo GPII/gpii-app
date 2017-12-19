@@ -35,7 +35,8 @@ fluid.defaults("gpii.app.surveyConnector", {
     config: {
         // {1} - survey server implementation
         // TODO update when survey server is implemented
-        surveyServerUrl: "ws://localhost:3333"
+        hostname: "localhost",
+        port: 3333
     },
 
     members: {
@@ -85,7 +86,8 @@ fluid.defaults("gpii.app.surveyConnector", {
  * TODO
  */
 gpii.app.surveyConnector.connect = function (config, callback) {
-    var ws = new WebSocket(config.surveyServerUrl);
+    var serverUrl = fluid.stringTemplate("ws://%hostname:%port", config),
+        ws = new WebSocket(serverUrl);
     ws.on("open", callback);
 
     return ws;
