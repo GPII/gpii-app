@@ -47,6 +47,14 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     }
 
     /**
+     * Sends an IPC message to the hosting `BrowserWindow` indicating that
+     * the survey should be closed.
+     */
+    function closeSurvey() {
+        ipcRenderer.sendToHost("onSurveyClose");
+    }
+
+    /**
      * Adds a listener which notifies the host `BrowserWindow` that it
      * needs to close as a result of the user clicking on the 'break out'
      * link. The listener is attached to the document instead of to
@@ -58,11 +66,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     function addBreakOutLinkListener() {
         document.body.addEventListener("click", function (event) {
             if (isBreakOutLink(event.target) || isCloseButton(event.target)) {
-                // Needed so that the default action of the link can
-                // execute before the dialog is closed and destroyed.
-                setTimeout(function () {
-                    ipcRenderer.sendToHost("onSurveyClose");
-                });
+                // The timeout is needed so that the default action of the
+                // link can execute before the dialog is closed and destroyed.
+                setTimeout(closeSurvey);
             }
         });
     }
@@ -79,10 +85,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      */
     function addEndOfSurveyListener() {
         new MutationObserver(function () {
-            var el = document.getElementById("EndOfSurvey");
-            if (el) {
-                this.disconnect();
-                ipcRenderer.sendToHost("onSurveyClose");
+            // It is much faster to try to find an element by its id instead of
+            // looking though the array of mutations which is passed as an
+            // argument to the `MutationObserver` callback.
+            var endOfSurveyElement = document.getElementById("EndOfSurvey");
+            if (endOfSurveyElement) {
+                this.disconnect(); // detach the `MutationObserver`
+                closeSurvey();
             }
         }).observe(document, {
             subtree: true,
@@ -90,14 +99,22 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         });
     }
 
-    // Wait for the DOM to initialize and then attach necessary listeners.
-    document.addEventListener("DOMContentLoaded", function () {
-        addBreakOutLinkListener();
-    });
+    /**
+     * Contains all the code for initializing the webview (e.g. attaching
+     * listeners, handling IPC communication, etc).
+     */
+    function initWebview() {
+        // Wait for the DOM to initialize and then attach necessary listeners.
+        document.addEventListener("DOMContentLoaded", function () {
+            addBreakOutLinkListener();
+        });
 
-    ipcRenderer.on("openSurvey", function (event, closeOnSubmit) {
-        if (closeOnSubmit) {
-            addEndOfSurveyListener();
-        }
-    });
+        ipcRenderer.on("openSurvey", function (event, closeOnSubmit) {
+            if (closeOnSubmit) {
+                addEndOfSurveyListener();
+            }
+        });
+    }
+
+    initWebview();
 })();

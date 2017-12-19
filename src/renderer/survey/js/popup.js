@@ -14,6 +14,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii"),
+        async = require("async"),
         fs = require("fs"),
         shell = require("electron").shell;
 
@@ -44,7 +45,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             },
             "onCreate.injectCSS": {
                 funcName: "gpii.survey.popup.injectCSS",
-                args: ["{that}.dom.webview"]
+                args: ["{that}.dom.webview", "{that}.options.cssFiles"]
             },
             "onCreate.addIPCListener": {
                 funcName: "gpii.survey.popup.addIPCListener",
@@ -54,7 +55,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 funcName: "gpii.survey.popup.addNewWindowListener",
                 args: ["{that}.dom.webview"]
             }
-        }
+        },
+        cssFiles: [
+            "/css/webview.css"
+        ]
     });
 
     /**
@@ -104,17 +108,22 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     };
 
     /**
-     * Injects custom CSS (asynchronously from a file on the file system)
+     * Injects custom CSS (asynchronously from files on the file system)
      * into the guest survey page when it has been fully loaded.
      * @params webview {jQuery} The jQuery object corresponding to the
      * webview element.
+     * @param cssFiles {Array} An array of relative paths to the css files
+     * whose content is to be injected into the webview.
      */
-    gpii.survey.popup.injectCSS = function (webview) {
+    gpii.survey.popup.injectCSS = function (webview, cssFiles) {
         webview.on("dom-ready", function () {
-            fs.readFile(__dirname + "/css/webview.css", "utf-8", function (error, data) {
-                if (!error) {
-                    webview[0].insertCSS(data);
-                }
+            async.eachSeries(cssFiles, function (filename, callback) {
+                fs.readFile(__dirname + filename, "utf-8", function (error, data) {
+                    if (!error) {
+                        webview[0].insertCSS(data);
+                    }
+                    callback(error);
+                });
             });
         });
     };
