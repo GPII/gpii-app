@@ -152,5 +152,10 @@ gpii.tests.dialogManager.testDefs = {
         path: "keyedInUserToken",
         listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
         args: ["{that}.app.surveyManager.dialogManager"]
+    }, { // Close the mock survey server gracefully
+        func: "{that}.app.surveyManager.surveyServer.close"
+    }, { // Wait for the mock survey server until it has closed itself completely
+        event: "{that}.app.surveyManager.surveyServer.events.onServerClosed",
+        listener: "fluid.identity"
     }]
 };

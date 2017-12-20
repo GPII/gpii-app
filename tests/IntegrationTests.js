@@ -29,6 +29,7 @@ require("./IntegrationTestDefs.js");
 require("./SettingsBrokerTestDefs.js");
 require("./RestartDialogTestDefs.js");
 require("./DialogManagerTestDefs.js");
+require("./SurveysTestDefs.js");
 
 fluid.registerNamespace("gpii.tests.app");
 
@@ -91,5 +92,6 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.dev.testDefs),
     fluid.copy(gpii.tests.settingsBroker.testDefs),
     fluid.copy(gpii.tests.restartWarningController.testDefs),
-    fluid.copy(gpii.tests.dialogManager.testDefs)
+    fluid.copy(gpii.tests.dialogManager.testDefs),
+    fluid.copy(gpii.tests.surveys.testDefs)
 ]);

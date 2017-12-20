@@ -32,12 +32,67 @@ fluid.defaults("gpii.tests.mocks.surveyServer", {
                 funcName: "gpii.tests.mocks.surveyServer.create",
                 args: ["{that}.options.config.port"]
             }
+        },
+        webSocket: null
+    },
+    events: {
+        onTriggersRequested: null,
+        onTriggerOccurred: null,
+        onServerClosed: null
+    },
+    listeners: {
+        onCreate: {
+            funcName: "gpii.tests.mocks.surveyServer.registerHandlers",
+            args: ["{that}", "{that}.server"]
+        }
+    },
+    invokers: {
+        sendPayload: {
+            funcName: "gpii.tests.mocks.surveyServer.sendPayload",
+            args: ["{that}.webSocket", "{arguments}.0"]
+        },
+        close: {
+            funcName: "gpii.tests.mocks.surveyServer.close",
+            args: ["{that}", "{that}.server"]
         }
     }
 });
 
 gpii.tests.mocks.surveyServer.create = function (port) {
     return new WebSocket.Server({port: port});
+};
+
+gpii.tests.mocks.surveyServer.registerHandlers = function (that, server) {
+    server.on("connection", function connection(webSocket) {
+        that.webSocket = webSocket;
+
+        webSocket.on("message", function (message) {
+            message = JSON.parse(message);
+            var payload = message.payload,
+                type = message.type;
+
+            switch (type) {
+            case "triggersRequest":
+                that.events.onTriggersRequested.fire(payload);
+                break;
+            case "triggerOccurred":
+                that.events.onTriggerOccurred.fire(payload);
+                break;
+            }
+        });
+    });
+};
+
+gpii.tests.mocks.surveyServer.sendPayload = function (webSocket, payload) {
+    if (webSocket) {
+        webSocket.send(JSON.stringify(payload));
+    }
+};
+
+gpii.tests.mocks.surveyServer.close = function (that, server) {
+    server.close(function () {
+        that.events.onServerClosed.fire();
+    });
 };
 
 fluid.defaults("gpii.tests.mocks.surveyServerWrapper", {
@@ -58,7 +113,7 @@ fluid.defaults("gpii.tests.mocks.surveyServerWrapper", {
             priority: "after:surveyServer",
             options: {
                 config: {
-                    serverPort: "{surveyServerWrapper}.options.config.port"
+                    port: "{surveyServerWrapper}.options.config.port"
                 }
             }
         }
