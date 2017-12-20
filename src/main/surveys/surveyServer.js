@@ -13,7 +13,8 @@ wss.on("connection", function connection(ws) {
         console.log("Survey Triggers Requested: ", keyedInData);
 
         var triggerFixture = {
-            surveyTrigger: {
+            type: "surveyTrigger",
+            value: {
                 conditions: [
                     {
                         "minutesSinceKeyIn": 3
@@ -31,7 +32,8 @@ wss.on("connection", function connection(ws) {
         console.log("Survey Trigger Occured: ", trigger);
 
         var surveyRawPayloadFixture = {
-            survey: {
+            type: "survey",
+            value: {
                 "url": "https://survey.az1.qualtrics.com/jfe/form/SV_7QWbGd4JuGmSu33?keyedInUserToken=" + keyedInUserToken + "&machineId=" + machineId,
                 "closeOnSubmit": false,
                 "window": {
@@ -54,15 +56,15 @@ wss.on("connection", function connection(ws) {
 
     ws.on("message", function incoming(message) {
         message = JSON.parse(message);
-        var payload = message.payload,
+        var value = message.value,
             type = message.type;
 
         switch (type) {
         case "triggersRequest":
-            handleTriggersRequest(payload);
+            handleTriggersRequest(value);
             break;
         case "triggerOccurred":
-            handleTriggerOccurrance(payload);
+            handleTriggerOccurrance(value);
             break;
         }
     });

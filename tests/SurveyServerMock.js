@@ -68,15 +68,15 @@ gpii.tests.mocks.surveyServer.registerHandlers = function (that, server) {
 
         webSocket.on("message", function (message) {
             message = JSON.parse(message);
-            var payload = message.payload,
-                type = message.type;
+            var type = message.type,
+                value = message.value;
 
             switch (type) {
             case "triggersRequest":
-                that.events.onTriggersRequested.fire(payload);
+                that.events.onTriggersRequested.fire(value);
                 break;
             case "triggerOccurred":
-                that.events.onTriggerOccurred.fire(payload);
+                that.events.onTriggerOccurred.fire(value);
                 break;
             }
         });

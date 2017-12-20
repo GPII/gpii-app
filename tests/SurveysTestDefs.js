@@ -27,7 +27,8 @@ require("./SurveyServerMock.js");
 fluid.registerNamespace("gpii.tests.surveys.testDefs");
 
 var surveyTriggersFixture = {
-    surveyTrigger: {
+    type: "surveyTrigger",
+    value: {
         conditions: [
             {
                 "minutesSinceKeyIn": 1
@@ -39,7 +40,8 @@ var surveyTriggersFixture = {
 };
 
 var surveyFixture = {
-    survey: {
+    type: "survey",
+    value: {
         "url": "https://fluidproject.org/",
         "closeOnSubmit": false,
         "window": {
@@ -53,17 +55,17 @@ gpii.tests.surveys.receiveApp = function (testCaseHolder, app) {
     testCaseHolder.app = app;
 };
 
-gpii.tests.surveys.testTriggersRequestPayload = function (payload, keyedInUserToken) {
+gpii.tests.surveys.testTriggersRequestValue = function (value, keyedInUserToken) {
     jqUnit.assertEquals("The user token in the triggers request is correct",
-        keyedInUserToken, payload.userId);
+        keyedInUserToken, value.userId);
     jqUnit.assertTrue("The triggers request contains information about the machine id",
-        payload.machineId);
+        value.machineId);
 };
 
-gpii.tests.surveys.testTriggerOccurredPayload = function (payload, expectedPayload) {
-    expectedPayload = fluid.censorKeys(expectedPayload.surveyTrigger, ["conditions"]);
+gpii.tests.surveys.testTriggerOccurredValue = function (value, expectedValue) {
+    expectedValue = fluid.censorKeys(expectedValue, ["conditions"]);
     jqUnit.assertDeepEq("The triggers occurred payload contains the correct data",
-        expectedPayload, payload);
+        expectedValue, value);
 };
 
 gpii.tests.surveys.testDefs = {
@@ -95,15 +97,15 @@ gpii.tests.surveys.testDefs = {
         args: ["snapset_1a"]
     }, {
         event: "{that}.app.surveyManager.surveyServer.events.onTriggersRequested",
-        listener: "gpii.tests.surveys.testTriggersRequestPayload",
+        listener: "gpii.tests.surveys.testTriggersRequestValue",
         args: ["{arguments}.0", "snapset_1a"]
     }, {
         func: "{that}.app.surveyManager.surveyServer.sendPayload",
         args: [surveyTriggersFixture]
     }, {
         event: "{that}.app.surveyManager.surveyServer.events.onTriggerOccurred",
-        listener: "gpii.tests.surveys.testTriggerOccurredPayload",
-        args: ["{arguments}.0", surveyTriggersFixture]
+        listener: "gpii.tests.surveys.testTriggerOccurredValue",
+        args: ["{arguments}.0", surveyTriggersFixture.value]
     }, {
         func: "{that}.app.surveyManager.surveyServer.sendPayload",
         args: [surveyFixture]
