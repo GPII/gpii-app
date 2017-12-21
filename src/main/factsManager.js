@@ -83,7 +83,6 @@ fluid.defaults("gpii.app.factsManager", {
  * @param that {Component} The `gpii.app.factsManager` component
  */
 gpii.app.factsManager.emitFacts = function (that) {
-    console.log("DEBUG: Notify facts")
     that.events.onFactsUpdated.fire(that.getFacts());
 };
 

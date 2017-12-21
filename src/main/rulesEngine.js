@@ -140,16 +140,15 @@ fluid.defaults("gpii.app.rulesEngine", {
  * of `gpii.app.rulesEngine` signature`)
  */
 gpii.app.rulesEngine.registerSuccessListener = function (registeredRulesMap, ruleId, events) {
-    // Register for the specific rule to
+    // Register listener for once the specified rule is successful
     registeredRulesMap[ruleId].on("success", function (event) {
-        console.log("DEBUG: Conditions Engine - Rule success: ", ruleId, event.params)
         events.onRuleSatisfied.fire(ruleId, event.params);
     });
 };
 
 /**
  * Remove all registered rules for the engine.
- * @param that {Component} The rulesEngine component
+ * @param that {Component} The `gpii.app.rulesEngine` component
  */
 gpii.app.rulesEngine.reset = function (that) {
     that.registeredRulesMap = {};
@@ -174,7 +173,7 @@ gpii.app.rulesEngine.removeRule = function (registeredRulesMap, ruleId) {
  *
  * @param that {Component} The `gpii.app.rulesEngine` component
  * @param registeredRulesMap {Object} The map of all registered rules
- * @param ruleId {String} The unique id for the rule being added. N.B. In case a rule with 
+ * @param ruleId {String} The unique id for the rule being added. N.B. In case a rule with
  * such id already exists, it will be overridden.
  * @param conditions {Object} The list of conditions for the rules
  * @param payload {Object} The payload to be sent with the event once the rule succeeds
