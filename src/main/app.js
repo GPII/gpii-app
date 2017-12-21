@@ -16,16 +16,19 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var path    = require("path");
 var request = require("request");
+var machineInfo = require("node-machine-id");
 
 
-require("./settingsBroker.js");
+require("./factsManager.js");
 require("./gpiiConnector.js");
-require("./menu.js"); // menuInApp, menuInAppDev
-require("./tray.js");
+require("./menu.js");
 require("./psp.js");
-require("./survey.js");
-require("./waitDialog.js");
 require("./restartDialog.js");
+require("./rulesEngine.js");
+require("./settingsBroker.js");
+require("./surveys/surveyManager.js");
+require("./tray.js");
+require("./waitDialog.js");
 
 require("./networkCheck.js");
 
@@ -52,6 +55,7 @@ require("electron").app.on("window-all-closed", fluid.identity);
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
+        machineId: null,
         keyedInUserToken: null,
         snapsetName: null,
         showDialog: false,
@@ -62,14 +66,24 @@ fluid.defaults("gpii.app", {
     },
     // prerequisites
     components: {
-        survey: {
-            type: "gpii.app.survey",
+        factsManager: {
+            type: "gpii.app.factsManager",
+            createOnEvent: "onPrerequisitesReady"
+        },
+        rulesEngine: {
             createOnEvent: "onPrerequisitesReady",
+            priority: "after:factsManager",
+            type: "gpii.app.rulesEngine",
             options: {
-                model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                listeners: {
+                    "{factsManager}.events.onFactsUpdated": "{that}.checkRules"
                 }
             }
+        },
+        surveyManager: {
+            type: "gpii.app.surveyManager",
+            createOnEvent: "onPrerequisitesReady",
+            priority: "after:rulesEngine"
         },
         psp: {
             type: "gpii.app.psp",
@@ -246,12 +260,17 @@ fluid.defaults("gpii.app", {
     events: {
         onPrerequisitesReady: {
             events: {
+                onMachineIdFetched: "onMachineIdFetched",
                 onGPIIReady: "onGPIIReady",
                 onAppReady: "onAppReady"
             }
         },
+        onMachineIdFetched: null,
         onGPIIReady: null,
-        onAppReady: null
+        onAppReady: null,
+
+        onKeyedIn: null,
+        onKeyedOut: null
     },
     modelListeners: {
         "{lifecycleManager}.model.logonChange": {
@@ -260,6 +279,10 @@ fluid.defaults("gpii.app", {
         }
     },
     listeners: {
+        "onCreate.fetchMachineId": {
+            listener: "gpii.app.fetchMachineId",
+            args: ["{that}"]
+        },
         "onCreate.appReady": {
             listener: "gpii.app.fireAppReady",
             args: ["{that}.events.onAppReady.fire"]
@@ -268,15 +291,21 @@ fluid.defaults("gpii.app", {
             "this": "{that}.events.onGPIIReady",
             method: "fire"
         },
-        "{lifecycleManager}.events.onSessionStart": {
+        "{lifecycleManager}.events.onSessionStart": [{
             listener: "{that}.updateKeyedInUserToken",
             args: ["{arguments}.1"],
             namespace: "onLifeCycleManagerUserKeyedIn"
-        },
-        "{lifecycleManager}.events.onSessionStop": {
+        }, {
+            listener: "{that}.events.onKeyedIn.fire",
+            namespace: "notifyUserKeyedIn"
+        }],
+        "{lifecycleManager}.events.onSessionStop": [{
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
-        },
+        }, {
+            listener: "{that}.events.onKeyedOut.fire",
+            namespace: "notifyUserKeyedOut"
+        }],
 
         "onDestroy.beforeExit": {
             listener: "{that}.keyOut"
@@ -321,6 +350,22 @@ fluid.defaults("gpii.app", {
         record: "gpii.app.onKeyInError"
     }
 });
+
+/**
+ * Retrieves the id of the machine on which the PSP is running and sets it in the
+ * model. In case the machine id cannot be obtained, this will not prevent the app
+ * from starting.
+ * @param psp {Component} The `gpii.app.psp` component.
+ */
+gpii.app.fetchMachineId = function (that) {
+    machineInfo.machineId().then(function (machineId) {
+        that.applier.change("machineId", machineId);
+        that.events.onMachineIdFetched.fire();
+    }, function (error) {
+        fluid.log(fluid.logLevel.WARN, "Error obtaining machine id: " + error);
+        that.events.onMachineIdFetched.fire();
+    });
+};
 
 /**
  * Either hides or shows the warning in the PSP.
@@ -477,7 +522,7 @@ gpii.app.handleUncaughtException = function (that, err) {
             tray.displayBalloon({
                 title: error.title || "GPII Error",
                 content: error.message || err.message,
-                icon: path.join(__dirname, "../icons/gpii-icon-balloon.png")
+                icon: path.join(fluid.module.terms()["gpii-app"], "src/icons/gpii-icon-balloon.png")
             });
             if (error.fatal) {
                 var timeout;

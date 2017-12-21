@@ -34,9 +34,9 @@ fluid.defaults("gpii.app.tray", {
         }
     },
     icons: {
-        pendingChanges: "../icons/gpii-pending.png",
-        keyedIn: "../icons/gpii-color.ico",
-        keyedOut: "../icons/gpii.ico"
+        pendingChanges: "src/icons/gpii-pending.png",
+        keyedIn: "src/icons/gpii-color.ico",
+        keyedOut: "src/icons/gpii.ico"
     },
     components: {
         menu: {
@@ -98,7 +98,7 @@ fluid.defaults("gpii.app.tray", {
   * @param icon {String} The simple path to the icon file.
   */
 gpii.app.tray.setTrayIcon = function (tray, icon) {
-    var iconPath = path.join(__dirname, icon);
+    var iconPath = path.join(fluid.module.terms()["gpii-app"], icon);
     tray.setImage(iconPath);
 };
 
@@ -109,7 +109,7 @@ gpii.app.tray.setTrayIcon = function (tray, icon) {
   * whenever the user left clicks on the tray icon or uses the PSP window shortcut.
   */
 gpii.app.makeTray = function (icon, openPSP) {
-    var tray = new Tray(path.join(__dirname, icon));
+    var tray = new Tray(path.join(fluid.module.terms()["gpii-app"], icon));
 
     tray.on("click", function () {
         openPSP();

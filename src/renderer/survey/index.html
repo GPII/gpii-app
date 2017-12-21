@@ -4,12 +4,15 @@
         <link rel="stylesheet" href="css/survey.css">
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+        <script type="text/javascript" src="js/channel.js"></script>
+        <script type="text/javascript" src="js/popup.js"></script>
         <script type="text/javascript" src="js/survey.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
     </head>
-    <body>
+    <body id="flc-survey">
         <div class="fl-popup">
             <div class="fl-popup-content">
-                <webview class="fl-survey" src="about:blank" preload="js/webview.js"></webview>
+                <webview class="flc-surveyContent fl-surveyContent" preload="js/webview.js"></webview>
             </div>
             <div class="fl-popup-footer">
                 <span>GPII</span>

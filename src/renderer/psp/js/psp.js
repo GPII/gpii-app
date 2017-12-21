@@ -13,7 +13,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
 "use strict";
 (function (fluid) {
-    var gpii = fluid.registerNamespace("gpii");
     fluid.registerNamespace("gpii.psp");
 
     fluid.defaults("gpii.psp", {

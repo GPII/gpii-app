@@ -85,7 +85,7 @@ gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
     expect: 32,
     config: {
-        configName: "app",
+        configName: "app.production",
         configPath: "configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
