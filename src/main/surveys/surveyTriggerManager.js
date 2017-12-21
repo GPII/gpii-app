@@ -16,80 +16,82 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
-
-fluid.defaults("gpii.app.surveyTriggersManager", {
+/**
+ * Responsible for notifying when a certain survey trigger rule is satisfied.
+ * It uses the `gpii.app.rulesEngine` engine to watch for the conditions' completion.
+ */
+fluid.defaults("gpii.app.surveyTriggerManager", {
     gradeNames: ["fluid.modelComponent"],
-
-    model: {
-        keyedInUserToken: null,
-        activeTimer: null
-    },
-
-    modelListeners: {
-        keyedInUserToken: {
-            funcName: "gpii.app.surveyTriggersManager.clearTriggersIfNeeded",
-            args: ["{that}", "{change}.value"],
-            excludeSource: "init"
-        }
-    },
 
     events: {
         onTriggerOccurred: null
     },
 
+    ruleIds: {
+        surveyTrigger: "surveyTrigger"
+    },
+
+    listeners: {
+        "{rulesEngine}.events.onRuleSatisfied": {
+            func: "{surveyTriggerManager}.handleRuleSuccess",
+            args: [
+                "{arguments}.0",
+                "{arguments}.1"
+            ]
+        }
+
+    },
+    components: {
+        rulesEngine: null
+    },
 
     invokers: {
-        registerTrigger: {
-            funcName: "gpii.app.surveyTriggersManager.registerTrigger",
-            args: ["{that}", "{arguments}.0"]
+        reset: {
+            funcName: "gpii.app.surveyTriggerManager.reset",
+            args: "{that}"
         },
-        clearTriggers: {
-            funcName: "gpii.app.surveyTriggersManager.clearTriggers",
-            args: ["{that}"]
+
+        handleRuleSuccess: {
+            funcName: "gpii.app.surveyTriggerManager.handleRuleSuccess",
+            args: [
+                "{that}",
+                "{arguments}.0",
+                "{arguments}.1"
+            ]
+        },
+
+        registerTrigger: {
+            funcName: "gpii.app.surveyTriggerManager.registerTrigger",
+            args: [
+                "{that}.options.ruleIds.surveyTrigger",
+                "{rulesEngine}",
+                "{arguments}.0"
+            ]
         }
     }
 });
 
+/**
+ * TODO
+ */
+gpii.app.surveyTriggerManager.reset = function (that) {
+    var ruleIds = fluid.values(that.options.ruleIds);
 
-gpii.app.surveyTriggersManager.registerTrigger = function (that, triggerData) {
-    that.clearTriggers();
+    ruleIds.forEach( function (ruleId) {
+        that.rulesEngine.removeRule(ruleId);
+    });
+};
 
-    if (!triggerData || !triggerData.conditions) {
-        return;
-    }
-
-    var conditions = triggerData.conditions;
-    if (conditions.length !== 1) {
-        console.log("SurveyTriggerManager: Unsoported number of conditions: ", conditions.length);
-        return;
-    }
-
-    // XXX mock
-    var timer;
-    if (conditions[0].minutesSinceKeyIn) {
-        timer = setTimeout(
-            function () {
-                console.log("SurveyTriggerManager: KeyedIn Timer triggered!");
-
-                delete triggerData.conditions;
-                that.events.onTriggerOccurred.fire(triggerData);
-            },
-            conditions[0].minutesSinceKeyIn * 1000
-        );
-        that.applier.change("activeTimer", timer);
+gpii.app.surveyTriggerManager.handleRuleSuccess = function (that, ruleId, payload) {
+    if (ruleId === that.options.ruleIds.surveyTrigger) {
+        that.events.onTriggerOccurred.fire(payload);
+        that.rulesEngine.removeRule(ruleId);
     }
 };
 
-
-gpii.app.surveyTriggersManager.clearTriggers = function (that) {
-    if (that.model.activeTimer) {
-        clearTimeout(that.model.activeTimer);
-        that.applier.change("activeTimer", null, "DELETE");
-    }
-};
-
-gpii.app.surveyTriggersManager.clearTriggersIfNeeded = function (that, keyedInUserToken) {
-    if (!fluid.isValue(keyedInUserToken)) {
-        that.clearTriggers();
-    }
+/**
+ * TODO
+ */
+gpii.app.surveyTriggerManager.registerTrigger = function (triggerRuleId, rulesEngine, triggerData) {
+    rulesEngine.addRule(triggerRuleId, triggerData.conditions, triggerData);
 };

@@ -29,12 +29,14 @@ fluid.registerNamespace("gpii.tests.surveys.testDefs");
 var surveyTriggersFixture = {
     type: "surveyTrigger",
     value: {
-        conditions: [
-            {
-                "minutesSinceKeyIn": 1
-            }
-        ],
-        id: "id",
+        conditions: {
+            all: [{
+                fact: "keyedInBefore",
+                operator: "greaterThanInclusive",
+                value: 1000 * 1 // 1 sec
+            }]
+        },
+        triggerId: "id",
         urlTriggerHandler: "URL of the survey server to handle the surveyTriggerEvent"
     }
 };
@@ -63,7 +65,6 @@ gpii.tests.surveys.testTriggersRequestValue = function (value, keyedInUserToken)
 };
 
 gpii.tests.surveys.testTriggerOccurredValue = function (value, expectedValue) {
-    expectedValue = fluid.censorKeys(expectedValue, ["conditions"]);
     jqUnit.assertDeepEq("The triggers occurred payload contains the correct data",
         expectedValue, value);
 };

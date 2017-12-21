@@ -19,6 +19,8 @@ require("./surveyTriggerManager.js");
 require("./surveyConnector.js");
 require("./dialogManager.js");
 
+
+
 fluid.defaults("gpii.app.surveyManager", {
     gradeNames: ["fluid.component"],
 
@@ -40,25 +42,25 @@ fluid.defaults("gpii.app.surveyManager", {
                         args: ["survey", "{arguments}.0"] // the raw payload
                     },
 
-                    onTriggerReceived: {
-                        func: "{surveyTriggersManager}.registerTrigger",
+                    onTriggerDataReceived: {
+                        func: "{surveyTriggerManager}.registerTrigger",
                         args: ["{arguments}.0"]
                     }
                 }
             }
         },
 
-        surveyTriggersManager: {
-            type: "gpii.app.surveyTriggersManager",
+        surveyTriggerManager: {
+            type: "gpii.app.surveyTriggerManager",
             options: {
-                model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
-                },
                 listeners: {
                     onTriggerOccurred: {
                         func: "{surveyConnector}.notifyTriggerOccurred",
                         args: "{arguments}.0" // the trigger payload
                     }
+                },
+                components: {
+                    rulesEngine: "{rulesEngine}"
                 }
             }
         },

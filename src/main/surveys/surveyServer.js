@@ -15,11 +15,13 @@ wss.on("connection", function connection(ws) {
         var triggerFixture = {
             type: "surveyTrigger",
             value: {
-                conditions: [
-                    {
-                        "minutesSinceKeyIn": 3
-                    }
-                ],
+                conditions: {
+                    all: [{
+                        fact: "keyedInBefore",
+                        operator: "greaterThanInclusive",
+                        value: 1000 * 5 // 5 secs
+                    }]
+                },
                 id: "id",
                 urlTriggerHandler: "URL of the survey server to handle the surveyTriggerEvent"
             }

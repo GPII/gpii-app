@@ -272,6 +272,4 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
         applyManualLivenessFlag(preferences.settings);
         applyOsLivenessFlag(preferences.settings);
     }
-
-    return preferences;
 };
