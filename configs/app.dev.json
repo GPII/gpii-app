@@ -21,8 +21,8 @@
             },
             "distributeSurveyConnector": {
                 "record": {
-                    "hostname": "astea@surveyserver.gpii.net",
-                    "port": 33334
+                    "hostname": "localhost",
+                    "port": 3334
                 },
                 "target": "{that surveyConnector}.options.config"
             }

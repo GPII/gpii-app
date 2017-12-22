@@ -1,7 +1,7 @@
 "use strict";
 var WebSocket = require("ws");
 
-var wss = new WebSocket.Server({ port: 3333 });
+var wss = new WebSocket.Server({ port: 3334 });
 
 wss.on("connection", function connection(ws) {
     var keyedInUserToken = null,
