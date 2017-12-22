@@ -17,7 +17,7 @@ var WebSocket = require("ws");
 
 var gpii = fluid.registerNamespace("gpii");
 
-// XXX TEST
+// Curently used by the dev configuration
 require("./surveyServer.js");
 
 /**
@@ -139,18 +139,27 @@ fluid.defaults("gpii.app.surveyConnector", {
 
 
 /**
- * TODO
+ * Creates a connection to a WebSocket server (ws).
+ * @param config {Object} WebSocket server url configuration
+ * @param config.hostname {String} WebSocket server url's hostname
+ * @param config.port {String} WebSocket server url's port
+ * @param config.path {String} WebSocket server url's path
+ * @param successCallback {Function} Handler that will be called once the
+ * socket connection is successfully established
+ * @return {ws} The newly created WebSocket connection
  */
-gpii.app.surveyConnector.connect = function (config, callback) {
+gpii.app.surveyConnector.connect = function (config, successCallback) {
     var serverUrl = fluid.stringTemplate("ws://%hostname:%port%path", config),
         ws = new WebSocket(serverUrl);
-    ws.on("open", callback);
+    ws.on("open", successCallback);
 
     return ws;
 };
 
 /**
- * TODO
+ * Registers listeners for the different survey server messages (requests)
+ * @param socket {ws} The connected ws (WebSocket) instance
+ * @param events {Object} Map of events to be used for the various server requests
  */
 gpii.app.surveyConnector.register = function (socket, events) {
     socket.on("message", function (message) {
@@ -173,7 +182,12 @@ gpii.app.surveyConnector.register = function (socket, events) {
 };
 
 /**
- * TODO
+ * Notify the survey server that a user have keyed in.
+ *
+ * @param socket {ws} A connected ws (WebSocket) instance
+ * @param keyedInData {Object} Data that is to be sent over the socket
+ * @param keyedInData.userId {String} The id of the keyed in user
+ * @param keyedInData.machineId {String} The id of the keyed in user's machine
  */
 gpii.app.surveyConnector.requestTriggers = function (socket, keyedInData) {
     socket.send(JSON.stringify({
@@ -183,7 +197,9 @@ gpii.app.surveyConnector.requestTriggers = function (socket, keyedInData) {
 };
 
 /**
- * TODO
+ * Notify the survey server that trigger conditions are met.
+ * @param socket {ws} A connected ws (WebSocket) instance
+ * @param trigger {Object} Data corresponding to the successful trigger
  */
 gpii.app.surveyConnector.notifyTriggerOccurred = function (socket, trigger) {
     socket.send(JSON.stringify({
