@@ -26,7 +26,9 @@ fluid.defaults("gpii.app.gpiiConnector", {
 
     // Configuration regarding the socket connection
     config: {
-        gpiiWSUrl: "ws://localhost:8081/pcpChannel"
+        hostname: null,
+        port: null,
+        path: ""        // optional
     },
 
     members: {
@@ -101,7 +103,8 @@ gpii.app.gpiiConnector.updateSetting = function (socket, setting) {
  * @param config {Object} The configuration for the WebSocket
  */
 gpii.app.gpiiConnector.createGPIIConnection = function (config) {
-    return new ws(config.gpiiWSUrl); // eslint-disable-line new-cap
+    var serverUrl = fluid.stringTemplate("ws://%hostname:%port%path", config);
+    return new ws(serverUrl); // eslint-disable-line new-cap
 };
 
 /**
