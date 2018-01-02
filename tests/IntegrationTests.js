@@ -42,6 +42,17 @@ gpii.tests.app.startSequence = [
     }*/
 ];
 
+// A common end sequence for all test definitions. They all use a mocked version of the
+// survey server which should be closed when each testcase holder finishes.
+gpii.tests.app.endSequence = [
+    { // Close the mock survey server gracefully
+        func: "{that}.app.surveyManager.surveyServer.close"
+    }, { // Wait for the mock survey server until it has closed itself completely
+        event: "{that}.app.surveyManager.surveyServer.events.onServerClosed",
+        listener: "fluid.identity"
+    }
+];
+
 // This is a fork of kettle.test.testDefToCaseHolder which is written in a non-reusable style
 // See: https://issues.fluidproject.org/browse/KETTLE-60
 gpii.tests.app.testDefToCaseHolder = function (configurationName, testDefIn) {
@@ -53,6 +64,7 @@ gpii.tests.app.testDefToCaseHolder = function (configurationName, testDefIn) {
     // as well as the server
     // sequence.unshift.apply(sequence, kettle.test.startServerSequence);
     sequence.unshift.apply(sequence, gpii.tests.app.startSequence);
+    sequence.push.apply(sequence, gpii.tests.app.endSequence);
     testDef.modules = [{
         name: configurationName + " tests",
         tests: [{

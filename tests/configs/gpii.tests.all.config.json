@@ -1,5 +1,5 @@
 {
-    "type": "gpii.tests.dialogManager.config",
+    "type": "gpii.tests.all.config",
     "options": {
         "gradeNames": ["fluid.component"],
         "distributeOptions": {
@@ -17,7 +17,7 @@
             },
             "receiveApp": {
                 "record": {
-                    "funcName": "gpii.tests.dialogManager.receiveApp",
+                    "funcName": "gpii.tests.app.receiveApp",
                     "args": ["{testCaseHolder}", "{arguments}.0"]
                 },
                 "target": "{that flowManager gpii.app}.options.listeners.onCreate"

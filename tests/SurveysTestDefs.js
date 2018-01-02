@@ -20,7 +20,6 @@ var fluid = require("infusion"),
     jqUnit = fluid.require("node-jqunit", require, "jqUnit"),
     gpii = fluid.registerNamespace("gpii");
 
-require("../node_modules/kettle/lib/test/KettleTestUtils.http.js");
 require("../src/main/app.js");
 require("./SurveyServerMock.js");
 
@@ -53,10 +52,6 @@ var surveyFixture = {
     }
 };
 
-gpii.tests.surveys.receiveApp = function (testCaseHolder, app) {
-    testCaseHolder.app = app;
-};
-
 gpii.tests.surveys.testTriggersRequestValue = function (value, keyedInUserToken) {
     jqUnit.assertEquals("The user token in the triggers request is correct",
         keyedInUserToken, value.userId);
@@ -73,23 +68,10 @@ gpii.tests.surveys.testDefs = {
     name: "Surveys integration tests",
     expect: 4,
     config: {
-        configName: "app.dev",
-        configPath: "configs"
+        configName: "gpii.tests.dev.config",
+        configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        receiveApp: {
-            record: {
-                funcName: "gpii.tests.surveys.receiveApp",
-                args: ["{testCaseHolder}", "{arguments}.0"]
-            },
-            target: "{that flowManager gpii.app}.options.listeners.onCreate"
-        },
-        mockSurveyServer: {
-            record: "gpii.tests.mocks.surveyServerWrapper",
-            target: "{that gpii.app.surveyManager}.options.gradeNames"
-        }
-    },
     sequence: [{ // Wait for the survey manager to be created before doing anything else
         event: "{that gpii.app.surveyManager}.events.onCreate",
         listener: "fluid.identity"
@@ -116,10 +98,5 @@ gpii.tests.surveys.testDefs = {
         args: ["Survey dialog is created successfully"]
     }, {
         func: "{that}.app.keyOut"
-    }, {
-        func: "{that}.app.surveyManager.surveyServer.close"
-    }, {
-        event: "{that}.app.surveyManager.surveyServer.events.onServerClosed",
-        listener: "fluid.identity"
     }]
 };

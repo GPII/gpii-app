@@ -20,7 +20,6 @@ var fluid = require("infusion"),
     jqUnit = fluid.require("node-jqunit", require, "jqUnit"),
     gpii = fluid.registerNamespace("gpii");
 
-require("../node_modules/kettle/lib/test/KettleTestUtils.http.js");
 require("../src/main/app.js");
 require("./SurveyServerMock.js");
 
@@ -36,10 +35,6 @@ var surveyDialogFixture = {
         minimizable: false,
         maximizable: true
     }
-};
-
-gpii.tests.dialogManager.receiveApp = function (testCaseHolder, app) {
-    testCaseHolder.app = app;
 };
 
 gpii.tests.dialogManager.testManagerWithNoKeyedInUser = function (dialogManager) {
@@ -85,7 +80,7 @@ gpii.tests.dialogManager.testDefs = {
     name: "Dialog manager integration tests",
     expect: 11,
     config: {
-        configName: "gpii.tests.dialogManager.config",
+        configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
@@ -138,10 +133,5 @@ gpii.tests.dialogManager.testDefs = {
         path: "keyedInUserToken",
         listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
         args: ["{that}.app.dialogManager"]
-    }, { // Close the mock survey server gracefully
-        func: "{that}.app.surveyManager.surveyServer.close"
-    }, { // Wait for the mock survey server until it has closed itself completely
-        event: "{that}.app.surveyManager.surveyServer.events.onServerClosed",
-        listener: "fluid.identity"
     }]
 };
