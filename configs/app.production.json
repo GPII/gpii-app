@@ -6,22 +6,22 @@
             "distributeTaskTray": {
                 "record": "gpii.appWrapper",
                 "target": "{that flowManager}.options.gradeNames"
+            },
+            "distributePcpChannelConnector": {
+                "record": {
+                    "hostname": "localhost",
+                    "port": 8081,
+                    "path": "/pcpChannel"
+                },
+                "target": "{that gpiiConnector}.options.config"
+            },
+            "distributeSurveyConnector": {
+                "record": {
+                    "hostname": "astea@surveyserver.gpii.net",
+                    "port": 33334
+                },
+                "target": "{that surveyConnector}.options.config"
             }
-        },
-        "distributePcpChannelConnector": {
-            "record": {
-                "hostname": "localhost",
-                "port": 8081,
-                "path": "/pcpChannel"
-            },
-            "target": "{that gpiiConnector}.options.config"
-        },
-        "distributeSurveyConnector": {
-            "record": {
-                "hostname": "astea@surveyserver.gpii.net",
-                "port": 33334
-            },
-            "target": "{that surveyConnector}.options.config"
         }
     },
     "mergeConfigs": [
