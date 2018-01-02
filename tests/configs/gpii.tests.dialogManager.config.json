@@ -1,0 +1,34 @@
+{
+    "type": "gpii.tests.dialogManager.config",
+    "options": {
+        "gradeNames": ["fluid.component"],
+        "distributeOptions": {
+            "distributeTaskTray": {
+                "record": "gpii.appWrapper",
+                "target": "{that flowManager}.options.gradeNames"
+            },
+            "distributePcpChannelConnector": {
+                "record": {
+                    "hostname": "localhost",
+                    "port": 8081,
+                    "path": "/pcpChannel"
+                },
+                "target": "{that gpiiConnector}.options.config"
+            },
+            "receiveApp": {
+                "record": {
+                    "funcName": "gpii.tests.dialogManager.receiveApp",
+                    "args": ["{testCaseHolder}", "{arguments}.0"]
+                },
+                "target": "{that flowManager gpii.app}.options.listeners.onCreate"
+            },
+            "mockSurveyServer": {
+                "record": "gpii.tests.mocks.surveyServerWrapper",
+                "target": "{that gpii.app.surveyManager}.options.gradeNames"
+            }
+        }
+    },
+    "mergeConfigs": [
+        "../../node_modules/universal/gpii/configs/gpii.config.development.all.local.json"
+     ]
+}

@@ -85,23 +85,10 @@ gpii.tests.dialogManager.testDefs = {
     name: "Dialog manager integration tests",
     expect: 11,
     config: {
-        configName: "app.dev",
-        configPath: "configs"
+        configName: "gpii.tests.dialogManager.config",
+        configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        receiveApp: {
-            record: {
-                funcName: "gpii.tests.dialogManager.receiveApp",
-                args: ["{testCaseHolder}", "{arguments}.0"]
-            },
-            target: "{that flowManager gpii.app}.options.listeners.onCreate"
-        },
-        mockSurveyServer: {
-            record: "gpii.tests.mocks.surveyServerWrapper",
-            target: "{that gpii.app.surveyManager}.options.gradeNames"
-        }
-    },
     sequence: [{
         event: "{that gpii.app.dialogManager}.events.onCreate",
         listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser"

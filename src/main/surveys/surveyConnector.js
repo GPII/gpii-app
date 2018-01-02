@@ -67,7 +67,7 @@ require("./surveyServer.js");
  *        value: {
  *            url: <the Qualtrics survey's URL>,
  *            closeOnSubmit: <true | false> // whether the survey should close automatically when completed
- *            window": { // parameters for the `BrowserWindow` in which the survey would open
+ *            window: { // parameters for the `BrowserWindow` in which the survey would open
  *                // Below are given some configuration parameters with their default values
  *                width: 800,
  *                height: 600,

@@ -98,6 +98,7 @@ gpii.tests.mocks.surveyServer.close = function (that, server) {
 fluid.defaults("gpii.tests.mocks.surveyServerWrapper", {
     gradeNames: "fluid.component",
     config: {
+        hostname: "localhost",
         port: 33345
     },
     components: {
@@ -105,6 +106,7 @@ fluid.defaults("gpii.tests.mocks.surveyServerWrapper", {
             type: "gpii.tests.mocks.surveyServer",
             options: {
                 config: {
+                    hostname: "{surveyServerWrapper}.options.config.hostname",
                     port: "{surveyServerWrapper}.options.config.port"
                 }
             }
@@ -113,6 +115,7 @@ fluid.defaults("gpii.tests.mocks.surveyServerWrapper", {
             priority: "after:surveyServer",
             options: {
                 config: {
+                    hostname: "{surveyServerWrapper}.options.config.hostname",
                     port: "{surveyServerWrapper}.options.config.port"
                 }
             }
