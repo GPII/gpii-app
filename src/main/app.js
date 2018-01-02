@@ -20,6 +20,7 @@ var machineInfo = require("node-machine-id");
 
 
 require("./factsManager.js");
+require("./dialogManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
@@ -84,6 +85,22 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.surveyManager",
             createOnEvent: "onPrerequisitesReady",
             priority: "after:rulesEngine"
+        },
+        dialogManager: {
+            type: "gpii.app.dialogManager",
+            createOnEvent: "onPrerequisitesReady",
+            priority: "after:surveyManager",
+            options: {
+                model: {
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                },
+                listeners: {
+                    "{surveyManager}.events.onSurveyRequired": {
+                        func: "{that}.show",
+                        args: ["survey", "{arguments}.0"] // the raw payload
+                    }
+                }
+            }
         },
         psp: {
             type: "gpii.app.psp",

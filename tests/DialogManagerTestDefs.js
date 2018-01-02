@@ -103,44 +103,43 @@ gpii.tests.dialogManager.testDefs = {
         }
     },
     sequence: [{
-        event: "{that gpii.app.surveyManager}.events.onCreate",
-        listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
-        args: ["{that}.app.surveyManager.dialogManager"]
+        event: "{that gpii.app.dialogManager}.events.onCreate",
+        listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser"
     }, {
         func: "{that}.app.keyIn",
         args: ["snapset_1a"]
     }, {
-        changeEvent: "{that}.app.surveyManager.dialogManager.applier.modelChanged",
+        changeEvent: "{that}.app.dialogManager.applier.modelChanged",
         path: "keyedInUserToken",
         listener: "gpii.tests.dialogManager.testManagerAfterKeyIn",
-        args: ["{that}.app.surveyManager.dialogManager", "snapset_1a"]
+        args: ["{that}.app.dialogManager", "snapset_1a"]
     }, {
-        func: "{that}.app.surveyManager.dialogManager.show",
+        func: "{that}.app.dialogManager.show",
         args: ["survey", surveyDialogFixture]
     }, {
         event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
         listener: "gpii.tests.dialogManager.testSurveyDialogShown",
-        args: ["{that}.app.surveyManager.dialogManager", surveyDialogFixture]
+        args: ["{that}.app.dialogManager", surveyDialogFixture]
     }, { // Test hiding of a dialog via the manager
-        func: "{that}.app.surveyManager.dialogManager.hide",
+        func: "{that}.app.dialogManager.hide",
         args: ["survey"]
     }, {
         func: "gpii.tests.dialogManager.testSurveyDialogHidden",
-        args: ["{that}.app.surveyManager.dialogManager"]
+        args: ["{that}.app.dialogManager"]
     }, {
-        func: "{that}.app.surveyManager.dialogManager.show",
+        func: "{that}.app.dialogManager.show",
         args: ["survey", surveyDialogFixture]
     }, {
         event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
         listener: "fluid.identity"
     }, { // Test closing of a dialog via the manager
-        func: "{that}.app.surveyManager.dialogManager.close",
+        func: "{that}.app.dialogManager.close",
         args: ["survey"]
     }, {
         func: "gpii.tests.dialogManager.testSurveyDialogClosed",
-        args: ["{that}.app.surveyManager.dialogManager"]
+        args: ["{that}.app.dialogManager"]
     }, {
-        func: "{that}.app.surveyManager.dialogManager.show",
+        func: "{that}.app.dialogManager.show",
         args: ["survey", surveyDialogFixture]
     }, {
         event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
@@ -148,10 +147,10 @@ gpii.tests.dialogManager.testDefs = {
     }, {
         func: "{that}.app.keyOut"
     }, { // Test that the survey dialog is closed when the user keys out
-        changeEvent: "{that}.app.surveyManager.dialogManager.applier.modelChanged",
+        changeEvent: "{that}.app.dialogManager.applier.modelChanged",
         path: "keyedInUserToken",
         listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
-        args: ["{that}.app.surveyManager.dialogManager"]
+        args: ["{that}.app.dialogManager"]
     }, { // Close the mock survey server gracefully
         func: "{that}.app.surveyManager.surveyServer.close"
     }, { // Wait for the mock survey server until it has closed itself completely

@@ -15,7 +15,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
-require("./surveyDialog.js");
+require("./surveys/surveyDialog.js");
 
 /**
  * A component which provides means for showing, hiding and closing of dialogs
@@ -28,6 +28,9 @@ require("./surveyDialog.js");
  * In order to show/hide/close a dialog, the IoCSS selector of the particular
  * component needs to be provided as an argument of the corresponding function.
  */
+// XXX: Currently only the survey dialog is managed by the dialogManager. As a
+// refactoring step, in the future the rest of the dialogs will be controlled by
+// this manager, as well.
 fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {

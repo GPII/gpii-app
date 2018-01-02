@@ -17,12 +17,12 @@ var fluid = require("infusion");
 require("../utils.js");
 require("./surveyTriggerManager.js");
 require("./surveyConnector.js");
-require("./dialogManager.js");
-
-
 
 fluid.defaults("gpii.app.surveyManager", {
     gradeNames: ["fluid.component"],
+    events: {
+        onSurveyRequired: null
+    },
 
     components: {
         surveyConnector: {
@@ -32,14 +32,12 @@ fluid.defaults("gpii.app.surveyManager", {
                     machineId: "{app}.model.machineId",
                     userId: "{app}.model.keyedInUserToken"
                 },
+                events: {
+                    onSurveyRequired: "{surveyManager}.events.onSurveyRequired"
+                },
                 listeners: {
                     "{app}.events.onKeyedIn": {
                         func: "{that}.requestTriggers"
-                    },
-
-                    onSurveyRequired: {
-                        func: "{dialogManager}.show",
-                        args: ["survey", "{arguments}.0"] // the raw payload
                     },
 
                     onTriggerDataReceived: {
@@ -61,15 +59,6 @@ fluid.defaults("gpii.app.surveyManager", {
                 },
                 components: {
                     rulesEngine: "{rulesEngine}"
-                }
-            }
-        },
-
-        dialogManager: {
-            type: "gpii.app.dialogManager",
-            options: {
-                model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
                 }
             }
         }
