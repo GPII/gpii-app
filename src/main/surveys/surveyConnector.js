@@ -17,9 +17,6 @@ var WebSocket = require("ws");
 
 var gpii = fluid.registerNamespace("gpii");
 
-// Curently used by the dev configuration
-require("./surveyServer.js");
-
 /**
  * Send/receive survey data to/from the survey server
  * occurred
