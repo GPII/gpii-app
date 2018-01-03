@@ -55,7 +55,6 @@ fluid.defaults("gpii.app.surveyDialog", {
             show: false,
             skipTaskbar: false,
             frame: true,
-            alwaysOnTop: false,
             transparent: false, // needs to be false to enable resizing and maximizing
             fullscreenable: true,
             movable: true,
@@ -149,7 +148,7 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
  * survey to be shown.
  */
 gpii.app.surveyDialog.openSurvey = function (that, config) {
-    that.notifySurveyWindow("openSurvey", config);
+    that.notifySurveyWindow("onSurveyOpen", config);
     that.show();
 };
 

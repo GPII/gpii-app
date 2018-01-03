@@ -26,7 +26,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 type: "gpii.survey.channel",
                 options: {
                     listeners: {
-                        openSurvey: {
+                        onSurveyOpen: {
                             funcName: "{popup}.openSurvey"
                         }
                     }

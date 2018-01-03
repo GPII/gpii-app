@@ -118,7 +118,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             addBreakOutLinkListener();
         });
 
-        ipcRenderer.on("openSurvey", function (event, options) {
+        ipcRenderer.on("onSurveyOpen", function (event, options) {
             if (options.closeOnSubmit) {
                 addEndOfSurveyListener();
             }

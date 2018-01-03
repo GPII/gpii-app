@@ -23,7 +23,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     fluid.defaults("gpii.survey.channel", {
         gradeNames: ["fluid.component"],
         events: {
-            openSurvey: null
+            onSurveyOpen: null
         },
         listeners: {
             "onCreate.initChannel": {
@@ -54,8 +54,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param that {Component} The `gpii.survey.channel` instance.
      */
     gpii.survey.channel.initialize = function (that) {
-        ipcRenderer.on("openSurvey", function (event, surveyParams) {
-            that.events.openSurvey.fire(surveyParams);
+        ipcRenderer.on("onSurveyOpen", function (event, surveyParams) {
+            that.events.onSurveyOpen.fire(surveyParams);
         });
     };
 })(fluid);

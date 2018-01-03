@@ -71,7 +71,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      */
     gpii.survey.popup.openSurvey = function (webview, options) {
         webview.one("dom-ready", function () {
-            this.send("openSurvey", options);
+            this.send("onSurveyOpen", options);
         });
         webview.attr("src", options.surveyUrl);
     };
