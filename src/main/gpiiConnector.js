@@ -14,26 +14,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 require("./utils.js");
 
 var fluid = require("infusion");
-var ws    = require("ws");
-
 var gpii = fluid.registerNamespace("gpii");
 
 /**
  * Responsible for creation and housekeeping of the connection to the PSP Channel WebSocket
  */
 fluid.defaults("gpii.app.gpiiConnector", {
-    gradeNames: "fluid.component",
-
-    // Configuration regarding the socket connection
-    config: {
-        hostname: null,
-        port: null,
-        path: ""        // optional
-    },
-
-    members: {
-        socket: "@expand:gpii.app.gpiiConnector.createGPIIConnection({that}.options.config)"
-    },
+    gradeNames: ["gpii.app.ws"],
 
     events: {
         onPreferencesUpdated: null,
@@ -42,123 +29,98 @@ fluid.defaults("gpii.app.gpiiConnector", {
     },
 
     listeners: {
-        "onCreate.register": {
-            funcName: "{gpiiConnector}.registerPSPListener"
-        },
-        "onDestroy.closeConnection": {
-            listener: "{that}.closeConnection"
+        "onCreate.connect": "{that}.connect",
+        "onMessageReceived.parseMessage": {
+            funcName: "{gpiiConnector}.parseMessage"
         }
     },
 
     invokers: {
-        registerPSPListener: {
-            funcName: "gpii.app.gpiiConnector.registerPSPListener",
-            args: ["{that}.socket", "{that}"]
+        parseMessage: {
+            funcName: "gpii.app.gpiiConnector.parseMessage",
+            args: ["{that}", "{arguments}.0"]
         },
         updateSetting: {
             funcName: "gpii.app.gpiiConnector.updateSetting",
-            args: ["{that}.socket", "{arguments}.0"]
+            args: ["{that}", "{arguments}.0"]
         },
         updateActivePrefSet: {
             funcName: "gpii.app.gpiiConnector.updateActivePrefSet",
-            args: ["{that}.socket", "{arguments}.0"]
-        },
-        closeConnection: {
-            this: "{that}.socket",
-            method: "close",
-            // for ref https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent#Status_codes
-            args: [1000]
+            args: ["{that}", "{arguments}.0"]
         }
     }
 });
 
 /**
- * Sends setting update request to GPII over the socket if necessary.
+ * Sends a setting update request to GPII over the socket if necessary.
  * A request will not be sent if the current and the previous values
  * of the setting coincide.
- *
- * @param socket {Object} The already connected WebSocket instance
+ * @param gpiiConnector {Component} The `gpii.app.gpiiConnector` instance
  * @param setting {Object} The setting to be changed
  * @param setting.path {String} The id of the setting
  * @param setting.value {String} The new value of the setting
  * @param setting.oldValue {String} Optional - the previous value of
  * the setting
  */
-gpii.app.gpiiConnector.updateSetting = function (socket, setting) {
+gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
     if (fluid.isValue(setting.oldValue) && gpii.app.equalsAsJSON(setting.oldValue, setting.value)) {
         return;
     }
 
-    var payload = JSON.stringify({
+    gpiiConnector.send({
         path: ["settingControls", setting.path, "value"],
         type: "ADD",
         value: setting.value
     });
-
-    socket.send(payload);
 };
 
 /**
- * Opens a connection to the PSP Channel WebSocket.
- * @param config {Object} The configuration for the WebSocket
- */
-gpii.app.gpiiConnector.createGPIIConnection = function (config) {
-    var serverUrl = fluid.stringTemplate("ws://%hostname:%port%path", config);
-    return new ws(serverUrl); // eslint-disable-line new-cap
-};
-
-/**
- * Register listeners for messages from the GPII socket connection.
- * @param socket {Object} The connected gpii socket
+ * Responsible for parsing messages from the GPII socket connection.
  * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` instance
+ * @param message {Object} The received message
  */
-gpii.app.gpiiConnector.registerPSPListener = function (socket, gpiiConnector) {
-    socket.on("message", function (rawData) {
-        var data = JSON.parse(rawData),
-            payload = data.payload || {},
-            operation = payload.type,
-            path = payload.path,
-            preferences;
+gpii.app.gpiiConnector.parseMessage = function (gpiiConnector, message) {
+    var payload = message.payload || {},
+        operation = payload.type,
+        path = payload.path,
+        preferences;
 
-        if ((operation === "ADD" && path.length === 0) ||
-                operation === "DELETE") {
-            /*
-             * Preferences change update has been received
-             */
-            var snapsetName = gpii.app.extractSnapsetName(payload);
-            gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
+    if ((operation === "ADD" && path.length === 0) ||
+            operation === "DELETE") {
+        /*
+         * Preferences change update has been received
+         */
+        var snapsetName = gpii.app.extractSnapsetName(payload);
+        gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
 
-            preferences = gpii.app.extractPreferencesData(payload);
-            gpiiConnector.events.onPreferencesUpdated.fire(preferences);
-        } else if (operation === "ADD") {
-            /*
-             * Setting change update has been received
-             */
-            var settingPath = path[path.length - 2],
-                settingValue = payload.value;
+        preferences = gpii.app.extractPreferencesData(payload);
+        gpiiConnector.events.onPreferencesUpdated.fire(preferences);
+    } else if (operation === "ADD") {
+        /*
+         * Setting change update has been received
+         */
+        var settingPath = path[path.length - 2],
+            settingValue = payload.value;
 
-            gpiiConnector.events.onSettingUpdated.fire({
-                path: settingPath,
-                value: settingValue
-            });
-        }
-    });
+        gpiiConnector.events.onSettingUpdated.fire({
+            path: settingPath,
+            value: settingValue
+        });
+    }
 };
 
 /**
  * Send active set change request to GPII.
  *
- * @param socket {ws} The already connected `ws`(`WebSocket`) instance
+ * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` instance
  * @param newPrefSet {String} The id of the new preference set
  */
-gpii.app.gpiiConnector.updateActivePrefSet = function (socket, newPrefSet) {
-    var payload = JSON.stringify({
+gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefSet) {
+    gpiiConnector.send({
         path: ["activeContextName"],
         type: "ADD",
         value: newPrefSet
     });
-
-    socket.send(payload);
 };
 
 /**

@@ -146,8 +146,8 @@ gpii.tests.settingsBroker.testDefs = {
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{
-        event: "{that gpii.app.settingsBroker}.events.onCreate",
-        listener: "gpii.tests.settingsBroker.testBrokerBeforeKeyIn"
+        func: "gpii.tests.settingsBroker.testBrokerBeforeKeyIn",
+        args: ["{that}.app.settingsBroker"]
     }, {
         func: "{that}.app.keyIn",
         args: ["snapset_1a"]

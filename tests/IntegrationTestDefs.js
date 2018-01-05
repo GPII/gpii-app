@@ -90,8 +90,8 @@ gpii.tests.app.testDefs = {
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{ // Test the menu that will be rendered
-        event: "{that gpii.app.menu}.events.onCreate",
-        listener: "gpii.tests.app.testInitialMenu"
+        func: "gpii.tests.app.testInitialMenu",
+        args: ["{that}.app.tray.menu"]
     }, [ // PSP window tests
         { // pspWindow should've been created by now
             funcName: "gpii.tests.app.psp.testInitialPSPWindow",
@@ -240,8 +240,8 @@ gpii.tests.dev.testDefs = {
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{ // Test the tray that will be rendered
-        event: "{that gpii.app.tray}.events.onCreate",
-        listener: "gpii.tests.dev.testTrayKeyedOut"
+        func: "gpii.tests.dev.testTrayKeyedOut",
+        args: ["{that}.app.tray"]
     }, { // Test the menu that will be rendered
         func: "gpii.tests.dev.testInitialMenu",
         args: "{that}.app.tray.menu"

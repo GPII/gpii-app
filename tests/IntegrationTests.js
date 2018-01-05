@@ -36,10 +36,10 @@ fluid.registerNamespace("gpii.tests.app");
 gpii.tests.app.startSequence = [
     { // This sequence point is required because of a QUnit bug - it defers the start of sequence by 13ms "to avoid any current callbacks" in its words
         func: "{testEnvironment}.events.constructServer.fire"
-    }/*, {
-        event: "{that gpii.app}.events.onAppReady", // if you do this here, you can't wait for an event that happens around the same time in the actual test.
+    }, { // Before the actual tests commence, the PSP application must be fully functional. The `onPSPReady` event guarantees that.
+        event: "{that gpii.app}.events.onPSPReady",
         listener: "fluid.identity"
-    }*/
+    }
 ];
 
 // A common end sequence for all test definitions. They all use a mocked version of the

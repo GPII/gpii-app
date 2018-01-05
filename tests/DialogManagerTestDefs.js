@@ -85,8 +85,8 @@ gpii.tests.dialogManager.testDefs = {
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{
-        event: "{that gpii.app.dialogManager}.events.onCreate",
-        listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser"
+        func: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
+        args: ["{that}.app.dialogManager"]
     }, {
         func: "{that}.app.keyIn",
         args: ["snapset_1a"]

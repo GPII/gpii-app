@@ -72,10 +72,7 @@ gpii.tests.surveys.testDefs = {
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    sequence: [{ // Wait for the survey manager to be created before doing anything else
-        event: "{that gpii.app.surveyManager}.events.onCreate",
-        listener: "fluid.identity"
-    }, {
+    sequence: [{
         func: "{that}.app.keyIn",
         args: ["snapset_1a"]
     }, {

@@ -12,10 +12,8 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 */
 "use strict";
 
-var fluid     = require("infusion");
-var WebSocket = require("ws");
-
-var gpii = fluid.registerNamespace("gpii");
+var fluid = require("infusion"),
+    gpii = fluid.registerNamespace("gpii");
 
 /**
  * Send/receive survey data to/from the survey server
@@ -79,32 +77,22 @@ var gpii = fluid.registerNamespace("gpii");
  * object of the payload above without the need for any further actions on the PSP's side.
  */
 fluid.defaults("gpii.app.surveyConnector", {
-    gradeNames: ["fluid.modelComponent"],
+    gradeNames: ["fluid.modelComponent", "gpii.app.ws"],
 
     model: {
         machineId: null,
         userId: null
     },
 
-    config: {
-        hostname: null,
-        port: null,
-        path: ""        // optional
-    },
-
-    members: {
-        socket: "@expand:gpii.app.surveyConnector.connect({that}.options.config, {that}.events.onSocketOpened.fire)"
-    },
-
     listeners: {
-        "onSocketOpened.register": {
-            funcName: "gpii.app.surveyConnector.register",
-            args: ["{that}.socket", "{that}.events"]
+        "onCreate.connect": "{that}.connect",
+        "onMessageReceived.parseMessage": {
+            funcName: "gpii.app.surveyConnector.parseMessage",
+            args: ["{that}.events", "{arguments}.0"]
         }
     },
 
     events: {
-        onSocketOpened: null,
         /*
          * A survey payload is received.
          */
@@ -118,89 +106,59 @@ fluid.defaults("gpii.app.surveyConnector", {
     invokers: {
         requestTriggers: {
             funcName: "gpii.app.surveyConnector.requestTriggers",
-            args: [
-                "{that}.socket",
-                "{that}.model",
-                "{that}.events"
-            ]
+            args: ["{that}", "{that}.model"]
         },
         notifyTriggerOccurred: {
             funcName: "gpii.app.surveyConnector.notifyTriggerOccurred",
-            args: [
-                "{that}.socket",
-                "{arguments}.0"
-            ]
+            args: ["{that}", "{arguments}.0"]
         }
     }
 });
 
-
 /**
- * Creates a connection to a WebSocket server (ws).
- * @param config {Object} WebSocket server url configuration
- * @param config.hostname {String} WebSocket server url's hostname
- * @param config.port {String} WebSocket server url's port
- * @param config.path {String} WebSocket server url's path
- * @param successCallback {Function} Handler that will be called once the
- * socket connection is successfully established
- * @return {ws} The newly created WebSocket connection
- */
-gpii.app.surveyConnector.connect = function (config, successCallback) {
-    var serverUrl = fluid.stringTemplate("ws://%hostname:%port%path", config),
-        ws = new WebSocket(serverUrl);
-    ws.on("open", successCallback);
-
-    return ws;
-};
-
-/**
- * Registers listeners for the different survey server messages (requests)
- * @param socket {ws} The connected ws (WebSocket) instance
+ * Responsible for parsing messages received via the ws member of the component.
  * @param events {Object} Map of events to be used for the various server requests
+ * @param message {Object} The received message
  */
-gpii.app.surveyConnector.register = function (socket, events) {
-    socket.on("message", function (message) {
-        message = JSON.parse(message);
-        // Single key payload
-        var type = message.type,
-            value = message.value;
+gpii.app.surveyConnector.parseMessage = function (events, message) {
+    // Single key payload
+    var type = message.type,
+        value = message.value;
 
-        switch (type) {
-        case "survey":
-            events.onSurveyRequired.fire(value);
-            break;
-        case "surveyTrigger":
-            events.onTriggerDataReceived.fire(value);
-            break;
-        default:
-            console.log("SurveyConnector - Unrecognized message type: ", message);
-        }
-    });
+    switch (type) {
+    case "survey":
+        events.onSurveyRequired.fire(value);
+        break;
+    case "surveyTrigger":
+        events.onTriggerDataReceived.fire(value);
+        break;
+    default:
+        console.log("SurveyConnector - Unrecognized message type: ", message);
+    }
 };
 
 /**
  * Notify the survey server that a user have keyed in.
- *
- * @param socket {ws} A connected ws (WebSocket) instance
+ * @param that {Component} The `gpii.app.surveyConnector` instance
  * @param keyedInData {Object} Data that is to be sent over the socket
  * @param keyedInData.userId {String} The id of the keyed in user
  * @param keyedInData.machineId {String} The id of the keyed in user's machine
  */
-gpii.app.surveyConnector.requestTriggers = function (socket, keyedInData) {
-    socket.send(JSON.stringify({
+gpii.app.surveyConnector.requestTriggers = function (that, keyedInData) {
+    that.send({
         type: "triggersRequest",
         value: keyedInData
-    }));
+    });
 };
 
 /**
  * Notify the survey server that trigger conditions are met.
- * @param socket {ws} A connected ws (WebSocket) instance
+ * @param that {Component} The `gpii.app.surveyConnector` instance
  * @param trigger {Object} Data corresponding to the successful trigger
  */
-gpii.app.surveyConnector.notifyTriggerOccurred = function (socket, trigger) {
-    socket.send(JSON.stringify({
+gpii.app.surveyConnector.notifyTriggerOccurred = function (that, trigger) {
+    that.send({
         type: "triggerOccurred",
         value: trigger
-    }));
+    });
 };
