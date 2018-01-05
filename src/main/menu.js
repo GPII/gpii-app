@@ -39,7 +39,7 @@ fluid.defaults("gpii.app.menuInApp", {
         }
     },
     listeners: {
-        "onPSP.performPSP": {
+        "onPSP.performPSPShow": {
             listener: "{psp}.show"
         },
 

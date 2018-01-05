@@ -152,7 +152,7 @@ gpii.app.surveyConnector.requestTriggers = function (that, keyedInData) {
 };
 
 /**
- * Notify the survey server that trigger conditions are met.
+ * Notify the survey server that a trigger's conditions are met.
  * @param that {Component} The `gpii.app.surveyConnector` instance
  * @param trigger {Object} Data corresponding to the successful trigger
  */
