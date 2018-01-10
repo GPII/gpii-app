@@ -1,17 +1,20 @@
-/*!
-Copyright 2017 Raising the Floor - International
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * The preload script for the survey webview
+ *
+ * Responsible for detecting when the survey has ended - either when it has been
+ * completed, or when the user has chosen to exit it via a close button within the
+ * content.
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 
 "use strict";
 /**
- * The preload script for the webview which will embed the survey content.
  * As the webview runs in a separate process than the PSP, the
  * communication between the application and the embedded content will
  * be asynchronous.

@@ -1,19 +1,17 @@
-/*
- * GPII App Integration Test Definitions
+/**
+ * PSP Survey Integration Test Definitions
  *
- * Copyright 2017 OCAD University
+ * Test definitions for survey related functionalities. Check whether a trigger message
+ * is interpreted correctly as well as whether a survey is shown when necessary.
+ * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
  * compliance with this License.
- *
  * The research leading to these results has received funding from the European Union's
- * Seventh Framework Programme (FP7/2007-2013)
- * under grant agreement no. 289016.
- *
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
  * You may obtain a copy of the License at
  * https://github.com/GPII/universal/blob/master/LICENSE.txt
  */
-
 "use strict";
 
 var fluid = require("infusion"),
