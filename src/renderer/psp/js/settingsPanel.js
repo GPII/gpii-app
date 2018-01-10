@@ -1,13 +1,18 @@
-/*!
-Copyright 2017 Raising the Floor - International
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * The settings panel component for visualizing user settings.
+ *
+ * Contains all necessary components in order for the user settings to be visualized (i.e.
+ * means for drawing the corresponding widgets, handling user input and removing the DOM
+ * elements when they are no longer needed).
+ * Copyright 2017 Raising the Floor - International
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 
 /* global fluid */
 
@@ -375,11 +380,11 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
         },
 
         events: {
-            // XXX not quite valid naming as the widget component (in settingPresenter) also renders
             onSettingRendered: null,
-            onSettingAltered: null,  // passed from parent
-            // onSettingUpdated: null  // passed from parent
-            onRestartRequired: null
+            onRestartRequired: null,
+
+            onSettingAltered: null,  // provided by parent component
+            onSettingUpdated: null  // provided by parent component
         },
 
         components: {

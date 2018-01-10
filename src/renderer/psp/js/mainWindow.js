@@ -1,13 +1,17 @@
-/*!
-Copyright 2017 Raising the Floor - International
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * The main window component of the PSP
+ *
+ * A component which houses all visual components of the PSP (header, settingsPanel,
+ * footer, restart warning).
+ * Copyright 2017 Raising the Floor - International
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 
 /* global fluid */
 
@@ -58,9 +62,17 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
      * @param accentColor {String} The accent color used in the user's OS.
      */
     gpii.psp.updateTheme = function (theme, accentColor) {
-        var mainColor = "#" + accentColor.slice(0, 6),
-            themeRules = ":root{ --main-color: " + mainColor + "; }";
-        theme.text(themeRules);
+        // The accent color is an 8-digit hex number whose last 2 digits
+        // represent the alpha. In case the user has chosen his accent
+        // color to be automatically picked by Windows, the accent color
+        // is sometimes reported as an 8-digit hex number and sometimes
+        // as a 6-digit number. The latter appears is incorrect and
+        // should be ignored.
+        if (accentColor && accentColor.length === 8) {
+            var mainColor = "#" + accentColor.slice(0, 6),
+                themeRules = ":root{ --main-color: " + mainColor + "; }";
+            theme.text(themeRules);
+        }
     };
 
     /**
@@ -138,7 +150,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 container: "{that}.dom.restartWarning",
                 options: {
                     listeners: {
-                        onContentHeightChanged: {
+                        onHeightChanged: {
                             funcName: "{mainWindow}.onContentHeightChanged"
                         },
                         "{mainWindow}.events.onRestartRequired": {
@@ -165,8 +177,10 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 type: "gpii.psp.heightChangeListener",
                 container: "{that}.dom.heightChangeListener",
                 options: {
-                    invokers: {
-                        onHeightChanged: "{mainWindow}.onContentHeightChanged"
+                    listeners: {
+                        onHeightChanged: {
+                            funcName: "{mainWindow}.onContentHeightChanged"
+                        }
                     }
                 }
             }

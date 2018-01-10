@@ -1,15 +1,17 @@
-/*!
-GPII Application
-Copyright 2016 Steven Githens
-Copyright 2016-2017 OCAD University
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * Settings Broker - Postpone settings applying
+ *
+ * Introduces component that serves as a "broker" for the communication bettween the PcpChannel and the PSP itself. It postpones sending of a setting change, in case the later requires OS or Application restart. It provides mechanism for undo as well as applying of all such "pending" setting changes.
+ * Copyright 2016 Steven Githens
+ * Copyright 2016-2017 OCAD University
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 "use strict";
 require("./utils.js");
 
@@ -103,7 +105,7 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
     if (pendingChange) {
         // If the new setting's value is simply the initial value for the setting,
         // remove the pending changes for this setting altogether.
-        if (gpii.app.equalsAsJSON(pendingChange.oldValue, setting.value)) {
+        if (fluid.model.diff(pendingChange.oldValue, setting.value)) {
             pendingChanges = fluid.remove_if(pendingChanges, function (change) {
                 return change.path === setting.path;
             });

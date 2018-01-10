@@ -1,13 +1,19 @@
-/*!
-Copyright 2017 Raising the Floor - International
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * The restart warning appearing at the bottom of the PSP window
+ *
+ * A component representing the restart warning which appears at the bottom of the PSP
+ * whenever an application or the OS needs to be restarted in order for a setting to be
+ * applied. Contains the restart message and the cancel, restart now and restart later
+ * buttons.
+ * Copyright 2017 Raising the Floor - International
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 
 /* global fluid */
 
@@ -206,15 +212,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                 type: "gpii.psp.heightChangeListener",
                 container: "{that}.dom.heightChangeListener",
                 options: {
-                    invokers: {
-                        onHeightChanged: "{restartWarning}.events.onContentHeightChanged.fire"
+                    events: {
+                        onHeightChanged: "{restartWarning}.events.onHeightChanged"
                     }
                 }
             }
         },
 
         events: {
-            onContentHeightChanged: null
+            onHeightChanged: null
         },
 
         styles: {
@@ -241,7 +247,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         // Fire manually the height changed event because the listener is not
         // triggered when the warning has already been hidden.
-        restartWarning.events.onContentHeightChanged.fire();
+        restartWarning.events.onHeightChanged.fire();
     };
 
     /**

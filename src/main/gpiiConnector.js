@@ -1,15 +1,18 @@
-/*!
-GPII Application
-Copyright 2016 Steven Githens
-Copyright 2016-2017 OCAD University
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * The PcpChannel connector
+ *
+ * Introduces component that manages the connection with the PcpChannel.
+ * GPII Application
+ * Copyright 2016 Steven Githens
+ * Copyright 2016-2017 OCAD University
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 "use strict";
 require("./utils.js");
 
@@ -83,7 +86,7 @@ fluid.defaults("gpii.app.gpiiConnector", {
  * the setting
  */
 gpii.app.gpiiConnector.updateSetting = function (socket, setting) {
-    if (fluid.isValue(setting.oldValue) && gpii.app.equalsAsJSON(setting.oldValue, setting.value)) {
+    if (fluid.isValue(setting.oldValue) && fluid.model.diff(setting.oldValue, setting.value)) {
         return;
     }
 
@@ -175,7 +178,7 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
         schema: settingDescriptor.schema,
 
         // XXX hardcoded as they're not currently supported by the API (pcpChannel)
-        icon: "../../icons/gear-cloud-white.png",
+        icon: fluid.module.resolvePath("%gpii-app/src/icons/gear-cloud-white.png"),
         liveness: settingDescriptor.liveness || "live",
         memory: fluid.isValue(settingDescriptor.memory) ? settingDescriptor.memory : true
     };
