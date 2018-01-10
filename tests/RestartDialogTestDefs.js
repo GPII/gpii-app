@@ -1,19 +1,18 @@
-/*
- * GPII App Integration Test Definitions
+ /**
+ * PSP Restart Dialog Integration Test Definitions
  *
- * Copyright 2017 OCAD University
+ * Integration tests for the restart dialog of the PSP. Test whether the restart dialog
+ * is correctly shown/hidden based on whether there are any pending changes, as well as
+ * if the buttons within the dialog function as expected.
+ * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
  * compliance with this License.
- *
  * The research leading to these results has received funding from the European Union's
- * Seventh Framework Programme (FP7/2007-2013)
- * under grant agreement no. 289016.
- *
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
  * You may obtain a copy of the License at
  * https://github.com/GPII/universal/blob/master/LICENSE.txt
  */
-
 "use strict";
 
 var fluid  = require("infusion"),
@@ -26,6 +25,12 @@ require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.settingsBroker.testDefs");
 
+var settingChangeFixture = {
+    liveness: "manualRestart",
+    value: 1,
+    oldValue: 2,
+    path: "change/setting"
+};
 
 var manualRestartSettingFixture = {
     icon: "../../icons/gear-cloud-white.png",
@@ -53,7 +58,7 @@ gpii.tests.restartWarningController.utils.simulateSettingAlter = function (psp, 
 
 gpii.tests.restartWarningController.testDefs = {
     name: "Restart dialog integration tests",
-    expect: 15,
+    expect: 16,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -190,8 +195,15 @@ gpii.tests.restartWarningController.testDefs = {
         }
     ],
 
+    {
+        func: "{that}.app.settingsBroker.clearPendingChanges"
+    },
     { // show PSP
         func: "{that}.app.psp.show"
+    },
+    {
+        func: "{that}.app.psp.events.onSettingAltered.fire",
+        args: [settingChangeFixture]
     },
     { // Simulate RestartNow click
         func: "{that}.app.psp.events.onRestartNow.fire"
@@ -202,6 +214,18 @@ gpii.tests.restartWarningController.testDefs = {
          * when PSP is closed with RestartNow
          */
         {
+            event: "{that}.app.settingsBroker.events.onSettingApplied",
+            listener: "jqUnit.assertLeftHand", // check includes
+            args: [
+                "RestartDialog: PSP is hidden when onRestart is fired",
+                settingChangeFixture,
+                "{arguments}.0"
+            ]
+        }, {
+            changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
+            path: "pendingChanges",
+            listener: "fluid.identity"
+        }, {
             funcName: "jqUnit.assertFalse",
             args: [
                 "RestartDialog: PSP is hidden when onRestart is fired",
@@ -221,7 +245,6 @@ gpii.tests.restartWarningController.testDefs = {
                 "@expand:{that}.app.restartDialog.isShown()"
             ]
         }
-        // TODO check whether setting applied event was fired
     ],
 
     { // show PSP
@@ -266,13 +289,5 @@ gpii.tests.restartWarningController.testDefs = {
             ]
         }
     ]
-
-    /*
-     * Tests that are missing
-     * - should show warning in PSP with correct settings list
-     * - should show dialog with correct settings list
-     * - should fire N events (settingApplied) with resartNow
-     * - should fire N events () with undoChanges
-     */
     ]
 };

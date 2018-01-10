@@ -16,6 +16,7 @@
 
 .fl-dropdown .combobox:after {
     color: #ffffff;
+    pointer-events: none;
 }
 
 .fl-dropdown select:hover,

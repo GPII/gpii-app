@@ -1,13 +1,17 @@
-/*!
-Copyright 2017 Raising the Floor - International
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * UI tests for the PSP
+ *
+ * Tests for the PSP widgets, for the expansion of attributes and for the restart warning
+ * within the PSP `BrowserWindow`.
+ * Copyright 2017 Raising the Floor - International
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 
 /* global fluid, jqUnit */
 
@@ -1032,9 +1036,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                                 [dropdownSettingFixture, multipickerSettingFixture]
                             ]
                         }, {
-                            event: "{restartWarning}.events.onContentHeightChanged",
+                            event: "{restartWarning}.events.onHeightChanged",
                             listener: "jqUnit.assert",
-                            args: ["When the restart warning is show, onContentHeightChanged event is fired"]
+                            args: ["When the restart warning is shown, onHeightChanged event is fired"]
                         }, {
                             funcName: "gpii.tests.psp.testRestartWarningMessage",
                             args: [
@@ -1085,9 +1089,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                                 []
                             ]
                         }, {
-                            event: "{restartWarning}.events.onContentHeightChanged",
+                            event: "{restartWarning}.events.onHeightChanged",
                             listener: "jqUnit.assert",
-                            args: ["When the restart warning is hidden, onContentHeightChanged event is fired"]
+                            args: ["When the restart warning is hidden, onHeightChanged event is fired"]
                         }, {
                             funcName: "gpii.tests.psp.testRestartWarningVisibility",
                             args: ["{restartWarning}.container", false]

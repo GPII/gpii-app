@@ -1,13 +1,18 @@
-/*!
-Copyright 2017 Raising the Floor - International
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * The restart dialog
+ *
+ * Represents the restart dialog which appears when there is a pending change and the
+ * user has closed the PSP either by clicking outside of it or by using the close button
+ * in the upper right corner.
+ * Copyright 2017 Raising the Floor - International
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 
 /* global fluid */
 

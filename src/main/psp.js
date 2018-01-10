@@ -1,15 +1,18 @@
-/*!
-GPII Application
-Copyright 2016 Steven Githens
-Copyright 2016-2017 OCAD University
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * PSP BrowserWindow dialog
+ *
+ * Introduces a component that manages the PSP's Electron BrowserWindow (the panel itself).
+ * GPII Application
+ * Copyright 2016 Steven Githens
+ * Copyright 2016-2017 OCAD University
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 "use strict";
 
 var fluid    = require("infusion");
@@ -235,10 +238,11 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
  * @param pspWindow {Object} An Electron `BrowserWindow`.
  */
 gpii.app.psp.moveOffScreen = function (pspWindow) {
-    var windowSize = pspWindow.getSize(),
-        width = windowSize[0],
-        height = windowSize[1];
-    pspWindow.setPosition(-width, -height);
+    // Move the PSP so far away that even if there is an additional screen attached,
+    // it will not be visible. It appears that the min value for the `BrowserWindow`
+    // position can be -Math.pow(2, 31). Any smaller values lead to an exception.
+    var coordinate = -Math.pow(2, 20);
+    pspWindow.setPosition(coordinate, coordinate);
 };
 
 /**

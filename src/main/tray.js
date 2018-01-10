@@ -1,19 +1,20 @@
-/*!
-GPII Application
-Copyright 2016 Steven Githens
-Copyright 2016-2017 OCAD University
-
-Licensed under the New BSD license. You may not use this file except in
-compliance with this License.
-The research leading to these results has received funding from the European Union's
-Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
-You may obtain a copy of the License at
-https://github.com/GPII/universal/blob/master/LICENSE.txt
-*/
+/**
+ * The PSP Electron Tray
+ *
+ * Introduces a component that creates and manages the PSP Electron Tray icon.
+ * Copyright 2016 Steven Githens
+ * Copyright 2016-2017 OCAD University
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
 "use strict";
 
 var fluid    = require("infusion");
-var path     = require("path");
 var electron = require("electron");
 
 var Tray           = electron.Tray,
@@ -29,14 +30,15 @@ fluid.defaults("gpii.app.tray", {
         tray: {
             expander: {
                 funcName: "gpii.app.makeTray",
-                args: ["{that}.options.icons.keyedOut", "{psp}.show"]
+                args: ["{that}.options", "{psp}.show"]
             }
         }
     },
+    shortcut: "Super+CmdOrCtrl+Alt+U",
     icons: {
-        pendingChanges: "src/icons/gpii-pending.png",
-        keyedIn: "src/icons/gpii-color.ico",
-        keyedOut: "src/icons/gpii.ico"
+        pendingChanges: "%gpii-app/src/icons/gpii-pending.png",
+        keyedIn: "%gpii-app/src/icons/gpii-color.ico",
+        keyedOut: "%gpii-app/src/icons/gpii.ico"
     },
     components: {
         menu: {
@@ -98,24 +100,24 @@ fluid.defaults("gpii.app.tray", {
   * @param icon {String} The simple path to the icon file.
   */
 gpii.app.tray.setTrayIcon = function (tray, icon) {
-    var iconPath = path.join(fluid.module.terms()["gpii-app"], icon);
+    var iconPath = fluid.module.resolvePath(icon);
     tray.setImage(iconPath);
 };
 
 /**
   * Creates the Electron Tray
-  * @param icon {String} Path to the icon that represents the GPII in the task tray.
+  * @param options {Object} A configuration object for the tray that will be created.
   * @param openPSP {Function} A function for showing the PSP window. Should be called
   * whenever the user left clicks on the tray icon or uses the PSP window shortcut.
   */
-gpii.app.makeTray = function (icon, openPSP) {
-    var tray = new Tray(path.join(fluid.module.terms()["gpii-app"], icon));
+gpii.app.makeTray = function (options, openPSP) {
+    var tray = new Tray(fluid.module.resolvePath(options.icons.keyedOut));
 
     tray.on("click", function () {
         openPSP();
     });
 
-    globalShortcut.register("Super+CmdOrCtrl+Alt+U", function () {
+    globalShortcut.register(options.shortcut, function () {
         openPSP();
     });
 
@@ -129,7 +131,7 @@ gpii.app.makeTray = function (icon, openPSP) {
  * there is no such.
  * @param pendingChanges {Array} An array containing all pending setting changes.
  * @param icons {Object} An object containing all possible icon paths.
- * @return The tooltip label for the Electron Tray.
+ * @return The path to the icon for the Electron Tray.
  */
 gpii.app.getTrayIcon = function (keyedInUserToken, pendingChanges, icons) {
     if (pendingChanges && pendingChanges.length > 0) {
