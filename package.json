@@ -15,7 +15,7 @@
     "grunt": "1.0.1",
     "grunt-jsonlint": "1.1.0",
     "grunt-shell": "1.3.0",
-    "npm-run-all": "^4.1.2",
+    "npm-run-all": "4.1.2",
     "shelljs": "0.3.0"
   },
   "scripts": {

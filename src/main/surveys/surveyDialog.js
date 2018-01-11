@@ -21,8 +21,8 @@ var fluid = require("infusion"),
 
 require("../dialog.js");
 
-// XXX: Needed to circumvent the certificate error for the "umd.edu" domain.Should
-// be removed before going to production.
+// XXX: Needed to circumvent the certificate error for the "umd.edu" domain. See
+// https://issues.gpii.net/browse/GPII-2818 for more information.
 require("electron").app.on("certificate-error", function (event, webContents, url, error, certificate, callback) {
     event.preventDefault();
     callback(true);

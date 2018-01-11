@@ -99,7 +99,7 @@ fluid.defaults("gpii.app", {
         },
         dialogManager: {
             type: "gpii.app.dialogManager",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             priority: "after:surveyManager",
             options: {
                 model: {
@@ -129,7 +129,7 @@ fluid.defaults("gpii.app", {
         },
         psp: {
             type: "gpii.app.psp",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             priority: "after:gpiiConnector",
             options: {
                 model: {
@@ -139,7 +139,7 @@ fluid.defaults("gpii.app", {
         },
         waitDialog: {
             type: "gpii.app.waitDialog",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             priority: "after:psp",
             options: {
                 model: {
@@ -149,12 +149,12 @@ fluid.defaults("gpii.app", {
         },
         restartDialog: {
             type: "gpii.app.dialog.restartDialog",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             priority: "after:waitDialog"
         },
         settingsBroker: {
             type: "gpii.app.settingsBroker",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             priority: "after:restartDialog",
             options: {
                 model: {
@@ -172,7 +172,7 @@ fluid.defaults("gpii.app", {
         },
         tray: {
             type: "gpii.app.tray",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             priority: "after:settingsBroker",
             options: {
                 model: {
@@ -187,7 +187,7 @@ fluid.defaults("gpii.app", {
          */
         channelMediator: {
             type: "fluid.component",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             priority: "after:tray",
             options: {
                 listeners: {
@@ -222,7 +222,7 @@ fluid.defaults("gpii.app", {
          */
         restartWarningController: {
             type: "fluid.modelComponent",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             priority: "after:channelMediator",
             options: {
                 model: {
@@ -287,7 +287,7 @@ fluid.defaults("gpii.app", {
         // This subcomponent must be the last one created.
         pspReady: {
             type: "fluid.component",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             priority: "after:channelMediator",
             options: {
                 listeners: {
@@ -297,7 +297,7 @@ fluid.defaults("gpii.app", {
         }
     },
     events: {
-        onPrerequisitesReady: {
+        onPSPPrerequisitesReady: {
             events: {
                 onMachineIdFetched: "onMachineIdFetched",
                 onGPIIReady: "onGPIIReady",

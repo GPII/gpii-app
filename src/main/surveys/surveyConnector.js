@@ -18,8 +18,7 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
 /**
- * Send/receive survey data to/from the survey server
- * occurred
+ * A component which is responsible for sending/receiving survey data to/from the survey server.
  *
  * All payloads sent to or received from the survey server conform to the
  * following format:
@@ -38,7 +37,7 @@ var fluid = require("infusion"),
  *         }
  *     }
  *
- * When the server receives a "surveyTrigger" request, it will respond with
+ * When the server receives a "triggersRequest" message, it will respond with
  * the following message:
  *     {
  *         type: "surveyTrigger",
@@ -136,7 +135,7 @@ gpii.app.surveyConnector.parseMessage = function (events, message) {
         events.onTriggerDataReceived.fire(value);
         break;
     default:
-        console.log("SurveyConnector - Unrecognized message type: ", message);
+        fluid.log(fluid.logLevel.WARN, "SurveyConnector - Unrecognized message type:", message);
     }
 };
 

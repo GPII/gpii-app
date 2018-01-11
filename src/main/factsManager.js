@@ -23,7 +23,7 @@ require("./utils.js");
 /**
  * Manages and disseminates facts. A fact is simply represented by a name
  * and value. For each fact there is a fact provider that collects and supplies it.
- * Example for fact is "keyedInBefore", which defines times since keying in in
+ * Example of a fact is "keyedInBefore", which defines times since keying in in
  * milliseconds.
  *
  * Once a fact's updated notification is recieved, all facts are collected from the providers

@@ -32,7 +32,8 @@ require("./surveys/surveyDialog.js");
  */
 // XXX: Currently only the survey dialog is managed by the dialogManager. As a
 // refactoring step, in the future the rest of the dialogs will be controlled by
-// this manager, as well.
+// this manager, as well. See https://issues.gpii.net/browse/GPII-2817 for more
+// information.
 fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {
@@ -91,6 +92,8 @@ gpii.app.dialogManager.get = function (dialogManager, selector) {
  * Shows a dialog component given its IoCSS selector.
  * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
  * @param selector {String} The IoCSS selector of the component to be shown.
+ * @param options {Object} An object containing configuration options for
+ * the dialog which is to be shown.
  */
 gpii.app.dialogManager.show = function (dialogManager, selector, options) {
     var dialog = dialogManager.get(selector);
