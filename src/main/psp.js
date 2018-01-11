@@ -107,7 +107,11 @@ fluid.defaults("gpii.app.psp", {
         },
         notifyPSPWindow: {
             funcName: "gpii.app.notifyWindow",
-            args: ["{that}.pspWindow", "{arguments}.0", "{arguments}.1"]
+            args: [
+                "{that}.pspWindow",
+                "{arguments}.0", // messageChannel
+                "{arguments}.1"  // message
+            ]
         },
         getWindowPosition: {
             funcName: "gpii.app.getWindowPosition",
@@ -115,11 +119,19 @@ fluid.defaults("gpii.app.psp", {
         },
         resize: {
             funcName: "gpii.app.psp.resize",
-            args: ["{that}", "{arguments}.0", "{that}.options.attrs.height", "{arguments}.1"]
+            args: [
+                "{that}",
+                "{arguments}.0", // contentHeight
+                "{that}.options.attrs.height",
+                "{arguments}.1"  // forceResize
+            ]
         },
         showRestartWarning: {
             func: "{psp}.notifyPSPWindow",
-            args: ["onRestartRequired", "{arguments}.0"]
+            args: [
+                "onRestartRequired",
+                "{arguments}.0" // message
+            ]
         },
         hideRestartWarning: {
             func: "{psp}.notifyPSPWindow",

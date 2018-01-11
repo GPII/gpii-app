@@ -181,7 +181,10 @@
         invokers: {
             getExemplarBySchemaType: {
                 funcName: "gpii.psp.widgetExemplars.getExemplarBySchemaType",
-                args: ["{that}", "{arguments}.0"]
+                args: [
+                    "{that}",
+                    "{arguments}.0" // schemaType
+                ]
             }
         }
     });

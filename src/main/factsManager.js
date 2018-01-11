@@ -143,7 +143,7 @@ fluid.defaults("gpii.app.factsManager.factProvider", {
          */
         getFact: {
             funcName: "fluid.notImplemented",
-            args: ["{arguments}.0"]
+            args: []
         },
         /*
          * Reset fact's data restarting the collection info.

@@ -41,15 +41,15 @@ fluid.defaults("gpii.app.gpiiConnector", {
     invokers: {
         parseMessage: {
             funcName: "gpii.app.gpiiConnector.parseMessage",
-            args: ["{that}", "{arguments}.0"]
+            args: ["{that}", "{arguments}.0"] // message
         },
         updateSetting: {
             funcName: "gpii.app.gpiiConnector.updateSetting",
-            args: ["{that}", "{arguments}.0"]
+            args: ["{that}", "{arguments}.0"] // setting
         },
         updateActivePrefSet: {
             funcName: "gpii.app.gpiiConnector.updateActivePrefSet",
-            args: ["{that}", "{arguments}.0"]
+            args: ["{that}", "{arguments}.0"] // newPrefSet
         }
     }
 });

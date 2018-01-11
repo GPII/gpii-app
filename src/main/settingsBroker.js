@@ -51,17 +51,24 @@ fluid.defaults("gpii.app.settingsBroker", {
     invokers: {
         enqueue: {
             funcName: "gpii.app.settingsBroker.enqueue",
-            args: ["{that}", "{arguments}.0"]
+            args: [
+                "{that}",
+                "{arguments}.0" // setting
+            ]
         },
         applySetting: {
             this: "{that}.events.onSettingApplied",
             method: "fire",
-            args: ["{arguments}.0"]
+            args: ["{arguments}.0"] // setting
         },
         undoSetting: {
             this: "{that}.events.onSettingApplied",
             method: "fire",
-            args: ["{arguments}.0", null, "settingsBroker.undo"]
+            args: [
+                "{arguments}.0", // setting
+                null,
+                "settingsBroker.undo"
+            ]
         },
         applyPendingChanges: {
             funcName: "gpii.app.settingsBroker.applyPendingChanges",

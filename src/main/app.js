@@ -193,25 +193,34 @@ fluid.defaults("gpii.app", {
                 listeners: {
                     "{settingsBroker}.events.onSettingApplied": [{
                         listener: "{gpiiConnector}.updateSetting",
-                        args: ["{arguments}.0"],
+                        args: ["{arguments}.0"], // setting
                         excludeSource: ["settingsBroker.undo"]
                     }, {
                         listener: "{psp}.notifyPSPWindow",
-                        args: ["onSettingUpdated", "{arguments}.0"]
+                        args: [
+                            "onSettingUpdated",
+                            "{arguments}.0" // message
+                        ]
                     }],
 
                     "{psp}.events.onActivePreferenceSetAltered": {
                         listener: "{gpiiConnector}.updateActivePrefSet",
-                        args: ["{arguments}.0"]
+                        args: ["{arguments}.0"] // newPrefSet
                     },
 
                     "{gpiiConnector}.events.onPreferencesUpdated": {
                         listener: "{psp}.notifyPSPWindow",
-                        args: ["onPreferencesUpdated", "{arguments}.0"]
+                        args: [
+                            "onPreferencesUpdated",
+                            "{arguments}.0" // message
+                        ]
                     },
                     "{gpiiConnector}.events.onSettingUpdated": {
                         listener: "{psp}.notifyPSPWindow",
-                        args: ["onSettingUpdated", "{arguments}.0"]
+                        args: [
+                            "onSettingUpdated",
+                            "{arguments}.0" // message
+                        ]
                     }
                 }
             }
@@ -265,21 +274,31 @@ fluid.defaults("gpii.app", {
                     // Handle setting interactions (undo, restart now, settings interaction)
                     "{settingsBroker}.events.onRestartRequired" : [{
                         func: "{that}.hideRestartDialogIfNeeded",
-                        args: ["{that}.model.isPspShown", "{arguments}.0"]
+                        args: [
+                            "{that}.model.isPspShown",
+                            "{arguments}.0" // pendingChanges
+                        ]
                     },{
                         func: "{that}.togglePspRestartWarning",
-                        args: ["{arguments}.0"]
+                        args: ["{arguments}.0"] // pendingChanges
                     }]
                 },
 
                 invokers: {
                     hideRestartDialogIfNeeded: {
                         funcName: "gpii.app.hideRestartDialogIfNeeded",
-                        args: ["{restartDialog}", "{arguments}.0", "{arguments}.1"]
+                        args: [
+                            "{restartDialog}",
+                            "{arguments}.0", // isPspShown
+                            "{arguments}.1"  // pendingChanges
+                        ]
                     },
                     togglePspRestartWarning: {
                         funcName: "gpii.app.togglePspRestartWarning",
-                        args: ["{psp}", "{arguments}.0"]
+                        args: [
+                            "{psp}",
+                            "{arguments}.0" // pendingChanges
+                        ]
                     }
                 }
             }
@@ -337,7 +356,7 @@ fluid.defaults("gpii.app", {
         },
         "{lifecycleManager}.events.onSessionStart": [{
             listener: "{that}.updateKeyedInUserToken",
-            args: ["{arguments}.1"],
+            args: ["{arguments}.1"], // new token
             namespace: "onLifeCycleManagerUserKeyedIn"
         }, {
             listener: "{that}.events.onKeyedIn.fire",
@@ -374,7 +393,7 @@ fluid.defaults("gpii.app", {
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
-            args: ["{arguments}.0"]
+            args: ["{arguments}.0"] // token
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
@@ -386,7 +405,7 @@ fluid.defaults("gpii.app", {
         },
         "handleUncaughtException": {
             funcName: "gpii.app.handleUncaughtException",
-            args: ["{that}", "{arguments}.0"]
+            args: ["{that}", "{arguments}.0"] // err
         }
     },
     distributeOptions: {

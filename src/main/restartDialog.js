@@ -44,7 +44,7 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
             args: [
                 "{dialog}.dialog",
                 "onRestartRequired",
-                "{arguments}.0"
+                "{arguments}.0" // message
             ]
         }
     }
@@ -77,7 +77,10 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
     invokers: {
         showIfNeeded: {
             funcName: "gpii.app.dialog.restartDialog.showIfNeeded",
-            args: ["{that}", "{arguments}.0"]
+            args: [
+                "{that}",
+                "{arguments}.0" // pendingChanges
+            ]
         },
         isShown: {
             this: "{that}.dialog",

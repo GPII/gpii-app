@@ -90,7 +90,10 @@ fluid.defaults("gpii.app.surveyConnector", {
         "onCreate.connect": "{that}.connect",
         "onMessageReceived.parseMessage": {
             funcName: "gpii.app.surveyConnector.parseMessage",
-            args: ["{that}.events", "{arguments}.0"]
+            args: [
+                "{that}.events",
+                "{arguments}.0" // message
+            ]
         }
     },
 
@@ -112,7 +115,10 @@ fluid.defaults("gpii.app.surveyConnector", {
         },
         notifyTriggerOccurred: {
             funcName: "gpii.app.surveyConnector.notifyTriggerOccurred",
-            args: ["{that}", "{arguments}.0"]
+            args: [
+                "{that}",
+                "{arguments}.0" // trigger
+            ]
         }
     }
 });

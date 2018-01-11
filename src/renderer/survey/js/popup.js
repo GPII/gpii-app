@@ -39,7 +39,10 @@
         invokers: {
             openSurvey: {
                 funcName: "gpii.survey.popup.openSurvey",
-                args: ["{that}.dom.webview", "{arguments}.0"]
+                args: [
+                    "{that}.dom.webview",
+                    "{arguments}.0" // options
+                ]
             }
         },
         listeners: {

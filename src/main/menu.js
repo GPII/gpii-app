@@ -48,7 +48,7 @@ fluid.defaults("gpii.app.menuInApp", {
 
         "onActivePrefSetUpdate.performActiveSetChange": {
             listener: "{gpiiConnector}.updateActivePrefSet",
-            args: "{arguments}.0.path"
+            args: "{arguments}.0.path" // newPrefSet
         },
 
         // onKeyOut event is fired when a keyed-in user keys out through the task tray.
@@ -117,7 +117,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
         },
         "onKeyIn.performKeyIn": {
             listener: "{app}.keyIn",
-            args: ["{arguments}.0.token"],
+            args: ["{arguments}.0.token"], // token
             priority: "after:performKeyOut"
         },
 

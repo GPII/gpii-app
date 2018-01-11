@@ -102,7 +102,11 @@ fluid.defaults("gpii.app.surveyDialog", {
     invokers: {
         notifySurveyWindow: {
             funcName: "gpii.app.notifyWindow",
-            args: ["{that}.dialog", "{arguments}.0", "{arguments}.1"]
+            args: [
+                "{that}.dialog",
+                "{arguments}.0", // messageChannel
+                "{arguments}.1"  // message
+            ]
         }
     }
 });
@@ -200,7 +204,10 @@ fluid.defaults("gpii.app.survey", {
     invokers: {
         show: {
             funcName: "gpii.app.survey.show",
-            args: ["{that}", "{arguments}.0"]
+            args: [
+                "{that}",
+                "{arguments}.0" // options
+            ]
         },
         hide: {
             funcName: "gpii.app.survey.hide",

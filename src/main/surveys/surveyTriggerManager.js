@@ -42,8 +42,8 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
         "{rulesEngine}.events.onRuleSatisfied": {
             func: "{surveyTriggerManager}.handleRuleSuccess",
             args: [
-                "{arguments}.0",
-                "{arguments}.1"
+                "{arguments}.0", // triggerType
+                "{arguments}.1"  // payload
             ]
         }
 
@@ -62,8 +62,8 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
             funcName: "gpii.app.surveyTriggerManager.handleRuleSuccess",
             args: [
                 "{that}",
-                "{arguments}.0",
-                "{arguments}.1"
+                "{arguments}.0", // triggerType
+                "{arguments}.1"  // payload
             ]
         },
 
@@ -72,7 +72,7 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
             args: [
                 "{that}.options.triggerTypes.surveyTrigger",
                 "{rulesEngine}",
-                "{arguments}.0"
+                "{arguments}.0" // triggerData
             ]
         }
     }

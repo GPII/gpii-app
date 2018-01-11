@@ -56,19 +56,32 @@ fluid.defaults("gpii.app.dialogManager", {
     invokers: {
         get: {
             funcName: "gpii.app.dialogManager.get",
-            args: ["{that}", "{arguments}.0"]
+            args: [
+                "{that}",
+                "{arguments}.0" // selector
+            ]
         },
         show: {
             funcName: "gpii.app.dialogManager.show",
-            args: ["{that}", "{arguments}.0", "{arguments}.1"]
+            args: [
+                "{that}",
+                "{arguments}.0", // selector
+                "{arguments}.1"  // options
+            ]
         },
         hide: {
             funcName: "gpii.app.dialogManager.hide",
-            args: ["{that}", "{arguments}.0"]
+            args: [
+                "{that}",
+                "{arguments}.0" // selector
+            ]
         },
         close: {
             funcName: "gpii.app.dialogManager.close",
-            args: ["{that}", "{arguments}.0"]
+            args: [
+                "{that}",
+                "{arguments}.0" // selector
+            ]
         }
     }
 });

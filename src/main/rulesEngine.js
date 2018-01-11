@@ -94,7 +94,7 @@ fluid.defaults("gpii.app.rulesEngine", {
             // the new facts
             args: [
                 "{that}.registeredRulesMap",
-                "{arguments}.0"
+                "{arguments}.0" // facts
             ]
         },
         addRule: {
@@ -102,16 +102,16 @@ fluid.defaults("gpii.app.rulesEngine", {
             args: [
                 "{that}",
                 "{that}.registeredRulesMap",
-                "{arguments}.0",
-                "{arguments}.1",
-                "{arguments}.2"
+                "{arguments}.0", // ruleId
+                "{arguments}.1", // conditions
+                "{arguments}.2"  // payload
             ]
         },
         removeRule: {
             funcName: "gpii.app.rulesEngine.removeRule",
             args: [
                 "{that}.registeredRulesMap",
-                "{arguments}.0"
+                "{arguments}.0" // ruleId
             ]
         },
         reset: {
@@ -126,8 +126,8 @@ fluid.defaults("gpii.app.rulesEngine", {
         registerSuccessListener: {
             funcName: "gpii.app.rulesEngine.registerSuccessListener",
             args: [
-                "{arguments}.0",
-                "{arguments}.1",
+                "{arguments}.0", // registeredRulesMap
+                "{arguments}.1", // ruleId
                 "{that}.events"
             ]
         }
