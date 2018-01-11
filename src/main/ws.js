@@ -27,6 +27,8 @@ var fluid = require("infusion"),
 fluid.defaults("gpii.app.ws", {
     gradeNames: ["fluid.component"],
 
+    // indicates if connection errors should be ignored by the component
+    ignoreErrors: false,
     config: {
         hostname: null,
         port: null,
@@ -50,7 +52,7 @@ fluid.defaults("gpii.app.ws", {
     invokers: {
         connect: {
             funcName: "gpii.app.ws.connect",
-            args: ["{that}", "{that}.options.config"]
+            args: ["{that}", "{that}.options.config", "{that}.options.ignoreErrors"]
         },
         send: {
             funcName: "gpii.app.ws.send",
@@ -69,9 +71,11 @@ fluid.defaults("gpii.app.ws", {
  * will fire the appropriate event of the component.
  * @param that {Component} The `gpii.app.ws` instance.
  * @param config {Object} An object containing the hostname, port and path of
+ * @param ignoreErrors {Boolean} Whether socket errors should be ignored if the
+ * connection cannot be established.
  * the URL to connect to.
  */
-gpii.app.ws.connect = function (that, config) {
+gpii.app.ws.connect = function (that, config, ignoreErrors) {
     var url = fluid.stringTemplate("ws://%hostname:%port%path", config);
     that.ws = new WebSocket(url);
 
@@ -84,6 +88,13 @@ gpii.app.ws.connect = function (that, config) {
     });
 
     that.ws.on("error", function (error) {
+        if (that.ws.readyState === WebSocket.CONNECTING && ignoreErrors) {
+            fluid.log(fluid.logLevel.WARN, "Ignoring WebSocket error:", error);
+            that.events.onConnected.fire();
+            return;
+        }
+
+        fluid.log(fluid.logLevel.FAIL, "WebSocket error:", error);
         that.events.onError.fire(error);
     });
 
@@ -99,8 +110,10 @@ gpii.app.ws.connect = function (that, config) {
  * @param data {Any} The data to send.
  */
 gpii.app.ws.send = function (ws, data) {
-    if (ws) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(data));
+    } else {
+        fluid.log(fluid.logLevel.WARN, "Trying to send a message over an unopened socket", data);
     }
 };
 

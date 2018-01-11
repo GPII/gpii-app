@@ -85,6 +85,7 @@ fluid.defaults("gpii.app.surveyConnector", {
         machineId: null,
         userId: null
     },
+    ignoreErrors: true,
 
     listeners: {
         "onCreate.connect": "{that}.connect",
