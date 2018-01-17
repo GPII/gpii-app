@@ -22,7 +22,7 @@
             "distributeSurveyConnector": {
                 "record": {
                     "hostname": "localhost",
-                    "port": 3334
+                    "port": 33334
                 },
                 "target": "{that surveyConnector}.options.config"
             }
