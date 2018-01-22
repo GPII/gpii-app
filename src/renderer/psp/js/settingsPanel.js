@@ -26,7 +26,7 @@
     /**
      * Utility function for retrieving the last sub-element of a container
      * @param container {jQuery} The jQuery container object
-     * @returns {jQuery} A jQuery container object
+     * @return {jQuery} A jQuery container object
      */
     gpii.psp.utils.getContainerLastChild = function (container) {
         return container.children().last();
@@ -165,7 +165,7 @@
      * the restart icon tooltip label is to be calculated.
      * @param labels {Object} A set of labels to choose from when calculating the restart icon
      * tooltip label.
-     * @returns The tooltip label for the restart icon.
+     * @return The tooltip label for the restart icon.
      */
     gpii.psp.settingPresenter.getRestartIconLabel = function (setting, hasPendingChange, labels) {
         if (setting.liveness === "manualRestart") {
@@ -492,7 +492,7 @@
      * @param markup.container {String} The markup which is to be interpolated with the container index.
      *   Should have a `containerClass` interpolated expression.
      * @param containerIndex {Number} The index for the container
-     * @returns {String}
+     * @return {String}
      */
     gpii.psp.settingsVisualizer.getIndexedContainerMarkup = function (markup, containerIndex) {
         // Remove the "." prefix
@@ -575,7 +575,7 @@
     /**
      * Returns list of exemplars.
      * @param exemplars {Object} The `gpii.psp.widgetExemplars` object
-     * @returns {Object[]} A list of `gpii.psp.exemplar` objects
+     * @return {Object[]} A list of `gpii.psp.exemplar` objects
      */
     gpii.psp.settingsPanel.getExemplarsList = function (exemplars) {
         return fluid.values(exemplars)
@@ -586,7 +586,7 @@
      * Simplifies the `fluid.resourcesLoader`'s resource object, to supply only the fetched data.
      *
      * @param resources {Object} The `fluid.resourceLoader`'s `resource` object after fetch.
-     * @returns {Object} Object with properties like: `{resourceKey}: {resourceText}`
+     * @return {Object} Object with properties like: `{resourceKey}: {resourceText}`
      */
     gpii.psp.settingsPanel.flattenResources = function (resources) {
         return fluid.keys(resources)

@@ -18,6 +18,6 @@
         }
     },
     "mergeConfigs": [
-        "../node_modules/universal/gpii/configs/gpii.config.development.all.local.json"
+        "%universal/gpii/configs/gpii.config.development.all.local.json"
      ]
 }

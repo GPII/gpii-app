@@ -109,8 +109,8 @@ fluid.defaults("gpii.app.psp", {
             funcName: "gpii.app.notifyWindow",
             args: ["{that}.pspWindow", "{arguments}.0", "{arguments}.1"]
         },
-        getWindowPosition: {
-            funcName: "gpii.app.getWindowPosition",
+        getDesiredWindowPosition: {
+            funcName: "gpii.app.getDesiredWindowPosition",
             args: ["{that}.options.attrs.width", "{that}.options.attrs.height"]
         },
         resize: {
@@ -292,7 +292,7 @@ gpii.app.psp.resize = function (psp, contentHeight, minHeight, forceResize) {
  * Creates an Electron `BrowserWindow` that is to be used as the PSP window
  *
  * @param {Object} windowOptions Raw options to be passed to the `BrowserWindow`
- * @returns {Object} The created Electron `BrowserWindow`
+ * @return {Object} The created Electron `BrowserWindow`
  */
 gpii.app.psp.makePSPWindow = function (windowOptions) {
     var pspWindow = new BrowserWindow(windowOptions);

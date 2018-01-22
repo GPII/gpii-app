@@ -76,7 +76,7 @@ fluid.defaults("gpii.app.dialog", {
                 funcName: "gpii.app.dialog.makeDialog",
                 args: [
                     "{that}.options.config.attrs",
-                    "@expand:{that}.getWindowPosition()",
+                    "@expand:{that}.getDesiredWindowPosition()",
                     "{that}.options.config.url"
                 ]
             }
@@ -89,8 +89,8 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
-        getWindowPosition: {
-            funcName: "gpii.app.getWindowPosition",
+        getDesiredWindowPosition: {
+            funcName: "gpii.app.getDesiredWindowPosition",
             args: [
                 "{that}.options.config.attrs.width",
                 "{that}.options.config.attrs.height"
@@ -98,7 +98,7 @@ fluid.defaults("gpii.app.dialog", {
         },
         resetWindowPosition: {
             funcName: "gpii.app.setWindowPosition",
-            args: ["{that}.dialog", "@expand:{that}.getWindowPosition()"]
+            args: ["{that}.dialog", "@expand:{that}.getDesiredWindowPosition()"]
         },
         // Simple default behaviour
         show: {
@@ -138,8 +138,8 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
  * dialog every time a new message should be displayed.
  * @param windowOptions {Object} The raw Electron `BrowserWindow` settings
  * @param position {Object} The desired position for the component
- * @param positoins.x {Number}
- * @param positoins.y {Number}
+ * @param position.x {Number}
+ * @param position.y {Number}
  * @param url {String} The URL to be loaded in the `BrowserWindow`
  * @return {BrowserWindow} The Electron `BrowserWindow` component
  */
