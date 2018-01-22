@@ -61,157 +61,84 @@ var gpii = fluid.registerNamespace("gpii");
  * using this module adds flexibility and currently seems sufficient.
  */
 fluid.defaults("gpii.app.rulesEngine", {
+    gradeNames: ["fluid.modelComponent"]
+});
+
+fluid.defaults("gpii.app.ruleHandler", {
     gradeNames: ["fluid.modelComponent"],
-
-    /*
-     * A map of currently registered rules.
-     * As we want to have control over registered rules
-     * (remove or change a rule by an id) using the
-     * third-party dependency `json-rules-engine` necessitates
-     * that we keep them in the following manner:
-     * { ruleId: <Single Ruled ruleEngine>,... }
-     * where `ruleEngine` is of type `json-rules-engine` engine
-     * In other words, every rule is kept in a dedicated ruleEngine
-     * (a `json-rules-engine` engine).
-     */
-    members: {
-        registeredRulesMap: {}
+    model: {
+        satisfiedCount: 0,
+        conditions: []
     },
-
     events: {
-        /*
-         * Fired once any rule is satisfied.
-         * Fired with arguments:
-         * <ruleId>       - the successful rule's id,
-         * <rule_payload> - the payload which is provided with rule registration
-         */
+        onConditionSatisfied: null,
         onRuleSatisfied: null
     },
-
-    invokers: {
-        checkRules: {
-            funcName: "gpii.app.rulesEngine.checkRules",
-            // the new facts
-            args: [
-                "{that}.registeredRulesMap",
-                "{arguments}.0" // facts
-            ]
-        },
-        addRule: {
-            funcName: "gpii.app.rulesEngine.addRule",
-            args: [
-                "{that}",
-                "{that}.registeredRulesMap",
-                "{arguments}.0", // ruleId
-                "{arguments}.1", // conditions
-                "{arguments}.2"  // payload
-            ]
-        },
-        removeRule: {
-            funcName: "gpii.app.rulesEngine.removeRule",
-            args: [
-                "{that}.registeredRulesMap",
-                "{arguments}.0" // ruleId
-            ]
-        },
-        reset: {
-            funcName: "gpii.app.rulesEngine.reset",
-            args: [
-                "{that}",
-                "{that}.events"
-            ]
-        },
-
-        // Could be overwritten to provide different success handling
-        registerSuccessListener: {
-            funcName: "gpii.app.rulesEngine.registerSuccessListener",
-            args: [
-                "{arguments}.0", // registeredRulesMap
-                "{arguments}.1", // ruleId
-                "{that}.events"
-            ]
+    dynamicComponents: {
+        conditionHandler: {
+            sources: "{that}.model.conditions",
+            type: "@expand:fluid.app.ruleHandler.getConditionHandlerType({source})",
+            options: {
+                condition: "{source}",
+                model: {
+                    value: "{that}.options.condition.value"
+                },
+                events: {
+                    onConditionSatisfied: "{ruleHandler}.events.onConditionSatisfied"
+                }
+            }
+        }
+    },
+    listeners: {
+        onConditionSatisfied: {
+            funcName: "fluid.app.ruleHandler.onConditionSatisfied",
+            args: ["{that}"]
         }
     }
 });
 
-/**
- * Registers a success listener for the given rule. Once the rule is satisfied an
- * event is fired with `ruleId` and  `payload` as parameters.
- * @param registeredRulesMap {Object} The map of all registered rules
- * @param ruleId {String} The id for the that is to be removed
- * @param events {Object} A map of events that could be used (events that are part
- * of `gpii.app.rulesEngine` signature`)
- */
-gpii.app.rulesEngine.registerSuccessListener = function (registeredRulesMap, ruleId, events) {
-    // Register listener for once the specified rule is successful
-    registeredRulesMap[ruleId].on("success", function (event) {
-        events.onRuleSatisfied.fire(ruleId, event.params);
-    });
+fluid.app.ruleHandler.getConditionHandlerType = function (condition) {
+    if (condition.type === "keyedInBefore") {
+        return "gpii.app.keyedInBeforeHandler";
+    }
 };
 
-/**
- * Remove all registered rules for the engine.
- * @param that {Component} The `gpii.app.rulesEngine` component
- */
-gpii.app.rulesEngine.reset = function (that) {
-    that.registeredRulesMap = {};
+fluid.app.ruleHandler.onConditionSatisfied = function (that) {
+    var satisfiedCount = that.model.satisfiedCount + 1;
+    that.applier.change("satisfiedCount", satisfiedCount);
+    if (satisfiedCount === that.model.conditions.length) {
+        that.events.onRuleSatisfied.fire();
+    }
 };
 
-/**
- * Removes a rule from the rule engine. For example this could wanted for
- * once the rule is satisfied, but this logic is delegated to the user of the
- * component.
- * @param registeredRulesMap {Object} The map of all registered rules
- * @param ruleId {String} The id for the that is to be removed
- */
-gpii.app.rulesEngine.removeRule = function (registeredRulesMap, ruleId) {
-    // just let garbage collection do its work for the old rule
-    registeredRulesMap[ruleId] = null;
-};
+fluid.defaults("gpii.app.conditionHandler", {
+    gradeNames: ["fluid.modelComponent"],
+    model: {
+        value: null
+    },
+    events: {
+        onConditionSatisfied: null
+    }
+});
 
-/**
- * Registers a rule to the engine which is to be tested with the next `checkRules` call.
- * A rule's conditions follow this schema https://github.com/CacheControl/json-rules-engine/blob/72d0d2abe46ae95c730ac5ccbe7cb0f6cf28d784/docs/rules.md#conditions,
- * where a `fact` by this name is registered in the `gpii.app.factsManager`.
- *
- * @param that {Component} The `gpii.app.rulesEngine` component
- * @param registeredRulesMap {Object} The map of all registered rules
- * @param ruleId {String} The unique id for the rule being added. N.B. In case a rule with
- * such id already exists, it will be overridden.
- * @param conditions {Object} The list of conditions for the rules
- * @param payload {Object} The payload to be sent with the event once the rule succeeds
- */
-gpii.app.rulesEngine.addRule = function (that, registeredRulesMap, ruleId, conditions, payload) {
-    /*
-     * This approach is needed by the current dependent rule engine module (`json-rules-engine`), which doesn't
-     * support removal of already added rules. But we want to use its extensive conditions checking functionality.
-     */
-    registeredRulesMap[ruleId] = new RulesEngine([{
-        conditions: conditions,
-        event: {
-            type: ruleId,
-            params: payload
+fluid.defaults("gpii.app.timedConditionHandler", {
+    gradeNames: ["gpii.app.conditionHandler", "gpii.app.timer"],
+    listeners: {
+        onTimerFinished: "{that}.events.onConditionSatisfied.fire"
+    }
+});
+
+fluid.defaults("gpii.app.keyedInBeforeHandler", {
+    gradeNames: ["gpii.app.timedConditionHandler"],
+    listeners: {
+        "onCreate.startTimer": {
+            funcName: "gpii.app.keyedInBeforeHandler.start",
+            args: ["{that}", "{pspFacts}.model.keyedInTimestamp"]
         }
-    }]);
+    }
+});
 
-    that.registerSuccessListener(registeredRulesMap, ruleId);
-};
-
-/**
- * Runs an async check whether any of the registered rules is satisfied
- * against the supplied facts. In case a rule's conditions are met, the
- * registered "success" listener will be fired.
- *
- * @param registeredRulesMap {Object} The map of registered rules
- * @param facts {Object} A map of all facts to be used for the checking.
- * Follows the schema { factName: factValue, ... }.
- */
-gpii.app.rulesEngine.checkRules = function (registeredRulesMap, facts) {
-    var ruleEngines = fluid
-        .values(registeredRulesMap)
-        .filter(fluid.isValue);
-
-    ruleEngines.forEach(function (engine) {
-        engine.run(facts);
-    });
+gpii.app.keyedInBeforeHandler.start = function (that, keyedInTimestamp) {
+    var offset = Date.now() - keyedInTimestamp;
+    that.start(that.model.value - offset);
 };
