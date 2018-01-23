@@ -16,16 +16,25 @@
 
 var fluid = require("infusion"),
     electron = require("electron"),
+    URL = require("url"),
     ipcMain = electron.ipcMain,
     gpii = fluid.registerNamespace("gpii");
 
 require("../dialog.js");
 
-// XXX: Needed to circumvent the certificate error for the "umd.edu" domain. See
-// https://issues.gpii.net/browse/GPII-2818 for more information.
-require("electron").app.on("certificate-error", function (event, webContents, url, error, certificate, callback) {
-    event.preventDefault();
-    callback(true);
+// XXX: Needed to circumvent the certificate error for the "umd.edu" domain. This code
+// snippet can be removed when Electron 1.4.12 or above is used. For more information
+// please see https://issues.gpii.net/browse/GPII-2818.
+require("electron").app.on("certificate-error", function (event, webContents, urlString, error, certificate, callback) {
+    var url = URL.parse(urlString),
+        hostname = url.hostname || "";
+    // Adding an exception only for the "umd.edu" domain and its subdomains.
+    if (hostname === "umd.edu" || hostname.endsWith(".umd.edu")) {
+        event.preventDefault();
+        callback(true);
+    } else {
+        callback(false);
+    }
 });
 
 /**
