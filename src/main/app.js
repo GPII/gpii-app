@@ -17,7 +17,6 @@
 var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
-var machineInfo = require("node-machine-id");
 
 require("./ws.js");
 require("./factsManager.js");
@@ -62,7 +61,6 @@ require("electron").app.on("window-all-closed", fluid.identity);
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
     model: {
-        machineId: null,
         keyedInUserToken: null,
         snapsetName: null,
         showDialog: false,
@@ -71,13 +69,20 @@ fluid.defaults("gpii.app", {
             activeSet: null
         }
     },
+    members: {
+        machineId: "@expand:{that}.installID.getMachineID()"
+    },
     components: {
         networkCheck: { // Network check component to meet GPII-2349
             type: "gpii.app.networkCheck"
         },
+        installID: {
+            type: "gpii.installID",
+            priority: "after:networkCheck"
+        },
         factsManager: {
             type: "gpii.app.factsManager",
-            priority: "after:networkCheck"
+            priority: "after:installID"
         },
         rulesEngine: {
             type: "gpii.app.rulesEngine",
@@ -318,14 +323,12 @@ fluid.defaults("gpii.app", {
     events: {
         onPSPPrerequisitesReady: {
             events: {
-                onMachineIdFetched: "onMachineIdFetched",
                 onGPIIReady: "onGPIIReady",
                 onAppReady: "onAppReady",
                 onPSPChannelConnected: "onPSPChannelConnected",
                 onSurveyWSConnected: "onSurveyWSConnected"
             }
         },
-        onMachineIdFetched: null,
         onGPIIReady: null,
         onAppReady: null,
         onPSPChannelConnected: null,
@@ -342,10 +345,6 @@ fluid.defaults("gpii.app", {
         }
     },
     listeners: {
-        "onCreate.fetchMachineId": {
-            listener: "gpii.app.fetchMachineId",
-            args: ["{that}"]
-        },
         "onCreate.appReady": {
             listener: "gpii.app.fireAppReady",
             args: ["{that}.events.onAppReady.fire"]
@@ -413,22 +412,6 @@ fluid.defaults("gpii.app", {
         record: "gpii.app.onKeyInError"
     }
 });
-
-/**
- * Retrieves the id of the machine on which the PSP is running and sets it in the
- * model. In case the machine id cannot be obtained, this will not prevent the app
- * from starting.
- * @param psp {Component} The `gpii.app.psp` component.
- */
-gpii.app.fetchMachineId = function (that) {
-    machineInfo.machineId().then(function (machineId) {
-        that.applier.change("machineId", machineId);
-        that.events.onMachineIdFetched.fire();
-    }, function (error) {
-        fluid.log(fluid.logLevel.WARN, "Error obtaining machine id: " + error);
-        that.events.onMachineIdFetched.fire();
-    });
-};
 
 /**
  * Either hides or shows the warning in the PSP.

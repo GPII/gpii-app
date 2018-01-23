@@ -32,7 +32,7 @@ fluid.defaults("gpii.app.surveyManager", {
             type: "gpii.app.surveyConnector",
             options: {
                 model: {
-                    machineId: "{app}.model.machineId",
+                    machineId: "{app}.machineId",
                     userId: "{app}.model.keyedInUserToken"
                 },
                 events: {
