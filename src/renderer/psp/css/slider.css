@@ -1,5 +1,5 @@
-/* Default (dark) theme styles */
-.fl-stepper input[type=range] {
+/* Default theme styles */
+.fl-slider input[type=range] {
     display: inline-block;
     width: auto;
     max-width: 110px;
@@ -10,18 +10,18 @@
     cursor: pointer;
 }
 
-.fl-stepper input[type=range]:focus {
+.fl-slider input[type=range]:focus {
     outline-color: rgba(255, 255, 255, 0.6);
 }
 
-.fl-stepper input[type=range]::-webkit-slider-runnable-track {
+.fl-slider input[type=range]::-webkit-slider-runnable-track {
     width: 100%;
     height: 3px;
     cursor: pointer;
     background: #66aee6;
 }
 
-.fl-stepper input[type=range]::-webkit-slider-thumb {
+.fl-slider input[type=range]::-webkit-slider-thumb {
     height: 30px;
     width: 10px;
     border-radius: 5px;
@@ -31,40 +31,19 @@
     margin-top: -13.5px;
 }
 
-.fl-stepper input[type=range]:focus::-webkit-slider-thumb {
+.fl-slider input[type=range]:focus::-webkit-slider-thumb {
     background: #ffffff;
 }
 
-.fl-stepper .fl-stepperBtn {
-    display: inline-block;
-    margin: 0 5px;
-
-    font-size: 30px;
-    color: rgba(255, 255, 255, 0.6);
-
-    vertical-align: top;
-}
-
-.fl-stepper .fl-stepperBtn:hover {
-    color: #ffffff;
-}
-
-.fl-stepper .fl-textfield {
-    max-width: 50px;
-    padding: 2px;
-
-    text-align: center;
-}
-
-/* Styles for alt theme */
-.theme-alt .fl-stepper input[type=range]:focus {
+/* Styles for alt (dark) theme */
+.theme-alt .fl-slider input[type=range]:focus {
     outline-color: var(--main-color);
 }
 
-.theme-alt .fl-stepper input[type=range]::-webkit-slider-runnable-track {
+.theme-alt .fl-slider input[type=range]::-webkit-slider-runnable-track {
     background-color: #797979;
 }
 
-.theme-alt .fl-stepper input[type=range]::-webkit-slider-thumb {
+.theme-alt .fl-slider input[type=range]::-webkit-slider-thumb {
     background-color: var(--main-color);
 }

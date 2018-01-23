@@ -28,7 +28,6 @@ var liveSettingChange = {
     oldValue: "Old value",
     value: "New Value",
 
-    icon: fluid.module.resolvePath("%gpii-app/icons/gear-cloud-white.png"),
     liveness: "live",
 
     schema: {
@@ -44,7 +43,6 @@ var manualSettingChange = {
     value: "New value",
     solutionName: "solutions1",
 
-    icon: fluid.module.resolvePath("%gpii-app/icons/gear-cloud-black.png"),
     liveness: "manualRestart",
     memory: false,
 
@@ -61,7 +59,6 @@ var osSettingChange = {
     oldValue: 0.75,
     value: 1,
 
-    icon: fluid.module.resolvePath("%gpii-app/icons/gear-cloud-black.png"),
     liveness: "OSRestart",
 
     schema: {

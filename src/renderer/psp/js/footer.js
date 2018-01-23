@@ -22,23 +22,9 @@
     fluid.defaults("gpii.psp.footer", {
         gradeNames: ["fluid.viewComponent"],
         selectors: {
-            keyOutBtn: ".flc-keyOutBtn",
             helpBtn: ".flc-helpBtn"
         },
-        events: {
-            onKeyOut: null
-        },
         components: {
-            keyOutBtn: {
-                type: "gpii.psp.widgets.button",
-                container: "{that}.dom.keyOutBtn",
-                options: {
-                    label: "{footer}.options.labels.keyOut",
-                    invokers: {
-                        "onClick": "{footer}.events.onKeyOut.fire"
-                    }
-                }
-            },
             helpBtn: {
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.helpBtn",
@@ -54,7 +40,6 @@
             help: "http://pmt.gpii.org/help"
         },
         labels: {
-            keyOut: "Key Out",
             help: "Help"
         }
     });

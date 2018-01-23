@@ -41,7 +41,7 @@ fluid.defaults("gpii.app.psp", {
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
      */
     attrs: {
-        width: 500,
+        width: 450,
         height: 600,
         show: true,
         frame: false,

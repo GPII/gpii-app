@@ -3,38 +3,47 @@
 }
 
 .fl-dropdown select {
-    padding-top: 0;
+    height: 30px;
+    min-height: 30px;
+    padding: 0 12px;
 
-    background-color: rgba(255, 255, 255, 0.6);
-    border-color: #ffffff;
-    color: #000000;
-
-    font-size: 20px;
+    background-color: #ffffff;
+    border-color: var(--main-theme-text-color);
+    color: var(--main-theme-text-color);
 
     cursor: pointer;
 }
 
 .fl-dropdown .combobox:after {
-    color: #ffffff;
+    position: absolute;
+    top: 9px;
+    right: 9px;
+
+    color: var(--main-theme-text-color);
     pointer-events: none;
 }
 
 .fl-dropdown select:hover,
 .fl-dropdown select:focus {
-    background-color: rgba(255, 255, 255, 0.8);
-    border-color: #ffffff;
-    color: #000000;
+    background-color: var(--main-theme-background-color);
+    border-color: var(--main-theme-text-color);
+    color: var(--main-theme-text-color);
 }
 
-/* Styles for alt theme */
+/* Styles for alt (dark) theme */
 .theme-alt .fl-dropdown select {
-    background-color: #1f1f1f;
+    background-color: var(--alt-theme-background-color);
     border-color: rgba(255, 255, 255, 0.6);
-    color: #ffffff;
+    color: var(--alt-theme-text-color);
+}
+
+.theme-alt .fl-dropdown .combobox:after {
+    color: var(--alt-theme-text-color);
 }
 
 .theme-alt .fl-dropdown select:hover,
 .theme-alt .fl-dropdown select:focus {
     background-color: #383838;
     border-color: rgba(255, 255, 255, 0.8);
+    color: var(--alt-theme-text-color);
 }

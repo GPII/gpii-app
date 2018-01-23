@@ -49,7 +49,6 @@
     fluid.defaults("gpii.psp.settingPresenter", {
         gradeNames: "fluid.viewComponent",
         selectors: {
-            icon: ".flc-icon",
             solutionName: ".flc-solutionName",
             title: ".flc-title",
             titleLabel: ".flc-titleLabel",
@@ -63,7 +62,6 @@
             valueChanged: "fl-icon-filled"
         },
         labels: {
-            memory: "This control auto-saves",
             osRestart: "To change this setting,\nWindows requires a restart.",
             osRestartRequired: "You changed this setting, which\nrequires Windows to restart.",
             appRestart: "%solutionName - To change this setting,\nthe app requires a restart.",
@@ -71,7 +69,6 @@
         },
         model: {
             path: null,
-            icon: null,
             solutionName: null,
             value: null,
             schema: null,
@@ -105,11 +102,6 @@
             }
         },
         listeners: {
-            "onCreate.setIcon": {
-                this: "{that}.dom.icon",
-                method: "attr",
-                args: ["src", "{that}.model.icon"]
-            },
             "onCreate.setSolutionName": {
                 this: "{that}.dom.solutionName",
                 method: "text",
@@ -198,6 +190,8 @@
                 .addClass(iconClass)
                 .attr("title", label)
                 .show();
+        } else {
+            restartIcon.hide();
         }
     };
 
@@ -232,16 +226,16 @@
     };
 
     /**
-     * A function responsible for showing and adding a tooltip to a memory icon
-     * if the setting will be persisted after a user has changed it.
+     * A function responsible for showing a memory icon if the setting will be
+     * persisted after a user has changed it.
      * @param that {Component} An instance of `gpii.psp.settingPresenter`.
      * @param memoryIcon {jQuery} A jQuery object representing the memory icon.
      */
     gpii.psp.settingPresenter.showMemoryIcon = function (that, memoryIcon) {
         if (that.model.memory) {
-            memoryIcon
-                .attr("title", that.options.labels.memory)
-                .show();
+            memoryIcon.show();
+        } else {
+            memoryIcon.hide();
         }
     };
 
