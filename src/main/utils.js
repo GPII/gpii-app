@@ -34,12 +34,13 @@ gpii.app.isWin10OS = function () {
 };
 
 /**
-* Get the position of `Electron` `BrowserWindows`
+* Gets the desired position (in the lower right corner of the primary
+* display) of an `Electron` `BrowserWindow` given its dimensions.
 * @param width {Number} The current width of the window
 * @param height {Number} The current height of the window
 * @return {{x: Number, y: Number}}
 */
-gpii.app.getWindowPosition = function (width, height) {
+gpii.app.getDesiredWindowPosition = function (width, height) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
     return {
         x: screenSize.width - width,
@@ -48,7 +49,7 @@ gpii.app.getWindowPosition = function (width, height) {
 };
 
 /**
- * Set the position of the Electorn `BrowserWindow` element.
+ * Sets the position of the Electorn `BrowserWindow` element.
  * @param dialogWindow {BrowserWindow} The window which is to be positioned
  * @param position {Object} The position where the window to be placed
  * @param position.x {Number}

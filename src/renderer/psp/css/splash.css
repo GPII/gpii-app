@@ -1,4 +1,4 @@
-/* Default (dark) theme styles */
+/* Default theme styles */
 .flc-splash {
     position: absolute;
     top: 0;
@@ -11,7 +11,7 @@
      * Same as for `body`;
      * Needed to hide the other content
      */
-    background-color: #0078d7;
+    background-color: var(--main-theme-background-color);
 }
 
 .flc-splash .logo {
@@ -36,7 +36,7 @@
     font-style: italic;
 }
 
-/* Styles for alt theme */
+/* Styles for alt (dark) theme */
 .theme-alt .flc-splash {
-    background-color: #1f1f1f;
+    background-color: var(--alt-theme-background-color);
 }

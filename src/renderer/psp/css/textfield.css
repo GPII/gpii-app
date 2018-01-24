@@ -1,11 +1,11 @@
-/* Default (dark) theme styles */
+/* Default theme styles */
 .fl-textfield {
     width: 100%;
     height:36px;
     padding: 4px 8px 4px 11px;
 
     background-color: rgba(255, 255, 255, 0.6);
-    border: 1px solid #ffffff;
+    border: 1px solid #000000;
     color: #000000;
 
     line-height: 36px;
@@ -17,23 +17,23 @@
 
 .fl-textfield:focus {
     background-color: #ffffff;
-    border: 1px solid rgba(0, 120, 215, 0.6);
+    border: 1px solid #000000;
     outline: none;
 }
 
-/* Styles for alt theme */
+/* Styles for alt (dark) theme */
 .theme-alt .fl-textfield {
-    background-color: #1f1f1f;
+    background-color: var(--alt-theme-background-color);
     border-color: rgba(255, 255, 255, 0.6);
-    color: #ffffff;
+    color: var(--alt-theme-text-color);
 }
 
 .theme-alt .fl-textfield:hover {
-    background-color: #1f1f1f;
+    background-color: var(--alt-theme-background-color);
 }
 
 .theme-alt .fl-textfield:focus {
     background-color: #ffffff;
-    border-color: var(--main-color);
+    border-color: rgba(255, 255, 255, 0.6);
     color: #000000;
 }

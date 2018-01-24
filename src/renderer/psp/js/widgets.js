@@ -155,6 +155,7 @@
         that.applier.change("stringValue", value, null, "slide");
     };
 
+    // Not used currently. Remove it if it won't be used in the future.
     fluid.defaults("gpii.psp.widgets.slider", {
         gradeNames: ["fluid.textfieldSlider"],
         components: {
@@ -178,7 +179,7 @@
                             args: ["{that}", "{that}.container"]
                         },
                         onSlideEnd: {
-                            changePath: "number",
+                            changePath: "value",
                             value: "{that}.model.value"
                         }
                     }
@@ -187,52 +188,13 @@
         }
     });
 
-
-    /**
-     * The `stepper` has two important model properties: `number` and
-     * `value`. `number` is the actual value that this input represents.
-     * `value` represents a temporary state which may not always be the
-     * same as `number` (e.g. while the user is dragging the thumb of the
-     * slider, `value` changes continuously while `number` changes only
-     * when the user releases the thumb). This means that `number` should
-     * be used if changes to the actual model value should be observed from
-     * outer components.
-     */
     fluid.defaults("gpii.psp.widgets.stepper", {
         gradeNames: ["gpii.psp.widgets.attrsExpander", "fluid.textfieldStepper"],
         scale: 2,
         attrs: {
             // "aria-labelledby": null
         },
-        modelRelay: {
-            "value": {
-                target: "value",
-                singleTransform: {
-                    type: "fluid.transforms.identity",
-                    input: "{that}.model.number"
-                }
-            }
-        },
-        modelListeners: {
-            "value": {
-                changePath: "number",
-                value: "{change}.value",
-                excludeSource: ["init", "slide"]
-            }
-        },
         components: {
-            slider: {
-                type: "gpii.psp.widgets.slider",
-                container: "{that}.container",
-                options: {
-                    model: "{stepper}.model",
-                    scale: "{stepper}.options.scale",
-                    selectors: {
-                        textfield: ".flc-textfieldStepper-field"
-                    },
-                    attrs: "{stepper}.options.attrs"
-                }
-            },
             textfield: {
                 options: {
                     model: "{stepper}.model"

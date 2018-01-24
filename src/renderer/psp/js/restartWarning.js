@@ -131,7 +131,7 @@
      * @param labels {Object} An object containing various labels used throughout
      * the component.
      * @param pendingChanges {Array} An array containing all pending setting changes.
-     * @returns the solutions names or titles corresponding to the applications
+     * @return the solutions names or titles corresponding to the applications
      * that need to be restarted.
      */
     gpii.psp.baseRestartWarning.getSolutionsNames = function (labels, pendingChanges) {
@@ -161,7 +161,7 @@
      * the component.
      * @param solutionNames {Array} the solutions names or titles corresponding to the
      * applications that need to be restarted.
-     * @returns {String} The text which is to be displayed in the component.
+     * @return {String} The text which is to be displayed in the component.
      */
     gpii.psp.baseRestartWarning.generateRestartText = function (labels, solutionNames) {
         if (solutionNames[0] === labels.os) {

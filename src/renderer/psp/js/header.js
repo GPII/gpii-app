@@ -2,7 +2,7 @@
  * The header component of the PSP window
  *
  * Defines the elements in the header of the PSP (the active preference set name or
- * picker if there is more than one set available) and the close button.
+ * picker if there is more than one set available), the close and key out buttons.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -32,7 +32,8 @@
         selectors: {
             preferenceSetPicker: ".flc-prefSetPicker",
             activePreferenceSet: ".flc-activePreferenceSet",
-            closeBtn: ".flc-closeBtn"
+            autosaveText: ".flc-autosaveText",
+            keyOutBtn: ".flc-keyOutBtn"
         },
         model: {
             preferences: {
@@ -42,8 +43,8 @@
         },
         events: {
             onPreferencesUpdated: null,
-            onPSPClose: null,
-            onActivePreferenceSetAltered: null
+            onActivePreferenceSetAltered: null,
+            onKeyOut: null
         },
         modelListeners: {
             "preferences.activeSet": [{
@@ -87,15 +88,13 @@
                     }
                 }
             },
-            closeBtn: {
+            keyOutBtn: {
                 type: "gpii.psp.widgets.button",
-                container: "{that}.dom.closeBtn",
+                container: "{that}.dom.keyOutBtn",
                 options: {
-                    attrs: {
-                        "aria-label": "Close"
-                    },
+                    label: "{header}.options.labels.keyOut",
                     invokers: {
-                        "onClick": "{header}.events.onPSPClose.fire"
+                        "onClick": "{header}.events.onKeyOut.fire"
                     }
                 }
             }
@@ -104,7 +103,16 @@
             onPreferencesUpdated: {
                 funcName: "gpii.psp.updateHeader",
                 args: ["{that}.model.preferences.sets", "{that}.dom.preferenceSetPicker", "{that}.dom.activePreferenceSet"]
+            },
+            "onCreate.setAutosaveText": {
+                this: "{that}.dom.autosaveText",
+                method: "text",
+                args: ["{that}.options.labels.autosaveText"]
             }
+        },
+        labels: {
+            autosaveText: "Auto-save is on",
+            keyOut: "Key Out"
         }
     });
 

@@ -3,7 +3,7 @@
     width: 24px;
     height: 24px;
 
-    background-color: #000000;
+    background-color: var(--main-theme-text-color);
 
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
@@ -13,6 +13,10 @@
 
     -webkit-mask-size: 100% 100%;
     mask-size: 100% 100%;
+}
+
+.fl-icon.fl-icon-filled {
+    background-color: var(--main-theme-background-color);
 }
 
 .fl-icon-logOut {
@@ -36,9 +40,19 @@
     mask-image: url("../icons/info.svg");
 }
 
+.fl-icon-appRestart.fl-icon-filled {
+    -webkit-mask-image: url("../icons/info-filled.svg");
+    mask-image: url("../icons/info-filled.svg");
+}
+
 .fl-icon-osRestart {
     -webkit-mask-image: url("../icons/info-triangle.svg");
     mask-image: url("../icons/info-triangle.svg");
+}
+
+.fl-icon-osRestart.fl-icon-filled {
+    -webkit-mask-image: url("../icons/info-triangle-filled.svg");
+    mask-image: url("../icons/info-triangle-filled.svg");
 }
 
 .fl-icon-memory {
@@ -46,20 +60,11 @@
     mask-image: url("../icons/upload-cloud.svg");
 }
 
+/* Styles for alt (dark) theme */
 .theme-alt .fl-icon {
-    background-color: #ffffff;
+    background-color: var(--alt-theme-text-color);
 }
 
 .theme-alt .fl-icon.fl-icon-filled {
     background-color: var(--main-color);
-}
-
-.theme-alt .fl-icon-appRestart.fl-icon-filled {
-    -webkit-mask-image: url("../icons/info-filled.svg");
-    mask-image: url("../icons/info-filled.svg");
-}
-
-.theme-alt .fl-icon-osRestart.fl-icon-filled {
-    -webkit-mask-image: url("../icons/info-triangle-filled.svg");
-    mask-image: url("../icons/info-triangle-filled.svg");
 }

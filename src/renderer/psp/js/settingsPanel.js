@@ -26,7 +26,7 @@
     /**
      * Utility function for retrieving the last sub-element of a container
      * @param container {jQuery} The jQuery container object
-     * @returns {jQuery} A jQuery container object
+     * @return {jQuery} A jQuery container object
      */
     gpii.psp.utils.getContainerLastChild = function (container) {
         return container.children().last();
@@ -49,7 +49,6 @@
     fluid.defaults("gpii.psp.settingPresenter", {
         gradeNames: "fluid.viewComponent",
         selectors: {
-            icon: ".flc-icon",
             solutionName: ".flc-solutionName",
             title: ".flc-title",
             titleLabel: ".flc-titleLabel",
@@ -63,7 +62,6 @@
             valueChanged: "fl-icon-filled"
         },
         labels: {
-            memory: "This control auto-saves",
             osRestart: "To change this setting,\nWindows requires a restart.",
             osRestartRequired: "You changed this setting, which\nrequires Windows to restart.",
             appRestart: "%solutionName - To change this setting,\nthe app requires a restart.",
@@ -71,7 +69,6 @@
         },
         model: {
             path: null,
-            icon: null,
             solutionName: null,
             value: null,
             schema: null,
@@ -105,11 +102,6 @@
             }
         },
         listeners: {
-            "onCreate.setIcon": {
-                this: "{that}.dom.icon",
-                method: "attr",
-                args: ["src", "{that}.model.icon"]
-            },
             "onCreate.setSolutionName": {
                 this: "{that}.dom.solutionName",
                 method: "text",
@@ -173,7 +165,7 @@
      * the restart icon tooltip label is to be calculated.
      * @param labels {Object} A set of labels to choose from when calculating the restart icon
      * tooltip label.
-     * @returns The tooltip label for the restart icon.
+     * @return The tooltip label for the restart icon.
      */
     gpii.psp.settingPresenter.getRestartIconLabel = function (setting, hasPendingChange, labels) {
         if (setting.liveness === "manualRestart") {
@@ -206,6 +198,8 @@
                 .addClass(iconClass)
                 .attr("title", label)
                 .show();
+        } else {
+            restartIcon.hide();
         }
     };
 
@@ -240,16 +234,16 @@
     };
 
     /**
-     * A function responsible for showing and adding a tooltip to a memory icon
-     * if the setting will be persisted after a user has changed it.
+     * A function responsible for showing a memory icon if the setting will be
+     * persisted after a user has changed it.
      * @param that {Component} An instance of `gpii.psp.settingPresenter`.
      * @param memoryIcon {jQuery} A jQuery object representing the memory icon.
      */
     gpii.psp.settingPresenter.showMemoryIcon = function (that, memoryIcon) {
         if (that.model.memory) {
-            memoryIcon
-                .attr("title", that.options.labels.memory)
-                .show();
+            memoryIcon.show();
+        } else {
+            memoryIcon.hide();
         }
     };
 
@@ -500,7 +494,7 @@
      * @param markup.container {String} The markup which is to be interpolated with the container index.
      *   Should have a `containerClass` interpolated expression.
      * @param containerIndex {Number} The index for the container
-     * @returns {String}
+     * @return {String}
      */
     gpii.psp.settingsVisualizer.getIndexedContainerMarkup = function (markup, containerIndex) {
         // Remove the "." prefix
@@ -583,7 +577,7 @@
     /**
      * Returns list of exemplars.
      * @param exemplars {Object} The `gpii.psp.widgetExemplars` object
-     * @returns {Object[]} A list of `gpii.psp.exemplar` objects
+     * @return {Object[]} A list of `gpii.psp.exemplar` objects
      */
     gpii.psp.settingsPanel.getExemplarsList = function (exemplars) {
         return fluid.values(exemplars)
@@ -594,7 +588,7 @@
      * Simplifies the `fluid.resourcesLoader`'s resource object, to supply only the fetched data.
      *
      * @param resources {Object} The `fluid.resourceLoader`'s `resource` object after fetch.
-     * @returns {Object} Object with properties like: `{resourceKey}: {resourceText}`
+     * @return {Object} Object with properties like: `{resourceKey}: {resourceText}`
      */
     gpii.psp.settingsPanel.flattenResources = function (resources) {
         return fluid.keys(resources)

@@ -1,0 +1,47 @@
+/* Default theme styles */
+.fl-stepper .fl-stepperBtn {
+    float: left;
+    height: 30px;
+    padding: 0 5px;
+    border: 1px solid var(--main-theme-text-color);
+
+    line-height: 30px;
+    font-size: 24px;
+    color: var(--main-theme-text-color);
+
+    vertical-align: top;
+    box-shadow: none;
+}
+
+.fl-stepper .fl-stepperBtn.fl-stepperBtnLeft {
+    border-right: none;
+}
+
+.fl-stepper .fl-stepperBtn.fl-stepperBtnLeft > span {
+    position: relative;
+    top: -5px;
+}
+
+.fl-stepper .fl-stepperBtn.fl-stepperBtnRight {
+    border-left: none;
+}
+
+.fl-stepper .fl-stepperBtn.fl-stepperBtnRight > span {
+    position: relative;
+    top: -4px;
+}
+
+.fl-stepper .fl-textfield {
+    float: left;
+    width: 60px;
+    height: 30px;
+    padding: 2px;
+
+    text-align: center;
+}
+
+/* Styles for alt (dark) theme */
+.theme-alt .fl-stepper .fl-stepperBtn {
+    border-color: rgba(255, 255, 255, 0.6);
+    color: var(--alt-theme-text-color);
+}

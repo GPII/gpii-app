@@ -398,7 +398,7 @@ gpii.app.menu.getPreferenceSetsMenuItems = function (preferenceSets, activeSet) 
   * Generates an object that represents the menu items for opening the settings panel
   * @param keyedInUserToken {String} The user token that is currently keyed in.
   * @param openSettingsStr {String} The string to be displayed for the open setting panel menu item.
-  * @returns {ElectronMenuItem}
+  * @return {ElectronMenuItem}
   */
 gpii.app.menu.getShowPSP = function (keyedInUserToken, openSettingsStr) {
     return {
@@ -412,8 +412,9 @@ gpii.app.menu.getShowPSP = function (keyedInUserToken, openSettingsStr) {
 
 /**
   * Creates a JSON representation of a menu.
-  * @param {Object} An object containing a menu item template.
-  * There should be one object per menu item in the order they should appear in the mneu.
+  * @param {...Object} The arguments represent menu item templates and should be passed to the function
+  * in the order they should appear in the menu. If an item is not defined or null, it should be ignored.
+  * @return {Array} An array of the menu item templates.
   */
 gpii.app.menu.generateMenuTemplate = function (/* all the items in the menu */) {
     var menuTemplate = [],

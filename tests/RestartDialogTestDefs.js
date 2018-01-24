@@ -33,7 +33,6 @@ var settingChangeFixture = {
 };
 
 var manualRestartSettingFixture = {
-    icon: "../../icons/gear-cloud-white.png",
     liveness: "manualRestart",
     memory: true,
     path: "http://registry\\.gpii\\.net/common/magnification",

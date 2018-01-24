@@ -143,7 +143,6 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
         schema: settingDescriptor.schema,
 
         // XXX hardcoded as they're not currently supported by the API (pcpChannel)
-        icon: fluid.module.resolvePath("%gpii-app/src/icons/gear-cloud-white.png"),
         liveness: settingDescriptor.liveness || "live",
         memory: fluid.isValue(settingDescriptor.memory) ? settingDescriptor.memory : true
     };
