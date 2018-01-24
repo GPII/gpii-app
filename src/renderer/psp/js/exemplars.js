@@ -127,7 +127,7 @@
         schemaType: "number",
         widgetOptions: {
             model: {
-                number: "{settingPresenter}.model.value",
+                value: "{settingPresenter}.model.value",
                 step: "{settingPresenter}.model.schema.divisibleBy",
                 range: {
                     min: "{settingPresenter}.model.schema.min",

@@ -1,17 +1,20 @@
-/* Default (dark) theme styles */
+/* Default theme styles */
 .fl-btn {
     position: relative;
     width: 106px;
-    height: 75px;
+    min-width: 106px;
+    height: 50px;
+    padding-top: 7px;
 
-    background-color: #ffffff;
+    background-color: #434343;
     border: 3px solid transparent;
-    color: #000000;
+    color: #ffffff;
 }
 
 .fl-btn:hover {
-    background-color: rgba(255, 255, 255, 0.8);
-    border-color: #ffffff;
+    background-color: rgba(67, 67, 67, 0.8);
+    border-color: #434343;
+    color: #ffffff;
 }
 
 .fl-btn:focus,
@@ -19,13 +22,15 @@
     -webkit-box-shadow: none;
     box-shadow: none;
 
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(67, 67, 67, 0.6);
+    color: #ffffff;
 }
 
 .fl-btn .fl-btnIcon {
     position: absolute;
     top: 5px;
     left: 5px;
+    background-color: #ffffff;
 }
 
 .fl-btn .fl-btnIcon:before {
@@ -33,29 +38,22 @@
     font-weight: bold;
 }
 
-.fl-btn .fl-btnLabel {
-    position: absolute;
-    bottom: 5px;
-    left: 5px;
-
-    text-align: left;
-    white-space: normal;
-}
-
-/* Styles for alt theme */
+/* Styles for alt (dark) theme */
 .theme-alt .fl-btn {
     background-color: var(--main-color);
     border-color: transparent;
-    color: #ffffff;
+    color: var(--alt-theme-text-color);
 }
 
 .theme-alt .fl-btn:hover {
     background-color: var(--main-color);
     border-color: rgba(255, 255, 255, 0.4);
+    color: var(--alt-theme-text-color);
 }
 
 .theme-alt .fl-btn:focus,
 .theme-alt .fl-btn:active {
     background-color: var(--main-color);
     border-color: rgba(255, 255, 255, 0.4);
+    color: var(--alt-theme-text-color);
 }

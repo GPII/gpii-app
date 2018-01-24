@@ -24,7 +24,6 @@
         value: "b",
         solutionName: "solutions1",
 
-        icon: "../../../../icons/gear-cloud-black.png",
         liveness: "manualRestart",
         memory: false,
 
@@ -40,7 +39,6 @@
         path: "textfieldPath",
         value: "Someee",
 
-        icon: "../../../../icons/gear-cloud-white.png",
         liveness: "live",
 
         schema: {
@@ -54,7 +52,6 @@
         path: "invertColorsPath",
         value: true,
 
-        icon: "../../../../icons/gear-cloud-black.png",
         liveness: "liveRestart",
         memory: true,
 
@@ -69,7 +66,6 @@
         path: "zoomPath",
         value: 1,
 
-        icon: "../../../../icons/gear-cloud-black.png",
         liveness: "OSRestart",
 
         schema: {
@@ -86,7 +82,6 @@
         path: "ttsTrackingPath",
         value: ["mouse", "focus"],
 
-        icon: "../../../../icons/gear-cloud-white.png",
         liveness: "manualRestart",
 
         schema: {
@@ -101,8 +96,6 @@
         path: "settingTwoPath",
         value: "c",
         solutionName: "solutions2",
-
-        icon: "../../../../icons/gear-cloud-black.png",
 
         schema: {
             type: "string",
@@ -242,30 +235,6 @@
     };
 
     gpii.tests.psp.testStepper = function (container, setting) {
-        // Test slider
-        var slider = $(".flc-textfieldSlider-slider", container);
-        jqUnit.assertEquals(
-            "Widgets: Stepper - slider should have proper value",
-            setting.value.toString(),
-            slider.val()
-        );
-        jqUnit.assertEquals(
-            "Widgets: Stepper - slider min should be proper",
-            setting.schema.min.toString(),
-            slider.attr("min")
-        );
-        jqUnit.assertEquals(
-            "Widgets: Stepper - slider min should be proper",
-            setting.schema.max.toString(),
-            slider.attr("max")
-        );
-        jqUnit.assertEquals(
-            "Widgets: Stepper - slider step should be proper",
-            setting.schema.divisibleBy.toString(),
-            slider.attr("step")
-        );
-
-        // Test stepper
         var stepper = $(".flc-textfieldStepper-field", container);
         jqUnit.assertEquals(
             "Widgets: Stepper - stepper value should be proper",
@@ -328,12 +297,6 @@
                 $(".flc-solutionName", settingContainer).text().trim()
             );
 
-            jqUnit.assertEquals(
-                "Setting element should have solutionName",
-                setting[idx].icon,
-                $(".flc-icon", settingContainer).attr("src")
-            );
-
             widgetCheckersMap[setting[idx].schema.type](
                 settingContainers[idx],
                 setting[idx]
@@ -384,7 +347,7 @@
             }, {
                 // Test all visible markup
                 name: "Test elements rendered properly",
-                expect: 33,
+                expect: 23,
                 sequence: [{
                     funcName: "gpii.tests.psp.testSettingsRendered",
                     args: ["{settingsPanelMock}.container", allSettingTypesFixture]
@@ -412,21 +375,13 @@
         });
     };
 
-    gpii.tests.psp.testWidgetMemoryIcon = function (container, memory, tooltip) {
+    gpii.tests.psp.testWidgetMemoryIcon = function (container, memory) {
         var memoryIcon = container.find(".flc-memoryIcon");
         jqUnit.assertEquals(
             "Widgets: Widget is correctly (not) showing its memory icon",
             memory,
             memoryIcon.is(":visible")
         );
-
-        if (memory) {
-            jqUnit.assertEquals(
-                "Widgets: Widget's memory icon has correct tooltip",
-                tooltip,
-                memoryIcon.attr("title")
-            );
-        }
     };
 
     gpii.tests.psp.testOSRestartIcon = function (container, isModified, styles, labels) {
@@ -478,13 +433,6 @@
             "Widgets: Stepper - text input has correct value after model update",
             expected.toString(),
             textfield.val()
-        );
-
-        var slider = $(".flc-textfieldSlider-slider", container);
-        jqUnit.assertEquals(
-            "Widgets: Stepper - slider input has correct value after model update",
-            expected.toString(),
-            slider.val()
         );
     };
 
@@ -560,7 +508,7 @@
             name: "PSP widgets interaction tests",
             tests: [{
                 name: "Widgets: Switch - interactions test",
-                expect: 5,
+                expect: 4,
                 sequence: [{ // initiate `settingsVisualizer` creation
                     funcName: "{singleSettingPanelsMock}.switchPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -573,8 +521,7 @@
                     funcName: "gpii.tests.psp.testWidgetMemoryIcon",
                     args: [
                         "{singleSettingPanelsMock}.switchPanel.container",
-                        switchSettingFixture.memory,
-                        "{singleSettingPanelsMock}.switchPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels.memory"
+                        switchSettingFixture.memory
                     ]
                 }, [ // Test DOM interaction
                     { // simulate manual click from the user
@@ -601,14 +548,13 @@
                 ]
             }, {
                 name: "Widgets: Stepper - interactions test",
-                expect: 12,
+                expect: 10,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.stepperPanel.events.onTemplatesLoaded.fire"
                 }, {
                     funcName: "gpii.tests.psp.testWidgetAccessibility",
                     args: [
-                        ["@expand:$(.flc-textfieldSlider-slider, {singleSettingPanelsMock}.stepperPanel.container)",
-                            "@expand:$(.flc-textfieldStepper-field, {singleSettingPanelsMock}.stepperPanel.container)"],
+                        ["@expand:$(.flc-textfieldStepper-field, {singleSettingPanelsMock}.stepperPanel.container)"],
                         stepperSettingFixture.path
                     ]
                 }, {
@@ -729,8 +675,7 @@
                     funcName: "gpii.tests.psp.testWidgetMemoryIcon",
                     args: [
                         "{singleSettingPanelsMock}.dropdownPanel.container",
-                        dropdownSettingFixture.memory,
-                        "{singleSettingPanelsMock}.switchPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels.memory"
+                        dropdownSettingFixture.memory
                     ]
                 }, [
                     {

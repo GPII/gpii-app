@@ -91,6 +91,7 @@
         },
         selectors: {
             theme: "#flc-theme",
+            titlebar: "#flc-titlebar",
             header: "#flc-header",
             content: "#flc-content",
             footer: "#flc-footer",
@@ -111,6 +112,15 @@
                     }
                 }
             },
+            titlebar: {
+                type: "gpii.psp.titlebar",
+                container: "{that}.dom.titlebar",
+                options: {
+                    listeners: {
+                        "onPSPClose": "{mainWindow}.events.onPSPClose"
+                    }
+                }
+            },
             header: {
                 type: "gpii.psp.header",
                 container: "{that}.dom.header",
@@ -123,10 +133,8 @@
                     },
                     events: {
                         onPreferencesUpdated: "{mainWindow}.events.onPreferencesUpdated",
-                        onActivePreferenceSetAltered: "{mainWindow}.events.onActivePreferenceSetAltered"
-                    },
-                    listeners: {
-                        "onPSPClose": "{mainWindow}.events.onPSPClose"
+                        onActivePreferenceSetAltered: "{mainWindow}.events.onActivePreferenceSetAltered",
+                        onKeyOut: "{mainWindow}.events.onKeyOut"
                     }
                 }
             },
@@ -166,12 +174,7 @@
             },
             footer: {
                 type: "gpii.psp.footer",
-                container: "{that}.dom.footer",
-                options: {
-                    events: {
-                        onKeyOut: "{mainWindow}.events.onKeyOut"
-                    }
-                }
+                container: "{that}.dom.footer"
             },
             heightChangeListener: {
                 type: "gpii.psp.heightChangeListener",
