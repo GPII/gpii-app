@@ -61,11 +61,35 @@ var gpii = fluid.registerNamespace("gpii");
  * using this module adds flexibility and currently seems sufficient.
  */
 fluid.defaults("gpii.app.rulesEngine", {
-    gradeNames: ["fluid.modelComponent"]
+    gradeNames: ["fluid.modelComponent"],
+    model: {
+        triggers: []
+    },
+    events: {
+        onRuleSatisfied: null
+    },
+    dynamicComponents: {
+        ruleHandler: {
+            type: "gpii.app.ruleHandler",
+            sources: "{that}.model.triggers",
+            options: {
+                rule: "{source}",
+                model: {
+                    conditions: "{that}.options.rule.conditions"
+                },
+                events: {
+                    onRuleSatisfied: "{rulesEngine}.events.onRuleSatisfied"
+                }
+            }
+        }
+    }
 });
 
 fluid.defaults("gpii.app.ruleHandler", {
     gradeNames: ["fluid.modelComponent"],
+    rule: {
+        // the actual rule with all its conditions
+    },
     model: {
         satisfiedCount: 0,
         conditions: []
@@ -76,8 +100,8 @@ fluid.defaults("gpii.app.ruleHandler", {
     },
     dynamicComponents: {
         conditionHandler: {
-            sources: "{that}.model.conditions",
             type: "@expand:fluid.app.ruleHandler.getConditionHandlerType({source})",
+            sources: "{that}.model.conditions",
             options: {
                 condition: "{source}",
                 model: {
@@ -107,12 +131,15 @@ fluid.app.ruleHandler.onConditionSatisfied = function (that) {
     var satisfiedCount = that.model.satisfiedCount + 1;
     that.applier.change("satisfiedCount", satisfiedCount);
     if (satisfiedCount === that.model.conditions.length) {
-        that.events.onRuleSatisfied.fire();
+        that.events.onRuleSatisfied.fire(that.options.rule);
     }
 };
 
 fluid.defaults("gpii.app.conditionHandler", {
     gradeNames: ["fluid.modelComponent"],
+    condition: {
+        // the actual condition with its type and value
+    },
     model: {
         value: null
     },
