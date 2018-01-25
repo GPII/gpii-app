@@ -164,7 +164,7 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
  */
 gpii.app.surveyDialog.openSurvey = function (that, config) {
     that.notifySurveyWindow("onSurveyOpen", config);
-    that.show();
+    that.applier.change("isShown", true);
 };
 
 /**
@@ -246,7 +246,7 @@ gpii.app.survey.show = function (that, options) {
  */
 gpii.app.survey.hide = function (that) {
     if (that.surveyDialog) {
-        that.surveyDialog.hide();
+        that.change.applier("isShown", false);
     }
 };
 
