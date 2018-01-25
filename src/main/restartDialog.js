@@ -77,11 +77,10 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
     invokers: {
         showIfNeeded: {
             funcName: "gpii.app.dialog.restartDialog.showIfNeeded",
-            args: ["{that}", "{arguments}.0"]
-        },
-        isShown: {
-            this: "{that}.dialog",
-            method: "isVisible"
+            args: [
+                "{that}",
+                "{arguments}.0" // pendingChanges
+            ]
         }
     },
 
@@ -125,6 +124,6 @@ gpii.app.dialog.restartDialog.showIfNeeded = function (restartDialog, pendingCha
         restartDialog.dialog.focus();
 
         // finally, show the dialog
-        restartDialog.show();
+        restartDialog.applier.change("isShown", true);
     }
 };

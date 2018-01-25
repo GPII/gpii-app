@@ -54,7 +54,6 @@ fluid.defaults("gpii.app", {
     model: {
         keyedInUserToken: null,
         snapsetName: null,
-        showDialog: false,
         preferences: {
             sets: [],
             activeSet: null
@@ -169,21 +168,25 @@ fluid.defaults("gpii.app", {
                         ]
                     },
                     "{psp}.events.onRestartNow": [{
-                        func: "{restartDialog}.hide"
+                        changePath: "{restartDialog}.model.isShown",
+                        args: false
                     }, {
                         listener: "{settingsBroker}.applyPendingChanges"
                     }],
                     "{psp}.events.onUndoChanges": [{
-                        func: "{restartDialog}.hide"
+                        changePath: "{restartDialog}.model.isShown",
+                        args: false
                     }, {
                         listener: "{settingsBroker}.undoPendingChanges"
                     }],
                     "{psp}.events.onRestartLater": {
-                        func: "{restartDialog}.hide"
+                        changePath: "{restartDialog}.model.isShown",
+                        args: false
                     },
 
                     "{restartDialog}.events.onClosed": {
-                        func: "{restartDialog}.hide"
+                        changePath: "{restartDialog}.model.isShown",
+                        args: false
                     },
 
                     // Handle setting interactions (undo, restart now, settings interaction)
@@ -225,8 +228,11 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.waitDialog",
             createOnEvent: "onPrerequisitesReady",
             options: {
-                model: {
-                    showDialog: "{gpii.app}.model.showDialog"
+                modelListeners: {
+                    "{lifecycleManager}.model.logonChange": {
+                        changePath: "{that}.model.isShown",
+                        value: "{change}.value.inProgress"
+                    }
                 }
             }
         },
@@ -243,12 +249,6 @@ fluid.defaults("gpii.app", {
         },
         onGPIIReady: null,
         onAppReady: null
-    },
-    modelListeners: {
-        "{lifecycleManager}.model.logonChange": {
-            funcName: "{that}.updateShowDialog",
-            args: ["{change}.value.inProgress"]
-        }
     },
     listeners: {
         "onCreate.appReady": {
@@ -276,10 +276,6 @@ fluid.defaults("gpii.app", {
     invokers: {
         updateKeyedInUserToken: {
             changePath: "keyedInUserToken",
-            value: "{arguments}.0"
-        },
-        updateShowDialog: {
-            changePath: "showDialog",
             value: "{arguments}.0"
         },
         updatePreferences: {
@@ -341,7 +337,7 @@ gpii.app.hideRestartDialogIfNeeded = function (restartDialog, isPspShown, pendin
     if (isPspShown || (pendingChanges && pendingChanges.length === 0)) {
         // ensure the dialog is hidden
         // NOTE: this may have no effect in case the dialog is already hidden
-        restartDialog.hide();
+        restartDialog.applier.change("isShown", false);
     }
 };
 
@@ -456,11 +452,8 @@ gpii.app.handleUncaughtException = function (that, err) {
         }
     };
 
-    // Update the showDialog model in order for the dialog to show for the
-    // next user who tries to key in.
-    that.updateShowDialog(false);
-    // Immediately hide the loading dialog.
-    that.waitDialog.dialog.hide();
+    // Restore the state of the wait dialog
+    that.waitDialog.applier.change("isShown", false);
 
     if (err.code) {
         var error = handledErrors[err.code];

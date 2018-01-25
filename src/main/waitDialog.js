@@ -25,7 +25,7 @@ require("./dialog.js");
  */
 
 fluid.defaults("gpii.app.waitDialog", {
-    gradeNames: ["gpii.app.dialog", "fluid.modelComponent"],
+    gradeNames: ["gpii.app.dialog"],
 
     config: {
         attrs: {
@@ -35,15 +35,15 @@ fluid.defaults("gpii.app.waitDialog", {
         fileSuffixPath: "waitDialog/index.html"
     },
     model: {
-        showDialog: false,
         dialogMinDisplayTime: 2000, // minimum time to display dialog to user in ms
         dialogStartTime: 0, // timestamp recording when the dialog was displayed to know when we can dismiss it again
         timeout: 0
     },
     modelListeners: {
-        "showDialog": {
-            funcName: "gpii.app.waitDialog.showHideWaitDialog",
-            args: ["{that}", "{change}.value"]
+        isShown: {
+            funcName: "gpii.app.waitDialog.toggle",
+            args: ["{that}", "{change}.value"],
+            namespace: "impl"
         }
     },
     listeners: {
@@ -57,8 +57,18 @@ gpii.app.waitDialog.clearTimers = function (that) {
     clearInterval(that.displayWaitInterval);
 };
 
-gpii.app.waitDialog.showHideWaitDialog = function (that, showDialog) {
-    showDialog ? gpii.app.waitDialog.show(that) : gpii.app.waitDialog.hide(that);
+/**
+ * Either shows or hides the wait dialog, depending on the `isShown` flag state
+ *
+ * @param that {Component} The `gpii.app.waitDialog` instance
+ * @param isShown {Boolean} The state of the dialog
+ */
+gpii.app.waitDialog.toggle = function (that, isShown) {
+    if (isShown) {
+        gpii.app.waitDialog.show(that);
+    } else {
+        gpii.app.waitDialog.hide(that);
+    }
 };
 
 /**
