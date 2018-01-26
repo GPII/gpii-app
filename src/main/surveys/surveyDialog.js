@@ -246,7 +246,7 @@ gpii.app.survey.show = function (that, options) {
  */
 gpii.app.survey.hide = function (that) {
     if (that.surveyDialog) {
-        that.change.applier("isShown", false);
+        that.surveyDialog.applier.change("isShown", false);
     }
 };
 
