@@ -20,11 +20,8 @@
                 "target": "{that gpiiConnector}.options.config"
             },
             "distributeSurveyConnector": {
-                "record": {
-                    "hostname": "astea@surveyserver.gpii.net",
-                    "port": 33334
-                },
-                "target": "{that surveyConnector}.options.config"
+                "record": "gpii.app.staticSurveyConnector",
+                "target": "{that surveyConnector}.options.gradeNames"
             }
         }
     },

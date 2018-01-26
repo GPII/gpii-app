@@ -96,11 +96,6 @@ fluid.defaults("gpii.app", {
         surveyManager: {
             type: "gpii.app.surveyManager",
             priority: "after:rulesEngine",
-            options: {
-                events: {
-                    onSurveyWSConnected: "{app}.events.onSurveyWSConnected"
-                }
-            }
         },
         dialogManager: {
             type: "gpii.app.dialogManager",
@@ -325,14 +320,12 @@ fluid.defaults("gpii.app", {
             events: {
                 onGPIIReady: "onGPIIReady",
                 onAppReady: "onAppReady",
-                onPSPChannelConnected: "onPSPChannelConnected",
-                onSurveyWSConnected: "onSurveyWSConnected"
+                onPSPChannelConnected: "onPSPChannelConnected"
             }
         },
         onGPIIReady: null,
         onAppReady: null,
         onPSPChannelConnected: null,
-        onSurveyWSConnected: null,
         onPSPReady: null,
 
         onKeyedIn: null,
