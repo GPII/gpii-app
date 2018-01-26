@@ -1,0 +1,14 @@
+{
+    "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux",
+    "closeOnSubmit": true,
+    "window": {
+        "width": 800,
+        "height": 600,
+        "resizable": true,
+
+        "title": "GPII Auto-Personalization Survey",
+        "closable": true,
+        "minimizable": false,
+        "maximizable": false
+    }
+}

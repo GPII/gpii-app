@@ -21,7 +21,6 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
 require("../src/main/app.js");
-require("./SurveyServerMock.js");
 
 fluid.registerNamespace("gpii.tests.dialogManager.testDefs");
 

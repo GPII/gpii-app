@@ -21,10 +21,6 @@
                     "args": ["{testCaseHolder}", "{arguments}.0"]
                 },
                 "target": "{that flowManager gpii.app}.options.listeners.onCreate"
-            },
-            "mockSurveyServer": {
-                "record": "gpii.tests.mocks.surveyServerWrapper",
-                "target": "{that gpii.app.surveyManager}.options.gradeNames"
             }
         }
     },

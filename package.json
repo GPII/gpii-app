@@ -11,18 +11,14 @@
     "electron-packager": "8.5.1",
     "eslint-config-fluid": "1.0.0",
     "fluid-grunt-eslint": "18.1.2",
-    "gpii-survey-server": "git+https://github.com/danailbd/gpii-survey-server.git",
     "grunt": "1.0.1",
     "grunt-jsonlint": "1.1.0",
     "grunt-shell": "1.3.0",
-    "npm-run-all": "4.1.2",
     "shelljs": "0.3.0"
   },
   "scripts": {
     "start": "electron main.js",
-    "start-survey-server": "node ./node_modules/gpii-survey-server",
-    "start-psp-dev": "electron main.js ./configs app.dev",
-    "dev": "npm-run-all --parallel start-survey-server start-psp-dev",
+    "dev": "electron main.js ./configs app.dev",
     "test": "powershell provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; electron tests.js"
   },
   "dependencies": {

@@ -1,0 +1,11 @@
+{
+    "conditions": {
+        "all": [{
+            "fact": "keyedInBefore",
+            "operator": "greaterThanInclusive",
+            "value": 5000
+        }]
+    },
+    "id": "id",
+    "urlTriggerHandler": "URL of the survey server to handle the surveyTriggerEvent"
+}
