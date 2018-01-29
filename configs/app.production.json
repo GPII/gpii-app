@@ -10,6 +10,6 @@
         }
     },
     "mergeConfigs": [
-        "../node_modules/universal/gpii/configs/gpii.config.all.development.dr.production.json"
+        "%universal/gpii/configs/gpii.config.all.development.dr.production.json"
      ]
 }

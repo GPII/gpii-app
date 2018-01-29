@@ -30,10 +30,10 @@ if (appIsRunning || gpiiIsRunning) {
 }
 
 require("gpii-windows/index.js");
-require("./src/logging.js");
-require("./src/app.js");
+require("./src/main/logging.js");
+require("./src/main/app.js");
 
 kettle.config.loadConfig({
-    configName: kettle.config.getConfigName("app"),
+    configName: kettle.config.getConfigName("app.testing"),
     configPath: kettle.config.getConfigPath(__dirname + "/configs")
 });

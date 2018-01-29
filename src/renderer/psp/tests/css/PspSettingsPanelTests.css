@@ -1,0 +1,11 @@
+body {
+    background-color: white;
+}
+
+.fl-settingsList,
+.fl-restartWarning {
+    background-color: #0078d7;
+    width: 500px;
+
+    opacity: 0;
+}

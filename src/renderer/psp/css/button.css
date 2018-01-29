@@ -1,0 +1,59 @@
+/* Default theme styles */
+.fl-btn {
+    position: relative;
+    width: 106px;
+    min-width: 106px;
+    height: 50px;
+    padding-top: 7px;
+
+    background-color: #434343;
+    border: 3px solid transparent;
+    color: #ffffff;
+}
+
+.fl-btn:hover {
+    background-color: rgba(67, 67, 67, 0.8);
+    border-color: #434343;
+    color: #ffffff;
+}
+
+.fl-btn:focus,
+.fl-btn:active {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+
+    background-color: rgba(67, 67, 67, 0.6);
+    color: #ffffff;
+}
+
+.fl-btn .fl-btnIcon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: #ffffff;
+}
+
+.fl-btn .fl-btnIcon:before {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Styles for alt (dark) theme */
+.theme-alt .fl-btn {
+    background-color: var(--main-color);
+    border-color: transparent;
+    color: var(--alt-theme-text-color);
+}
+
+.theme-alt .fl-btn:hover {
+    background-color: var(--main-color);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: var(--alt-theme-text-color);
+}
+
+.theme-alt .fl-btn:focus,
+.theme-alt .fl-btn:active {
+    background-color: var(--main-color);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: var(--alt-theme-text-color);
+}
