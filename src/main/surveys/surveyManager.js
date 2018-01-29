@@ -54,6 +54,7 @@ fluid.defaults("gpii.app.surveyManager", {
             type: "gpii.app.surveyTriggerManager",
             options: {
                 listeners: {
+                    "{app}.events.onKeyedOut": "{that}.reset",
                     onTriggerOccurred: {
                         func: "{surveyConnector}.notifyTriggerOccurred",
                         args: "{arguments}.0" // the trigger payload

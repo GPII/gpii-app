@@ -14,11 +14,10 @@
  */
 "use strict";
 
-var fluid = require("infusion"),
-    gpii = fluid.registerNamespace("gpii");
+var fluid = require("infusion");
 
 fluid.defaults("gpii.app.pspFacts", {
-    gradeNames: ["gpii.modelComponent"],
+    gradeNames: ["fluid.modelComponent"],
     model: {
         keyedInTimestamp: null
     },
@@ -36,12 +35,8 @@ fluid.defaults("gpii.app.pspFacts", {
             value: "@expand:Date.now()"
         },
         reset: {
-            funcName: "gpii.app.pspFacts.reset",
-            args: ["{that}"]
+            changePath: "keyedInTimestamp",
+            value: null
         }
     }
 });
-
-gpii.app.pspFacts.reset = function (that) {
-    that.applier.change("keyedInTimestamp", null);
-};

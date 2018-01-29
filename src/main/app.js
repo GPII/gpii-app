@@ -85,12 +85,7 @@ fluid.defaults("gpii.app", {
         },
         rulesEngine: {
             type: "gpii.app.rulesEngine",
-            priority: "after:pspFacts",
-            options: {
-                listeners: {
-                    "{pspFacts}.events.onFactsUpdated": "{that}.checkRules"
-                }
-            }
+            priority: "after:pspFacts"
         },
         surveyManager: {
             type: "gpii.app.surveyManager",

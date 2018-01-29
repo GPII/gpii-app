@@ -42,8 +42,7 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
         "{rulesEngine}.events.onRuleSatisfied": {
             func: "{surveyTriggerManager}.handleRuleSuccess",
             args: [
-                "{arguments}.0", // triggerType
-                "{arguments}.1"  // payload
+                "{arguments}.0" // trigger
             ]
         }
 
@@ -54,23 +53,20 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
 
     invokers: {
         reset: {
-            funcName: "gpii.app.surveyTriggerManager.reset",
-            args: "{that}"
+            func: "{rulesEngine}.reset"
         },
 
         handleRuleSuccess: {
             funcName: "gpii.app.surveyTriggerManager.handleRuleSuccess",
             args: [
                 "{that}",
-                "{arguments}.0", // triggerType
-                "{arguments}.1"  // payload
+                "{arguments}.0" // trigger
             ]
         },
 
         registerTrigger: {
             funcName: "gpii.app.surveyTriggerManager.registerTrigger",
             args: [
-                "{that}.options.triggerTypes.surveyTrigger",
                 "{rulesEngine}",
                 "{arguments}.0" // triggerData
             ]
@@ -79,28 +75,14 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
 });
 
 /**
- * Clears any registered triggers.
- * @param that {Component} The `gpii.app.surveyTriggerManger` component
- */
-gpii.app.surveyTriggerManager.reset = function (that) {
-    var triggerTypes = fluid.values(that.options.triggerTypes);
-
-    triggerTypes.forEach(function (triggerType) {
-        that.rulesEngine.removeRule(triggerType);
-    });
-};
-
-/**
  * Registers a listener for once the specified rule is completed with success.
  * @param that {Component} The `gpii.app.surveyTriggerManger` component
  * @param ruleType {String} The trigger, for which a rule is registered
  * @param payload {Object} The data to be sent with trigger's success event
  */
-gpii.app.surveyTriggerManager.handleRuleSuccess = function (that, triggerType, payload) {
-    if (triggerType === that.options.triggerTypes.surveyTrigger) {
-        that.events.onTriggerOccurred.fire(payload);
-        that.rulesEngine.removeRule(triggerType);
-    }
+gpii.app.surveyTriggerManager.handleRuleSuccess = function (that, trigger) {
+    that.events.onTriggerOccurred.fire(trigger);
+    that.rulesEngine.removeRule(trigger);
 };
 
 /**
@@ -110,6 +92,8 @@ gpii.app.surveyTriggerManager.handleRuleSuccess = function (that, triggerType, p
  * @param triggerData {Object} The data for the trigger
  * @param triggerData.conditions {Object} The coditions to be watcher for
  */
-gpii.app.surveyTriggerManager.registerTrigger = function (triggerType, rulesEngine, triggerData) {
-    rulesEngine.addRule(triggerType, triggerData.conditions, triggerData);
+gpii.app.surveyTriggerManager.registerTrigger = function (rulesEngine, triggerData) {
+    fluid.each(triggerData, function (trigger) {
+        rulesEngine.addRule(trigger);
+    });
 };

@@ -15,11 +15,8 @@
  */
 "use strict";
 
-var fluid = require("infusion");
-var RulesEngine = require("json-rules-engine").Engine;
-
-var gpii = fluid.registerNamespace("gpii");
-
+var fluid = require("infusion"),
+    gpii = fluid.registerNamespace("gpii");
 
 /**
  * A component that, having facts provided, supports checks on whether a list of
@@ -62,28 +59,81 @@ var gpii = fluid.registerNamespace("gpii");
  */
 fluid.defaults("gpii.app.rulesEngine", {
     gradeNames: ["fluid.modelComponent"],
-    model: {
-        triggers: []
+    members: {
+        handlersMap: {}
     },
     events: {
+        onRuleAdded: null,
         onRuleSatisfied: null
     },
     dynamicComponents: {
         ruleHandler: {
             type: "gpii.app.ruleHandler",
-            sources: "{that}.model.triggers",
+            createOnEvent: "onRuleAdded",
             options: {
-                rule: "{source}",
+                rule: "{arguments}.0",
                 model: {
                     conditions: "{that}.options.rule.conditions"
                 },
                 events: {
                     onRuleSatisfied: "{rulesEngine}.events.onRuleSatisfied"
+                },
+                listeners: {
+                    onCreate: {
+                        funcName: "gpii.app.rulesEngine.registerRuleHandler",
+                        args: ["{rulesEngine}", "{that}"]
+                    }
                 }
             }
         }
+    },
+    invokers: {
+        addRule: {
+            funcName: "gpii.app.rulesEngine.addRule",
+            args: [
+                "{that}",
+                "{arguments}.0" // rule
+            ]
+        },
+        removeRule: {
+            funcName: "gpii.app.rulesEngine.removeRule",
+            args: [
+                "{that}",
+                "{arguments}.0" // rule
+            ]
+        },
+        reset: {
+            funcName: "gpii.app.rulesEngine.reset",
+            args: ["{that}"]
+        }
     }
 });
+
+gpii.app.rulesEngine.addRule = function (that, rule) {
+    that.removeRule(rule);
+    that.events.onRuleAdded.fire(rule);
+};
+
+gpii.app.rulesEngine.removeRule = function (that, rule) {
+    if (rule && fluid.isValue(rule.id)) {
+        var ruleHandler = that.handlersMap[rule.id];
+        if (ruleHandler) {
+            ruleHandler.destroy();
+        }
+    }
+};
+
+gpii.app.rulesEngine.reset = function (that) {
+    var ruleHandlers = fluid.values(that.handlersMap);
+    fluid.each(ruleHandlers, function (ruleHandler) {
+        ruleHandler.destroy();
+    });
+};
+
+gpii.app.rulesEngine.registerRuleHandler = function (rulesEngine, ruleHandler) {
+    var ruleId = ruleHandler.options.rule.id;
+    rulesEngine.handlersMap[ruleId] = ruleHandler;
+};
 
 fluid.defaults("gpii.app.ruleHandler", {
     gradeNames: ["fluid.modelComponent"],
@@ -100,7 +150,7 @@ fluid.defaults("gpii.app.ruleHandler", {
     },
     dynamicComponents: {
         conditionHandler: {
-            type: "@expand:fluid.app.ruleHandler.getConditionHandlerType({source})",
+            type: "@expand:gpii.app.ruleHandler.getConditionHandlerType({source})",
             sources: "{that}.model.conditions",
             options: {
                 condition: "{source}",
@@ -115,19 +165,19 @@ fluid.defaults("gpii.app.ruleHandler", {
     },
     listeners: {
         onConditionSatisfied: {
-            funcName: "fluid.app.ruleHandler.onConditionSatisfied",
+            funcName: "gpii.app.ruleHandler.onConditionSatisfied",
             args: ["{that}"]
         }
     }
 });
 
-fluid.app.ruleHandler.getConditionHandlerType = function (condition) {
+gpii.app.ruleHandler.getConditionHandlerType = function (condition) {
     if (condition.type === "keyedInBefore") {
         return "gpii.app.keyedInBeforeHandler";
     }
 };
 
-fluid.app.ruleHandler.onConditionSatisfied = function (that) {
+gpii.app.ruleHandler.onConditionSatisfied = function (that) {
     var satisfiedCount = that.model.satisfiedCount + 1;
     that.applier.change("satisfiedCount", satisfiedCount);
     if (satisfiedCount === that.model.conditions.length) {
