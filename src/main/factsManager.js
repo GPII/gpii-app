@@ -23,18 +23,10 @@ fluid.defaults("gpii.app.factsManager", {
     },
     listeners: {
         "{app}.events.onKeyedIn": {
-            func: "{that}.updateKeyedInTimestamp"
-        },
-        "{app}.events.onKeyedOut": {
-            func: "{that}.reset"
-        }
-    },
-    invokers: {
-        updateKeyedInTimestamp: {
             changePath: "keyedInTimestamp",
             value: "@expand:Date.now()"
         },
-        reset: {
+        "{app}.events.onKeyedOut": {
             changePath: "keyedInTimestamp",
             value: null
         }
