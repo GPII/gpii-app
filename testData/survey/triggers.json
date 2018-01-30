@@ -5,6 +5,10 @@
             {
                 "type": "keyedInBefore",
                 "value": 5000
+            },
+            {
+                "type": "keyedOut",
+                "value": true
             }
         ]
     }
