@@ -43,8 +43,8 @@ fluid.defaults("gpii.app.surveyManager", {
                     },
 
                     onTriggerDataReceived: {
-                        func: "{surveyTriggerManager}.registerTrigger",
-                        args: ["{arguments}.0"] // triggerData
+                        func: "{surveyTriggerManager}.registerTriggers",
+                        args: ["{arguments}.0"] // triggers
                     }
                 }
             }
@@ -59,9 +59,6 @@ fluid.defaults("gpii.app.surveyManager", {
                         func: "{surveyConnector}.notifyTriggerOccurred",
                         args: "{arguments}.0" // the trigger payload
                     }
-                },
-                components: {
-                    rulesEngine: "{rulesEngine}"
                 }
             }
         }

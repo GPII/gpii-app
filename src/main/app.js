@@ -19,13 +19,12 @@ var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
 require("./ws.js");
-require("./pspFacts.js");
+require("./factsManager.js");
 require("./dialogManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
 require("./restartDialog.js");
-require("./rulesEngine.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
@@ -79,17 +78,13 @@ fluid.defaults("gpii.app", {
             type: "gpii.installID",
             priority: "after:networkCheck"
         },
-        pspFacts: {
-            type: "gpii.app.pspFacts",
+        factsManager: {
+            type: "gpii.app.factsManager",
             priority: "after:installID"
-        },
-        rulesEngine: {
-            type: "gpii.app.rulesEngine",
-            priority: "after:pspFacts"
         },
         surveyManager: {
             type: "gpii.app.surveyManager",
-            priority: "after:rulesEngine"
+            priority: "after:factsManager"
         },
         dialogManager: {
             type: "gpii.app.dialogManager",

@@ -26,64 +26,66 @@ var gpii = fluid.registerNamespace("gpii");
  */
 fluid.defaults("gpii.app.surveyTriggerManager", {
     gradeNames: ["fluid.modelComponent"],
-
+    members: {
+        registeredTriggerHandlers: {}
+    },
+    conditionHandlerGrades: {
+        keyedInBefore: "gpii.app.keyedInBeforeHandler"
+    },
     events: {
-        /*
-         * Fired with the payload of the trigger
-         */
+        onTriggerAdded: null,
         onTriggerOccurred: null
     },
-
-    triggerTypes: {
-        surveyTrigger: "surveyTrigger"
+    dynamicComponents: {
+        triggerHandler: {
+            type: "gpii.app.triggerHandler",
+            createOnEvent: "onTriggerAdded",
+            options: {
+                trigger: "{arguments}.0",
+                model: {
+                    trigger: "{that}.options.trigger"
+                },
+                events: {
+                    onTriggerOccurred: "{surveyTriggerManager}.events.onTriggerOccurred"
+                },
+                listeners: {
+                    onCreate: {
+                        funcName: "gpii.app.surveyTriggerManager.registerTriggerHandler",
+                        args: ["{surveyTriggerManager}", "{that}"]
+                    }
+                }
+            }
+        }
     },
-
     listeners: {
-        "{rulesEngine}.events.onRuleSatisfied": {
-            func: "{surveyTriggerManager}.handleRuleSuccess",
+        onTriggerOccurred: {
+            func: "{that}.removeTrigger",
             args: [
                 "{arguments}.0" // trigger
             ]
         }
-
     },
-    components: {
-        rulesEngine: null
-    },
-
     invokers: {
-        reset: {
-            func: "{rulesEngine}.reset"
+        registerTriggers: {
+            funcName: "gpii.app.surveyTriggerManager.registerTriggers",
+            args: [
+                "{that}",
+                "{arguments}.0" // triggers
+            ]
         },
-
-        handleRuleSuccess: {
-            funcName: "gpii.app.surveyTriggerManager.handleRuleSuccess",
+        removeTrigger: {
+            funcName: "gpii.app.surveyTriggerManager.removeTrigger",
             args: [
                 "{that}",
                 "{arguments}.0" // trigger
             ]
         },
-
-        registerTrigger: {
-            funcName: "gpii.app.surveyTriggerManager.registerTrigger",
-            args: [
-                "{rulesEngine}",
-                "{arguments}.0" // triggerData
-            ]
+        reset: {
+            funcName: "gpii.app.surveyTriggerManager.reset",
+            args: ["{that}"]
         }
     }
 });
-
-/**
- * Registers a listener for once the specified rule is completed with success.
- * @param that {Component} The `gpii.app.surveyTriggerManger` component
- * @param ruleType {String} The trigger, for which a rule is registered
- * @param payload {Object} The data to be sent with trigger's success event
- */
-gpii.app.surveyTriggerManager.handleRuleSuccess = function (that, trigger) {
-    that.events.onTriggerOccurred.fire(trigger);
-    that.rulesEngine.removeRule(trigger);
-};
 
 /**
  * Registers a watcher for the specified trigger conditions
@@ -92,8 +94,120 @@ gpii.app.surveyTriggerManager.handleRuleSuccess = function (that, trigger) {
  * @param triggerData {Object} The data for the trigger
  * @param triggerData.conditions {Object} The coditions to be watcher for
  */
-gpii.app.surveyTriggerManager.registerTrigger = function (rulesEngine, triggerData) {
-    fluid.each(triggerData, function (trigger) {
-        rulesEngine.addRule(trigger);
+gpii.app.surveyTriggerManager.registerTriggers = function (that, triggers) {
+    fluid.each(triggers, function (trigger) {
+        that.removeTrigger(trigger);
+        that.events.onTriggerAdded.fire(trigger);
     });
+};
+
+gpii.app.surveyTriggerManager.removeTrigger = function (that, trigger) {
+    if (trigger && fluid.isValue(trigger.id)) {
+        var triggerHandler = that.registeredTriggerHandlers[trigger.id];
+        if (triggerHandler) {
+            triggerHandler.destroy();
+        }
+    }
+};
+
+gpii.app.surveyTriggerManager.reset = function (that) {
+    var triggerHandlers = fluid.values(that.registeredTriggerHandlers);
+    fluid.each(triggerHandlers, function (triggerHandler) {
+        triggerHandler.destroy();
+    });
+};
+
+gpii.app.surveyTriggerManager.registerTriggerHandler = function (surveyTriggerManager, triggerHandler) {
+    var triggerId = triggerHandler.model.trigger.id;
+    surveyTriggerManager.registeredTriggerHandlers[triggerId] = triggerHandler;
+};
+
+fluid.defaults("gpii.app.triggerHandler", {
+    gradeNames: ["fluid.modelComponent"],
+    model: {
+        satisfiedCount: 0,
+        trigger: {
+            // the actual trigger with all its conditions
+        }
+    },
+    events: {
+        onConditionSatisfied: null,
+        onTriggerOccurred: null
+    },
+    dynamicComponents: {
+        conditionHandler: {
+            type: {
+                expander: {
+                    funcName: "gpii.app.triggerHandler.getConditionHandlerType",
+                    args: ["{source}", "{surveyTriggerManager}.options.conditionHandlerGrades"]
+                }
+            },
+            sources: "{that}.model.trigger.conditions",
+            options: {
+                condition: "{source}",
+                model: {
+                    condition: "{that}.options.condition"
+                },
+                events: {
+                    onConditionSatisfied: "{triggerHandler}.events.onConditionSatisfied"
+                }
+            }
+        }
+    },
+    listeners: {
+        onConditionSatisfied: {
+            funcName: "gpii.app.triggerHandler.onConditionSatisfied",
+            args: ["{that}"]
+        }
+    }
+});
+
+gpii.app.triggerHandler.getConditionHandlerType = function (condition, conditionHandlerGrades) {
+    var type = condition.type;
+    if (conditionHandlerGrades[type]) {
+        return conditionHandlerGrades[type];
+    } else {
+        fluid.fail("No grade name found for a condition with type ", type);
+    }
+};
+
+gpii.app.triggerHandler.onConditionSatisfied = function (that) {
+    that.applier.change("satisfiedCount", that.model.satisfiedCount + 1);
+    if (that.model.satisfiedCount === that.model.trigger.conditions.length) {
+        that.events.onTriggerOccurred.fire(that.model.trigger);
+    }
+};
+
+fluid.defaults("gpii.app.conditionHandler", {
+    gradeNames: ["fluid.modelComponent"],
+    model: {
+        condition: {
+            // the actual condition with its type and value
+        }
+    },
+    events: {
+        onConditionSatisfied: null
+    }
+});
+
+fluid.defaults("gpii.app.timedConditionHandler", {
+    gradeNames: ["gpii.app.conditionHandler", "gpii.app.timer"],
+    listeners: {
+        onTimerFinished: "{that}.events.onConditionSatisfied.fire"
+    }
+});
+
+fluid.defaults("gpii.app.keyedInBeforeHandler", {
+    gradeNames: ["gpii.app.timedConditionHandler"],
+    listeners: {
+        "onCreate.startTimer": {
+            funcName: "gpii.app.keyedInBeforeHandler.start",
+            args: ["{that}", "{factsManager}.model.keyedInTimestamp"]
+        }
+    }
+});
+
+gpii.app.keyedInBeforeHandler.start = function (that, keyedInTimestamp) {
+    var offset = Date.now() - keyedInTimestamp;
+    that.start(that.model.condition.value - offset);
 };

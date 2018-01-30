@@ -16,7 +16,7 @@
 
 var fluid = require("infusion");
 
-fluid.defaults("gpii.app.pspFacts", {
+fluid.defaults("gpii.app.factsManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {
         keyedInTimestamp: null
