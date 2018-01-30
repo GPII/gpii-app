@@ -87,13 +87,6 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
     }
 });
 
-/**
- * Registers a watcher for the specified trigger conditions
- * @param triggerType {String} The type of trigger for which watcher to be registered
- * @param rulesEngine {Component} A `gpii.app.rulesEngine` instace
- * @param triggerData {Object} The data for the trigger
- * @param triggerData.conditions {Object} The coditions to be watcher for
- */
 gpii.app.surveyTriggerManager.registerTriggers = function (that, triggers) {
     fluid.each(triggers, function (trigger) {
         that.removeTrigger(trigger);
@@ -187,13 +180,26 @@ fluid.defaults("gpii.app.conditionHandler", {
     },
     events: {
         onConditionSatisfied: null
+    },
+    invokers: {
+        handleSuccess: {
+            funcName: "gpii.app.conditionHandler.handleSuccess",
+            args: ["{that}"]
+        }
     }
 });
+
+gpii.app.conditionHandler.handleSuccess = function (that) {
+    that.events.onConditionSatisfied.fire(that.model.condition);
+    if (!fluid.isDestroyed(that)) {
+        that.destroy();
+    }
+};
 
 fluid.defaults("gpii.app.timedConditionHandler", {
     gradeNames: ["gpii.app.conditionHandler", "gpii.app.timer"],
     listeners: {
-        onTimerFinished: "{that}.events.onConditionSatisfied.fire"
+        onTimerFinished: "{that}.handleSuccess()"
     }
 });
 
