@@ -60,11 +60,14 @@ var fluid = require("infusion"),
 fluid.defaults("gpii.app.rulesEngine", {
     gradeNames: ["fluid.modelComponent"],
     members: {
-        handlersMap: {}
+        registeredRuleHandlers: {}
     },
     events: {
         onRuleAdded: null,
         onRuleSatisfied: null
+    },
+    conditionHandlerGrades: {
+        keyedInBefore: "gpii.app.keyedInBeforeHandler"
     },
     dynamicComponents: {
         ruleHandler: {
@@ -116,7 +119,7 @@ gpii.app.rulesEngine.addRule = function (that, rule) {
 
 gpii.app.rulesEngine.removeRule = function (that, rule) {
     if (rule && fluid.isValue(rule.id)) {
-        var ruleHandler = that.handlersMap[rule.id];
+        var ruleHandler = that.registeredRuleHandlers[rule.id];
         if (ruleHandler) {
             ruleHandler.destroy();
         }
@@ -124,7 +127,7 @@ gpii.app.rulesEngine.removeRule = function (that, rule) {
 };
 
 gpii.app.rulesEngine.reset = function (that) {
-    var ruleHandlers = fluid.values(that.handlersMap);
+    var ruleHandlers = fluid.values(that.registeredRuleHandlers);
     fluid.each(ruleHandlers, function (ruleHandler) {
         ruleHandler.destroy();
     });
@@ -132,7 +135,7 @@ gpii.app.rulesEngine.reset = function (that) {
 
 gpii.app.rulesEngine.registerRuleHandler = function (rulesEngine, ruleHandler) {
     var ruleId = ruleHandler.options.rule.id;
-    rulesEngine.handlersMap[ruleId] = ruleHandler;
+    rulesEngine.registeredRuleHandlers[ruleId] = ruleHandler;
 };
 
 fluid.defaults("gpii.app.ruleHandler", {
@@ -150,7 +153,12 @@ fluid.defaults("gpii.app.ruleHandler", {
     },
     dynamicComponents: {
         conditionHandler: {
-            type: "@expand:gpii.app.ruleHandler.getConditionHandlerType({source})",
+            type: {
+                expander: {
+                    funcName: "gpii.app.ruleHandler.getConditionHandlerType",
+                    args: ["{source}", "{rulesEngine}.options.conditionHandlerGrades"]
+                }
+            },
             sources: "{that}.model.conditions",
             options: {
                 condition: "{source}",
@@ -171,9 +179,12 @@ fluid.defaults("gpii.app.ruleHandler", {
     }
 });
 
-gpii.app.ruleHandler.getConditionHandlerType = function (condition) {
-    if (condition.type === "keyedInBefore") {
-        return "gpii.app.keyedInBeforeHandler";
+gpii.app.ruleHandler.getConditionHandlerType = function (condition, conditionHandlerGrades) {
+    var type = condition.type;
+    if (conditionHandlerGrades[type]) {
+        return conditionHandlerGrades[type];
+    } else {
+        fluid.fail("No grade name found for a condition with type ", type);
     }
 };
 
