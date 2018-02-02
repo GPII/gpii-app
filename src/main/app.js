@@ -26,6 +26,7 @@ require("./tray.js");
 require("./psp.js");
 require("./waitDialog.js");
 require("./restartDialog.js");
+require("./errorDialog.js");
 
 require("./networkCheck.js");
 
@@ -235,6 +236,10 @@ fluid.defaults("gpii.app", {
                     }
                 }
             }
+        },
+        errorDialog: {
+            type: "gpii.app.errorDialog",
+            createOnEvent: "onPrerequisitesReady",
         },
         networkCheck: { // Network check component to meet GPII-2349
             type: "gpii.app.networkCheck"
@@ -458,7 +463,7 @@ gpii.app.handleUncaughtException = function (that, err) {
     if (err.code) {
         var error = handledErrors[err.code];
         if (error) {
-            tray.displayBalloon({
+            that.errorDialog.show({
                 title: error.title || "GPII Error",
                 content: error.message || err.message,
                 icon: fluid.module.resolvePath("%gpii-app/src/icons/gpii-icon-balloon.png")
@@ -473,8 +478,9 @@ gpii.app.handleUncaughtException = function (that, err) {
                     }
                 };
                 // Exit when the balloon is dismissed.
-                tray.on("balloon-closed", quit);
-                tray.on("balloon-click", quit);
+                // TODO close when window closes
+               // tray.on("balloon-closed", quit);
+               // tray.on("balloon-click", quit);
                 // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
                 // TODO: See GPII-2348 about this.
                 timeout = setTimeout(quit, 12000);
