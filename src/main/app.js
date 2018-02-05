@@ -445,7 +445,6 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
  * @param that {Component} An instance of gpii.app.
  */
 gpii.app.handleUncaughtException = function (that, err) {
-    var tray = that.tray.tray;
     var handledErrors = {
         "EADDRINUSE": {
             message: "There is another application listening on port " + err.port,
@@ -465,9 +464,12 @@ gpii.app.handleUncaughtException = function (that, err) {
         if (error) {
             that.errorDialog.show({
                 title: error.title || "GPII Error",
-                content: error.message || err.message,
-                icon: fluid.module.resolvePath("%gpii-app/src/icons/gpii-icon-balloon.png")
+                subhead: "some subeheader",
+                details: error.message || err.message,
+                icon: fluid.module.resolvePath("%gpii-app/src/icons/gpii-icon-balloon.png"),
+                message: "Message " + err.code
             });
+
             if (error.fatal) {
                 var timeout;
                 var quit = function () {

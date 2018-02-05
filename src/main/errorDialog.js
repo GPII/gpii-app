@@ -16,9 +16,9 @@
 "use strict";
 
 var fluid = require("infusion");
-
 var gpii  = fluid.registerNamespace("gpii");
 
+require("./utils.js");
 
 /**
  * A component that serves as simple interface for communication with the
@@ -52,17 +52,17 @@ fluid.defaults("gpii.app.errorDialog", {
 
     config: {
         attrs: {
-            width: 500,
-            height: 400
+            width: 400,
+            height: 300
         },
         fileSuffixPath: "errorDialog/index.html"
     },
 
     listeners: {
-        "onCreate.autoclose": {
-            funcName: "gpii.app.errorDialog.autoClose",
-            args: ["{that}", "{that}.options.timeout"]
-        }
+//        "onCreate.autoclose": {
+//            funcName: "gpii.app.errorDialog.autoClose",
+//            args: ["{that}", "{that}.options.timeout"]
+//        }
     },
 
     components: {

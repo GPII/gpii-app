@@ -80,6 +80,7 @@ gpii.app.capitalize = function (text) {
  */
 gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
     if (browserWindow) {
+        console.log("HREE", messageChannel);
         browserWindow.webContents.send(messageChannel, message);
     }
 };

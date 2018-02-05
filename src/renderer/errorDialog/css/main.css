@@ -1,6 +1,7 @@
 .fl-dialog .fl-dialog-content .fl-errorBody {
     margin-top: 10px;
     margin-right: 20px; /* leave some empty space on the right side of the block */
+    margin-bottom: 10px;
 }
 
 .fl-dialog .fl-dialog-content .fl-icon {

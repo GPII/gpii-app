@@ -28,7 +28,7 @@
      * It supplies interface (through invokers) for communication in direction to
      * and events for data coming from the Main process.
      */
-    fluid.defaults("gpii.restartDialog.channel", {
+    fluid.defaults("gpii.errorDialog.channel", {
         gradeNames: ["fluid.component"],
 
         events: {
@@ -37,14 +37,14 @@
 
         listeners: {
             "onCreate.registerChannel": {
-                funcName: "gpii.restartDialog.channel.register",
+                funcName: "gpii.errorDialog.channel.register",
                 args: "{that}.events"
             }
         },
 
         invokers: {
             close: {
-                funcName: "gpii.restartDialog.channel.notifyChannel",
+                funcName: "gpii.errorDialog.channel.notifyChannel",
                 args: "onClosed"
             }
         }
@@ -56,7 +56,7 @@
      * Main process that a button was clicked.
      * @param channel {String} The channel to be notified
      */
-    gpii.restartDialog.channel.notifyChannel = function (channel) {
+    gpii.errorDialog.channel.notifyChannel = function (channel) {
         ipcRenderer.send(channel);
     };
 
@@ -66,7 +66,7 @@
      * @param events.onPendingChangesReceived {Object} Event related to pending
      * changes received from the Main process
      */
-    gpii.restartDialog.channel.register = function (events) {
+    gpii.errorDialog.channel.register = function (events) {
         ipcRenderer.on("onUpdate", function (event, config) {
             console.log("Recieved: ", config);
             events.onConfigReceived.fire(config);
@@ -78,7 +78,7 @@
      * The wrapper component for the restart warning dialog. Handles visualization and
      * interactions for the require restart functionality.
      */
-    fluid.defaults("gpii.restartDialog", {
+    fluid.defaults("gpii.errorDialog", {
         gradeNames: ["fluid.viewComponent"],
 
         model: {
@@ -91,16 +91,16 @@
         },
 
         selectors: {
-            close:   ".fl-close",
+//            close:   ".fl-close",
 
             title:   ".fl-title",
             subhead: ".fl-subhead",
             details: ".fl-details",
             message: ".fl-message"
-
         },
 
         events: {
+            // TODO introduce
             onClosed: null
         },
 
@@ -109,29 +109,59 @@
                 this: "{that}.dom.title",
                 method: "text",
                 args: "{that}.model.title"
+            },
+            subhead: {
+                this: "{that}.dom.subhead",
+                method: "text",
+                args: "{that}.model.subhead"
+            },
+            details: {
+                this: "{that}.dom.details",
+                method: "text",
+                args: "{that}.model.details"
+            },
+
+            // TODO
+            message: {
+                this: "{that}.dom.message",
+                method: "text",
+                args: "{that}.model.message"
             }
         },
 
         listeners: {
-            onClosed: "{channel}.close"
+            onClosed: "{channel}.close",
+            "onCreate.log": {
+                this: "console",
+                method: "log",
+                args: ["{that}"]
+            }
+        },
+
+        invokers: {
+            // merges with the current model
+            updateConfig: {
+                changePath: "",
+                value: "{arguments}.0"
+            }
         },
 
         components: {
-            closeBtn: { // Header
-                type: "gpii.psp.widgets.button",
-                container: "{that}.dom.close",
-                options: {
-                    invokers: {
-                        onClick: "{restartDialog}.events.onClosed.fire"
-                    }
-                }
-            },
+//            closeBtn: { // Header
+//                type: "gpii.psp.widgets.button",
+//                container: "{that}.dom.close",
+//                options: {
+//                    invokers: {
+//                        onClick: "{errorDialog}.events.onClosed.fire"
+//                    }
+//                }
+//            },
             channel: {
-                type: "gpii.restartDialog.channel",
+                type: "gpii.errorDialog.channel",
                 options: {
                     listeners: {
-                        onPendingChangesReceived: {
-                            func: "{restartWarning}.updatePendingChanges",
+                        onConfigReceived: {
+                            func: "{errorDialog}.updateConfig",
                             args: "{arguments}.0"
                         }
                     }
