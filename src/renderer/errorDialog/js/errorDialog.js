@@ -32,7 +32,7 @@
         gradeNames: ["fluid.component"],
 
         events: {
-            onPendingChangesReceived: null
+            onConfigReceived: null
         },
 
         listeners: {
@@ -46,18 +46,6 @@
             close: {
                 funcName: "gpii.restartDialog.channel.notifyChannel",
                 args: "onClosed"
-            },
-            restartNow: {
-                funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onRestartNow"
-            },
-            restartLater: {
-                funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onRestartLater"
-            },
-            undoChanges: {
-                funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onUndoChanges"
             }
         }
     });
@@ -79,39 +67,11 @@
      * changes received from the Main process
      */
     gpii.restartDialog.channel.register = function (events) {
-        ipcRenderer.on("onRestartRequired", function (event, pendingChanges) {
-            events.onPendingChangesReceived.fire(pendingChanges);
+        ipcRenderer.on("onUpdate", function (event, config) {
+            console.log("Recieved: ", config);
+            events.onConfigReceived.fire(config);
         });
     };
-
-
-    /**
-     * Handles the displayed dynamic text in the dialog as well as
-     * the be behaviour of the restart actions buttons.
-     */
-    fluid.defaults("gpii.restartDialog.restartWarning", {
-        gradeNames: ["gpii.psp.baseRestartWarning"],
-
-        selectors: {
-            title: ".flc-popup-title",
-            restartText: ".flc-popup-bodyText"
-        },
-
-        listeners: {
-            "onCreate.setText": {
-                this: "{that}.dom.title",
-                method: "text",
-                args: "{that}.options.labels.restartTitle"
-            }
-        },
-
-        labels: {
-            restartTitle: "Changes require restart",
-            // Simple override of `gpii.psp.restartWarning`'s labels
-            osRestartText: "Windows needs to restart to apply your changes. \n\n What would you like to do?",
-            restartText: "In order to be applied, some of the changes you made require the following applications to restart: %solutions \n\n What would you like to do?"
-        }
-    });
 
 
     /**
@@ -121,14 +81,22 @@
     fluid.defaults("gpii.restartDialog", {
         gradeNames: ["fluid.viewComponent"],
 
-        selectors: {
-            close: ".flc-close",
+        model: {
+            icon:    null,
 
-            title:   ".flc-title",
-            subhead: ".flc-subhead",
-            details: ".flc-details",
-            icon:    ".flc-icon",
-            message: ".flc-message"
+            title:   null,
+            subhead: null,
+            details: null,
+            message: null
+        },
+
+        selectors: {
+            close:   ".fl-close",
+
+            title:   ".fl-title",
+            subhead: ".fl-subhead",
+            details: ".fl-details",
+            message: ".fl-message"
 
         },
 
@@ -137,7 +105,11 @@
         },
 
         modelListeners: {
-        
+            title: {
+                this: "{that}.dom.title",
+                method: "text",
+                args: "{that}.model.title"
+            }
         },
 
         listeners: {

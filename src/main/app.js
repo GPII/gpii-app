@@ -239,7 +239,7 @@ fluid.defaults("gpii.app", {
         },
         errorDialog: {
             type: "gpii.app.errorDialog",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPrerequisitesReady"
         },
         networkCheck: { // Network check component to meet GPII-2349
             type: "gpii.app.networkCheck"

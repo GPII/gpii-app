@@ -27,10 +27,10 @@ var gpii  = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.dialog.errorDialog.channel", {
     gradeNames: ["fluid.component"],
 
-//    events: {
-//        // TODO
-//        onClosed: null // provided by parent component
-//    },
+    events: {
+        // TODO
+        onClosed: null // provided by parent component
+    },
 
     invokers: {
         update: {
@@ -45,9 +45,6 @@ fluid.defaults("gpii.app.dialog.errorDialog.channel", {
 });
 
 
-
-
-
 fluid.defaults("gpii.app.errorDialog", {
     gradeNames: ["gpii.app.dialog"],
 
@@ -58,7 +55,7 @@ fluid.defaults("gpii.app.errorDialog", {
             width: 500,
             height: 400
         },
-        fileSuffixPath: "restartDialog/index.html"
+        fileSuffixPath: "errorDialog/index.html"
     },
 
     listeners: {
@@ -70,7 +67,7 @@ fluid.defaults("gpii.app.errorDialog", {
 
     components: {
         dialogChannel: {
-            type: "gpii.app.dialog.errorDialog.channel",
+            type: "gpii.app.dialog.errorDialog.channel"
         }
     },
 

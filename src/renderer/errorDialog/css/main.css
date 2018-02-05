@@ -1,0 +1,26 @@
+.fl-dialog .fl-dialog-content .fl-errorBody {
+    margin-top: 10px;
+    margin-right: 20px; /* leave some empty space on the right side of the block */
+}
+
+.fl-dialog .fl-dialog-content .fl-icon {
+    margin-right: 10px;
+}
+
+.fl-dialog .fl-dialog-content .fl-icon img {
+    width:  50px;
+    height: 50px;
+}
+
+.fl-dialog .fl-dialog-content .fl-errorBody .fl-title {
+    color: #034EA2;
+    font-size: 1.5em;
+}
+
+.fl-dialog .fl-dialog-content .fl-errorBody .fl-subhead {
+    margin-bottom: 20px;
+}
+
+.fl-dialog .fl-dialog-content .fl-errorBody .fl-details {
+    font-size: 0.9em;
+}

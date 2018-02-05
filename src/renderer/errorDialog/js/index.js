@@ -19,6 +19,6 @@
     var gpii = fluid.registerNamespace("gpii");
 
     $(function () {
-        gpii.errorDialog(".fl-popup-contentWrapper");
+        gpii.errorDialog(".fl-contentWrapper");
     });
 })(fluid);
