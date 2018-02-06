@@ -21,17 +21,17 @@ require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.surveys.testDefs");
 
-var triggerFixture = {
-    conditions: {
-        all: [{
-            fact: "keyedInBefore",
-            operator: "greaterThanInclusive",
-            value: 1000 * 1 // 1 sec
-        }]
-    },
-    id: "id",
-    urlTriggerHandler: "URL of the survey server to handle the surveyTriggerEvent"
-};
+var triggerFixture = [
+    {
+        id: "trigger_1",
+        conditions: [
+            {
+                type: "keyedInBefore",
+                value: 1000
+            }
+        ]
+    }
+];
 
 var surveyFixture = {
     "url": "https://fluidproject.org/",
@@ -44,9 +44,12 @@ var surveyFixture = {
 
 fluid.defaults("gpii.tests.surveys.surveyConnector", {
     gradeNames: ["gpii.app.staticSurveyConnector"],
-    members: {
+    config: {
         triggerFixture: triggerFixture,
         surveyFixture: surveyFixture
+    },
+    mergePolicy: {
+        config: "replace"
     }
 });
 
@@ -74,19 +77,11 @@ gpii.tests.surveys.testDefs = {
         event: "{that}.app.surveyManager.surveyConnector.events.onTriggerDataReceived",
         listener: "jqUnit.assertDeepEq",
         args: ["The trigger fixture is correctly received", triggerFixture, "{arguments}.0"]
-    // }, {
-    //     event: "{that}.app.surveyManager.surveyTriggerManager.events.onTriggerOccurred",
-    //     listener: "jqUnit.assertDeepEq",
-    //     args: ["The trigger has occurred correctly", triggerFixture, "{arguments}.0"]
     }, {
         event: "{that}.app.surveyManager.surveyConnector.events.onSurveyRequired",
         listener: "jqUnit.assert",
         args: ["The survey fixture is received"]
     }, {
-    //     event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
-    //     listener: "jqUnit.assert",
-    //     args: ["Survey dialog is created successfully"]
-    // }, {
         func: "{that}.app.keyOut"
     }]
 };

@@ -30,7 +30,9 @@ require("./SettingsBrokerTestDefs.js");
 require("./RestartDialogTestDefs.js");
 require("./DialogManagerTestDefs.js");
 require("./SurveysTestDefs.js");
-require("./RulesEngineTestsDefs.js");
+require("./SurveyTriggerManagerTestsDefs.js");
+
+fluid.setLogging(fluid.logLevel.FATAL);
 
 fluid.registerNamespace("gpii.tests.app");
 
@@ -95,5 +97,5 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.restartWarningController.testDefs),
     fluid.copy(gpii.tests.dialogManager.testDefs),
     fluid.copy(gpii.tests.surveys.testDefs),
-    fluid.copy(gpii.tests.rulesEngine.testDefs)
+    fluid.copy(gpii.tests.surveyTriggerManager.testDefs)
 ]);
