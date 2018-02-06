@@ -105,7 +105,7 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
     // TODO: Move this to options once the `json-rules-engine` module is not used.
     // It seems that `fluid.require` does not parse arrays in the way expected by
     // `json-rules-engine`.
-    members: {
+    config: {
         triggerFixture: "@expand:fluid.require({that}.options.paths.triggerFixture)",
         surveyFixture: "@expand:fluid.require({that}.options.paths.surveyFixture)"
     },
@@ -131,7 +131,7 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
  * @param that {Component} The `gpii.app.staticSurveyConnector` instance.
  */
 gpii.app.staticSurveyConnector.requestTriggers = function (that) {
-    that.events.onTriggerDataReceived.fire(that.triggerFixture);
+    that.events.onTriggerDataReceived.fire(that.options.config.triggerFixture);
 };
 
 /**
@@ -141,7 +141,7 @@ gpii.app.staticSurveyConnector.requestTriggers = function (that) {
  * @param that {Component} The `gpii.app.staticSurveyConnector` instance.
  */
 gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that) {
-    var fixture = that.surveyFixture;
+    var fixture = that.options.config.surveyFixture;
     fixture.url = fluid.stringTemplate(fixture.url +
         "?keyedInUserToken=%keyedInUserToken&machineId=%machineId", that.model);
     that.events.onSurveyRequired.fire(fixture);

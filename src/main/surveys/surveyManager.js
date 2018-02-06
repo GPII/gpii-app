@@ -14,7 +14,8 @@
  */
 "use strict";
 
-var fluid = require("infusion");
+var fluid = require("infusion"),
+    gpii = fluid.registerNamespace("gpii");
 
 require("../utils.js");
 require("./surveyTriggerManager.js");
@@ -43,8 +44,11 @@ fluid.defaults("gpii.app.surveyManager", {
                     },
 
                     onTriggerDataReceived: {
-                        func: "{surveyTriggerManager}.registerTrigger",
-                        args: ["{arguments}.0"] // triggerData
+                        funcName: "gpii.app.surveyManager.registerTriggers",
+                        args: [
+                            "{surveyTriggerManager}",
+                            "{arguments}.0" // triggers
+                        ]
                     }
                 }
             }
@@ -54,15 +58,25 @@ fluid.defaults("gpii.app.surveyManager", {
             type: "gpii.app.surveyTriggerManager",
             options: {
                 listeners: {
+                    "{app}.events.onKeyedOut": "{that}.reset",
                     onTriggerOccurred: {
                         func: "{surveyConnector}.notifyTriggerOccurred",
                         args: "{arguments}.0" // the trigger payload
                     }
-                },
-                components: {
-                    rulesEngine: "{rulesEngine}"
                 }
             }
         }
     }
 });
+
+/**
+ * Registers all survey triggers received via the `surveyConnector` with
+ * the `surveyTriggerManager`.
+ * @param surveyTriggerManager {Component} The `gpii.app.surveyTriggerManager` instance.
+ * @param triggers {Array} An array representing the received triggers.
+ */
+gpii.app.surveyManager.registerTriggers = function (surveyTriggerManager, triggers) {
+    fluid.each(triggers, function (trigger) {
+        surveyTriggerManager.registerTrigger(trigger);
+    });
+};

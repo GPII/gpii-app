@@ -25,7 +25,6 @@ require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
 require("./restartDialog.js");
-require("./rulesEngine.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
@@ -72,29 +71,16 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
-        networkCheck: { // Network check component to meet GPII-2349
-            type: "gpii.app.networkCheck"
-        },
         installID: {
-            type: "gpii.installID",
-            priority: "after:networkCheck"
+            type: "gpii.installID"
         },
         factsManager: {
             type: "gpii.app.factsManager",
             priority: "after:installID"
         },
-        rulesEngine: {
-            type: "gpii.app.rulesEngine",
-            priority: "after:factsManager",
-            options: {
-                listeners: {
-                    "{factsManager}.events.onFactsUpdated": "{that}.checkRules"
-                }
-            }
-        },
         surveyManager: {
             type: "gpii.app.surveyManager",
-            priority: "after:rulesEngine",
+            priority: "after:factsManager"
         },
         dialogManager: {
             type: "gpii.app.dialogManager",

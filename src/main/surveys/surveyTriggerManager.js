@@ -14,102 +14,285 @@
  */
 "use strict";
 
-var fluid = require("infusion");
-
-var gpii = fluid.registerNamespace("gpii");
+var fluid = require("infusion"),
+    gpii = fluid.registerNamespace("gpii");
 
 /**
- * Responsible for notifying when a certain survey trigger rule is satisfied.
- * It uses the `gpii.app.rulesEngine` engine to watch for the completion of
- * trigger's conditions.
- * Currently single type of trigger is present, but this may change.
+ * A component responsible for creating trigger handlers when the PSP receives
+ * the survey triggers and sending the appropriate event (`onTriggerOccurred`)
+ * whenever a trigger has occurreded (i.e. all of its conditions have been
+ * satisfied).
+ *
+ * If a survey trigger already exists in the PSP and then a trigger with the
+ * same id is registered, the latter will override the former. For this purpose
+ * the `surveyTriggerManager` keeps track of the currently registered trigger
+ * handlers. Once a trigger has occurred, its handler is destroyed and removed
+ * from the handlers map.
  */
 fluid.defaults("gpii.app.surveyTriggerManager", {
     gradeNames: ["fluid.modelComponent"],
-
+    members: {
+        registeredTriggerHandlers: {}
+    },
+    conditionHandlerGrades: {
+        keyedInFor: "gpii.app.keyedInForHandler"
+    },
     events: {
-        /*
-         * Fired with the payload of the trigger
-         */
+        onTriggerAdded: null,
         onTriggerOccurred: null
     },
-
-    triggerTypes: {
-        surveyTrigger: "surveyTrigger"
+    dynamicComponents: {
+        triggerHandler: {
+            type: "gpii.app.triggerHandler",
+            createOnEvent: "onTriggerAdded",
+            options: {
+                trigger: "{arguments}.0",
+                model: {
+                    trigger: "{that}.options.trigger"
+                },
+                events: {
+                    onTriggerOccurred: "{surveyTriggerManager}.events.onTriggerOccurred"
+                },
+                listeners: {
+                    "onCreate.registerTriggerHandler": {
+                        funcName: "gpii.app.surveyTriggerManager.registerTriggerHandler",
+                        args: ["{surveyTriggerManager}", "{that}"]
+                    }
+                }
+            }
+        }
     },
-
     listeners: {
-        "{rulesEngine}.events.onRuleSatisfied": {
-            func: "{surveyTriggerManager}.handleRuleSuccess",
+        onTriggerOccurred: {
+            func: "{that}.removeTrigger",
             args: [
-                "{arguments}.0", // triggerType
-                "{arguments}.1"  // payload
+                "{arguments}.0" // trigger
             ]
         }
-
     },
-    components: {
-        rulesEngine: null
-    },
-
     invokers: {
-        reset: {
-            funcName: "gpii.app.surveyTriggerManager.reset",
-            args: "{that}"
-        },
-
-        handleRuleSuccess: {
-            funcName: "gpii.app.surveyTriggerManager.handleRuleSuccess",
-            args: [
-                "{that}",
-                "{arguments}.0", // triggerType
-                "{arguments}.1"  // payload
-            ]
-        },
-
         registerTrigger: {
             funcName: "gpii.app.surveyTriggerManager.registerTrigger",
             args: [
-                "{that}.options.triggerTypes.surveyTrigger",
-                "{rulesEngine}",
-                "{arguments}.0" // triggerData
+                "{that}",
+                "{arguments}.0" // trigger
             ]
+        },
+        removeTrigger: {
+            funcName: "gpii.app.surveyTriggerManager.removeTrigger",
+            args: [
+                "{that}",
+                "{arguments}.0" // trigger
+            ]
+        },
+        reset: {
+            funcName: "gpii.app.surveyTriggerManager.reset",
+            args: ["{that}"]
         }
     }
 });
 
 /**
- * Clears any registered triggers.
- * @param that {Component} The `gpii.app.surveyTriggerManger` component
+ * Registers a survey trigger with the `surveyTriggerManager` by creating a
+ * trigger handler for it. Any trigger handlers for previously registered
+ * triggers that have the same id as the current trigger will be destroyed
+ * and will no longer be tracked.
+ * @param that {Component} The `gpii.app.surveyTriggerManager` instance.
+ * @param trigger {Object} The survey trigger which is to be registered.
  */
-gpii.app.surveyTriggerManager.reset = function (that) {
-    var triggerTypes = fluid.values(that.options.triggerTypes);
-
-    triggerTypes.forEach(function (triggerType) {
-        that.rulesEngine.removeRule(triggerType);
-    });
+gpii.app.surveyTriggerManager.registerTrigger = function (that, trigger) {
+    that.removeTrigger(trigger);
+    that.events.onTriggerAdded.fire(trigger);
 };
 
 /**
- * Registers a listener for once the specified rule is completed with success.
- * @param that {Component} The `gpii.app.surveyTriggerManger` component
- * @param ruleType {String} The trigger, for which a rule is registered
- * @param payload {Object} The data to be sent with trigger's success event
+ * Removes a trigger from the `surveyTriggerManager` by destroying its
+ * corresponding trigger handler.
+ * @param that {Component} The `gpii.app.surveyTriggerManager` instance.
+ * @param trigger {Object} The survey trigger which is to be removed.
  */
-gpii.app.surveyTriggerManager.handleRuleSuccess = function (that, triggerType, payload) {
-    if (triggerType === that.options.triggerTypes.surveyTrigger) {
-        that.events.onTriggerOccurred.fire(payload);
-        that.rulesEngine.removeRule(triggerType);
+gpii.app.surveyTriggerManager.removeTrigger = function (that, trigger) {
+    var triggerId = trigger.id;
+    if (fluid.isValue(triggerId)) {
+        var triggerHandler = that.registeredTriggerHandlers[triggerId];
+        if (triggerHandler) {
+            triggerHandler.destroy();
+            delete that.registeredTriggerHandlers[triggerId];
+        }
     }
 };
 
 /**
- * Registers a watcher for the specified trigger conditions
- * @param triggerType {String} The type of trigger for which watcher to be registered
- * @param rulesEngine {Component} A `gpii.app.rulesEngine` instace
- * @param triggerData {Object} The data for the trigger
- * @param triggerData.conditions {Object} The coditions to be watcher for
+ * Resets the `surveyTriggerManager` by destroying and removing all registered
+ * trigger handlers.
+ * @param that {Component} The `gpii.app.surveyTriggerManager` instance.
  */
-gpii.app.surveyTriggerManager.registerTrigger = function (triggerType, rulesEngine, triggerData) {
-    rulesEngine.addRule(triggerType, triggerData.conditions, triggerData);
+gpii.app.surveyTriggerManager.reset = function (that) {
+    var triggerHandlers = fluid.values(that.registeredTriggerHandlers);
+    fluid.each(triggerHandlers, function (triggerHandler) {
+        triggerHandler.destroy();
+    });
+    that.registeredTriggerHandlers = {};
+};
+
+/**
+ * Registers a dynamic `triggerHandler` component with its parent
+ * `surveyTriggerManager` component. Necessary in order to be able to remove handlers
+ * when they are no longer needed.
+ * @param surveyTriggerManager {Component} The `gpii.app.surveyTriggerManager` instance.
+ * @param triggerHandler {Component} The `gpii.app.triggerHandler` instance.
+ */
+gpii.app.surveyTriggerManager.registerTriggerHandler = function (surveyTriggerManager, triggerHandler) {
+    var triggerId = triggerHandler.model.trigger.id;
+    surveyTriggerManager.registeredTriggerHandlers[triggerId] = triggerHandler;
+};
+
+/**
+ * A component which is in charge of determining if a trigger has occurred. For each of
+ * the trigger’s conditions the trigger handler will delegate the responsibility of
+ * ascertaining whether this condition is satisfied to a specific condition handler. The
+ * condition handlers are dynamic subcomponents of the trigger handler.
+ */
+fluid.defaults("gpii.app.triggerHandler", {
+    gradeNames: ["fluid.modelComponent"],
+    model: {
+        satisfiedCount: 0,
+        trigger: {
+            // the actual trigger with all its conditions
+        }
+    },
+    events: {
+        onConditionSatisfied: null,
+        onTriggerOccurred: null
+    },
+    dynamicComponents: {
+        conditionHandler: {
+            type: {
+                expander: {
+                    funcName: "gpii.app.triggerHandler.getConditionHandlerType",
+                    args: ["{source}", "{surveyTriggerManager}.options.conditionHandlerGrades"]
+                }
+            },
+            sources: "{that}.model.trigger.conditions",
+            options: {
+                condition: "{source}",
+                model: {
+                    condition: "{that}.options.condition"
+                },
+                events: {
+                    onConditionSatisfied: "{triggerHandler}.events.onConditionSatisfied"
+                }
+            }
+        }
+    },
+    listeners: {
+        onConditionSatisfied: {
+            funcName: "gpii.app.triggerHandler.onConditionSatisfied",
+            args: ["{that}"]
+        }
+    }
+});
+
+/**
+ * Retrieves the `gradeName` for a condition handler based on the condition's type.
+ * An error will be thrown if there is no condition handler for the given type.
+ * @param condition {Object} The condition for whose handler the type is to be
+ * retrieved.
+ * @param conditionHandlerGrades {Object} A hash whose keys represent all available
+ * condition types and the values are the corresponding gradeNames.
+ * @return The `gradeName` which corresponds to the condition.
+ */
+gpii.app.triggerHandler.getConditionHandlerType = function (condition, conditionHandlerGrades) {
+    var type = condition.type;
+    if (conditionHandlerGrades[type]) {
+        return conditionHandlerGrades[type];
+    } else {
+        fluid.fail("No grade name found for a condition with type ", type);
+    }
+};
+
+/**
+ * A function of the `triggerHandler` which is invoked when a `conditionHandler` has
+ * been satisfied. Its purpose is to determine if the whole trigger has occurred now
+ * that one more condition is satisfied.
+ * @param that {Component} The `gpii.app.triggerHandler` instance.
+ */
+gpii.app.triggerHandler.onConditionSatisfied = function (that) {
+    that.applier.change("satisfiedCount", that.model.satisfiedCount + 1);
+    if (that.model.satisfiedCount === that.model.trigger.conditions.length) {
+        that.events.onTriggerOccurred.fire(that.model.trigger);
+    }
+};
+
+/**
+ * A component which is responsible for determining when a given trigger condition has
+ * been satisfied. Depending on the nature of the condition’s fact, the condition
+ * handler can schedule a timer or wait to be notified that the value of the fact has
+ * changed. Whenever a condition is satisfied, the `onConditionSatisfied` is fired and
+ * the condition handler is destroyed.
+ */
+fluid.defaults("gpii.app.conditionHandler", {
+    gradeNames: ["fluid.modelComponent"],
+    model: {
+        condition: {
+            // the actual condition with its type and value
+        }
+    },
+    events: {
+        onConditionSatisfied: null
+    },
+    invokers: {
+        handleSuccess: {
+            funcName: "gpii.app.conditionHandler.handleSuccess",
+            args: ["{that}"]
+        }
+    }
+});
+
+/**
+ * A function which is called when a condition handler determines that its condition has
+ * been satisfied. Responsible for firing the `onConditionSatisfied` event and destroying
+ * the condition handler.
+ * that {Component} The `gpii.app.conditionHandler` instance.
+ */
+gpii.app.conditionHandler.handleSuccess = function (that) {
+    that.events.onConditionSatisfied.fire(that.model.condition);
+    if (!fluid.isDestroyed(that)) {
+        that.destroy();
+    }
+};
+
+/**
+ * An extension of the `gpii.app.conditionHandler` which schedules a timer. When the
+ * time is up, the condition is considered to be satisfied.
+ */
+fluid.defaults("gpii.app.timedConditionHandler", {
+    gradeNames: ["gpii.app.conditionHandler", "gpii.app.timer"],
+    listeners: {
+        onTimerFinished: "{that}.handleSuccess()"
+    }
+});
+
+/**
+ * A `timedConditionHandler` for the `keyedInFor` fact. It determines whether a
+ * given amount of time has passed since the user has keyed in.
+ */
+fluid.defaults("gpii.app.keyedInForHandler", {
+    gradeNames: ["gpii.app.timedConditionHandler"],
+    listeners: {
+        "onCreate.startTimer": {
+            funcName: "gpii.app.keyedInForHandler.start",
+            args: ["{that}", "{factsManager}.model.keyedInTimestamp"]
+        }
+    }
+});
+
+/**
+ * Starts the `keyedInForHandler` timer.
+ * @param that {Component} The `keyedInForHandler` instance.
+ * @param keyedInTimestamp {Number} The timestamp when the user has keyed in.
+ */
+gpii.app.keyedInForHandler.start = function (that, keyedInTimestamp) {
+    var offset = Date.now() - keyedInTimestamp;
+    that.start(that.model.condition.value - offset);
 };

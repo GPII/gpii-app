@@ -117,7 +117,7 @@ fluid.defaults("gpii.app.timer", {
 
     invokers: {
         start: {
-            funcName: "timer",
+            changePath: "timer",
             args: [
                 "@expand:setTimeout({that}.events.onTimerFinished.fire, {arguments}.0)"
             ]
