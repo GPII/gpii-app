@@ -26,7 +26,7 @@ var triggerFixture = [
         id: "trigger_1",
         conditions: [
             {
-                type: "keyedInBefore",
+                type: "keyedInFor",
                 value: 1000
             }
         ]

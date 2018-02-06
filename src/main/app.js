@@ -71,12 +71,8 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
-        networkCheck: { // Network check component to meet GPII-2349
-            type: "gpii.app.networkCheck"
-        },
         installID: {
-            type: "gpii.installID",
-            priority: "after:networkCheck"
+            type: "gpii.installID"
         },
         factsManager: {
             type: "gpii.app.factsManager",

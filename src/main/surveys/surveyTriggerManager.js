@@ -35,7 +35,7 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
         registeredTriggerHandlers: {}
     },
     conditionHandlerGrades: {
-        keyedInBefore: "gpii.app.keyedInBeforeHandler"
+        keyedInFor: "gpii.app.keyedInForHandler"
     },
     events: {
         onTriggerAdded: null,
@@ -274,25 +274,25 @@ fluid.defaults("gpii.app.timedConditionHandler", {
 });
 
 /**
- * A `timedConditionHandler` for the `keyedInBefore` fact. It determines whether a
+ * A `timedConditionHandler` for the `keyedInFor` fact. It determines whether a
  * given amount of time has passed since the user has keyed in.
  */
-fluid.defaults("gpii.app.keyedInBeforeHandler", {
+fluid.defaults("gpii.app.keyedInForHandler", {
     gradeNames: ["gpii.app.timedConditionHandler"],
     listeners: {
         "onCreate.startTimer": {
-            funcName: "gpii.app.keyedInBeforeHandler.start",
+            funcName: "gpii.app.keyedInForHandler.start",
             args: ["{that}", "{factsManager}.model.keyedInTimestamp"]
         }
     }
 });
 
 /**
- * Starts the `keyedInBeforeHandler` timer.
- * @param that {Component} The `keyedInBeforeHandler` instance.
+ * Starts the `keyedInForHandler` timer.
+ * @param that {Component} The `keyedInForHandler` instance.
  * @param keyedInTimestamp {Number} The timestamp when the user has keyed in.
  */
-gpii.app.keyedInBeforeHandler.start = function (that, keyedInTimestamp) {
+gpii.app.keyedInForHandler.start = function (that, keyedInTimestamp) {
     var offset = Date.now() - keyedInTimestamp;
     that.start(that.model.condition.value - offset);
 };

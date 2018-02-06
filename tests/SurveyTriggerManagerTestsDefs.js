@@ -22,18 +22,18 @@ require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.surveyTriggerManager.testDefs");
 
-var keyedInBeforeTrigger = {
+var keyedInForTrigger = {
     id: "trigger_1",
     conditions: [{
-        type: "keyedInBefore",
+        type: "keyedInFor",
         value: 1000
     }]
 };
 
-var keyedInBeforeTriggerDuplicate = {
+var keyedInForTriggerDuplicate = {
     id: "trigger_1",
     conditions: [{
-        type: "keyedInBefore",
+        type: "keyedInFor",
         value: 30000
     }]
 };
@@ -73,34 +73,34 @@ gpii.tests.surveyTriggerManager.testDefs = {
         args: ["keyedInTimestamp", Date.now()]
     }, {
         func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-        args: [keyedInBeforeTrigger]
+        args: [keyedInForTrigger]
     }, {
         func: "gpii.tests.surveyTriggerManager.testHandlerCreated",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInBeforeTrigger]
+        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTrigger]
     }, {
         event: "{that}.app.surveyManager.surveyTriggerManager.events.onTriggerOccurred",
         listener: "jqUnit.assertDeepEq",
-        args: ["The correct trigger has occurred", keyedInBeforeTrigger, "{arguments}.0"]
+        args: ["The correct trigger has occurred", keyedInForTrigger, "{arguments}.0"]
     }, {
         func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInBeforeTrigger]
+        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTrigger]
     }, {
         func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-        args: [keyedInBeforeTrigger]
+        args: [keyedInForTrigger]
     }, {
         func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-        args: [keyedInBeforeTriggerDuplicate]
+        args: [keyedInForTriggerDuplicate]
     }, {
         func: "gpii.tests.surveyTriggerManager.testHandlerCreated",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInBeforeTriggerDuplicate]
+        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
     }, {
         func: "{that}.app.surveyManager.surveyTriggerManager.removeTrigger",
-        args: [keyedInBeforeTriggerDuplicate]
+        args: [keyedInForTriggerDuplicate]
     }, {
         func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInBeforeTriggerDuplicate]
+        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
     }, {
         func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInBeforeTriggerDuplicate]
+        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
     }]
 };
