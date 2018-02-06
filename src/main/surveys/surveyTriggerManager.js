@@ -35,8 +35,7 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
         registeredTriggerHandlers: {}
     },
     conditionHandlerGrades: {
-        keyedInBefore: "gpii.app.keyedInBeforeHandler",
-        keyedOut: "gpii.app.keyedOutHandler"
+        keyedInBefore: "gpii.app.keyedInBeforeHandler"
     },
     events: {
         onTriggerAdded: null,
@@ -129,15 +128,11 @@ gpii.app.surveyTriggerManager.removeTrigger = function (that, trigger) {
  * @param that {Component} The `gpii.app.surveyTriggerManager` instance.
  */
 gpii.app.surveyTriggerManager.reset = function (that) {
-    // The timeout is for demo purposes - in order to detect that the keyOut event
-    // has occurred prior to destroying all trigger handlers.
-    setTimeout(function () {
-        var triggerHandlers = fluid.values(that.registeredTriggerHandlers);
-        fluid.each(triggerHandlers, function (triggerHandler) {
-            triggerHandler.destroy();
-        });
-        that.registeredTriggerHandlers = {};
+    var triggerHandlers = fluid.values(that.registeredTriggerHandlers);
+    fluid.each(triggerHandlers, function (triggerHandler) {
+        triggerHandler.destroy();
     });
+    that.registeredTriggerHandlers = {};
 };
 
 /**
@@ -300,30 +295,4 @@ fluid.defaults("gpii.app.keyedInBeforeHandler", {
 gpii.app.keyedInBeforeHandler.start = function (that, keyedInTimestamp) {
     var offset = Date.now() - keyedInTimestamp;
     that.start(that.model.condition.value - offset);
-};
-
-/**
- * A `conditionHandler` which determines whether the user has keyed out.
- */
-fluid.defaults("gpii.app.keyedOutHandler", {
-    gradeNames: ["gpii.app.conditionHandler"],
-    modelListeners: {
-        // If the keyedInTimestamp is `null`, this means that there is no
-        // keyed in user. No need for a separate fact for this handler.
-        "{factsManager}.model.keyedInTimestamp": {
-            funcName: "gpii.app.keyedOutHandler.onKeyedInTimestampChanged",
-            args: ["{that}", "{change}.value"]
-        }
-    }
-});
-
-/**
- * Invoked whenever the `keyedInTimestamp` fact changes.
- * @param that {Component} The `gpii.app.keyedOutHandler` instance.
- * @param keyedInTimestamp {Number} The timestamp when the user has keyed in.
- */
-gpii.app.keyedOutHandler.onKeyedInTimestampChanged = function (that, keyedInTimestamp) {
-    if (!keyedInTimestamp) {
-        that.handleSuccess();
-    }
 };
