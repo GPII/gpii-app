@@ -84,18 +84,6 @@ gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
     }
 };
 
-/**
- * Collect all subcomponents for the given component
- * @param that {Component} The components holder
- * @return {Component[]} The list of subcomponents
- */
-gpii.app.getSubcomponents = function (that) {
-    return fluid
-        .values(that)
-        .filter(fluid.isComponent);
-};
-
-
 /*
  * A simple wrapper for the native timeout. Responsible for clearing the interval
  * upon component destruction.

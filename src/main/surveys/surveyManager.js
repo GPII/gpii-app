@@ -21,6 +21,10 @@ require("../utils.js");
 require("./surveyTriggerManager.js");
 require("./surveyConnector.js");
 
+/**
+ * This component serves as a mediator between the `surveyConnector`, the
+ * `surveyTriggerManager` and the app itself.
+ */
 fluid.defaults("gpii.app.surveyManager", {
     gradeNames: ["fluid.component"],
     events: {

@@ -35,22 +35,22 @@ var fluid = require("infusion"),
  * In the future, when a user keyes in, the `surveyConnector` would request the survey triggers
  * by issuing a request to the corresponding server route with the following JSON parameter:
  *     {
- *         keyedInUserToken: <keyedInUserToken> // the token of the currently keyed in user
+ *         keyedInUserToken: <keyedInUserToken>, // the token of the currently keyed in user
  *         machineId: <machineId> // the installation id of the OS
  *     }
  *
- * The response of the server would be in the following format:
+ * The response of the server would be an array of trigger objects in the following format:
  *     {
+ *         id: <trigger_id>, // mandatory, used to distinguish the triggers
  *         conditions: {
- *             // lists all conditions that need to be satisfied for this
- *             // trigger. See the `rulesEngine` documentation for more info.
+ *             // lists all conditions that need to be satisfied for this trigger
  *         }
  *     }
  *
  * When the conditions for a survey trigger have been satisfied, the `surveyConnector`
  * would issue a request to the corresponding server route with the following JSON parameter:
  *     {
- *         trigger: <triggerObject> // the same value from the "surveyTrigger" payload
+ *         trigger: <triggerObject> // the trigger which has occurred
  *     }
  *
  * Finally, the message that the survey server will send in order for the PSP to show a survey would
@@ -102,9 +102,6 @@ fluid.defaults("gpii.app.surveyConnector", {
 
 fluid.defaults("gpii.app.staticSurveyConnector", {
     gradeNames: ["gpii.app.surveyConnector"],
-    // TODO: Move this to options once the `json-rules-engine` module is not used.
-    // It seems that `fluid.require` does not parse arrays in the way expected by
-    // `json-rules-engine`.
     config: {
         triggerFixture: "@expand:fluid.require({that}.options.paths.triggerFixture)",
         surveyFixture: "@expand:fluid.require({that}.options.paths.surveyFixture)"

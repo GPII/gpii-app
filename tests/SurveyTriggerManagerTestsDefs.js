@@ -62,7 +62,7 @@ gpii.tests.surveyTriggerManager.testHandlerRemoved = function (surveyTriggerMana
 
 gpii.tests.surveyTriggerManager.testDefs = {
     name: "Trigger Engine integration tests",
-    expect: 13,
+    expect: 14,
     config: {
         configName: "gpii.tests.all.config",
         configPath: "tests/configs"
@@ -71,36 +71,47 @@ gpii.tests.surveyTriggerManager.testDefs = {
     sequence: [{
         func: "{that}.app.factsManager.applier.change",
         args: ["keyedInTimestamp", Date.now()]
-    }, {
-        func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-        args: [keyedInForTrigger]
-    }, {
-        func: "gpii.tests.surveyTriggerManager.testHandlerCreated",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTrigger]
-    }, {
-        event: "{that}.app.surveyManager.surveyTriggerManager.events.onTriggerOccurred",
-        listener: "jqUnit.assertDeepEq",
-        args: ["The correct trigger has occurred", keyedInForTrigger, "{arguments}.0"]
-    }, {
-        func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTrigger]
-    }, {
-        func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-        args: [keyedInForTrigger]
-    }, {
-        func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-        args: [keyedInForTriggerDuplicate]
-    }, {
-        func: "gpii.tests.surveyTriggerManager.testHandlerCreated",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
-    }, {
-        func: "{that}.app.surveyManager.surveyTriggerManager.removeTrigger",
-        args: [keyedInForTriggerDuplicate]
-    }, {
-        func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
-    }, {
-        func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-        args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
-    }]
+    }, [ // Testing basic trigger workflow
+        {
+            func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
+            args: [keyedInForTrigger]
+        }, {
+            func: "gpii.tests.surveyTriggerManager.testHandlerCreated",
+            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTrigger]
+        }, {
+            event: "{that}.app.surveyManager.surveyTriggerManager.events.onTriggerOccurred",
+            listener: "jqUnit.assertDeepEq",
+            args: ["The correct trigger has occurred", keyedInForTrigger, "{arguments}.0"]
+        }, {
+            func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
+            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTrigger]
+        }
+    ], [ // Testing registration of triggers with the same id
+        {
+            func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
+            args: [keyedInForTrigger]
+        }, {
+            func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
+            args: [keyedInForTriggerDuplicate]
+        }, {
+            func: "gpii.tests.surveyTriggerManager.testHandlerCreated",
+            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
+        }, {
+            func: "{that}.app.surveyManager.surveyTriggerManager.removeTrigger",
+            args: [keyedInForTriggerDuplicate]
+        }, {
+            func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
+            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
+        }
+    ], [ // Testing resetting of the survey trigger manager
+        {
+            func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
+            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
+        }, {
+            func: "{that}.app.surveyManager.surveyTriggerManager.reset"
+        }, {
+            func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
+            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
+        }
+    ]]
 };

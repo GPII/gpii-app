@@ -7,7 +7,7 @@
                 "record": "gpii.appWrapper",
                 "target": "{that flowManager}.options.gradeNames"
             },
-            "distributePcpChannelConnector": {
+            "distributeDevPcpChannelConnector": {
                 "record": "gpii.app.dev.gpiiConnector",
                 "target": "{that gpiiConnector}.options.gradeNames"
             },

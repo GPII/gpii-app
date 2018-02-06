@@ -26,7 +26,6 @@
     "electron-edge": "6.5.4",
     "gpii-windows": "git://github.com/danailbd/windows.git",
     "infusion": "3.0.0-dev.20170830T182157Z.392b2f8",
-    "json-rules-engine": "2.0.2",
     "node-jqunit": "1.1.7",
     "request": "2.69.0",
     "winstrap": "0.5.11"
