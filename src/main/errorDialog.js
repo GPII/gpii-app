@@ -48,8 +48,6 @@ fluid.defaults("gpii.app.dialog.errorDialog.channel", {
 fluid.defaults("gpii.app.errorDialog", {
     gradeNames: ["gpii.app.dialog"],
 
-    timeout: 15000,
-
     config: {
         attrs: {
             width: 400,
@@ -59,10 +57,10 @@ fluid.defaults("gpii.app.errorDialog", {
     },
 
     listeners: {
-//        "onCreate.autoclose": {
-//            funcName: "gpii.app.errorDialog.autoClose",
-//            args: ["{that}", "{that}.options.timeout"]
-//        }
+        "onCreate.autoclose": {
+            funcName: "gpii.app.errorDialog.autoClose",
+            args: ["{that}", "{that}.options.autoclose"]
+        }
     },
 
     components: {
@@ -71,8 +69,11 @@ fluid.defaults("gpii.app.errorDialog", {
         }
     },
 
-
     invokers: {
+        registerAutoClose: {
+            funcName: "gpii.app.errorDialog.autoClose",
+            args: ["{that}", "{arguments}.0"]
+        },
         show: {
             funcName: "gpii.app.errorDialog.show",
             args: ["{that}", "{arguments}.0"]
@@ -80,13 +81,17 @@ fluid.defaults("gpii.app.errorDialog", {
     }
 });
 
-gpii.app.errorDialog.autoClose = function (that, timeout) {
+gpii.app.errorDialog.autoClose = function (that, autoclose) {
     setTimeout(function () {
         that.applier.change("isShown", false);
-    }, timeout);
+    }, autoclose);
 };
 
 gpii.app.errorDialog.show = function (that, config) {
     that.dialogChannel.update(config);
     that.applier.change("isShown", true);
+
+    if (config.autoclose) {
+        that.registerAutoClose(config.autoclose);
+    }
 };

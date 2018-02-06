@@ -68,7 +68,6 @@
      */
     gpii.errorDialog.channel.register = function (events) {
         ipcRenderer.on("onUpdate", function (event, config) {
-            console.log("Recieved: ", config);
             events.onConfigReceived.fire(config);
         });
     };
@@ -87,7 +86,7 @@
             title:   null,
             subhead: null,
             details: null,
-            message: null
+            code: null
         },
 
         selectors: {
@@ -96,7 +95,7 @@
             title:   ".fl-title",
             subhead: ".fl-subhead",
             details: ".fl-details",
-            message: ".fl-message"
+            code: ".fl-code"
         },
 
         events: {
@@ -121,11 +120,10 @@
                 args: "{that}.model.details"
             },
 
-            // TODO
-            message: {
-                this: "{that}.dom.message",
+            code: {
+                this: "{that}.dom.code",
                 method: "text",
-                args: "{that}.model.message"
+                args: "{that}.model.code"
             }
         },
 

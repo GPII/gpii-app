@@ -445,13 +445,20 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
  * @param that {Component} An instance of gpii.app.
  */
 gpii.app.handleUncaughtException = function (that, err) {
+    var errCode = err && err.code;
+    var autoQuitTimeoutTime = 12000;
+
     var handledErrors = {
         "EADDRINUSE": {
-            message: "There is another application listening on port " + err.port,
+            title: "GPII can't start",
+            subhead: "There is another application listening on port " + err.port,
+            details: "Stop the other running application and try again. If the problem is still present, contact GPII Technical Support.",
             fatal: true
         },
         "EKEYINFAIL": {
-            message: "Unable to key in. Please try again.",
+            title: "Cannot Key In",
+            subhead: "There might be a problem with the user you are trying to use",
+            details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
             fatal: false
         }
     };
@@ -459,35 +466,39 @@ gpii.app.handleUncaughtException = function (that, err) {
     // Restore the state of the wait dialog
     that.waitDialog.applier.change("isShown", false);
 
-    if (err.code) {
-        var error = handledErrors[err.code];
-        if (error) {
-            that.errorDialog.show({
-                title: error.title || "GPII Error",
-                subhead: "some subeheader",
-                details: error.message || err.message,
-                icon: fluid.module.resolvePath("%gpii-app/src/icons/gpii-icon-balloon.png"),
-                message: "Message " + err.code
-            });
 
-            if (error.fatal) {
-                var timeout;
-                var quit = function () {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                        timeout = null;
-                        that.exit();
-                    }
-                };
-                // Exit when the balloon is dismissed.
-                // TODO close when window closes
-               // tray.on("balloon-closed", quit);
-               // tray.on("balloon-click", quit);
-                // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
-                // TODO: See GPII-2348 about this.
-                timeout = setTimeout(quit, 12000);
+    var defaultDialogConfig = {
+        title: "GPII ERROR",
+        // TODO
+        autoclose: 15000
+    };
+
+    err = handledErrors[errCode] || {};
+
+    var dialogConfig = Object.assign(
+        { message: errCode  },
+        defaultDialogConfig,
+        err);
+
+    that.errorDialog.show(dialogConfig);
+
+    if (err.fatal) {
+        var autoQuitTimeout;
+        var quit = function () {
+            console.log("Closiiing & Quiting");
+            if (autoQuitTimeout) {
+                clearTimeout(autoQuitTimeout);
+                autoQuitTimeout = null;
+                that.exit();
             }
-        }
+        };
+
+        // TODO test
+        that.errorDialog.applier.modelChanged.addListener("isShown", quit);
+        
+        // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
+        // TODO: See GPII-2348 about this.
+        autoQuitTimeout = setTimeout(quit, autoQuitTimeoutTime);
     }
 };
 

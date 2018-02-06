@@ -19,7 +19,13 @@
 }
 
 .fl-dialog .fl-dialog-content .fl-errorBody .fl-subhead {
-    margin-bottom: 20px;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.fl-dialog .fl-dialog-content .fl-errorBody .fl-details {
+    margin-top: 20px;
+    margin-left: 5px;
 }
 
 .fl-dialog .fl-dialog-content .fl-errorBody .fl-details {
