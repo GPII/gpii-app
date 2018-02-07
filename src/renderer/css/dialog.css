@@ -2,30 +2,29 @@
  * This configuration follows the "Master Dialog Design Template"
  */
 body {
+    /*
+     * Set at the bottom right corner as bigger than
+     * the needed browser windows may be drawn
+     */
+    position: absolute;
+    bottom: 22px;
+    right: 0;
     padding: 0;
     margin: 0;
 
-    font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-
-    /* 
-     * Set at the botton right corner as the a bigger
-     * than the needed browser windows may be drawn
-     */
-    position: absolute;
-    bottom: 22px;        /* The size of the triangle */
-    right: 0;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .fl-dialog {
-    background-color: #83CBEF;
     padding: 8px 8px 0 8px;
+    background-color: #83CBEF;
 }
 
 .fl-dialog .fl-dialog-content {
-    background-color: #ffffff;
+    display: flex;
     padding: 8px;
 
-    display: flex;
+    background-color: #ffffff;
 }
 
 .fl-dialog .fl-dialog-footer {
@@ -38,14 +37,13 @@ body {
 }
 
 .fl-dialog .fl-dialog-footer .fl-gpiiIcon img {
-    margin-bottom: -3px; /* vertial align text and image properly */
     height: 16px;
+    margin-bottom: -3px; /* vertial align text and image properly */
 }
 
-.fl-dialog .fl-speach-triangle {
+.fl-dialog .fl-speech-triangle {
     position: absolute;
     left: 15%;
-
     width: 0; 
     height: 0; 
 
