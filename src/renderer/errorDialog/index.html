@@ -1,26 +1,37 @@
 <html>
     <head>
         <title>GPII</title>
+        <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
+        <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="../css/dialog.css">
         <link rel="stylesheet" href="css/main.css">
 
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
 
+        <script type="text/javascript" src="../psp/js/widgets.js"></script>
         <script type="text/javascript" src="js/errorDialog.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
     </head>
     <body>
         <div class="fl-dialog">
-            <div class="fl-dialog-content">
-                <img class="fl-icon" src="../../icons/gpii-color.ico">
+            <div class="fl-dialog-body">
+                <div class="fl-dialog-content">
+                    <img class="fl-dialog-contentIcon" src="../../icons/gpii-color.ico">
 
-                <div class="fl-errorBody">
-                    <div class="fl-title">Title</div>
-                    <div class="fl-subhead">subheader and some other text that should wrap</div>
-                    <div class="fl-details">and the even longer descriptions that is positioned at the bottom of  the div</div>
+                    <div class="fl-dialog-contentText">
+                        <div class="fl-title">Title</div>
+                        <div class="fl-subhead">subheader and some other text that should wrap</div>
+                        <div class="fl-details">and the even longer descriptions that is positioned at the bottom of  the div</div>
+                    </div>
+                    <div class="clear-both"></div>
+
+                    <div class="fl-popup-controls">
+                        <button class="flc-closeButton btn fl-btn">
+                            <span class="fl-btnLabel"></span>
+                        </button>
+                    </div>
                 </div>
-            </div>
 
             <div class="fl-dialog-footer">
                 <span class="fl-message">Message ####</span>

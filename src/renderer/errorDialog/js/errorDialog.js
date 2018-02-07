@@ -90,7 +90,7 @@
         },
 
         selectors: {
-//            close:   ".fl-close",
+            close:   ".fl-close",
 
             title:   ".fl-title",
             subhead: ".fl-subhead",
@@ -145,15 +145,15 @@
         },
 
         components: {
-//            closeBtn: { // Header
-//                type: "gpii.psp.widgets.button",
-//                container: "{that}.dom.close",
-//                options: {
-//                    invokers: {
-//                        onClick: "{errorDialog}.events.onClosed.fire"
-//                    }
-//                }
-//            },
+            closeBtn: {
+                type: "gpii.psp.widgets.button",
+                container: "{that}.dom.close",
+                options: {
+                    invokers: {
+                        onClick: "{errorDialog}.events.onClosed.fire"
+                    }
+                }
+            },
             channel: {
                 type: "gpii.errorDialog.channel",
                 options: {

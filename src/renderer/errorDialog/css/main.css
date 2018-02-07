@@ -1,29 +1,26 @@
-.fl-dialog .fl-dialog-content .fl-errorBody {
-    margin: 10px 20px 10px 0;
-}
+.fl-dialog .fl-dialog-content .fl-dialog-contentIcon {
+    float: left;
 
-.fl-dialog .fl-dialog-content .fl-icon {
-    margin-right: 10px;
-}
-
-.fl-dialog .fl-dialog-content .fl-icon {
     width:  50px;
     height: 50px;
 }
 
-.fl-dialog .fl-dialog-content .fl-errorBody .fl-title {
+.fl-dialog .fl-dialog-content .fl-dialog-contentText {
+    float: left;
+    width: calc(100% - 80px); /* include the image size and margins */
+    margin: 10px 20px 10px 10px;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-title {
     color: #034EA2;
     font-size: 1.5em;
 }
 
-.fl-dialog .fl-dialog-content .fl-errorBody .fl-subhead {
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-subhead {
     margin: 5px 0 0 5px;
 }
 
-.fl-dialog .fl-dialog-content .fl-errorBody .fl-details {
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-details {
     margin: 20px 0 0 5px;
-}
-
-.fl-dialog .fl-dialog-content .fl-errorBody .fl-details {
     font-size: 0.9em;
 }
