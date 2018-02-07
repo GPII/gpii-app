@@ -60,6 +60,20 @@ fluid.defaults("gpii.app", {
             activeSet: null
         }
     },
+    errorsDescriptionMap: {
+        "EADDRINUSE": {
+            title:   "GPII can't start",
+            subhead: "There is another application listening on port the same port",
+            details: "Stop the other running application and try again. If the problem is still present, contact GPII Technical Support.",
+            fatal: true
+        },
+        "EKEYINFAIL": {
+            title:   "Cannot Key In",
+            subhead: "There might be a problem with the user you are trying to use",
+            details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
+            fatal: false
+        }
+    },
     // prerequisites
     components: {
         psp: {
@@ -305,7 +319,7 @@ fluid.defaults("gpii.app", {
         },
         "handleUncaughtException": {
             funcName: "gpii.app.handleUncaughtException",
-            args: ["{that}", "{arguments}.0"]
+            args: ["{that}", "{that}.options.errorsDescriptionMap", "{arguments}.0"]
         }
     },
     distributeOptions: {
@@ -443,62 +457,26 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
 /**
  * Listen on uncaught exceptions and display it to the user is if it's interesting.
  * @param that {Component} An instance of gpii.app.
+ * @param errorsDescription {Object} Map with more detailed description for the errors.
  */
-gpii.app.handleUncaughtException = function (that, err) {
+gpii.app.handleUncaughtException = function (that, errorsDescription, err) {
     var errCode = err && err.code;
-    var autoQuitTimeoutTime = 12000;
-
-    var handledErrors = {
-        "EADDRINUSE": {
-            title: "GPII can't start",
-            subhead: "There is another application listening on port " + err.port,
-            details: "Stop the other running application and try again. If the problem is still present, contact GPII Technical Support.",
-            fatal: true
-        },
-        "EKEYINFAIL": {
-            title: "Cannot Key In",
-            subhead: "There might be a problem with the user you are trying to use",
-            details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
-            fatal: false
-        }
-    };
+    var errDetails = errorsDescription[errCode] || {};
 
     // Restore the state of the wait dialog
     that.waitDialog.applier.change("isShown", false);
 
 
-    var defaultDialogConfig = {
-        title: "GPII ERROR",
-        // TODO
-        autoclose: 15000
-    };
+    that.errorDialog.show({
+        title:   errDetails.title,
+        subhead: errDetails.subhead,
+        details: errDetails.details,
 
-    err = handledErrors[errCode] || {};
+        code:    errCode
+    });
 
-    var dialogConfig = Object.assign(
-        { message: errCode  },
-        defaultDialogConfig,
-        err);
-
-    that.errorDialog.show(dialogConfig);
-
-    if (err.fatal) {
-        var autoQuitTimeout;
-        var quit = function () {
-            console.log("Closiiing & Quiting");
-            if (autoQuitTimeout) {
-                clearTimeout(autoQuitTimeout);
-                autoQuitTimeout = null;
-                that.exit();
-            }
-        };
-
-        // TODO test
-        that.errorDialog.applier.modelChanged.addListener("isShown", quit);
-        
-        // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
-        // TODO: See GPII-2348 about this.
-        autoQuitTimeout = setTimeout(quit, autoQuitTimeoutTime);
+    if (errDetails.fatal) {
+        that.errorDialog.applier.modelChanged.addListener("isShown", that.exit);
     }
 };
 

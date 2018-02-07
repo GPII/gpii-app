@@ -1,9 +1,7 @@
 /**
- * The restart dialog
+ * The error dialog
  *
- * Represents the restart dialog which appears when there is a pending change and the
- * user has closed the PSP either by clicking outside of it or by using the close button
- * in the upper right corner.
+ * Represents an error dialog, that can be closed by the user.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -74,8 +72,7 @@
 
 
     /**
-     * The wrapper component for the restart warning dialog. Handles visualization and
-     * interactions for the require restart functionality.
+     * Responsible for the visualisation of the error dialog.
      */
     fluid.defaults("gpii.errorDialog", {
         gradeNames: ["fluid.viewComponent"],
@@ -84,7 +81,7 @@
             title:   null,
             subhead: null,
             details: null,
-            code: null
+            errCode: null
         },
 
         selectors: {
@@ -93,11 +90,10 @@
             title:   ".flc-title",
             subhead: ".flc-subhead",
             details: ".flc-details",
-            code:    ".flc-code"
+            errCode: ".flc-errCode"
         },
 
         events: {
-            // TODO introduce
             onClosed: null
         },
 
@@ -118,10 +114,10 @@
                 args: "{that}.model.details"
             },
 
-            code: {
-                this: "{that}.dom.code",
+            errCode: {
+                this: "{that}.dom.errCode",
                 method: "text",
-                args: "{that}.model.code"
+                args: "{that}.model.errCode"
             }
         },
 

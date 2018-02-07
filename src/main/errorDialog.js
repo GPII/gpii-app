@@ -1,7 +1,7 @@
 /**
- * Base BrowserWindow dialog component
+ * Error dialog component
  *
- * A base component for all Electron BrowserWindow dialogs.
+ * An Electron BrowserWindow dialog that presents errors to the user.
  * GPII Application
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
@@ -23,7 +23,7 @@ require("./utils.js");
 
 /**
  * A component that serves as simple interface for communication with the
- * electron `BrowserWindow` restart dialog.
+ * electron `BrowserWindow` error dialog.
  */
 fluid.defaults("gpii.app.errorDialog.channel", {
     gradeNames: ["fluid.component"],
@@ -62,7 +62,12 @@ gpii.app.errorDialog.channel.register = function (events) {
 };
 
 
-
+/**
+ * A component that represent an error dialog
+ * and is used to display error messages to the user.
+ * In order for an error to be properly displayed it requires the following attributes:
+ * title, subheader, details and error code
+ */
 fluid.defaults("gpii.app.errorDialog", {
     gradeNames: ["gpii.app.dialog"],
 
@@ -96,6 +101,18 @@ fluid.defaults("gpii.app.errorDialog", {
     }
 });
 
+
+/**
+ * As we're using a single Electron `BrowserWindow`, showing
+ * the error requires updating the current message properties.
+ *
+ * @param that {Component} The `gpii.app.errorDialog` component
+ * @param config {Object} Options for error dialog
+ * @param config.title {String} The error title
+ * @param config.subhead {String} The error's subheader
+ * @param config.details {String} The details for the error
+ * @param config.code {String} The error code
+ */
 gpii.app.errorDialog.show = function (that, config) {
     that.dialogChannel.update(config);
     that.applier.change("isShown", true);
