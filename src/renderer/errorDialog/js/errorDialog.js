@@ -45,7 +45,7 @@
         invokers: {
             close: {
                 funcName: "gpii.errorDialog.channel.notifyChannel",
-                args: "onClosed"
+                args: "onErrorDialogClosed"
             }
         }
     });
@@ -67,7 +67,7 @@
      * changes received from the Main process
      */
     gpii.errorDialog.channel.register = function (events) {
-        ipcRenderer.on("onUpdate", function (event, config) {
+        ipcRenderer.on("onErrorUpdate", function (event, config) {
             events.onConfigReceived.fire(config);
         });
     };
@@ -81,8 +81,6 @@
         gradeNames: ["fluid.viewComponent"],
 
         model: {
-            icon:    null,
-
             title:   null,
             subhead: null,
             details: null,
@@ -90,12 +88,12 @@
         },
 
         selectors: {
-            close:   ".fl-close",
+            close:   ".flc-close",
 
-            title:   ".fl-title",
-            subhead: ".fl-subhead",
-            details: ".fl-details",
-            code: ".fl-code"
+            title:   ".flc-title",
+            subhead: ".flc-subhead",
+            details: ".flc-details",
+            code:    ".flc-code"
         },
 
         events: {
@@ -128,12 +126,7 @@
         },
 
         listeners: {
-            onClosed: "{channel}.close",
-            "onCreate.log": {
-                this: "console",
-                method: "log",
-                args: ["{that}"]
-            }
+            onClosed: "{channel}.close"
         },
 
         invokers: {
@@ -149,6 +142,7 @@
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.close",
                 options: {
+                    label: "Close",
                     invokers: {
                         onClick: "{errorDialog}.events.onClosed.fire"
                     }

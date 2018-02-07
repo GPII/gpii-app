@@ -15,8 +15,9 @@
  */
 "use strict";
 
-var fluid = require("infusion");
-var gpii  = fluid.registerNamespace("gpii");
+var fluid   = require("infusion");
+var gpii    = fluid.registerNamespace("gpii");
+var ipcMain = require("electron").ipcMain;
 
 require("./utils.js");
 
@@ -24,12 +25,18 @@ require("./utils.js");
  * A component that serves as simple interface for communication with the
  * electron `BrowserWindow` restart dialog.
  */
-fluid.defaults("gpii.app.dialog.errorDialog.channel", {
+fluid.defaults("gpii.app.errorDialog.channel", {
     gradeNames: ["fluid.component"],
 
     events: {
-        // TODO
-        onClosed: null // provided by parent component
+        onClosed: null
+    },
+
+    listeners: {
+        "onCreate.registerChannel": {
+            funcName: "gpii.app.errorDialog.channel.register",
+            args: ["{that}.events"]
+        }
     },
 
     invokers: {
@@ -37,12 +44,23 @@ fluid.defaults("gpii.app.dialog.errorDialog.channel", {
             funcName: "gpii.app.notifyWindow",
             args: [
                 "{dialog}.dialog",
-                "onUpdate",
+                "onErrorUpdate",
                 "{arguments}.0"
             ]
         }
     }
 });
+
+/**
+ * Register for events from the managed Electron `BrowserWindow` (the renderer process).
+ * @param events {Objects} Events that are to be mapped to dialog actoins
+ */
+gpii.app.errorDialog.channel.register = function (events) {
+    ipcMain.on("onErrorDialogClosed", function (/*event, message*/) {
+        events.onClosed.fire();
+    });
+};
+
 
 
 fluid.defaults("gpii.app.errorDialog", {
@@ -51,29 +69,26 @@ fluid.defaults("gpii.app.errorDialog", {
     config: {
         attrs: {
             width: 400,
-            height: 300
+            height: 350
         },
         fileSuffixPath: "errorDialog/index.html"
     },
 
     listeners: {
-        "onCreate.autoclose": {
-            funcName: "gpii.app.errorDialog.autoClose",
-            args: ["{that}", "{that}.options.autoclose"]
+        // close the dialog
+        "{dialogChannel}.events.onClosed": {
+            changePath: "isShown",
+            value: false
         }
     },
 
     components: {
         dialogChannel: {
-            type: "gpii.app.dialog.errorDialog.channel"
+            type: "gpii.app.errorDialog.channel"
         }
     },
 
     invokers: {
-        registerAutoClose: {
-            funcName: "gpii.app.errorDialog.autoClose",
-            args: ["{that}", "{arguments}.0"]
-        },
         show: {
             funcName: "gpii.app.errorDialog.show",
             args: ["{that}", "{arguments}.0"]
@@ -81,17 +96,7 @@ fluid.defaults("gpii.app.errorDialog", {
     }
 });
 
-gpii.app.errorDialog.autoClose = function (that, autoclose) {
-    setTimeout(function () {
-        that.applier.change("isShown", false);
-    }, autoclose);
-};
-
 gpii.app.errorDialog.show = function (that, config) {
     that.dialogChannel.update(config);
     that.applier.change("isShown", true);
-
-    if (config.autoclose) {
-        that.registerAutoClose(config.autoclose);
-    }
 };
