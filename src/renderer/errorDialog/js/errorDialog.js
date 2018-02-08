@@ -44,6 +44,10 @@
             close: {
                 funcName: "gpii.errorDialog.channel.notifyChannel",
                 args: "onErrorDialogClosed"
+            },
+            notifyHeightChanged: {
+                funcName: "gpii.errorDialog.channel.notifyChannel",
+                args: ["onErrorDialogContentSizeChanged", "{arguments}.0", "{arguments}.1"]
             }
         }
     });
@@ -54,8 +58,8 @@
      * Main process that a button was clicked.
      * @param channel {String} The channel to be notified
      */
-    gpii.errorDialog.channel.notifyChannel = function (channel) {
-        ipcRenderer.send(channel);
+    gpii.errorDialog.channel.notifyChannel = function (/* channel */) {
+        ipcRenderer.send.apply(null, arguments);
     };
 
     /**
@@ -75,7 +79,7 @@
      * Responsible for the visualisation of the error dialog.
      */
     fluid.defaults("gpii.errorDialog", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
 
         model: {
             title:   null,
@@ -130,6 +134,10 @@
             updateConfig: {
                 changePath: "",
                 value: "{arguments}.0"
+            },
+            onContentHeightChanged: {
+                funcName: "gpii.errorDialog.onContentHeightChanged",
+                args: ["{that}", "{that}.container"]
             }
         },
 
@@ -157,5 +165,20 @@
             }
         }
     });
-})(fluid);
 
+    /**
+     * Compute the size of the dialog content.
+     * @param that {Component} The `gpii.errorDialog` component
+     */
+    gpii.errorDialog.onContentHeightChanged = function (that) {
+        var container = that.container;
+        // get speech triangle size, in case such exists
+        var triangleSize = $(".fl-speech-triangle").outerHeight(true) || 0;
+
+        that.channel.notifyHeightChanged({
+            width: container.outerWidth(true),
+            height: container.outerHeight(true) + triangleSize + 10 /* some spare  */
+        });
+    };
+
+})(fluid);

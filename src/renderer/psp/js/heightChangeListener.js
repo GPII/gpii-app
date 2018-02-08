@@ -34,4 +34,26 @@
             onHeightChanged: null
         }
     });
+
+    fluid.defaults("gpii.psp.heightObservable", {
+        gradeNames: "fluid.viewComponent",
+
+        selectors: {
+            heightChangeListener: ".flc-contentHeightChangeListener"
+        },
+
+        components: {
+            heightChangeListener: {
+                type: "gpii.psp.heightChangeListener",
+                container: "{that}.dom.heightChangeListener",
+                options: {
+                    listeners: {
+                        onHeightChanged: {
+                            funcName: "{heightObservable}.onContentHeightChanged"
+                        }
+                    }
+                }
+            }
+        }
+    });
 })(fluid);

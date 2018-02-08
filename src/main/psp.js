@@ -109,10 +109,6 @@ fluid.defaults("gpii.app.psp", {
             funcName: "gpii.app.notifyWindow",
             args: ["{that}.pspWindow", "{arguments}.0", "{arguments}.1"]
         },
-        getDesiredWindowPosition: {
-            funcName: "gpii.app.getDesiredWindowPosition",
-            args: ["{that}.options.attrs.width", "{that}.options.attrs.height"]
-        },
         resize: {
             funcName: "gpii.app.psp.resize",
             args: ["{that}", "{arguments}.0", "{that}.options.attrs.height", "{arguments}.1"]

@@ -61,7 +61,8 @@ fluid.defaults("gpii.app.dialog", {
             frame: false,
             transparent: true,
             alwaysOnTop: true,
-            skipTaskbar: true
+            skipTaskbar: true,
+            resizable: false
         },
         filePrefixPath: "src/renderer",
         fileSuffixPath: null,           // e.g. "waitDialog/index.html"
@@ -81,7 +82,6 @@ fluid.defaults("gpii.app.dialog", {
                 funcName: "gpii.app.dialog.makeDialog",
                 args: [
                     "{that}.options.config.attrs",
-                    "@expand:{that}.getDesiredWindowPosition()",
                     "{that}.options.config.url"
                 ]
             }
@@ -95,6 +95,9 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     listeners: {
+        "onCreate.positionWindow": {
+            func: "{that}.resetWindowPosition"
+        },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
             method: "destroy"
@@ -103,10 +106,7 @@ fluid.defaults("gpii.app.dialog", {
     invokers: {
         getDesiredWindowPosition: {
             funcName: "gpii.app.getDesiredWindowPosition",
-            args: [
-                "{that}.options.config.attrs.width",
-                "{that}.options.config.attrs.height"
-            ]
+            args: ["{that}.dialog"]
         },
         resetWindowPosition: {
             funcName: "gpii.app.setWindowPosition",
@@ -140,15 +140,11 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
  * Creates a dialog. This is done up front to avoid the delay from creating a new
  * dialog every time a new message should be displayed.
  * @param windowOptions {Object} The raw Electron `BrowserWindow` settings
- * @param position {Object} The desired position for the component
- * @param position.x {Number}
- * @param position.y {Number}
  * @param url {String} The URL to be loaded in the `BrowserWindow`
  * @return {BrowserWindow} The Electron `BrowserWindow` component
  */
-gpii.app.dialog.makeDialog = function (windowOptions, position, url) {
+gpii.app.dialog.makeDialog = function (windowOptions, url) {
     var dialog = new BrowserWindow(windowOptions);
-    dialog.setPosition(position.x, position.y);
 
     dialog.loadURL(url);
     return dialog;

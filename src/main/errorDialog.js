@@ -29,13 +29,14 @@ fluid.defaults("gpii.app.errorDialog.channel", {
     gradeNames: ["fluid.component"],
 
     events: {
-        onClosed: null
+        onClosed: null,
+        onContentHeightChanged: null
     },
 
     listeners: {
         "onCreate.registerChannel": {
             funcName: "gpii.app.errorDialog.channel.register",
-            args: ["{that}.events"]
+            args: ["{errorDialog}", "{that}.events"]
         }
     },
 
@@ -55,9 +56,13 @@ fluid.defaults("gpii.app.errorDialog.channel", {
  * Register for events from the managed Electron `BrowserWindow` (the renderer process).
  * @param events {Objects} Events that are to be mapped to dialog actoins
  */
-gpii.app.errorDialog.channel.register = function (events) {
+gpii.app.errorDialog.channel.register = function (that, events) {
     ipcMain.on("onErrorDialogClosed", function (/*event, message*/) {
         events.onClosed.fire();
+    });
+
+    ipcMain.on("onErrorDialogContentSizeChanged", function (event, size) {
+        events.onContentHeightChanged.fire(size);
     });
 };
 
@@ -74,7 +79,7 @@ fluid.defaults("gpii.app.errorDialog", {
     config: {
         attrs: {
             width: 450,
-            height: 350
+            height: 100 // This is to be changed with respect to the content needs
         },
         fileSuffixPath: "errorDialog/index.html"
     },
@@ -89,7 +94,15 @@ fluid.defaults("gpii.app.errorDialog", {
 
     components: {
         dialogChannel: {
-            type: "gpii.app.errorDialog.channel"
+            type: "gpii.app.errorDialog.channel",
+            options: {
+                listeners: {
+                    "onContentHeightChanged": {
+                        func: "{dialog}.resize",
+                        args: ["{arguments}.0.width", "{arguments}.0.height"]
+                    }
+                }
+            }
         }
     },
 
@@ -97,12 +110,21 @@ fluid.defaults("gpii.app.errorDialog", {
         show: {
             funcName: "gpii.app.errorDialog.show",
             args: ["{that}", "{arguments}.0"]
+        },
+        resize: {
+            funcName: "gpii.app.errorDialog.resize",
+            args: ["{that}", "{arguments}.0", "{arguments}.1"]
         }
     }
 });
 
+gpii.app.errorDialog.resize = function (that, windowWidth, windowHeight) {
+    that.dialog.setSize(windowWidth, windowHeight);
+    that.resetWindowPosition();
+};
 
 /**
+ * TODO
  * As we're using a single Electron `BrowserWindow`, showing
  * the error requires updating the current message properties.
  *
@@ -115,5 +137,10 @@ fluid.defaults("gpii.app.errorDialog", {
  */
 gpii.app.errorDialog.show = function (that, config) {
     that.dialogChannel.update(config);
-    that.applier.change("isShown", true);
+
+    // Give brief time for the window to be resized
+    setTimeout(function () {
+        // TODO move to listener
+        that.applier.change("isShown", true);
+    }, 100);
 };

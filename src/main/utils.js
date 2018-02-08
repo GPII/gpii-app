@@ -36,15 +36,19 @@ gpii.app.isWin10OS = function () {
 /**
 * Gets the desired position (in the lower right corner of the primary
 * display) of an `Electron` `BrowserWindow` given its dimensions.
-* @param width {Number} The current width of the window
-* @param height {Number} The current height of the window
+* @param dialog {Object} The electron BrowserWindow object
 * @return {{x: Number, y: Number}}
 */
-gpii.app.getDesiredWindowPosition = function (width, height) {
+gpii.app.getDesiredWindowPosition = function (dialog) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    // Get the current size of the BrowserWindow in order
+    var windowSize = dialog.getSize(),
+        windowX = windowSize[0],
+        windowY = windowSize[1];
+
     return {
-        x: screenSize.width - width,
-        y: screenSize.height - height
+        x: screenSize.width - windowX,
+        y: screenSize.height - windowY
     };
 };
 

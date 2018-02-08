@@ -4,6 +4,7 @@
         <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
         <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="../css/dialog.css">
+        <link rel="stylesheet" href="../psp/css/main.css">
         <link rel="stylesheet" href="css/main.css">
 
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
@@ -12,13 +13,16 @@
         <script type="text/javascript" src="../psp/js/widgets.js"></script>
         <script type="text/javascript" src="js/errorDialog.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+
+        <script type="text/javascript" src="../psp/js/heightChangeListener.js"></script>
     </head>
     <body>
         <div class="fl-dialog">
-            <div class="fl-dialog-content">
+            <div class="fl-dialog-content fl-errorDialog-content">
                 <img class="fl-dialog-contentIcon" src="../../icons/gpii-color.ico">
 
                 <div class="fl-dialog-contentText">
+                    <iframe class="flc-contentHeightChangeListener fl-heightChangeListener"></iframe>
                     <div class="flc-title fl-title"></div>
                     <div class="flc-subhead fl-subhead"></div>
                     <div class="flc-details fl-details"></div>
