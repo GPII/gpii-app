@@ -11,16 +11,16 @@
     margin: 10px 20px 10px 10px;
 }
 
-.fl-dialog .fl-dialog-content .fl-dialog-contentText .flc-title {
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-title {
     color: #034EA2;
     font-size: 1.5em;
 }
 
-.fl-dialog .fl-dialog-content .fl-dialog-contentText .flc-subhead {
-    margin: 5px 0 0 5px;
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-subhead {
+    margin: 5px 15px 0 5px;
 }
 
-.fl-dialog .fl-dialog-content .fl-dialog-contentText .flc-details {
-    margin: 20px 0 0 5px;
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-details {
+    margin: 20px 25px 0 5px;
     font-size: 0.9em;
 }

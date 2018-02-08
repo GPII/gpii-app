@@ -23,28 +23,28 @@ body {
 }
 
 .fl-dialog .fl-dialog-content {
-    padding: 8px;
+    padding: 12px;
 
     background-color: #ffffff;
 }
 
-.fl-dialog .fl-dialog-controls {
+.fl-dialog .fl-dialog-content .fl-dialog-controls {
     clear: both;
 
     display: flex;
     justify-content: space-between;
 }
 
-.fl-dialog .fl-dialog-controls button {
+.fl-dialog .fl-dialog-content .fl-dialog-controls button {
     width: 140px;
     height: 50px;
 }
 
-.fl-dialog .fl-dialog-controls button span {
+.fl-dialog .fl-dialog-content .fl-dialog-controls button span {
     white-space: pre-wrap;
 }
 
-.fl-dialog .fl-dialog-controls button:last-child {
+.fl-dialog .fl-dialog-content .fl-dialog-controls button:last-child {
     margin-right: 0;
 }
 

@@ -73,7 +73,7 @@ fluid.defaults("gpii.app.errorDialog", {
 
     config: {
         attrs: {
-            width: 400,
+            width: 450,
             height: 350
         },
         fileSuffixPath: "errorDialog/index.html"
