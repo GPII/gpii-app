@@ -16,7 +16,7 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii"),
     kettle = fluid.registerNamespace("kettle");
 
-require("universal");
+require("gpii-universal");
 
 // Check that we are not running another instance of GPII-App.
 var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirectory*/) {
