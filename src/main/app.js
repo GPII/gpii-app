@@ -71,6 +71,9 @@ fluid.defaults("gpii.app", {
             title:   "Cannot Key In",
             subhead: "There might be a problem with the user you are trying to use",
             details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
+            btnLabel1: "Ok",
+            btnLabel2: null,
+            btnLabel3: "Oh Noooooooooooo",
             fatal: false
         }
     },
@@ -471,6 +474,10 @@ gpii.app.handleUncaughtException = function (that, errorsDescription, err) {
         title:   errDetails.title,
         subhead: errDetails.subhead,
         details: errDetails.details,
+
+        btnTitle1: errDetails.btnTitle1,
+        btnTitle2: errDetails.btnTitle2,
+        btnTitle3: errDetails.btnTitle3,
 
         code:    errCode
     });

@@ -74,6 +74,25 @@
         });
     };
 
+    fluid.defaults("gpii.errorDialog.button", {
+        gradeNames: "gpii.psp.widgets.button",
+        model: {
+            label: "{that}.options.label"
+        },
+        invokers: {
+            onClick: {
+                func: "{errorDialog}.events.onButtonClicked.fire",
+                /* Simply identify a button by its label */
+                args: "{that}.options.label"
+            }
+        },
+        modelListeners: {
+            "label": {
+                funcName: "gpii.errorDialog.toggleButton",
+                args: ["{that}.container", "{change}.value"]
+            }
+        }
+    });
 
     /**
      * Responsible for the visualisation of the error dialog.
@@ -82,6 +101,11 @@
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
 
         model: {
+            // Support at most 3 buttons
+            btnLabel1: null,
+            btnLabel2: null,
+            btnLabel3: null,
+
             title:   null,
             subhead: null,
             details: null,
@@ -89,7 +113,9 @@
         },
 
         selectors: {
-            close:   ".flc-close",
+            btn1:   ".flc-btn-1",
+            btn2:   ".flc-btn-2",
+            btn3:   ".flc-btn-3",
 
             title:   ".flc-title",
             subhead: ".flc-subhead",
@@ -98,7 +124,7 @@
         },
 
         events: {
-            onClosed: null
+            onButtonClicked: null
         },
 
         modelListeners: {
@@ -126,7 +152,12 @@
         },
 
         listeners: {
-            onClosed: "{channel}.close"
+            onButtonClicked: "{channel}.close",
+            "onCreate.log": {
+                this: "console",
+                method: "log",
+                args: "{that}"
+            }
         },
 
         invokers: {
@@ -142,16 +173,6 @@
         },
 
         components: {
-            closeBtn: {
-                type: "gpii.psp.widgets.button",
-                container: "{that}.dom.close",
-                options: {
-                    label: "Close",
-                    invokers: {
-                        onClick: "{errorDialog}.events.onClosed.fire"
-                    }
-                }
-            },
             channel: {
                 type: "gpii.errorDialog.channel",
                 options: {
@@ -162,9 +183,47 @@
                         }
                     }
                 }
+            },
+            /*
+             * Dialog Controls
+             */
+            btnLeft: {
+                type: "gpii.errorDialog.button",
+                container: "{that}.dom.btn1",
+                options: {
+                    label: "{errorDialog}.model.btn1"
+                }
+            },
+            btnMid: {
+                type: "gpii.errorDialog.button",
+                container: "{that}.dom.btn2",
+                options: {
+                    label: "{errorDialog}.model.btnLabel2"
+                }
+            },
+            btnRight: {
+                type: "gpii.errorDialog.button",
+                container: "{that}.dom.btn3",
+                options: {
+                    label: "{errorDialog}.model.btn3"
+                }
             }
         }
     });
+
+
+    /**
+     * Either shows or hides a button depending on the label. Simply hide
+     * a button if no label is provided, as buttons are optional.
+     */
+    gpii.errorDialog.toggleButton = function (container, value) {
+        console.log("Toggle: ", value)
+        if (value) {
+            container.show();
+        } else {
+            container.hide();
+        }
+    };
 
     /**
      * Compute the size of the dialog content.

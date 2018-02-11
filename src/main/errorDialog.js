@@ -99,7 +99,7 @@ fluid.defaults("gpii.app.errorDialog", {
                 listeners: {
                     "onContentHeightChanged": {
                         func: "{dialog}.resize",
-                        args: ["{arguments}.0.width", "{arguments}.0.height"]
+                        args: ["{arguments}.0"]
                     }
                 }
             }
@@ -118,8 +118,8 @@ fluid.defaults("gpii.app.errorDialog", {
     }
 });
 
-gpii.app.errorDialog.resize = function (that, windowWidth, windowHeight) {
-    that.dialog.setSize(windowWidth, windowHeight);
+gpii.app.errorDialog.resize = function (that, windowSize) {
+    that.dialog.setSize(windowSize.width, windowSize.height);
     that.resetWindowPosition();
 };
 
@@ -140,7 +140,7 @@ gpii.app.errorDialog.show = function (that, config) {
 
     // Give brief time for the window to be resized
     setTimeout(function () {
-        // TODO move to listener
+        // TODO move to listener ?
         that.applier.change("isShown", true);
     }, 100);
 };
