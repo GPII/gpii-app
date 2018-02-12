@@ -47,7 +47,7 @@
             },
             notifyHeightChanged: {
                 funcName: "gpii.errorDialog.channel.notifyChannel",
-                args: ["onErrorDialogContentSizeChanged", "{arguments}.0", "{arguments}.1"]
+                args: ["onErrorDialogHeightChanged", "{arguments}.0"]
             }
         }
     });
@@ -77,8 +77,10 @@
     fluid.defaults("gpii.errorDialog.button", {
         gradeNames: "gpii.psp.widgets.button",
         model: {
-            label: "{that}.options.label"
+            label: null
         },
+        label: "{that}.model.label",
+
         invokers: {
             onClick: {
                 func: "{errorDialog}.events.onButtonClicked.fire",
@@ -87,10 +89,17 @@
             }
         },
         modelListeners: {
-            "label": {
-                funcName: "gpii.errorDialog.toggleButton",
-                args: ["{that}.container", "{change}.value"]
-            }
+            label:
+            // {
+            //     this: "{that}.container",
+            //     method: "toggle",
+            //     args: "{change}.value"
+            // }
+           {
+               this: "console",
+               method: "log",
+               args: ["{change}.value"]
+           }
         }
     });
 
@@ -191,39 +200,32 @@
                 type: "gpii.errorDialog.button",
                 container: "{that}.dom.btn1",
                 options: {
-                    label: "{errorDialog}.model.btn1"
+                    model: {
+                        label: "{errorDialog}.model.btnLabel1"
+                    }
                 }
             },
             btnMid: {
                 type: "gpii.errorDialog.button",
                 container: "{that}.dom.btn2",
                 options: {
-                    label: "{errorDialog}.model.btnLabel2"
+                    model: {
+                        label: "{errorDialog}.model.btnLabel2"
+                    }
                 }
             },
             btnRight: {
                 type: "gpii.errorDialog.button",
                 container: "{that}.dom.btn3",
                 options: {
-                    label: "{errorDialog}.model.btn3"
+                    model: {
+                        label: "{errorDialog}.model.btnLabel3"
+                    }
                 }
             }
         }
     });
 
-
-    /**
-     * Either shows or hides a button depending on the label. Simply hide
-     * a button if no label is provided, as buttons are optional.
-     */
-    gpii.errorDialog.toggleButton = function (container, value) {
-        console.log("Toggle: ", value)
-        if (value) {
-            container.show();
-        } else {
-            container.hide();
-        }
-    };
 
     /**
      * Compute the size of the dialog content.
@@ -234,10 +236,9 @@
         // get speech triangle size, in case such exists
         var triangleSize = $(".fl-speech-triangle").outerHeight(true) || 0;
 
-        that.channel.notifyHeightChanged({
-            width: container.outerWidth(true),
-            height: container.outerHeight(true) + triangleSize + 10 /* some spare  */
-        });
+        that.channel.notifyHeightChanged(
+            container.outerHeight(true) + triangleSize + 10 /* some spare pixels */
+        );
     };
 
 })(fluid);

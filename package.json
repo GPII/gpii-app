@@ -10,6 +10,7 @@
   "devDependencies": {
     "electron-packager": "8.5.1",
     "eslint-config-fluid": "1.0.0",
+    "eslint": "4.17.0",
     "fluid-grunt-eslint": "18.1.2",
     "grunt": "1.0.1",
     "grunt-jsonlint": "1.1.0",
@@ -24,7 +25,6 @@
   "dependencies": {
     "electron": "1.4.1",
     "electron-edge": "6.5.4",
-    "eslint": "^4.17.0",
     "gpii-windows": "git://github.com/danailbd/windows.git#hst-2017",
     "infusion": "3.0.0-dev.20170830T182157Z.392b2f8",
     "node-jqunit": "1.1.7",

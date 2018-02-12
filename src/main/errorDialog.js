@@ -61,8 +61,8 @@ gpii.app.errorDialog.channel.register = function (that, events) {
         events.onClosed.fire();
     });
 
-    ipcMain.on("onErrorDialogContentSizeChanged", function (event, size) {
-        events.onContentHeightChanged.fire(size);
+    ipcMain.on("onErrorDialogHeightChanged", function (event, height) {
+        events.onContentHeightChanged.fire(height);
     });
 };
 
@@ -78,7 +78,7 @@ fluid.defaults("gpii.app.errorDialog", {
 
     config: {
         attrs: {
-            width: 450,
+            width: 400,
             height: 100 // This is to be changed with respect to the content needs
         },
         fileSuffixPath: "errorDialog/index.html"
@@ -99,7 +99,10 @@ fluid.defaults("gpii.app.errorDialog", {
                 listeners: {
                     "onContentHeightChanged": {
                         func: "{dialog}.resize",
-                        args: ["{arguments}.0"]
+                        args: [
+                            "{errorDialog}.options.config.attrs.width", // only the height is dynamic
+                            "{arguments}.0" // windowHeight
+                        ]
                     }
                 }
             }
@@ -118,8 +121,11 @@ fluid.defaults("gpii.app.errorDialog", {
     }
 });
 
-gpii.app.errorDialog.resize = function (that, windowSize) {
-    that.dialog.setSize(windowSize.width, windowSize.height);
+/**
+ * Resize the current window to... TODO
+ */
+gpii.app.errorDialog.resize = function (that, windowWidth, windowHeight) {
+    that.dialog.setSize(windowWidth, windowHeight);
     that.resetWindowPosition();
 };
 
