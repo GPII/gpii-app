@@ -3,14 +3,15 @@
         <title>GPII</title>
         <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
         <link rel="stylesheet" href="../psp/css/button.css">
-        <link rel="stylesheet" href="../css/dialog.css">
-        <link rel="stylesheet" href="../psp/css/main.css">
+        <link rel="stylesheet" href="../common/css/dialog.css">
+        <link rel="stylesheet" href="../common/css/titlebar.css">
         <link rel="stylesheet" href="css/main.css">
 
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
 
         <script type="text/javascript" src="../psp/js/widgets.js"></script>
+        <script type="text/javascript" src="../common/js/titlebar.js"></script>
         <script type="text/javascript" src="js/errorDialog.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
@@ -18,6 +19,13 @@
     </head>
     <body>
         <div class="fl-dialog">
+            <div class="flc-titlebar fl-titlebar">
+                <img src="../../icons/gpii-icon-balloon.png">
+                <span class="flc-appName fl-appName"></span>
+                <button class="flc-closeBtn fl-closeBtn btn btn-regular">&#x2715;</button>
+                <div class="clear-both"></div>
+            </div>
+
             <div class="fl-dialog-content fl-errorDialog-content">
                 <img class="fl-dialog-contentIcon" src="../../icons/gpii-color.ico">
 
@@ -42,7 +50,7 @@
             </div>
 
             <div class="fl-dialog-footer">
-                <span class="flc-errCode"></span>
+                Message <span class="flc-errCode"></span>
                 <span class="fl-gpiiIcon">GPII <img src="../../icons/gear-cloud-black.png"></span>
                 <div class="clear-both"></div>
                 <div class="fl-speech-triangle"></div>

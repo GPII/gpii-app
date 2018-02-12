@@ -89,17 +89,11 @@
             }
         },
         modelListeners: {
-            label:
-            {
+            label: {
                 this: "{that}.container",
                 method: "toggle",
                 args: "@expand:fluid.isValue({change}.value)"
             }
-           // {
-           //     this: "console",
-           //     method: "log",
-           //     args: ["{change}.value"]
-           // }
         }
     });
 
@@ -110,8 +104,8 @@
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
 
         model: {
-            // Support at most 3 buttons
-            btnLabel1: "OK",
+            // Support at most 3 buttons (optional)
+            btnLabel1: null,
             btnLabel2: null,
             btnLabel3: null,
 
@@ -125,6 +119,8 @@
             btn1:   ".flc-btn-1",
             btn2:   ".flc-btn-2",
             btn3:   ".flc-btn-3",
+
+            titlebar: ".flc-titlebar",
 
             title:   ".flc-title",
             subhead: ".flc-subhead",
@@ -193,10 +189,24 @@
                     }
                 }
             },
+
+            titlebar: {
+                type: "gpii.psp.titlebar",
+                container: "{that}.dom.titlebar",
+                options: {
+                    labels: {
+                        appName: "GPII Error"
+                    },
+                    listeners: {
+                        "onClose": "{errorDialog}.events.onButtonClicked"
+                    }
+                }
+            },
+
             /*
              * Dialog Controls
              */
-            btnLeft: {
+            btnRight: {
                 type: "gpii.errorDialog.button",
                 container: "{that}.dom.btn1",
                 options: {
@@ -214,7 +224,7 @@
                     }
                 }
             },
-            btnRight: {
+            btnLeft: {
                 type: "gpii.errorDialog.button",
                 container: "{that}.dom.btn3",
                 options: {

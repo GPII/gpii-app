@@ -78,3 +78,16 @@ body {
 .clear-both {
     clear: both;
 }
+
+/* Resizing of the dialog */
+iframe.fl-heightChangeListener {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 100%;
+
+    visibility: hidden;
+    pointer-events: none;
+}
