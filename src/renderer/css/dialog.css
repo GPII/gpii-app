@@ -31,7 +31,9 @@ body {
 .fl-dialog .fl-dialog-content .fl-dialog-controls {
     clear: both;
 
+    flex-direction: row-reverse;
     display: flex;
+
     justify-content: space-between;
 }
 
