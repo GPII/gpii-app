@@ -72,8 +72,8 @@ fluid.defaults("gpii.app", {
             subhead: "There might be a problem with the user you are trying to use",
             details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
             btnLabel1: "Ok",
-            btnLabel2: null,
-            btnLabel3: "Oh Noooooooooooo",
+            btnLabel2: "Cancel",
+            btnLabel3: "Oh Nooooo",
             fatal: false
         }
     },
@@ -471,11 +471,15 @@ gpii.app.handleUncaughtException = function (that, errorsDescription, err) {
 
 
     that.errorDialog.show({
-        title:   errDetails.title,
-        subhead: errDetails.subhead,
-        details: errDetails.details,
+        title:     errDetails.title,
+        subhead:   errDetails.subhead,
+        details:   errDetails.details,
 
-        errCode:    errCode
+        btnLabel1: errDetails.btnLabel1,
+        btnLabel2: errDetails.btnLabel2,
+        btnLabel3: errDetails.btnLabel3,
+
+        errCode:   errCode
     });
 
     if (errDetails.fatal) {

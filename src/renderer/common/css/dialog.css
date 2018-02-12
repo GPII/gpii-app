@@ -34,21 +34,20 @@ body {
     flex-direction: row-reverse;
     display: flex;
 
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .fl-dialog .fl-dialog-content .fl-dialog-controls button {
     min-width: 80px;
     height: 40px;
+
+    margin: 12px 0 0 0; /* override winstrap's button margins */
 }
 
 .fl-dialog .fl-dialog-content .fl-dialog-controls button span {
     white-space: pre-wrap;
 }
 
-.fl-dialog .fl-dialog-content .fl-dialog-controls button:last-child {
-    margin-right: 0;
-}
 
 .fl-dialog .fl-dialog-footer {
     padding: 5px 10px 5px 10px;
