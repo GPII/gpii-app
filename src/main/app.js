@@ -475,11 +475,7 @@ gpii.app.handleUncaughtException = function (that, errorsDescription, err) {
         subhead: errDetails.subhead,
         details: errDetails.details,
 
-        btnLabel1: errDetails.btnLabel1,
-        btnLabel2: errDetails.btnLabel2,
-        btnLabel3: errDetails.btnLabel3,
-
-        errCode:   errCode
+        errCode:    errCode
     });
 
     if (errDetails.fatal) {

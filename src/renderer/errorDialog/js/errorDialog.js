@@ -90,16 +90,16 @@
         },
         modelListeners: {
             label:
-            // {
-            //     this: "{that}.container",
-            //     method: "toggle",
-            //     args: "{change}.value"
-            // }
-           {
-               this: "console",
-               method: "log",
-               args: ["{change}.value"]
-           }
+            {
+                this: "{that}.container",
+                method: "toggle",
+                args: "@expand:fluid.isValue({change}.value)"
+            }
+           // {
+           //     this: "console",
+           //     method: "log",
+           //     args: ["{change}.value"]
+           // }
         }
     });
 
@@ -111,7 +111,7 @@
 
         model: {
             // Support at most 3 buttons
-            btnLabel1: null,
+            btnLabel1: "OK",
             btnLabel2: null,
             btnLabel3: null,
 
