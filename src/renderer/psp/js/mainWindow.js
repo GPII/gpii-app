@@ -116,8 +116,11 @@
                 type: "gpii.psp.titlebar",
                 container: "{that}.dom.titlebar",
                 options: {
+                    labels: {
+                        appName: "GPII Settings"
+                    },
                     listeners: {
-                        "onPSPClose": "{mainWindow}.events.onPSPClose"
+                        "onClose": "{mainWindow}.events.onPSPClose"
                     }
                 }
             },
