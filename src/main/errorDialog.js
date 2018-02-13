@@ -113,21 +113,9 @@ fluid.defaults("gpii.app.errorDialog", {
         show: {
             funcName: "gpii.app.errorDialog.show",
             args: ["{that}", "{arguments}.0"]
-        },
-        resize: {
-            funcName: "gpii.app.errorDialog.resize",
-            args: ["{that}", "{arguments}.0", "{arguments}.1"]
         }
     }
 });
-
-/**
- * Resize the current window to... TODO
- */
-gpii.app.errorDialog.resize = function (that, windowWidth, windowHeight) {
-    that.dialog.setSize(windowWidth, windowHeight);
-    that.resetWindowPosition();
-};
 
 /**
  * TODO
@@ -143,10 +131,6 @@ gpii.app.errorDialog.resize = function (that, windowWidth, windowHeight) {
  */
 gpii.app.errorDialog.show = function (that, config) {
     that.dialogChannel.update(config);
-
-    // Give brief time for the window to be resized
-    setTimeout(function () {
-        // TODO move to listener ?
-        that.applier.change("isShown", true);
-    }, 100);
+    
+    that.applier.change("isShown", true);
 };

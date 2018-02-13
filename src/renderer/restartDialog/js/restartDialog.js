@@ -43,21 +43,25 @@
         },
 
         invokers: {
+            notifyHeightChanged: {
+                funcName: "gpii.restartDialog.channel.notifyChannel",
+                args: ["onRestartDialogHeightChanged", "{arguments}.0"]
+            },
             close: {
                 funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onClosed"
+                args: ["onClosed"]
             },
             restartNow: {
                 funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onRestartNow"
+                args: ["onRestartNow"]
             },
             restartLater: {
                 funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onRestartLater"
+                args: ["onRestartLater"]
             },
             undoChanges: {
                 funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onUndoChanges"
+                args: ["onUndoChanges"]
             }
         }
     });
@@ -68,8 +72,8 @@
      * Main process that a button was clicked.
      * @param channel {String} The channel to be notified
      */
-    gpii.restartDialog.channel.notifyChannel = function (channel) {
-        ipcRenderer.send(channel);
+    gpii.restartDialog.channel.notifyChannel = function () {
+        ipcRenderer.send.apply(null, arguments);
     };
 
     /**
@@ -93,8 +97,8 @@
         gradeNames: ["gpii.psp.baseRestartWarning"],
 
         selectors: {
-            title: ".flc-popup-title",
-            restartText: ".flc-popup-bodyText"
+            title: ".flc-title",
+            restartText: ".flc-details"
         },
 
         listeners: {
@@ -119,27 +123,35 @@
      * interactions for the require restart functionality.
      */
     fluid.defaults("gpii.restartDialog", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
 
         selectors: {
-            close: ".flc-close"
+            titlebar: ".flc-titlebar"
         },
 
         events: {
+            onHeightChanged: null,
             onClosed: null
         },
 
         listeners: {
+            onHeightChanged: {
+                func: "{that}.channel.notifyHeightChanged",
+                args: ["{arguments}.0"]
+            },
             onClosed: "{channel}.close"
         },
 
         components: {
-            closeBtn: { // Header
-                type: "gpii.psp.widgets.button",
-                container: "{that}.dom.close",
+            titlebar: {
+                type: "gpii.psp.titlebar",
+                container: "{that}.dom.titlebar",
                 options: {
-                    invokers: {
-                        onClick: "{restartDialog}.events.onClosed.fire"
+                    labels: {
+                        appName: "GPII Auto Personalization"
+                    },
+                    listeners: {
+                        "onClose": "{restartDialog}.events.onClosed.fire"
                     }
                 }
             },

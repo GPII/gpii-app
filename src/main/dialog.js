@@ -111,6 +111,10 @@ fluid.defaults("gpii.app.dialog", {
         resetWindowPosition: {
             funcName: "gpii.app.setWindowPosition",
             args: ["{that}.dialog", "@expand:{that}.getDesiredWindowPosition()"]
+        },
+        resize: {
+            funcName: "gpii.app.dialog.resize",
+            args: ["{that}", "{arguments}.0", "{arguments}.1"]
         }
     }
 });
@@ -166,4 +170,12 @@ gpii.app.dialog.toggle = function (dialog, isShown) {
     } else {
         dialog.dialog.hide();
     }
+};
+
+/**
+ * Resize the current window to... TODO
+ */
+gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
+    that.dialog.setSize(windowWidth, windowHeight);
+    that.resetWindowPosition();
 };

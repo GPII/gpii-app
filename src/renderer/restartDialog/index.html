@@ -3,47 +3,51 @@
         <title>GPII Auto Personalization</title>
         <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
         <link rel="stylesheet" href="../psp/css/button.css">
+        <link rel="stylesheet" href="../common/css/dialog.css">
+        <link rel="stylesheet" href="../common/css/titlebar.css">
         <link rel="stylesheet" href="css/restartDialog.css">
 
 
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
         <script type="text/javascript" src="../psp/js/widgets.js"></script>
+        <script type="text/javascript" src="../common/js/titlebar.js"></script>
         <script type="text/javascript" src="../psp/js/restartWarning.js"></script>
         <script type="text/javascript" src="js/restartDialog.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+
+        <script type="text/javascript" src="../psp/js/heightChangeListener.js"></script>
     </head>
     <body>
-        <div class="fl-popup">
-            <div class="fl-popup-contentWrapper">
-                <div class="fl-popup-header">
-                    GPII Auto Personalization
-                    <button class="flc-close fl-popup-closeBtn">
-                        &#x2715;
+        <div class="fl-dialog">
+            <div class="flc-titlebar fl-titlebar">
+                <span class="flc-appName fl-appName"></span>
+                <button class="flc-closeBtn fl-closeBtn btn btn-regular">&#x2715;</button>
+            </div>
+            <div class="fl-dialog-content">
+                <img class="fl-dialog-contentIcon" src="../../icons/gpii-color.ico">
+
+                <div class="fl-dialog-contentText">
+                    <iframe class="flc-contentHeightChangeListener fl-heightChangeListener"></iframe>
+                    <div class="flc-title fl-title"></div>
+                    <div class="flc-details fl-details"></div>
+                </div>
+                <div class="fl-dialog-controls">
+                    <button class="flc-restartUndo btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                    <button class="flc-restartNow btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                    <button class="flc-restartLater btn fl-btn">
+                        <span class="flc-btnLabel"></span>
                     </button>
                 </div>
-                <div class="fl-popup-content">
-                    <img class="fl-popup-contentImage" src="../../icons/gpii-color.ico">
-                    <div class="fl-popup-contentText">
-                        <h3 class="flc-popup-title"></h3>
-                        <p class="flc-popup-bodyText"></p>
-                    </div>
-                    <div class="fl-popup-controls">
-                        <button class="flc-restartUndo btn fl-btn">
-                            <span class="flc-btnLabel"></span>
-                        </button>
-                        <button class="flc-restartNow btn fl-btn">
-                            <span class="flc-btnLabel"></span>
-                        </button>
-                        <button class="flc-restartLater btn fl-btn">
-                            <span class="flc-btnLabel"></span>
-                        </button>
-                    </div>
-                </div>
-                <div class="fl-popup-footer">
-                    <span>GPII</span>
-                    <img class="fl-gpiiIcon" src="../../icons/gear-cloud-black.png">
-                </div>
+            </div>
+            <div class="fl-dialog-footer">
+                <span class="fl-gpiiIcon">GPII <img src="../../icons/gear-cloud-black.png"></span>
+                <div class="clear-both"></div>
+                <div class="fl-speech-triangle"></div>
             </div>
         </div>
     </body>

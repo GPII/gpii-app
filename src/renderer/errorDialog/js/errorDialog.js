@@ -161,12 +161,7 @@
                 func: "{that}.channel.notifyHeightChanged",
                 args: ["{arguments}.0"]
             },
-            onButtonClicked: "{channel}.close",
-            "onCreate.log": {
-                this: "console",
-                method: "log",
-                args: "{that}"
-            }
+            onButtonClicked: "{channel}.close"
         },
 
         invokers: {

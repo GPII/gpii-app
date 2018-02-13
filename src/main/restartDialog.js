@@ -28,7 +28,8 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
     gradeNames: ["fluid.component"],
 
     events: {
-        onClosed: null // provided by parent component
+        onClosed: null, // provided by parent component
+        onContentHeightChanged: null
     },
 
     listeners: {
@@ -63,6 +64,10 @@ gpii.app.dialog.restartDialog.channel.register = function (events) {
 
     ipcMain.on("onClosed", function (/*event, message*/) {
         events.onClosed.fire();
+    });
+
+    ipcMain.on("onRestartDialogHeightChanged", function (event, height) {
+        events.onContentHeightChanged.fire(height);
     });
 };
 
@@ -106,6 +111,15 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
             options: {
                 events: {
                     onClosed: "{restartDialog}.events.onClosed"
+                },
+                listeners: {
+                    "onContentHeightChanged": {
+                        func: "{dialog}.resize",
+                        args: [
+                            "{restartDialog}.options.config.attrs.width",
+                            "{arguments}.0" // windowHeight
+                        ]
+                    }
                 }
             }
         }

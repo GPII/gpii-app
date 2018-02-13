@@ -46,6 +46,7 @@ body {
 .fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-details {
     padding-bottom: 10px;
     line-height: 1.33;
+    white-space: pre-wrap;
 }
 
 .fl-dialog .fl-dialog-content .fl-dialog-controls {
@@ -65,11 +66,6 @@ body {
 }
 
 .fl-dialog .fl-dialog-content .fl-dialog-controls button span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
     white-space: pre-wrap;
 }
 

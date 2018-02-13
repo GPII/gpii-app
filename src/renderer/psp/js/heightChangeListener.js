@@ -73,7 +73,6 @@
         var triangleHeight = container.find(".fl-speech-triangle").outerHeight(true) || 0,
             height = container.outerHeight(true) + triangleHeight;
 
-        // that.channel.notifyHeightChanged(height);
         that.events.onHeightChanged.fire(height);
     };
 })(fluid);
