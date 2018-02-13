@@ -13,8 +13,6 @@ body {
     margin: 0;
 
     background-color: transparent;
-
-    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .fl-dialog {
@@ -28,16 +26,38 @@ body {
     background-color: #ffffff;
 }
 
+.fl-dialog .fl-dialog-content .fl-dialog-contentIcon {
+    float: left;
+    width: 48px;
+    height: 48px;
+    margin-right: 10px;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-contentText {
+    overflow: hidden;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-title {
+    margin-bottom: 10px;
+    color: #034EA2;
+    font-size: 1.5em;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-details {
+    padding-bottom: 10px;
+    line-height: 1.33;
+}
+
 .fl-dialog .fl-dialog-content .fl-dialog-controls {
-    clear: both;
-
-    flex-direction: row-reverse;
     display: flex;
-
+    flex-direction: row-reverse;
     justify-content: space-around;
+
+    clear: both;
 }
 
 .fl-dialog .fl-dialog-content .fl-dialog-controls button {
+    position: relative;
     min-width: 80px;
     height: 40px;
 
@@ -45,13 +65,16 @@ body {
 }
 
 .fl-dialog .fl-dialog-content .fl-dialog-controls button span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
     white-space: pre-wrap;
 }
 
-
 .fl-dialog .fl-dialog-footer {
-    padding: 5px 10px 5px 10px;
-    font-size: .8em;
+    padding: 5px;
 }
 
 .fl-dialog .fl-dialog-footer .fl-gpiiIcon {

@@ -1,8 +1,5 @@
-/* Default theme styles */
 .fl-titlebar {
     height: 29px;
-    background-color: var(--main-theme-background-color);
-    color: var(--main-theme-text-color);
 }
 
 .fl-titlebar img {
@@ -23,8 +20,8 @@
 .fl-titlebar .fl-closeBtn {
     float: right;
 
-    line-height: 24px;
-    font-size: 24px;
+    line-height: 20px;
+    font-size: 20px;
     font-weight: bold;
     color: var(--main-theme-text-color);
 }
@@ -42,19 +39,4 @@
 .fl-titlebar .fl-closeBtn:hover,
 .fl-titlebar .fl-closeBtn:focus {
     color: rgba(0, 0, 0, 0.6);
-}
-
-/* Styles for alt (dark) theme */
-.theme-alt .fl-titlebar {
-    background-color: var(--alt-theme-background-color);
-    color: var(--alt-theme-text-color);
-}
-
-.theme-alt .fl-titlebar .fl-closeBtn {
-    color: var(--alt-theme-text-color);
-}
-
-.theme-alt .fl-titlebar .fl-closeBtn:hover,
-.theme-alt .fl-titlebar .fl-closeBtn:focus {
-    color: rgba(255, 255, 255, 0.6);
 }

@@ -17,6 +17,7 @@
 
 "use strict";
 (function (fluid) {
+    var gpii = fluid.registerNamespace("gpii");
     /**
      * Responsible for detecting height changes in the element in which
      * the component's container is nested.
@@ -42,6 +43,10 @@
             heightChangeListener: ".flc-contentHeightChangeListener"
         },
 
+        events: {
+            onHeightChanged: null
+        },
+
         components: {
             heightChangeListener: {
                 type: "gpii.psp.heightChangeListener",
@@ -49,11 +54,26 @@
                 options: {
                     listeners: {
                         onHeightChanged: {
-                            funcName: "{heightObservable}.onContentHeightChanged"
+                            funcName: "gpii.psp.heightObservable.onContentHeightChanged",
+                            args: ["{heightObservable}"]
                         }
                     }
                 }
             }
         }
     });
+
+    /**
+     * Compute the size of the content.
+     * @param that {Component} The `gpii.errorDialog` component
+     */
+    gpii.psp.heightObservable.onContentHeightChanged = function (that) {
+        var container = that.container;
+        // get speech triangle size, in case such exists
+        var triangleHeight = container.find(".fl-speech-triangle").outerHeight(true) || 0,
+            height = container.outerHeight(true) + triangleHeight;
+
+        // that.channel.notifyHeightChanged(height);
+        that.events.onHeightChanged.fire(height);
+    };
 })(fluid);

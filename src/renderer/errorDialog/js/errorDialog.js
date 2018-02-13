@@ -128,6 +128,7 @@
         },
 
         events: {
+            onHeightChanged: null,
             onButtonClicked: null
         },
 
@@ -156,6 +157,10 @@
         },
 
         listeners: {
+            onHeightChanged: {
+                func: "{that}.channel.notifyHeightChanged",
+                args: ["{arguments}.0"]
+            },
             onButtonClicked: "{channel}.close",
             "onCreate.log": {
                 this: "console",
@@ -169,10 +174,6 @@
             updateConfig: {
                 changePath: "",
                 value: "{arguments}.0"
-            },
-            onContentHeightChanged: {
-                funcName: "gpii.errorDialog.onContentHeightChanged",
-                args: ["{that}", "{that}.container"]
             }
         },
 
@@ -234,20 +235,4 @@
             }
         }
     });
-
-
-    /**
-     * Compute the size of the dialog content.
-     * @param that {Component} The `gpii.errorDialog` component
-     */
-    gpii.errorDialog.onContentHeightChanged = function (that) {
-        var container = that.container;
-        // get speech triangle size, in case such exists
-        var triangleSize = $(".fl-speech-triangle").outerHeight(true) || 0;
-
-        that.channel.notifyHeightChanged(
-            container.outerHeight(true) + triangleSize + 10 /* some spare pixels */
-        );
-    };
-
 })(fluid);
