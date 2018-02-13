@@ -1,0 +1,50 @@
+/* Default theme styles */
+.fl-header {
+    position: relative;
+    padding: 4px;
+    background-color: #d8eef9;
+}
+
+.fl-header .flc-prefSetPicker {
+    float: left;
+    width: 50%;
+    margin-bottom: 5px;
+}
+
+.fl-header .fl-activePreferenceSet {
+    float: left;
+    margin-bottom: 5px;
+
+    font-weight: bold;
+    color: #184f9c;
+    cursor: default;
+}
+
+.fl-header .fl-autosaveHint {
+    clear: both;
+    cursor: default;
+}
+
+.fl-header .fl-autosaveHint .fl-icon {
+    float: left;
+    margin-right: 5px;
+}
+
+.fl-header .fl-keyOutBtn {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    height: 36px;
+    margin: 0;
+
+    transform: translateY(-50%);
+}
+
+/* Styles for alt (dark) theme */
+.theme-alt .fl-header {
+    background-color: var(--alt-theme-background-color);
+}
+
+.theme-alt .fl-header .fl-activePreferenceSet {
+    color: var(--alt-theme-text-color);;
+}

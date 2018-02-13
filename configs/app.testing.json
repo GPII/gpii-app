@@ -1,15 +1,11 @@
 {
-    "type": "gpii.appDevWithTaskTray",
+    "type": "gpii.appTestingWithTaskTray",
     "options": {
         "gradeNames": ["fluid.component"],
         "distributeOptions": {
             "distributeTaskTray": {
                 "record": "gpii.appWrapper",
                 "target": "{that flowManager}.options.gradeNames"
-            },
-            "distributeMenuDisplay": {
-                "record": "gpii.app.menuInAppDev",
-                "target": "{that menu}.options.gradeNames"
             },
             "distributePcpChannelConnector": {
                 "record": "gpii.app.dev.gpiiConnector",
@@ -18,6 +14,6 @@
         }
     },
     "mergeConfigs": [
-        "%universal/gpii/configs/gpii.config.development.all.local.json"
+        "%universal/gpii/configs/gpii.config.all.development.dr.production.json"
      ]
 }

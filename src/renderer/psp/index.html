@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/button.css">
+        <link rel="stylesheet" href="css/dropdown.css">
+        <link rel="stylesheet" href="css/multipicker.css">
+        <link rel="stylesheet" href="css/stepper.css">
+        <link rel="stylesheet" href="css/switch.css">
+        <link rel="stylesheet" href="css/textfield.css">
+        <link rel="stylesheet" href="css/icons.css">
+        <link rel="stylesheet" href="css/restartWarning.css">
+        <link rel="stylesheet" href="css/titlebar.css">
+        <link rel="stylesheet" href="css/splash.css">
+        <link rel="stylesheet" href="css/header.css">
+        <link rel="stylesheet" href="css/content.css">
+        <link rel="stylesheet" href="css/footer.css">
+        <link rel="stylesheet" href="css/main.css">
+        <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+        <script type="text/javascript" src="../../../node_modules/winstrap/dist/js/vendor/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/widgets.js"></script>
+        <script type="text/javascript" src="js/exemplars.js"></script>
+        <script type="text/javascript" src="js/settingsPanel.js"></script>
+        <script type="text/javascript" src="js/splash.js"></script>
+        <script type="text/javascript" src="js/titlebar.js"></script>
+        <script type="text/javascript" src="js/header.js"></script>
+        <script type="text/javascript" src="js/restartWarning.js"></script>
+        <script type="text/javascript" src="js/footer.js"></script>
+        <script type="text/javascript" src="js/clientChannel.js"></script>
+        <script type="text/javascript" src="js/heightChangeListener.js"></script>
+        <script type="text/javascript" src="js/mainWindow.js"></script>
+        <script type="text/javascript" src="js/psp.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </head>
+    <body id="flc-body">
+        <style id="flc-theme" type="text/css">
+            :root {
+                --main-color: #0078d7;
+            }
+        </style>
+        <div class="flc-splash">
+            <div class="logo">
+                <div class="flc-splashMsg">Not keyed in</div>
+                <img src="../../icons/gpii-icon-balloon.png">
+                <h3>GPII - Personal Settings Panel</h3>
+            </div>
+        </div>
+
+        <div class="fl-contentWrapper">
+            <div id="flc-titlebar" class="fl-titlebar">
+                <img src="../../icons/gpii-icon-balloon.png">
+                <span class="flc-appName fl-appName"></span>
+                <button class="flc-closeBtn fl-closeBtn btn btn-regular">&#x2715;</button>
+                <div class="clear-both"></div>
+            </div>
+
+            <div id="flc-header" class="fl-header">
+                <div class="flc-prefSetPicker form-group fl-dropdown">
+                    <div class="combobox">
+                        <select class="flc-dropdown-options form-control"></select>
+                    </div>
+                </div>
+                <span class="flc-activePreferenceSet fl-activePreferenceSet"></span>
+                <div class="flc-autosaveHint fl-autosaveHint">
+                    <span class="fl-icon fl-icon-memory"></span>
+                    <span class="flc-autosaveText"></span>
+                </div>
+                <button class="flc-keyOutBtn btn fl-btn fl-keyOutBtn">
+                    <span class="flc-btnLabel fl-btnLabel"></span>
+                </button>
+            </div>
+
+            <div id="flc-content" class="fl-content">
+                <div id="flc-settingsList" class="fl-settingsList">
+                    <iframe id="flc-contentHeightChangeListener" class="fl-heightChangeListener"></iframe>
+                </div>
+            </div>
+
+            <div id="flc-restartWarning" class="fl-restartWarning">
+                <iframe id="flc-restartHeightChangeListener" class="fl-heightChangeListener"></iframe>
+                <div>
+                    <span class="flc-restartIcon fl-restartIcon fl-icon"></span>
+                    <div class="flc-restartText fl-restartText"></div>
+                </div>
+                <div class="fl-restartControls">
+                    <button class="flc-restartUndo btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                    <button class="flc-restartNow btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                    <button class="flc-restartLater btn fl-btn">
+                        <span class="flc-btnLabel"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="flc-footer" class="fl-footer btn-group">
+                <button class="flc-helpBtn btn fl-btn">
+                    <span class="flc-btnLabel fl-btnLabel"></span>
+                </button>
+            </div>
+        </div>
+    </body>
+</html>

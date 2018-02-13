@@ -1,0 +1,87 @@
+/* Default theme styles */
+.fl-contentWrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    background-color: #ffffff;
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+.fl-content {
+    flex: 1;
+
+    /* Needed in order to have some spacing between the scrollbar
+       and the content of the text. */
+    margin-right: -8px;
+    padding-right: 8px;
+    overflow-y: overlay;
+}
+
+.fl-settingsList {
+    position: relative;
+    float: left;
+    width: 100%;
+}
+
+.fl-settingsList *[class^="flc-settingListRow"] {
+    padding: 4px;
+    border-bottom: 2px solid var(--main-theme-background-color);
+}
+
+.fl-settingsList *[class^="flc-settingListRow"]:nth-child(even) {
+    background-color: #f4f9ff;
+}
+
+.fl-settingsList *[class^="flc-settingListRow"]:last-child {
+    border-bottom: none;
+}
+
+.fl-settingsList .flc-setting {
+    display: flex;
+}
+
+.fl-settingsList .flc-setting > * {
+    flex: 1;
+}
+
+.fl-settingsList .flc-setting .fl-icon-memory {
+    float: left;
+    margin: 2px 5px 0 0;
+}
+
+.fl-settingsList .flc-setting .fl-settingLabel {
+    overflow: hidden;
+}
+
+.fl-settingsList .flc-setting .fl-settingLabel .flc-titleLabel {
+    display: inline;
+    vertical-align: top;
+
+    font-weight: normal;
+}
+
+.fl-settingsList .flc-setting .fl-settingLabel .flc-solutionName:not(:empty):after {
+    content: ":";
+}
+
+.fl-settingsList .flc-setting .flc-widget {
+    padding-left: 10px;
+    color: #000000;
+}
+
+.fl-settingsList .flc-setting .fl-settingLabel .fl-icon-restart {
+    float: right;
+    margin: 2px 0 0 6px;
+}
+
+/* Styles for alt (dark) theme */
+.theme-alt .fl-contentWrapper {
+    background-color: var(--alt-theme-background-color);
+}
+
+.theme-alt .fl-settingsList *[class^="flc-settingListRow"] {
+    background-color: var(--alt-theme-background-color);
+    border-bottom: none;
+}
