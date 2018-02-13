@@ -92,7 +92,9 @@
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.keyOutBtn",
                 options: {
-                    label: "{header}.options.labels.keyOut",
+                    model: {
+                        label: "{header}.options.labels.keyOut"
+                    },
                     invokers: {
                         "onClick": "{header}.events.onKeyOut.fire"
                     }

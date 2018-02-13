@@ -79,9 +79,17 @@
         renderOnInit: true
     });
 
+    /**
+     * Represents a behaviour for a button. Requires "label" in
+     * case such is required to be shown, but it can be omitted.
+     */
     fluid.defaults("gpii.psp.widgets.button", {
         gradeNames: ["fluid.viewComponent"],
-        label: null,
+
+        model: {
+            label: null // Expected from implementor
+        },
+
         selectors: {
             label: ".flc-btnLabel"
         },
@@ -98,11 +106,13 @@
                 "this": "{that}.container",
                 method: "click",
                 args: ["{that}.onClick"]
-            },
-            "onCreate.initText": {
+            }
+        },
+        modelListeners: {
+            label: {
                 "this": "{that}.dom.label",
                 method: "text",
-                args: ["{that}.options.label"]
+                args: ["{that}.model.label"]
             }
         },
         invokers: {

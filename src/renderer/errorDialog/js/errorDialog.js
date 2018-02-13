@@ -79,13 +79,12 @@
         model: {
             label: null
         },
-        label: "{that}.model.label",
 
         invokers: {
             onClick: {
                 func: "{errorDialog}.events.onButtonClicked.fire",
                 /* Simply identify a button by its label */
-                args: "{that}.options.label"
+                args: "{that}.model.label"
             }
         },
         modelListeners: {

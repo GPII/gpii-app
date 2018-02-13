@@ -73,7 +73,9 @@
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.undo",
                 options: {
-                    label: "{baseRestartWarning}.options.labels.undo",
+                    model: {
+                        label: "{baseRestartWarning}.options.labels.undo"
+                    },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onUndoChanges.fire"
                     }
@@ -83,7 +85,9 @@
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.restartNow",
                 options: {
-                    label: "{baseRestartWarning}.options.labels.restartNow",
+                    model: {
+                        label: "{baseRestartWarning}.options.labels.restartNow"
+                    },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onRestartNow.fire"
                     }
@@ -93,7 +97,9 @@
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.restartLater",
                 options: {
-                    label: "{baseRestartWarning}.options.labels.restartLater",
+                    model: {
+                        label: "{baseRestartWarning}.options.labels.restartLater"
+                    },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onRestartLater.fire"
                     }
