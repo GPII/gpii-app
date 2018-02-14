@@ -116,6 +116,8 @@
             btnLabel3: null
         },
 
+        errorCodeFormat: "Message %errCode",
+
         selectors: {
             btn1:   ".flc-btn-1",
             btn2:   ".flc-btn-2",
@@ -154,7 +156,7 @@
             errCode: {
                 this: "{that}.dom.errCode",
                 method: "text",
-                args: "{that}.model.errCode"
+                args: "@expand:fluid.stringTemplate({that}.options.errorCodeFormat, {that}.model)"
             }
         },
 

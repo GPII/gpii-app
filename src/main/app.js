@@ -328,10 +328,6 @@ fluid.defaults("gpii.app", {
                     onCreate: "{app}.events.onPSPReady.fire"
                 }
             }
-        },
-        errorDialog: {
-            type: "gpii.app.errorDialog",
-            createOnEvent: "onPSPPrerequisitesReady"
         }
     },
     events: {
@@ -558,7 +554,7 @@ gpii.app.handleUncaughtException = function (that, errorsDescription, err) {
     that.waitDialog.applier.change("isShown", false);
 
 
-    that.errorDialog.show({
+    that.dialogManager.show("errorDialog", {
         title:     errDetails.title,
         subhead:   errDetails.subhead,
         details:   errDetails.details,
@@ -571,7 +567,7 @@ gpii.app.handleUncaughtException = function (that, errorsDescription, err) {
     });
 
     if (errDetails.fatal) {
-        that.errorDialog.applier.modelChanged.addListener("isShown", that.exit);
+        that.dialogManager.errorDialog.applier.modelChanged.addListener("isShown", that.exit);
     }
 };
 

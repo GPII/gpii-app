@@ -50,6 +50,9 @@ fluid.defaults("gpii.app.dialogManager", {
     components: {
         survey: {
             type: "gpii.app.survey"
+        },
+        errorDialog: {
+            type: "gpii.app.errorDialog"
         }
     },
 
