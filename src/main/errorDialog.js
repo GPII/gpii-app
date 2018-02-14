@@ -84,12 +84,15 @@ fluid.defaults("gpii.app.errorDialog", {
         fileSuffixPath: "errorDialog/index.html"
     },
 
-    listeners: {
-        // close the dialog
-        "{dialogChannel}.events.onClosed": {
-            changePath: "isShown",
-            value: false
-        }
+    defaultDialogConfig: {
+        title:   null,
+        subhead: null,
+        details: null,
+        errCode: null,
+
+        btnLabel1: null,
+        btnLabel2: null,
+        btnLabel3: null
     },
 
     components: {
@@ -103,6 +106,9 @@ fluid.defaults("gpii.app.errorDialog", {
                             "{errorDialog}.options.config.attrs.width", // only the height is dynamic
                             "{arguments}.0" // windowHeight
                         ]
+                    },
+                    "onClosed": {
+                        func: "{errorDialog}.hide"
                     }
                 }
             }
@@ -112,7 +118,14 @@ fluid.defaults("gpii.app.errorDialog", {
     invokers: {
         show: {
             funcName: "gpii.app.errorDialog.show",
-            args: ["{that}", "{arguments}.0"]
+            args: [
+                "{that}",
+                "{arguments}.0" // errorConfig
+            ]
+        },
+        hide: {
+            funcName: "gpii.app.errorDialog.hide",
+            args: ["{that}"]
         }
     }
 });
@@ -133,4 +146,16 @@ gpii.app.errorDialog.show = function (that, errorConfig) {
     that.dialogChannel.update(errorConfig);
 
     that.applier.change("isShown", true);
+};
+
+/**
+ * Hides and resets the state of the dialog, clearing any set
+ * properties.
+ *
+ * @param that {Component} The `gpii.app.errorDialog` component
+ */
+gpii.app.errorDialog.hide = function (that) {
+    that.applier.change("isShown", false);
+
+    that.dialogChannel.update(that.options.defaultDialogConfig);
 };

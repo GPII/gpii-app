@@ -103,15 +103,17 @@
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
 
         model: {
-            // Support at most 3 buttons (optional)
-            btnLabel1: null,
-            btnLabel2: null,
-            btnLabel3: null,
-
             title:   null,
             subhead: null,
             details: null,
-            errCode: null
+            errCode: null,
+
+            /*
+             * Support at most 3 buttons (optional)
+             */
+            btnLabel1: null,
+            btnLabel2: null,
+            btnLabel3: null
         },
 
         selectors: {
