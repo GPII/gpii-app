@@ -80,8 +80,15 @@ fluid.defaults("gpii.app", {
             subhead: "There might be a problem with the user you are trying to use",
             details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
             btnLabel1: "Ok",
-            btnLabel2: "Cancel",
-            btnLabel3: "Oh Nooooo",
+            fatal: false
+        },
+        // XXX test error message
+        "ENOCONNECTION": {
+            title:   "No Internet connection",
+            subhead: "There seem to be a problem your Internet connectivity",
+            details: "Have you tried turning it off and on again? If the problem is still present, contact GPII Technical Support.",
+            btnLabel1: "Ok",
+            btnLabel2: "Oh Nooooo",
             fatal: false
         }
     },
@@ -397,7 +404,7 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.exit",
             args: "{that}"
         },
-        "handleUncaughtException": {
+        handleUncaughtException: {
             funcName: "gpii.app.handleUncaughtException",
             args: [
                 "{that}",
