@@ -25,7 +25,7 @@
   "dependencies": {
     "electron": "1.4.1",
     "electron-edge": "6.5.4",
-    "gpii-windows": "git://github.com/danailbd/windows.git#hst-2017",
+    "gpii-windows": "git://github.com/danailbd/windows.git",
     "infusion": "3.0.0-dev.20170830T182157Z.392b2f8",
     "node-jqunit": "1.1.7",
     "request": "2.69.0",

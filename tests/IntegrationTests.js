@@ -28,16 +28,21 @@ gpii.loadTestingSupport();
 require("./IntegrationTestDefs.js");
 require("./SettingsBrokerTestDefs.js");
 require("./RestartDialogTestDefs.js");
+require("./DialogManagerTestDefs.js");
+require("./SurveysTestDefs.js");
+require("./SurveyTriggerManagerTestsDefs.js");
+
+fluid.setLogging(fluid.logLevel.FATAL);
 
 fluid.registerNamespace("gpii.tests.app");
 
 gpii.tests.app.startSequence = [
     { // This sequence point is required because of a QUnit bug - it defers the start of sequence by 13ms "to avoid any current callbacks" in its words
         func: "{testEnvironment}.events.constructServer.fire"
-    }/*, {
-        event: "{that gpii.app}.events.onAppReady", // if you do this here, you can't wait for an event that happens around the same time in the actual test.
+    }, { // Before the actual tests commence, the PSP application must be fully functional. The `onPSPReady` event guarantees that.
+        event: "{that gpii.app}.events.onPSPReady",
         listener: "fluid.identity"
-    }*/
+    }
 ];
 
 // This is a fork of kettle.test.testDefToCaseHolder which is written in a non-reusable style
@@ -89,5 +94,8 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.app.testDefs),
     fluid.copy(gpii.tests.dev.testDefs),
     fluid.copy(gpii.tests.settingsBroker.testDefs),
-    fluid.copy(gpii.tests.restartWarningController.testDefs)
+    fluid.copy(gpii.tests.restartWarningController.testDefs),
+    fluid.copy(gpii.tests.dialogManager.testDefs),
+    fluid.copy(gpii.tests.surveys.testDefs),
+    fluid.copy(gpii.tests.surveyTriggerManager.testDefs)
 ]);

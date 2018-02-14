@@ -45,7 +45,7 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
             args: [
                 "{dialog}.dialog",
                 "onRestartRequired",
-                "{arguments}.0"
+                "{arguments}.0" // message
             ]
         }
     }

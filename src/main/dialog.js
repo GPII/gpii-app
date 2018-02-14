@@ -24,9 +24,9 @@ require("./utils.js");
 
 
 /**
- * Base dialog component that supply initialization of
+ * Base dialog component that provides initialization of
  * an Electron `BrowserWindow` and the generation of
- * the file URL that it to be loaded in the same `BrowserWindow`.
+ * the file URL that is to be loaded in the same `BrowserWindow`.
  * NOTE: The generated URL is always relative to the working
  * directory of the application (`module.terms()`)
  *
@@ -41,8 +41,8 @@ require("./utils.js");
  *    - `fileSuffixPath` - the suffix to the file
  *    - `filePrefixPath` (optional) - the prefix to the file
  *
- *   For example a relative path such as `"/src/rendered/waitDialog/index.html"`,
- *   might be split to:
+ *   For example, a relative path such as `"/src/rendered/waitDialog/index.html"`,
+ *   might be split into:
  *   `prefixPath = "src/renderer"`
  *   `fileSuffixPath = "waitDialog/index.html"`
  */
@@ -115,6 +115,10 @@ fluid.defaults("gpii.app.dialog", {
         resize: {
             funcName: "gpii.app.dialog.resize",
             args: ["{that}", "{arguments}.0", "{arguments}.1"]
+        },
+        close: {
+            this: "{that}.dialog",
+            method: "close"
         }
     }
 });

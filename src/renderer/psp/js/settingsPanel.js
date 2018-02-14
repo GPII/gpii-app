@@ -129,11 +129,19 @@
             //   DOM elements to be notifier, and thus updated
             "onSettingUpdated": {
                 funcName: "gpii.psp.settingPresenter.updateModelIfNeeded",
-                args: ["{that}", "{arguments}.0", "{arguments}.1"]
+                args: [
+                    "{that}",
+                    "{arguments}.0", // path
+                    "{arguments}.1"  // newValue
+                ]
             },
             "onRestartRequired": {
                 funcName: "gpii.psp.settingPresenter.updateRestartIcon",
-                args: ["{that}", "{arguments}.0", "{that}.dom.restartIcon"]
+                args: [
+                    "{that}",
+                    "{arguments}.0", // pendingChanges
+                    "{that}.dom.restartIcon"
+                ]
             }
         }
     });

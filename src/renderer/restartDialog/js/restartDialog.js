@@ -172,7 +172,7 @@
                     listeners: {
                         onPendingChangesReceived: {
                             func: "{restartWarning}.updatePendingChanges",
-                            args: "{arguments}.0"
+                            args: "{arguments}.0" // pending changes
                         }
                     }
                 }

@@ -59,17 +59,10 @@ gpii.tests.restartWarningController.testDefs = {
     name: "Restart dialog integration tests",
     expect: 16,
     config: {
-        configName: "app.dev",
-        configPath: "configs"
+        configName: "gpii.tests.dev.config",
+        configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        record: {
-            funcName: "gpii.tests.app.receiveApp",
-            args: ["{testCaseHolder}", "{arguments}.0"]
-        },
-        target: "{that flowManager gpii.app}.options.listeners.onCreate"
-    },
     sequence: [{ // just bring the app in working state
         func: "{that}.app.keyIn",
         args: ["snapset_4a"]

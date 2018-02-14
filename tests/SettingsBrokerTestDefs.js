@@ -136,20 +136,13 @@ gpii.tests.settingsBroker.testDefs = {
     name: "Settings broker integration tests",
     expect: 25,
     config: {
-        configName: "app.dev",
-        configPath: "configs"
+        configName: "gpii.tests.dev.config",
+        configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        record: {
-            funcName: "gpii.tests.app.receiveApp",
-            args: ["{testCaseHolder}", "{arguments}.0"]
-        },
-        target: "{that flowManager gpii.app}.options.listeners.onCreate"
-    },
     sequence: [{
-        event: "{that gpii.app.settingsBroker}.events.onCreate",
-        listener: "gpii.tests.settingsBroker.testBrokerBeforeKeyIn"
+        func: "gpii.tests.settingsBroker.testBrokerBeforeKeyIn",
+        args: ["{that}.app.settingsBroker"]
     }, {
         func: "{that}.app.keyIn",
         args: ["snapset_1a"]

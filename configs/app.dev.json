@@ -12,8 +12,16 @@
                 "target": "{that menu}.options.gradeNames"
             },
             "distributePcpChannelConnector": {
-                "record": "gpii.app.dev.gpiiConnector",
-                "target": "{that gpiiConnector}.options.gradeNames"
+                "record": {
+                    "hostname": "localhost",
+                    "port": 8081,
+                    "path": "/pcpChannel"
+                },
+                "target": "{that gpiiConnector}.options.config"
+            },
+            "distributeSurveyConnector": {
+                "record": "gpii.app.staticSurveyConnector",
+                "target": "{that surveyConnector}.options.gradeNames"
             }
         }
     },
