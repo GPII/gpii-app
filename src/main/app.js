@@ -75,17 +75,14 @@ fluid.defaults("gpii.app", {
             type: "gpii.installID"
         },
         factsManager: {
-            type: "gpii.app.factsManager",
-            priority: "after:installID"
+            type: "gpii.app.factsManager"
         },
         surveyManager: {
-            type: "gpii.app.surveyManager",
-            priority: "after:factsManager"
+            type: "gpii.app.surveyManager"
         },
         dialogManager: {
             type: "gpii.app.dialogManager",
             createOnEvent: "onPSPPrerequisitesReady",
-            priority: "after:surveyManager",
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"

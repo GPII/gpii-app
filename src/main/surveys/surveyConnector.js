@@ -106,6 +106,7 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
         triggerFixture: "@expand:fluid.require({that}.options.paths.triggerFixture)",
         surveyFixture: "@expand:fluid.require({that}.options.paths.surveyFixture)"
     },
+    surveyQueryString: "?keyedInUserToken=%keyedInUserToken&machineId=%machineId",
     invokers: {
         requestTriggers: {
             funcName: "gpii.app.staticSurveyConnector.requestTriggers",
@@ -140,6 +141,6 @@ gpii.app.staticSurveyConnector.requestTriggers = function (that) {
 gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that) {
     var fixture = that.options.config.surveyFixture;
     fixture.url = fluid.stringTemplate(fixture.url +
-        "?keyedInUserToken=%keyedInUserToken&machineId=%machineId", that.model);
+        that.options.surveyQueryString, that.model);
     that.events.onSurveyRequired.fire(fixture);
 };
