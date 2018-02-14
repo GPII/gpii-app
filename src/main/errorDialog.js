@@ -117,20 +117,20 @@ fluid.defaults("gpii.app.errorDialog", {
     }
 });
 
+
 /**
- * TODO
- * As we're using a single Electron `BrowserWindow`, showing
- * the error requires updating the current message properties.
+ * Update the current state of the error dialog, and show it.
+ * Update is required as we're using a single Electron `BrowserWindow`
  *
  * @param that {Component} The `gpii.app.errorDialog` component
- * @param config {Object} Options for error dialog
- * @param config.title {String} The error title
- * @param config.subhead {String} The error's subheader
- * @param config.details {String} The details for the error
- * @param config.code {String} The error code
+ * @param errorConfig         {Object} Options for error dialog
+ * @param errorConfig.title   {String} The error title
+ * @param errorConfig.subhead {String} The error subheader
+ * @param errorConfig.details {String} The details for the error
+ * @param errorConfig.errCode {String} The error code
  */
-gpii.app.errorDialog.show = function (that, config) {
-    that.dialogChannel.update(config);
-    
+gpii.app.errorDialog.show = function (that, errorConfig) {
+    that.dialogChannel.update(errorConfig);
+
     that.applier.change("isShown", true);
 };

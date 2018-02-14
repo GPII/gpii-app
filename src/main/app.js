@@ -402,7 +402,7 @@ fluid.defaults("gpii.app", {
             args: [
                 "{that}",
                 "{that}.options.errorsDescriptionMap",
-                "{arguments}.0" // error
+                "{arguments}.0" // err
             ]
         }
     },

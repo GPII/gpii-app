@@ -114,7 +114,11 @@ fluid.defaults("gpii.app.dialog", {
         },
         resize: {
             funcName: "gpii.app.dialog.resize",
-            args: ["{that}", "{arguments}.0", "{arguments}.1"]
+            args: [
+                "{that}",
+                "{arguments}.0", // windowWidth
+                "{arguments}.1"  // windowHeight
+            ]
         },
         close: {
             this: "{that}.dialog",
@@ -177,7 +181,11 @@ gpii.app.dialog.toggle = function (dialog, isShown) {
 };
 
 /**
- * Resize the current window to... TODO
+ * Resize the current window and reposition to match the new size.
+ *
+ * @param that {Component} The `gpii.app.dialog` instance
+ * @param windowWidth {Number} The new width for the window
+ * @param windowHeight {Number} The new height for the window
  */
 gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
     that.dialog.setSize(windowWidth, windowHeight);
