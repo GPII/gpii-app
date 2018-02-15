@@ -289,7 +289,7 @@ gpii.app.psp.resize = function (psp, contentHeight, minHeight, forceResize) {
         return;
     }
 
-    pspWindow.setSize(windowWidth, windowHeight);
+    pspWindow.setSize(Math.ceil(windowWidth), Math.ceil(windowHeight));
 
     if (wasShown) {
         psp.show();

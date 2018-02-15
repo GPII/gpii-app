@@ -3,6 +3,10 @@
     min-height: 120px;
 }
 
+.fl-dialog .fl-dialog-content ul li {
+    margin: 0;
+}
+
 .fl-dialog .fl-dialog-content .fl-dialog-controls button {
     width: 140px;
     height: 50px;

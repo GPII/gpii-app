@@ -188,6 +188,6 @@ gpii.app.dialog.toggle = function (dialog, isShown) {
  * @param windowHeight {Number} The new height for the window
  */
 gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
-    that.dialog.setSize(windowWidth, windowHeight);
+    that.dialog.setSize(Math.ceil(windowWidth), Math.ceil(windowHeight));
     that.resetWindowPosition();
 };
