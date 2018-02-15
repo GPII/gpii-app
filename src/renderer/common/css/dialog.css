@@ -2,17 +2,17 @@
  * This configuration follows the "Master Dialog Design Template"
  */
 body {
-    /*
-     * Set at the bottom right corner as bigger than
-     * the needed browser windows may be drawn
-     */
-    position: absolute;
-    bottom: 22px;
-    right: 0;
-    padding: 0;
-    margin: 0;
-
     background-color: transparent;
+}
+
+/*
+ * Used when the dialog is automatically resizable,
+ * i.e. when using the `heightChangeListener`.
+ */
+.fl-dialog-resizable {
+    position: absolute;
+    top:  0;
+    left: 0;
 }
 
 .fl-dialog {
@@ -91,6 +91,20 @@ body {
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
     border-top: 20px solid #83CBEF;
+}
+
+/*
+ * Used to expand the dialog to the size of its container (the size of the BrowserWindow).
+ * There may be a problem with adding the speech triangle, as it will take up additional space.
+ */
+.fl-dialog.fl-dialog-fullScreen {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.fl-dialog.fl-dialog-fullScreen .fl-dialog-content {
+    flex: 1; /* take up as much space as possible */
 }
 
 .clear-both {
