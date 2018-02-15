@@ -116,6 +116,14 @@ fluid.defaults("gpii.app.surveyDialog", {
                 "{arguments}.0", // messageChannel
                 "{arguments}.1"  // message
             ]
+        },
+        executeCommand: {
+            funcName: "gpii.app.notifyWindow",
+            args: [
+                "{that}.dialog",
+                "onExecuteCommand",
+                "{arguments}.0" // message
+            ]
         }
     }
 });

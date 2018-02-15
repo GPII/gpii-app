@@ -31,6 +31,9 @@
                     listeners: {
                         onSurveyOpen: {
                             funcName: "{popup}.openSurvey"
+                        },
+                        onExecuteCommand: {
+                            funcName: "{popup}.executeCommand"
                         }
                     }
                 }
