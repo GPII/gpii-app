@@ -25,8 +25,8 @@
     "electron": "1.4.1",
     "electron-edge": "6.5.4",
     "gpii-windows": "git://github.com/javihernandez/windows.git#GPII-2568",
-    "infusion": "3.0.0-dev.20170830T182157Z.392b2f8",
-    "node-jqunit": "1.1.7",
+    "infusion": "3.0.0-dev.20180214T203645Z.eb2448d",
+    "node-jqunit": "1.1.8",
     "request": "2.69.0",
     "winstrap": "0.5.11"
   }
