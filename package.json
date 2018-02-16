@@ -24,7 +24,7 @@
   "dependencies": {
     "electron": "1.4.1",
     "electron-edge": "6.5.4",
-    "gpii-windows": "git://github.com/javihernandez/windows.git#GPII-2568",
+    "gpii-windows": "git://github.com/GPII/windows.git#bd537ded185c870399363df3e10b77f2c2be166d",
     "infusion": "3.0.0-dev.20180214T203645Z.eb2448d",
     "node-jqunit": "1.1.8",
     "request": "2.69.0",
