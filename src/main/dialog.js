@@ -87,12 +87,21 @@ fluid.defaults("gpii.app.dialog", {
             }
         }
     },
+
+    events: {
+        onClosed: null,
+        onOpened: null
+    },
+
     modelListeners: {
-        isShown: {
+        isShown: [{
             funcName: "gpii.app.dialog.toggle",
             args: ["{that}", "{change}.value"],
             namespace: "impl"
-        }
+        }, {
+            funcName: "gpii.app.dialog.emitState",
+            args: ["{that}", "{change}.value"]
+        }]
     },
     listeners: {
         "onCreate.positionWindow": {
@@ -127,6 +136,20 @@ fluid.defaults("gpii.app.dialog", {
     }
 });
 
+
+/**
+ * Emits event corresponding to the dialog's state.
+ *
+ * @param that {Component} The dialog component
+ * @param isShown {Boolean} The state of the dialog
+ */
+gpii.app.dialog.emitState = function (that, isShown) {
+    if (isShown === true) {
+        that.events.onOpened.fire();
+    } else {
+        that.events.onClosed.fire();
+    }
+};
 
 /**
  * Builds a file URL inside the application **Working Directory**.

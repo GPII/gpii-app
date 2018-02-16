@@ -18,6 +18,94 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
 require("./surveys/surveyDialog.js");
+require("./errorDialog.js");
+
+/**
+ * A component for making a dialog sequential. Only a single instance of the dialog
+ * is allowed to be shown at a time and displaying of another such dialog is postponed
+ * (queued up) for until the previous one in the sequence had been closed.
+ * After closing the current dialog, displaying of the next one is delayed a bit, to
+ * ensure that the user notices the closing of the window (showing the dialog right away
+ * is barely noticeable in case the two windows share similar layout).
+ */
+fluid.defaults("gpii.app.dialogManager.queue", {
+    gradeNames: ["fluid.modelComponent"],
+
+    members: {
+        queue: []
+    },
+
+    nextDialogTimeout: 300,
+
+    components: {
+        dialog: null
+    },
+
+    listeners: {
+        "{dialog}.events.onClosed": {
+            func: "{that}.processNext"
+        }
+    },
+
+    invokers: {
+        enqueue: {
+            funcName: "gpii.app.dialogManager.queue.enqueue",
+            args: ["{that}", "{arguments}.0"]
+        },
+        processNext: {
+            funcName: "gpii.app.dialogManager.queue.processNext",
+            args: ["{that}", "{that}.dialog"]
+        },
+        clear: {
+            funcName: "gpii.app.dialogManager.queue.clear",
+            args: ["{that}"]
+        }
+    }
+});
+
+
+/**
+ * Clear the dialog queue.
+ * @param that {Component} The `gpii.app.dialogManager.queue` object
+ */
+gpii.app.dialogManager.queue.clear = function (that) {
+    that.queue = [];
+};
+
+/**
+ * Process the next item in the queue. Processing the item is postponed
+ * with a small interval, to ensure the user sees the closing of the
+ * previous dialog.
+ *
+ * @param that {Component} The `gpii.app.dialogManager.queue` object
+ * @param dialog {Object} The `gpii.app.dialog` instance
+ */
+gpii.app.dialogManager.queue.processNext = function (that, dialog) {
+    if (that.queue.length > 0) {
+        setTimeout(function () {
+            var options = that.queue.shift();
+            dialog.show(options);
+        }, that.options.nextDialogTimeout);
+    }
+};
+
+/**
+ * Add item to the queue. In case it is the first item, trigger the
+ * execution process.
+ *
+ * @param that {Component} The `gpii.app.dialogManager.queue` object
+ * @param options {Object} The options for the dialog. The dialog is
+ * shown with these options, once it time has come.
+ */
+gpii.app.dialogManager.queue.enqueue = function (that, options) {
+    that.queue.push(options);
+
+    // Init the process showing, in case this is the first dialog
+    if (that.queue.length === 1) {
+        that.processNext();
+    }
+};
+
 
 /**
  * A component which provides means for showing, hiding and closing of dialogs
@@ -36,9 +124,15 @@ require("./surveys/surveyDialog.js");
 // information.
 fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
+
     model: {
         keyedInUserToken: null
     },
+
+    sequentialDialogs: {
+        errorDialogGrade: "gpii.app.errorDialog"
+    },
+
     modelListeners: {
         keyedInUserToken: {
             funcName: "gpii.app.dialogManager.closeDialogsOnKeyOut",
@@ -53,6 +147,21 @@ fluid.defaults("gpii.app.dialogManager", {
         },
         errorDialog: {
             type: "gpii.app.errorDialog"
+        },
+
+        errorDialogQueue: {
+            type: "gpii.app.dialogManager.queue",
+            options: {
+                listeners: {
+                    "{app}.events.onKeyedOut": {
+                        func: "{that}.clear"
+                    }
+                },
+
+                components: {
+                    dialog: "{errorDialog}"
+                }
+            }
         }
     },
 
@@ -105,15 +214,21 @@ gpii.app.dialogManager.get = function (dialogManager, selector) {
 };
 
 /**
- * Shows a dialog component given its IoCSS selector.
+ * Shows a dialog component given its IoCSS selector. The dialog may not be shown
+ * direclty but instead added to a queue.
+ *
  * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
  * @param selector {String} The IoCSS selector of the component to be shown.
- * @param options {Object} An object containing configuration options for
+ * @param [options] {Object} An object containing configuration options for
  * the dialog which is to be shown.
  */
 gpii.app.dialogManager.show = function (dialogManager, selector, options) {
-    var dialog = dialogManager.get(selector);
-    if (dialog) {
+    var dialog = dialogManager.get(selector),
+        sequentialDialogs = dialogManager.options.sequentialDialogs;
+
+    if (dialog.typeName === sequentialDialogs.errorDialogGrade) {
+        dialogManager.errorDialogQueue.enqueue(options);
+    } else if (dialog) {
         dialog.show(options);
     }
 };

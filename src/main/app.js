@@ -25,7 +25,6 @@ require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
 require("./restartDialog.js");
-require("./errorDialog.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
@@ -456,6 +455,9 @@ gpii.app.onKeyInError = function (error) {
     if (error.isError) {
         fluid.onUncaughtException.fire({
             code: "EKEYINFAIL"
+        });
+        fluid.onUncaughtException.fire({
+            code: "ENOCONNECTION"
         });
     }
 };
