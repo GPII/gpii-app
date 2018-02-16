@@ -50,12 +50,8 @@ require("electron").app.on("ready", gpii.app.electronAppListener);
 require("electron").app.on("window-all-closed", fluid.identity);
 
 /**
- * A component to manage the app. Each subcomponent of the app (except for the first
- * one) has a specified priority of creation. This is needed to ensure that every
- * component is created no sooner than all the components it depends on. Furthermore,
- * the `pspReady` subcomponent must be created last because its only purpose is to
- * send the `onPSPReady` event which indicates that the PSP application is fully
- * functional. This is useful especially when writing integration tests.
+ * A component to manage the app. When  the PSP application is fully functional,
+ * the `onPSPReady` event will be fired.
  */
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
@@ -98,7 +94,6 @@ fluid.defaults("gpii.app", {
         gpiiConnector: {
             type: "gpii.app.gpiiConnector",
             createOnEvent: "onGPIIReady",
-            priority: "after:dialogManager",
             options: {
                 listeners: {
                     "onPreferencesUpdated.updateSets": "{app}.updatePreferences",
@@ -112,7 +107,6 @@ fluid.defaults("gpii.app", {
         psp: {
             type: "gpii.app.psp",
             createOnEvent: "onPSPPrerequisitesReady",
-            priority: "after:gpiiConnector",
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
@@ -122,7 +116,6 @@ fluid.defaults("gpii.app", {
         waitDialog: {
             type: "gpii.app.waitDialog",
             createOnEvent: "onPSPPrerequisitesReady",
-            priority: "after:psp",
             options: {
                 modelListeners: {
                     "{lifecycleManager}.model.logonChange": {
@@ -134,13 +127,11 @@ fluid.defaults("gpii.app", {
         },
         restartDialog: {
             type: "gpii.app.dialog.restartDialog",
-            createOnEvent: "onPSPPrerequisitesReady",
-            priority: "after:waitDialog"
+            createOnEvent: "onPSPPrerequisitesReady"
         },
         settingsBroker: {
             type: "gpii.app.settingsBroker",
             createOnEvent: "onPSPPrerequisitesReady",
-            priority: "after:restartDialog",
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
@@ -158,7 +149,6 @@ fluid.defaults("gpii.app", {
         tray: {
             type: "gpii.app.tray",
             createOnEvent: "onPSPPrerequisitesReady",
-            priority: "after:settingsBroker",
             options: {
                 model: {
                     keyedInUserToken: "{gpii.app}.model.keyedInUserToken",
@@ -173,7 +163,6 @@ fluid.defaults("gpii.app", {
         channelMediator: {
             type: "fluid.component",
             createOnEvent: "onPSPPrerequisitesReady",
-            priority: "after:tray",
             options: {
                 listeners: {
                     "{settingsBroker}.events.onSettingApplied": [{
@@ -217,7 +206,6 @@ fluid.defaults("gpii.app", {
         restartWarningController: {
             type: "fluid.modelComponent",
             createOnEvent: "onPSPPrerequisitesReady",
-            priority: "after:channelMediator",
             options: {
                 model: {
                     isPspShown: "{psp}.model.isShown"
@@ -291,17 +279,6 @@ fluid.defaults("gpii.app", {
                     }
                 }
             }
-        },
-        // This subcomponent must be the last one created.
-        pspReady: {
-            type: "fluid.component",
-            createOnEvent: "onPSPPrerequisitesReady",
-            priority: "after:channelMediator",
-            options: {
-                listeners: {
-                    onCreate: "{app}.events.onPSPReady.fire"
-                }
-            }
         }
     },
     events: {
@@ -344,7 +321,11 @@ fluid.defaults("gpii.app", {
             listener: "{that}.events.onKeyedOut.fire",
             namespace: "notifyUserKeyedOut"
         }],
-
+        "onPSPPrerequisitesReady.notifyPSPReady": {
+            this: "{that}.events.onPSPReady",
+            method: "fire",
+            priority: "last"
+        },
         "onDestroy.beforeExit": {
             listener: "{that}.keyOut"
         }
