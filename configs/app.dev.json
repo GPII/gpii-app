@@ -22,6 +22,10 @@
             "distributeSurveyConnector": {
                 "record": "gpii.app.staticSurveyConnector",
                 "target": "{that surveyConnector}.options.gradeNames"
+            },
+            "distributeStaticSurveyConnectorFixture": {
+                "record": "%gpii-app/testData/survey/triggers.dev.json",
+                "target": "{that staticSurveyConnector}.options.paths.triggerFixture"
             }
         }
     },
