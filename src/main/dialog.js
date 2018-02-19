@@ -138,13 +138,12 @@ fluid.defaults("gpii.app.dialog", {
 
 
 /**
- * Emits event corresponding to the dialog's state.
- *
+ * Emits an event corresponding to the dialog's state.
  * @param that {Component} The dialog component
  * @param isShown {Boolean} The state of the dialog
  */
 gpii.app.dialog.emitState = function (that, isShown) {
-    if (isShown === true) {
+    if (isShown) {
         that.events.onOpened.fire();
     } else {
         that.events.onClosed.fire();
@@ -153,7 +152,6 @@ gpii.app.dialog.emitState = function (that, isShown) {
 
 /**
  * Builds a file URL inside the application **Working Directory**.
- *
  * @param prefixPath {String} Prefix for the file path, e.g. "src/renderer"
  * @param suffixPath {String} Suffix for the file path, e.g. "index.html"
  * @return {String} The generated URL

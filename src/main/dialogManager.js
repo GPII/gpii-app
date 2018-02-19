@@ -19,14 +19,16 @@ var fluid = require("infusion"),
 
 require("./surveys/surveyDialog.js");
 require("./errorDialog.js");
+require("./utils.js");
+
 
 /**
- * A component for making a dialog sequential. Only a single instance of the dialog
- * is allowed to be shown at a time and displaying of another such dialog is postponed
- * (queued up) for until the previous one in the sequence had been closed.
- * After closing the current dialog, displaying of the next one is delayed a bit, to
- * ensure that the user notices the closing of the window (showing the dialog right away
- * is barely noticeable in case the two windows share similar layout).
+ * A component for showing dialogs sequentially. Only a single dialog is allowed to be
+ * shown at a given time. The display of another dialog is postponed (queued up) until
+ * the previous one in the sequence is closed. After closing the current dialog,
+ * displaying of the next one is delayed a bit to ensure that the user notices the
+ * closing of the window (showing the dialog right away is barely noticeable in case the
+ * two window have similar layout).
  */
 fluid.defaults("gpii.app.dialogManager.queue", {
     gradeNames: ["fluid.modelComponent"],
@@ -38,12 +40,22 @@ fluid.defaults("gpii.app.dialogManager.queue", {
     nextDialogTimeout: 300,
 
     components: {
-        dialog: null
+        dialog: null,
+        timer: {
+            type: "gpii.app.timer"
+        }
     },
 
     listeners: {
         "{dialog}.events.onClosed": {
             func: "{that}.processNext"
+        },
+        "{timer}.events.onTimerFinished": {
+            funcName: "gpii.app.dialogManager.queue.showDialog",
+            args: ["{that}", "{dialog}"]
+        },
+        "onDestroy.clearTimer": {
+            func: "{that}.timer.clear"
         }
     },
 
@@ -54,7 +66,7 @@ fluid.defaults("gpii.app.dialogManager.queue", {
         },
         processNext: {
             funcName: "gpii.app.dialogManager.queue.processNext",
-            args: ["{that}", "{that}.dialog"]
+            args: ["{that}"]
         },
         clear: {
             funcName: "gpii.app.dialogManager.queue.clear",
@@ -63,13 +75,14 @@ fluid.defaults("gpii.app.dialogManager.queue", {
     }
 });
 
-
 /**
- * Clear the dialog queue.
- * @param that {Component} The `gpii.app.dialogManager.queue` object
+ * Clears the dialog queue and cancels the pending timeout (if any) for showing
+ * the next dialog.
+ * @param that {Component} The `gpii.app.dialogManager.queue` instance.
  */
 gpii.app.dialogManager.queue.clear = function (that) {
     that.queue = [];
+    that.timer.clear();
 };
 
 /**
@@ -89,23 +102,42 @@ gpii.app.dialogManager.queue.processNext = function (that, dialog) {
     }
 };
 
+/*
+ * Initiates the displaying of the next dialog in the queue.
+ * @param that {Component} The `gpii.app.dialogManager.queue` instance.
+ */
+gpii.app.dialogManager.queue.processNext = function (that) {
+    if (that.queue.length > 0) {
+        // delay the displaying of the dialog
+        that.timer.start(that.options.nextDialogTimeout);
+    }
+};
+
 /**
- * Add item to the queue. In case it is the first item, trigger the
- * execution process.
- *
- * @param that {Component} The `gpii.app.dialogManager.queue` object
- * @param options {Object} The options for the dialog. The dialog is
- * shown with these options, once it time has come.
+ * Removes a dialog from the queue and shows it.
+ * @param that {Component} The `gpii.app.dialogManager.queue` instance.
+ * @param dialog {Component} The dialog to be shown.
+ */
+gpii.app.dialogManager.queue.showDialog = function (that, dialog) {
+    var options = that.queue.shift();
+    dialog.show(options);
+};
+
+/**
+ * Queues a dialog to be shown in the future. If this is the only dialog in the
+ * queue, it will be shown immediately. Otherwise, it will be shown once the
+ * previous dialog is closed.
+ * @param that {Component} The `gpii.app.dialogManager.queue` instance.
+ * @param options {Object} The configuration options of the dialog to be queued.
  */
 gpii.app.dialogManager.queue.enqueue = function (that, options) {
     that.queue.push(options);
 
-    // Init the process showing, in case this is the first dialog
+    // Init the process showing in case this is the first dialog
     if (that.queue.length === 1) {
         that.processNext();
     }
 };
-
 
 /**
  * A component which provides means for showing, hiding and closing of dialogs
@@ -129,8 +161,8 @@ fluid.defaults("gpii.app.dialogManager", {
         keyedInUserToken: null
     },
 
-    sequentialDialogs: {
-        errorDialogGrade: "gpii.app.errorDialog"
+    sequentialDialogGradesMap: {
+        errorDialog: "gpii.app.errorDialog"
     },
 
     modelListeners: {
@@ -224,9 +256,10 @@ gpii.app.dialogManager.get = function (dialogManager, selector) {
  */
 gpii.app.dialogManager.show = function (dialogManager, selector, options) {
     var dialog = dialogManager.get(selector),
-        sequentialDialogs = dialogManager.options.sequentialDialogs;
+        sequentialDialogGrades =
+            fluid.values(dialogManager.options.sequentialDialogGradesMap);
 
-    if (dialog.typeName === sequentialDialogs.errorDialogGrade) {
+    if (fluid.contains(sequentialDialogGrades, dialog.typeName)) {
         dialogManager.errorDialogQueue.enqueue(options);
     } else if (dialog) {
         dialog.show(options);

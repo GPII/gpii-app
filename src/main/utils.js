@@ -95,7 +95,7 @@ gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
 fluid.defaults("gpii.app.timer", {
     gradeNames: ["fluid.modelComponent"],
 
-    model: {
+    members: {
         timer: null
     },
 
@@ -109,46 +109,38 @@ fluid.defaults("gpii.app.timer", {
 
     invokers: {
         start: {
-            changePath: "timer",
+            funcName: "gpii.app.timer.start",
             args: [
-                "@expand:setTimeout({that}.events.onTimerFinished.fire, {arguments}.0)"
+                "{that}",
+                "{arguments}.0" // timeoutDuration
             ]
         },
         clear: {
-            funcName: "clearTimeout",
-            args: "{that}.model.timer"
+            funcName: "gpii.app.timer.clear",
+            args: ["{that}"]
         }
     }
 });
 
-
-/*
- * A simple wrapper for the native interval. Responsible for clearing the interval
- * upon component destruction.
+/**
+ * Starts a timer. In `timeoutDuration` milliseconds, the `onTimerFinished`
+ * event will be fired. Any previously registered timers will be cleared
+ * upon the invokation of this function.
+ * that {Component} The `gpii.app.timer` instance.
+ * timeoutDuration {Number} The timeout duration in milliseconds.
  */
-fluid.defaults("gpii.app.interval", {
-    gradeNames: ["fluid.modelComponent"],
+gpii.app.timer.start = function (that, timeoutDuration) {
+    that.clear();
+    that.timer = setTimeout(that.events.onTimerFinished.fire, timeoutDuration);
+};
 
-    model: {
-        interval: null
-    },
-
-    listeners: {
-        "onDestroy.clearInterval": "{that}.clear"
-    },
-
-    events: {
-        onIntervalTick: null
-    },
-
-    invokers: {
-        start: {
-            changePath: "interval",
-            value: "@expand:setInterval({that}.events.onIntervalTick.fire, {arguments}.0)"
-        },
-        clear: {
-            funcName: "clearInterval",
-            args: "{that}.model.interval"
-        }
+/**
+ * Clears the timer.
+ * that {Component} The `gpii.app.timer` instance.
+ */
+gpii.app.timer.clear = function (that) {
+    if (that.timer) {
+        clearTimeout(that.timer);
+        that.timer = null;
     }
-});
+};

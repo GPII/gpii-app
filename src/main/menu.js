@@ -101,7 +101,6 @@ fluid.defaults("gpii.app.menuInAppDev", {
     },
     events: {
         onKeyIn: null,
-        onTriggerError: null,
         onExit: null
     },
 
@@ -120,12 +119,6 @@ fluid.defaults("gpii.app.menuInAppDev", {
             listener: "{app}.keyIn",
             args: ["{arguments}.0.token"], // token
             priority: "after:performKeyOut"
-        },
-
-        // XXX for Error Dialog testing purposes
-        onTriggerError: {
-            listener: "{app}.handleUncaughtException",
-            args:     [{code: "{arguments}.0.errorCode"}]
         },
 
         // onExit
@@ -220,12 +213,6 @@ fluid.defaults("gpii.app.menuInAppDev", {
             click: "onKeyIn",
             args: {
                 token: "danailbd"
-            }
-        }, {
-            label: "Trigger Connection error",
-            click: "onTriggerError",
-            args: {
-                errorCode: "ENOCONNECTION"
             }
         }]
     },
