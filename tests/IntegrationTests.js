@@ -31,6 +31,7 @@ require("./RestartDialogTestDefs.js");
 require("./DialogManagerTestDefs.js");
 require("./SurveysTestDefs.js");
 require("./SurveyTriggerManagerTestsDefs.js");
+require("./SequentialDialogsTestDefs.js");
 
 fluid.setLogging(fluid.logLevel.FATAL);
 
@@ -97,5 +98,6 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.restartWarningController.testDefs),
     fluid.copy(gpii.tests.dialogManager.testDefs),
     fluid.copy(gpii.tests.surveys.testDefs),
-    fluid.copy(gpii.tests.surveyTriggerManager.testDefs)
+    fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
+    fluid.copy(gpii.tests.sequentialDialogs.testDefs)
 ]);

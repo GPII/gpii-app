@@ -1,5 +1,5 @@
 /*
- * GPII App Integration Test Definitions
+ * GPII Dialog Manager Integration Test Definitions
  *
  * Copyright 2017 OCAD University
  *

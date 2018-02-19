@@ -85,26 +85,12 @@ gpii.app.dialogManager.queue.clear = function (that) {
     that.timer.clear();
 };
 
-/**
+/*
  * Process the next item in the queue. Processing the item is postponed
  * with a small interval, to ensure the user sees the closing of the
  * previous dialog.
  *
  * @param that {Component} The `gpii.app.dialogManager.queue` object
- * @param dialog {Object} The `gpii.app.dialog` instance
- */
-gpii.app.dialogManager.queue.processNext = function (that, dialog) {
-    if (that.queue.length > 0) {
-        setTimeout(function () {
-            var options = that.queue.shift();
-            dialog.show(options);
-        }, that.options.nextDialogTimeout);
-    }
-};
-
-/*
- * Initiates the displaying of the next dialog in the queue.
- * @param that {Component} The `gpii.app.dialogManager.queue` instance.
  */
 gpii.app.dialogManager.queue.processNext = function (that) {
     if (that.queue.length > 0) {
