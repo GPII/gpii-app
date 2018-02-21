@@ -54,19 +54,17 @@
 
 
     /**
-     * Notifies a channel. Currently it is used only for notifying the
-     * Main process that a button was clicked.
-     * @param channel {String} The channel to be notified
+     * Sends a message to the main process.
+     * @param {...Any} The channel to be notified and the parameters to be passed
+     * with the message.
      */
-    gpii.errorDialog.channel.notifyChannel = function (/* channel */) {
+    gpii.errorDialog.channel.notifyChannel = function () {
         ipcRenderer.send.apply(null, arguments);
     };
 
     /**
      * Registers for events from the Main process.
-     * @param events {Object} Events map
-     * @param events.onPendingChangesReceived {Object} Event related to pending
-     * changes received from the Main process
+     * @param events {Object} Events map.
      */
     gpii.errorDialog.channel.register = function (events) {
         ipcRenderer.on("onErrorUpdate", function (event, config) {

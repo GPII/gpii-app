@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>GPII</title>
+        <title>GPII Error</title>
         <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
         <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="../common/css/dialog.css">
@@ -15,19 +15,19 @@
         <script type="text/javascript" src="js/errorDialog.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
-        <script type="text/javascript" src="../psp/js/heightChangeListener.js"></script>
+        <script type="text/javascript" src="../common/js/heightChangeListener.js"></script>
     </head>
     <body class="fl-dialog-resizable">
         <div class="fl-dialog fl-dialog-fullScreen">
             <div class="flc-titlebar fl-titlebar">
-                <span class="flc-appName fl-appName"></span>
+                <span class="flc-appName fl-appName" tabindex="0"></span>
                 <button class="flc-closeBtn fl-closeBtn btn btn-regular">&#x2715;</button>
             </div>
 
             <div class="fl-dialog-content">
                 <img class="fl-dialog-contentIcon" src="../../icons/gpii-color.ico">
 
-                <div class="fl-dialog-contentText">
+                <div class="fl-dialog-contentText" tabindex="0">
                     <iframe class="flc-contentHeightChangeListener fl-heightChangeListener"></iframe>
                     <div class="flc-title fl-title"></div>
                     <div class="flc-subhead fl-details"></div>
@@ -47,7 +47,7 @@
             </div>
 
             <div class="fl-dialog-footer">
-                <span class="flc-errCode"></span>
+                <span class="flc-errCode" tabindex="0"></span>
                 <span class="fl-gpiiIcon">GPII <img src="../../icons/gear-cloud-black.png"></span>
                 <div class="clear-both"></div>
                 <div class="fl-speech-triangle"></div>

@@ -78,16 +78,15 @@ fluid.defaults("gpii.app", {
             title:   "Cannot Key In",
             subhead: "There might be a problem with the user you are trying to use",
             details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
-            btnLabel1: "Ok",
+            btnLabel1: "OK",
             fatal: false
         },
-        // XXX test error message
         "ENOCONNECTION": {
             title:   "No Internet connection",
             subhead: "There seem to be a problem your Internet connectivity",
             details: "Have you tried turning it off and on again? If the problem is still present, contact GPII Technical Support.",
-            btnLabel1: "Ok",
-            btnLabel2: "Oh Nooooo",
+            btnLabel1: "OK",
+            btnLabel2: "Cancel",
             fatal: false
         }
     },
@@ -404,7 +403,7 @@ fluid.defaults("gpii.app", {
             args: [
                 "{that}",
                 "{that}.options.errorsDescriptionMap",
-                "{arguments}.0" // err
+                "{arguments}.0" // error
             ]
         }
     },
@@ -544,29 +543,25 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
 };
 
 /**
- * Listen on uncaught exceptions and display it to the user is if it's interesting.
+ * Listen for uncaught exceptions and display them to the user is if they are interesting.
  * @param that {Component} An instance of gpii.app.
- * @param errorsDescription {Object} Map with more detailed description for the errors.
+ * @param errorsDescription {Object} A map with more detailed description for the errors.
+ * @param error {Object} The error which has occurred.
  */
-gpii.app.handleUncaughtException = function (that, errorsDescription, err) {
-    var errCode = err && err.code;
-    var errDetails = errorsDescription[errCode] || {};
+gpii.app.handleUncaughtException = function (that, errorsDescription, error) {
+    var errCode = error && error.code,
+        errDetails = errorsDescription[errCode],
+        errorDialogOptions = fluid.extend(true, {}, errDetails, {
+            errCode: errCode
+        });
+
+    if (!fluid.isValue(errDetails)) {
+        return;
+    }
 
     // Restore the state of the wait dialog
     that.waitDialog.applier.change("isShown", false);
-
-
-    that.dialogManager.show("errorDialog", {
-        title:     errDetails.title,
-        subhead:   errDetails.subhead,
-        details:   errDetails.details,
-
-        btnLabel1: errDetails.btnLabel1,
-        btnLabel2: errDetails.btnLabel2,
-        btnLabel3: errDetails.btnLabel3,
-
-        errCode:   errCode
-    });
+    that.dialogManager.show("errorDialog", errorDialogOptions);
 
     if (errDetails.fatal) {
         that.dialogManager.errorDialog.applier.modelChanged.addListener("isShown", that.exit);

@@ -68,9 +68,9 @@
 
 
     /**
-     * Notifies a channel. Currently it is used only for notifying the
-     * Main process that a button was clicked.
-     * @param channel {String} The channel to be notified
+     * Sends a message to the main process.
+     * @param {...Any} The channel to be notified and the parameters to be passed
+     * with the message.
      */
     gpii.restartDialog.channel.notifyChannel = function () {
         ipcRenderer.send.apply(null, arguments);

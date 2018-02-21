@@ -53,7 +53,7 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
 
 /**
  * Register for events from the managed Electron `BrowserWindow` (the renderer process).
- * @param events {Objects} Events that are to be mapped to dialog actoins
+ * @param events {Object} Events that are to be mapped to dialog actions.
  */
 gpii.app.dialog.restartDialog.channel.register = function (events) {
     /*

@@ -202,8 +202,7 @@ gpii.app.dialog.toggle = function (dialog, isShown) {
 };
 
 /**
- * Resize the current window and reposition to match the new size.
- *
+ * Resizes the current window and repositions it to match the new size.
  * @param that {Component} The `gpii.app.dialog` instance
  * @param windowWidth {Number} The new width for the window
  * @param windowHeight {Number} The new height for the window

@@ -79,10 +79,6 @@
         renderOnInit: true
     });
 
-    /**
-     * Represents a behaviour for a button. Requires "label" in
-     * case such is required to be shown, but it can be omitted.
-     */
     fluid.defaults("gpii.psp.widgets.button", {
         gradeNames: ["fluid.viewComponent"],
 

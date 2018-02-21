@@ -19,7 +19,7 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
     /**
-     * Responsible for detecting height changes in the element in which
+     * Responsible for detecting height changes in the DOM element in which
      * the component's container is nested.
      */
     fluid.defaults("gpii.psp.heightChangeListener", {
@@ -36,6 +36,11 @@
         }
     });
 
+    /**
+     * A `viewComponent` which continuously watches for changes in the height
+     * of its container. Whenever a height modification is detected, the
+     * `onHeightChanged` event will be fired with the new height as an argument.
+     */
     fluid.defaults("gpii.psp.heightObservable", {
         gradeNames: "fluid.viewComponent",
 
@@ -64,8 +69,8 @@
     });
 
     /**
-     * Compute the size of the content.
-     * @param that {Component} The `gpii.errorDialog` component
+     * Computes the size of the content and fires the `onHeightChanged` event.
+     * @param that {Component} The `gpii.psp.heightObservable` instance.
      */
     gpii.psp.heightObservable.onContentHeightChanged = function (that) {
         var container = that.container;
