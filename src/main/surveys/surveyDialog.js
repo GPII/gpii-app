@@ -177,25 +177,15 @@ gpii.app.surveyDialog.removeSurveyWindowIPC = function () {
 };
 
 /**
- * A wrapper for the actual survey dialog. This component makes the instantiation
- * of the actual dialog more elegant - the survey dialog is automatically created
- * by the framework when the `onDialogCreate` event is fired. Also, Infusion takes
- * care of destroying any other instances of the survey dialog that may be present
- * before actually creating a new one.
- *
- * Being a wrapper for the survey dialog component, this component has the same
- * interface - it contains the `show`, `hide` and `close` invokers. The former is
- * responsible for firing the event for creating the wrapped component, whereas the
- * latter two simply delegate to the corresponding wrapped component's method (if
- * the component exists).
+ * A wrapper for the creation of survey dialogs. See the documentation of the
+ * `gpii.app.dialogWrapper` grade for more information.
  */
 fluid.defaults("gpii.app.survey", {
-    gradeNames: "fluid.component",
+    gradeNames: "gpii.app.dialogWrapper",
 
     components: {
-        surveyDialog: {
+        dialog: {
             type: "gpii.app.surveyDialog",
-            createOnEvent: "onDialogCreate",
             options: {
                 config: {
                     surveyUrl: "{arguments}.0",
@@ -206,10 +196,6 @@ fluid.defaults("gpii.app.survey", {
         }
     },
 
-    events: {
-        onDialogCreate: null
-    },
-
     invokers: {
         show: {
             funcName: "gpii.app.survey.show",
@@ -217,14 +203,6 @@ fluid.defaults("gpii.app.survey", {
                 "{that}",
                 "{arguments}.0" // options
             ]
-        },
-        hide: {
-            funcName: "gpii.app.survey.hide",
-            args: ["{that}"]
-        },
-        close: {
-            funcName: "gpii.app.survey.close",
-            args: ["{that}"]
         }
     }
 });
@@ -238,24 +216,4 @@ fluid.defaults("gpii.app.survey", {
  */
 gpii.app.survey.show = function (that, options) {
     that.events.onDialogCreate.fire(options.url, options.closeOnSubmit, options.window);
-};
-
-/**
- * Responsible for hiding the `surveyDialog` component if it exists.
- * @param that {Component} The `gpii.app.survey` instance.
- */
-gpii.app.survey.hide = function (that) {
-    if (that.surveyDialog) {
-        that.surveyDialog.applier.change("isShown", false);
-    }
-};
-
-/**
- * Responsible for closing the `surveyDialog` component if it exists.
- * @param that {Component} The `gpii.app.survey` instance.
- */
-gpii.app.survey.close = function (that) {
-    if (that.surveyDialog) {
-        that.surveyDialog.close();
-    }
 };

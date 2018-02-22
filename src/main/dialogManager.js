@@ -25,10 +25,11 @@ require("./utils.js");
 /**
  * A component for showing dialogs sequentially. Only a single dialog is allowed to be
  * shown at a given time. The display of another dialog is postponed (queued up) until
- * the previous one in the sequence is closed. After closing the current dialog,
- * displaying of the next one is delayed a bit to ensure that the user notices the
- * closing of the window (showing the dialog right away is barely noticeable in case the
- * two window have similar layout).
+ * the previous one in the sequence is closed.
+ *
+ * The first element of the queue represents the options of the currently shown error
+ * dialog. When it is closed, the element is removed from the queue and the next
+ * options element in the queue is used for showing the following error dialog.
  */
 fluid.defaults("gpii.app.dialogManager.queue", {
     gradeNames: ["fluid.modelComponent"],
@@ -37,26 +38,8 @@ fluid.defaults("gpii.app.dialogManager.queue", {
         queue: []
     },
 
-    nextDialogTimeout: 300,
-
     components: {
-        dialog: null,
-        timer: {
-            type: "gpii.app.timer"
-        }
-    },
-
-    listeners: {
-        "{dialog}.events.onClosed": {
-            func: "{that}.processNext"
-        },
-        "{timer}.events.onTimerFinished": {
-            funcName: "gpii.app.dialogManager.queue.showDialog",
-            args: ["{that}", "{dialog}"]
-        },
-        "onDestroy.clearTimer": {
-            func: "{that}.timer.clear"
-        }
+        dialog: null
     },
 
     invokers: {
@@ -68,6 +51,10 @@ fluid.defaults("gpii.app.dialogManager.queue", {
             funcName: "gpii.app.dialogManager.queue.processNext",
             args: ["{that}"]
         },
+        showDialog: {
+            funcName: "gpii.app.dialogManager.queue.showDialog",
+            args: ["{that}", "{dialog}"]
+        },
         clear: {
             funcName: "gpii.app.dialogManager.queue.clear",
             args: ["{that}"]
@@ -76,37 +63,34 @@ fluid.defaults("gpii.app.dialogManager.queue", {
 });
 
 /**
- * Clears the dialog queue and cancels the pending timeout (if any) for showing
- * the next dialog.
+ * Clears the dialog queue.
  * @param that {Component} The `gpii.app.dialogManager.queue` instance.
  */
 gpii.app.dialogManager.queue.clear = function (that) {
     that.queue = [];
-    that.timer.clear();
 };
 
 /*
- * Process the next item in the queue. Processing the item is postponed
- * with a small interval, to ensure the user sees the closing of the
- * previous dialog.
- *
+ * Removes the first element in the queue (which represents the options
+ * of the error dialog that has just been closed) and shows the next
+ * dialog if there are any items in the queue.
  * @param that {Component} The `gpii.app.dialogManager.queue` object
  */
 gpii.app.dialogManager.queue.processNext = function (that) {
-    if (that.queue.length > 0) {
-        // delay the displaying of the dialog
-        that.timer.start(that.options.nextDialogTimeout);
-    }
+    that.queue.shift();
+    that.showDialog();
 };
 
 /**
- * Removes a dialog from the queue and shows it.
+ * Shows a dialog given its configuration options from the queue.
  * @param that {Component} The `gpii.app.dialogManager.queue` instance.
  * @param dialog {Component} The dialog to be shown.
  */
 gpii.app.dialogManager.queue.showDialog = function (that, dialog) {
-    var options = that.queue.shift();
-    dialog.show(options);
+    if (that.queue.length > 0) {
+        var options = that.queue[0];
+        dialog.show(options);
+    }
 };
 
 /**
@@ -119,9 +103,8 @@ gpii.app.dialogManager.queue.showDialog = function (that, dialog) {
 gpii.app.dialogManager.queue.enqueue = function (that, options) {
     that.queue.push(options);
 
-    // Init the process showing in case this is the first dialog
     if (that.queue.length === 1) {
-        that.processNext();
+        that.showDialog();
     }
 };
 
@@ -147,8 +130,17 @@ fluid.defaults("gpii.app.dialogManager", {
         keyedInUserToken: null
     },
 
-    sequentialDialogGradesMap: {
-        errorDialog: "gpii.app.errorDialog"
+    sequentialDialogsGrade: "gpii.app.error",
+
+    distributeOptions: {
+        target: "{that errorDialog}.options.modelListeners",
+        record: {
+            isShown: {
+                funcName: "gpii.app.dialogManager.errorDialogToggled",
+                args: ["{dialogManager}.queue", "{change}.value"],
+                excludeSource: "init"
+            }
+        }
     },
 
     modelListeners: {
@@ -163,11 +155,11 @@ fluid.defaults("gpii.app.dialogManager", {
         survey: {
             type: "gpii.app.survey"
         },
-        errorDialog: {
-            type: "gpii.app.errorDialog"
+        error: {
+            type: "gpii.app.error"
         },
 
-        errorDialogQueue: {
+        queue: {
             type: "gpii.app.dialogManager.queue",
             options: {
                 listeners: {
@@ -177,7 +169,7 @@ fluid.defaults("gpii.app.dialogManager", {
                 },
 
                 components: {
-                    dialog: "{errorDialog}"
+                    dialog: "{error}"
                 }
             }
         }
@@ -217,6 +209,18 @@ fluid.defaults("gpii.app.dialogManager", {
 });
 
 /**
+ * Invoked whenever an error dialog has changed its visibility (i.e. it has
+ * either be shown or hidden).
+ * @param queue {Component} The `gpii.app.dialogManager.queue` instance.
+ * @param isShown {Boolean} Whether the error dialog is shown or not.
+ */
+gpii.app.dialogManager.errorDialogToggled = function (queue, isShown) {
+    if (!isShown) {
+        queue.processNext();
+    }
+};
+
+/**
  * Retrieves a dialog component that is a subcomponent of the `dialogManager`
  * given its IoCSS selector.
  * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
@@ -241,14 +245,13 @@ gpii.app.dialogManager.get = function (dialogManager, selector) {
  * the dialog which is to be shown.
  */
 gpii.app.dialogManager.show = function (dialogManager, selector, options) {
-    var dialog = dialogManager.get(selector),
-        sequentialDialogGrades =
-            fluid.values(dialogManager.options.sequentialDialogGradesMap);
-
-    if (fluid.contains(sequentialDialogGrades, dialog.typeName)) {
-        dialogManager.errorDialogQueue.enqueue(options);
-    } else if (dialog) {
-        dialog.show(options);
+    var dialog = dialogManager.get(selector);
+    if (dialog) {
+        if (dialog.typeName === dialogManager.options.sequentialDialogsGrade) {
+            dialogManager.queue.enqueue(options);
+        } else {
+            dialog.show(options);
+        }
     }
 };
 

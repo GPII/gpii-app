@@ -551,7 +551,7 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
 gpii.app.handleUncaughtException = function (that, errorsDescription, error) {
     var errCode = error && error.code,
         errDetails = errorsDescription[errCode],
-        errorDialogOptions = fluid.extend(true, {}, errDetails, {
+        errorOptions = fluid.extend(true, {}, errDetails, {
             errCode: errCode
         });
 
@@ -561,10 +561,10 @@ gpii.app.handleUncaughtException = function (that, errorsDescription, error) {
 
     // Restore the state of the wait dialog
     that.waitDialog.applier.change("isShown", false);
-    that.dialogManager.show("errorDialog", errorDialogOptions);
+    that.dialogManager.show("error", errorOptions);
 
     if (errDetails.fatal) {
-        that.dialogManager.errorDialog.applier.modelChanged.addListener("isShown", that.exit);
+        that.dialogManager.error.applier.modelChanged.addListener("isShown", that.exit);
     }
 };
 

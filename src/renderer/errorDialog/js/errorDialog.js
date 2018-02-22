@@ -41,13 +41,8 @@
         },
 
         invokers: {
-            close: {
-                funcName: "gpii.errorDialog.channel.notifyChannel",
-                args: "onErrorDialogClosed"
-            },
-            notifyHeightChanged: {
-                funcName: "gpii.errorDialog.channel.notifyChannel",
-                args: ["onErrorDialogHeightChanged", "{arguments}.0"]
+            notify: {
+                funcName: "gpii.errorDialog.channel.notifyChannel"
             }
         }
     });
@@ -159,11 +154,18 @@
         },
 
         listeners: {
-            onHeightChanged: {
-                func: "{that}.channel.notifyHeightChanged",
-                args: ["{arguments}.0"]
+            onCreate: {
+                func: "{channel}.notify",
+                args: ["onErrorDialogCreated"]
             },
-            onButtonClicked: "{channel}.close"
+            onHeightChanged: {
+                func: "{channel}.notify",
+                args: ["onErrorDialogHeightChanged", "{arguments}.0"]
+            },
+            onButtonClicked: {
+                func: "{channel}.notify",
+                args: ["onErrorDialogClosed"]
+            }
         },
 
         invokers: {

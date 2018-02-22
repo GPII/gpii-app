@@ -29,14 +29,18 @@ fluid.defaults("gpii.app.errorDialog.channel", {
     gradeNames: ["fluid.component"],
 
     events: {
-        onClosed: null,
+        onErrorDialogCreated: null,
+        onErrorDialogClosed: null,
         onContentHeightChanged: null
     },
 
     listeners: {
         "onCreate.registerChannel": {
             funcName: "gpii.app.errorDialog.channel.register",
-            args: ["{errorDialog}", "{that}.events"]
+            args: ["{that}"]
+        },
+        "onDestroy.deregisterChannel": {
+            funcName: "gpii.app.errorDialog.channel.deregister"
         }
     },
 
@@ -54,24 +58,36 @@ fluid.defaults("gpii.app.errorDialog.channel", {
 
 /**
  * Register for events from the managed Electron `BrowserWindow` (the renderer process).
- * @param events {Objects} Events that are to be mapped to dialog actoins
+ * @param that {Component} The `gpii.app.errorDialog.channel` instance.
  */
-gpii.app.errorDialog.channel.register = function (that, events) {
-    ipcMain.on("onErrorDialogClosed", function (/*event, message*/) {
-        events.onClosed.fire();
+gpii.app.errorDialog.channel.register = function (that) {
+    ipcMain.on("onErrorDialogCreated", function () {
+        that.events.onErrorDialogCreated.fire();
+    });
+
+    ipcMain.on("onErrorDialogClosed", function () {
+        that.events.onErrorDialogClosed.fire();
     });
 
     ipcMain.on("onErrorDialogHeightChanged", function (event, height) {
-        events.onContentHeightChanged.fire(height);
+        that.events.onContentHeightChanged.fire(height);
     });
 };
 
+/**
+ * Removes the IPC listeners needed for the communication with the `BrowserWindow`
+ * when the latter is about to be destroyed.
+ */
+gpii.app.errorDialog.channel.deregister = function () {
+    ipcMain.removeAllListeners("onErrorDialogCreated");
+    ipcMain.removeAllListeners("onErrorDialogClosed");
+    ipcMain.removeAllListeners("onErrorDialogHeightChanged");
+};
 
 /**
- * A component that represent an error dialog
- * and is used to display error messages to the user.
- * In order for an error to be properly displayed it requires the following attributes:
- * title, subheader, details and error code
+ * A component that represent an error dialog and is used to display error messages
+ * to the user. In order for an error to be properly displayed it requires the
+ * following attributes: title, subheader, details and error code.
  */
 fluid.defaults("gpii.app.errorDialog", {
     gradeNames: ["gpii.app.dialog"],
@@ -79,20 +95,18 @@ fluid.defaults("gpii.app.errorDialog", {
     config: {
         attrs: {
             width: 400,
-            height: 100 // This is to be changed with respect to the content needs
+            height: 100, // This is to be changed with respect to the content needs
+
+            title:   null,
+            subhead: null,
+            details: null,
+            errCode: null,
+
+            btnLabel1: null,
+            btnLabel2: null,
+            btnLabel3: null
         },
         fileSuffixPath: "errorDialog/index.html"
-    },
-
-    defaultDialogConfig: {
-        title:   null,
-        subhead: null,
-        details: null,
-        errCode: null,
-
-        btnLabel1: null,
-        btnLabel2: null,
-        btnLabel3: null
     },
 
     components: {
@@ -100,15 +114,18 @@ fluid.defaults("gpii.app.errorDialog", {
             type: "gpii.app.errorDialog.channel",
             options: {
                 listeners: {
-                    "onContentHeightChanged": {
+                    onContentHeightChanged: {
                         func: "{dialog}.resize",
                         args: [
                             "{errorDialog}.options.config.attrs.width", // only the height is dynamic
                             "{arguments}.0" // windowHeight
                         ]
                     },
-                    "onClosed": {
-                        func: "{errorDialog}.hide"
+                    onErrorDialogCreated: {
+                        funcName: "{errorDialog}.show"
+                    },
+                    onErrorDialogClosed: {
+                        funcName: "{errorDialog}.hide"
                     }
                 }
             }
@@ -120,16 +137,15 @@ fluid.defaults("gpii.app.errorDialog", {
             funcName: "gpii.app.errorDialog.show",
             args: [
                 "{that}",
-                "{arguments}.0" // errorConfig
+                "{that}.options.config.attrs"
             ]
         },
         hide: {
-            funcName: "gpii.app.errorDialog.hide",
-            args: ["{that}"]
+            changePath: "isShown",
+            value: false
         }
     }
 });
-
 
 /**
  * Update the current state of the error dialog, and show it.
@@ -144,18 +160,33 @@ fluid.defaults("gpii.app.errorDialog", {
  */
 gpii.app.errorDialog.show = function (that, errorConfig) {
     that.dialogChannel.update(errorConfig);
-
     that.applier.change("isShown", true);
 };
 
 /**
- * Hides and resets the state of the dialog, clearing any set
- * properties.
- *
- * @param that {Component} The `gpii.app.errorDialog` component
+ * A wrapper for the creation of error dialogs. See the documentation of the
+ * `gpii.app.dialogWrapper` grade for more information.
  */
-gpii.app.errorDialog.hide = function (that) {
-    that.applier.change("isShown", false);
+fluid.defaults("gpii.app.error", {
+    gradeNames: "gpii.app.dialogWrapper",
 
-    that.dialogChannel.update(that.options.defaultDialogConfig);
-};
+    components: {
+        dialog: {
+            type: "gpii.app.errorDialog",
+            options: {
+                config: {
+                    attrs: "{arguments}.0"
+                },
+                events: {
+                    onClosed: "{gpii.app.error}.events.onClosed",
+                    onOpened: "{gpii.app.error}.events.onOpened"
+                }
+            }
+        }
+    },
+
+    events: {
+        onClosed: null,
+        onOpened: null
+    }
+});

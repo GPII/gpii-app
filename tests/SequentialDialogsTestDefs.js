@@ -55,7 +55,7 @@ var surveyDialogFixture = {
 gpii.tests.sequentialDialogs.testNoQueuedDialogs = function (dialogManager) {
     jqUnit.assertEquals("There are no dialogs in the queue",
         0,
-        dialogManager.errorDialogQueue.queue.length);
+        dialogManager.queue.queue.length);
 };
 
 gpii.tests.sequentialDialogs.testDefs = {
@@ -66,48 +66,43 @@ gpii.tests.sequentialDialogs.testDefs = {
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    sequence: [
-        // Try to show two error dialogs initially
-        {
-            func: "{that}.app.dialogManager.show",
-            args: ["errorDialog", noInternetErrorFixture]
-        }, {
-            func: "{that}.app.dialogManager.show",
-            args: ["errorDialog", keyInErrorFixture]
-        }, {
-            func: "jqUnit.assertEquals",
-            args: [
-                "There are 2 error dialogs queued for showing",
-                2,
-                "{that}.app.dialogManager.errorDialogQueue.queue.length"
-            ]
-        }, { // The first error dialog is shown automatically after a timeout.
-            changeEvent: "{that}.app.dialogManager.errorDialog.applier.modelChanged",
-            path: "isShown",
-            listener: "jqUnit.assertDeepEq",
-            args: [
-                "Now there is only 1 error dialog queued for showing",
-                keyInErrorFixture,
-                "{that}.app.dialogManager.errorDialogQueue.queue.0"
-            ]
-        }, { // Only after the first error dialog is hidden...
-            func: "{that}.app.dialogManager.hide",
-            args: ["errorDialog"]
-        }, {
-            changeEvent: "{that}.app.dialogManager.errorDialog.applier.modelChanged",
-            path: "isShown",
-            listener: "fluid.identity"
-        }, { // ...will the second error dialog be shown.
-            changeEvent: "{that}.app.dialogManager.errorDialog.applier.modelChanged",
-            path: "isShown",
-            listener: "gpii.tests.sequentialDialogs.testNoQueuedDialogs",
-            args: ["{that}.app.dialogManager"]
-        }, { // Then try to show a survey dialog...
-            func: "{that}.app.dialogManager.show",
-            args: ["survey", surveyDialogFixture]
-        }, { // ...and check that it is not queued even though there is already an error dialog shown
-            func: "gpii.tests.sequentialDialogs.testNoQueuedDialogs",
-            args: ["{that}.app.dialogManager"]
-        }
-    ]
+    sequence: [{
+        func: "{that}.app.dialogManager.show",
+        args: ["error", noInternetErrorFixture]
+    }, { // The error dialog is shown automatically as it is the only one.
+        event: "{that gpii.app.errorDialog.channel}.events.onErrorDialogCreated",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "The no internet error dialog is now shown",
+            noInternetErrorFixture,
+            "{that}.app.dialogManager.queue.queue.0"
+        ]
+    }, { // Try to show a second error dialog.
+        func: "{that}.app.dialogManager.show",
+        args: ["error", keyInErrorFixture]
+    }, { // It will not be shown immediately.
+        func: "jqUnit.assertLeftHand",
+        args: [
+            "The key in error dialog options were added to the queue",
+            keyInErrorFixture,
+            "{that}.app.dialogManager.queue.queue.1"
+        ]
+    }, { // Only after the first error dialog is hidden...
+        func: "{that}.app.dialogManager.hide",
+        args: ["error"]
+    }, { // ...will the second be eligible for showing.
+        func: "jqUnit.assertLeftHand",
+        args: [
+            "The key in error dialog is now the first element in the queue",
+            keyInErrorFixture,
+            "{that}.app.dialogManager.queue.queue.0"
+        ]
+    }, { // Then try to show a survey dialog.
+        func: "{that}.app.dialogManager.show",
+        args: ["survey", surveyDialogFixture]
+    }, { // It will be shown immediately.
+        event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
+        listener: "jqUnit.assert",
+        args: ["Both the survey dialog and the key-in error dialogs are shown"]
+    }]
 };

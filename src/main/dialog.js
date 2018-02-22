@@ -88,20 +88,12 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
 
-    events: {
-        onClosed: null,
-        onOpened: null
-    },
-
     modelListeners: {
-        isShown: [{
+        isShown: {
             funcName: "gpii.app.dialog.toggle",
             args: ["{that}", "{change}.value"],
             namespace: "impl"
-        }, {
-            funcName: "gpii.app.dialog.emitState",
-            args: ["{that}", "{change}.value"]
-        }]
+        }
     },
     listeners: {
         "onCreate.positionWindow": {
@@ -135,20 +127,6 @@ fluid.defaults("gpii.app.dialog", {
         }
     }
 });
-
-
-/**
- * Emits an event corresponding to the dialog's state.
- * @param that {Component} The dialog component
- * @param isShown {Boolean} The state of the dialog
- */
-gpii.app.dialog.emitState = function (that, isShown) {
-    if (isShown) {
-        that.events.onOpened.fire();
-    } else {
-        that.events.onClosed.fire();
-    }
-};
 
 /**
  * Builds a file URL inside the application **Working Directory**.
@@ -210,4 +188,80 @@ gpii.app.dialog.toggle = function (dialog, isShown) {
 gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
     that.dialog.setSize(Math.ceil(windowWidth), Math.ceil(windowHeight));
     that.resetWindowPosition();
+};
+
+/**
+ * A wrapper for the creation of dialogs with the same type. This component makes
+ * the instantiation of the actual dialog more elegant - the dialog is automatically
+ * created by the framework when the `onDialogCreate` event is fired. Also, Infusion
+ * takes care of destroying any other instances of the dialog that may be present
+ * before actually creating a new one.
+ *
+ * Being a wrapper, this component has the same interface as the dialog itself - it
+ * contains the `show`, `hide` and `close` invokers. The former is responsible for
+ * firing the event for creating the wrapped component. The `hide` invoker simply
+ * modifies the `isShown` model property of the dialog, whereas the `close` invoker
+ * delegate to the corresponding wrapped component's method (if the component exists).
+ */
+fluid.defaults("gpii.app.dialogWrapper", {
+    gradeNames: "fluid.component",
+    components: {
+        dialog: {
+            type: "gpii.app.dialog",
+            createOnEvent: "onDialogCreate"
+        }
+    },
+
+    events: {
+        onDialogCreate: null
+    },
+
+    invokers: {
+        show: {
+            funcName: "gpii.app.dialogWrapper.show",
+            args: [
+                "{that}",
+                "{arguments}.0" // options
+            ]
+        },
+        hide: {
+            funcName: "gpii.app.dialogWrapper.hide",
+            args: ["{that}"]
+        },
+        close: {
+            funcName: "gpii.app.dialogWrapper.close",
+            args: ["{that}"]
+        }
+    }
+});
+
+/**
+ * Responsible for firing the `onDialogCreate` event which in turn creates the
+ * wrapped dialog component.
+ * @param that {Component} The `gpii.app.dialogWrapper` instance.
+ * @param options {Object} An object containing the various properties for the
+ * dialog which is to be created.
+ */
+gpii.app.dialogWrapper.show = function (that, options) {
+    that.events.onDialogCreate.fire(options);
+};
+
+/**
+ * Responsible for hiding the wrapped dialog if it exists.
+ * @param that {Component} The `gpii.app.dialogWrapper` instance.
+ */
+gpii.app.dialogWrapper.hide = function (that) {
+    if (that.dialog) {
+        that.dialog.applier.change("isShown", false);
+    }
+};
+
+/**
+ * Responsible for closing the wrapped dialog if it exists.
+ * @param that {Component} The `gpii.app.dialogWrapper` instance.
+ */
+gpii.app.dialogWrapper.close = function (that) {
+    if (that.dialog) {
+        that.dialog.close();
+    }
 };

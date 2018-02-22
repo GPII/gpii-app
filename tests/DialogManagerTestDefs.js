@@ -48,7 +48,7 @@ gpii.tests.dialogManager.testManagerAfterKeyIn = function (dialogManager, expect
 };
 
 gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, surveyDialogFixture) {
-    var dialog = dialogManager.survey.surveyDialog.dialog,
+    var dialog = dialogManager.survey.dialog.dialog,
         windowAttrs = surveyDialogFixture.window,
         dialogSize = dialog.getSize();
 
@@ -66,7 +66,7 @@ gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, survey
 };
 
 gpii.tests.dialogManager.testSurveyDialogHidden = function (dialogManager) {
-    var dialog = dialogManager.survey.surveyDialog.dialog;
+    var dialog = dialogManager.survey.dialog.dialog;
     jqUnit.assertFalse("Survey dialog is hidden", dialog.isVisible());
 };
 
