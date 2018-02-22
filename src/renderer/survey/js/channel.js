@@ -27,7 +27,8 @@
     fluid.defaults("gpii.survey.channel", {
         gradeNames: ["fluid.component"],
         events: {
-            onSurveyOpen: null
+            onSurveyOpen: null,
+            onExecuteCommand: null
         },
         listeners: {
             "onCreate.initChannel": {
@@ -60,6 +61,10 @@
     gpii.survey.channel.initialize = function (that) {
         ipcRenderer.on("onSurveyOpen", function (event, surveyParams) {
             that.events.onSurveyOpen.fire(surveyParams);
+        });
+
+        ipcRenderer.on("onExecuteCommand", function (event, command) {
+            that.events.onExecuteCommand.fire(command);
         });
     };
 })(fluid);
