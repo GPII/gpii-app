@@ -16,12 +16,12 @@
 
 "use strict";
 
-var fluid = require("universal"),
+var fluid = require("gpii-universal"),
     kettle = fluid.registerNamespace("kettle"),
     gpii = fluid.registerNamespace("gpii");
 
 require("gpii-windows/index.js");
-require("../node_modules/universal/gpii/node_modules/testing");
+require("../node_modules/gpii-universal/gpii/node_modules/testing");
 
 gpii.loadTestingSupport();
 

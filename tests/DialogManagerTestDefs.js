@@ -72,7 +72,7 @@ gpii.tests.dialogManager.testSurveyDialogHidden = function (dialogManager) {
 
 gpii.tests.dialogManager.testSurveyDialogClosed = function (dialogManager) {
     jqUnit.assertFalse("There is no survey dialog available",
-        dialogManager.survey.surveyDialog);
+        dialogManager.survey.dialog);
 };
 
 gpii.tests.dialogManager.testDefs = {

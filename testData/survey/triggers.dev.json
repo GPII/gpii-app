@@ -4,7 +4,7 @@
         "conditions": [
             {
                 "type": "keyedInFor",
-                "value": 600000
+                "value": 5000
             }
         ]
     }
