@@ -204,11 +204,21 @@ gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
  * delegate to the corresponding wrapped component's method (if the component exists).
  */
 fluid.defaults("gpii.app.dialogWrapper", {
-    gradeNames: "fluid.component",
+    gradeNames: "fluid.modelComponent",
+
+    model: {
+        isShown: null
+    },
+
     components: {
         dialog: {
             type: "gpii.app.dialog",
-            createOnEvent: "onDialogCreate"
+            createOnEvent: "onDialogCreate",
+            options: {
+                model: {
+                    isShown: "{dialogWrapper}.model.isShown"
+                }
+            }
         }
     },
 

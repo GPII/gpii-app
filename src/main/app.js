@@ -545,7 +545,11 @@ gpii.app.handleUncaughtException = function (that, errorsDescription, error) {
     that.dialogManager.show("error", errorOptions);
 
     if (errDetails.fatal) {
-        that.dialogManager.error.applier.modelChanged.addListener("isShown", that.exit);
+        that.dialogManager.error.applier.modelChanged.addListener("isShown", function (isShown) {
+            if (!isShown) {
+                that.exit();
+            }
+        });
     }
 };
 
