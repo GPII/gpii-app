@@ -11,8 +11,8 @@
     "dependencies": {
         "electron": "1.4.1",
         "electron-edge": "6.5.4",
-        "gpii-windows": "0.3.0-dev.20180221T110316Z.a99234a",
-        "infusion": "3.0.0-dev.20180221T012810Z.29c3e67",
+        "gpii-windows": "0.3.0-dev.20180223T001116Z.c007a9d",
+        "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
         "node-jqunit": "1.1.8",
         "request": "2.69.0",
         "winstrap": "0.5.11"
