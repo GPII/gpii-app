@@ -63,7 +63,10 @@ fluid.defaults("gpii.app.psp", {
         onUndoChanges: null,
 
         onClosed: null,
-        onRestartLater: null
+        onRestartLater: null,
+
+        onDisplayMetricsChanged: null,
+        onPSPWindowFocusLost: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -94,6 +97,21 @@ fluid.defaults("gpii.app.psp", {
 
         "onRestartNow.closePsp": {
             func: "{psp}.hide"
+        },
+
+        "onDisplayMetricsChanged": {
+            funcName: "gpii.app.psp.handleDisplayMetricsChange",
+            args: [
+                "{that}",
+                "{arguments}.0", // event
+                "{arguments}.1", // display
+                "{arguments}.2"  // changedMetrics
+            ]
+        },
+
+        "onPSPWindowFocusLost": {
+            funcName: "gpii.app.psp.handlePSPWindowFocusLost",
+            args: "{that}"
         }
     },
     invokers: {
@@ -164,25 +182,43 @@ gpii.app.psp.show = function (psp) {
 };
 
 /**
+ * Handle electron's display-metrics-changed event, by resizing the PSP when necessary.
+ * @param psp {Component} The `gpii.app.psp` instance.
+ * @param event {event} An Electron `event`.
+ * @param display {Object} The Electron `Display` object.
+ * @param changedMetrics {Array} An array of strings that describe the changes. Possible
+ * changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
+ */
+gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changedMetrics) {
+    if (changedMetrics.indexOf("workArea") > -1) {
+        var windowSize = pspWindow.getSize(),
+            contentHeight = windowSize[1];
+        psp.resize(contentHeight, true);
+    }
+};
+
+/**
+ * Handle PSPWindow's blur event, which is fired when the window loses focus
+ */
+gpii.app.psp.handlePSPWindowFocusLost = function (psp) {
+    if (psp.model.isShown) {
+        psp.events.onClosed.fire();
+    }
+};
+
+/**
  * A function which should be called to init various listeners related to
  * the PSP window.
  * @param psp {Component} The `gpii.app.psp` instance.
  */
 gpii.app.psp.initPSPWindowListeners = function (psp) {
     var pspWindow = psp.pspWindow;
-    pspWindow.on("blur", function () {
-        if (psp.model.isShown) {
-            psp.events.onClosed.fire();
-        }
-    });
 
-    electron.screen.on("display-metrics-changed", function (event, display, changedMetrics) {
-        if (changedMetrics.indexOf("workArea") > -1) {
-            var windowSize = pspWindow.getSize(),
-                contentHeight = windowSize[1];
-            psp.resize(contentHeight, true);
-        }
-    });
+    // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-blur
+    pspWindow.on("blur", psp.events.onPSPWindowFocusLost.fire);
+
+    // https://github.com/electron/electron/blob/master/docs/api/screen.md#event-display-metrics-changed
+    electron.screen.on("display-metrics-changed", psp.events.onDisplayMetricsChanged.fire);
 };
 
 /**
