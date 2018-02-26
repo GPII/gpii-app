@@ -134,7 +134,7 @@ gpii.tests.settingsBroker.testBrokerAfterKeyOut = function (settingsBroker) {
 
 gpii.tests.settingsBroker.testDefs = {
     name: "Settings broker integration tests",
-    expect: 25,
+    expect: 23,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -208,8 +208,8 @@ gpii.tests.settingsBroker.testDefs = {
     }, {
         func: "{that}.app.keyOut"
     }, {
-        changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
-        path: "",
+        changeEvent: "{that}.app.applier.modelChanged",
+        path: "keyedInUserToken",
         listener: "gpii.tests.settingsBroker.testBrokerAfterKeyOut",
         args: ["{that}.app.settingsBroker"]
     }, {
