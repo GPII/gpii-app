@@ -83,20 +83,13 @@ gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
     expect: 32,
     config: {
-        configName: "app.production",
-        configPath: "configs"
+        configName: "gpii.tests.production.config",
+        configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        record: {
-            funcName: "gpii.tests.app.receiveApp",
-            args: ["{testCaseHolder}", "{arguments}.0"]
-        },
-        target: "{that flowManager gpii.app}.options.listeners.onCreate"
-    },
     sequence: [{ // Test the menu that will be rendered
-        event: "{that gpii.app.menu}.events.onCreate",
-        listener: "gpii.tests.app.testInitialMenu"
+        func: "gpii.tests.app.testInitialMenu",
+        args: ["{that}.app.tray.menu"]
     }, [ // PSP window tests
         { // pspWindow should've been created by now
             funcName: "gpii.tests.app.psp.testInitialPSPWindow",
@@ -240,20 +233,13 @@ gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
     expect: 161,
     config: {
-        configName: "app.dev",
-        configPath: "configs"
+        configName: "gpii.tests.dev.config",
+        configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        record: {
-            funcName: "gpii.tests.app.receiveApp",
-            args: ["{testCaseHolder}", "{arguments}.0"]
-        },
-        target: "{that flowManager gpii.app}.options.listeners.onCreate"
-    },
     sequence: [{ // Test the tray that will be rendered
-        event: "{that gpii.app.tray}.events.onCreate",
-        listener: "gpii.tests.dev.testTrayKeyedOut"
+        func: "gpii.tests.dev.testTrayKeyedOut",
+        args: ["{that}.app.tray"]
     }, { // Test the menu that will be rendered
         func: "gpii.tests.dev.testInitialMenu",
         args: "{that}.app.tray.menu"

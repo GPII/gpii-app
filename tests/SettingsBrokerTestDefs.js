@@ -134,22 +134,15 @@ gpii.tests.settingsBroker.testBrokerAfterKeyOut = function (settingsBroker) {
 
 gpii.tests.settingsBroker.testDefs = {
     name: "Settings broker integration tests",
-    expect: 25,
+    expect: 23,
     config: {
-        configName: "app.dev",
-        configPath: "configs"
+        configName: "gpii.tests.dev.config",
+        configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        record: {
-            funcName: "gpii.tests.app.receiveApp",
-            args: ["{testCaseHolder}", "{arguments}.0"]
-        },
-        target: "{that flowManager gpii.app}.options.listeners.onCreate"
-    },
     sequence: [{
-        event: "{that gpii.app.settingsBroker}.events.onCreate",
-        listener: "gpii.tests.settingsBroker.testBrokerBeforeKeyIn"
+        func: "gpii.tests.settingsBroker.testBrokerBeforeKeyIn",
+        args: ["{that}.app.settingsBroker"]
     }, {
         func: "{that}.app.keyIn",
         args: ["snapset_1a"]
@@ -215,8 +208,8 @@ gpii.tests.settingsBroker.testDefs = {
     }, {
         func: "{that}.app.keyOut"
     }, {
-        changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
-        path: "",
+        changeEvent: "{that}.app.applier.modelChanged",
+        path: "keyedInUserToken",
         listener: "gpii.tests.settingsBroker.testBrokerAfterKeyOut",
         args: ["{that}.app.settingsBroker"]
     }, {

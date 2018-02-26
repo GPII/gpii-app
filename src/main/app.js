@@ -18,14 +18,17 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
-
-require("./settingsBroker.js");
+require("./ws.js");
+require("./factsManager.js");
+require("./dialogManager.js");
 require("./gpiiConnector.js");
-require("./menu.js"); // menuInApp, menuInAppDev
-require("./tray.js");
+require("./menu.js");
 require("./psp.js");
-require("./waitDialog.js");
 require("./restartDialog.js");
+require("./settingsBroker.js");
+require("./surveys/surveyManager.js");
+require("./tray.js");
+require("./waitDialog.js");
 
 require("./networkCheck.js");
 
@@ -46,8 +49,9 @@ require("electron").app.on("ready", gpii.app.electronAppListener);
 // Override default behaviour - don't exit process once all windows are closed
 require("electron").app.on("window-all-closed", fluid.identity);
 
-/*
- ** Component to manage the app.
+/**
+ * A component to manage the app. When  the PSP application is fully functional,
+ * the `onPSPReady` event will be fired.
  */
 fluid.defaults("gpii.app", {
     gradeNames: "fluid.modelComponent",
@@ -59,37 +63,75 @@ fluid.defaults("gpii.app", {
             activeSet: null
         }
     },
-    // prerequisites
+    members: {
+        machineId: "@expand:{that}.installID.getMachineID()"
+    },
     components: {
+        installID: {
+            type: "gpii.installID"
+        },
+        factsManager: {
+            type: "gpii.app.factsManager"
+        },
+        surveyManager: {
+            type: "gpii.app.surveyManager"
+        },
+        dialogManager: {
+            type: "gpii.app.dialogManager",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                },
+                listeners: {
+                    "{surveyManager}.events.onSurveyRequired": {
+                        func: "{that}.show",
+                        args: ["survey", "{arguments}.0"] // the raw payload
+                    }
+                }
+            }
+        },
+        gpiiConnector: {
+            type: "gpii.app.gpiiConnector",
+            createOnEvent: "onGPIIReady",
+            options: {
+                listeners: {
+                    "onPreferencesUpdated.updateSets": "{app}.updatePreferences",
+                    "onSnapsetNameUpdated.updateSnapsetName": "{app}.updateSnapsetName"
+                },
+                events: {
+                    onConnected: "{app}.events.onPSPChannelConnected"
+                }
+            }
+        },
         psp: {
             type: "gpii.app.psp",
-            createOnEvent: "onPrerequisitesReady",
+            createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
                 }
             }
         },
-        restartDialog: {
-            type: "gpii.app.dialog.restartDialog",
-            createOnEvent: "onPrerequisitesReady",
-            priority: "after:psp"
-        },
-        gpiiConnector: {
-            type: "gpii.app.gpiiConnector",
-            createOnEvent: "onPrerequisitesReady",
-            priority: "after:psp",
+        waitDialog: {
+            type: "gpii.app.waitDialog",
+            createOnEvent: "onPSPPrerequisitesReady",
             options: {
-                listeners: {
-                    "onPreferencesUpdated.updateSets": "{app}.updatePreferences",
-                    "onSnapsetNameUpdated.updateSnapsetName": "{app}.updateSnapsetName"
+                modelListeners: {
+                    "{lifecycleManager}.model.logonChange": {
+                        changePath: "{that}.model.isShown",
+                        value: "{change}.value.inProgress"
+                    }
                 }
             }
         },
+        restartDialog: {
+            type: "gpii.app.dialog.restartDialog",
+            createOnEvent: "onPSPPrerequisitesReady"
+        },
         settingsBroker: {
             type: "gpii.app.settingsBroker",
-            createOnEvent: "onPrerequisitesReady",
-            priority: "after:gpiiConnector",
+            createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
@@ -104,37 +146,55 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        tray: {
+            type: "gpii.app.tray",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken",
+                    pendingChanges: "{settingsBroker}.model.pendingChanges"
+                }
+            }
+        },
         /*
          * A helper component used as mediator for handling communication
          * between the PSP and gpiiConnector components.
          */
         channelMediator: {
             type: "fluid.component",
-            createOnEvent: "onPrerequisitesReady",
-            priority: "after:settingsBroker",
+            createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 listeners: {
                     "{settingsBroker}.events.onSettingApplied": [{
                         listener: "{gpiiConnector}.updateSetting",
-                        args: ["{arguments}.0"],
+                        args: ["{arguments}.0"], // setting
                         excludeSource: ["settingsBroker.undo"]
                     }, {
                         listener: "{psp}.notifyPSPWindow",
-                        args: ["onSettingUpdated", "{arguments}.0"]
+                        args: [
+                            "onSettingUpdated",
+                            "{arguments}.0" // message
+                        ]
                     }],
 
                     "{psp}.events.onActivePreferenceSetAltered": {
                         listener: "{gpiiConnector}.updateActivePrefSet",
-                        args: ["{arguments}.0"]
+                        args: ["{arguments}.0"] // newPrefSet
                     },
 
                     "{gpiiConnector}.events.onPreferencesUpdated": {
                         listener: "{psp}.notifyPSPWindow",
-                        args: ["onPreferencesUpdated", "{arguments}.0"]
+                        args: [
+                            "onPreferencesUpdated",
+                            "{arguments}.0" // message
+                        ]
                     },
                     "{gpiiConnector}.events.onSettingUpdated": {
                         listener: "{psp}.notifyPSPWindow",
-                        args: ["onSettingUpdated", "{arguments}.0"]
+                        args: [
+                            "onSettingUpdated",
+                            "{arguments}.0" // message
+                        ]
                     }
                 }
             }
@@ -145,8 +205,7 @@ fluid.defaults("gpii.app", {
          */
         restartWarningController: {
             type: "fluid.modelComponent",
-            createOnEvent: "onPrerequisitesReady",
-            priority: "after:restartDialog",
+            createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
                     isPspShown: "{psp}.model.isShown"
@@ -192,63 +251,51 @@ fluid.defaults("gpii.app", {
                     // Handle setting interactions (undo, restart now, settings interaction)
                     "{settingsBroker}.events.onRestartRequired" : [{
                         func: "{that}.hideRestartDialogIfNeeded",
-                        args: ["{that}.model.isPspShown", "{arguments}.0"]
+                        args: [
+                            "{that}.model.isPspShown",
+                            "{arguments}.0" // pendingChanges
+                        ]
                     },{
                         func: "{that}.togglePspRestartWarning",
-                        args: ["{arguments}.0"]
+                        args: ["{arguments}.0"] // pendingChanges
                     }]
                 },
 
                 invokers: {
                     hideRestartDialogIfNeeded: {
                         funcName: "gpii.app.hideRestartDialogIfNeeded",
-                        args: ["{restartDialog}", "{arguments}.0", "{arguments}.1"]
+                        args: [
+                            "{restartDialog}",
+                            "{arguments}.0", // isPspShown
+                            "{arguments}.1"  // pendingChanges
+                        ]
                     },
                     togglePspRestartWarning: {
                         funcName: "gpii.app.togglePspRestartWarning",
-                        args: ["{psp}", "{arguments}.0"]
+                        args: [
+                            "{psp}",
+                            "{arguments}.0" // pendingChanges
+                        ]
                     }
                 }
             }
-        },
-
-        tray: {
-            type: "gpii.app.tray",
-            createOnEvent: "onPrerequisitesReady",
-            options: {
-                model: {
-                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken",
-                    pendingChanges: "{settingsBroker}.model.pendingChanges"
-                }
-            },
-            // needed as the psp window is used by the tray
-            priority: "after:psp"
-        },
-        waitDialog: {
-            type: "gpii.app.waitDialog",
-            createOnEvent: "onPrerequisitesReady",
-            options: {
-                modelListeners: {
-                    "{lifecycleManager}.model.logonChange": {
-                        changePath: "{that}.model.isShown",
-                        value: "{change}.value.inProgress"
-                    }
-                }
-            }
-        },
-        networkCheck: { // Network check component to meet GPII-2349
-            type: "gpii.app.networkCheck"
         }
     },
     events: {
-        onPrerequisitesReady: {
+        onPSPPrerequisitesReady: {
             events: {
                 onGPIIReady: "onGPIIReady",
-                onAppReady: "onAppReady"
+                onAppReady: "onAppReady",
+                onPSPChannelConnected: "onPSPChannelConnected"
             }
         },
         onGPIIReady: null,
-        onAppReady: null
+        onAppReady: null,
+        onPSPChannelConnected: null,
+        onPSPReady: null,
+
+        onKeyedIn: null,
+        onKeyedOut: null
     },
     listeners: {
         "onCreate.appReady": {
@@ -259,16 +306,26 @@ fluid.defaults("gpii.app", {
             "this": "{that}.events.onGPIIReady",
             method: "fire"
         },
-        "{lifecycleManager}.events.onSessionStart": {
+        "{lifecycleManager}.events.onSessionStart": [{
             listener: "{that}.updateKeyedInUserToken",
-            args: ["{arguments}.1"],
+            args: ["{arguments}.1"], // new token
             namespace: "onLifeCycleManagerUserKeyedIn"
-        },
-        "{lifecycleManager}.events.onSessionStop": {
+        }, {
+            listener: "{that}.events.onKeyedIn.fire",
+            namespace: "notifyUserKeyedIn"
+        }],
+        "{lifecycleManager}.events.onSessionStop": [{
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.options.userToken"]
+        }, {
+            listener: "{that}.events.onKeyedOut.fire",
+            namespace: "notifyUserKeyedOut"
+        }],
+        "onPSPPrerequisitesReady.notifyPSPReady": {
+            this: "{that}.events.onPSPReady",
+            method: "fire",
+            priority: "last"
         },
-
         "onDestroy.beforeExit": {
             listener: "{that}.keyOut"
         }
@@ -288,7 +345,7 @@ fluid.defaults("gpii.app", {
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
-            args: ["{arguments}.0"]
+            args: ["{arguments}.0"] // token
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
@@ -300,7 +357,7 @@ fluid.defaults("gpii.app", {
         },
         "handleUncaughtException": {
             funcName: "gpii.app.handleUncaughtException",
-            args: ["{that}", "{arguments}.0"]
+            args: ["{that}", "{arguments}.0"] // err
         }
     },
     distributeOptions: {

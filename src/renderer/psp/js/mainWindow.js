@@ -200,13 +200,16 @@
             "updateSetting": {
                 func: "{that}.events.onSettingUpdated.fire",
                 args: [
-                    "{arguments}.0",
-                    "{arguments}.1"
+                    "{arguments}.0", // path
+                    "{arguments}.1"  // value
                 ]
             },
             "updateTheme": {
                 funcName: "gpii.psp.updateTheme",
-                args: ["{that}.dom.theme", "{arguments}.0"]
+                args: [
+                    "{that}.dom.theme",
+                    "{arguments}.0" // accentColor
+                ]
             },
             "onContentHeightChanged": {
                 funcName: "gpii.psp.onContentHeightChanged",
