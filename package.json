@@ -9,9 +9,9 @@
     },
     "license": "BSD-3-Clause",
     "dependencies": {
-        "electron": "1.4.1",
-        "electron-edge": "6.5.4",
-        "gpii-windows": "0.3.0-dev.20180223T001116Z.c007a9d",
+        "electron": "1.8.1",
+        "electron-edge-js": "^8.3.0",
+        "gpii-windows": "javihernandez/windows#GPII-2795",
         "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
         "node-jqunit": "1.1.8",
         "request": "2.69.0",
