@@ -176,17 +176,8 @@ fluid.defaults("gpii.app.error", {
             options: {
                 config: {
                     attrs: "{arguments}.0"
-                },
-                events: {
-                    onClosed: "{gpii.app.error}.events.onClosed",
-                    onOpened: "{gpii.app.error}.events.onOpened"
                 }
             }
         }
-    },
-
-    events: {
-        onClosed: null,
-        onOpened: null
     }
 });

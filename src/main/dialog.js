@@ -196,29 +196,14 @@ gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
  * created by the framework when the `onDialogCreate` event is fired. Also, Infusion
  * takes care of destroying any other instances of the dialog that may be present
  * before actually creating a new one.
- *
- * Being a wrapper, this component has the same interface as the dialog itself - it
- * contains the `show`, `hide` and `close` invokers. The former is responsible for
- * firing the event for creating the wrapped component. The `hide` invoker simply
- * modifies the `isShown` model property of the dialog, whereas the `close` invoker
- * delegate to the corresponding wrapped component's method (if the component exists).
  */
 fluid.defaults("gpii.app.dialogWrapper", {
     gradeNames: "fluid.modelComponent",
 
-    model: {
-        isShown: null
-    },
-
     components: {
         dialog: {
             type: "gpii.app.dialog",
-            createOnEvent: "onDialogCreate",
-            options: {
-                model: {
-                    isShown: "{dialogWrapper}.model.isShown"
-                }
-            }
+            createOnEvent: "onDialogCreate"
         }
     },
 

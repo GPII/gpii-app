@@ -55,7 +55,7 @@ var surveyDialogFixture = {
 gpii.tests.sequentialDialogs.testNoQueuedDialogs = function (dialogManager) {
     jqUnit.assertEquals("There are no dialogs in the queue",
         0,
-        dialogManager.queue.queue.length);
+        dialogManager.errorQueue.queue.length);
 };
 
 gpii.tests.sequentialDialogs.testDefs = {
@@ -75,7 +75,7 @@ gpii.tests.sequentialDialogs.testDefs = {
         args: [
             "The no internet error dialog is now shown",
             noInternetErrorFixture,
-            "{that}.app.dialogManager.queue.queue.0"
+            "{that}.app.dialogManager.errorQueue.queue.0"
         ]
     }, { // Try to show a second error dialog.
         func: "{that}.app.dialogManager.show",
@@ -85,7 +85,7 @@ gpii.tests.sequentialDialogs.testDefs = {
         args: [
             "The key in error dialog options were added to the queue",
             keyInErrorFixture,
-            "{that}.app.dialogManager.queue.queue.1"
+            "{that}.app.dialogManager.errorQueue.queue.1"
         ]
     }, { // Only after the first error dialog is hidden...
         func: "{that}.app.dialogManager.hide",
@@ -95,7 +95,7 @@ gpii.tests.sequentialDialogs.testDefs = {
         args: [
             "The key in error dialog is now the first element in the queue",
             keyInErrorFixture,
-            "{that}.app.dialogManager.queue.queue.0"
+            "{that}.app.dialogManager.errorQueue.queue.0"
         ]
     }, { // Then try to show a survey dialog.
         func: "{that}.app.dialogManager.show",
