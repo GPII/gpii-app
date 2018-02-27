@@ -191,7 +191,7 @@ gpii.app.psp.show = function (psp) {
  */
 gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changedMetrics) {
     if (changedMetrics.indexOf("workArea") > -1) {
-        var windowSize = pspWindow.getSize(),
+        var windowSize = psp.pspWindow.getSize(),
             contentHeight = windowSize[1];
         psp.resize(contentHeight, true);
     }
