@@ -86,14 +86,6 @@ fluid.defaults("gpii.app.psp", {
 
         "onClosed.closePsp": {
             func: "{psp}.hide"
-        },
-
-        "onRestartLater.closePsp": {
-            func: "{psp}.hide"
-        },
-
-        "onRestartNow.closePsp": {
-            func: "{psp}.hide"
         }
     },
     invokers: {

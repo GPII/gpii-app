@@ -80,8 +80,8 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
     gradeNames: ["gpii.app.dialog"],
 
     invokers: {
-        showIfNeeded: {
-            funcName: "gpii.app.dialog.restartDialog.showIfNeeded",
+        show: {
+            funcName: "gpii.app.dialog.restartDialog.show",
             args: [
                 "{that}",
                 "{arguments}.0" // pendingChanges
@@ -98,11 +98,13 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
     },
 
     events: {
-        onClosed: null,
+        onClosed: null
+    },
 
-        onRestartNow: null,   // provided by parent component
-        onRestartLater: null, // provided by parent component
-        onUndoChanges: null   // provided by parent component
+    listeners: {
+        onClosed: {
+            func: "{that}.hide"
+        }
     },
 
     components: {
@@ -127,17 +129,14 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
 });
 
 /**
- * Defines the logic for showing the "Restart required" warning dialog.
+ * Defines the logic for showing the "Restart required" dialog.
  * @param restartDialog {Component} The `gpii.app.restartDialog` component.
  * @param pendingChanges {Object[]} The list of pending changes that are to be listed.
  */
-gpii.app.dialog.restartDialog.showIfNeeded = function (restartDialog, pendingChanges) {
-    if (pendingChanges.length > 0) {
-        // change according to the new solutions
-        restartDialog.dialogChannel.updatePendingChanges(pendingChanges);
-        restartDialog.dialog.focus();
+gpii.app.dialog.restartDialog.show = function (that, pendingChanges) {
+    // change according to the new solutions
+    that.dialogChannel.updatePendingChanges(pendingChanges);
 
-        // finally, show the dialog
-        restartDialog.applier.change("isShown", true);
-    }
+    // finally, show the dialog
+    that.applier.change("isShown", true);
 };

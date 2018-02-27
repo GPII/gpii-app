@@ -60,7 +60,7 @@ gpii.tests.sequentialDialogs.testNoQueuedDialogs = function (dialogManager) {
 
 gpii.tests.sequentialDialogs.testDefs = {
     name: "Sequential dialogs integration tests",
-    expect: 4,
+    expect: 5,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -80,6 +80,13 @@ gpii.tests.sequentialDialogs.testDefs = {
     }, { // Try to show a second error dialog.
         func: "{that}.app.dialogManager.show",
         args: ["error", keyInErrorFixture]
+    }, {
+        func: "jqUnit.assertLeftHand",
+        args: [
+            "The shown dialog is not changed",
+            noInternetErrorFixture,
+            "{that}.app.dialogManager.error.dialog.options.config.attrs"
+        ]
     }, { // It will not be shown immediately.
         func: "jqUnit.assertLeftHand",
         args: [

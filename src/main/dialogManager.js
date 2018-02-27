@@ -17,6 +17,7 @@
 var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
+require("./waitDialog.js");
 require("./surveys/surveyDialog.js");
 require("./errorDialog.js");
 require("./utils.js");
@@ -53,7 +54,7 @@ fluid.defaults("gpii.app.dialogManager.queue", {
         },
         showDialog: {
             funcName: "gpii.app.dialogManager.queue.showDialog",
-            args: ["{that}", "{dialog}"]
+            args: ["{that}", "{that}.dialog"]
         },
         clear: {
             funcName: "gpii.app.dialogManager.queue.clear",
@@ -119,10 +120,6 @@ gpii.app.dialogManager.queue.enqueue = function (that, options) {
  * In order to show/hide/close a dialog, the IoCSS selector of the particular
  * component needs to be provided as an argument of the corresponding function.
  */
-// XXX: Currently only the survey dialog is managed by the dialogManager. As a
-// refactoring step, in the future the rest of the dialogs will be controlled by
-// this manager, as well. See https://issues.gpii.net/browse/GPII-2817 for more
-// information.
 fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
 
@@ -152,11 +149,17 @@ fluid.defaults("gpii.app.dialogManager", {
     },
 
     components: {
+        waitDialog: {
+            type: "gpii.app.waitDialog"
+        },
         survey: {
             type: "gpii.app.survey"
         },
         error: {
             type: "gpii.app.error"
+        },
+        restartDialog: {
+            type: "gpii.app.dialog.restartDialog"
         },
 
         errorQueue: {
@@ -181,6 +184,15 @@ fluid.defaults("gpii.app.dialogManager", {
             args: [
                 "{that}",
                 "{arguments}.0" // selector
+            ]
+        },
+        toggle: {
+            funcName: "gpii.app.dialogManager.toggle",
+            args: [
+                "{that}",
+                "{arguments}.0", // selector
+                "{arguments}.1", // display
+                "{arguments}.2"  // options
             ]
         },
         show: {
@@ -232,6 +244,24 @@ gpii.app.dialogManager.get = function (dialogManager, selector) {
     var dialogs = fluid.queryIoCSelector(dialogManager, selector);
     if (dialogs.length > 0) {
         return dialogs[0];
+    }
+};
+
+/**
+ * Depending on the value of the `display` argument, either shows or hides a
+ * component given its IoCSS selector.
+ * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
+ * @param selector {String} The IoCSS selector of the component to be shown.
+ * @param display {Boolean} If `true`, the corresponding dialog will be shown.
+ * Otherwise, it will be hidden.
+ * @param [options] {Object} An object containing configuration options for
+ * the dialog in case it needs to be shown.
+ */
+gpii.app.dialogManager.toggle = function (dialogManager, selector, display, options) {
+    if (display) {
+        dialogManager.show(selector, options);
+    } else {
+        dialogManager.hide(selector);
     }
 };
 

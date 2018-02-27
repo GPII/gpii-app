@@ -121,6 +121,14 @@ fluid.defaults("gpii.app.dialog", {
                 "{arguments}.1"  // windowHeight
             ]
         },
+        show: {
+            changePath: "isShown",
+            value: true
+        },
+        hide: {
+            changePath: "isShown",
+            value: false
+        },
         close: {
             this: "{that}.dialog",
             method: "close"
@@ -247,7 +255,7 @@ gpii.app.dialogWrapper.show = function (that, options) {
  */
 gpii.app.dialogWrapper.hide = function (that) {
     if (that.dialog) {
-        that.dialog.applier.change("isShown", false);
+        that.dialog.hide();
     }
 };
 
