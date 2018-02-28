@@ -1,0 +1,55 @@
+body {
+    margin: 8px;
+    background-color: var(--main-theme-background-color);
+    color: var(--main-theme-text-color);
+
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 5px;
+    border-radius: 5px;
+    background-color: #005ba6;
+    box-shadow: none;
+}
+
+.btn-regular {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+
+    background: transparent;
+    border: none;
+}
+
+.clear-both {
+    clear: both;
+}
+
+iframe.fl-heightChangeListener {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 100%;
+
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Styles for alt (dark) theme */
+body.theme-alt {
+    background-color: var(--alt-theme-background-color);
+    color: var(--alt-theme-text-color);
+}
+
+.theme-alt ::-webkit-scrollbar-thumb {
+    background-color: var(--alt-theme-background-color);
+}

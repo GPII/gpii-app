@@ -1,15 +1,11 @@
 {
-    "type": "gpii.appDevWithTaskTray",
+    "type": "gpii.tests.all.config",
     "options": {
         "gradeNames": ["fluid.component"],
         "distributeOptions": {
             "distributeTaskTray": {
                 "record": "gpii.appWrapper",
                 "target": "{that flowManager}.options.gradeNames"
-            },
-            "distributeMenuDisplay": {
-                "record": "gpii.app.menuInAppDev",
-                "target": "{that menu}.options.gradeNames"
             },
             "distributePcpChannelConnector": {
                 "record": {
@@ -19,13 +15,12 @@
                 },
                 "target": "{that gpiiConnector}.options.config"
             },
-            "distributeSurveyConnector": {
-                "record": "gpii.app.staticSurveyConnector",
-                "target": "{that surveyConnector}.options.gradeNames"
-            },
-            "distributeStaticSurveyConnectorFixture": {
-                "record": "%gpii-app/testData/survey/triggers.dev.json",
-                "target": "{that staticSurveyConnector}.options.paths.triggerFixture"
+            "receiveApp": {
+                "record": {
+                    "funcName": "gpii.tests.app.receiveApp",
+                    "args": ["{testCaseHolder}", "{arguments}.0"]
+                },
+                "target": "{that flowManager gpii.app}.options.listeners.onCreate"
             }
         }
     },

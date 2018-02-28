@@ -1,0 +1,70 @@
+.fl-icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+
+    background-color: var(--main-theme-text-color);
+
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+
+    -webkit-mask-position: 50% 50%;
+    mask-position: 50% 50%;
+
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+}
+
+.fl-icon.fl-icon-filled {
+    background-color: var(--main-theme-background-color);
+}
+
+.fl-icon-logOut {
+    /* Using a mask instead of a background-image lets us control
+    the color of the icons while leaving the svg intact. */
+    -webkit-mask-image: url("../icons/log-out.svg");
+    mask-image: url("../icons/log-out.svg");
+
+    /* Invert the icon so that it points outwards of the button
+       and conveys better the idea of logging out. */
+    transform: scaleX(-1);
+}
+
+.fl-icon-help {
+    -webkit-mask-image: url("../icons/help-circle.svg");
+    mask-image: url("../icons/help-circle.svg");
+}
+
+.fl-icon-appRestart {
+    -webkit-mask-image: url("../icons/info.svg");
+    mask-image: url("../icons/info.svg");
+}
+
+.fl-icon-appRestart.fl-icon-filled {
+    -webkit-mask-image: url("../icons/info-filled.svg");
+    mask-image: url("../icons/info-filled.svg");
+}
+
+.fl-icon-osRestart {
+    -webkit-mask-image: url("../icons/info-triangle.svg");
+    mask-image: url("../icons/info-triangle.svg");
+}
+
+.fl-icon-osRestart.fl-icon-filled {
+    -webkit-mask-image: url("../icons/info-triangle-filled.svg");
+    mask-image: url("../icons/info-triangle-filled.svg");
+}
+
+.fl-icon-memory {
+    -webkit-mask-image: url("../icons/upload-cloud.svg");
+    mask-image: url("../icons/upload-cloud.svg");
+}
+
+/* Styles for alt (dark) theme */
+.theme-alt .fl-icon {
+    background-color: var(--alt-theme-text-color);
+}
+
+.theme-alt .fl-icon.fl-icon-filled {
+    background-color: var(--main-color);
+}

@@ -16,7 +16,7 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii"),
     kettle = fluid.registerNamespace("kettle");
 
-require("universal");
+require("gpii-universal");
 
 // Check that we are not running another instance of GPII-App.
 var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirectory*/) {
@@ -30,10 +30,10 @@ if (appIsRunning || gpiiIsRunning) {
 }
 
 require("gpii-windows/index.js");
-require("./src/logging.js");
-require("./src/app.js");
+require("./src/main/logging.js");
+require("./src/main/app.js");
 
 kettle.config.loadConfig({
-    configName: kettle.config.getConfigName("app"),
-    configPath: kettle.config.getConfigPath(__dirname + "/configs")
+    configName: kettle.config.getConfigName("app.testing"),
+    configPath: kettle.config.getConfigPath("%gpii-app/configs")
 });

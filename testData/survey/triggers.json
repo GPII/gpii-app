@@ -1,0 +1,11 @@
+[
+    {
+        "id": "trigger_1",
+        "conditions": [
+            {
+                "type": "keyedInFor",
+                "value": 600000
+            }
+        ]
+    }
+]

@@ -1,15 +1,11 @@
 {
-    "type": "gpii.appDevWithTaskTray",
+    "type": "gpii.appWithTaskTray",
     "options": {
         "gradeNames": ["fluid.component"],
         "distributeOptions": {
             "distributeTaskTray": {
                 "record": "gpii.appWrapper",
                 "target": "{that flowManager}.options.gradeNames"
-            },
-            "distributeMenuDisplay": {
-                "record": "gpii.app.menuInAppDev",
-                "target": "{that menu}.options.gradeNames"
             },
             "distributePcpChannelConnector": {
                 "record": {
@@ -22,14 +18,10 @@
             "distributeSurveyConnector": {
                 "record": "gpii.app.staticSurveyConnector",
                 "target": "{that surveyConnector}.options.gradeNames"
-            },
-            "distributeStaticSurveyConnectorFixture": {
-                "record": "%gpii-app/testData/survey/triggers.dev.json",
-                "target": "{that staticSurveyConnector}.options.paths.triggerFixture"
             }
         }
     },
     "mergeConfigs": [
-        "%gpii-universal/gpii/configs/gpii.config.development.all.local.json"
+        "%gpii-universal/gpii/configs/gpii.config.all.development.dr.production.json"
      ]
 }

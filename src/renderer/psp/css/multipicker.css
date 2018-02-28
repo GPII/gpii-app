@@ -1,0 +1,68 @@
+/* Default theme styles */
+.fl-multipicker label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+
+    color: var(--main-theme-text-color);
+}
+
+.fl-multipicker .checkbox:first-of-type {
+    margin-top: 2px;
+}
+
+.fl-multipicker .checkbox {
+    margin-bottom: 10px;
+}
+
+.fl-multipicker .checkbox label input:checked ~ span::before {
+    padding-top: 0;
+    text-indent: -1px;
+    line-height: 20px;
+    font-size: 20px;
+
+    content: "\E106";
+}
+
+.fl-multipicker .checkbox label input ~ span::before,
+.fl-multipicker .checkbox:hover label input ~ span::before {
+    background-color: #ffffff;
+    border-color: var(--main-theme-text-color);
+}
+
+.fl-multipicker .checkbox label input:checked ~ span::before,
+.fl-multipicker .checkbox:hover label input:checked ~ span::before {
+    background-color: #ffffff;
+    border-color: var(--main-theme-text-color);
+    color: var(--main-theme-text-color);
+}
+
+.fl-multipicker .checkbox label input:focus ~ span::before {
+    border-color: var(--main-theme-text-color);
+}
+
+/* Styles for alt (dark) theme */
+.theme-alt .fl-multipicker label {
+    color: var(--alt-theme-text-color);
+}
+
+.theme-alt .fl-multipicker .checkbox label input ~ span::before {
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.theme-alt .fl-multipicker .checkbox label input:checked ~ span::before {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+    color: var(--alt-theme-text-color);
+}
+
+.theme-alt .fl-multipicker .checkbox label input:focus ~ span::before {
+    border-color: var(--alt-theme-text-color);
+}
+
+.theme-alt .fl-multipicker .checkbox:hover label input:checked ~ span::before {
+    background-color: var(--main-color);
+    border-color: var(--alt-theme-text-color);
+    color: var(--alt-theme-text-color);
+}
