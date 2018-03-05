@@ -27,7 +27,7 @@ fluid.registerNamespace("gpii.tests.dialogManager.testDefs");
 var surveyDialogFixture = {
     url: "https://fluidproject.org/",
     window: {
-        width: 500,
+        width: 400,
         height: 700,
         resizable: true,
         closable: true,
