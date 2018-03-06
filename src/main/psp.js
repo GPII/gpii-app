@@ -25,6 +25,107 @@ var gpii              = fluid.registerNamespace("gpii");
 
 require("./utils.js");
 
+
+/**
+ * Configuration for using the `gpii.app.psp` component in the App (the `gpii.app` component).
+ * Note that this is an incomplete grade which references the App and other
+ * App related components (subcomponents).
+ */
+fluid.defaults("gpii.app.pspInApp", {
+    gradeNames: "gpii.app.psp",
+    model: {
+        keyedInUserToken: "{app}.model.keyedInUserToken"
+    },
+    modelListeners: {
+        isShown: {
+            funcName: "gpii.app.hideRestartDialogIfNeeded",
+            args: ["{dialogManager}", "{change}.value"]
+        }
+    },
+    listeners: {
+        "onActivePreferenceSetAltered.notifyChannel": {
+            listener: "{gpiiConnector}.updateActivePrefSet",
+            args: ["{arguments}.0"] // newPrefSet
+        },
+
+        "{gpiiConnector}.events.onPreferencesUpdated": {
+            listener: "{that}.notifyPSPWindow",
+            args: [
+                "onPreferencesUpdated",
+                "{arguments}.0" // message
+            ]
+        },
+
+        "{gpiiConnector}.events.onSettingUpdated": {
+            listener: "{that}.notifyPSPWindow",
+            args: [
+                "onSettingUpdated",
+                "{arguments}.0" // message
+            ]
+        },
+
+        "{settingsBroker}.events.onSettingApplied": [{
+            listener: "{that}.notifyPSPWindow",
+            args: [
+                "onSettingUpdated",
+                "{arguments}.0" // message
+            ]
+        }],
+
+        /*
+         * Restart Warning related listeners
+         */
+
+        onClosed: {
+            funcName: "gpii.app.showRestartDialogIfNeeded",
+            args: ["{dialogManager}", "{settingsBroker}.model.pendingChanges"]
+        },
+
+        onSettingAltered: {
+            listener: "{settingsBroker}.enqueue"
+        },
+
+        onRestartNow: [{
+            func: "{dialogManager}.hide",
+            args: ["restartDialog"]
+        }, {
+            func: "{that}.hide"
+        }, {
+            listener: "{settingsBroker}.applyPendingChanges"
+        }],
+
+        onUndoChanges: [{
+            func: "{dialogManager}.hide",
+            args: ["restartDialog"]
+        }, {
+            listener: "{settingsBroker}.undoPendingChanges"
+        }],
+
+        onRestartLater: [{
+            func: "{dialogManager}.hide",
+            args: ["restartDialog"]
+        }, {
+            func: "{that}.hide"
+        }],
+
+        onActivePreferenceSetAltered: [{
+            func: "{dialogManager}.hide",
+            args: ["restartDialog"]
+        }, {
+            listener: "{settingsBroker}.clearPendingChanges"
+        }],
+
+        "{settingsBroker}.events.onRestartRequired": {
+            funcName: "gpii.app.togglePspRestartWarning",
+            args: [
+                "{that}",
+                "{arguments}.0" // pendingChanges
+            ]
+        }
+    }
+});
+
+
 /**
  * Handles logic for the PSP window.
  * Creates an Electron `BrowserWindow` and manages it.
