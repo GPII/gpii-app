@@ -27,8 +27,6 @@ fluid.registerNamespace("gpii.tests.dialogManager.testDefs");
 var surveyDialogFixture = {
     url: "https://fluidproject.org/",
     window: {
-        width: 400,
-        height: 700,
         resizable: true,
         closable: true,
         minimizable: false,
@@ -49,12 +47,9 @@ gpii.tests.dialogManager.testManagerAfterKeyIn = function (dialogManager, expect
 
 gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, surveyDialogFixture) {
     var dialog = dialogManager.survey.surveyDialog.dialog,
-        windowAttrs = surveyDialogFixture.window,
-        dialogSize = dialog.getSize();
+        windowAttrs = surveyDialogFixture.window;
 
     jqUnit.assertTrue("Survey dialog is visible", dialog.isVisible());
-    // Testing only the width of the survey dialog because of a bug in the vagrant test box.
-    jqUnit.assertEquals("Survey dialog has correct width", windowAttrs.width, dialogSize[0]);
     jqUnit.assertEquals("Survey dialog resizable state is correct",
         windowAttrs.resizable,
         dialog.isResizable());
@@ -76,7 +71,7 @@ gpii.tests.dialogManager.testSurveyDialogClosed = function (dialogManager) {
 
 gpii.tests.dialogManager.testDefs = {
     name: "Dialog manager integration tests",
-    expect: 11,
+    expect: 10,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
