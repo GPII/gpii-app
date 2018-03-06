@@ -19,14 +19,18 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
     /**
-     * Responsible for detecting height changes in the DOM element in which
-     * the component's container is nested.
+     * Responsible for detecting height changes in the DOM element which is the
+     * parent of the component's container. When a height change occurs, the
+     * component fires the `onHeightChanged` event without any arguments. It is
+     * up to the implementor/parent component to calculate what the new height
+     * is (it may as well not be any different) and whether any subsequent actions
+     * should be taken based on it.
      */
     fluid.defaults("gpii.psp.heightChangeListener", {
         gradeNames: ["fluid.viewComponent"],
         listeners: {
             "onCreate.initResizeListener": {
-                "this": "@expand:$({that}.container.0.contentWindow)",
+                "this": "@expand:jQuery({that}.container.0.contentWindow)",
                 method: "on",
                 args: ["resize", "{that}.events.onHeightChanged.fire"]
             }
@@ -37,15 +41,31 @@
     });
 
     /**
-     * A `viewComponent` which continuously watches for changes in the height
-     * of its container. Whenever a height modification is detected, the
-     * `onHeightChanged` event will be fired with the new height as an argument.
+     * Represents a view component whose height can vary. The component fires the
+     * `onHeightChanged` event with the new height as an argument whenever a change
+     * in the height of the DOM element is detected. Internally uses an instance of
+     * the `gpii.psp.heightChangeListener` component.
+     *
+     * The component provides a general mechanism for calculating the new height of
+     * its visual representation. If for any reason there is a need to use a
+     * different strategy for this, please override the `calculateHeight` invoker.
      */
     fluid.defaults("gpii.psp.heightObservable", {
         gradeNames: "fluid.viewComponent",
 
+        model: {
+            height: null
+        },
+
+        modelListeners: {
+            height: {
+                func: "{that}.events.onHeightChanged.fire",
+                args: ["{change}.value"]
+            }
+        },
+
         selectors: {
-            heightChangeListener: ".flc-contentHeightChangeListener"
+            heightChangeListener: ".flc-contentHeightChangeListener:eq(0)"
         },
 
         events: {
@@ -59,25 +79,34 @@
                 options: {
                     listeners: {
                         onHeightChanged: {
-                            funcName: "gpii.psp.heightObservable.onContentHeightChanged",
-                            args: ["{heightObservable}"]
+                            func: "{heightObservable}.updateHeight"
                         }
                     }
                 }
+            }
+        },
+
+        invokers: {
+            calculateHeight: {
+                funcName: "gpii.psp.heightObservable.calculateHeight",
+                args: ["{that}"]
+            },
+            updateHeight: {
+                changePath: "height",
+                value: "@expand:{that}.calculateHeight()"
             }
         }
     });
 
     /**
-     * Computes the size of the content and fires the `onHeightChanged` event.
+     * Returns the height of the visual representation of the `heightObservable`
+     * component.
      * @param that {Component} The `gpii.psp.heightObservable` instance.
+     * @return {Number} The height of the component.
      */
-    gpii.psp.heightObservable.onContentHeightChanged = function (that) {
-        var container = that.container;
-        // get speech triangle size, in case such exists
-        var triangleHeight = container.find(".fl-speech-triangle").outerHeight(true) || 0,
-            height = container.outerHeight(true) + triangleHeight;
-
-        that.events.onHeightChanged.fire(height);
+    gpii.psp.heightObservable.calculateHeight = function (that) {
+        var container = that.container,
+            triangleHeight = container.find(".fl-speech-triangle").outerHeight(true) || 0;
+        return container.outerHeight(true) + triangleHeight;
     };
 })(fluid);

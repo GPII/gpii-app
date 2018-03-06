@@ -184,7 +184,7 @@
      * Currently it is shown always when there is at least one pending change.
      */
     fluid.defaults("gpii.psp.restartWarning", {
-        gradeNames: ["gpii.psp.baseRestartWarning"],
+        gradeNames: ["gpii.psp.baseRestartWarning", "gpii.psp.heightObservable"],
 
         modelRelay: {
             restartIcon: {
@@ -209,24 +209,7 @@
         },
 
         selectors: {
-            restartIcon: ".flc-restartIcon",
-            heightChangeListener: "#flc-restartHeightChangeListener"
-        },
-
-        components: {
-            heightChangeListener: {
-                type: "gpii.psp.heightChangeListener",
-                container: "{that}.dom.heightChangeListener",
-                options: {
-                    events: {
-                        onHeightChanged: "{restartWarning}.events.onHeightChanged"
-                    }
-                }
-            }
-        },
-
-        events: {
-            onHeightChanged: null
+            restartIcon: ".flc-restartIcon"
         },
 
         styles: {

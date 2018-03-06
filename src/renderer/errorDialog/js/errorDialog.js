@@ -90,7 +90,14 @@
     });
 
     /**
-     * Responsible for the visualisation of the error dialog.
+     * Responsible for the visualisation of the error dialog. As the title,
+     * subhead and details messages can have an arbitrary length and due to
+     * the fact that the `BrowserWindow` has fixed dimensions initially, it is
+     * important for the `errorDialog` component to be aware of its height
+     * and to notify the main process when it changes. Thus, the `BrowserWindow`
+     * will be able to be adjusted accordingly to accommodate the whole error
+     * message. That is why this component has the `gpii.psp.heightObservable`
+     * grade specified.
      */
     fluid.defaults("gpii.errorDialog", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
