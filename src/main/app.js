@@ -62,34 +62,21 @@ fluid.defaults("gpii.app", {
             activeSet: null
         }
     },
-    errorsDescriptionMap: {
-        "EADDRINUSE": {
-            title:   "GPII can't start",
-            subhead: "There is another application listening on port the same port",
-            details: "Stop the other running application and try again. If the problem is still present, contact GPII Technical Support.",
-            fatal: true
-        },
-        "EKEYINFAIL": {
-            title:   "Cannot Key In",
-            subhead: "There might be a problem with the user you are trying to use",
-            details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
-            btnLabel1: "OK",
-            fatal: false
-        },
-        "ENOCONNECTION": {
-            title:   "No Internet connection",
-            subhead: "There seem to be a problem your Internet connectivity",
-            details: "Have you tried turning it off and on again? If the problem is still present, contact GPII Technical Support.",
-            btnLabel1: "OK",
-            btnLabel2: "Cancel",
-            fatal: false
-        }
-    },
     // prerequisites
     members: {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
+        errorHandler: {
+            type: "gpii.app.errorHandler",
+            options: {
+                listeners: {
+                    "onFatalError.exit": {
+                        func: "{app}.exit"
+                    }
+                }
+            }
+        },
         installID: {
             type: "gpii.installID"
         },
@@ -242,21 +229,132 @@ fluid.defaults("gpii.app", {
         exit: {
             funcName: "gpii.app.exit",
             args: "{that}"
+        }
+    }
+});
+
+
+
+/**
+ * A component for handling errors during app runtime. It triggers appearance of the "Error Dialog"
+ * with all the details for the occurred error.
+ *
+ * This error handling system is more or less in temporary state for until GPII-1313 (a mechanism for notifying the
+ * PSP for errors) is finished. Currently we are using error description that hard-coded in the PSP and
+ * a listener for any fluid `UncaughtException`.
+ */
+fluid.defaults("gpii.app.errorHandler", {
+    gradeNames: ["fluid.component"],
+
+    errorsDescriptionMap: {
+        "EADDRINUSE": {
+            title:   "GPII can't start",
+            subhead: "There is another application listening on port the same port",
+            details: "Stop the other running application and try again. If the problem is still present, contact GPII Technical Support.",
+            fatal: true
         },
+        "EKEYINFAIL": {
+            title:   "Cannot Key In",
+            subhead: "There might be a problem with the user you are trying to use",
+            details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
+            btnLabel1: "OK",
+            fatal: false
+        },
+        "ENOCONNECTION": {
+            title:   "No Internet connection",
+            subhead: "There seem to be a problem your Internet connectivity",
+            details: "Have you tried turning it off and on again? If the problem is still present, contact GPII Technical Support.",
+            btnLabel1: "OK",
+            btnLabel2: "Cancel",
+            fatal: false
+        }
+    },
+
+    events: {
+        onFatalError: null
+    },
+
+    listeners: {
+        "onCreate.registerErrorListener": {
+            funcName: "gpii.app.errorHandler.registerErrorListener",
+            args: ["{that}"]
+        }
+    },
+
+    // Attach keyIn error listener to the core component
+    distributeOptions: {
+        target: "{flowManager requests stateChangeHandler}.options.listeners.onError",
+        record: "gpii.app.errorHandler.onKeyInError"
+    },
+
+    invokers: {
         handleUncaughtException: {
-            funcName: "gpii.app.handleUncaughtException",
+            funcName: "gpii.app.errorHandler.handleUncaughtException",
             args: [
                 "{that}",
+                "{dialogManager}",
                 "{that}.options.errorsDescriptionMap",
                 "{arguments}.0" // error
             ]
         }
-    },
-    distributeOptions: {
-        target: "{flowManager requests stateChangeHandler}.options.listeners.onError",
-        record: "gpii.app.onKeyInError"
     }
 });
+
+/**
+ * A function which is called whenever an error occurs while keying in. Note that a real error
+ * would have its `isError` property set to true.
+ * @param error {Object} The error which has occurred.
+ */
+gpii.app.errorHandler.onKeyInError = function (error) {
+    if (error.isError) {
+        fluid.onUncaughtException.fire({
+            code: "EKEYINFAIL"
+        });
+    }
+};
+
+/**
+ * Handles the process of displaying errors through the usage of the "error dialog".
+ * @param app {Component} An instance of gpii.app.
+ * @param dialogManager {Component} An instance of `gpii.app.dialogManager`.
+ * @param errorsDescription {Object} A map with more detailed description for the errors.
+ * @param error {Object} The error which has occurred.
+ */
+gpii.app.errorHandler.handleUncaughtException = function (that, dialogManager, errorsDescription, error) {
+    var errCode = error && error.code,
+        errDetails = errorsDescription[errCode],
+        errorOptions = fluid.extend(true, {}, errDetails, {
+            errCode: errCode
+        });
+
+    if (!fluid.isValue(errDetails)) {
+        return;
+    }
+
+    dialogManager.hide("waitDialog");
+    dialogManager.show("error", errorOptions);
+
+    if (errDetails.fatal) {
+        dialogManager.error.applier.modelChanged.addListener("isShown", function (isShown) {
+            if (!isShown) {
+                that.onFatalError.fire(errDetails);
+            }
+        });
+    }
+};
+
+/**
+ * Register global listener for all fluid exceptions.
+ *
+ * @param errorHandler {Component} The `gpii.app.errorHandler` component
+ */
+gpii.app.errorHandler.registerErrorListener = function (errorHandler) {
+    fluid.onUncaughtException.addListener(function (err) {
+        fluid.log(err);
+        errorHandler.handleUncaughtException(err);
+    }, "gpii.app.errorHandler", "last");
+};
+
 
 /**
  * Either hides or shows the warning in the PSP.
@@ -291,22 +389,6 @@ gpii.app.hideRestartDialogIfNeeded = function (dialogManager, isPspShown) {
 gpii.app.showRestartDialogIfNeeded = function (dialogManager, pendingChanges) {
     if (pendingChanges.length > 0) {
         dialogManager.show("restartDialog", pendingChanges);
-    }
-};
-
-/**
- * A function which is called whenever an error occurs while keying in. Note that a real error
- * would have its `isError` property set to true.
- * @param error {Object} The error which has occurred.
- */
-gpii.app.onKeyInError = function (error) {
-    if (error.isError) {
-        fluid.onUncaughtException.fire({
-            code: "EKEYINFAIL"
-        });
-        fluid.onUncaughtException.fire({
-            code: "ENOCONNECTION"
-        });
     }
 };
 
@@ -390,43 +472,6 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
         that.updateKeyedInUserToken(null);
     }
 };
-
-/**
- * Listen for uncaught exceptions and display them to the user is if they are interesting.
- * @param that {Component} An instance of gpii.app.
- * @param errorsDescription {Object} A map with more detailed description for the errors.
- * @param error {Object} The error which has occurred.
- */
-gpii.app.handleUncaughtException = function (that, errorsDescription, error) {
-    var errCode = error && error.code,
-        errDetails = errorsDescription[errCode],
-        errorOptions = fluid.extend(true, {}, errDetails, {
-            errCode: errCode
-        });
-
-    if (!fluid.isValue(errDetails)) {
-        return;
-    }
-
-    that.dialogManager.hide("waitDialog");
-    that.dialogManager.show("error", errorOptions);
-
-    if (errDetails.fatal) {
-        that.dialogManager.error.applier.modelChanged.addListener("isShown", function (isShown) {
-            if (!isShown) {
-                that.exit();
-            }
-        });
-    }
-};
-
-fluid.onUncaughtException.addListener(function (err) {
-    var app = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app");
-    if (app.length > 0) {
-        app[0].handleUncaughtException(err);
-    }
-}, "gpii.app", "last");
-
 
 // A wrapper that wraps gpii.app as a subcomponent. This is the grade need by configs/app.json
 // to distribute gpii.app as a subcomponent of GPII flow manager since infusion doesn't support
