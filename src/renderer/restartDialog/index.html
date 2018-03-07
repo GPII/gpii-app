@@ -4,6 +4,7 @@
         <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
         <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="../common/css/dialog.css">
+        <link rel="stylesheet" href="../common/css/heightObservable.css">
         <link rel="stylesheet" href="../common/css/titlebar.css">
         <link rel="stylesheet" href="css/restartDialog.css">
 
@@ -16,7 +17,7 @@
         <script type="text/javascript" src="js/restartDialog.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
-        <script type="text/javascript" src="../common/js/heightChangeListener.js"></script>
+        <script type="text/javascript" src="../common/js/heightObservable.js"></script>
     </head>
     <body class="fl-dialog-resizable">
         <div class="fl-dialog">
@@ -28,7 +29,6 @@
                 <img class="fl-dialog-contentIcon" src="../../icons/gpii-color.ico">
 
                 <div class="fl-dialog-contentText">
-                    <iframe class="flc-contentHeightChangeListener fl-heightChangeListener"></iframe>
                     <div class="flc-title fl-title"></div>
                     <div class="flc-details fl-details"></div>
                     <ul class="flc-solutionNames fl-details"></ul>
@@ -49,7 +49,7 @@
             <div class="fl-dialog-footer">
                 <span class="fl-gpiiIcon">GPII <img src="../../icons/gear-cloud-black.png"></span>
                 <div class="clear-both"></div>
-                <div class="fl-speech-triangle"></div>
+                <div class="flc-speech-triangle fl-speech-triangle"></div>
             </div>
         </div>
     </body>

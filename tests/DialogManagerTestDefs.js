@@ -47,8 +47,7 @@ gpii.tests.dialogManager.testManagerAfterKeyIn = function (dialogManager, expect
 
 gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, surveyDialogFixture) {
     var dialog = dialogManager.survey.dialog.dialog,
-        windowAttrs = surveyDialogFixture.window,
-        dialogSize = dialog.getSize();
+        windowAttrs = surveyDialogFixture.window;
 
     jqUnit.assertTrue("Survey dialog is visible", dialog.isVisible());
     jqUnit.assertEquals("Survey dialog resizable state is correct",

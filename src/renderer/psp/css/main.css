@@ -32,18 +32,6 @@ body {
     clear: both;
 }
 
-iframe.fl-heightChangeListener {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    height: 100%;
-
-    visibility: hidden;
-    pointer-events: none;
-}
-
 /* Styles for alt (dark) theme */
 body.theme-alt {
     background-color: var(--alt-theme-background-color);

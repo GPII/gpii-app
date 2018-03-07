@@ -96,7 +96,8 @@
             content: "#flc-content",
             footer: "#flc-footer",
             settingsList: "#flc-settingsList",
-            restartWarning: "#flc-restartWarning"
+            restartWarning: "#flc-restartWarning",
+            heightListenerContainer: "#flc-settingsList"
         },
         components: {
             splash: {
