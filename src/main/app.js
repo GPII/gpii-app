@@ -48,6 +48,94 @@ require("electron").app.on("ready", gpii.app.electronAppListener);
 // Override default behaviour - don't exit process once all windows are closed
 require("electron").app.on("window-all-closed", fluid.identity);
 
+
+
+fluid.defaults("gpii.messageBundles", {
+    gradeNames: ["fluid.modelComponent"],
+
+    model: {
+        locale: "bg",
+
+        // keep messages here in order to make use
+        // of the model events system
+        messages: {}
+    },
+
+    defaultLocale: "en_us",
+
+    messageBundles: {
+        "en_us": {
+            "gpii_app_menu_open-psp": "Open PSP",
+            "gpii_app_menu_keyed_in_label": "Keyed in with %snapsetName",
+            "gpii_app_menu_status_not_keyed": "(No one keyed in)",
+            "gpii_app_menu_keyed_out_btn": "Key-out of GPII"
+        },
+        "bg": {
+            // персонален панел за настройки
+            "gpii_app_menu_open-psp": "Отвори ППН",
+            "gpii_app_menu_keyed_in_label": "Влязъл с %snapsetName",
+            "gpii_app_menu_status_not_keyed": "(Не сте влезли)",
+            "gpii_app_menu_keyed_out_btn": "Излезте от GPII"
+        }
+    },
+
+    modelListeners: {
+        "locale": {
+            func: "{that}.updateMessages"
+        },
+
+        // "messages": {
+        //     func: "{that}.events.onLocaleChanged.fire"
+        // }
+    },
+
+    // events: {
+    //     onLocaleChanged: null
+    // },
+
+    invokers: {
+        updateMessages: {
+            funcName: "gpii.messageBundles.updateMessages",
+            args: [
+                "{that}",
+                "{that}.options.messageBundles",
+                "{that}.model.locale",
+                "{that}.options.defaultLocale"
+            ]
+        }
+    }
+});
+
+
+
+/**
+ * Make a bulk update of the currently set translations, ??? and use
+ * the model listeners to notify about that change TODO or just use the onLocaleChanged event?
+ *
+ * @param that
+ * @param messageBundles
+ * @param locale
+ * @param defaultLocale
+ * @returns {undefined}
+ */
+gpii.messageBundles.updateMessages = function (that, messageBundles, locale, defaultLocale) {
+    var messages = messageBundles[locale];
+
+    if (!messages) {
+        messages = messageBundles[defaultLocale];
+    }
+
+    console.log("Update: ", messages);
+    that.applier.change("messages", messages);
+
+    // XXX dev
+    setTimeout(function () {
+        console.log();
+        // set invalid locale
+        that.applier.change("locale", "en");
+    }, 5000);
+};
+
 /**
  * A component to manage the app. When  the PSP application is fully functional,
  * the `onPSPReady` event will be fired.
@@ -67,6 +155,9 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
+        messageBundles: {
+            type: "gpii.messageBundles"
+        },
         errorHandler: {
             type: "gpii.app.errorHandler",
             options: {

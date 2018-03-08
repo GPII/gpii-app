@@ -235,7 +235,15 @@ fluid.defaults("gpii.app.menu", {
         preferenceSetsMenuItems: [],  // Updated on `preferences` changed.
         keyedInSnapset: null,        // Must be updated when keyedInUserToken changes.
         keyOut: null,                 // May or may not be in the menu, must be updated when keyedInUserToken changes.
-        menuTemplate: []              // This is updated on change of keyedInUserToken.
+        menuTemplate: [],             // This is updated on change of keyedInUserToken.
+
+        // TODO does this belong to the model :/
+        menuLabels: {
+            psp:        "{messageBundles}.model.messages.gpii_app_menu_open-psp", /// TODO with dashes for keys...
+            keyOut:     "{messageBundles}.model.messages.gpii_app_menu_keyed_out_btn", /// or all to follow the snake style...
+            keyedIn:    "{messageBundles}.model.messages.gpii_app_menu_status_keyed_in", // string template
+            notKeyedIn: "{messageBundles}.model.messages.gpii_app_menu_status_not_keyed"
+        }
     },
     modelRelay: {
         "keyedInSnapset": {
@@ -243,7 +251,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyedInSnapset",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.snapsetName", "{that}.options.menuLabels.keyedIn"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.snapsetName", "{that}.model.menuLabels.keyedIn"]
             }
         },
         "keyOut": {
@@ -251,7 +259,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyOut",
-                args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.keyOut", "{that}.options.menuLabels.notKeyedIn"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.menuLabels.keyOut", "{that}.model.menuLabels.notKeyedIn"]
             }
         },
         "showPSP": {
@@ -259,7 +267,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getShowPSP",
-                args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.psp"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.menuLabels.psp"]
             }
         },
         "preferenceSetsMenuItems": {
@@ -280,11 +288,16 @@ fluid.defaults("gpii.app.menu", {
             priority: "last"
         }
     },
-    menuLabels: {
-        psp: "Open PSP",
-        keyedIn: "Keyed in with %snapsetName",    // string template
-        keyOut: "Key-out of GPII",
-        notKeyedIn: "(No one keyed in)"
+
+    invokers : {
+        // refreshMenuTempalte: {
+        //     funcName: "gpii.app.menu.refreshMenuTempalte",
+        //     args: ["{that}"]
+        // },
+        // getMenuTemplate: {
+        //     funcName: "gpii.app.menu.generateMenuTemplate",
+        //     args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut"]
+        //}
     },
     events: {
         onPSP: null,
