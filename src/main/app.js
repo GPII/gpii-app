@@ -236,11 +236,11 @@ fluid.defaults("gpii.app", {
 
 
 /**
- * A component for handling errors during app runtime. It triggers appearance of the "Error Dialog"
+ * A component for handling errors during app runtime. It triggers showing of an "Error Dialog"
  * with all the details for the occurred error.
  *
- * This error handling system is more or less in temporary state for until GPII-1313 (a mechanism for notifying the
- * PSP for errors) is finished. Currently we are using error description that hard-coded in the PSP and
+ * This error handling system is more or less in a temporary state until GPII-1313 (a mechanism for notifying the
+ * PSP for errors) is finished. Currently we are using error descriptions that are hard-coded in the PSP and
  * a listener for any fluid `UncaughtException`.
  */
 fluid.defaults("gpii.app.errorHandler", {
@@ -278,6 +278,10 @@ fluid.defaults("gpii.app.errorHandler", {
         "onCreate.registerErrorListener": {
             funcName: "gpii.app.errorHandler.registerErrorListener",
             args: ["{that}"]
+        },
+        "onDestroy.clearListener": {
+            funcName: "fluid.onUncaughtException.removeListener",
+            args: ["gpii.app.errorHandler"]
         }
     },
 
@@ -344,7 +348,7 @@ gpii.app.errorHandler.handleUncaughtException = function (that, dialogManager, e
 };
 
 /**
- * Register global listener for all fluid exceptions.
+ * Register a global listener for all fluid exceptions.
  *
  * @param errorHandler {Component} The `gpii.app.errorHandler` component
  */
