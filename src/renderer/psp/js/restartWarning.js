@@ -43,7 +43,7 @@
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.baseRestartWarning.getSolutionsNames",
-                    args: ["{that}.options.labels", "{that}.model.pendingChanges"]
+                    args: ["{that}.model.messages", "{that}.model.pendingChanges"]
                 }
             },
             restartText: {
@@ -51,7 +51,7 @@
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.baseRestartWarning.generateRestartText",
-                    args: ["{that}.options.labels", "{that}.model.solutionNames"]
+                    args: ["{that}.model.messages", "{that}.model.solutionNames"]
                 }
             }
         },
@@ -170,11 +170,11 @@
      * @return {String} The text which is to be displayed in the component.
      */
     gpii.psp.baseRestartWarning.generateRestartText = function (labels, solutionNames) {
-        if (solutionNames[0] === labels.os) {
-            return labels.osRestartText;
+        if (solutionNames[0] === labels.os) { // TODO
+            return labels.gpii_app_restartWarning_osRestartText;
         }
 
-        return fluid.stringTemplate(labels.restartText, { solutions: solutionNames.join(", ")});
+        return fluid.stringTemplate(labels.gpii_app_restartWarning_restartText, { solutions: solutionNames.join(", ")});
     };
 
     /**

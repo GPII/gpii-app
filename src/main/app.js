@@ -68,21 +68,32 @@ fluid.defaults("gpii.messageBundles", {
             "gpii_app_menu_open-psp": "Open PSP",
             "gpii_app_menu_keyed_in_label": "Keyed in with %snapsetName",
             "gpii_app_menu_status_not_keyed": "(No one keyed in)",
-            "gpii_app_menu_keyed_out_btn": "Key-out of GPII"
+            "gpii_app_menu_keyed_out_btn": "Key-out of GPII",
+
+            gpii_app_restartWarning_restartTitle: "Changes require restart",
+            gpii_app_restartWarning_osRestartText: "Windows needs to restart to apply your changes.",
+            gpii_app_restartWarning_restartText: "In order to be applied, some of the changes you made require the following applications to restart:",
+            gpii_app_restartWarning_restartQuestion: "What would you like to do?"
+
         },
         "bg": {
             // персонален панел за настройки
             "gpii_app_menu_open-psp": "Отвори ППН",
             "gpii_app_menu_keyed_in_label": "Влязъл с %snapsetName",
             "gpii_app_menu_status_not_keyed": "(Не сте влезли)",
-            "gpii_app_menu_keyed_out_btn": "Излезте от GPII"
+            "gpii_app_menu_keyed_out_btn": "Излезте от GPII",
+
+            gpii_app_restartWarning_restartTitle: "Промените изискват рестартиране.",
+            gpii_app_restartWarning_osRestartText: "Windows изисква да бъде рестартиран, за да се приложат настройките.",
+            gpii_app_restartWarning_restartText: "In order to be applied, some of the changes you made require the following applications to restart:",
+            gpii_app_restartWarning_restartQuestion: "Какво бихте желали да направите?"
         }
     },
 
     modelListeners: {
         "locale": {
             func: "{that}.updateMessages"
-        },
+        }
 
         // "messages": {
         //     func: "{that}.events.onLocaleChanged.fire"

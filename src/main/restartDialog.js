@@ -20,12 +20,80 @@ var ipcMain = require("electron").ipcMain;
 
 require("./dialog.js");
 
+
+
+/**
+ * Generic channel extension that enables i18n supplying
+ * to the BrowserWindow
+ */
+fluid.defaults("gpii.app.i18n.channel", {
+    gradeNames: "fluid.modelComponent",
+
+    // TODO
+    modelListeners: {
+        "{messageBundles}.model.messages": {
+            funcName: "gpii.app.notifyWindow",
+            args: [
+                "{dialog}.dialog",
+                "onLocaleChanged",
+                "{messageBundles}.model.messages"
+            ]
+        }
+    }
+});
+
+
+// /**
+//  * XXX currently not used. A draft idea
+//  * Generic channel component for comunication with BroserWindows
+//  */
+// fluid.defaults("gpii.app.electronWindow.channel", {
+//     gradeNames: "fluid.component",
+
+//     events: {}, // to be passed by implementor
+
+//     listeners: {
+//         "onCreate.registerIpcListeners": {
+//             funcName: "gpii.app.channel.registerIPCListenersBasedOnEvents",
+//             args: "{that}.events"
+//         },
+//         "onDestroy.deregisterIpcListeners": {
+//             funcName: "gpii.app.channel.deregisterIPCListenersBasedOnEvents",
+//             args: "{that}.events"
+//         }
+//     }
+// });
+
+
+// gpii.app.channel.registerIPCListenersBasedOnEvents = function (events) {
+//     fluid.each(events, function (event, eventName) {
+//         gpii.app.channel.registerIPCListener(eventName, event);
+//     });
+// };
+
+// gpii.app.channel.deregisterIPCListenersBasedOnEvents = function (events) {
+//     fluid.keys(events, function (eventName) {
+//         gpii.app.channel.registerIPCListener(eventName);
+//     });
+// };
+
+
+// gpii.app.channel.registerIPCListener = function (channel, event) {
+//     ipcMain.on(channel, event.fire);
+// };
+
+// gpii.app.channel.deregisterIPCListener = function (channel) {
+//     ipcMain.removeAllListeners(channel);
+// };
+
+
+
 /**
  * A component that serves as simple interface for communication with the
  * electron `BrowserWindow` restart dialog.
  */
 fluid.defaults("gpii.app.dialog.restartDialog.channel", {
-    gradeNames: ["fluid.component"],
+    gradeNames: ["gpii.app.i18n.channel"],
 
     events: {
         onClosed: null, // provided by parent component

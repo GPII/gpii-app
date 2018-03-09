@@ -48,13 +48,17 @@ fluid.defaults("gpii.app.pspInApp", {
             args: ["{arguments}.0"] // newPrefSet
         },
 
-        "{gpiiConnector}.events.onPreferencesUpdated": {
+        "{gpiiConnector}.events.onPreferencesUpdated": 
+        [{
             listener: "{that}.notifyPSPWindow",
             args: [
                 "onPreferencesUpdated",
                 "{arguments}.0" // message
             ]
-        },
+        }, {
+            listener: "{settingsBroker}.enqueue",
+            args: "{arguments}.0.0"
+        }],
 
         "{gpiiConnector}.events.onSettingUpdated": {
             listener: "{that}.notifyPSPWindow",
