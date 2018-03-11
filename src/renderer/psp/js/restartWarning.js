@@ -35,8 +35,21 @@
         model: {
             pendingChanges: [],
             solutionNames: [],
-            restartText: ""
+            restartText: "",
+
+            messages: "{restartDialog}.model.messages"
         },
+        
+        x: "{restartDialog}",
+
+        listeners: {
+            onCreate: {
+                this: "console",
+                method: "log",
+                args: ["Base: ", "{that}"]
+            }
+        },
+
         modelRelay: {
             solutionNames: {
                 target: "solutionNames",
@@ -170,7 +183,11 @@
      * @return {String} The text which is to be displayed in the component.
      */
     gpii.psp.baseRestartWarning.generateRestartText = function (labels, solutionNames) {
-        if (solutionNames[0] === labels.os) { // TODO
+        console.log("Lab: ", labels);
+
+        if (!labels) return;
+
+        if (solutionNames[0] === "WIN") { // TODO
             return labels.gpii_app_restartWarning_osRestartText;
         }
 

@@ -66,7 +66,7 @@ fluid.defaults("gpii.messageBundles", {
     messageBundles: {
         "en_us": {
             "gpii_app_menu_open-psp": "Open PSP",
-            "gpii_app_menu_keyed_in_label": "Keyed in with %snapsetName",
+            "gpii_app_menu_status_keyed_in": "Keyed in with %snapsetName",
             "gpii_app_menu_status_not_keyed": "(No one keyed in)",
             "gpii_app_menu_keyed_out_btn": "Key-out of GPII",
 
@@ -79,13 +79,13 @@ fluid.defaults("gpii.messageBundles", {
         "bg": {
             // персонален панел за настройки
             "gpii_app_menu_open-psp": "Отвори ППН",
-            "gpii_app_menu_keyed_in_label": "Влязъл с %snapsetName",
             "gpii_app_menu_status_not_keyed": "(Не сте влезли)",
+            "gpii_app_menu_status_keyed_in": "Влязъл с %snapsetName",
             "gpii_app_menu_keyed_out_btn": "Излезте от GPII",
 
             gpii_app_restartWarning_restartTitle: "Промените изискват рестартиране.",
             gpii_app_restartWarning_osRestartText: "Windows изисква да бъде рестартиран, за да се приложат настройките.",
-            gpii_app_restartWarning_restartText: "In order to be applied, some of the changes you made require the following applications to restart:",
+            gpii_app_restartWarning_restartText: "За да могат част вашите настройки да бъдат приложени, следните приложения да бъдат презаредени:",
             gpii_app_restartWarning_restartQuestion: "Какво бихте желали да направите?"
         }
     },
@@ -93,11 +93,12 @@ fluid.defaults("gpii.messageBundles", {
     modelListeners: {
         "locale": {
             func: "{that}.updateMessages"
-        }
+        },
 
-        // "messages": {
-        //     func: "{that}.events.onLocaleChanged.fire"
-        // }
+        "messages": {
+            funcName: "gpii.app.i18n.updateGlobalTranslations",
+            args: ["{messageBundles}.model.messages"]
+        }
     },
 
     // events: {
@@ -118,6 +119,11 @@ fluid.defaults("gpii.messageBundles", {
 });
 
 
+gpii.app.i18n.updateGlobalTranslations = function (newTranslations) {
+    console.log("Update global: ", newTranslations);
+
+    global.translations = newTranslations;
+};
 
 /**
  * Make a bulk update of the currently set translations, ??? and use
@@ -144,7 +150,7 @@ gpii.messageBundles.updateMessages = function (that, messageBundles, locale, def
         console.log();
         // set invalid locale
         that.applier.change("locale", "en");
-    }, 5000);
+    }, 10000);
 };
 
 /**
@@ -493,7 +499,8 @@ gpii.app.hideRestartDialogIfNeeded = function (dialogManager, isPspShown) {
  * @param pendingChanges {Object[]} A list containing the current pending changes
  */
 gpii.app.showRestartDialogIfNeeded = function (dialogManager, pendingChanges) {
-    if (pendingChanges.length > 0) {
+    console.log("Change: ",pendingChanges);
+    if (pendingChanges.settings && pendingChanges.settings.length > 0) {
         dialogManager.show("restartDialog", pendingChanges);
     }
 };

@@ -55,9 +55,6 @@ fluid.defaults("gpii.app.pspInApp", {
                 "onPreferencesUpdated",
                 "{arguments}.0" // message
             ]
-        }, {
-            listener: "{settingsBroker}.enqueue",
-            args: "{arguments}.0.0"
         }],
 
         "{gpiiConnector}.events.onSettingUpdated": {
@@ -80,9 +77,9 @@ fluid.defaults("gpii.app.pspInApp", {
          * Restart Warning related listeners
          */
 
-        onClosed: {
+        "{gpiiConnector}.events.onPreferencesUpdated": {
             funcName: "gpii.app.showRestartDialogIfNeeded",
-            args: ["{dialogManager}", "{settingsBroker}.model.pendingChanges"]
+            args: ["{dialogManager}", "{arguments}.0"]
         },
 
         onSettingAltered: {

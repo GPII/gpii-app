@@ -18,7 +18,8 @@
 
 "use strict";
 (function (fluid) {
-    var ipcRenderer =  {};//require("electron").ipcRenderer;
+    var ipcRenderer = require("electron").ipcRenderer,
+        remote = require("electron").remote;
 
     var gpii = fluid.registerNamespace("gpii");
 
@@ -29,11 +30,17 @@
         model: {
             messages: null // received from the main process
         },
+        
+        listeners: {
+            onCreate: {
+                func: "{that}.updateMessages"
+            }
+        },
 
         invokers: {
             updateMessages: {
                 changePath: "messages",
-                args: ["{arguments}.0"]
+                value: "@expand:gpii.app.renderer.i18n.getTranslations()"
             }
         },
 
@@ -54,6 +61,10 @@
         }
 
     });
+
+    gpii.app.renderer.i18n.getTranslations = function () {
+        return remote.getGlobal("translations");
+    };
 
     // TODO is this a good generic namespace for the renderer items?
     /// Generic component for receiving the translations updates
@@ -79,6 +90,7 @@
      */
     gpii.app.renderer.i18n.channel.register = function (events) {
         ipcRenderer.on("onLocaleChanged", function (event, messages) {
+            console.log("Update msg: ", messages);
             events.onLocaleChanged.fire(messages);
         });
     };
@@ -156,7 +168,7 @@
      * the be behaviour of the restart actions buttons.
      */
     fluid.defaults("gpii.restartDialog.restartWarning", {
-        gradeNames: ["gpii.psp.baseRestartWarning", "gpii.app.renderer.i18n"],
+        gradeNames: ["gpii.psp.baseRestartWarning"],
 
         selectors: {
             title: ".flc-title",
@@ -202,6 +214,8 @@
             solutionNameMarkup = that.options.markup.solutionName,
             listItemElement;
 
+        console.log("List: ", that);
+
         listElement.empty();
         if (solutionNames[0] === that.options.labels.os) {
             listElement.hide();
@@ -220,7 +234,7 @@
      * interactions for the require restart functionality.
      */
     fluid.defaults("gpii.restartDialog", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.dialogHeightObservable"],
+        gradeNames: ["gpii.app.renderer.i18n", "fluid.viewComponent", "gpii.psp.dialogHeightObservable"],
 
         selectors: {
             titlebar: ".flc-titlebar"
