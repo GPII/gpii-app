@@ -9,5 +9,5 @@
 
 .fl-dialog .fl-dialog-content .fl-dialog-controls button {
     width: 140px;
-    height: 50px;
+    min-height: 50px;
 }
