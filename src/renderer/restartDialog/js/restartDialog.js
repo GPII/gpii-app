@@ -18,83 +18,9 @@
 
 "use strict";
 (function (fluid) {
-    var ipcRenderer = require("electron").ipcRenderer,
-        remote = require("electron").remote;
+    var ipcRenderer = require("electron").ipcRenderer;
 
     var gpii = fluid.registerNamespace("gpii");
-
-
-    fluid.defaults("gpii.app.renderer.i18n", {
-        gradeNames: "fluid.modelComponent",
-
-        model: {
-            messages: null // received from the main process
-        },
-        
-        listeners: {
-            onCreate: {
-                func: "{that}.updateMessages"
-            }
-        },
-
-        invokers: {
-            updateMessages: {
-                changePath: "messages",
-                value: "@expand:gpii.app.renderer.i18n.getTranslations()"
-            }
-        },
-
-        components: {
-            // expect the component to have channel attached and extend it
-            // by applying additional options to an existing channel
-            channel: {
-                options: {
-                    gradeNames: ["gpii.app.renderer.i18n.channel"],
-                    listeners: {
-                        onLocaleChanged: {
-                            func: "{i18n}.updateMessages",
-                            args: "{arguments}.0"
-                        }
-                    }
-                }
-            }
-        }
-
-    });
-
-    gpii.app.renderer.i18n.getTranslations = function () {
-        return remote.getGlobal("translations");
-    };
-
-    // TODO is this a good generic namespace for the renderer items?
-    /// Generic component for receiving the translations updates
-    fluid.defaults("gpii.app.renderer.i18n.channel", {
-        gradeNames: "fluid.component",
-
-        events: {
-            onLocaleChanged: null
-        },
-
-        listeners: {
-            "onCreate.registerLocaleListener": {
-                funcName: "gpii.app.renderer.i18n.channel.register",
-                args: "{that}.events"
-            }
-        }
-    });
-
-    /**
-     * Registers for events from the Main process.
-     *
-     * @param events {Object} Events map.
-     */
-    gpii.app.renderer.i18n.channel.register = function (events) {
-        ipcRenderer.on("onLocaleChanged", function (event, messages) {
-            console.log("Update msg: ", messages);
-            events.onLocaleChanged.fire(messages);
-        });
-    };
-
 
 
     /**
@@ -186,12 +112,12 @@
             "labels.restartTitle": {
                 this: "{that}.dom.title",
                 method: "text",
-                args: "{i18n}.model.messages.gpii_app_restartWarning_restartTitle"
+                args: "{messageBundles}.model.messages.gpii_app_restartWarning_restartTitle"
             },
             "labels.restartQuestion": {
                 this: "{that}.dom.restartQuestion",
                 method: "text",
-                args: "{i18n}.model.messages.gpii_app_restartWarning_restartQuestion"
+                args: "{messageBundles}.model.messages.gpii_app_restartWarning_restartQuestion"
             },
             solutionNames: {
                 funcName: "gpii.restartDialog.restartWarning.modifySolutionNamesList",
@@ -234,7 +160,7 @@
      * interactions for the require restart functionality.
      */
     fluid.defaults("gpii.restartDialog", {
-        gradeNames: ["gpii.app.renderer.i18n", "fluid.viewComponent", "gpii.psp.dialogHeightObservable"],
+        gradeNames: ["gpii.psp.messageBundles", "gpii.psp.dialogHeightObservable", "fluid.viewComponent"],
 
         selectors: {
             titlebar: ".flc-titlebar"

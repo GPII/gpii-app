@@ -35,18 +35,15 @@
         model: {
             pendingChanges: [],
             solutionNames: [],
-            restartText: "",
-
-            messages: "{restartDialog}.model.messages"
+            restartText: ""
         },
-        
-        x: "{restartDialog}",
 
+        // XXX dev
         listeners: {
             onCreate: {
                 this: "console",
                 method: "log",
-                args: ["Base: ", "{that}"]
+                args: ["Base: ", "{that}", "{messageBundles}"]
             }
         },
 
@@ -56,7 +53,7 @@
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.baseRestartWarning.getSolutionsNames",
-                    args: ["{that}.model.messages", "{that}.model.pendingChanges"]
+                    args: ["{messageBundles}.model.messages", "{that}.model.pendingChanges"]
                 }
             },
             restartText: {
@@ -64,7 +61,11 @@
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.baseRestartWarning.generateRestartText",
-                    args: ["{that}.model.messages", "{that}.model.solutionNames"]
+                    args: [
+                        "{messageBundles}.model.messages",
+                        "{that}.options.labels.os",
+                        "{that}.model.solutionNames"
+                    ]
                 }
             }
         },
@@ -87,7 +88,7 @@
                 container: "{that}.dom.undo",
                 options: {
                     model: {
-                        label: "{baseRestartWarning}.options.labels.undo"
+                        label: "{messageBundles}.model.messages.gpii_app_restartWarning_undo"
                     },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onUndoChanges.fire"
@@ -99,7 +100,7 @@
                 container: "{that}.dom.restartNow",
                 options: {
                     model: {
-                        label: "{baseRestartWarning}.options.labels.restartNow"
+                        label: "{messageBundles}.model.messages.gpii_app_restartWarning_restartNow"
                     },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onRestartNow.fire"
@@ -111,7 +112,7 @@
                 container: "{that}.dom.restartLater",
                 options: {
                     model: {
-                        label: "{baseRestartWarning}.options.labels.restartLater"
+                        label: "{messageBundles}.model.messages.gpii_app_restartWarning_restartLater"
                     },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onRestartLater.fire"
@@ -131,13 +132,7 @@
             onUndoChanges: null
         },
         labels: {
-            os: "Windows",
-            osRestartText: "Windows needs to restart to apply your changes",
-            restartText: "To apply your changes, the following applications need to restart: %solutions",
-
-            undo: "Cancel\n(Undo Changes)",
-            restartNow: "Restart Now",
-            restartLater: "Close and\nRestart Later"
+            os: "Windows"
         }
     });
 
@@ -182,16 +177,20 @@
      * applications that need to be restarted.
      * @return {String} The text which is to be displayed in the component.
      */
-    gpii.psp.baseRestartWarning.generateRestartText = function (labels, solutionNames) {
+    gpii.psp.baseRestartWarning.generateRestartText = function (labels, osLabel, solutionNames) {
         console.log("Lab: ", labels);
+        if (!labels) {
+            // translations are missing yet
+            return;
+        }
 
-        if (!labels) return;
-
-        if (solutionNames[0] === "WIN") { // TODO
+        if (solutionNames[0] === osLabel) {
             return labels.gpii_app_restartWarning_osRestartText;
         }
 
-        return fluid.stringTemplate(labels.gpii_app_restartWarning_restartText, { solutions: solutionNames.join(", ")});
+        if (labels.gpii_app_restartWarning_restartText) {
+            return fluid.stringTemplate(labels.gpii_app_restartWarning_restartText, { solutions: solutionNames.join(", ")});
+        }
     };
 
     /**

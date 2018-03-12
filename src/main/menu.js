@@ -85,16 +85,18 @@ fluid.defaults("gpii.app.menuInAppDev", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
+                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.options.locales", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
             },
             priority: "last"
         }
     },
     menuLabels: {
+        locale: "Locale",
         keyIn: "Key in ...",
         exit: "Exit GPII"
     },
     events: {
+        onLocale: null,
         onKeyIn: null,
         onExit: null
     },
@@ -107,6 +109,10 @@ fluid.defaults("gpii.app.menuInAppDev", {
         //   a) trigger GPII {lifecycleManager}.events.onSessionStart
         //   b) fire a model change to set the new model.keyedInUserToken
         //   c) update the menu
+        "onLocale.changeLocale": {
+            changePath: "{app}.messageBundles.model.locale",
+            value: "{arguments}.0.locale"
+        },
         "onKeyIn.performKeyOut": {
             listener: "{app}.keyOut"
         },
@@ -120,6 +126,29 @@ fluid.defaults("gpii.app.menuInAppDev", {
         "onExit.performExit": {
             listener: "{app}.exit"
         }
+    },
+
+    locales: {
+        label: "{that}.options.menuLabels.locale",
+        submenu: [{
+            label: "bg",
+            click: "onLocale",
+            args: {
+                locale: "bg"
+            }
+        }, {
+            label: "en",
+            click: "onLocale",
+            args: {
+                locale: "en_us"
+            }
+        }, {
+            label: "missing",
+            click: "onLocale",
+            args: {
+                locale: "fr"
+            }
+        }]
     },
 
     // The list of the default snapsets shown on the task tray menu for key-in

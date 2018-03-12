@@ -50,7 +50,10 @@ require("electron").app.on("window-all-closed", fluid.identity);
 
 
 
-fluid.defaults("gpii.messageBundles", {
+/**
+ * Holds all messages for the app (renderer included)
+ */
+fluid.defaults("gpii.app.messageBundles", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
@@ -73,20 +76,27 @@ fluid.defaults("gpii.messageBundles", {
             gpii_app_restartWarning_restartTitle: "Changes require restart",
             gpii_app_restartWarning_osRestartText: "Windows needs to restart to apply your changes.",
             gpii_app_restartWarning_restartText: "In order to be applied, some of the changes you made require the following applications to restart:",
-            gpii_app_restartWarning_restartQuestion: "What would you like to do?"
+            gpii_app_restartWarning_restartQuestion: "What would you like to do?",
 
+            gpii_app_restartWarning_undo: "Cancel\n(Undo Changes)",
+            gpii_app_restartWarning_restartLater: "Close and\nRestart Later",
+            gpii_app_restartWarning_restartNow: "Restart Now"
         },
         "bg": {
             // персонален панел за настройки
             "gpii_app_menu_open-psp": "Отвори ППН",
             "gpii_app_menu_status_not_keyed": "(Не сте влезли)",
-            "gpii_app_menu_status_keyed_in": "Влязъл с %snapsetName",
-            "gpii_app_menu_keyed_out_btn": "Излезте от GPII",
+            "gpii_app_menu_status_keyed_in": "Вписан с %snapsetName",
+            "gpii_app_menu_keyed_out_btn": "Отписване от GPII",
 
             gpii_app_restartWarning_restartTitle: "Промените изискват рестартиране.",
             gpii_app_restartWarning_osRestartText: "Windows изисква да бъде рестартиран, за да се приложат настройките.",
-            gpii_app_restartWarning_restartText: "За да могат част вашите настройки да бъдат приложени, следните приложения да бъдат презаредени:",
-            gpii_app_restartWarning_restartQuestion: "Какво бихте желали да направите?"
+            gpii_app_restartWarning_restartText: "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени:",
+            gpii_app_restartWarning_restartQuestion: "Какво бихте желали да направите?",
+
+            gpii_app_restartWarning_undo: "Отказ\n(Отменете промените)",
+            gpii_app_restartWarning_restartLater: "Затваряне и\n рестартиране по-късно",
+            gpii_app_restartWarning_restartNow: "Рестартиране сега"
         }
     },
 
@@ -96,18 +106,15 @@ fluid.defaults("gpii.messageBundles", {
         },
 
         "messages": {
-            funcName: "gpii.app.i18n.updateGlobalTranslations",
-            args: ["{messageBundles}.model.messages"]
+            funcName: "gpii.app.messageBundles.updateGlobalMessages",
+            args: ["{messageBundles}.model.messages"],
+            excludeSource: "init"
         }
     },
 
-    // events: {
-    //     onLocaleChanged: null
-    // },
-
     invokers: {
         updateMessages: {
-            funcName: "gpii.messageBundles.updateMessages",
+            funcName: "gpii.app.messageBundles.updateMessages",
             args: [
                 "{that}",
                 "{that}.options.messageBundles",
@@ -119,38 +126,34 @@ fluid.defaults("gpii.messageBundles", {
 });
 
 
-gpii.app.i18n.updateGlobalTranslations = function (newTranslations) {
+gpii.app.messageBundles.updateGlobalMessages = function (newTranslations) {
     console.log("Update global: ", newTranslations);
 
+    // Use the `global` object to ease sharing the translations
+    // across all Electron BrowserWindows
     global.translations = newTranslations;
 };
 
 /**
- * Make a bulk update of the currently set translations, ??? and use
- * the model listeners to notify about that change TODO or just use the onLocaleChanged event?
- *
+ * Make a bulk update of the currently set translations
+ * 
+ * TODO
  * @param that
  * @param messageBundles
  * @param locale
  * @param defaultLocale
  * @returns {undefined}
  */
-gpii.messageBundles.updateMessages = function (that, messageBundles, locale, defaultLocale) {
+gpii.app.messageBundles.updateMessages = function (that, messageBundles, locale, defaultLocale) {
     var messages = messageBundles[locale];
 
     if (!messages) {
+        fluid.log(fluid.logLevel.WARN, "Bundles for locale - " + locale + " - are missing. Using default locale of: " + defaultLocale);
         messages = messageBundles[defaultLocale];
     }
 
     console.log("Update: ", messages);
     that.applier.change("messages", messages);
-
-    // XXX dev
-    setTimeout(function () {
-        console.log();
-        // set invalid locale
-        that.applier.change("locale", "en");
-    }, 10000);
 };
 
 /**
@@ -173,7 +176,7 @@ fluid.defaults("gpii.app", {
     },
     components: {
         messageBundles: {
-            type: "gpii.messageBundles"
+            type: "gpii.app.messageBundles"
         },
         errorHandler: {
             type: "gpii.app.errorHandler",
@@ -499,8 +502,9 @@ gpii.app.hideRestartDialogIfNeeded = function (dialogManager, isPspShown) {
  * @param pendingChanges {Object[]} A list containing the current pending changes
  */
 gpii.app.showRestartDialogIfNeeded = function (dialogManager, pendingChanges) {
-    console.log("Change: ",pendingChanges);
-    if (pendingChanges.settings && pendingChanges.settings.length > 0) {
+    // XXX DEV
+    //console.log("Change: ",pendingChanges);
+    if (pendingChanges.length > 0) {
         dialogManager.show("restartDialog", pendingChanges);
     }
 };
