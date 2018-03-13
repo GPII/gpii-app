@@ -220,6 +220,18 @@ fluid.defaults("gpii.app.psp", {
             args: "{that}"
         }
     },
+
+    modelListeners: {
+        "{messageBundles}.model.messages": {
+            funcName: "gpii.app.notifyWindow",
+            args: [
+                "{that}.pspWindow",
+                "onLocaleChanged",
+                "{messageBundles}.model.messages"
+            ]
+        }
+    },
+
     invokers: {
         show: {
             funcName: "gpii.app.psp.show",

@@ -48,19 +48,18 @@
             }
         },
 
-        components: {
-            // expect the component to have channel attached and extend it
-            // by applying additional options to an existing channel
-            channel: {
-                options: {
+        distributeOptions: {
+            distributeMessageBundlesChannel: {
+                record: {
                     gradeNames: ["gpii.psp.messageBundles.channel"],
                     listeners: {
-                        onLocaleChanged: {
+                        "onLocaleChanged.setLocalisedMessages": {
                             func: "{messageBundles}.updateMessages",
                             args: "{arguments}.0"
                         }
                     }
-                }
+                },
+                target: "{that channel}.options"
             }
         }
     });
@@ -69,7 +68,6 @@
         return remote.getGlobal("localisedMessages");
     };
 
-    // TODO is this a good generic namespace for the renderer items?
     /// Generic component for receiving the translations updates
     fluid.defaults("gpii.psp.messageBundles.channel", {
         gradeNames: "fluid.component",

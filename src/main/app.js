@@ -68,6 +68,7 @@ fluid.defaults("gpii.app.messageBundles", {
 
     messageBundles: {
         "en_us": {
+            // TODO naming
             "gpii_app_menu_open-psp": "Open PSP",
             "gpii_app_menu_status_keyed_in": "Keyed in with %snapsetName",
             "gpii_app_menu_status_not_keyed": "(No one keyed in)",
