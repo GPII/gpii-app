@@ -53,7 +53,10 @@
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.baseRestartWarning.getSolutionsNames",
-                    args: ["{messageBundles}.model.messages", "{that}.model.pendingChanges"]
+                    args: [
+                        "{that}.options.labels.os",
+                        "{that}.model.pendingChanges"
+                    ]
                 }
             },
             restartText: {
@@ -148,13 +151,13 @@
      * @return the solutions names or titles corresponding to the applications
      * that need to be restarted.
      */
-    gpii.psp.baseRestartWarning.getSolutionsNames = function (labels, pendingChanges) {
+    gpii.psp.baseRestartWarning.getSolutionsNames = function (osLabel, pendingChanges) {
         var isOSRestartNeeded = fluid.find_if(pendingChanges, function (pendingChange) {
             return pendingChange.liveness === "OSRestart";
         });
 
         if (isOSRestartNeeded) {
-            return [labels.os];
+            return [osLabel];
         }
 
         return fluid.accumulate(pendingChanges, function (pendingChange, solutionNames) {
@@ -171,25 +174,25 @@
     /**
      * Returns the text which is to be displayed in the component based on the solution
      * names corresponding to the pending setting changes.
-     * @param labels {Object} An object containing various labels used throughout
+     * @param messages {Object} An object containing various messages used throughout
      * the component.
      * @param solutionNames {Array} the solutions names or titles corresponding to the
      * applications that need to be restarted.
      * @return {String} The text which is to be displayed in the component.
      */
-    gpii.psp.baseRestartWarning.generateRestartText = function (labels, osLabel, solutionNames) {
-        console.log("Lab: ", labels);
-        if (!labels) {
+    gpii.psp.baseRestartWarning.generateRestartText = function (messages, osLabel, solutionNames) {
+        console.log("Lab: ", messages);
+        if (!messages) {
             // translations are missing yet
             return;
         }
 
         if (solutionNames[0] === osLabel) {
-            return labels.gpii_app_restartWarning_osRestartText;
+            return messages.gpii_app_restartWarning_osRestartText;
         }
 
-        if (labels.gpii_app_restartWarning_restartText) {
-            return fluid.stringTemplate(labels.gpii_app_restartWarning_restartText, { solutions: solutionNames.join(", ")});
+        if (messages.gpii_app_restartWarning_restartText) {
+            return fluid.stringTemplate(messages.gpii_app_restartWarning_restartText, { solutions: solutionNames.join(", ")});
         }
     };
 
@@ -208,7 +211,7 @@
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.restartWarning.getRestartIcon",
-                    args: ["{that}.options.labels", "{that}.model.solutionNames", "{that}.options.styles"]
+                    args: ["{that}.options.labels.os", "{that}.model.solutionNames", "{that}.options.styles"]
                 }
             }
         },
@@ -265,8 +268,8 @@
      * @param styles {Object} An object containing the CSS classes used in the component.
      * @return the CSS class to be applied to the icon.
      */
-    gpii.psp.restartWarning.getRestartIcon = function (labels, solutionNames, styles) {
-        return solutionNames[0] === labels.os ? styles.osRestartIcon : styles.applicationRestartIcon;
+    gpii.psp.restartWarning.getRestartIcon = function (osLabel, solutionNames, styles) {
+        return solutionNames[0] === osLabel ? styles.osRestartIcon : styles.applicationRestartIcon;
     };
 
     /**

@@ -126,12 +126,12 @@ fluid.defaults("gpii.app.messageBundles", {
 });
 
 
-gpii.app.messageBundles.updateGlobalMessages = function (newTranslations) {
-    console.log("Update global: ", newTranslations);
+gpii.app.messageBundles.updateGlobalMessages = function (newMessages) {
+    console.log("Update global: ", newMessages);
 
     // Use the `global` object to ease sharing the translations
     // across all Electron BrowserWindows
-    global.translations = newTranslations;
+    global.localisedMessages = newMessages;
 };
 
 /**
