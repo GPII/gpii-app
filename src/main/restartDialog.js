@@ -31,12 +31,12 @@ fluid.defaults("gpii.app.i18n.channel", {
 
     // TODO
     modelListeners: {
-        "{messageBundles}.model.messages": {
+        "{messageBundles}.model.locale": {
             funcName: "gpii.app.notifyWindow",
             args: [
                 "{dialog}.dialog",
                 "onLocaleChanged",
-                "{messageBundles}.model.messages"
+                "{messageBundles}.model.locale"
             ]
         }
     }

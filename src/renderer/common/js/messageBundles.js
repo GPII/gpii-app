@@ -19,8 +19,7 @@
 "use strict";
 
 (function (fluid) {
-    var ipcRenderer = require("electron").ipcRenderer,
-        remote = require("electron").remote;
+    var ipcRenderer = require("electron").ipcRenderer;
 
     var gpii = fluid.registerNamespace("gpii");
 
@@ -29,22 +28,12 @@
      * TODO
      */
     fluid.defaults("gpii.psp.messageBundles", {
-        gradeNames: "fluid.modelComponent",
-
-        model: {
-            // messages: null // received from the main process
-        },
-
-        listeners: {
-            onCreate: {
-                func: "{that}.updateMessages"
-            }
-        },
+        gradeNames: "gpii.app.messageBundles",
 
         invokers: {
-            updateMessages: {
-                changePath: "messages",
-                value: "@expand:gpii.psp.messageBundles.getLocalisedMessages()"
+            updateLocale: {
+                changePath: "locale",
+                value: "{arguments}.0"
             }
         },
 
@@ -53,8 +42,8 @@
                 record: {
                     gradeNames: ["gpii.psp.messageBundles.channel"],
                     listeners: {
-                        "onLocaleChanged.setLocalisedMessages": {
-                            func: "{messageBundles}.updateMessages",
+                        "onLocaleChanged.setLocale": {
+                            func: "{messageBundles}.updateLocale",
                             args: "{arguments}.0"
                         }
                     }
@@ -63,10 +52,6 @@
             }
         }
     });
-
-    gpii.psp.messageBundles.getLocalisedMessages = function () {
-        return remote.getGlobal("localisedMessages");
-    };
 
     /// Generic component for receiving the translations updates
     fluid.defaults("gpii.psp.messageBundles.channel", {

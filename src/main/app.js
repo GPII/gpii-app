@@ -29,6 +29,8 @@ require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
 
+require("../messageBundles/gpii-app-messageBundles_all.js");
+
 require("./networkCheck.js");
 
 
@@ -48,114 +50,6 @@ require("electron").app.on("ready", gpii.app.electronAppListener);
 // Override default behaviour - don't exit process once all windows are closed
 require("electron").app.on("window-all-closed", fluid.identity);
 
-
-
-/**
- * Holds all messages for the app (renderer included)
- */
-fluid.defaults("gpii.app.messageBundles", {
-    gradeNames: ["fluid.modelComponent"],
-
-    model: {
-        locale: "bg",
-
-        // keep messages here in order to make use
-        // of the model events system
-        messages: {}
-    },
-
-    defaultLocale: "en_us",
-
-    messageBundles: {
-        "en_us": {
-            // TODO naming
-            "gpii_app_menu_open-psp": "Open PSP",
-            "gpii_app_menu_status_keyed_in": "Keyed in with %snapsetName",
-            "gpii_app_menu_status_not_keyed": "(No one keyed in)",
-            "gpii_app_menu_keyed_out_btn": "Key-out of GPII",
-
-            gpii_app_restartWarning_restartTitle: "Changes require restart",
-            gpii_app_restartWarning_osRestartText: "Windows needs to restart to apply your changes.",
-            gpii_app_restartWarning_restartText: "In order to be applied, some of the changes you made require the following applications to restart:",
-            gpii_app_restartWarning_restartQuestion: "What would you like to do?",
-
-            gpii_app_restartWarning_undo: "Cancel\n(Undo Changes)",
-            gpii_app_restartWarning_restartLater: "Close and\nRestart Later",
-            gpii_app_restartWarning_restartNow: "Restart Now"
-        },
-        "bg": {
-            // персонален панел за настройки
-            "gpii_app_menu_open-psp": "Отвори ППН",
-            "gpii_app_menu_status_not_keyed": "(Не сте влезли)",
-            "gpii_app_menu_status_keyed_in": "Вписан с %snapsetName",
-            "gpii_app_menu_keyed_out_btn": "Отписване от GPII",
-
-            gpii_app_restartWarning_restartTitle: "Промените изискват рестартиране.",
-            gpii_app_restartWarning_osRestartText: "Windows изисква да бъде рестартиран, за да се приложат настройките.",
-            gpii_app_restartWarning_restartText: "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени:",
-            gpii_app_restartWarning_restartQuestion: "Какво бихте желали да направите?",
-
-            gpii_app_restartWarning_undo: "Отказ\n(Отменете промените)",
-            gpii_app_restartWarning_restartLater: "Затваряне и\n рестартиране по-късно",
-            gpii_app_restartWarning_restartNow: "Рестартиране сега"
-        }
-    },
-
-    modelListeners: {
-        "locale": {
-            func: "{that}.updateMessages"
-        },
-
-        "messages": {
-            funcName: "gpii.app.messageBundles.updateGlobalMessages",
-            args: ["{messageBundles}.model.messages"],
-            excludeSource: "init"
-        }
-    },
-
-    invokers: {
-        updateMessages: {
-            funcName: "gpii.app.messageBundles.updateMessages",
-            args: [
-                "{that}",
-                "{that}.options.messageBundles",
-                "{that}.model.locale",
-                "{that}.options.defaultLocale"
-            ]
-        }
-    }
-});
-
-
-gpii.app.messageBundles.updateGlobalMessages = function (newMessages) {
-    console.log("Update global: ", newMessages);
-
-    // Use the `global` object to ease sharing the translations
-    // across all Electron BrowserWindows
-    global.localisedMessages = newMessages;
-};
-
-/**
- * Make a bulk update of the currently set translations
- * 
- * TODO
- * @param that
- * @param messageBundles
- * @param locale
- * @param defaultLocale
- * @returns {undefined}
- */
-gpii.app.messageBundles.updateMessages = function (that, messageBundles, locale, defaultLocale) {
-    var messages = messageBundles[locale];
-
-    if (!messages) {
-        fluid.log(fluid.logLevel.WARN, "Bundles for locale - " + locale + " - are missing. Using default locale of: " + defaultLocale);
-        messages = messageBundles[defaultLocale];
-    }
-
-    console.log("Update: ", messages);
-    that.applier.change("messages", messages);
-};
 
 /**
  * A component to manage the app. When  the PSP application is fully functional,
