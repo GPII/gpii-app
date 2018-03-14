@@ -34,33 +34,37 @@ gpii.app.isWin10OS = function () {
 };
 
 /**
-* Gets the desired position (in the lower right corner of the primary
-* display) of an `Electron` `BrowserWindow` given its dimensions.
-* @param dialog {Object} The electron BrowserWindow object
-* @return {{x: Number, y: Number}}
+* Gets the desired bounds (i.e. the coordinates and the width and
+* height, the latter two being restricted by the corresponding
+* dimensions of the primary display) of an Electron `BrowserWindow`
+* given its width and height. If used in the `window.setBounds`
+* function of the `BrowserWindow`, the window will be positioned
+* in  the lower right corner of the primary display.
+* @param width {Number} The width of the `BrowserWindow`.
+* @param height {Number} The height of the `BrowserWindow`.
+* @return {{x: Number, y: Number, width: Number, height: Number}}
 */
-gpii.app.getDesiredWindowPosition = function (dialog) {
+gpii.app.getDesiredWindowBounds = function (width, height) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
-    // Get the current size of the BrowserWindow in order
-    var windowSize = dialog.getSize(),
-        windowX = windowSize[0],
-        windowY = windowSize[1];
-
+    width = Math.ceil(Math.min(width, screenSize.width));
+    height = Math.ceil(Math.min(height, screenSize.height));
     return {
-        x: screenSize.width - windowX,
-        y: screenSize.height - windowY
+        x: Math.ceil(screenSize.width - width),
+        y: Math.ceil(screenSize.height - height),
+        width: width,
+        height: height
     };
 };
 
 /**
- * Sets the position of the Electorn `BrowserWindow` element.
- * @param dialogWindow {BrowserWindow} The window which is to be positioned
- * @param position {Object} The position where the window to be placed
- * @param position.x {Number}
- * @param position.y {Number}
+ * Positions an Electron `BrowserWindow` in the lower right corner of
+ * the primary display.
+ * @param dialogWindow {BrowserWindow} The window which is to be positioned.
  */
-gpii.app.setWindowPosition = function (dialogWindow, position) {
-    dialogWindow.setPosition(position.x, position.y);
+gpii.app.positionWindow = function (dialogWindow) {
+    var size = dialogWindow.getSize(),
+        bounds = gpii.app.getDesiredWindowBounds(size[0], size[1]);
+    dialogWindow.setPosition(bounds.x, bounds.y);
 };
 
 /**

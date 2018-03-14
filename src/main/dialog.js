@@ -16,6 +16,7 @@
 "use strict";
 
 var fluid         = require("infusion");
+var electron      = require("electron");
 var BrowserWindow = require("electron").BrowserWindow;
 
 var gpii  = fluid.registerNamespace("gpii");
@@ -95,9 +96,27 @@ fluid.defaults("gpii.app.dialog", {
             namespace: "impl"
         }
     },
+    events: {
+        onDisplayMetricsChanged: null
+    },
     listeners: {
         "onCreate.positionWindow": {
-            func: "{that}.resetWindowPosition"
+            func: "{that}.positionWindow"
+        },
+        "onCreate.addDisplayMetricsListener": {
+            func: "gpii.app.dialog.addDisplayMetricsListener",
+            args: ["{that}"]
+        },
+        "onDisplayMetricsChanged.handleDisplayMetricsChange": {
+            func: "gpii.app.dialog.handleDisplayMetricsChange",
+            args: [
+                "{that}",
+                "{arguments}.2" // changedMetrics
+            ]
+        },
+        "onDestroy.removeDisplayMetricsListener": {
+            func: "gpii.app.dialog.removeDisplayMetricsListener",
+            args: ["{that}"]
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -105,13 +124,9 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
-        getDesiredWindowPosition: {
-            funcName: "gpii.app.getDesiredWindowPosition",
+        positionWindow: {
+            funcName: "gpii.app.positionWindow",
             args: ["{that}.dialog"]
-        },
-        resetWindowPosition: {
-            funcName: "gpii.app.setWindowPosition",
-            args: ["{that}.dialog", "@expand:{that}.getDesiredWindowPosition()"]
         },
         resize: {
             funcName: "gpii.app.dialog.resize",
@@ -135,6 +150,40 @@ fluid.defaults("gpii.app.dialog", {
         }
     }
 });
+
+/**
+ * Registers a listener to be called whenever the `display-metrics-changed`
+ * event is emitted by the electron screen.
+ * @param that {Component} The `gpii.app.dialog` component.
+ */
+gpii.app.dialog.addDisplayMetricsListener = function (that) {
+    electron.screen.on("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
+};
+
+/**
+ * Handle electron's display-metrics-changed event by resizing the dialog if
+ * necessary.
+ * @param that {Component} The `gpii.app.dialog` component.
+ * @param changedMetrics {Array} An array of strings that describe the changes.
+ * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
+ */
+gpii.app.dialog.handleDisplayMetricsChange = function (that, changedMetrics) {
+    if (changedMetrics.indexOf("scaleFactor") === -1) {
+        var attrs = that.options.config.attrs;
+        that.resize(attrs.width, attrs.height);
+    }
+};
+
+/**
+ * Removes the listener for the `display-metrics-changed` event. This should
+ * be done when the component gets destroyed in order to avoid memory leaks,
+ * as some dialogs are created and destroyed dynamically (i.e. before the
+ * PSP application terminates).
+ * @param that {Component} The `gpii.app.dialog` component.
+ */
+gpii.app.dialog.removeDisplayMetricsListener = function (that) {
+    electron.screen.removeListener("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
+};
 
 /**
  * Builds a file URL inside the application **Working Directory**.
@@ -180,7 +229,7 @@ gpii.app.dialog.makeDialog = function (windowOptions, url) {
  */
 gpii.app.dialog.toggle = function (dialog, isShown) {
     if (isShown) {
-        dialog.resetWindowPosition();
+        dialog.positionWindow();
         dialog.dialog.show();
     } else {
         dialog.dialog.hide();
@@ -194,8 +243,8 @@ gpii.app.dialog.toggle = function (dialog, isShown) {
  * @param windowHeight {Number} The new height for the window
  */
 gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
-    that.dialog.setSize(Math.ceil(windowWidth), Math.ceil(windowHeight));
-    that.resetWindowPosition();
+    var bounds = gpii.app.getDesiredWindowBounds(windowWidth, windowHeight);
+    that.dialog.setBounds(bounds);
 };
 
 /**
