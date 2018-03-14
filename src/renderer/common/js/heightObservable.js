@@ -172,35 +172,4 @@
         container.prepend(heightListenerElement);
         onRenderedEvent.fire(heightListenerElement);
     };
-
-    /**
-     * An extension of the `gpii.psp.heightObservable` for dialogs. When computing
-     * the height of its visual representation, this component takes into account
-     * the speech tail which some of the dialogs in the application have.
-     */
-    fluid.defaults("gpii.psp.dialogHeightObservable", {
-        gradeNames: "gpii.psp.heightObservable",
-        selectors: {
-            speechTriangle: ".flc-speech-triangle"
-        },
-        invokers: {
-            calculateHeight: {
-                funcName: "gpii.psp.dialogHeightObservable.calculateHeight",
-                args: ["{that}", "{that}.dom.speechTriangle"]
-            }
-        }
-    });
-
-    /**
-     * Returns the height of the visual representation of the `dialogHeightObservable`
-     * component.
-     * @param that {Component} The `gpii.psp.heightObservable` instance.
-     * @param speechTriangle {jQuery} An object representing the speech triangle of
-     * the dialog. May be empty.
-     * @return {Number} The height of the component.
-     */
-    gpii.psp.dialogHeightObservable.calculateHeight = function (that, speechTriangle) {
-        var speechTriangleHeight = speechTriangle.outerHeight(true) || 0;
-        return that.container.outerHeight(true) + speechTriangleHeight;
-    };
 })(fluid);

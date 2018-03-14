@@ -168,7 +168,7 @@
      * interactions for the require restart functionality.
      */
     fluid.defaults("gpii.restartDialog", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.dialogHeightObservable"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
 
         selectors: {
             titlebar: ".flc-titlebar"

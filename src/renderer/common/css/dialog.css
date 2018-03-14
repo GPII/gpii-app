@@ -15,7 +15,7 @@ body {
     left: 0;
 }
 
-.fl-dialog {
+.fl-dialog .fl-dialog-contentWrapper {
     padding: 8px 8px 0 8px;
     background-color: #83CBEF;
 }
@@ -83,7 +83,16 @@ body {
 }
 
 .fl-dialog .fl-speech-triangle {
+    position: relative;
+    height: 20px;
+    width: 100%;
+}
+
+.fl-dialog .fl-speech-triangle:after {
+    content: "";
+
     position: absolute;
+    top: 0;
     left: 15%;
     width: 0; 
     height: 0; 
@@ -97,7 +106,7 @@ body {
  * Used to expand the dialog to the size of its container (the size of the BrowserWindow).
  * There may be a problem with adding the speech triangle, as it will take up additional space.
  */
-.fl-dialog.fl-dialog-fullScreen {
+.fl-dialog.fl-dialog-fullScreen  .fl-dialog-contentWrapper {
     display: flex;
     flex-direction: column;
     height: 100%;
