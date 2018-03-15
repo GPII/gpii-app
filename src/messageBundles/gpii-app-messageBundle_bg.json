@@ -1,0 +1,10 @@
+{
+        "gpii_app_restartWarning_restartTitle": "Промените изискват рестартиране.",
+        "gpii_app_restartWarning_osRestartText": "Windows изисква да бъде рестартиран, за да се приложат настройките.",
+        "gpii_app_restartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени:",
+        "gpii_app_restartWarning_restartQuestion": "Какво бихте желали да направите?",
+
+        "gpii_app_restartWarning_undo": "Отказ\n(Отменете промените)",
+        "gpii_app_restartWarning_restartLater": "Затваряне и\n рестартиране по-късно",
+        "gpii_app_restartWarning_restartNow": "Рестартиране сега"
+    }
