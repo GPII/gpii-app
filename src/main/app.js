@@ -29,7 +29,7 @@ require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
 
-require("../messageBundles/gpii-app-messageBundles_all.js");
+require("../messageBundles/gpii-app-messageBundles_compiled.js");
 
 require("./networkCheck.js");
 

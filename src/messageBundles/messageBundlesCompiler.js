@@ -1,5 +1,8 @@
 "use-strict";
 
+var fs = require("fs");
+var path = require("path");
+
 // fr_FR, en -> ["en", "fr", "fr_FR"]
 function getLocaleVersions(locale, defaultLocale) {
     var segments = locale.split("_");
@@ -34,7 +37,7 @@ function enchanceMessageBundles(messageBundles, defaultLocale) {
     return result;
 }
 
-console.log(mergeMessageBundles(messageBundles, "en"));
+// console.log(mergeMessageBundles(messageBundles, "en"));
 
 
 /*
@@ -67,8 +70,6 @@ app
 // gpii-psp-restartDialog_en.json
 //
 function loadMessageBundles(bundlesDir, fileType, parser) {
-    var fs = require("fs");
-    var path = require("path");
     // read every json file from that index down (support subdirs?)
     var files = fs.readdirSync(bundlesDir);
     var typeRegex = "\\." + fileType + "$";
@@ -127,8 +128,10 @@ function constructMessageBundles(loadedBundles) {
     return messageBundles;
 };
 
-/*
-var messageBundlesList = loadMessageBundles("./src/messageBundles", "json", JSON);
-var rawMessageBundles = constructMessageBundles(messageBundlesList);
-var compiledMessageBundle = enchanceMessageBundles(rawMessageBundles, "en");
-*/
+module.exports.buildMessageBundles = function (bundlesDir, fileType, parser, defaultLocale) { 
+    var messageBundlesList = loadMessageBundles(bundlesDir, fileType, parser);
+    var rawMessageBundles = constructMessageBundles(messageBundlesList);
+    var compiledMessageBundle = enchanceMessageBundles(rawMessageBundles, defaultLocale);
+
+    return compiledMessageBundle;
+};
