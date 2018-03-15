@@ -14,8 +14,10 @@ $projectDir = (Get-Item $provisioningDir).parent.FullName
 
 Import-Module (Join-Path $provisioningDir 'Provisioning.psm1') -Force
 
-$installerRepo = "https://github.com/GPII/gpii-wix-installer"
-$installerBranch = "HST"
+#$installerRepo = "https://github.com/GPII/gpii-wix-installer"
+#$installerBranch = "HST"
+$installerRepo = "https://github.com/stegru/gpii-wix-installer"
+$installerBranch = "GPII-2294-HST"
 
 # Obtaining useful tools location.
 $installerDir = Join-Path $env:SystemDrive "installer" # a.k.a. C:\installer\
@@ -83,17 +85,6 @@ Invoke-Command "electron-packager.cmd" "$preStagingDir --platform=win32 --arch=i
 # TODO: Try to avoid using the electron-packager directory name hardcoding it.
 $packagedAppDir = (Join-Path $packagerDir "gpii-app-win32-ia32")
 Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
-
-# We are exiting with as a successful value if robocopy error is less or equal to 3
-# to avoid interruption. http://ss64.com/nt/robocopy-exit.html
-Invoke-Command "robocopy" "..\node_modules\gpii-windows\listeners $(Join-Path $stagingWindowsDir "listeners") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
-
-# Compile listeners.
-# TODO: This should be a function in Provisioning.psm1
-Invoke-Environment "C:\Program Files (x86)\Microsoft Visual C++ Build Tools\vcbuildtools_msbuild.bat"
-$msbuild = Get-MSBuild "4.0"
-$listenersDir = Join-Path $stagingWindowsDir "listeners"
-Invoke-Command $msbuild "listeners.sln /nodeReuse:false /p:Platform=Win32 /p:Configuration=Release /p:FrameworkPathOverride=`"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1`"" $listenersDir
 
 md (Join-Path $installerDir "output")
 md (Join-Path $installerDir "temp")
