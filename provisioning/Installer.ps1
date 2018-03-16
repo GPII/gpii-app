@@ -14,10 +14,8 @@ $projectDir = (Get-Item $provisioningDir).parent.FullName
 
 Import-Module (Join-Path $provisioningDir 'Provisioning.psm1') -Force
 
-#$installerRepo = "https://github.com/GPII/gpii-wix-installer"
-#$installerBranch = "HST"
-$installerRepo = "https://github.com/stegru/gpii-wix-installer"
-$installerBranch = "GPII-2294-HST"
+$installerRepo = "https://github.com/GPII/gpii-wix-installer"
+$installerBranch = "HST"
 
 # Obtaining useful tools location.
 $installerDir = Join-Path $env:SystemDrive "installer" # a.k.a. C:\installer\
@@ -68,9 +66,11 @@ Invoke-Command $npm "install" $projectDir
 Invoke-Command "robocopy" "..\node_modules $(Join-Path $preStagingDir "node_modules") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "..\configs $(Join-Path $preStagingDir "configs") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "..\src $(Join-Path $preStagingDir "src") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "..\testData $(Join-Path $preStagingDir "testData") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir LICENSE.txt" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir main.js" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir package.json" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "$projectDir $preStagingDir package-lock.json" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir README.md" $provisioningDir -errorLevel 3
 
 $packagerMetadata = "--app-copyright=`"Raising the Floor - International Association`" --win32metadata.CompanyName=`"Raising the Floor - International Association`" --win32metadata.FileDescription=`"GPII-App`" --win32metadata.OriginalFilename=`"gpii.exe`" --win32metadata.ProductName=`"GPII-App`" --win32metadata.InternalName=`"GPII-App`""

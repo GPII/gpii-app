@@ -11,7 +11,8 @@
     "dependencies": {
         "electron": "1.8.1",
         "electron-edge-js": "8.3.1",
-        "gpii-windows": "stegru/windows#GPII-2294",        "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
+        "gpii-windows": "0.3.0-dev.20180315T174453Z.02de41c",
+        "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
         "node-jqunit": "1.1.8",
         "request": "2.69.0",
         "winstrap": "0.5.11"
