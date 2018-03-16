@@ -100,7 +100,7 @@
      * grade specified.
      */
     fluid.defaults("gpii.errorDialog", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.dialogHeightObservable"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
 
         model: {
             title:   null,
