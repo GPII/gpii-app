@@ -4,6 +4,9 @@
         "gpii_app_menu_status_not_keyed": "(No one keyed in)",
         "gpii_app_menu_keyed_out_btn": "Key-out of GPII",
 
+        "gpii_app_splash_heading": "Not keyed in",
+        "gpii_app_splash_fullAppName": "GPII - Personal Settings Panel",
+
         "gpii_app_restartWarning_restartTitle": "Changes require restart",
         "gpii_app_restartWarning_osRestartText": "Windows needs to restart to apply your changes.",
         "gpii_app_restartWarning_restartText": "In order to be applied, some of the changes you made require the following applications to restart:",

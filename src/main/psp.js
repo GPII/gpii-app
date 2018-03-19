@@ -227,7 +227,7 @@ fluid.defaults("gpii.app.psp", {
             args: [
                 "{that}.pspWindow",
                 "onLocaleChanged",
-                "{messageBundles}.model.messages"
+                "{messageBundles}.model.locale"
             ]
         }
     },
