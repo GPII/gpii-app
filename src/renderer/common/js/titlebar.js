@@ -31,8 +31,18 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
             onClose: null
         },
 
-        labels: {
-            appName: null // expected from implementor
+        model: {
+            messages: {
+                appName: "{messageBundles}.model.messages.gpii_psp_titlebar_appName"
+            }
+        },
+
+        modelListeners: {
+            "messages.appName": {
+                this: "{that}.dom.appName",
+                method: "text",
+                args: ["{change}.value"]
+            }
         },
 
         components: {
@@ -47,13 +57,6 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         "onClick": "{titlebar}.events.onClose.fire"
                     }
                 }
-            }
-        },
-        listeners: {
-            "onCreate.setAppName": {
-                this: "{that}.dom.appName",
-                method: "text",
-                args: ["{that}.options.labels.appName"]
             }
         }
     });

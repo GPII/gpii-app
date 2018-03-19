@@ -96,6 +96,14 @@
     fluid.defaults("gpii.restartDialog.restartWarning", {
         gradeNames: ["gpii.psp.baseRestartWarning"],
 
+        model: {
+            messages: {
+                os: "{messageBundles}.model.messages.gpii_app_restartWarning_os",
+                restartTitle: "{messageBundles}.model.messages.gpii_app_restartWarning_restartTitle",
+                restartQuestion: "{messageBundles}.model.messages.gpii_app_restartWarning_restartQuestion"
+            }
+        },
+
         selectors: {
             title: ".flc-title",
             restartText: ".flc-details",
@@ -109,15 +117,15 @@
 
 
         modelListeners: {
-            "labels.restartTitle": {
+            "messages.restartTitle": {
                 this: "{that}.dom.title",
                 method: "text",
-                args: "{messageBundles}.model.messages.gpii_app_restartWarning_restartTitle"
+                args: "{change}.value"
             },
-            "labels.restartQuestion": {
+            "messages.restartQuestion": {
                 this: "{that}.dom.restartQuestion",
                 method: "text",
-                args: "{messageBundles}.model.messages.gpii_app_restartWarning_restartQuestion"
+                args: "{change}.value"
             },
             solutionNames: {
                 funcName: "gpii.restartDialog.restartWarning.modifySolutionNamesList",
@@ -140,10 +148,8 @@
             solutionNameMarkup = that.options.markup.solutionName,
             listItemElement;
 
-        console.log("List: ", that);
-
         listElement.empty();
-        if (solutionNames[0] === that.options.labels.os) {
+        if (solutionNames[0] === that.model.messages.os) {
             listElement.hide();
             return;
         }

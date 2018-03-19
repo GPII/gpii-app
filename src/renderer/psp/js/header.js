@@ -39,6 +39,10 @@
             preferences: {
                 sets: [],
                 activeSet: null
+            },
+            messages: {
+                autosaveText: "{messageBundles}.model.messages.gpii_psp_header_autosaveText",
+                keyOut: "{messageBundles}.model.messages.gpii_psp_header_keyOut"
             }
         },
         events: {
@@ -54,7 +58,12 @@
             },{
                 funcName: "gpii.psp.updateActiveSetElement",
                 args: ["{that}.dom.activePreferenceSet", "{that}.model.preferences"]
-            }]
+            }],
+            "messages.autosaveText": {
+                this: "{that}.dom.autosaveText",
+                method: "text",
+                args: ["{change}.value"]
+            }
         },
         components: {
             preferenceSetPicker: {
@@ -93,7 +102,7 @@
                 container: "{that}.dom.keyOutBtn",
                 options: {
                     model: {
-                        label: "{header}.options.labels.keyOut"
+                        label: "{header}.model.messages.keyOut"
                     },
                     invokers: {
                         "onClick": "{header}.events.onKeyOut.fire"
@@ -105,16 +114,7 @@
             onPreferencesUpdated: {
                 funcName: "gpii.psp.updateHeader",
                 args: ["{that}.model.preferences.sets", "{that}.dom.preferenceSetPicker", "{that}.dom.activePreferenceSet"]
-            },
-            "onCreate.setAutosaveText": {
-                this: "{that}.dom.autosaveText",
-                method: "text",
-                args: ["{that}.options.labels.autosaveText"]
             }
-        },
-        labels: {
-            autosaveText: "Auto-save is on",
-            keyOut: "Key Out"
         }
     });
 

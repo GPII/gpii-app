@@ -22,19 +22,21 @@
     fluid.defaults("gpii.psp.splash", {
         gradeNames: "fluid.viewComponent",
         model: {
-            heading: "{messageBundles}.model.messages.gpii_app_splash_heading",
-            fullAppName: "{messageBundles}.model.messages.gpii_app_splash_fullAppName"
+            messages: {
+                heading: "{messageBundles}.model.messages.gpii_psp_splash_heading",
+                fullAppName: "{messageBundles}.model.messages.gpii_psp_splash_fullAppName"
+            }
         },
         modelListeners: {
-            heading: {
+            "messages.heading": {
                 this: "{that}.dom.heading",
                 method: "text",
-                args: ["{that}.model.heading"]
+                args: ["{change}.value"]
             },
-            fullAppName: {
+            "messages.fullAppName": {
                 this: "{that}.dom.fullAppName",
                 method: "text",
-                args: ["{that}.model.fullAppName"]
+                args: ["{change}.value"]
             }
         },
         selectors: {
