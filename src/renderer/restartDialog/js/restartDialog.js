@@ -43,33 +43,37 @@
         },
 
         invokers: {
+            notifyHeightChanged: {
+                funcName: "gpii.restartDialog.channel.notifyChannel",
+                args: ["onRestartDialogHeightChanged", "{arguments}.0"]
+            },
             close: {
                 funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onClosed"
+                args: ["onClosed"]
             },
             restartNow: {
                 funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onRestartNow"
+                args: ["onRestartNow"]
             },
             restartLater: {
                 funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onRestartLater"
+                args: ["onRestartLater"]
             },
             undoChanges: {
                 funcName: "gpii.restartDialog.channel.notifyChannel",
-                args: "onUndoChanges"
+                args: ["onUndoChanges"]
             }
         }
     });
 
 
     /**
-     * Notifies a channel. Currently it is used only for notifying the
-     * Main process that a button was clicked.
-     * @param channel {String} The channel to be notified
+     * Sends a message to the main process.
+     * @param {...Any} The channel to be notified and the parameters to be passed
+     * with the message.
      */
-    gpii.restartDialog.channel.notifyChannel = function (channel) {
-        ipcRenderer.send(channel);
+    gpii.restartDialog.channel.notifyChannel = function () {
+        ipcRenderer.send.apply(null, arguments);
     };
 
     /**
@@ -93,8 +97,14 @@
         gradeNames: ["gpii.psp.baseRestartWarning"],
 
         selectors: {
-            title: ".flc-popup-title",
-            restartText: ".flc-popup-bodyText"
+            title: ".flc-title",
+            restartText: ".flc-details",
+            solutionNames: ".flc-solutionNames",
+            restartQuestion: ".flc-restartQuestion"
+        },
+
+        markup: {
+            solutionName: "<li>%solutionName</li>"
         },
 
         listeners: {
@@ -102,44 +112,91 @@
                 this: "{that}.dom.title",
                 method: "text",
                 args: "{that}.options.labels.restartTitle"
+            },
+            "onCreate.setQuestion": {
+                this: "{that}.dom.restartQuestion",
+                method: "text",
+                args: "{that}.options.labels.restartQuestion"
+            }
+        },
+
+        modelListeners: {
+            solutionNames: {
+                funcName: "gpii.restartDialog.restartWarning.modifySolutionNamesList",
+                args: ["{that}", "{that}.dom.solutionNames"]
             }
         },
 
         labels: {
             restartTitle: "Changes require restart",
             // Simple override of `gpii.psp.restartWarning`'s labels
-            osRestartText: "Windows needs to restart to apply your changes. \n\n What would you like to do?",
-            restartText: "In order to be applied, some of the changes you made require the following applications to restart: %solutions \n\n What would you like to do?"
+            osRestartText: "Windows needs to restart to apply your changes.",
+            restartText: "In order to be applied, some of the changes you made require the following applications to restart:",
+            restartQuestion: "What would you like to do?"
         }
     });
 
+    /**
+     * If there is at least one application to be restarted, this function creates the
+     * corresponding DOM elements (list items) for each solution name and appends them
+     * to their container. If the whole OS needs to be restarted, the function does not
+     * have a visual effect.
+     * @param that {Component} The `gpii.restartDialog.restartWarning` instance.
+     * @param listElement {jQuery} A jQuery object representing the list into which the
+     * solution name elements must be added.
+     */
+    gpii.restartDialog.restartWarning.modifySolutionNamesList = function (that, listElement) {
+        var solutionNames = that.model.solutionNames,
+            solutionNameMarkup = that.options.markup.solutionName,
+            listItemElement;
+
+        listElement.empty();
+        if (solutionNames[0] === that.options.labels.os) {
+            listElement.hide();
+            return;
+        }
+
+        fluid.each(solutionNames, function (solutionName) {
+            listItemElement = fluid.stringTemplate(solutionNameMarkup, {solutionName: solutionName});
+            listElement.append(listItemElement);
+        });
+        listElement.show();
+    };
 
     /**
      * The wrapper component for the restart warning dialog. Handles visualization and
      * interactions for the require restart functionality.
      */
     fluid.defaults("gpii.restartDialog", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
 
         selectors: {
-            close: ".flc-close"
+            titlebar: ".flc-titlebar"
         },
 
         events: {
+            onHeightChanged: null,
             onClosed: null
         },
 
         listeners: {
+            onHeightChanged: {
+                func: "{that}.channel.notifyHeightChanged",
+                args: ["{arguments}.0"]
+            },
             onClosed: "{channel}.close"
         },
 
         components: {
-            closeBtn: { // Header
-                type: "gpii.psp.widgets.button",
-                container: "{that}.dom.close",
+            titlebar: {
+                type: "gpii.psp.titlebar",
+                container: "{that}.dom.titlebar",
                 options: {
-                    invokers: {
-                        onClick: "{restartDialog}.events.onClosed.fire"
+                    labels: {
+                        appName: "GPII Auto Personalization"
+                    },
+                    listeners: {
+                        "onClose": "{restartDialog}.events.onClosed.fire"
                     }
                 }
             },

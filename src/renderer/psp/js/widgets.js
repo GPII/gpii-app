@@ -81,7 +81,11 @@
 
     fluid.defaults("gpii.psp.widgets.button", {
         gradeNames: ["fluid.viewComponent"],
-        label: null,
+
+        model: {
+            label: null // Expected from implementor
+        },
+
         selectors: {
             label: ".flc-btnLabel"
         },
@@ -98,11 +102,13 @@
                 "this": "{that}.container",
                 method: "click",
                 args: ["{that}.onClick"]
-            },
-            "onCreate.initText": {
+            }
+        },
+        modelListeners: {
+            label: {
                 "this": "{that}.dom.label",
                 method: "text",
-                args: ["{that}.options.label"]
+                args: ["{that}.model.label"]
             }
         },
         invokers: {

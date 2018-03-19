@@ -222,7 +222,7 @@ gpii.tests.dev.testActiveSetChanged = function (tray, menuTemplate, prefSetItemC
 
     // Changed in component
     jqUnit.assertEquals("Active preference set changed properly in component",
-        menuTemplate[prefSetItemClickedIdx].args.path,
+        menuTemplate[prefSetItemClickedIdx].args,
         preferences.activeSet);
 };
 

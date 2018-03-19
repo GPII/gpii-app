@@ -21,20 +21,20 @@
     fluid.registerNamespace("gpii.psp");
 
     /**
-     * A function which should be called whenever the total height of the document
-     * assuming that the settings panel is displayed fully, without the need for it
-     * to scroll (i.e. if there is enough vertical space for the whole document),
-     * changes.
+     * Calculates the total height of the PSP assuming that the settings panel is
+     * displayed fully, without the need for it to scroll (i.e. if there were enough
+     * vertical space for the whole document).
      * @param mainWindow {Component} An instance of mainWindow.
      * @param container {jQuery} A jQuery object representing the mainWindow container.
      * @param content {jQuery} A jQuery object representing the content of the
      * document between the header and footer. This container is scrollable.
      * @param settingsList {jQuery} A jQuery object representing the container in
      * which the various widgets will have their containers inserted.
+     * @param {Number} The height of the PSP assuming the settings panel is displayed
+     * fully.
      */
-    gpii.psp.onContentHeightChanged = function (mainWindow, container, content, settingsList) {
-        var height = container.outerHeight(true) - content.height() + settingsList.height();
-        mainWindow.events.onContentHeightChanged.fire(height);
+    gpii.psp.calculateHeight = function (mainWindow, container, content, settingsList) {
+        return container.outerHeight(true) - content.height() + settingsList.height();
     };
 
     /**
@@ -81,7 +81,7 @@
      * Note: currently only single update of available setting is supported
      */
     fluid.defaults("gpii.psp.mainWindow", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
         model: {
             preferences: {
                 sets: [],
@@ -96,8 +96,8 @@
             content: "#flc-content",
             footer: "#flc-footer",
             settingsList: "#flc-settingsList",
-            heightChangeListener: "#flc-contentHeightChangeListener",
-            restartWarning: "#flc-restartWarning"
+            restartWarning: "#flc-restartWarning",
+            heightListenerContainer: "#flc-settingsList"
         },
         components: {
             splash: {
@@ -116,8 +116,11 @@
                 type: "gpii.psp.titlebar",
                 container: "{that}.dom.titlebar",
                 options: {
+                    labels: {
+                        appName: "GPII Settings"
+                    },
                     listeners: {
-                        "onPSPClose": "{mainWindow}.events.onPSPClose"
+                        "onClose": "{mainWindow}.events.onPSPClose"
                     }
                 }
             },
@@ -159,7 +162,7 @@
                 options: {
                     listeners: {
                         onHeightChanged: {
-                            funcName: "{mainWindow}.onContentHeightChanged"
+                            funcName: "{mainWindow}.updateHeight"
                         },
                         "{mainWindow}.events.onRestartRequired": {
                             funcName: "{that}.updatePendingChanges"
@@ -175,17 +178,6 @@
             footer: {
                 type: "gpii.psp.footer",
                 container: "{that}.dom.footer"
-            },
-            heightChangeListener: {
-                type: "gpii.psp.heightChangeListener",
-                container: "{that}.dom.heightChangeListener",
-                options: {
-                    listeners: {
-                        onHeightChanged: {
-                            funcName: "{mainWindow}.onContentHeightChanged"
-                        }
-                    }
-                }
             }
         },
         modelListeners: {
@@ -211,8 +203,8 @@
                     "{arguments}.0" // accentColor
                 ]
             },
-            "onContentHeightChanged": {
-                funcName: "gpii.psp.onContentHeightChanged",
+            "calculateHeight": {
+                funcName: "gpii.psp.calculateHeight",
                 args: ["{that}", "{that}.container", "{that}.dom.content", "{that}.dom.settingsList"]
             }
         },
@@ -225,7 +217,7 @@
             onPSPClose: null,
             onKeyOut: null,
             onActivePreferenceSetAltered: null,
-            onContentHeightChanged: null,
+            onHeightChanged: null,
 
             onRestartRequired: null,
             onRestartNow: null,

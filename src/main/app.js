@@ -28,7 +28,6 @@ require("./restartDialog.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
-require("./waitDialog.js");
 
 require("./networkCheck.js");
 
@@ -63,31 +62,32 @@ fluid.defaults("gpii.app", {
             activeSet: null
         }
     },
+    // prerequisites
     members: {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
+        errorHandler: {
+            type: "gpii.app.errorHandler",
+            options: {
+                listeners: {
+                    "onFatalError.exit": {
+                        func: "{app}.exit"
+                    }
+                }
+            }
+        },
         installID: {
             type: "gpii.installID"
         },
         factsManager: {
             type: "gpii.app.factsManager"
         },
-        surveyManager: {
-            type: "gpii.app.surveyManager"
-        },
-        dialogManager: {
-            type: "gpii.app.dialogManager",
-            createOnEvent: "onPSPPrerequisitesReady",
+        settingsBroker: {
+            type: "gpii.app.settingsBroker",
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
-                },
-                listeners: {
-                    "{surveyManager}.events.onSurveyRequired": {
-                        func: "{that}.show",
-                        args: ["survey", "{arguments}.0"] // the raw payload
-                    }
                 }
             }
         },
@@ -96,55 +96,51 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onGPIIReady",
             options: {
                 listeners: {
+                    "onSnapsetNameUpdated.updateSnapsetName": "{app}.updateSnapsetName",
                     "onPreferencesUpdated.updateSets": "{app}.updatePreferences",
-                    "onSnapsetNameUpdated.updateSnapsetName": "{app}.updateSnapsetName"
+
+                    "{settingsBroker}.events.onSettingApplied": {
+                        listener: "{that}.updateSetting",
+                        args: ["{arguments}.0"], // setting
+                        excludeSource: ["settingsBroker.undo"]
+                    }
                 },
                 events: {
                     onConnected: "{app}.events.onPSPChannelConnected"
                 }
             }
         },
-        psp: {
-            type: "gpii.app.psp",
-            createOnEvent: "onPSPPrerequisitesReady",
-            options: {
-                model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
-                }
-            }
-        },
-        waitDialog: {
-            type: "gpii.app.waitDialog",
-            createOnEvent: "onPSPPrerequisitesReady",
-            options: {
-                modelListeners: {
-                    "{lifecycleManager}.model.logonChange": {
-                        changePath: "{that}.model.isShown",
-                        value: "{change}.value.inProgress"
-                    }
-                }
-            }
-        },
-        restartDialog: {
-            type: "gpii.app.dialog.restartDialog",
-            createOnEvent: "onPSPPrerequisitesReady"
-        },
-        settingsBroker: {
-            type: "gpii.app.settingsBroker",
+        dialogManager: {
+            type: "gpii.app.dialogManager",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
                 },
-                listeners: {
-                    "{psp}.events.onSettingAltered": {
-                        listener: "{that}.enqueue"
-                    },
-                    "{psp}.events.onActivePreferenceSetAltered": {
-                        listener: "{that}.clearPendingChanges"
+                modelListeners: {
+                    "{lifecycleManager}.model.logonChange": {
+                        func: "{that}.toggle",
+                        args: ["waitDialog", "{change}.value.inProgress"],
+                        excludeSource: "init"
                     }
                 }
             }
+        },
+        surveyManager: {
+            type: "gpii.app.surveyManager",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                listeners: {
+                    onSurveyRequired: {
+                        func: "{dialogManager}.show",
+                        args: ["survey", "{arguments}.0"]
+                    }
+                }
+            }
+        },
+        psp: {
+            type: "gpii.app.pspInApp",
+            createOnEvent: "onPSPPrerequisitesReady"
         },
         tray: {
             type: "gpii.app.tray",
@@ -153,130 +149,9 @@ fluid.defaults("gpii.app", {
                 model: {
                     keyedInUserToken: "{gpii.app}.model.keyedInUserToken",
                     pendingChanges: "{settingsBroker}.model.pendingChanges"
-                }
-            }
-        },
-        /*
-         * A helper component used as mediator for handling communication
-         * between the PSP and gpiiConnector components.
-         */
-        channelMediator: {
-            type: "fluid.component",
-            createOnEvent: "onPSPPrerequisitesReady",
-            options: {
-                listeners: {
-                    "{settingsBroker}.events.onSettingApplied": [{
-                        listener: "{gpiiConnector}.updateSetting",
-                        args: ["{arguments}.0"], // setting
-                        excludeSource: ["settingsBroker.undo"]
-                    }, {
-                        listener: "{psp}.notifyPSPWindow",
-                        args: [
-                            "onSettingUpdated",
-                            "{arguments}.0" // message
-                        ]
-                    }],
-
-                    "{psp}.events.onActivePreferenceSetAltered": {
-                        listener: "{gpiiConnector}.updateActivePrefSet",
-                        args: ["{arguments}.0"] // newPrefSet
-                    },
-
-                    "{gpiiConnector}.events.onPreferencesUpdated": {
-                        listener: "{psp}.notifyPSPWindow",
-                        args: [
-                            "onPreferencesUpdated",
-                            "{arguments}.0" // message
-                        ]
-                    },
-                    "{gpiiConnector}.events.onSettingUpdated": {
-                        listener: "{psp}.notifyPSPWindow",
-                        args: [
-                            "onSettingUpdated",
-                            "{arguments}.0" // message
-                        ]
-                    }
-                }
-            }
-        },
-        /**
-         * Responsible for toggling the "need restart" warnings both
-         * in the psp or as a dialog.
-         */
-        restartWarningController: {
-            type: "fluid.modelComponent",
-            createOnEvent: "onPSPPrerequisitesReady",
-            options: {
-                model: {
-                    isPspShown: "{psp}.model.isShown"
                 },
-                modelListeners: {
-                    // Hide restart dialog whenever PSP is shown
-                    "isPspShown": {
-                        func: "{that}.hideRestartDialogIfNeeded",
-                        args: "{change}.value"
-                    }
-                },
-
-                listeners: {
-                    "{psp}.events.onClosed": {
-                        // show if possible
-                        func: "{restartDialog}.showIfNeeded",
-                        args: [
-                            "{settingsBroker}.model.pendingChanges"
-                        ]
-                    },
-                    "{psp}.events.onRestartNow": [{
-                        changePath: "{restartDialog}.model.isShown",
-                        args: false
-                    }, {
-                        listener: "{settingsBroker}.applyPendingChanges"
-                    }],
-                    "{psp}.events.onUndoChanges": [{
-                        changePath: "{restartDialog}.model.isShown",
-                        args: false
-                    }, {
-                        listener: "{settingsBroker}.undoPendingChanges"
-                    }],
-                    "{psp}.events.onRestartLater": {
-                        changePath: "{restartDialog}.model.isShown",
-                        args: false
-                    },
-
-                    "{restartDialog}.events.onClosed": {
-                        changePath: "{restartDialog}.model.isShown",
-                        args: false
-                    },
-
-                    // Handle setting interactions (undo, restart now, settings interaction)
-                    "{settingsBroker}.events.onRestartRequired" : [{
-                        func: "{that}.hideRestartDialogIfNeeded",
-                        args: [
-                            "{that}.model.isPspShown",
-                            "{arguments}.0" // pendingChanges
-                        ]
-                    },{
-                        func: "{that}.togglePspRestartWarning",
-                        args: ["{arguments}.0"] // pendingChanges
-                    }]
-                },
-
-                invokers: {
-                    hideRestartDialogIfNeeded: {
-                        funcName: "gpii.app.hideRestartDialogIfNeeded",
-                        args: [
-                            "{restartDialog}",
-                            "{arguments}.0", // isPspShown
-                            "{arguments}.1"  // pendingChanges
-                        ]
-                    },
-                    togglePspRestartWarning: {
-                        funcName: "gpii.app.togglePspRestartWarning",
-                        args: [
-                            "{psp}",
-                            "{arguments}.0" // pendingChanges
-                        ]
-                    }
+                events: {
+                    onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
                 }
             }
         }
@@ -354,17 +229,136 @@ fluid.defaults("gpii.app", {
         exit: {
             funcName: "gpii.app.exit",
             args: "{that}"
-        },
-        "handleUncaughtException": {
-            funcName: "gpii.app.handleUncaughtException",
-            args: ["{that}", "{arguments}.0"] // err
         }
-    },
-    distributeOptions: {
-        target: "{flowManager requests stateChangeHandler}.options.listeners.onError",
-        record: "gpii.app.onKeyInError"
     }
 });
+
+
+
+/**
+ * A component for handling errors during app runtime. It triggers showing of an "Error Dialog"
+ * with all the details for the occurred error.
+ *
+ * This error handling system is more or less in a temporary state until GPII-1313 (a mechanism for notifying the
+ * PSP for errors) is finished. Currently we are using error descriptions that are hard-coded in the PSP and
+ * a listener for any fluid `UncaughtException`.
+ */
+fluid.defaults("gpii.app.errorHandler", {
+    gradeNames: ["fluid.component"],
+
+    errorsDescriptionMap: {
+        "EADDRINUSE": {
+            title:   "GPII can't start",
+            subhead: "There is another application listening on port the same port",
+            details: "Stop the other running application and try again. If the problem is still present, contact GPII Technical Support.",
+            fatal: true
+        },
+        "EKEYINFAIL": {
+            title:   "Cannot Key In",
+            subhead: "There might be a problem with the user you are trying to use",
+            details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
+            btnLabel1: "OK",
+            fatal: false
+        },
+        "ENOCONNECTION": {
+            title:   "No Internet connection",
+            subhead: "There seem to be a problem your Internet connectivity",
+            details: "Have you tried turning it off and on again? If the problem is still present, contact GPII Technical Support.",
+            btnLabel1: "OK",
+            btnLabel2: "Cancel",
+            fatal: false
+        }
+    },
+
+    events: {
+        onFatalError: null
+    },
+
+    listeners: {
+        "onCreate.registerErrorListener": {
+            funcName: "gpii.app.errorHandler.registerErrorListener",
+            args: ["{that}"]
+        },
+        "onDestroy.clearListener": {
+            funcName: "fluid.onUncaughtException.removeListener",
+            args: ["gpii.app.errorHandler"]
+        }
+    },
+
+    // Attach keyIn error listener to the core component
+    distributeOptions: {
+        target: "{flowManager requests stateChangeHandler}.options.listeners.onError",
+        record: "gpii.app.errorHandler.onKeyInError"
+    },
+
+    invokers: {
+        handleUncaughtException: {
+            funcName: "gpii.app.errorHandler.handleUncaughtException",
+            args: [
+                "{that}",
+                "{dialogManager}",
+                "{that}.options.errorsDescriptionMap",
+                "{arguments}.0" // error
+            ]
+        }
+    }
+});
+
+/**
+ * A function which is called whenever an error occurs while keying in. Note that a real error
+ * would have its `isError` property set to true.
+ * @param error {Object} The error which has occurred.
+ */
+gpii.app.errorHandler.onKeyInError = function (error) {
+    if (error.isError) {
+        fluid.onUncaughtException.fire({
+            code: "EKEYINFAIL"
+        });
+    }
+};
+
+/**
+ * Handles the process of displaying errors through the usage of the "error dialog".
+ * @param app {Component} An instance of gpii.app.
+ * @param dialogManager {Component} An instance of `gpii.app.dialogManager`.
+ * @param errorsDescription {Object} A map with more detailed description for the errors.
+ * @param error {Object} The error which has occurred.
+ */
+gpii.app.errorHandler.handleUncaughtException = function (that, dialogManager, errorsDescription, error) {
+    var errCode = error && error.code,
+        errDetails = errorsDescription[errCode],
+        errorOptions = fluid.extend(true, {}, errDetails, {
+            errCode: errCode
+        });
+
+    if (!fluid.isValue(errDetails)) {
+        return;
+    }
+
+    dialogManager.hide("waitDialog");
+    dialogManager.show("error", errorOptions);
+
+    if (errDetails.fatal) {
+        dialogManager.error.applier.modelChanged.addListener("isShown", function (isShown) {
+            if (!isShown) {
+                that.onFatalError.fire(errDetails);
+            }
+        });
+    }
+};
+
+/**
+ * Register a global listener for all fluid exceptions.
+ *
+ * @param errorHandler {Component} The `gpii.app.errorHandler` component
+ */
+gpii.app.errorHandler.registerErrorListener = function (errorHandler) {
+    fluid.onUncaughtException.addListener(function (err) {
+        fluid.log(err);
+        errorHandler.handleUncaughtException(err);
+    }, "gpii.app.errorHandler", "last");
+};
+
 
 /**
  * Either hides or shows the warning in the PSP.
@@ -373,7 +367,6 @@ fluid.defaults("gpii.app", {
  * @param pendingChanges {Object[]} A list of the current state of pending changes
  */
 gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
-
     if (pendingChanges.length === 0) {
         psp.hideRestartWarning();
     } else {
@@ -382,32 +375,24 @@ gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
 };
 
 /**
- * Closes "Restart Dialog" in one of the following cases:
- * - the PSP is being shown;
- * - there are no pending changes any more
- *
- * @param restartDialog {Component} The `gpii.app.restartDialog` component
- * @param isPspShown {Boolean} Whether the psp window is shown
- * @param pendingChanges {Object[]} A list of the current state of pending changes
+ * Hides the restart dialog if the PSP is being shown.
+ * @param dialogManager {Component} The `gpii.app.dialogManager` instance
+ * @param isPspShown {Boolean} Whether the psp window is being shown
  */
-gpii.app.hideRestartDialogIfNeeded = function (restartDialog, isPspShown, pendingChanges) {
-    if (isPspShown || (pendingChanges && pendingChanges.length === 0)) {
-        // ensure the dialog is hidden
-        // NOTE: this may have no effect in case the dialog is already hidden
-        restartDialog.applier.change("isShown", false);
+gpii.app.hideRestartDialogIfNeeded = function (dialogManager, isPspShown) {
+    if (isPspShown) {
+        dialogManager.hide("restartDialog");
     }
 };
 
 /**
- * A function which is called whenever an error occurs while keying in. Note that a real error
- * would have its `isError` property set to true.
- * @param error {Object} The error which has occurred.
+ * Shows the restart dialog if there is at least one pending change.
+ * @param dialogManager {Component} The `gpii.app.dialogManager` instance
+ * @param pendingChanges {Object[]} A list containing the current pending changes
  */
-gpii.app.onKeyInError = function (error) {
-    if (error.isError) {
-        fluid.onUncaughtException.fire({
-            code: "EKEYINFAIL"
-        });
+gpii.app.showRestartDialogIfNeeded = function (dialogManager, pendingChanges) {
+    if (pendingChanges.length > 0) {
+        dialogManager.show("restartDialog", pendingChanges);
     }
 };
 
@@ -491,62 +476,6 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
         that.updateKeyedInUserToken(null);
     }
 };
-
-/**
- * Listen on uncaught exceptions and display it to the user is if it's interesting.
- * @param that {Component} An instance of gpii.app.
- */
-gpii.app.handleUncaughtException = function (that, err) {
-    var tray = that.tray.tray;
-    var handledErrors = {
-        "EADDRINUSE": {
-            message: "There is another application listening on port " + err.port,
-            fatal: true
-        },
-        "EKEYINFAIL": {
-            message: "Unable to key in. Please try again.",
-            fatal: false
-        }
-    };
-
-    // Restore the state of the wait dialog
-    that.waitDialog.applier.change("isShown", false);
-
-    if (err.code) {
-        var error = handledErrors[err.code];
-        if (error) {
-            tray.displayBalloon({
-                title: error.title || "GPII Error",
-                content: error.message || err.message,
-                icon: fluid.module.resolvePath("%gpii-app/src/icons/gpii-icon-balloon.png")
-            });
-            if (error.fatal) {
-                var timeout;
-                var quit = function () {
-                    if (timeout) {
-                        clearTimeout(timeout);
-                        timeout = null;
-                        that.exit();
-                    }
-                };
-                // Exit when the balloon is dismissed.
-                tray.on("balloon-closed", quit);
-                tray.on("balloon-click", quit);
-                // Also terminate after a timeout - sometimes the balloon doesn't show, or the event doesn't fire.
-                // TODO: See GPII-2348 about this.
-                timeout = setTimeout(quit, 12000);
-            }
-        }
-    }
-};
-
-fluid.onUncaughtException.addListener(function (err) {
-    var app = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app");
-    if (app.length > 0) {
-        app[0].handleUncaughtException(err);
-    }
-}, "gpii.app", "last");
-
 
 // A wrapper that wraps gpii.app as a subcomponent. This is the grade need by configs/app.json
 // to distribute gpii.app as a subcomponent of GPII flow manager since infusion doesn't support

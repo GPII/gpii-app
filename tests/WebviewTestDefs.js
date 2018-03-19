@@ -87,10 +87,10 @@ gpii.tests.webview.testDefs = {
             event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
             listener: "fluid.identity"
         }, {
-            func: "{that}.app.dialogManager.survey.surveyDialog.executeCommand",
+            func: "{that}.app.dialogManager.survey.dialog.executeCommand",
             args: [clickBreakOutLink]
         }, {
-            event: "{that}.app.dialogManager.survey.surveyDialog.events.onSurveyClose",
+            event: "{that}.app.dialogManager.survey.dialog.events.onSurveyClose",
             listener: "jqUnit.assert",
             args: ["Survey was closed by clicking on the break-out link"]
         }
@@ -102,13 +102,13 @@ gpii.tests.webview.testDefs = {
             event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
             listener: "fluid.identity"
         }, {
-            func: "{that}.app.dialogManager.survey.surveyDialog.executeCommand",
+            func: "{that}.app.dialogManager.survey.dialog.executeCommand",
             args: [clickNonBreakOutLink]
         }, {
             func: "jqUnit.assertTrue",
             args: [
                 "Survey was not closed by clicking on a non-break-out link",
-                "{that}.app.dialogManager.survey.surveyDialog.model.isShown"
+                "{that}.app.dialogManager.survey.dialog.model.isShown"
             ]
         }
     ], [ // Test closing the survey using a close button within the content of the survey
@@ -119,10 +119,10 @@ gpii.tests.webview.testDefs = {
             event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
             listener: "fluid.identity"
         }, {
-            func: "{that}.app.dialogManager.survey.surveyDialog.executeCommand",
+            func: "{that}.app.dialogManager.survey.dialog.executeCommand",
             args: [clickCloseButton]
         }, {
-            event: "{that}.app.dialogManager.survey.surveyDialog.events.onSurveyClose",
+            event: "{that}.app.dialogManager.survey.dialog.events.onSurveyClose",
             listener: "jqUnit.assert",
             args: ["Survey was closed by clicking on the close button within the content"]
         }
@@ -134,10 +134,10 @@ gpii.tests.webview.testDefs = {
             event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
             listener: "fluid.identity"
         }, {
-            func: "{that}.app.dialogManager.survey.surveyDialog.executeCommand",
+            func: "{that}.app.dialogManager.survey.dialog.executeCommand",
             args: [addEndOfSurveyElement]
         }, {
-            event: "{that}.app.dialogManager.survey.surveyDialog.events.onSurveyClose",
+            event: "{that}.app.dialogManager.survey.dialog.events.onSurveyClose",
             listener: "jqUnit.assert",
             args: ["Survey was closed automatically when its end has been reached"]
         }
@@ -149,13 +149,13 @@ gpii.tests.webview.testDefs = {
             event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
             listener: "fluid.identity"
         }, {
-            func: "{that}.app.dialogManager.survey.surveyDialog.executeCommand",
+            func: "{that}.app.dialogManager.survey.dialog.executeCommand",
             args: [addEndOfSurveyElement]
         }, {
             func: "jqUnit.assertTrue",
             args: [
                 "Survey was not closed when its end has been reached as it is not configured to closeOnSubmit",
-                "{that}.app.dialogManager.survey.surveyDialog.model.isShown"
+                "{that}.app.dialogManager.survey.dialog.model.isShown"
             ]
         }
     ], {

@@ -1,0 +1,42 @@
+.fl-titlebar {
+    height: 29px;
+}
+
+.fl-titlebar img {
+    float: left;
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+}
+
+.fl-titlebar .fl-appName {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 24px;
+
+    cursor: default;
+}
+
+.fl-titlebar .fl-closeBtn {
+    float: right;
+
+    line-height: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--main-theme-text-color);
+}
+
+.fl-titlebar .btn-regular {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+
+    background: transparent;
+    border: none;
+}
+
+
+.fl-titlebar .fl-closeBtn:hover,
+.fl-titlebar .fl-closeBtn:focus {
+    color: rgba(0, 0, 0, 0.6);
+}

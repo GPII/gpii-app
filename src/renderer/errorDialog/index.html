@@ -1,53 +1,54 @@
 <html>
     <head>
-        <title>GPII Auto Personalization</title>
+        <title>GPII Error</title>
         <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
         <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="../common/css/dialog.css">
-        <link rel="stylesheet" href="../common/css/heightObservable.css">
         <link rel="stylesheet" href="../common/css/titlebar.css">
-        <link rel="stylesheet" href="css/restartDialog.css">
-
+        <link rel="stylesheet" href="../common/css/heightObservable.css">
+        <link rel="stylesheet" href="css/main.css">
 
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+
         <script type="text/javascript" src="../psp/js/widgets.js"></script>
         <script type="text/javascript" src="../common/js/titlebar.js"></script>
-        <script type="text/javascript" src="../psp/js/restartWarning.js"></script>
-        <script type="text/javascript" src="js/restartDialog.js"></script>
+        <script type="text/javascript" src="js/errorDialog.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
         <script type="text/javascript" src="../common/js/heightObservable.js"></script>
     </head>
     <body class="fl-dialog-resizable">
-        <div class="fl-dialog">
+        <div class="fl-dialog fl-dialog-fullScreen">
             <div class="fl-dialog-contentWrapper">
                 <div class="flc-titlebar fl-titlebar">
-                    <span class="flc-appName fl-appName"></span>
+                    <span class="flc-appName fl-appName" tabindex="0"></span>
                     <button class="flc-closeBtn fl-closeBtn btn btn-regular">&#x2715;</button>
                 </div>
+
                 <div class="fl-dialog-content">
                     <img class="fl-dialog-contentIcon" src="../../icons/gpii-color.ico">
 
-                    <div class="fl-dialog-contentText">
+                    <div class="fl-dialog-contentText" tabindex="0">
                         <div class="flc-title fl-title"></div>
+                        <div class="flc-subhead fl-details"></div>
                         <div class="flc-details fl-details"></div>
-                        <ul class="flc-solutionNames fl-details"></ul>
-                        <div class="flc-restartQuestion fl-details"></div>
                     </div>
                     <div class="fl-dialog-controls">
-                        <button class="flc-restartUndo btn fl-btn">
+                        <button class="flc-btn-1 btn fl-btn">
                             <span class="flc-btnLabel"></span>
                         </button>
-                        <button class="flc-restartNow btn fl-btn">
+                        <button class="flc-btn-2 btn fl-btn">
                             <span class="flc-btnLabel"></span>
                         </button>
-                        <button class="flc-restartLater btn fl-btn">
+                        <button class="flc-btn-3 btn fl-btn">
                             <span class="flc-btnLabel"></span>
                         </button>
                     </div>
                 </div>
+
                 <div class="fl-dialog-footer">
+                    <span class="flc-errCode" tabindex="0"></span>
                     <span class="fl-gpiiIcon">GPII <img src="../../icons/gear-cloud-black.png"></span>
                     <div class="clear-both"></div>
                 </div>

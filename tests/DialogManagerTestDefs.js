@@ -1,5 +1,5 @@
 /*
- * GPII App Integration Test Definitions
+ * GPII Dialog Manager Integration Test Definitions
  *
  * Copyright 2017 OCAD University
  *
@@ -27,8 +27,6 @@ fluid.registerNamespace("gpii.tests.dialogManager.testDefs");
 var surveyDialogFixture = {
     url: "https://fluidproject.org/",
     window: {
-        width: 500,
-        height: 700,
         resizable: true,
         closable: true,
         minimizable: false,
@@ -48,13 +46,10 @@ gpii.tests.dialogManager.testManagerAfterKeyIn = function (dialogManager, expect
 };
 
 gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, surveyDialogFixture) {
-    var dialog = dialogManager.survey.surveyDialog.dialog,
-        windowAttrs = surveyDialogFixture.window,
-        dialogSize = dialog.getSize();
+    var dialog = dialogManager.survey.dialog.dialog,
+        windowAttrs = surveyDialogFixture.window;
 
     jqUnit.assertTrue("Survey dialog is visible", dialog.isVisible());
-    // Testing only the width of the survey dialog because of a bug in the vagrant test box.
-    jqUnit.assertEquals("Survey dialog has correct width", windowAttrs.width, dialogSize[0]);
     jqUnit.assertEquals("Survey dialog resizable state is correct",
         windowAttrs.resizable,
         dialog.isResizable());
@@ -65,18 +60,18 @@ gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, survey
 };
 
 gpii.tests.dialogManager.testSurveyDialogHidden = function (dialogManager) {
-    var dialog = dialogManager.survey.surveyDialog.dialog;
+    var dialog = dialogManager.survey.dialog.dialog;
     jqUnit.assertFalse("Survey dialog is hidden", dialog.isVisible());
 };
 
 gpii.tests.dialogManager.testSurveyDialogClosed = function (dialogManager) {
     jqUnit.assertFalse("There is no survey dialog available",
-        dialogManager.survey.surveyDialog);
+        dialogManager.survey.dialog);
 };
 
 gpii.tests.dialogManager.testDefs = {
     name: "Dialog manager integration tests",
-    expect: 11,
+    expect: 10,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"

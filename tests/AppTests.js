@@ -122,7 +122,7 @@ jqUnit.test("Menu.getShowPSP", function () {
 });
 
 gpii.tests.app.testPrefSetMenuItem = function (item, label, checked) {
-    var prefSetMenuItemEvent = "onActivePrefSetUpdate";
+    var prefSetMenuItemEvent = "onActivePreferenceSetAltered";
     jqUnit.assertEquals("Pref set menu item has proper click handler", prefSetMenuItemEvent, item.click);
 
     var prefSetMenuType = "radio";

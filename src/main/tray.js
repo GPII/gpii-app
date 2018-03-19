@@ -42,8 +42,16 @@ fluid.defaults("gpii.app.tray", {
     },
     components: {
         menu: {
-            type: "gpii.app.menuInApp"
+            type: "gpii.app.menuInApp",
+            options: {
+                events: {
+                    onActivePreferenceSetAltered: "{tray}.events.onActivePreferenceSetAltered"
+                }
+            }
         }
+    },
+    events: {
+        onActivePreferenceSetAltered: null // passed from parent
     },
     model: {
         keyedInUserToken: null,
