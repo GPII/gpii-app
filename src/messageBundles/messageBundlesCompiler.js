@@ -3,6 +3,7 @@
 var fs = require("fs");
 var path = require("path");
 
+
 // fr_FR, en -> ["en", "fr", "fr_FR"]
 function getLocaleVersions(locale, defaultLocale) {
     var segments = locale.split("_");
@@ -18,7 +19,7 @@ function getLocaleVersions(locale, defaultLocale) {
     return versions;
 }
 
-function enchanceMessageBundles(messageBundles, defaultLocale) {
+function includeFallbackOptions(messageBundles, defaultLocale) {
     var result = {};
 
     Object.keys(messageBundles).forEach(function (locale) {
@@ -37,58 +38,43 @@ function enchanceMessageBundles(messageBundles, defaultLocale) {
     return result;
 }
 
-// console.log(mergeMessageBundles(messageBundles, "en"));
 
-
-/*
-give index
-read all folders of `messageBundles`
-merge these files under same locale
-merge locales
-*/
-
-/*
-
-app
-  |__ messageBundles
-  |__ src
-     |__ renderer
-        |__ 
-
-
-
-
- */
-
-// TODO extarct
-// TODO search dir recursivly
-//
-// gpii-app-messageBundle_en.json
-// gpii-app-messageBundle_fr.json
-// gpii-app-messageBundle_bg.json
-//
-// gpii-psp-restartDialog_en.json
-//
-function loadMessageBundles(bundlesDir, fileType, parser) {
-    // read every json file from that index down (support subdirs?)
-    var files = fs.readdirSync(bundlesDir);
+function collectFilesRec(cwd, fileType) {
     var typeRegex = "\\." + fileType + "$";
-    // TODO on error
-    var loadedFiles = files
-        .filter(function (filename) {
+
+    var messageBundlesDir = "messageBundles";
+
+    var items = fs.readdirSync(cwd),
+        dirs = items.filter(function isDirectory(name) {
+            return fs.lstatSync(path.join(cwd, name)).isDirectory();
+        }), files = [];
+
+    // We want to load json files only from message bundle dirs
+    if (cwd.includes(messageBundlesDir)) {
+        files = items.filter(function matchesFileType(filename) {
             return filename.match(typeRegex);
-        })
-        .reduce(function (acc, filename) {
-            // TODO error
-            acc.push({
-                messages: parser.parse(fs.readFileSync(path.join(bundlesDir, filename))),
-                filename: filename
-            });
+        }).map(function (filename) {
+            return path.join(cwd, filename);
+        });
+    }
 
-            return acc;
-        }, []);
+    // unite files from subdirectories
+    var subfolerBundles = dirs.reduce(function (acc, dirName) {
+        return acc.concat(collectFilesRec(path.join(cwd, dirName), fileType));
+    }, []);
 
-    return loadedFiles;
+    return files.concat(subfolerBundles);
+};
+
+function loadMessageBundlesRec(bundlesDir, fileType, parser) {
+    var bundleFiles = collectFilesRec(bundlesDir, fileType);
+
+    return bundleFiles.map(function (filePath) {
+        return {
+            messages: parser.parse(fs.readFileSync(filePath)),
+            filePath: filePath
+        };
+    });
 };
 
 function extractLocaleFromFilename(filename) {
@@ -100,7 +86,7 @@ function extractLocaleFromFilename(filename) {
 }
 
 /*
- * Merge all different bundles under same locale.
+ * Merge all different bundles under the same locale.
  *
  Results:
  {
@@ -114,7 +100,7 @@ function extractLocaleFromFilename(filename) {
     }
  }
  */
-function constructMessageBundles(loadedBundles) {
+function mergeMessageBundles(loadedBundles) {
     var messageBundles = {};
 
     loadedBundles.forEach(function (bundle) {
@@ -128,10 +114,19 @@ function constructMessageBundles(loadedBundles) {
     return messageBundles;
 };
 
-module.exports.buildMessageBundles = function (bundlesDir, fileType, parser, defaultLocale) { 
-    var messageBundlesList = loadMessageBundles(bundlesDir, fileType, parser);
-    var rawMessageBundles = constructMessageBundles(messageBundlesList);
-    var compiledMessageBundle = enchanceMessageBundles(rawMessageBundles, defaultLocale);
+module.exports.buildMessageBundles = function (bundlesDir, fileType, parser, defaultLocale) {
+    var messageBundlesList;
+
+    try {
+        messageBundlesList = loadMessageBundlesRec(bundlesDir, fileType, parser);
+    } catch (err) {
+        // ENOENT, SyntaxError
+        console.log(err.message);
+        throw err;
+    }
+
+    var rawMessageBundles = mergeMessageBundles(messageBundlesList);
+    var compiledMessageBundle = includeFallbackOptions(rawMessageBundles, defaultLocale);
 
     return compiledMessageBundle;
 };

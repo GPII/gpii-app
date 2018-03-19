@@ -95,7 +95,7 @@ fluid.defaults("gpii.app.errorDialog", {
     config: {
         attrs: {
             width: 400,
-            height: 100, // This is to be changed with respect to the content needs
+            height: 250, // This is to be changed with respect to the content needs
 
             title:   null,
             subhead: null,
