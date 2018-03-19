@@ -184,7 +184,7 @@ fluid.defaults("gpii.app.psp", {
         },
 
         "onDestroy.cleanupElectron": {
-            this: "{that}.pspWindow",
+            "this": "{that}.pspWindow",
             method: "destroy"
         },
 

@@ -119,6 +119,9 @@ gpii.app.dialogManager.queue.enqueue = function (that, options) {
  * creates it via an event).
  * In order to show/hide/close a dialog, the IoCSS selector of the particular
  * component needs to be provided as an argument of the corresponding function.
+ * All dialogs which have a `type` equal to the value of `sequentialDialogsGrade` (currently
+ * defaulted to `gpii.app.error`) will enter a visibility queue and each of these will
+ * only be shown once the previous such has been hidden/destroyed (see GPII-2871).
  */
 fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
