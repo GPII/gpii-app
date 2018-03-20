@@ -40,15 +40,6 @@ fluid.defaults("gpii.app.messageBundles", {
         }
     },
 
-    listeners: {
-        // XXX DEV
-        onCreate: {
-            this: "console",
-            method: 'log',
-            args: "===========HERE=============="
-        }
-    },
-
     invokers: {
         updateMessages: {
             funcName: "gpii.app.messageBundles.updateMessages",
