@@ -98,7 +98,7 @@
 
         model: {
             messages: {
-                os: "{messageBundles}.model.messages.gpii_app_restartWarning_os",
+                osName: "{messageBundles}.model.messages.gpii_app_restartWarning_osName",
                 restartTitle: "{messageBundles}.model.messages.gpii_app_restartWarning_restartTitle",
                 restartQuestion: "{messageBundles}.model.messages.gpii_app_restartWarning_restartQuestion"
             }
@@ -149,7 +149,7 @@
             listItemElement;
 
         listElement.empty();
-        if (solutionNames[0] === that.model.messages.os) {
+        if (solutionNames[0] === that.model.messages.osName) {
             listElement.hide();
             return;
         }

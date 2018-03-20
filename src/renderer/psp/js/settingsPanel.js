@@ -76,6 +76,20 @@
                 appRestartRequired: "{messageBundles}.model.messages.gpii_psp_settingPresenter_appRestartRequired"
             }
         },
+        modelRelay: {
+            restartIconTooltip: {
+                target: "restartIconTooltip",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.psp.settingPresenter.getRestartIconTooltip",
+                    args: [
+                        "{that}.model",
+                        "{that}.model.pendingChanges",
+                        "{that}.model.messages"
+                    ]
+                }
+            }
+        },
         widgetConfig: {
             widgetOptions: null,
             grade: null
@@ -100,6 +114,19 @@
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model", "{change}.oldValue"],
                 excludeSource: ["init", "psp.mainWindow"]
+            },
+            pendingChanges: {
+                funcName: "gpii.psp.settingPresenter.updateRestartIcon",
+                args: [
+                    "{that}",
+                    "{change}.value",
+                    "{that}.dom.restartIcon"
+                ]
+            },
+            restartIconTooltip: {
+                this: "{that}.dom.restartIcon",
+                method: "attr",
+                args: ["title", "{change}.value"]
             }
         },
         listeners: {
@@ -122,8 +149,8 @@
                 funcName: "gpii.psp.settingPresenter.showMemoryIcon",
                 args: ["{that}", "{that}.dom.memoryIcon"]
             },
-            "onCreate.showRestartIcon": {
-                funcName: "gpii.psp.settingPresenter.showRestartIcon",
+            "onCreate.toggleRestartIcon": {
+                funcName: "gpii.psp.settingPresenter.toggleRestartIcon",
                 args: ["{that}", "{that}.dom.restartIcon"]
             },
             // Update value locally in order for the corresponding
@@ -137,12 +164,8 @@
                 ]
             },
             "onRestartRequired": {
-                funcName: "gpii.psp.settingPresenter.updateRestartIcon",
-                args: [
-                    "{that}",
-                    "{arguments}.0", // pendingChanges
-                    "{that}.dom.restartIcon"
-                ]
+                changePath: "pendingChanges",
+                value: "{arguments}.0"
             }
         }
     });
@@ -158,20 +181,24 @@
     };
 
     /**
-     * Returns the appropriate tooltip label for the restart icon depending on whether the
+     * Returns the appropriate tooltip for the restart icon depending on whether the
      * setting has has a "manualRestart" or an "OSRestart" liveness, and on whether the
      * user has modified the setting's value.
      * @param setting {Object} An object representing the setting.
-     * @param hasPendingChange {Boolean} Whether the user has modified the setting for which
-     * the restart icon tooltip label is to be calculated.
-     * @param messages {Object} A set of messages to choose from when calculating the restart icon
-     * tooltip label.
-     * @return The tooltip label for the restart icon.
+     * @param pendingChanges {Array} An array of all pending setting changes that the user
+     * has made.
+     * @param messages {Object} A set of messages to choose from when calculating the restart
+     * icon tooltip.
+     * @return The tooltip for the restart icon.
      */
-    gpii.psp.settingPresenter.getRestartIconLabel = function (setting, hasPendingChange, messages) {
+    gpii.psp.settingPresenter.getRestartIconTooltip = function (setting, pendingChanges, messages) {
+        var hasPendingChange = fluid.find_if(pendingChanges, function (change) {
+            return change.path === setting.path;
+        });
+
         if (setting.liveness === "manualRestart") {
-            var label = hasPendingChange ? messages.appRestartRequired : messages.appRestart;
-            return fluid.stringTemplate(label, {
+            var tooltip = hasPendingChange ? messages.appRestartRequired : messages.appRestart;
+            return fluid.stringTemplate(tooltip, {
                 solutionName: fluid.isValue(setting.solutionName) ? setting.solutionName : setting.schema.title
             });
         }
@@ -187,17 +214,14 @@
      * @param that {Component} An instance of `gpii.psp.settingPresenter`.
      * @param restartIcon {jQuery} A jQuery object representing the restart icon.
      */
-    gpii.psp.settingPresenter.showRestartIcon = function (that, restartIcon) {
+    gpii.psp.settingPresenter.toggleRestartIcon = function (that, restartIcon) {
         var liveness = that.model.liveness,
-            styles = that.options.styles,
-            messages = that.model.messages;
+            styles = that.options.styles;
 
         if (liveness === "manualRestart" || liveness === "OSRestart") {
-            var iconClass = liveness === "manualRestart" ? styles.appRestartIcon : styles.osRestartIcon,
-                label = gpii.psp.settingPresenter.getRestartIconLabel(that.model, false, messages);
+            var iconClass = liveness === "manualRestart" ? styles.appRestartIcon : styles.osRestartIcon;
             restartIcon
                 .addClass(iconClass)
-                .attr("title", label)
                 .show();
         } else {
             restartIcon.hide();
@@ -215,8 +239,7 @@
     gpii.psp.settingPresenter.updateRestartIcon = function (that, pendingChanges, restartIcon) {
         var liveness = that.model.liveness,
             path = that.model.path,
-            styles = that.options.styles,
-            messages = that.model.messages;
+            styles = that.options.styles;
 
         if (liveness === "manualRestart" || liveness === "OSRestart") {
             var pendingChange = fluid.find_if(pendingChanges, function (change) {
@@ -228,9 +251,6 @@
             } else {
                 restartIcon.removeClass(styles.valueChanged);
             }
-
-            var label = gpii.psp.settingPresenter.getRestartIconLabel(that.model, pendingChange, messages);
-            restartIcon.attr("title", label);
         }
     };
 

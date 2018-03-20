@@ -17,7 +17,7 @@
         "gpii_psp_settingPresenter_appRestart": "%solutionName - To change this setting,\nthe app requires a restart.",
         "gpii_psp_settingPresenter_appRestartRequired": "%solutionName - You changed this setting,\nwhich requires the app to restart.",
 
-        "gpii_app_restartWarning_os": "Windows",
+        "gpii_app_restartWarning_osName": "Windows",
         "gpii_app_restartWarning_restartTitle": "Changes require restart",
         "gpii_app_restartWarning_osRestartText": "Windows needs to restart to apply your changes.",
         "gpii_app_restartWarning_restartText": "In order to be applied, some of the changes you made require the following applications to restart:",
