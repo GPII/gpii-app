@@ -112,16 +112,8 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
             type: "gpii.app.dialog.restartDialog.channel",
             options: {
                 events: {
+                    onContentHeightChanged: "{restartDialog}.events.onContentHeightChanged",
                     onClosed: "{restartDialog}.events.onClosed"
-                },
-                listeners: {
-                    "onContentHeightChanged": {
-                        func: "{dialog}.resize",
-                        args: [
-                            "{restartDialog}.options.config.attrs.width",
-                            "{arguments}.0" // windowHeight
-                        ]
-                    }
                 }
             }
         }

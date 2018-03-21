@@ -16,11 +16,11 @@
 "use strict";
 
 var fluid         = require("infusion");
-var electron      = require("electron");
 var BrowserWindow = require("electron").BrowserWindow;
 
 var gpii  = fluid.registerNamespace("gpii");
 
+require("./resizable.js");
 require("./utils.js");
 
 
@@ -48,7 +48,7 @@ require("./utils.js");
  *   `fileSuffixPath = "waitDialog/index.html"`
  */
 fluid.defaults("gpii.app.dialog", {
-    gradeNames: ["fluid.modelComponent"],
+    gradeNames: ["fluid.modelComponent", "gpii.app.resizable"],
 
     model: {
         isShown: false
@@ -96,27 +96,9 @@ fluid.defaults("gpii.app.dialog", {
             namespace: "impl"
         }
     },
-    events: {
-        onDisplayMetricsChanged: null
-    },
     listeners: {
         "onCreate.positionWindow": {
             func: "{that}.positionWindow"
-        },
-        "onCreate.addDisplayMetricsListener": {
-            func: "gpii.app.dialog.addDisplayMetricsListener",
-            args: ["{that}"]
-        },
-        "onDisplayMetricsChanged.handleDisplayMetricsChange": {
-            func: "gpii.app.dialog.handleDisplayMetricsChange",
-            args: [
-                "{that}",
-                "{arguments}.2" // changedMetrics
-            ]
-        },
-        "onDestroy.removeDisplayMetricsListener": {
-            func: "gpii.app.dialog.removeDisplayMetricsListener",
-            args: ["{that}"]
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -150,40 +132,6 @@ fluid.defaults("gpii.app.dialog", {
         }
     }
 });
-
-/**
- * Registers a listener to be called whenever the `display-metrics-changed`
- * event is emitted by the electron screen.
- * @param that {Component} The `gpii.app.dialog` component.
- */
-gpii.app.dialog.addDisplayMetricsListener = function (that) {
-    electron.screen.on("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
-};
-
-/**
- * Handle electron's display-metrics-changed event by resizing the dialog if
- * necessary.
- * @param that {Component} The `gpii.app.dialog` component.
- * @param changedMetrics {Array} An array of strings that describe the changes.
- * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
- */
-gpii.app.dialog.handleDisplayMetricsChange = function (that, changedMetrics) {
-    if (!changedMetrics.includes("scaleFactor")) {
-        var attrs = that.options.config.attrs;
-        that.resize(attrs.width, attrs.height);
-    }
-};
-
-/**
- * Removes the listener for the `display-metrics-changed` event. This should
- * be done when the component gets destroyed in order to avoid memory leaks,
- * as some dialogs are created and destroyed dynamically (i.e. before the
- * PSP application terminates).
- * @param that {Component} The `gpii.app.dialog` component.
- */
-gpii.app.dialog.removeDisplayMetricsListener = function (that) {
-    electron.screen.removeListener("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
-};
 
 /**
  * Builds a file URL inside the application **Working Directory**.
@@ -221,10 +169,7 @@ gpii.app.dialog.makeDialog = function (windowOptions, url) {
 /**
  * Default show/hide behaviour of the electron `BrowserWindow` dialog, depending
  * on the `isShown` flag state.
- * In case it is shown, resets the position and shows the current dialog (`BrowserWindow`).
- * The reset is needed in order to handle cases such as resolution or
- * DPI settings changes.
- * @param dialog {Component} The diolog component to be shown
+ * @param dialog {Component} The diolog component to be shown or hidden.
  * @param isShown {Boolean} Whether the window has to be shown
  */
 gpii.app.dialog.toggle = function (dialog, isShown) {
