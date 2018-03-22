@@ -32,7 +32,9 @@ fluid.defaults("gpii.app.messageBundles", {
 
     defaultLocale: "en_us",
 
-    messageBundles: <%= compiledMessageBundles %>,
+    messageBundlesPath: "build/gpii-app-messageBundles.json",
+
+    messageBundles: "@expand:gpii.app.messageBundles.loadMessageBundles({that}.options.messageBundlesPath)",
 
     modelListeners: {
         "locale": {
@@ -53,6 +55,10 @@ fluid.defaults("gpii.app.messageBundles", {
     }
 });
 
+gpii.app.messageBundles.loadMessageBundles = function (messageBundlesPath) {
+    var resolvedPath = require("path").resolve(messageBundlesPath);
+    return require(resolvedPath);
+};
 
 /**
  * Make a bulk update of the currently set translations
@@ -75,4 +81,3 @@ gpii.app.messageBundles.updateMessages = function (that, messageBundles, locale,
     console.log("Update: ", messages);
     that.applier.change("messages", messages);
 };
-

@@ -19,9 +19,8 @@ module.exports = function (grunt) {
         compileMessages: {
             defaults: {
                 messageCompilerPath: "./src/messageBundles/messageBundlesCompiler.js",
-                messageBundlesTemplatePath: "./src/messageBundles/gpii-app-messageBundles_all.js.tpl",
                 messagesPath: "./src/messageBundles",
-                resultFilePath: "./build/gpii-app-messageBundles_compiled.js"
+                resultFilePath: "./build/gpii-app-messageBundles.json"
             }
         }
     });
@@ -39,15 +38,6 @@ module.exports = function (grunt) {
 
         var compiledMessageBundles = buildMessageBundles(this.data.messagesPath, "json", JSON, "en");
 
-
-        var template = grunt.template.process(
-            grunt.file.read(this.data.messageBundlesTemplatePath),
-            {
-                data: {
-                    compiledMessageBundles: JSON.stringify(compiledMessageBundles)
-                }
-            });
-
-        grunt.file.write(this.data.resultFilePath, template);
+        grunt.file.write(this.data.resultFilePath, JSON.stringify(compiledMessageBundles, null, 4));
     });
 };
