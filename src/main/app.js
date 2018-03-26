@@ -28,11 +28,7 @@ require("./restartDialog.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
-
-fluid.require("%gpii-app/build/gpii-app-messageBundles_compiled.js");
-
-require("./networkCheck.js");
-
+require("../common/messageBundles.js");
 
 /**
  * Promise that resolves when the electron application is ready.
