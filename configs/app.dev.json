@@ -12,12 +12,24 @@
                 "target": "{that menu}.options.gradeNames"
             },
             "distributePcpChannelConnector": {
-                "record": "gpii.app.dev.gpiiConnector",
-                "target": "{that gpiiConnector}.options.gradeNames"
+                "record": {
+                    "hostname": "localhost",
+                    "port": 8081,
+                    "path": "/pcpChannel"
+                },
+                "target": "{that gpiiConnector}.options.config"
+            },
+            "distributeSurveyConnector": {
+                "record": "gpii.app.staticSurveyConnector",
+                "target": "{that surveyConnector}.options.gradeNames"
+            },
+            "distributeStaticSurveyConnectorFixture": {
+                "record": "%gpii-app/testData/survey/triggers.dev.json",
+                "target": "{that staticSurveyConnector}.options.paths.triggerFixture"
             }
         }
     },
     "mergeConfigs": [
-        "%universal/gpii/configs/gpii.config.development.all.local.json"
+        "%gpii-universal/gpii/configs/gpii.config.development.all.local.json"
      ]
 }

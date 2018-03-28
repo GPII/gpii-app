@@ -79,7 +79,7 @@ gpii.app.waitDialog.toggle = function (that, isShown) {
  * @param that {Component} the gpii.app instance
  */
 gpii.app.waitDialog.show = function (that) {
-    that.resetWindowPosition();
+    that.positionWindow();
     that.dialog.show();
     // Hack to ensure it stays on top, even as the GPII autoconfiguration starts applications, etc., that might
     // otherwise want to be on top

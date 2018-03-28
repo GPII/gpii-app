@@ -1,0 +1,14 @@
+.flc-closeBtn {
+    padding: 5px 10px;
+    border-radius: 3px;
+    text-decoration: none;
+
+    background-color: #919191;
+    color: white;
+
+    cursor: pointer;
+}
+
+.flc-closeBtn:hover {
+    background-color: #707070;
+}

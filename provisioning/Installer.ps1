@@ -68,9 +68,11 @@ Invoke-Command $npm "install" $projectDir
 Invoke-Command "robocopy" "..\node_modules $(Join-Path $preStagingDir "node_modules") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "..\configs $(Join-Path $preStagingDir "configs") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "..\src $(Join-Path $preStagingDir "src") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "..\testData $(Join-Path $preStagingDir "testData") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir LICENSE.txt" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir main.js" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir package.json" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "$projectDir $preStagingDir package-lock.json" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir README.md" $provisioningDir -errorLevel 3
 
 $packagerMetadata = "--app-copyright=`"Raising the Floor - International Association`" --win32metadata.CompanyName=`"Raising the Floor - International Association`" --win32metadata.FileDescription=`"GPII-App`" --win32metadata.OriginalFilename=`"gpii.exe`" --win32metadata.ProductName=`"GPII-App`" --win32metadata.InternalName=`"GPII-App`""

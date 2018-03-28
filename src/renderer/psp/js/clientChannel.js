@@ -102,15 +102,25 @@
             },
             alterSetting: {
                 funcName: "gpii.psp.clientChannel.alterSetting",
-                args: ["{that}", "{arguments}.0", "{arguments}.1"]
+                args: [
+                    "{that}",
+                    "{arguments}.0", // setting
+                    "{arguments}.1"  // oldValue
+                ]
             },
             alterActivePreferenceSet: {
                 func: "{that}.sendMessage",
-                args: ["onActivePreferenceSetAltered", "{arguments}.0"]
+                args: [
+                    "onActivePreferenceSetAltered",
+                    "{arguments}.0" // message
+                ]
             },
             changeContentHeight: {
                 func: "{that}.sendMessage",
-                args: ["onContentHeightChanged", "{arguments}.0"]
+                args: [
+                    "onContentHeightChanged",
+                    "{arguments}.0" // message
+                ]
             },
             restartNow: {
                 func: "{that}.sendMessage",

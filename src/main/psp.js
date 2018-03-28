@@ -25,6 +25,107 @@ var gpii              = fluid.registerNamespace("gpii");
 
 require("./utils.js");
 
+
+/**
+ * Configuration for using the `gpii.app.psp` component in the App (the `gpii.app` component).
+ * Note that this is an incomplete grade which references the App and other
+ * App related components (subcomponents).
+ */
+fluid.defaults("gpii.app.pspInApp", {
+    gradeNames: "gpii.app.psp",
+    model: {
+        keyedInUserToken: "{app}.model.keyedInUserToken"
+    },
+    modelListeners: {
+        isShown: {
+            funcName: "gpii.app.hideRestartDialogIfNeeded",
+            args: ["{dialogManager}", "{change}.value"]
+        }
+    },
+    listeners: {
+        "onActivePreferenceSetAltered.notifyChannel": {
+            listener: "{gpiiConnector}.updateActivePrefSet",
+            args: ["{arguments}.0"] // newPrefSet
+        },
+
+        "{gpiiConnector}.events.onPreferencesUpdated": {
+            listener: "{that}.notifyPSPWindow",
+            args: [
+                "onPreferencesUpdated",
+                "{arguments}.0" // message
+            ]
+        },
+
+        "{gpiiConnector}.events.onSettingUpdated": {
+            listener: "{that}.notifyPSPWindow",
+            args: [
+                "onSettingUpdated",
+                "{arguments}.0" // message
+            ]
+        },
+
+        "{settingsBroker}.events.onSettingApplied": [{
+            listener: "{that}.notifyPSPWindow",
+            args: [
+                "onSettingUpdated",
+                "{arguments}.0" // message
+            ]
+        }],
+
+        /*
+         * Restart Warning related listeners
+         */
+
+        onClosed: {
+            funcName: "gpii.app.showRestartDialogIfNeeded",
+            args: ["{dialogManager}", "{settingsBroker}.model.pendingChanges"]
+        },
+
+        onSettingAltered: {
+            listener: "{settingsBroker}.enqueue"
+        },
+
+        onRestartNow: [{
+            func: "{dialogManager}.hide",
+            args: ["restartDialog"]
+        }, {
+            func: "{that}.hide"
+        }, {
+            listener: "{settingsBroker}.applyPendingChanges"
+        }],
+
+        onUndoChanges: [{
+            func: "{dialogManager}.hide",
+            args: ["restartDialog"]
+        }, {
+            listener: "{settingsBroker}.undoPendingChanges"
+        }],
+
+        onRestartLater: [{
+            func: "{dialogManager}.hide",
+            args: ["restartDialog"]
+        }, {
+            func: "{that}.hide"
+        }],
+
+        onActivePreferenceSetAltered: [{
+            func: "{dialogManager}.hide",
+            args: ["restartDialog"]
+        }, {
+            listener: "{settingsBroker}.clearPendingChanges"
+        }],
+
+        "{settingsBroker}.events.onRestartRequired": {
+            funcName: "gpii.app.togglePspRestartWarning",
+            args: [
+                "{that}",
+                "{arguments}.0" // pendingChanges
+            ]
+        }
+    }
+});
+
+
 /**
  * Handles logic for the PSP window.
  * Creates an Electron `BrowserWindow` and manages it.
@@ -63,7 +164,10 @@ fluid.defaults("gpii.app.psp", {
         onUndoChanges: null,
 
         onClosed: null,
-        onRestartLater: null
+        onRestartLater: null,
+
+        onDisplayMetricsChanged: null,
+        onPSPWindowFocusLost: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -80,7 +184,7 @@ fluid.defaults("gpii.app.psp", {
         },
 
         "onDestroy.cleanupElectron": {
-            this: "{that}.pspWindow",
+            "this": "{that}.pspWindow",
             method: "destroy"
         },
 
@@ -94,6 +198,21 @@ fluid.defaults("gpii.app.psp", {
 
         "onRestartNow.closePsp": {
             func: "{psp}.hide"
+        },
+
+        "onDisplayMetricsChanged": {
+            funcName: "gpii.app.psp.handleDisplayMetricsChange",
+            args: [
+                "{that}",
+                "{arguments}.0", // event
+                "{arguments}.1", // display
+                "{arguments}.2"  // changedMetrics
+            ]
+        },
+
+        "onPSPWindowFocusLost": {
+            funcName: "gpii.app.psp.handlePSPWindowFocusLost",
+            args: "{that}"
         }
     },
     invokers: {
@@ -107,19 +226,28 @@ fluid.defaults("gpii.app.psp", {
         },
         notifyPSPWindow: {
             funcName: "gpii.app.notifyWindow",
-            args: ["{that}.pspWindow", "{arguments}.0", "{arguments}.1"]
-        },
-        getDesiredWindowPosition: {
-            funcName: "gpii.app.getDesiredWindowPosition",
-            args: ["{that}.options.attrs.width", "{that}.options.attrs.height"]
+            args: [
+                "{that}.pspWindow",
+                "{arguments}.0", // messageChannel
+                "{arguments}.1"  // message
+            ]
         },
         resize: {
             funcName: "gpii.app.psp.resize",
-            args: ["{that}", "{arguments}.0", "{that}.options.attrs.height", "{arguments}.1"]
+            args: [
+                "{that}",
+                "{that}.options.attrs.width",
+                "{arguments}.0", // contentHeight
+                "{that}.options.attrs.height",
+                "{arguments}.1"  // forceResize
+            ]
         },
         showRestartWarning: {
             func: "{psp}.notifyPSPWindow",
-            args: ["onRestartRequired", "{arguments}.0"]
+            args: [
+                "onRestartRequired",
+                "{arguments}.0" // message
+            ]
         },
         hideRestartWarning: {
             func: "{psp}.notifyPSPWindow",
@@ -164,25 +292,53 @@ gpii.app.psp.show = function (psp) {
 };
 
 /**
+ * Handle electron's display-metrics-changed event, by resizing the PSP when necessary.
+ * @param psp {Component} The `gpii.app.psp` instance.
+ * @param event {event} An Electron `event`.
+ * @param display {Object} The Electron `Display` object.
+ * @param changedMetrics {Array} An array of strings that describe the changes. Possible
+ * changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
+ */
+gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changedMetrics) {
+    // In older versions of Electron (e.g. 1.4.1) whenever the DPI was changed, one
+    // `display-metrics-changed` event was fired. In newer versions (e.g. 1.8.1) the
+    // `display-metrics-changed` event is fired multiple times. The change of the DPI
+    // appears to be applied at different times on different machines. On some as soon
+    // as the first `display-metrics-changed` event is fired, the DPI changes are
+    // applied. On others, this is not the case until the event is fired again. That is
+    // why the resizing should happen only the second (or third) time the
+    // `display-metrics-changed` event is fired in which case the changedMetrics argument
+    // will not include the `scaleFactor` string. For more information please take a look
+    // at https://issues.gpii.net/browse/GPII-2890.
+    if (!changedMetrics.includes("scaleFactor")) {
+        // Use the initial size of the PSP when the DPI is changed. The PSP will resize
+        // one more time when the heightChangeListener kicks in.
+        psp.resize(psp.options.attrs.height);
+    }
+};
+
+/**
+ * Handle PSPWindow's blur event, which is fired when the window loses focus
+ */
+gpii.app.psp.handlePSPWindowFocusLost = function (psp) {
+    if (psp.model.isShown) {
+        psp.events.onClosed.fire();
+    }
+};
+
+/**
  * A function which should be called to init various listeners related to
  * the PSP window.
  * @param psp {Component} The `gpii.app.psp` instance.
  */
 gpii.app.psp.initPSPWindowListeners = function (psp) {
     var pspWindow = psp.pspWindow;
-    pspWindow.on("blur", function () {
-        if (psp.model.isShown) {
-            psp.events.onClosed.fire();
-        }
-    });
 
-    electron.screen.on("display-metrics-changed", function (event, display, changedMetrics) {
-        if (changedMetrics.indexOf("workArea") > -1) {
-            var windowSize = pspWindow.getSize(),
-                contentHeight = windowSize[1];
-            psp.resize(contentHeight, true);
-        }
-    });
+    // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-blur
+    pspWindow.on("blur", psp.events.onPSPWindowFocusLost.fire);
+
+    // https://github.com/electron/electron/blob/master/docs/api/screen.md#event-display-metrics-changed
+    electron.screen.on("display-metrics-changed", psp.events.onDisplayMetricsChanged.fire);
 };
 
 /**
@@ -258,33 +414,27 @@ gpii.app.psp.hide = function (psp) {
 /**
  * Resizes the PSP window and positions it appropriately based on the new height
  * of its content. Makes sure that the window is no higher than the available
- * height of the work area in the primary display. The window will not be resized
- * if its current height is the same as the new height. This behaviour can be
- * overridden using the `forceResize` parameter.
+ * height of the work area in the primary display.
  * @param psp {Object} A `gpii.app.psp` instance.
+ * @param width {Number} The desired width of the BrowserWindow.
  * @param contentHeight {Number} The new height of the BrowserWindow's content.
  * @param minHeight {Number} The minimum height which the BrowserWindow must have.
- * @param forceResize {Boolean} Whether to resize the window even if the current
- * height of the `BrowserWindow` is the same as the new one. Useful when screen
- * DPI is changed as a result of the application of a user's preferences.
  */
-gpii.app.psp.resize = function (psp, contentHeight, minHeight, forceResize) {
+gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
     var pspWindow = psp.pspWindow,
         wasShown = psp.model.isShown,
-        screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-        windowSize = pspWindow.getSize(),
-        windowWidth = windowSize[0],
-        initialHeight = windowSize[1],
-        windowHeight = Math.min(screenSize.height, Math.max(contentHeight, minHeight));
-
-    if (initialHeight === windowHeight && !forceResize) {
-        return;
-    }
-
-    pspWindow.setSize(windowWidth, windowHeight);
+        height = Math.max(contentHeight, minHeight),
+        bounds = gpii.app.getDesiredWindowBounds(width, height);
 
     if (wasShown) {
-        psp.show();
+        // The coordinates and the dimensions of the PSP must be set with a single
+        // call to setBounds instead of by invoking setSize and setPosition in a
+        // row. Due to https://github.com/electron/electron/issues/10862.
+        pspWindow.setBounds(bounds);
+    } else {
+        // Setting only the size here because setting the bounds will actually
+        // move the PSP `BrowserWindow` to the screen (i.e. make it visible).
+        pspWindow.setSize(bounds.width, bounds.height);
     }
 };
 

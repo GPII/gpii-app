@@ -42,13 +42,8 @@ fluid.defaults("gpii.app.menuInApp", {
         }
     },
     listeners: {
-        "onPSP.performPSP": {
+        "onPSP.performPSPShow": {
             listener: "{psp}.show"
-        },
-
-        "onActivePrefSetUpdate.performActiveSetChange": {
-            listener: "{gpiiConnector}.updateActivePrefSet",
-            args: "{arguments}.0.path"
         },
 
         // onKeyOut event is fired when a keyed-in user keys out through the task tray.
@@ -117,7 +112,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
         },
         "onKeyIn.performKeyIn": {
             listener: "{app}.keyIn",
-            args: ["{arguments}.0.token"],
+            args: ["{arguments}.0.token"], // token
             priority: "after:performKeyOut"
         },
 
@@ -293,7 +288,7 @@ fluid.defaults("gpii.app.menu", {
     },
     events: {
         onPSP: null,
-        onActivePrefSetUpdate: null,
+        onActivePreferenceSetAltered: null,
         onKeyOut: null
     }
 });
@@ -378,10 +373,8 @@ gpii.app.menu.getPreferenceSetsMenuItems = function (preferenceSets, activeSet) 
         return {
             label: preferenceSet.name,
             type: "radio",
-            args: {
-                path: preferenceSet.path
-            },
-            click: "onActivePrefSetUpdate",
+            args: preferenceSet.path,
+            click: "onActivePreferenceSetAltered",
             checked: preferenceSet.path === activeSet
         };
     });

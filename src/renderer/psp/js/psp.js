@@ -51,7 +51,7 @@
                         onKeyOut: "{clientChannel}.keyOut",
                         onSettingAltered: "{clientChannel}.alterSetting",
                         onActivePreferenceSetAltered: "{clientChannel}.alterActivePreferenceSet",
-                        onContentHeightChanged: "{clientChannel}.changeContentHeight",
+                        onHeightChanged: "{clientChannel}.changeContentHeight",
 
                         onRestartNow: "{clientChannel}.restartNow",
                         onRestartLater: "{clientChannel}.restartLater",

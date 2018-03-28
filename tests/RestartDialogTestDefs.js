@@ -46,30 +46,23 @@ var manualRestartSettingFixture = {
     value: 2
 };
 
-fluid.registerNamespace("gpii.tests.restartWarningController.utils");
-// Utils
-gpii.tests.restartWarningController.utils.simulateSettingAlter = function (psp, setting, newValue) {
+fluid.registerNamespace("gpii.tests.restartDialog");
+
+gpii.tests.restartDialog.simulateSettingAlter = function (psp, setting, newValue) {
     setting.oldValue = setting.value;
     setting.value = newValue;
 
     psp.events.onSettingAltered.fire(setting);
 };
 
-gpii.tests.restartWarningController.testDefs = {
+gpii.tests.restartDialog.testDefs = {
     name: "Restart dialog integration tests",
     expect: 16,
     config: {
-        configName: "app.dev",
-        configPath: "configs"
+        configName: "gpii.tests.dev.config",
+        configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        record: {
-            funcName: "gpii.tests.app.receiveApp",
-            args: ["{testCaseHolder}", "{arguments}.0"]
-        },
-        target: "{that flowManager gpii.app}.options.listeners.onCreate"
-    },
     sequence: [{ // just bring the app in working state
         func: "{that}.app.keyIn",
         args: ["snapset_4a"]
@@ -79,10 +72,6 @@ gpii.tests.restartWarningController.testDefs = {
         listener: "fluid.identity"
     },
 
-    { // try to show dialog
-        func: "{that}.app.restartDialog.showIfNeeded",
-        args: [[]]
-    },
     [
         /*
          * Should not show restart dialog when no pending changes
@@ -91,13 +80,13 @@ gpii.tests.restartWarningController.testDefs = {
             funcName: "jqUnit.assertFalse",
             args: [
                 "RestartDialog: Dialog not shown with when no pending changes.",
-                "{that}.app.restartDialog.model.isShown"
+                "{that}.app.dialogManager.restartDialog.model.isShown"
             ]
         }
     ],
 
     { // simulate change of setting with manualRestart liveness
-        funcName: "gpii.tests.restartWarningController.utils.simulateSettingAlter",
+        funcName: "gpii.tests.restartDialog.simulateSettingAlter",
         args: [
             "{that}.app.psp",
             manualRestartSettingFixture,
@@ -125,7 +114,7 @@ gpii.tests.restartWarningController.testDefs = {
             funcName: "jqUnit.assertFalse",
             args: [
                 "RestartDialog: Dialog now shown when PSP is opened",
-                "{that}.app.restartDialog.model.isShown"
+                "{that}.app.dialogManager.restartDialog.model.isShown"
             ]
         }
     ],
@@ -148,7 +137,7 @@ gpii.tests.restartWarningController.testDefs = {
             funcName: "jqUnit.assertTrue",
             args: [
                 "RestartDialog: Dialog is shown when PSP is closed",
-                "{that}.app.restartDialog.model.isShown"
+                "{that}.app.dialogManager.restartDialog.model.isShown"
             ]
         }
     ],
@@ -170,7 +159,7 @@ gpii.tests.restartWarningController.testDefs = {
             funcName: "jqUnit.assertFalse",
             args: [
                 "RestartDialog: Dialog is hidden when PSP is shown",
-                "{that}.app.restartDialog.model.isShown"
+                "{that}.app.dialogManager.restartDialog.model.isShown"
             ]
         }
     ],
@@ -196,7 +185,7 @@ gpii.tests.restartWarningController.testDefs = {
             funcName: "jqUnit.assertFalse",
             args: [
                 "RestartDialog: Dialog is hidden on RestartLater in PSP",
-                "{that}.app.restartDialog.model.isShown"
+                "{that}.app.dialogManager.restartDialog.model.isShown"
             ]
         }
     ],
@@ -248,7 +237,7 @@ gpii.tests.restartWarningController.testDefs = {
             funcName: "jqUnit.assertFalse",
             args: [
                 "RestartDialog: Dialog is hidden on RestartNow in PSP",
-                "{that}.app.restartDialog.model.isShown"
+                "{that}.app.dialogManager.restartDialog.model.isShown"
             ]
         }
     ],
@@ -257,7 +246,7 @@ gpii.tests.restartWarningController.testDefs = {
         func: "{that}.app.psp.show"
     },
     { // simulate change of setting with manualRestart liveness
-        funcName: "gpii.tests.restartWarningController.utils.simulateSettingAlter",
+        funcName: "gpii.tests.restartDialog.simulateSettingAlter",
         args: [
             "{that}.app.psp",
             manualRestartSettingFixture,
@@ -291,7 +280,7 @@ gpii.tests.restartWarningController.testDefs = {
             funcName: "jqUnit.assertFalse",
             args: [
                 "RestartDialog: Dialog is hidden on RestartNow in PSP",
-                "{that}.app.restartDialog.model.isShown"
+                "{that}.app.dialogManager.restartDialog.model.isShown"
             ]
         }
     ]

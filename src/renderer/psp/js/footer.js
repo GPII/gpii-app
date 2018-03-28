@@ -29,7 +29,9 @@
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.helpBtn",
                 options: {
-                    label: "{footer}.options.labels.help",
+                    model: {
+                        label: "{footer}.options.labels.help"
+                    },
                     invokers: {
                         "onClick": "gpii.psp.openUrl({footer}.options.urls.help)"
                     }
