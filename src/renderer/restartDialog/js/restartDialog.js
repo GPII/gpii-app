@@ -96,14 +96,6 @@
     fluid.defaults("gpii.restartDialog.restartWarning", {
         gradeNames: ["gpii.psp.baseRestartWarning"],
 
-        model: {
-            messages: {
-                osName: "{messageBundles}.model.messages.gpii_app_restartWarning_osName",
-                restartTitle: "{messageBundles}.model.messages.gpii_app_restartWarning_restartTitle",
-                restartQuestion: "{messageBundles}.model.messages.gpii_app_restartWarning_restartQuestion"
-            }
-        },
-
         selectors: {
             title: ".flc-title",
             restartText: ".flc-details",

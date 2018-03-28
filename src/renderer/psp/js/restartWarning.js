@@ -37,12 +37,15 @@
             restartText: "",
 
             messages: {
-                osName: "{messageBundles}.model.messages.gpii_app_restartWarning_osName",
-                osRestartText: "{messageBundles}.model.messages.gpii_app_restartWarning_osRestartText",
-                restartText: "{messageBundles}.model.messages.gpii_app_restartWarning_restartText",
-                undo: "{messageBundles}.model.messages.gpii_app_restartWarning_undo",
-                restartNow: "{messageBundles}.model.messages.gpii_app_restartWarning_restartNow",
-                restartLater: "{messageBundles}.model.messages.gpii_app_restartWarning_restartLater"
+                osName: null,
+                restartTitle: null,
+                osRestartText: null,
+                restartText: null,
+                restartQuestion: null,
+
+                undo: null,
+                restartLater: null,
+                restartNow: null
             }
         },
 
@@ -176,12 +179,6 @@
      * @return {String} The text which is to be displayed in the component.
      */
     gpii.psp.baseRestartWarning.generateRestartText = function (messages, solutionNames) {
-        console.log("Generate Restart Text: ", messages);
-        if (!messages) {
-            // translations are missing yet
-            return;
-        }
-
         if (solutionNames[0] === messages.osName) {
             return messages.osRestartText;
         }

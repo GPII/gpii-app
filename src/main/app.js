@@ -52,7 +52,7 @@ require("electron").app.on("window-all-closed", fluid.identity);
  * the `onPSPReady` event will be fired.
  */
 fluid.defaults("gpii.app", {
-    gradeNames: "fluid.modelComponent",
+    gradeNames: ["fluid.modelComponent", "gpii.app.messageBundles"],
     model: {
         keyedInUserToken: null,
         snapsetName: null,
@@ -66,9 +66,6 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
-        messageBundles: {
-            type: "gpii.app.messageBundles"
-        },
         errorHandler: {
             type: "gpii.app.errorHandler",
             options: {

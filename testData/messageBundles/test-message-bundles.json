@@ -1,0 +1,10 @@
+{
+    "en": {
+        "gpii_tests_messageBundles_translatableComp_greet": "Hello!",
+        "gpii_tests_messageBundles_deepTranslatableComp_eat": "I eat!"
+    },
+    "it": {
+        "gpii_tests_messageBundles_translatableComp_greet": "Ciao!",
+        "gpii_tests_messageBundles_deepTranslatableComp_eat": "Magio!"
+    }
+}

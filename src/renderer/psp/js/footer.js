@@ -26,7 +26,7 @@
         },
         model: {
             messages: {
-                help: "{messageBundles}.model.messages.gpii_psp_footer_help"
+                help: null
             }
         },
         components: {

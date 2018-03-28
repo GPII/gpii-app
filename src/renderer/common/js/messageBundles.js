@@ -1,5 +1,5 @@
 /**
- * The restart dialog
+ * Message bundles management for the renderer.
  *
  * Represents the restart dialog which appears when there is a pending change and the
  * user has closed the PSP either by clicking outside of it or by using the close button
@@ -25,7 +25,12 @@
 
 
     /**
-     * TODO
+     * A component that handles i18n for the components in the renderer.
+     * It uses IPC to listen for changes in the locale and the same mechanism for
+     * messages distribution that is used in the main process.
+     * It expects there to be a subcomponent named `channel` (possibly not direct child) that handles
+     * communication with the Main process. It simply extends the latter component, attaching
+     * additional listener for the `onLocaleChanged` event.
      */
     fluid.defaults("gpii.psp.messageBundles", {
         gradeNames: "gpii.app.messageBundles",
@@ -53,7 +58,11 @@
         }
     });
 
-    /// Generic component for receiving the translations updates
+    /**
+     * A simple component that attaches listening for "onLocaleChanged" notifications
+     * from the Main process through the usage of IPC. A possible usage is alongside
+     * with existing (extending) of existing `channel` component.
+     */
     fluid.defaults("gpii.psp.messageBundles.channel", {
         gradeNames: "fluid.component",
 
@@ -70,14 +79,12 @@
     });
 
     /**
-     * Registers for events from the Main process.
+     * Registers for locale change events from the Main process.
      *
      * @param events {Object} Events map.
      */
     gpii.psp.messageBundles.channel.register = function (events) {
         ipcRenderer.on("onLocaleChanged", function (event, locale) {
-            //XXX dev
-            console.log("Update msg: ", locale);
             events.onLocaleChanged.fire(locale);
         });
     };

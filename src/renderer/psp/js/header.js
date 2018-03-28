@@ -41,8 +41,8 @@
                 activeSet: null
             },
             messages: {
-                autosaveText: "{messageBundles}.model.messages.gpii_psp_header_autosaveText",
-                keyOut: "{messageBundles}.model.messages.gpii_psp_header_keyOut"
+                autosaveText: null,
+                keyOut: null
             }
         },
         events: {

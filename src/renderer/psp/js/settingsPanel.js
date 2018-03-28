@@ -70,10 +70,10 @@
             memory: null,
 
             messages: {
-                osRestart: "{messageBundles}.model.messages.gpii_psp_settingPresenter_osRestart",
-                osRestartRequired: "{messageBundles}.model.messages.gpii_psp_settingPresenter_osRestartRequired",
-                appRestart: "{messageBundles}.model.messages.gpii_psp_settingPresenter_appRestart",
-                appRestartRequired: "{messageBundles}.model.messages.gpii_psp_settingPresenter_appRestartRequired"
+                osRestart: null,
+                osRestartRequired: null,
+                appRestart: null,
+                appRestartRequired: null
             }
         },
         modelRelay: {

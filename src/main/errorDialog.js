@@ -19,6 +19,7 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var ipcMain = require("electron").ipcMain;
 
+require("./dialog.js");
 require("./utils.js");
 
 /**
@@ -26,7 +27,7 @@ require("./utils.js");
  * electron `BrowserWindow` error dialog.
  */
 fluid.defaults("gpii.app.errorDialog.channel", {
-    gradeNames: ["fluid.component"],
+    gradeNames: ["gpii.app.i18n.channel"],
 
     events: {
         onErrorDialogCreated: null,

@@ -90,11 +90,6 @@ fluid.defaults("gpii.app.menuInAppDev", {
             priority: "last"
         }
     },
-    menuLabels: {
-        locale: "Locale",
-        keyIn: "Key in ...",
-        exit: "Exit GPII"
-    },
     events: {
         onLocale: null,
         onKeyIn: null,
@@ -110,7 +105,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
         //   b) fire a model change to set the new model.keyedInUserToken
         //   c) update the menu
         "onLocale.changeLocale": {
-            changePath: "{app}.messageBundles.model.locale",
+            changePath: "{app}.model.locale",
             value: "{arguments}.0.locale"
         },
         "onKeyIn.performKeyOut": {
@@ -129,7 +124,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
     },
 
     locales: {
-        label: "{that}.options.menuLabels.locale",
+        label: "Locale",
         submenu: [{
             label: "bg",
             click: "onLocale",
@@ -153,7 +148,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
 
     // The list of the default snapsets shown on the task tray menu for key-in
     snapsets: {
-        label: "{that}.options.menuLabels.keyIn",
+        label: "Key in ...",
         submenu: [{
             label: "Voice control with Increased Size",
             click: "onKeyIn",
@@ -241,7 +236,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
         }]
     },
     exit: {
-        label: "{that}.options.menuLabels.exit",
+        label: "Exit GPII",
         click: "onExit"
     }
 });
@@ -266,12 +261,11 @@ fluid.defaults("gpii.app.menu", {
         keyOut: null,                 // May or may not be in the menu, must be updated when keyedInUserToken changes.
         menuTemplate: [],             // This is updated on change of keyedInUserToken.
 
-        // TODO does this belong to the model :/
-        menuLabels: {
-            psp:        "{messageBundles}.model.messages.gpii_app_menu_open-psp", /// TODO with dashes for keys...
-            keyOut:     "{messageBundles}.model.messages.gpii_app_menu_keyed_out_btn", /// or all to follow the snake style...
-            keyedIn:    "{messageBundles}.model.messages.gpii_app_menu_status_keyed_in", // string template
-            notKeyedIn: "{messageBundles}.model.messages.gpii_app_menu_status_not_keyed"
+        messages: {
+            psp: null,
+            keyOut: null,
+            keyedIn: null,
+            notKeyedIn: null
         }
     },
     modelRelay: {
@@ -280,7 +274,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyedInSnapset",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.snapsetName", "{that}.model.menuLabels.keyedIn"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.snapsetName", "{that}.model.messages.keyedIn"]
             }
         },
         "keyOut": {
@@ -288,7 +282,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyOut",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.menuLabels.keyOut", "{that}.model.menuLabels.notKeyedIn"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.messages.keyOut", "{that}.model.messages.notKeyedIn"]
             }
         },
         "showPSP": {
@@ -296,7 +290,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getShowPSP",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.menuLabels.psp"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.messages.psp"]
             }
         },
         "preferenceSetsMenuItems": {
@@ -316,17 +310,6 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "last"
         }
-    },
-
-    invokers : {
-        // refreshMenuTempalte: {
-        //     funcName: "gpii.app.menu.refreshMenuTempalte",
-        //     args: ["{that}"]
-        // },
-        // getMenuTemplate: {
-        //     funcName: "gpii.app.menu.generateMenuTemplate",
-        //     args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut"]
-        //}
     },
     events: {
         onPSP: null,

@@ -1,28 +1,59 @@
-"use-strict";
+/**
+ * The error dialog
+ *
+ * Represents an error dialog, that can be closed by the user.
+ * Copyright 2017 Raising the Floor - International
+ *
+ * Licensed under the New BSD license. You may not use this file except in
+ * compliance with this License.
+ * The research leading to these results has received funding from the European Union's
+ * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
+ * You may obtain a copy of the License at
+ * https://github.com/GPII/universal/blob/master/LICENSE.txt
+ */
+
+/* global fluid */
+
+"use strict";
 
 var fs = require("fs");
 var path = require("path");
 
-// fr_FR, en -> ["en", "fr", "fr_FR"]
-function getLocaleVersions(locale, defaultLocale) {
+/**
+ *
+ * @returns {String[]} returns a list fr_FR, en -> ["en", "fr", "fr_FR"]
+ */
+function getLocaleVersions(locale, fallbackLocale) {
     var segments = locale.split("_");
 
     var versions = segments.map(function (segment, index) {
         return segments.slice(0, index + 1).join("_");
     });
 
-    if (defaultLocale) {
-        versions.unshift(defaultLocale);
+    if (fallbackLocale) {
+        versions.unshift(fallbackLocale);
     }
 
     return versions;
 }
 
-function enchanceMessageBundles(messageBundles, defaultLocale) {
+
+
+/**
+ * In case there are only partial translations for a locale, add
+ * missing translations using a fallback locale (that we expect to
+ * be the richest bundle), possibly the default one.
+ *
+ * @param messageBundles {Object} A raw map of collected bundles. It is of type
+ * { locale1: { key1: message1, ... }, locale2: { key2: messages }, ... }
+ * @param fallbackLocale {String} The locale to be used when translations are missing
+ * @returns {Object}
+ */
+function enhanceMessageBundles(messageBundles, fallbackLocale) {
     var result = {};
 
     Object.keys(messageBundles).forEach(function (locale) {
-        var localeVersions = getLocaleVersions(locale, defaultLocale),
+        var localeVersions = getLocaleVersions(locale, fallbackLocale),
             messageBundle = {};
 
         localeVersions.forEach(function (localeVersion) {
@@ -37,28 +68,6 @@ function enchanceMessageBundles(messageBundles, defaultLocale) {
     return result;
 }
 
-// console.log(mergeMessageBundles(messageBundles, "en"));
-
-
-/*
-give index
-read all folders of `messageBundles`
-merge these files under same locale
-merge locales
-*/
-
-/*
-
-app
-  |__ messageBundles
-  |__ src
-     |__ renderer
-        |__ 
-
-
-
-
- */
 
 // TODO extarct
 // TODO search dir recursivly
@@ -128,10 +137,11 @@ function constructMessageBundles(loadedBundles) {
     return messageBundles;
 };
 
-module.exports.buildMessageBundles = function (bundlesDir, fileType, parser, defaultLocale) { 
+
+module.exports.compileMessageBundles = function (bundlesDir, fileType, parser, defaultLocale) {
     var messageBundlesList = loadMessageBundles(bundlesDir, fileType, parser);
     var rawMessageBundles = constructMessageBundles(messageBundlesList);
-    var compiledMessageBundle = enchanceMessageBundles(rawMessageBundles, defaultLocale);
+    var compiledMessageBundle = enhanceMessageBundles(rawMessageBundles, defaultLocale);
 
     return compiledMessageBundle;
 };

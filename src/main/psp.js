@@ -222,12 +222,12 @@ fluid.defaults("gpii.app.psp", {
     },
 
     modelListeners: {
-        "{messageBundles}.model.messages": {
+        "{app}.model.locale": {
             funcName: "gpii.app.notifyWindow",
             args: [
                 "{that}.pspWindow",
                 "onLocaleChanged",
-                "{messageBundles}.model.locale"
+                "{app}.model.locale"
             ]
         }
     },

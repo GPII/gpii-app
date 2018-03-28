@@ -33,7 +33,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         model: {
             messages: {
-                appName: "{messageBundles}.model.messages.gpii_psp_titlebar_appName"
+                appName: null
             }
         },
 

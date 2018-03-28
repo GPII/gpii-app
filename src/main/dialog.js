@@ -317,3 +317,25 @@ gpii.app.dialogWrapper.close = function (that) {
         that.dialog.close();
     }
 };
+
+
+/**
+ * Generic channel extension that enables locale changes
+ * notification to the broser window the BrowserWindow.
+ */
+fluid.defaults("gpii.app.i18n.channel", {
+    gradeNames: "fluid.modelComponent",
+
+    modelListeners: {
+        "{app}.model.locale": {
+            funcName: "gpii.app.notifyWindow",
+            args: [
+                "{dialog}.dialog",
+                "onLocaleChanged",
+                "{app}.model.locale"
+            ]
+        }
+    }
+});
+
+

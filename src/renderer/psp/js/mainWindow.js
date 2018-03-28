@@ -163,6 +163,11 @@
                         },
                         "{mainWindow}.events.onRestartRequired": {
                             funcName: "{that}.updatePendingChanges"
+                        },
+                        onCreate: {
+                            this: "console",
+                            method: "log",
+                            args: ["==========RESTART WARNING"]
                         }
                     },
                     events: {

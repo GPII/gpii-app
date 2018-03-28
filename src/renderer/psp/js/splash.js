@@ -23,8 +23,8 @@
         gradeNames: "fluid.viewComponent",
         model: {
             messages: {
-                heading: "{messageBundles}.model.messages.gpii_psp_splash_heading",
-                fullAppName: "{messageBundles}.model.messages.gpii_psp_splash_fullAppName"
+                heading: null,
+                fullAppName: null
             }
         },
         modelListeners: {
