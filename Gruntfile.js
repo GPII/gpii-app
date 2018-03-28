@@ -19,7 +19,7 @@ module.exports = function (grunt) {
         compileMessages: {
             defaults: {
                 messageCompilerPath: "./src/common/messageBundlesCompiler.js",
-                messagesPath: "./src/messageBundles",
+                messagesDirs: ["./src/messageBundles"],
                 resultFilePath: "./build/gpii-app-messageBundles.json"
             }
         }
@@ -36,7 +36,7 @@ module.exports = function (grunt) {
     grunt.registerMultiTask("compileMessages", function () {
         var compileMessageBundles = require(this.data.messageCompilerPath).compileMessageBundles;
 
-        var compiledMessageBundles = compileMessageBundles(this.data.messagesPath, "json", JSON, "en");
+        var compiledMessageBundles = compileMessageBundles(this.data.messagesDirs, "en", "json", JSON);
 
         grunt.file.write(this.data.resultFilePath, JSON.stringify(compiledMessageBundles, null, 4));
     });
