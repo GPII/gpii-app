@@ -1,9 +1,8 @@
 /**
- * Message bundles management for the renderer.
+ * Message bundles management for the renderer process.
  *
- * Represents the restart dialog which appears when there is a pending change and the
- * user has closed the PSP either by clicking outside of it or by using the close button
- * in the upper right corner.
+ * This component handles internationalization for components in the renderer process by
+ * using IPC listeners (to observe changes in the locale) and message distributions.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -25,12 +24,12 @@
 
 
     /**
-     * A component that handles i18n for the components in the renderer.
+     * A component that handles i18n for the components in the renderer process.
      * It uses IPC to listen for changes in the locale and the same mechanism for
      * messages distribution that is used in the main process.
-     * It expects there to be a subcomponent named `channel` (possibly not direct child) that handles
-     * communication with the Main process. It simply extends the latter component, attaching
-     * additional listener for the `onLocaleChanged` event.
+     * It expects a subcomponent named `channel` (possibly not a direct child) that handles
+     * communication with the main process. It attaches additional listener for the
+     * `onLocaleChanged` event.
      */
     fluid.defaults("gpii.psp.messageBundles", {
         gradeNames: "gpii.app.messageBundles",
@@ -59,7 +58,7 @@
     });
 
     /**
-     * A simple component that attaches listening for "onLocaleChanged" notifications
+     * A simple component that attaches a listener for `onLocaleChanged` IPC message
      * from the Main process through the usage of IPC. A possible usage is alongside
      * with existing (extending) of existing `channel` component.
      */
@@ -79,7 +78,7 @@
     });
 
     /**
-     * Registers for locale change events from the Main process.
+     * Registers a listener for the  `onLocaleChanged` event from the main process.
      *
      * @param events {Object} Events map.
      */

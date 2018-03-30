@@ -6,5 +6,8 @@
     "it": {
         "gpii_tests_messageBundles_translatableComp_greet": "Ciao!",
         "gpii_tests_messageBundles_deepTranslatableComp_eat": "Magio!"
+    },
+    "de": {
+        "gpii_tests_messageBundles_translatableComp_greet": "Hallo!"
     }
 }

@@ -10,6 +10,6 @@ require("./node_modules/gpii-windows/tests/UnitTests.js");
 
 // Run the electron app tests
 require("./tests/AppTests.js");
-require("./tests/MessageBundlesTest.js");
+require("./tests/MessageBundlesTests.js");
 require("./tests/PreferencesParsingTests.js");
 require("./tests/IntegrationTests.js");

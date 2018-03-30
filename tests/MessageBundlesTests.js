@@ -3,8 +3,6 @@
  *
  * Test message bundles loading and distribution.
  *
- * Test definitions for survey related functionalities. Check whether a trigger message
- * is interpreted correctly as well as whether a survey is shown when necessary.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -98,12 +96,12 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
         name: "Messages Distribution tests",
         tests: [{
             name: "Distribution to normal subcomponent",
-            expect: 5,
+            expect: 6,
             sequence: [
                 { // Check distribution is proper using default message bundle
                     funcName: "jqUnit.assertEquals",
                     args: [
-                        "MessageBundles: simple component have message distributed",
+                        "MessageBundles: simple component has message distributed",
                         "{mainComp}.model.messages.gpii_tests_messageBundles_translatableComp.greet",
                         "{mainComp}.simple.model.messages.greet"
                     ]
@@ -123,7 +121,7 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
                     }, { // and a subcomponent
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper binding is set for component messages",
+                            "MessageBundles: A proper binding is set for component messages of a nested component",
                             "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_deepTranslatableComp_eat",
                             "{mainComp}.simple.deeper.model.messages.eat"
                         ]
@@ -135,19 +133,28 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
                     }, {
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper binding is set for component messages",
+                            "MessageBundles: A proper binding is set for component messages for a missing locale",
                             "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_translatableComp_greet",
                             "{mainComp}.simple.model.messages.greet"
                         ]
-                    }, { // same behaviour for invalid locale
+                    }
+                ], [ // use partial bundle and check that the default locale messages are used for the missing ones
+                    {
                         func: "{mainComp}.applier.change",
-                        args: ["locale", "invalid locale"]
+                        args: ["locale", "de"]
                     }, {
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper binding is set for component messages",
-                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_translatableComp_greet",
+                            "MessageBundles: A proper binding is set for component messages for the DE locale",
+                            "{mainComp}.options.messageBundles.de.gpii_tests_messageBundles_translatableComp_greet",
                             "{mainComp}.simple.model.messages.greet"
+                        ]
+                    }, {
+                        funcName: "jqUnit.assertEquals",
+                        args: [
+                            "MessageBundles: The default locale message for EAT is used as the DE locale does not have such a message",
+                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_deepTranslatableComp_eat",
+                            "{mainComp}.simple.deeper.model.messages.eat"
                         ]
                     }
                 ]
@@ -156,30 +163,31 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
             name: "Distribution to components with postponed creation",
             expect: 2,
             sequence: [
+                {
+                    func: "{mainComp}.applier.change",
+                    args: ["locale", "it"]
+                },
                 // create the subcomponent
                 {
                     funcName: "{mainComp}.events.onPostponed.fire"
-                }, {
-                    func: "{mainComp}.applier.change",
-                    args: ["locale", "en"]
                 },
 
                 [ // check if it has proper bindings
                     {
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper binding is set for component messages",
-                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_translatableComp_greet",
+                            "MessageBundles: A proper message binding is set for a component with postponed creation",
+                            "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_translatableComp_greet",
                             "{mainComp}.postponed.model.messages.greet"
                         ]
                     }, {
                         func: "{mainComp}.applier.change",
-                        args: ["locale", "it"]
+                        args: ["locale", "en"]
                     }, {
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper binding is set for component messages",
-                            "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_translatableComp_greet",
+                            "MessageBundles: A proper message binding is set for a component after it has been created",
+                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_translatableComp_greet",
                             "{mainComp}.postponed.model.messages.greet"
                         ]
                     }

@@ -169,8 +169,8 @@ gpii.app.dialog.addDisplayMetricsListener = function (that) {
  */
 gpii.app.dialog.handleDisplayMetricsChange = function (that, changedMetrics) {
     if (changedMetrics.indexOf("scaleFactor") === -1) {
-        // var attrs = that.options.config.attrs;
-        // that.resize(attrs.width, attrs.height);
+        var attrs = that.options.config.attrs;
+        that.resize(attrs.width, attrs.height);
     }
 };
 
@@ -320,8 +320,8 @@ gpii.app.dialogWrapper.close = function (that) {
 
 
 /**
- * Generic channel extension that enables locale changes
- * notification to the broser window the BrowserWindow.
+ * A generic channel extension which listens for locale changes and
+ * notifies the associated `BrowserWindow`.
  */
 fluid.defaults("gpii.app.i18n.channel", {
     gradeNames: "fluid.modelComponent",

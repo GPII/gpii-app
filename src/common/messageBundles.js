@@ -1,7 +1,7 @@
 /**
- * A component for the i18n
+ * A component which handles the i18n of the PSP.
  *
- * Introduces a component that distributes messages over components.
+ * Introduces a component that distributes messages to components.
  *
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
@@ -36,10 +36,10 @@ var gpii = fluid.registerNamespace("gpii");
  *
  * This component has a `messageDistributor` subcomponent which is created
  * programmatically and it takes care of providing the necessary messages to the
- * components which need them via `distributeOptions` blocks which are generated
- * dynamically. Note that it expects the messages that a component uses to be located
- * under the "model". This approach makes use of the modelListeners in order for
- * re-rendering to happen after locale change.
+ * components which need them via dynamically generated `distributeOptions` blocks.
+ * Note that the messages that a component uses must to be located in the "model".
+ * This approach makes use of the modelListeners in order for re-rendering to happen
+ * when the locale changes.
  */
 fluid.defaults("gpii.app.messageBundles", {
     gradeNames: ["fluid.modelComponent", "{that}.options.messageDistributorGrade"],
@@ -90,13 +90,12 @@ fluid.defaults("gpii.app.messageBundles", {
 
 /**
  * This function creates a `messageDistributor` grade which has a dynamically generated
- * `distributeOptions` block. This name of the grade is returned as a result of this
- * function and is applied to the `messageBundles` component. This is the raw dynamic
- * grades mechanism described here: https://docs.fluidproject.org/infusion/development/ComponentGrades.html#raw-dynamic-grades.
- * By using this mechanism this component is constructed before the other components.
- * This is important because distributeOptions will be considered only if they are present
- * when the component to which they have been distributed to inializes later. This means
- * that the distributor should be created first.
+ * `distributeOptions` block. The name of the grade is returned as a result of this
+ * function and is applied to the `messageBundles` component. By using this raw dynamic grade
+ * mechanism this component is constructed before the other components. This is important
+ * because distributeOptions will be considered only at creation time. This means that the
+ * distributor should be created before any other components to which it distributes
+ * messages.
  */
 gpii.app.messageBundles.getMessageDistributorGrade = function (messageBundles, defaultLocale) {
     var defaultMessages = messageBundles[defaultLocale],
@@ -170,8 +169,8 @@ gpii.app.messageBundles.getSimpleMessageKey = function (messageKey) {
 };
 
 /**
- * Given a map which contains all messages for a given locale, groups the messages by
- * component grades.
+ * Given a map which contains all messages for a given locale, this function groups the
+ * messages by component grades.
  * @param {Object} messages A map with all the messages for a given locale.
  * @return {Object} A map whose keys are individual component grade names (which contain
  * _ instead of . as separators) and the values are maps whose keys are the simple
@@ -194,10 +193,9 @@ gpii.app.messageBundles.groupMessagesByComponent = function (messages) {
 
 /**
  * Constructs an object which can be used as a `distributeOptions` value to distribute IoC
- * message references to the components that need them. Dependent components are extracted
- * from the message keys and in the constructed object, there exist a key for every such
- * component.
- * @param currentMessages {Object} A map of all messages.
+ * message references to the components that need them. In the returned object the keys are
+ * the names of the components to which messages need to be distributed.
+ * @param currentMessages {Object} A map of all messages for a given locale.
  * @return {Object} A map of namespaced distributeOptions blocks.
  */
 gpii.app.messageBundles.getMessageDistributions = function (currentMessages) {

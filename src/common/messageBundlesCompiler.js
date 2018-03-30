@@ -1,7 +1,8 @@
 /**
- * The error dialog
+ * The message bundles compiler.
  *
- * Represents an error dialog, that can be closed by the user.
+ * Contains various functions for compiling a mega message bundle which contains
+ * all messages for all available locales.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -12,8 +13,6 @@
  * https://github.com/GPII/universal/blob/master/LICENSE.txt
  */
 
-/* global fluid */
-
 "use strict";
 
 var fs = require("fs");
@@ -22,52 +21,42 @@ var path = require("path");
 var DEFAULT_FILE_TYPE = "json",
     DEFAULT_PARSER = JSON;
 
-
 /**
- * Generate a list of most specific to least specific locale that can
- * be used.
- *
+ * Generate a list of the least to the most specific locales that can be used.
  * @param locale {String} A locale, e.g. "en_us".
- * @param fallbackLocale {String} The fallback locale to be used in case
- * translations from previous are missing.
- * @returns {String[]} A list fr_FR, en -> ["en", "fr", "fr_FR"]
+ * @param defaultLocale {String} The locale to be used in case messages from all
+ * previous locales are missing.
+ * @returns {String[]} A list of locales. For example, for the "fr_FR" locale and
+ * in case the default locale is "en", the function would return ["en", "fr", "fr_FR"].
  */
-function getLocaleVersions(locale, fallbackLocale) {
+function getLocaleVersions(locale, defaultLocale) {
     var segments = locale.split("_");
 
     var versions = segments.map(function (segment, index) {
         return segments.slice(0, index + 1).join("_");
     });
 
-    if (fallbackLocale) {
-        versions.unshift(fallbackLocale);
+    if (defaultLocale) {
+        versions.unshift(defaultLocale);
     }
 
     return versions;
 }
 
-
-
 /**
- * In case there are only partial translations for a locale, e.g. "en_us", add
- * missing translations using its more general locale ("en" in this case) and a
- * fallback locale (probably the default one) in case translations are missing
- * both in "en" and "en_us".
- *
- * Note: in case we have "en_us" and "en" is missing, "en_us" will NOT be used
- * in place of "en", which will result in using the default locale once messages
- * for "en" are requested.
- *
+ * In case there are only partial messages for a given locale, this function adds
+ * the missing messages using the messages for all versions of the locale in the
+ * order in which they are returned by the `getLocaleVersions` function.
  * @param messageBundles {Object} A raw map of collected bundles. It is of type
- * { locale1: { key1: message1, ... }, locale2: { key2: messages }, ... }
- * @param fallbackLocale {String} The locale to be used when translations are missing
- * @returns {Object} The enhanced message bundles object
+ * { locale1: { key1: message1, ... }, locale2: { key2: message2 }, ... }
+ * @param defaultLocale {String} The default locale to be used.
+ * @returns {Object} The enhanced message bundles object.
  */
-function includeFallbackOptions(messageBundles, fallbackLocale) {
+function includeFallbackOptions(messageBundles, defaultLocale) {
     var result = {};
 
     Object.keys(messageBundles).forEach(function (locale) {
-        var localeVersions = getLocaleVersions(locale, fallbackLocale),
+        var localeVersions = getLocaleVersions(locale, defaultLocale),
             messageBundle = {};
 
         localeVersions.forEach(function (localeVersion) {
@@ -84,11 +73,11 @@ function includeFallbackOptions(messageBundles, fallbackLocale) {
 
 
 /**
- * Collect all files of the specified type from the given directory.
- *
- * @param dir {String} The directory which is to be searched for message bundles.
+ * Collects all file names of the specified type from the given directory.
+ * @param dir {String} The name of the directory from which files are to
+ * be collected.
  * @param fileType {String} The file type that is to be searched for.
- * @returns {String[]} The list of matching files
+ * @returns {String[]} The list of matching file names.
  */
 function collectFilesByType(dir, fileType) {
     var typeRegex = "\\." + fileType + "$";
@@ -104,12 +93,11 @@ function collectFilesByType(dir, fileType) {
 };
 
 /**
- * Load all message bundles from the passed directories.
- *
- * @param bundlesDirs {String[]} The list of directrories containing message bundles.
+ * Loads all message bundles from the passed directories.
+ * @param bundlesDirs {String[]} The list of directrories' names containing message bundles.
  * @param fileType {String} The file type to be searched for in the given folders.
- * @param parser {Object} A parser object, that has `parse` method. An example of such is `JSON`.
- * @returns {Object[]} A list of all collected messages by file.
+ * @param parser {Object} A parser object that has a `parse` method. An example of such is `JSON`.
+ * @returns {Object[]} A list of all collected messages by file name.
  */
 function loadMessageBundles(bundlesDirs, fileType, parser) {
     var bundleFiles = bundlesDirs.reduce(function (files, bundlesDir) {
@@ -124,13 +112,11 @@ function loadMessageBundles(bundlesDirs, fileType, parser) {
     });
 };
 
-
 /**
- * Simply returns the locale that is the last part of the filename:
- * <component name>_<locale>.<file type>
- *
- * @param filename {String}
- * @returns {String} The locale, e.g. "en" or "en_us"
+ * Returns the locale that is the last part of the filename:
+ * <component-name>_<locale>.<file type>
+ * @param filename {String} The name of the file.
+ * @returns {String} The locale, e.g. "en" or "en_us".
  */
 function extractLocaleFromFilename(filename) {
     // strip file extension
@@ -141,19 +127,17 @@ function extractLocaleFromFilename(filename) {
 }
 
 /**
- * Merge all different bundles, grouping them by locale. Each locale
- * key is represented as the merged bundles.
- *
+ * Merges all different bundles grouping them by locale.
  * @param {Object[]} A list of all messages by file name.
- * @returns {Object} Returnes the grouped and merged by locale messages.
+ * @returns {Object} Returns the grouped and merged messages.
  * For example:
  *   {
  *      en: {
- *          val: message,
+ *          key: message,
  *          ...
  *      },
  *      bg: {
- *          val: message,
+ *          key: message,
  *          ...
  *      }
  *   }
@@ -172,7 +156,17 @@ function mergeMessageBundles(loadedBundles) {
     return messageBundles;
 };
 
-
+/**
+ * Creates a message bundles hash where the keys are the available locales and the values
+ * are also hashes whose keys are the message keys and the values are the texts of the
+ * messages themselves.
+ * @param bundlesDirs {String[]} An array of the directories from which message bundle
+ * files are to be retrieved.
+ * @param defaultLocale {String} The default locale to be used.
+ * @param fileType {String} The extension of the message bundle files.
+ * @param parser {Object} An object which provides means (a `parse` method) for parsing the
+ * contents of message bundle files.
+ */
 module.exports.compileMessageBundles = function (bundlesDirs, defaultLocale, fileType, parser) {
     fileType = fileType || DEFAULT_FILE_TYPE;
     parser = parser || DEFAULT_PARSER;
