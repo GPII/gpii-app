@@ -38,10 +38,8 @@
 
             messages: {
                 osName: null,
-                restartTitle: null,
                 osRestartText: null,
                 restartText: null,
-                restartQuestion: null,
 
                 undo: null,
                 restartLater: null,

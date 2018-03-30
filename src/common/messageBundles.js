@@ -200,19 +200,40 @@ gpii.app.messageBundles.groupMessagesByComponent = function (messages) {
  */
 gpii.app.messageBundles.getMessageDistributions = function (currentMessages) {
     var groupedMessages = gpii.app.messageBundles.groupMessagesByComponent(currentMessages),
-        dependentPath = "{/ %componentName}.options.model.messages",
-        binding = "{gpii.app.messageBundles}.model.messages.%componentKey";
+        dependentPath = "{/ %componentName}.options.modelListeners";
 
     return fluid.keys(groupedMessages).reduce(function (distributions, componentKey) {
         var componentName = componentKey.replace(/_/g, ".");
 
         distributions[componentName] = {
             target: fluid.stringTemplate(dependentPath, {componentName: componentName}),
-            record: fluid.stringTemplate(binding, {
-                componentKey: componentKey
-            })
+            record: {
+                "{gpii.app.messageBundles}.model.messages": {
+                    funcName: "gpii.app.messageBundles.setComponentMessages",
+                    args: ["{that}", "{change}.value"]
+                }
+            }
         };
 
         return distributions;
     }, {});
+};
+
+/**
+ * Compiles and sets the messages for a given component. This is done by examining all grade
+ * names for the component and adding their messages to the resulting rest of messages. In
+ * case there are messages with the same key for different grade names, the rightmost grade
+ * name's messages will have priority.
+ * @param that {Component} The component whose messages need to be compiled and set.
+ * @param messageBundles {Object} A hash containing the messages for the varios grade names.
+ */
+gpii.app.messageBundles.setComponentMessages = function (that, messageBundles) {
+    var gradeNames = that.options.gradeNames;
+
+    var newMessages = gradeNames.reduce(function (messages, grade) {
+        var messageKey = grade.replace(/\./g, "_");
+        return Object.assign(messages, messageBundles[messageKey]);
+    }, {});
+    
+    that.applier.change("messages", newMessages);
 };

@@ -17,14 +17,15 @@
     "gpii_psp_settingPresenter_appRestart": "%solutionName - за да промените тази настройка,\nприложението трябва да се рестартира.",
     "gpii_psp_settingPresenter_appRestartRequired": "%solutionName - променихте тази настройка,\nкоето изисква приложението да се рестартира.",
 
-    "gpii_psp_baseRestartWarning_restartTitle": "Промените изискват рестартиране.",
     "gpii_psp_baseRestartWarning_osRestartText": "Windows изисква да бъде рестартиран, за да се приложат настройките.",
-    "gpii_psp_baseRestartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени:",
-    "gpii_psp_baseRestartWarning_restartQuestion": "Какво бихте желали да направите?",
-
+    "gpii_psp_baseRestartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени: %solutions",
     "gpii_psp_baseRestartWarning_undo": "Отказ\n(Отменете промените)",
     "gpii_psp_baseRestartWarning_restartLater": "Затваряне и\n рестартиране по-късно",
     "gpii_psp_baseRestartWarning_restartNow": "Рестартиране сега",
+
+    "gpii_restartDialog_restartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени:",
+    "gpii_restartDialog_restartWarning_restartTitle": "Промените изискват рестартиране.",
+    "gpii_restartDialog_restartWarning_restartQuestion": "Какво бихте желали да направите?",
 
     "gpii_psp_footer_help": "Помощ"
 }

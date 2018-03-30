@@ -198,9 +198,11 @@
 
         if (setting.liveness === "manualRestart") {
             var tooltip = hasPendingChange ? messages.appRestartRequired : messages.appRestart;
-            return fluid.stringTemplate(tooltip, {
-                solutionName: fluid.isValue(setting.solutionName) ? setting.solutionName : setting.schema.title
-            });
+            if (tooltip) {
+                return fluid.stringTemplate(tooltip, {
+                    solutionName: fluid.isValue(setting.solutionName) ? setting.solutionName : setting.schema.title
+                });
+            }
         }
 
         if (setting.liveness === "OSRestart") {

@@ -95,6 +95,10 @@
      */
     fluid.defaults("gpii.restartDialog.restartWarning", {
         gradeNames: ["gpii.psp.baseRestartWarning"],
+        model: {
+            restartTitle: null,
+            restartQuestion: null
+        },
 
         selectors: {
             title: ".flc-title",
