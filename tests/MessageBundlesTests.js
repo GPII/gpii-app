@@ -23,7 +23,7 @@ require("../src/common/messageBundles.js");
 fluid.registerNamespace("gpii.tests.messageBundles.testDefs");
 
 
-fluid.defaults("gpii.tests.messageBundles.deepTranslatableComp", {
+fluid.defaults("gpii.tests.messageBundles.eatComp", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
@@ -33,18 +33,53 @@ fluid.defaults("gpii.tests.messageBundles.deepTranslatableComp", {
     }
 });
 
-fluid.defaults("gpii.tests.messageBundles.translatableComp", {
+fluid.defaults("gpii.tests.messageBundles.greetComp", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
         messages: {
-            greet: null // expected to be passed by the distribution
+            greet: null
         }
-    },
+    }
+});
+
+/**
+ * This component will receive both the `eat` message from the `eatComp` and the
+ * `greet` message from the `greetComp`. There is no limitation on the number of
+ * grades from which a component can receive i18n messages. This can be done by
+ * distributing to the grade name in the `defaults` block, to any other grade
+ * specified in the `gradeNames` property or to both.
+ */
+fluid.defaults("gpii.tests.messageBundles.eatAndGreetComp", {
+    gradeNames: ["gpii.tests.messageBundles.eatComp", "gpii.tests.messageBundles.greetComp"]
+});
+
+fluid.defaults("gpii.tests.messageBundles.byeComp", {
+    gradeNames: ["fluid.modelComponent"],
+
+    model: {
+        messages: {
+            greet: null
+        }
+    }
+});
+
+/**
+ * This component will receive 2 `greet` messages - one from the `greetComp` and one
+ * from the `byeComp`. The message from the `byeComp` will take precedence over the
+ * one from the `greetComp` as the `byeComp` grade comes after the `greetComp` in
+ * the grade names definition array.
+ */
+fluid.defaults("gpii.tests.messageBundles.politeComp", {
+    gradeNames: ["gpii.tests.messageBundles.greetComp", "gpii.tests.messageBundles.byeComp"]
+});
+
+fluid.defaults("gpii.tests.messageBundles.translatableComp", {
+    gradeNames: ["gpii.tests.messageBundles.greetComp"],
 
     components: {
         deeper: {
-            type: "gpii.tests.messageBundles.deepTranslatableComp"
+            type: "gpii.tests.messageBundles.eatComp"
         }
     }
 });
@@ -70,6 +105,12 @@ fluid.defaults("gpii.tests.messageBundles.mainComp", {
             type: "gpii.tests.messageBundles.translatableComp",
             // simply ensure that the distribution component has been created
             createOnEvent: "{mainComp}.events.onPostponed"
+        },
+        extended: {
+            type: "gpii.tests.messageBundles.eatAndGreetComp"
+        },
+        overridden: {
+            type: "gpii.tests.messageBundles.politeComp"
         }
     }
 });
@@ -102,7 +143,7 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
                     funcName: "jqUnit.assertEquals",
                     args: [
                         "MessageBundles: simple component has message distributed",
-                        "{mainComp}.model.messages.gpii_tests_messageBundles_translatableComp.greet",
+                        "{mainComp}.model.messages.gpii_tests_messageBundles_greetComp.greet",
                         "{mainComp}.simple.model.messages.greet"
                     ]
                 },
@@ -114,15 +155,15 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
                     }, {
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper binding is set for component messages",
-                            "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_translatableComp_greet",
+                            "MessageBundles: the simple component has a proper message set",
+                            "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_greetComp_greet",
                             "{mainComp}.simple.model.messages.greet"
                         ]
                     }, { // and a subcomponent
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper binding is set for component messages of a nested component",
-                            "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_deepTranslatableComp_eat",
+                            "MessageBundles: A nested component has a prper message set",
+                            "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_eatComp_eat",
                             "{mainComp}.simple.deeper.model.messages.eat"
                         ]
                     }
@@ -133,8 +174,8 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
                     }, {
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper binding is set for component messages for a missing locale",
-                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_translatableComp_greet",
+                            "MessageBundles: A proper message is set for a missing locale",
+                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_greetComp_greet",
                             "{mainComp}.simple.model.messages.greet"
                         ]
                     }
@@ -145,15 +186,15 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
                     }, {
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper binding is set for component messages for the DE locale",
-                            "{mainComp}.options.messageBundles.de.gpii_tests_messageBundles_translatableComp_greet",
+                            "MessageBundles: A proper message is set for the DE locale",
+                            "{mainComp}.options.messageBundles.de.gpii_tests_messageBundles_greetComp_greet",
                             "{mainComp}.simple.model.messages.greet"
                         ]
                     }, {
                         funcName: "jqUnit.assertEquals",
                         args: [
                             "MessageBundles: The default locale message for EAT is used as the DE locale does not have such a message",
-                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_deepTranslatableComp_eat",
+                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_eatComp_eat",
                             "{mainComp}.simple.deeper.model.messages.eat"
                         ]
                     }
@@ -163,12 +204,11 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
             name: "Distribution to components with postponed creation",
             expect: 2,
             sequence: [
-                {
+                { // change the language before the component is created
                     func: "{mainComp}.applier.change",
                     args: ["locale", "it"]
                 },
-                // create the subcomponent
-                {
+                { // create the subcomponent
                     funcName: "{mainComp}.events.onPostponed.fire"
                 },
 
@@ -176,8 +216,8 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
                     {
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper message binding is set for a component with postponed creation",
-                            "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_translatableComp_greet",
+                            "MessageBundles: A proper message is set for a component with postponed creation",
+                            "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_greetComp_greet",
                             "{mainComp}.postponed.model.messages.greet"
                         ]
                     }, {
@@ -186,12 +226,51 @@ fluid.defaults("gpii.tests.psp.messageBundleTester", {
                     }, {
                         funcName: "jqUnit.assertEquals",
                         args: [
-                            "MessageBundles: A proper message binding is set for a component after it has been created",
-                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_translatableComp_greet",
+                            "MessageBundles: A proper message is set for a component after it has been created",
+                            "{mainComp}.options.messageBundles.en.gpii_tests_messageBundles_greetComp_greet",
                             "{mainComp}.postponed.model.messages.greet"
                         ]
                     }
                 ]
+            ]
+        }, {
+            name: "Distributions via multiple grades for one and the same component",
+            expect: 2,
+            sequence: [ // check that a component can receive messages via more than one of its grades
+                {
+                    func: "{mainComp}.applier.change",
+                    args: ["locale", "it"]
+                }, {
+                    funcName: "jqUnit.assertEquals",
+                    args: [
+                        "MessageBundles: A proper greet message is set for a multiple-grade component",
+                        "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_greetComp_greet",
+                        "{mainComp}.extended.model.messages.greet"
+                    ]
+                }, {
+                    funcName: "jqUnit.assertEquals",
+                    args: [
+                        "MessageBundles: A proper eat message is set for a multiple-grade component",
+                        "{mainComp}.options.messageBundles.it.gpii_tests_messageBundles_eatComp_eat",
+                        "{mainComp}.extended.model.messages.eat"
+                    ]
+                }
+            ]
+        }, {
+            name: "Overriding distributed messages via different grades for the same component",
+            expect: 1,
+            sequence: [ // check that the message value is the one that comes with the last grade
+                {
+                    func: "{mainComp}.applier.change",
+                    args: ["locale", "de"]
+                }, {
+                    funcName: "jqUnit.assertEquals",
+                    args: [
+                        "MessageBundles: The greet message is properly overridden",
+                        "{mainComp}.options.messageBundles.de.gpii_tests_messageBundles_byeComp_greet",
+                        "{mainComp}.overridden.model.messages.greet"
+                    ]
+                }
             ]
         }]
     }]

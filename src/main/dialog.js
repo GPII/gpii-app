@@ -337,5 +337,3 @@ fluid.defaults("gpii.app.i18n.channel", {
         }
     }
 });
-
-

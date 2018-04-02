@@ -48,18 +48,13 @@ fluid.defaults("gpii.app.pspInApp", {
             args: ["{arguments}.0"] // newPrefSet
         },
 
-        "{gpiiConnector}.events.onPreferencesUpdated": [{
+        "{gpiiConnector}.events.onPreferencesUpdated": {
             listener: "{that}.notifyPSPWindow",
             args: [
                 "onPreferencesUpdated",
                 "{arguments}.0" // message
             ]
-        }
-            // , { // XXX dev
-            // funcName: "gpii.app.showRestartDialogIfNeeded",
-            // args: ["{dialogManager}", "{arguments}.0.settings"]
-        // }
-        ],
+        },
 
         "{gpiiConnector}.events.onSettingUpdated": {
             listener: "{that}.notifyPSPWindow",

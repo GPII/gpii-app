@@ -1,13 +1,15 @@
 {
     "en": {
-        "gpii_tests_messageBundles_translatableComp_greet": "Hello!",
-        "gpii_tests_messageBundles_deepTranslatableComp_eat": "I eat!"
+        "gpii_tests_messageBundles_greetComp_greet": "Hello!",
+        "gpii_tests_messageBundles_byeComp_greet": "Bye!",
+        "gpii_tests_messageBundles_eatComp_eat": "I eat!"
     },
     "it": {
-        "gpii_tests_messageBundles_translatableComp_greet": "Ciao!",
-        "gpii_tests_messageBundles_deepTranslatableComp_eat": "Magio!"
+        "gpii_tests_messageBundles_greetComp_greet": "Ciao!",
+        "gpii_tests_messageBundles_eatComp_eat": "Magio!"
     },
     "de": {
-        "gpii_tests_messageBundles_translatableComp_greet": "Hallo!"
+        "gpii_tests_messageBundles_greetComp_greet": "Hallo!",
+        "gpii_tests_messageBundles_byeComp_greet": "Aufwiedersehen!"
     }
 }

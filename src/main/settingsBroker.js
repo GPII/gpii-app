@@ -98,10 +98,6 @@ fluid.defaults("gpii.app.settingsBroker", {
  * @param setting {Object} A descriptor of the setting which is to be applied.
  */
 gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
-    if (setting.settings) {
-        setting = setting.settings[0];
-    }
-
     // Apply the setting immediately, without queuing if it is live.
     if (setting.liveness === "live" || setting.liveness === "liveRestart") {
         settingsBroker.applySetting(setting);

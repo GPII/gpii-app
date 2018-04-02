@@ -390,8 +390,6 @@ gpii.app.hideRestartDialogIfNeeded = function (dialogManager, isPspShown) {
  * @param pendingChanges {Object[]} A list containing the current pending changes
  */
 gpii.app.showRestartDialogIfNeeded = function (dialogManager, pendingChanges) {
-    // XXX DEV
-    //console.log("Change: ",pendingChanges);
     if (pendingChanges.length > 0) {
         dialogManager.show("restartDialog", pendingChanges);
     }
