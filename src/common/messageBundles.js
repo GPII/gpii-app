@@ -234,6 +234,6 @@ gpii.app.messageBundles.setComponentMessages = function (that, messageBundles) {
         var messageKey = grade.replace(/\./g, "_");
         return Object.assign(messages, messageBundles[messageKey]);
     }, {});
-    
+
     that.applier.change("messages", newMessages);
 };

@@ -101,8 +101,7 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
     if (setting.settings) {
         setting = setting.settings[0];
     }
-    if (!setting) return;
-   
+
     // Apply the setting immediately, without queuing if it is live.
     if (setting.liveness === "live" || setting.liveness === "liveRestart") {
         settingsBroker.applySetting(setting);

@@ -4,6 +4,9 @@
     "gpii_app_menu_keyedIn": "Keyed in with %snapsetName",
     "gpii_app_menu_keyOut": "Key-out of GPII",
 
+    "gpii_app_tray_pendingChanges": "There are pending changes",
+    "gpii_app_tray_defaultTooltip": "(No one keyed in)",
+
     "gpii_psp_splash_heading": "Not keyed in",
     "gpii_psp_splash_fullAppName": "GPII - Personal Settings Panel",
 

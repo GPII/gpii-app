@@ -58,7 +58,11 @@ fluid.defaults("gpii.app.tray", {
         pendingChanges: [],
         icon: "{that}.options.icons.keyedOut",
         preferences: "{app}.model.preferences",
-        tooltip: ""
+        tooltip: "",
+        messages: {
+            pendingChanges: null,
+            defaultTooltip: null
+        }
     },
     modelRelay: {
         "icon": {
@@ -74,7 +78,7 @@ fluid.defaults("gpii.app.tray", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.getTrayTooltip",
-                args: ["{that}.model.preferences", "{that}.model.pendingChanges", "{that}.options.tooltips"]
+                args: ["{that}.model.preferences", "{that}.model.pendingChanges", "{that}.model.messages"]
             }
         }
     },
@@ -85,9 +89,9 @@ fluid.defaults("gpii.app.tray", {
             excludeSource: "init"
         },
         "tooltip": {
-            "this": "{that}.tray",
-            method: "setToolTip",
-            args: "{that}.model.tooltip"
+            funcName: "gpii.app.tray.setTrayTooltip",
+            args: ["{that}.tray", "{that}.model.tooltip"],
+            excludeSource: "init"
         }
     },
     listeners: {
@@ -95,10 +99,6 @@ fluid.defaults("gpii.app.tray", {
             this: "{that}.tray",
             method: "destroy"
         }
-    },
-    tooltips: {
-        pendingChanges: "There are pending changes",
-        defaultTooltip: "(No one keyed in)"
     }
 });
 
@@ -110,6 +110,17 @@ fluid.defaults("gpii.app.tray", {
 gpii.app.tray.setTrayIcon = function (tray, icon) {
     var iconPath = fluid.module.resolvePath(icon);
     tray.setImage(iconPath);
+};
+
+/**
+  * Sets the tooltip for the Electron Tray icon. If a falsy value is provided,
+  * the current tooltip will be removed.
+  * @param tray {Object} An instance of an Electron Tray.
+  * @param tooltip {String} The tooltip to be set.
+  */
+gpii.app.tray.setTrayTooltip = function (tray, tooltip) {
+    tooltip = tooltip || "";
+    tray.setToolTip(tooltip);
 };
 
 /**
@@ -155,12 +166,12 @@ gpii.app.getTrayIcon = function (keyedInUserToken, pendingChanges, icons) {
  * @param preferences {Object} An object describing the preference sets (including the
  * active one) for the currently keyed-in user (if any).
  * @param pendingChanges {Array} An array containing all pending setting changes.
- * @param tooltips {Object} An object containing all possible tooltip texts.
+ * @param messages {Object} An object containing differen messages for the tray tooltip.
  * @return The tooltip label for the Electron Tray.
  */
-gpii.app.getTrayTooltip = function (preferences, pendingChanges, tooltips) {
+gpii.app.getTrayTooltip = function (preferences, pendingChanges, messages) {
     if (pendingChanges && pendingChanges.length > 0) {
-        return tooltips.pendingChanges;
+        return messages.pendingChanges;
     }
 
     var activePreferenceSet = fluid.find_if(preferences.sets,
@@ -169,5 +180,5 @@ gpii.app.getTrayTooltip = function (preferences, pendingChanges, tooltips) {
         }
     );
 
-    return activePreferenceSet ? activePreferenceSet.name : tooltips.defaultTooltip;
+    return activePreferenceSet ? activePreferenceSet.name : messages.defaultTooltip;
 };

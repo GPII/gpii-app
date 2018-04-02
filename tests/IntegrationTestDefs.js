@@ -192,7 +192,7 @@ gpii.tests.dev.testTrayTooltip = function (tray, expectedTooltip) {
 gpii.tests.dev.testTrayKeyedOut = function (tray) {
     jqUnit.assertValue("Tray is available", tray);
     jqUnit.assertEquals("No user keyed-in icon", tray.options.icons.keyedOut, tray.model.icon);
-    gpii.tests.dev.testTrayTooltip(tray, tray.options.tooltips.defaultTooltip);
+    gpii.tests.dev.testTrayTooltip(tray, tray.model.messages.defaultTooltip);
 };
 
 gpii.tests.dev.testTrayKeyedIn = function (tray, expectedTooltip) {
