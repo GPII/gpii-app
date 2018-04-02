@@ -14,8 +14,10 @@ $projectDir = (Get-Item $provisioningDir).parent.FullName
 
 Import-Module (Join-Path $provisioningDir 'Provisioning.psm1') -Force
 
-$installerRepo = "https://github.com/GPII/gpii-wix-installer"
-$installerBranch = "HST"
+#$installerRepo = "https://github.com/GPII/gpii-wix-installer"
+#$installerBranch = "HST"
+$installerRepo = "https://github.com/stegru/gpii-wix-installer"
+$installerBranch = "GPII-2338"
 
 # Obtaining useful tools location.
 $installerDir = Join-Path $env:SystemDrive "installer" # a.k.a. C:\installer\
@@ -85,6 +87,13 @@ Invoke-Command "electron-packager.cmd" "$preStagingDir --platform=win32 --arch=i
 # TODO: Try to avoid using the electron-packager directory name hardcoding it.
 $packagedAppDir = (Join-Path $packagerDir "gpii-app-win32-ia32")
 Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
+
+# Build the Windows Service
+$serviceDir = $(Join-Path $preStagingDir "node_modules\gpii-windows\service")
+Invoke-Command "npm" "install --production" $serviceDir
+Invoke-Command "npm" "install pkg -g" $serviceDir
+Invoke-Command "pkg" "package.json --output $(Join-Path $stagingWindowsDir "gpii-service.exe")" $serviceDir
+Get-ChildItem "$serviceDir\*.node" -Recurse | Move-Item -Destination $stagingWindowsDir
 
 md (Join-Path $installerDir "output")
 md (Join-Path $installerDir "temp")
