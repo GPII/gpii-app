@@ -168,7 +168,7 @@ gpii.app.dialog.addDisplayMetricsListener = function (that) {
  * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
  */
 gpii.app.dialog.handleDisplayMetricsChange = function (that, changedMetrics) {
-    if (changedMetrics.indexOf("scaleFactor") === -1) {
+    if (!changedMetrics.includes("scaleFactor")) {
         var attrs = that.options.config.attrs;
         that.resize(attrs.width, attrs.height);
     }

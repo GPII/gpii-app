@@ -184,7 +184,7 @@ fluid.defaults("gpii.app.psp", {
         },
 
         "onDestroy.cleanupElectron": {
-            this: "{that}.pspWindow",
+            "this": "{that}.pspWindow",
             method: "destroy"
         },
 
@@ -320,8 +320,9 @@ gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changed
     // applied. On others, this is not the case until the event is fired again. That is
     // why the resizing should happen only the second (or third) time the
     // `display-metrics-changed` event is fired in which case the changedMetrics argument
-    // will not include the `scaleFactor` string.
-    if (changedMetrics.indexOf("scaleFactor") === -1) {
+    // will not include the `scaleFactor` string. For more information please take a look
+    // at https://issues.gpii.net/browse/GPII-2890.
+    if (!changedMetrics.includes("scaleFactor")) {
         // Use the initial size of the PSP when the DPI is changed. The PSP will resize
         // one more time when the heightChangeListener kicks in.
         psp.resize(psp.options.attrs.height);
