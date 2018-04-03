@@ -161,9 +161,6 @@ fluid.defaults("gpii.app.dialogManager", {
         error: {
             type: "gpii.app.error"
         },
-        restartDialog: {
-            type: "gpii.app.dialog.restartDialog"
-        },
 
         errorQueue: {
             type: "gpii.app.dialogManager.queue",

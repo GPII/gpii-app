@@ -24,7 +24,6 @@ require("./dialogManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
-require("./restartDialog.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
@@ -356,43 +355,6 @@ gpii.app.errorHandler.registerErrorListener = function (errorHandler) {
         fluid.log(err);
         errorHandler.handleUncaughtException(err);
     }, "gpii.app.errorHandler", "last");
-};
-
-
-/**
- * Either hides or shows the warning in the PSP.
- *
- * @param psp {Component} The `gpii.app.psp` component
- * @param pendingChanges {Object[]} A list of the current state of pending changes
- */
-gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
-    if (pendingChanges.length === 0) {
-        psp.hideRestartWarning();
-    } else {
-        psp.showRestartWarning(pendingChanges);
-    }
-};
-
-/**
- * Hides the restart dialog if the PSP is being shown.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance
- * @param isPspShown {Boolean} Whether the psp window is being shown
- */
-gpii.app.hideRestartDialogIfNeeded = function (dialogManager, isPspShown) {
-    if (isPspShown) {
-        dialogManager.hide("restartDialog");
-    }
-};
-
-/**
- * Shows the restart dialog if there is at least one pending change.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance
- * @param pendingChanges {Object[]} A list containing the current pending changes
- */
-gpii.app.showRestartDialogIfNeeded = function (dialogManager, pendingChanges) {
-    if (pendingChanges.length > 0) {
-        dialogManager.show("restartDialog", pendingChanges);
-    }
 };
 
 gpii.app.fireAppReady = function (fireFn) {

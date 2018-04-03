@@ -27,9 +27,5 @@
     "gpii_psp_baseRestartWarning_restartLater": "Close and\nRestart Later",
     "gpii_psp_baseRestartWarning_restartNow": "Restart Now",
 
-    "gpii_restartDialog_restartWarning_restartText": "In order to be applied, some of the changes you made require the following applications to restart:",
-    "gpii_restartDialog_restartWarning_restartTitle": "Changes require restart",
-    "gpii_restartDialog_restartWarning_restartQuestion": "What would you like to do?",
-
     "gpii_psp_footer_help": "Help"
 }

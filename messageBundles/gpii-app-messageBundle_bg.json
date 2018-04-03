@@ -26,9 +26,5 @@
     "gpii_psp_baseRestartWarning_restartLater": "Затваряне и\n рестартиране по-късно",
     "gpii_psp_baseRestartWarning_restartNow": "Рестартиране сега",
 
-    "gpii_restartDialog_restartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени:",
-    "gpii_restartDialog_restartWarning_restartTitle": "Промените изискват рестартиране.",
-    "gpii_restartDialog_restartWarning_restartQuestion": "Какво бихте желали да направите?",
-
     "gpii_psp_footer_help": "Помощ"
 }

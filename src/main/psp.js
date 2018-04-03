@@ -36,12 +36,6 @@ fluid.defaults("gpii.app.pspInApp", {
     model: {
         keyedInUserToken: "{app}.model.keyedInUserToken"
     },
-    modelListeners: {
-        isShown: {
-            funcName: "gpii.app.hideRestartDialogIfNeeded",
-            args: ["{dialogManager}", "{change}.value"]
-        }
-    },
     listeners: {
         "onActivePreferenceSetAltered.notifyChannel": {
             listener: "{gpiiConnector}.updateActivePrefSet",
@@ -76,44 +70,27 @@ fluid.defaults("gpii.app.pspInApp", {
          * Restart Warning related listeners
          */
 
-        onClosed: {
-            funcName: "gpii.app.showRestartDialogIfNeeded",
-            args: ["{dialogManager}", "{settingsBroker}.model.pendingChanges"]
-        },
-
         onSettingAltered: {
             listener: "{settingsBroker}.enqueue"
         },
 
         onRestartNow: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
             func: "{that}.hide"
         }, {
             listener: "{settingsBroker}.applyPendingChanges"
         }],
 
-        onUndoChanges: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
+        onUndoChanges: {
             listener: "{settingsBroker}.undoPendingChanges"
-        }],
+        },
 
-        onRestartLater: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
+        onRestartLater: {
             func: "{that}.hide"
-        }],
+        },
 
-        onActivePreferenceSetAltered: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
+        onActivePreferenceSetAltered: {
             listener: "{settingsBroker}.clearPendingChanges"
-        }],
+        },
 
         "{settingsBroker}.events.onRestartRequired": {
             funcName: "gpii.app.togglePspRestartWarning",
@@ -125,6 +102,19 @@ fluid.defaults("gpii.app.pspInApp", {
     }
 });
 
+/**
+ * Either hides or shows the warning in the PSP.
+ *
+ * @param psp {Component} The `gpii.app.psp` component
+ * @param pendingChanges {Object[]} A list of the current state of pending changes
+ */
+gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
+    if (pendingChanges.length === 0) {
+        psp.hideRestartWarning();
+    } else {
+        psp.showRestartWarning(pendingChanges);
+    }
+};
 
 /**
  * Handles logic for the PSP window.
