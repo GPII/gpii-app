@@ -28,8 +28,7 @@
      * It uses IPC to listen for changes in the locale and the same mechanism for
      * messages distribution that is used in the main process.
      * It expects a subcomponent named `channel` (possibly not a direct child) that handles
-     * communication with the main process. It attaches additional listener for the
-     * `onLocaleChanged` event.
+     * communication with the main process.
      */
     fluid.defaults("gpii.psp.messageBundles", {
         gradeNames: "gpii.app.messageBundles",
@@ -59,8 +58,7 @@
 
     /**
      * A simple component that attaches a listener for `onLocaleChanged` IPC message
-     * from the Main process through the usage of IPC. A possible usage is alongside
-     * with existing (extending) of existing `channel` component.
+     * from the main process.
      */
     fluid.defaults("gpii.psp.messageBundles.channel", {
         gradeNames: "fluid.component",
@@ -79,8 +77,7 @@
 
     /**
      * Registers a listener for the  `onLocaleChanged` event from the main process.
-     *
-     * @param events {Object} Events map.
+     * @param events {Object} A map of all events for the `channel` component.
      */
     gpii.psp.messageBundles.channel.register = function (events) {
         ipcRenderer.on("onLocaleChanged", function (event, locale) {

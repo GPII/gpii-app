@@ -91,7 +91,7 @@ fluid.defaults("gpii.tests.messageBundles.mainComp", {
         locale: "en"
     },
 
-    messageBundlesPath: "./testData/messageBundles/test-message-bundles.json",
+    messageBundlesPath: "./tests/fixtures/test-message-bundles.json",
 
     events: {
         onPostponed: null

@@ -45,10 +45,7 @@ fluid.defaults("gpii.app.messageBundles", {
     gradeNames: ["fluid.modelComponent", "{that}.options.messageDistributorGrade"],
 
     model: {
-        locale: null, // default will be used
-
-        // keep messages here in order to make use
-        // of the model events system
+        locale: null, // the defaultLocale will be used initially
         messages: {}
     },
 
@@ -59,8 +56,7 @@ fluid.defaults("gpii.app.messageBundles", {
     messageBundles: "@expand:gpii.app.messageBundles.loadMessageBundles({that}.options.messageBundlesPath)",
 
     modelListeners: {
-        // Will be called on init
-        "locale": {
+        locale: {
             func: "{that}.updateMessages"
         }
     },
@@ -96,6 +92,10 @@ fluid.defaults("gpii.app.messageBundles", {
  * because distributeOptions will be considered only at creation time. This means that the
  * distributor should be created before any other components to which it distributes
  * messages.
+ * @param messageBundles {Object} An object containing all i18n messages for all supported
+ * locales
+ * @param defaultLocale {String} A string representing the default locale.
+ * @return {String} The name of the distributor grade.
  */
 gpii.app.messageBundles.getMessageDistributorGrade = function (messageBundles, defaultLocale) {
     var defaultMessages = messageBundles[defaultLocale],
@@ -148,7 +148,7 @@ gpii.app.messageBundles.updateMessages = function (that, messageBundles, locale,
  * the "gpii_psp_header_autosaveText" key, this function would return "gpii_psp_header".
  * @param messageKey {String} a key from the `messages` object.
  * @return {String} The grade name to which this key is related to (except that it will
- * contain _ insted of . as separators).
+ * contain _ insteаd of . as separators).
  */
 gpii.app.messageBundles.getComponentKey = function (messageKey) {
     var keyDelimiterIndex = messageKey.lastIndexOf("_");
@@ -192,9 +192,10 @@ gpii.app.messageBundles.groupMessagesByComponent = function (messages) {
 };
 
 /**
- * Constructs an object which can be used as a `distributeOptions` value to distribute IoC
- * message references to the components that need them. In the returned object the keys are
- * the names of the components to which messages need to be distributed.
+ * Constructs an object which can be used as a `distributeOptions` value to distribute model
+ * listeners for updating the messages of i18n components in the application. The keys of the
+ * returned object are the names of the components to which the model listeners need to be
+ * distributed.
  * @param currentMessages {Object} A map of all messages for a given locale.
  * @return {Object} A map of namespaced distributeOptions blocks.
  */
@@ -221,11 +222,11 @@ gpii.app.messageBundles.getMessageDistributions = function (currentMessages) {
 
 /**
  * Compiles and sets the messages for a given component. This is done by examining all grade
- * names for the component and adding their messages to the resulting rest of messages. In
+ * names for the component and adding their messages to the resulting set of messages. In
  * case there are messages with the same key for different grade names, the rightmost grade
  * name's messages will have priority.
  * @param that {Component} The component whose messages need to be compiled and set.
- * @param messageBundles {Object} A hash containing the messages for the varios grade names.
+ * @param messageBundles {Object} A hash containing the messages for the various grade names.
  */
 gpii.app.messageBundles.setComponentMessages = function (that, messageBundles) {
     var gradeNames = that.options.gradeNames;

@@ -18,8 +18,8 @@ module.exports = function (grunt) {
         },
         compileMessages: {
             defaults: {
-                messageCompilerPath: "./src/common/messageBundlesCompiler.js",
-                messagesDirs: ["./src/messageBundles"],
+                messageCompilerPath: "./messageBundlesCompiler.js",
+                messagesDirs: ["./messageBundles"],
                 resultFilePath: "./build/gpii-app-messageBundles.json"
             }
         }

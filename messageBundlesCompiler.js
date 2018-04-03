@@ -22,7 +22,7 @@ var DEFAULT_FILE_TYPE = "json",
     DEFAULT_PARSER = JSON;
 
 /**
- * Generate a list of the least to the most specific locales that can be used.
+ * Generates a list of the least to the most specific locales that can be used.
  * @param locale {String} A locale, e.g. "en_us".
  * @param defaultLocale {String} The locale to be used in case messages from all
  * previous locales are missing.
@@ -71,7 +71,6 @@ function includeFallbackOptions(messageBundles, defaultLocale) {
     return result;
 }
 
-
 /**
  * Collects all file names of the specified type from the given directory.
  * @param dir {String} The name of the directory from which files are to
@@ -93,7 +92,7 @@ function collectFilesByType(dir, fileType) {
 };
 
 /**
- * Loads all message bundles from the passed directories.
+ * Loads synchronously all message bundles from the passed directories.
  * @param bundlesDirs {String[]} The list of directrories' names containing message bundles.
  * @param fileType {String} The file type to be searched for in the given folders.
  * @param parser {Object} A parser object that has a `parse` method. An example of such is `JSON`.
@@ -128,7 +127,7 @@ function extractLocaleFromFilename(filename) {
 
 /**
  * Merges all different bundles grouping them by locale.
- * @param {Object[]} A list of all messages by file name.
+ * @param loadedBundles {Object[]} A list of all messages by file name.
  * @returns {Object} Returns the grouped and merged messages.
  * For example:
  *   {
@@ -157,8 +156,8 @@ function mergeMessageBundles(loadedBundles) {
 };
 
 /**
- * Creates a message bundles hash where the keys are the available locales and the values
- * are also hashes whose keys are the message keys and the values are the texts of the
+ * Creates a message bundles map where the keys are the available locales and the values
+ * are also maps whose keys are the message keys and the values are the texts of the
  * messages themselves.
  * @param bundlesDirs {String[]} An array of the directories from which message bundle
  * files are to be retrieved.
@@ -166,6 +165,7 @@ function mergeMessageBundles(loadedBundles) {
  * @param fileType {String} The extension of the message bundle files.
  * @param parser {Object} An object which provides means (a `parse` method) for parsing the
  * contents of message bundle files.
+ * @return {Object} The compiled message bundles map.
  */
 module.exports.compileMessageBundles = function (bundlesDirs, defaultLocale, fileType, parser) {
     fileType = fileType || DEFAULT_FILE_TYPE;

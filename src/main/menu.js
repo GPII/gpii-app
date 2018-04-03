@@ -97,6 +97,10 @@ fluid.defaults("gpii.app.menuInAppDev", {
     },
 
     listeners: {
+        "onLocale.changeLocale": {
+            changePath: "{app}.model.locale",
+            value: "{arguments}.0.locale"
+        },
         // onKeyIn event is fired when a new user keys in through the task tray.
         // This should result in:
         // 1. key out the old keyed in user token
@@ -104,10 +108,6 @@ fluid.defaults("gpii.app.menuInAppDev", {
         //   a) trigger GPII {lifecycleManager}.events.onSessionStart
         //   b) fire a model change to set the new model.keyedInUserToken
         //   c) update the menu
-        "onLocale.changeLocale": {
-            changePath: "{app}.model.locale",
-            value: "{arguments}.0.locale"
-        },
         "onKeyIn.performKeyOut": {
             listener: "{app}.keyOut"
         },
