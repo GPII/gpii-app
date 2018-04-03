@@ -35,6 +35,7 @@
             pendingChanges: [],
             solutionNames: [],
             restartText: "",
+            restartBtnLabel: "",
 
             messages: {
                 osName: null,
@@ -42,7 +43,7 @@
                 restartText: null,
 
                 undo: null,
-                restartLater: null,
+                applyNow: null,
                 restartNow: null
             }
         },
@@ -69,6 +70,17 @@
                         "{that}.model.solutionNames"
                     ]
                 }
+            },
+            restartBtnLabel: {
+                target: "restartBtnLabel",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.psp.baseRestartWarning.generateRestartBtnLabel",
+                    args: [
+                        "{that}.model.messages",
+                        "{that}.model.solutionNames"
+                    ]
+                }
             }
         },
         modelListeners: {
@@ -81,7 +93,6 @@
         selectors: {
             restartText: ".flc-restartText",
             restartNow: ".flc-restartNow",
-            restartLater: ".flc-restartLater",
             undo: ".flc-restartUndo"
         },
         components: {
@@ -102,22 +113,10 @@
                 container: "{that}.dom.restartNow",
                 options: {
                     model: {
-                        label: "{baseRestartWarning}.model.messages.restartNow"
+                        label: "{baseRestartWarning}.model.restartBtnLabel"
                     },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onRestartNow.fire"
-                    }
-                }
-            },
-            restartLaterBtn: {
-                type: "gpii.psp.widgets.button",
-                container: "{that}.dom.restartLater",
-                options: {
-                    model: {
-                        label: "{baseRestartWarning}.model.messages.restartLater"
-                    },
-                    invokers: {
-                        onClick: "{baseRestartWarning}.events.onRestartLater.fire"
                     }
                 }
             }
@@ -130,7 +129,6 @@
         },
         events: {
             onRestartNow: null,
-            onRestartLater: null,
             onUndoChanges: null
         }
     });
@@ -184,6 +182,10 @@
         if (messages.restartText) {
             return fluid.stringTemplate(messages.restartText, { solutions: solutionNames.join(", ")});
         }
+    };
+
+    gpii.psp.baseRestartWarning.generateRestartBtnLabel = function (messages, solutionNames) {
+        return solutionNames[0] === messages.osName ? messages.restartNow : messages.applyNow;
     };
 
     /**

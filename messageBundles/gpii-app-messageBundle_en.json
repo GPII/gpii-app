@@ -22,9 +22,9 @@
 
     "gpii_psp_baseRestartWarning_osName": "Windows",
     "gpii_psp_baseRestartWarning_osRestartText": "Windows needs to restart to apply your changes.",
-    "gpii_psp_baseRestartWarning_restartText": "In order to be applied, some of the changes you made require the following applications to restart: %solutions",
-    "gpii_psp_baseRestartWarning_undo": "Cancel\n(Undo Changes)",
-    "gpii_psp_baseRestartWarning_restartLater": "Close and\nRestart Later",
+    "gpii_psp_baseRestartWarning_restartText": "These applications will restart when this GPII Settings panel closes: %solutions",
+    "gpii_psp_baseRestartWarning_undo": "Undo Changes",
+    "gpii_psp_baseRestartWarning_applyNow": "Apply changes now",
     "gpii_psp_baseRestartWarning_restartNow": "Restart Now",
 
     "gpii_psp_footer_help": "Help"

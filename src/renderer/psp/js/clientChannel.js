@@ -126,10 +126,6 @@
                 func: "{that}.sendMessage",
                 args: ["onRestartNow"]
             },
-            restartLater: {
-                func: "{that}.sendMessage",
-                args: ["onRestartLater"]
-            },
             undoChanges: {
                 func: "{that}.sendMessage",
                 args: ["onUndoChanges"]

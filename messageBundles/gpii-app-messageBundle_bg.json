@@ -21,10 +21,10 @@
     "gpii_psp_settingPresenter_appRestartRequired": "%solutionName - променихте тази настройка,\nкоето изисква приложението да се рестартира.",
 
     "gpii_psp_baseRestartWarning_osRestartText": "Windows изисква да бъде рестартиран, за да се приложат настройките.",
-    "gpii_psp_baseRestartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени: %solutions",
-    "gpii_psp_baseRestartWarning_undo": "Отказ\n(Отменете промените)",
-    "gpii_psp_baseRestartWarning_restartLater": "Затваряне и\n рестартиране по-късно",
-    "gpii_psp_baseRestartWarning_restartNow": "Рестартиране сега",
+    "gpii_psp_baseRestartWarning_restartText": "Следните приложения ще се рестартират, когато ППН се затвори: %solutions",
+    "gpii_psp_baseRestartWarning_undo": "Отменете промените",
+    "gpii_psp_baseRestartWarning_applyNow": "Приложи промените сега",
+    "gpii_psp_baseRestartWarning_restartNow": "Рестартирай сега",
 
     "gpii_psp_footer_help": "Помощ"
 }

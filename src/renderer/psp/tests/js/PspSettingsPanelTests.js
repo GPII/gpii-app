@@ -1022,13 +1022,6 @@
                             listener: "jqUnit.assert",
                             args: ["Restart warning's restart now button fires the correct event"]
                         }, {
-                            jQueryTrigger: "click",
-                            element: "@expand:$(.flc-restartLater, {restartWarning}.container)"
-                        }, {
-                            event: "{restartWarning}.events.onRestartLater",
-                            listener: "jqUnit.assert",
-                            args: ["Restart warning's restart later button fires the correct event"]
-                        }, {
                             funcName: "{restartWarning}.updatePendingChanges",
                             args: [
                                 []

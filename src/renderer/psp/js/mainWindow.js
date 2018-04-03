@@ -167,7 +167,6 @@
                     },
                     events: {
                         onRestartNow: "{mainWindow}.events.onRestartNow",
-                        onRestartLater: "{mainWindow}.events.onRestartLater",
                         onUndoChanges: "{mainWindow}.events.onUndoChanges"
                     }
                 }
@@ -218,7 +217,6 @@
 
             onRestartRequired: null,
             onRestartNow: null,
-            onRestartLater: null,
             onUndoChanges: null
         }
     });

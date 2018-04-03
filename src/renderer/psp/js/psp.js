@@ -54,7 +54,6 @@
                         onHeightChanged: "{channel}.changeContentHeight",
 
                         onRestartNow:   "{channel}.restartNow",
-                        onRestartLater: "{channel}.restartLater",
                         onUndoChanges:  "{channel}.undoChanges"
                     }
                 }

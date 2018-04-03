@@ -84,10 +84,6 @@ fluid.defaults("gpii.app.pspInApp", {
             listener: "{settingsBroker}.undoPendingChanges"
         },
 
-        onRestartLater: {
-            func: "{that}.hide"
-        },
-
         onActivePreferenceSetAltered: {
             listener: "{settingsBroker}.clearPendingChanges"
         },
@@ -154,7 +150,6 @@ fluid.defaults("gpii.app.psp", {
         onUndoChanges: null,
 
         onClosed: null,
-        onRestartLater: null,
 
         onDisplayMetricsChanged: null,
         onPSPWindowFocusLost: null
@@ -179,10 +174,6 @@ fluid.defaults("gpii.app.psp", {
         },
 
         "onClosed.closePsp": {
-            func: "{psp}.hide"
-        },
-
-        "onRestartLater.closePsp": {
             func: "{psp}.hide"
         },
 
@@ -377,10 +368,6 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
 
     ipcMain.on("onRestartNow", function () {
         psp.events.onRestartNow.fire();
-    });
-
-    ipcMain.on("onRestartLater", function () {
-        psp.events.onRestartLater.fire();
     });
 
     ipcMain.on("onUndoChanges", function () {
