@@ -81,6 +81,13 @@ fluid.defaults("gpii.app.settingsBroker", {
         undoPendingChanges: {
             funcName: "gpii.app.settingsBroker.undoPendingChanges",
             args: ["{that}", "{that}.model.pendingChanges"]
+        },
+        hasPendingChange: {
+            funcName: "gpii.app.settingsBroker.hasPendingChange",
+            args: [
+                "{that}.model.pendingChanges",
+                "{arguments}.0" // liveness
+            ]
         }
     },
     events: {
@@ -156,4 +163,14 @@ gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, pendingCh
         settingsBroker.undoSetting(pendingChange);
     });
     settingsBroker.clearPendingChanges();
+};
+
+gpii.app.settingsBroker.hasPendingChange = function (pendingChanges, liveness) {
+    if (!fluid.isValue(liveness)) {
+        return pendingChanges.length > 0;
+    }
+
+    return fluid.find_if(pendingChanges, function (change) {
+        return change.liveness === liveness;
+    });
 };
