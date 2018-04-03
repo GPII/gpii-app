@@ -4,8 +4,7 @@
     "gpii_app_menu_keyedIn": "Вписан с %snapsetName",
     "gpii_app_menu_keyOut": "Отписване от GPII",
 
-    "gpii_app_tray_pendingChanges": "Има незапазени промени",
-    "gpii_app_tray_defaultTooltip": "(Не сте влезли)",
+    "gpii_app_tray_defaultTooltip": "GPII: В готовност",
 
     "gpii_psp_splash_heading": "Не сте вписан",
     "gpii_psp_splash_fullAppName": "GPII - Персонален Панел за Настройки",
