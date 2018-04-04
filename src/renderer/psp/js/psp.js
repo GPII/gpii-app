@@ -26,6 +26,9 @@
                 type: "gpii.psp.clientChannel",
                 options: {
                     listeners: {
+                        onPSPOpen: {
+                            funcName: "{mainWindow}.playActivePrefSetSound"
+                        },
                         onPreferencesUpdated: {
                             funcName: "{mainWindow}.updatePreferences"
                         },

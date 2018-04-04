@@ -235,8 +235,17 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
         });
     }
 
+    function applyPrefSetSound(prefSets) {
+        prefSets.forEach(function (prefSet, index) {
+            var soundSrc = (index % 2 === 0) ? "sound1.mp3" : "sound2.mp3",
+                resolvedSrc = fluid.module.resolvePath("%gpii-app/src/sounds/" + soundSrc);
+            prefSet.soundSrc = resolvedSrc;
+        });
+    }
+
     if (preferences) {
         applyManualLivenessFlag(preferences.settings);
         applyOsLivenessFlag(preferences.settings);
+        applyPrefSetSound(preferences.sets);
     }
 };

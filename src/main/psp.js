@@ -283,6 +283,7 @@ gpii.app.psp.show = function (psp) {
     gpii.app.psp.moveToScreen(psp.pspWindow);
     psp.pspWindow.focus();
     psp.applier.change("isShown", true);
+    psp.notifyPSPWindow("onPSPOpen");
 };
 
 /**

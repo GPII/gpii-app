@@ -75,6 +75,23 @@
         }
     };
 
+    gpii.psp.playActivePrefSetSound = function (preferences) {
+        if (!preferences.activeSet) {
+            return;
+        }
+
+        var activePreferenceSet = fluid.find_if(preferences.sets,
+            function (preferenceSet) {
+                return preferenceSet.path === preferences.activeSet;
+            }
+        );
+
+        if (activePreferenceSet && activePreferenceSet.soundSrc) {
+            var sound = new Audio(activePreferenceSet.soundSrc);
+            sound.play();
+        }
+    };
+
     /**
      * Responsible for drawing the settings list
      *
@@ -179,6 +196,11 @@
         modelListeners: {
             "preferences": "{that}.events.onPreferencesUpdated"
         },
+        listeners: {
+            onActivePreferenceSetAltered: {
+                func: "{that}.playActivePrefSetSound"
+            }
+        },
         invokers: {
             "updatePreferences": {
                 changePath: "preferences",
@@ -202,6 +224,10 @@
             "calculateHeight": {
                 funcName: "gpii.psp.calculateHeight",
                 args: ["{that}", "{that}.container", "{that}.dom.content", "{that}.dom.settingsList"]
+            },
+            "playActivePrefSetSound": {
+                funcName: "gpii.psp.playActivePrefSetSound",
+                args: ["{that}.model.preferences"]
             }
         },
         events: {
