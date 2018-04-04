@@ -185,20 +185,30 @@ gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
     gpii.tests.app.testItem(menuTemplate[8], "Exit GPII");
 };
 
-gpii.tests.dev.testTrayTooltip = function (tray, expectedTooltip) {
+gpii.tests.dev.testTrayTooltip = function (tray, activePrefSet) {
+    var expectedTooltip;
+
+    if (activePrefSet) {
+        expectedTooltip = fluid.stringTemplate(tray.model.messages.prefSetTooltip, {
+            prefSet: activePrefSet
+        });
+    } else {
+        expectedTooltip = tray.model.messages.defaultTooltip;
+    }
+
     jqUnit.assertEquals("Tray tooltip label", expectedTooltip, tray.model.tooltip);
 };
 
 gpii.tests.dev.testTrayKeyedOut = function (tray) {
     jqUnit.assertValue("Tray is available", tray);
     jqUnit.assertEquals("No user keyed-in icon", tray.options.icons.keyedOut, tray.model.icon);
-    gpii.tests.dev.testTrayTooltip(tray, tray.model.messages.defaultTooltip);
+    gpii.tests.dev.testTrayTooltip(tray);
 };
 
-gpii.tests.dev.testTrayKeyedIn = function (tray, expectedTooltip) {
+gpii.tests.dev.testTrayKeyedIn = function (tray, activePrefSet) {
     jqUnit.assertValue("Tray is available", tray);
     jqUnit.assertEquals("Keyed-in user icon", tray.options.icons.keyedIn, tray.model.icon);
-    gpii.tests.dev.testTrayTooltip(tray, expectedTooltip);
+    gpii.tests.dev.testTrayTooltip(tray, activePrefSet);
 };
 
 gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {

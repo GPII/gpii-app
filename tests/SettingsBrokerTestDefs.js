@@ -87,15 +87,10 @@ gpii.tests.settingsBroker.testBrokerBeforeKeyIn = function (settingsBroker) {
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
 };
 
-gpii.tests.settingsBroker.testTrayIcon = function (tray, expectedIcon) {
-    jqUnit.assertEquals("Tray has correct icon", tray.model.icon, expectedIcon);
-};
-
 gpii.tests.settingsBroker.testBrokerAfterKeyIn = function (settingsBroker, tray, expectedUserToken) {
     jqUnit.assertEquals("The keyed in user token matches the token of the user",
         expectedUserToken, settingsBroker.model.keyedInUserToken);
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
-    gpii.tests.settingsBroker.testTrayIcon(tray, tray.options.icons.keyedIn);
 };
 
 gpii.tests.settingsBroker.testLiveSettingEnqueue = function (settingsBroker, expectedChange, actualChange) {
@@ -111,7 +106,6 @@ gpii.tests.settingsBroker.testNonLiveSettingEnqueue = function (settingsBroker, 
         jqUnit.assertDeepEq("The correct setting change has been queued",
             expectedChange, settingsBroker.model.pendingChanges[index]);
     });
-    gpii.tests.settingsBroker.testTrayIcon(tray, tray.options.icons.pendingChanges);
 };
 
 gpii.tests.settingsBroker.testapplyPendingChanges = function (expectedChanges, actualChanges) {
@@ -134,7 +128,7 @@ gpii.tests.settingsBroker.testBrokerAfterKeyOut = function (settingsBroker) {
 
 gpii.tests.settingsBroker.testDefs = {
     name: "Settings broker integration tests",
-    expect: 23,
+    expect: 18,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -183,9 +177,6 @@ gpii.tests.settingsBroker.testDefs = {
         listener: "gpii.tests.settingsBroker.testNoPendingChanges",
         args: ["{that}.app.settingsBroker"]
     }, {
-        func: "gpii.tests.settingsBroker.testTrayIcon",
-        args: ["{that}.app.tray", "{that}.app.tray.options.icons.keyedIn"]
-    }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [manualSettingChange]
     }, {
@@ -200,9 +191,6 @@ gpii.tests.settingsBroker.testDefs = {
         listener: "gpii.tests.settingsBroker.testNoPendingChanges",
         args: ["{that}.app.settingsBroker"]
     }, {
-        func: "gpii.tests.settingsBroker.testTrayIcon",
-        args: ["{that}.app.tray", "{that}.app.tray.options.icons.keyedIn"]
-    }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [osSettingChange]
     }, {
@@ -212,8 +200,5 @@ gpii.tests.settingsBroker.testDefs = {
         path: "keyedInUserToken",
         listener: "gpii.tests.settingsBroker.testBrokerAfterKeyOut",
         args: ["{that}.app.settingsBroker"]
-    }, {
-        func: "gpii.tests.settingsBroker.testTrayIcon",
-        args: ["{that}.app.tray", "{that}.app.tray.options.icons.keyedOut"]
     }]
 };
