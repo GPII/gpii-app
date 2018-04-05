@@ -243,9 +243,23 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
         });
     }
 
+    function applyPrefSetImages(prefSets) {
+        var images = [
+            "https://www.w3schools.com/howto/img_paris.jpg",
+            "https://www.w3schools.com/howto/img_mountains.jpg",
+            "https://www.w3schools.com/howto/img_mountains.jpg"
+        ];
+
+        prefSets.forEach(function (prefSet, index) {
+            var imageIndex = (index++) % images.length;
+            prefSet.imageSrc = images[imageIndex];
+        });
+    }
+
     if (preferences) {
         applyManualLivenessFlag(preferences.settings);
         applyOsLivenessFlag(preferences.settings);
         applyPrefSetSound(preferences.sets);
+        applyPrefSetImages(preferences.sets);
     }
 };

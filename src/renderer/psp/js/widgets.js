@@ -79,6 +79,101 @@
         renderOnInit: true
     });
 
+    fluid.defaults("gpii.psp.widgets.imageDropdown", {
+        gradeNames: ["fluid.rendererComponent"],
+        model: {
+            items: [],
+            selection: null
+        },
+        modelListeners: {
+            items: {
+                func: "{that}.refreshView"
+            },
+            selection: {
+                funcName: "gpii.psp.widgets.imageDropdown.onSelectionChanged",
+                args: [
+                    "{that}.dom.selectedItemImage",
+                    "{that}.dom.selectedItemText",
+                    "{that}.model.items",
+                    "{change}.value"
+                ]
+            }
+        },
+        selectors: {
+            selectedItemImage: ".flc-dropdown-selectedItemImage",
+            selectedItemText: ".flc-dropdown-selectedItemText",
+            dropdownItem: ".flc-dropdown-item",
+            itemLink: ".flc-dropdown-itemLink",
+            itemImage: ".flc-dropdown-itemImage",
+            itemText: ".flc-dropdown-itemText"
+        },
+        repeatingSelectors: ["dropdownItem"],
+        selectorsToIgnore: ["selectedItemImage", "selectedItemText"],
+        protoTree: {
+            expander: {
+                type: "fluid.renderer.repeat",
+                repeatID: "dropdownItem",
+                controlledBy: "items",
+                pathAs: "item",
+                tree: {
+                    itemLink: {
+                        decorators: [
+                            {
+                                type: "attrs",
+                                attributes: {
+                                    "data-path": "${{item}.path}"
+                                }
+                            }, {
+                                type: "jQuery",
+                                func: "click",
+                                args: "${{that}.onItemClick}"
+                            }
+                        ]
+                    },
+                    itemImage: {
+                        decorators: {
+                            attrs: {
+                                "src": "${{item}.imageSrc}"
+                            }
+                        }
+                    },
+                    itemText: "${{item}.name}"
+                }
+            }
+        },
+        invokers: {
+            onItemClick: {
+                funcName: "gpii.psp.widgets.imageDropdown.onItemClick",
+                args: ["{that}", "{arguments}.0"]
+            }
+        },
+        listeners: {
+            "onCreate.addAttrs": {
+                "this": "{that}.container",
+                method: "attr",
+                args: ["{that}.options.attrs"]
+            }
+        },
+        renderOnInit: true
+    });
+
+    gpii.psp.widgets.imageDropdown.onItemClick = function (that, event) {
+        var itemLink = event.currentTarget,
+            path = itemLink.getAttribute("data-path");
+        that.applier.change("selection", path);
+    };
+
+    gpii.psp.widgets.imageDropdown.onSelectionChanged = function (selectedItemImage, selectedItemText, items, selection) {
+        var selectedItem = fluid.find_if(items, function (item) {
+            return item.path === selection;
+        });
+
+        if (selectedItem) {
+            selectedItemImage.attr("src", selectedItem.imageSrc);
+            selectedItemText.text(selectedItem.name);
+        }
+    };
+
     fluid.defaults("gpii.psp.widgets.button", {
         gradeNames: ["fluid.viewComponent"],
 

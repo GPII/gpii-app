@@ -72,18 +72,7 @@
                 createOnEvent: "onPreferencesUpdated",
                 options: {
                     model: {
-                        optionNames: {
-                            expander: {
-                                func: "fluid.getMembers",
-                                args: ["{header}.model.preferences.sets", "name"]
-                            }
-                        },
-                        optionList: {
-                            expander: {
-                                func: "fluid.getMembers",
-                                args: ["{header}.model.preferences.sets", "path"]
-                            }
-                        },
+                        items: "{header}.model.preferences.sets",
                         selection: "{header}.model.preferences.activeSet"
                     },
                     listeners: {
@@ -159,7 +148,7 @@
      * @return {String} The type of the preferenceSetPicker subcomponent.
      */
     gpii.psp.getPreferenceSetPickerType = function (preferenceSets) {
-        return gpii.psp.hasMultipleItems(preferenceSets) ? "gpii.psp.widgets.dropdown" : "fluid.emptySubcomponent";
+        return gpii.psp.hasMultipleItems(preferenceSets) ? "gpii.psp.widgets.imageDropdown" : "fluid.emptySubcomponent";
     };
 
     /**
