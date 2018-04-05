@@ -110,8 +110,12 @@
         schemaType: "string",
         widgetOptions: {
             model: {
-                optionNames: "{settingPresenter}.model.schema.enum",
-                optionList: "{settingPresenter}.model.schema.enum",
+                items: {
+                    expander: {
+                        funcName: "gpii.psp.exemplar.dropdown.getItems",
+                        args: ["{settingPresenter}.model.schema.enum"]
+                    }
+                },
                 selection: "{settingPresenter}.model.value"
             },
             rawAttrs: {
@@ -119,6 +123,15 @@
             }
         }
     });
+
+    gpii.psp.exemplar.dropdown.getItems = function (enumArray) {
+        return enumArray.map(function (enumItem) {
+            return {
+                name: enumItem,
+                path: enumItem
+            };
+        });
+    };
 
     fluid.defaults("gpii.psp.exemplar.stepper", {
         gradeNames: "gpii.psp.exemplar",

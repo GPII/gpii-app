@@ -45,43 +45,6 @@
     fluid.defaults("gpii.psp.widgets.dropdown", {
         gradeNames: ["gpii.psp.widgets.attrsExpander", "fluid.rendererComponent"],
         model: {
-            optionNames: [],
-            optionList: [],
-            selection: null
-        },
-        modelListeners: {
-            "": {
-                this: "{that}",
-                method: "refreshView",
-                excludeSource: "init"
-            }
-        },
-        attrs: {
-            //"aria-labelledby": null
-        },
-        selectors: {
-            options: ".flc-dropdown-options"
-        },
-        protoTree: {
-            options: {
-                optionnames: "${optionNames}",
-                optionlist: "${optionList}",
-                selection: "${selection}"
-            }
-        },
-        listeners: {
-            "onCreate.addAttrs": {
-                "this": "{that}.dom.options",
-                method: "attr",
-                args: ["{that}.options.attrs"]
-            }
-        },
-        renderOnInit: true
-    });
-
-    fluid.defaults("gpii.psp.widgets.imageDropdown", {
-        gradeNames: ["fluid.rendererComponent"],
-        model: {
             items: [],
             selection: null
         },
@@ -90,7 +53,7 @@
                 func: "{that}.refreshView"
             },
             selection: {
-                funcName: "gpii.psp.widgets.imageDropdown.onSelectionChanged",
+                funcName: "gpii.psp.widgets.dropdown.onSelectionChanged",
                 args: [
                     "{that}.dom.selectedItemImage",
                     "{that}.dom.selectedItemText",
@@ -126,7 +89,7 @@
                             }, {
                                 type: "jQuery",
                                 func: "click",
-                                args: "${{that}.onItemClick}"
+                                args: "${{that}.updateSelection}"
                             }
                         ]
                     },
@@ -142,8 +105,8 @@
             }
         },
         invokers: {
-            onItemClick: {
-                funcName: "gpii.psp.widgets.imageDropdown.onItemClick",
+            updateSelection: {
+                funcName: "gpii.psp.widgets.dropdown.updateSelection",
                 args: ["{that}", "{arguments}.0"]
             }
         },
@@ -157,13 +120,13 @@
         renderOnInit: true
     });
 
-    gpii.psp.widgets.imageDropdown.onItemClick = function (that, event) {
+    gpii.psp.widgets.dropdown.updateSelection = function (that, event) {
         var itemLink = event.currentTarget,
             path = itemLink.getAttribute("data-path");
         that.applier.change("selection", path);
     };
 
-    gpii.psp.widgets.imageDropdown.onSelectionChanged = function (selectedItemImage, selectedItemText, items, selection) {
+    gpii.psp.widgets.dropdown.onSelectionChanged = function (selectedItemImage, selectedItemText, items, selection) {
         var selectedItem = fluid.find_if(items, function (item) {
             return item.path === selection;
         });

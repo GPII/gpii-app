@@ -148,7 +148,7 @@
      * @return {String} The type of the preferenceSetPicker subcomponent.
      */
     gpii.psp.getPreferenceSetPickerType = function (preferenceSets) {
-        return gpii.psp.hasMultipleItems(preferenceSets) ? "gpii.psp.widgets.imageDropdown" : "fluid.emptySubcomponent";
+        return gpii.psp.hasMultipleItems(preferenceSets) ? "gpii.psp.widgets.dropdown" : "fluid.emptySubcomponent";
     };
 
     /**
