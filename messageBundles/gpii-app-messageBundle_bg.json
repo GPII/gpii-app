@@ -10,7 +10,7 @@
     "gpii_psp_splash_heading": "Не сте вписан",
     "gpii_psp_splash_fullAppName": "GPII - Персонален Панел за Настройки",
 
-    "gpii_psp_titlebar_appName": "GPII Настройки",
+    "gpii_psp_mainWindow_titlebarAppName": "GPII Настройки",
 
     "gpii_psp_header_autosaveText": "Автоматично запазване е включено",
     "gpii_psp_header_keyOut":"Отпиши се",
@@ -25,6 +25,10 @@
     "gpii_psp_baseRestartWarning_undo": "Отказ\n(Отменете промените)",
     "gpii_psp_baseRestartWarning_restartLater": "Затваряне и\n рестартиране по-късно",
     "gpii_psp_baseRestartWarning_restartNow": "Рестартиране сега",
+
+    "gpii_psp_errorDialog_titlebarAppName": "GPII Грешка",
+
+    "gpii_psp_aboutDialog_titlebarAppName": "Относно GPII Auto-personalization",
 
     "gpii_restartDialog_restartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени:",
     "gpii_restartDialog_restartWarning_restartTitle": "Промените изискват рестартиране.",

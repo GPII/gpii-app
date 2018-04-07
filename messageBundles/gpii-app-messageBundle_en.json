@@ -10,7 +10,7 @@
     "gpii_psp_splash_heading": "Not keyed in",
     "gpii_psp_splash_fullAppName": "GPII - Personal Settings Panel",
 
-    "gpii_psp_titlebar_appName": "GPII Settings",
+    "gpii_psp_mainWindow_titlebarAppName": "GPII Settings",
 
     "gpii_psp_header_autosaveText": "Auto-save is on",
     "gpii_psp_header_keyOut":"Key Out",
@@ -26,6 +26,10 @@
     "gpii_psp_baseRestartWarning_undo": "Cancel\n(Undo Changes)",
     "gpii_psp_baseRestartWarning_restartLater": "Close and\nRestart Later",
     "gpii_psp_baseRestartWarning_restartNow": "Restart Now",
+
+    "gpii_psp_errorDialog_titlebarAppName": "GPII Error",
+
+    "gpii_psp_aboutDialog_titlebarAppName": "About GPII Auto-personalization",
 
     "gpii_restartDialog_restartWarning_restartText": "In order to be applied, some of the changes you made require the following applications to restart:",
     "gpii_restartDialog_restartWarning_restartTitle": "Changes require restart",

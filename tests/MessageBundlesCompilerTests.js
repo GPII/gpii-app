@@ -108,7 +108,14 @@ var bundlesDir1 = "./tests/fixtures/messageBundles/",
 jqUnit.test("Bundles loading", function () {
     jqUnit.expect(1);
 
+    // just a simplest comparison function in order to canonize the two arrays
+    function cmpFiles(message1, message2) {
+        return message1.filename < message2.filename;
+    }
+
     var loadedBundles = messagesCompiler._loadMessageBundles([bundlesDir1, bundlesDir2], "json", JSON);
 
-    jqUnit.assertDeepEq("Should load files from multiple directories properly", loadedBundlesFixture, loadedBundles);
+    jqUnit.assertDeepEq("Should load files from multiple directories properly",
+        loadedBundlesFixture.sort(cmpFiles),
+        loadedBundles.sort(cmpFiles));
 });
