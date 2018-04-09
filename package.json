@@ -21,14 +21,22 @@
         "electron-packager": "8.5.1",
         "eslint-config-fluid": "1.2.0",
         "fluid-grunt-eslint": "18.1.2",
+        "gpii-testem": "2.1.0",
         "grunt": "1.0.2",
         "grunt-jsonlint": "1.1.0",
         "grunt-shell": "1.3.0",
+        "nyc": "11.6.0",
+        "rimraf": "2.6.2",
         "shelljs": "0.3.0"
     },
     "scripts": {
         "start": "electron main.js",
         "dev": "electron main.js ./configs app.dev",
-        "test": "powershell provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; electron tests.js"
+        "test": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron tests.js",
+        "precoverage": "npm run precoverage:clean && npm run precoverage:instrument",
+        "precoverage:clean": "node node_modules/rimraf/bin.js coverage/* instrumented/* reports/*",
+        "precoverage:instrument": "node tests/lib/instrumentSource.js",
+        "coverage": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron ./instrumented/tests.js",
+        "postcoverage": "node node_modules/nyc/bin/nyc.js report"
     }
 }
