@@ -128,13 +128,13 @@
 
     gpii.psp.widgets.dropdown.onSelectionChanged = function (selectedItemImage, selectedItemText, items, selection) {
         var selectedItem = fluid.find_if(items, function (item) {
-            return item.path === selection;
-        });
+                return item.path === selection;
+            }),
+            itemImageSrc = fluid.get(selectedItem, "imageSrc") || "",
+            itemText = fluid.get(selectedItem, "name") || "";
 
-        if (selectedItem) {
-            selectedItemImage.attr("src", selectedItem.imageSrc);
-            selectedItemText.text(selectedItem.name);
-        }
+        selectedItemImage.attr("src", itemImageSrc);
+        selectedItemText.text(itemText);
     };
 
     fluid.defaults("gpii.psp.widgets.button", {
