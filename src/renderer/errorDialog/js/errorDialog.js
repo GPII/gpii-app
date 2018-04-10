@@ -74,10 +74,9 @@
      * multiple dynamic buttons are created and its actions
      * are handled from some distant logic.
      *
-     * TODO - Jira ticket number
      * This is still an idea, as errors are not yet received from
-     * the API. It would probably be better to use a different
-     * identifier from `label` in case its uniqueness is not
+     * the API as of GPII-1313. It would probably be better to use
+     * a different identifier from `label` in case its uniqueness is not
      * guaranteed.
      */
     fluid.defaults("gpii.psp.errorDialog.button", {
@@ -93,6 +92,7 @@
                 args: "{that}.model.label"
             }
         },
+        // Hide buttons that are not used
         modelListeners: {
             label: {
                 this: "{that}.container",
