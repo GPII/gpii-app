@@ -14,7 +14,7 @@ require("./index");
 jqUnit.onAllTestsDone.addListener(function() {
     if (global.__coverage__) {
         var filename = fluid.stringTemplate("coverage-tests-%timestamp.json", { timestamp: (new Date()).toISOString() });
-        var coverageFilePath = path.resolve("./coverage", filename);
+        var coverageFilePath = path.resolve(__dirname, "../coverage", filename);
         try {
             fs.writeFileSync(coverageFilePath, JSON.stringify(global.__coverage__, null, 2));
             fluid.log("Coverage data saved.");
