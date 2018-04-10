@@ -13,9 +13,8 @@ require("./index");
 // Must be hooked in before requiring any actual tests.
 jqUnit.onAllTestsDone.addListener(function() {
     if (global.__coverage__) {
-        var coverageDirPath = fluid.module.resolvePath("%gpii-app/coverage");
         var filename = fluid.stringTemplate("coverage-tests-%timestamp.json", { timestamp: (new Date()).toISOString() });
-        var coverageFilePath = path.resolve(coverageDirPath, filename);
+        var coverageFilePath = path.resolve("../coverage", filename);
         try {
             fs.writeFileSync(coverageFilePath, JSON.stringify(global.__coverage__, null, 2));
             fluid.log("Coverage data saved.");
