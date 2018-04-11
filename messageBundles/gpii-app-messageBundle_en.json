@@ -1,4 +1,5 @@
 {
+    "gpii_app_menu_about": "About...",
     "gpii_app_menu_psp": "Open PSP",
     "gpii_app_menu_notKeyedIn": "(No one keyed in)",
     "gpii_app_menu_keyedIn": "Keyed in with %snapsetName",
@@ -28,6 +29,11 @@
     "gpii_psp_errorDialog_titlebarAppName": "GPII Error",
 
     "gpii_psp_aboutDialog_titlebarAppName": "About GPII Auto-personalization",
+    "gpii_psp_aboutDialog_title": "GPII Auto-personalization",
+    "gpii_psp_aboutDialog_titlebarAppName": "About GPII Auto-personalization",
+    "gpii_psp_aboutDialog_update": "Check for updates",
+    "gpii_psp_aboutDialog_userListenersText": "Keys that work on this machine: %items",
+    "gpii_psp_aboutDialog_version": "version %item",
 
     "gpii_psp_footer_help": "Help"
 }

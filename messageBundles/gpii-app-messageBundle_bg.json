@@ -27,7 +27,12 @@
 
     "gpii_psp_errorDialog_titlebarAppName": "GPII Грешка",
 
-    "gpii_psp_aboutDialog_titlebarAppName": "Относно GPII Auto-personalization",
+    "gpii_psp_aboutDialog_titlebarAppName": "Относно GPII Авто-персонализиране",
+    "gpii_psp_aboutDialog_title": "GPII Авто-персонализиране",
+    "gpii_psp_aboutDialog_titlebarAppName": "Относно GPII Авто-персонализиране",
+    "gpii_psp_aboutDialog_update": "Провери за ъпдейти",
+    "gpii_psp_aboutDialog_userListenersText": "Бутони, които работят на тази машина: %items",
+    "gpii_psp_aboutDialog_version": "версия %item",
 
     "gpii_psp_footer_help": "Помощ"
 }
