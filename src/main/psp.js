@@ -404,9 +404,10 @@ gpii.app.psp.hide = function (psp) {
     psp.applier.change("isShown", false);
 };
 
-// TODO: Add behavior for undo/restart
 gpii.app.psp.closePSP = function (psp, settingsBroker) {
     psp.hide();
+    settingsBroker.applyPendingChanges("manualRestart");
+    settingsBroker.undoPendingChanges("OSRestart");
 };
 
 /**
