@@ -18,6 +18,15 @@ var fluid = require("infusion");
 
 require("./dialog.js");
 
+
+fluid.defaults("gpii.app.aboutDialog.channel", {
+    gradeNames: ["gpii.app.dialog.simpleEventChannel", "gpii.app.i18n.channel"],
+
+    events: {
+        onAboutDialogClosed: null
+    }
+});
+
 /**
  * Component that contains an Electron Dialog.
  */
@@ -35,7 +44,14 @@ fluid.defaults("gpii.app.aboutDialog", {
 
     components: {
         channel: {
-            type: "gpii.app.i18n.channel"
+            type: "gpii.app.aboutDialog.channel",
+            options: {
+                listeners: {
+                    onAboutDialogClosed: {
+                        func: "{aboutDialog}.hide"
+                    }
+                }
+            }
         }
     }
 });

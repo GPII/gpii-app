@@ -93,8 +93,10 @@
                         }
                     },
                     listeners: {
-                        // TODO
-                        "onClose": "{aboutDialog}.events.onButtonClicked"
+                        "onClose": {
+                            funcName: "gpii.psp.channel.notifyChannel",
+                            args: "onAboutDialogClosed"
+                        }
                     }
                 }
             }

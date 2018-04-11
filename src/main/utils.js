@@ -17,6 +17,7 @@
 var os       = require("os");
 var fluid    = require("infusion");
 var electron = require("electron");
+var ipcMain  = electron.ipcMain;
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -147,4 +148,55 @@ gpii.app.timer.clear = function (that) {
         clearTimeout(that.timer);
         that.timer = null;
     }
+};
+
+/**
+ * Generic channel component for comunication with BroserWindows
+ * It simply registers listeners for passes events (in the whole main)
+ */
+fluid.defaults("gpii.app.dialog.simpleEventChannel", {
+    gradeNames: "fluid.component",
+
+    events: {}, // to be passed by implementor
+
+    listeners: {
+        "onCreate.registerIpcListeners": {
+            funcName: "gpii.app.dialog.simpleEventChannel.registerIPCListenersBasedOnEvents",
+            args: "{that}.events"
+        },
+        "onDestroy.deregisterIpcListeners": {
+            funcName: "gpii.app.dialog.simpleEventChannel.deregisterIPCListenersBasedOnEvents",
+            args: "{that}.events"
+        }
+    }
+});
+
+
+/**
+ * Register simple IPC socket listeners for all given events. In case anything is written to
+ * the channel, the corresponding event is triggered.
+ *
+ * @param events {Object} The events to be used.
+ */
+gpii.app.dialog.simpleEventChannel.registerIPCListenersBasedOnEvents = function (events) {
+    fluid.each(events, function (event, eventName) {
+        gpii.app.dialog.simpleEventChannel.registerIPCListener(eventName, event);
+    });
+};
+
+/**
+ * Deregister all socket listeners for the specified events.
+ *
+ * @param events {Object} The events to be used.
+ */
+gpii.app.dialog.simpleEventChannel.deregisterIPCListenersBasedOnEvents = function (events) {
+    fluid.keys(events).forEach(gpii.app.dialog.simpleEventChannel.registerIPCListener);
+};
+
+gpii.app.dialog.simpleEventChannel.registerIPCListener = function (channel, event) {
+    ipcMain.on(channel, event.fire);
+};
+
+gpii.app.dialog.simpleEventChannel.deregisterIPCListener = function (channel) {
+    ipcMain.removeAllListeners(channel);
 };
