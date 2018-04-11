@@ -18,14 +18,11 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-    // TODO params / queryParams
-    // var options = require("electron").remote.getCurrentWindow().initOptions;
-    //
     /**
      * Simple wrapper that enables translations for the `gpii.psp.aboutDialog` component.
      */
     fluid.defaults("gpii.psp.translatedAboutDialog", {
-        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent"],
+        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
 
         components: {
             aboutDialog: {

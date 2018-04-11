@@ -1,7 +1,7 @@
 /**
- * The error dialog
+ * The about dialog
  *
- * Represents an error dialog, that can be closed by the user.
+ * Represents an about dialog, that can be closed by the user.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -20,7 +20,9 @@
 
 
     /**
-     * TODO
+     * Represents the controller for the about dialog,
+     * that gives information for the application version,
+     * user listeners (keys) and some useful links.
      */
     fluid.defaults("gpii.psp.aboutDialog", {
         gradeNames: ["fluid.viewComponent"],

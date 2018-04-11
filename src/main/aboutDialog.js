@@ -32,9 +32,6 @@ fluid.defaults("gpii.app.aboutDialog", {
         },
         fileSuffixPath: "aboutDialog/index.html"
     },
-    // model: {
-    //     userListeners: []
-    // },
 
     components: {
         channel: {
