@@ -16,9 +16,13 @@
 
 var fluid = require("infusion");
 
+var app = require("electron").app;
+
 require("./dialog.js");
 
-
+/**
+ * Simple connector with the corresponding BrowserWindow
+ */
 fluid.defaults("gpii.app.aboutDialog.channel", {
     gradeNames: ["gpii.app.dialog.simpleEventChannel", "gpii.app.i18n.channel"],
 
@@ -28,9 +32,8 @@ fluid.defaults("gpii.app.aboutDialog.channel", {
 });
 
 /**
- * Component that contains an Electron Dialog.
+ * Component that represents the About dialog
  */
-
 fluid.defaults("gpii.app.aboutDialog", {
     gradeNames: ["gpii.app.dialog"],
 
@@ -38,6 +41,10 @@ fluid.defaults("gpii.app.aboutDialog", {
         attrs: {
             width: 400,
             height: 250
+        },
+        params: {
+            userListeners: ["USB", "NFC", "Fingerprint", "Webcam & Voice"],
+            version: { expander: { func: app.getVersion } }
         },
         fileSuffixPath: "aboutDialog/index.html"
     },
@@ -55,5 +62,4 @@ fluid.defaults("gpii.app.aboutDialog", {
         }
     }
 });
-
 

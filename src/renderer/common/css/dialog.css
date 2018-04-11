@@ -129,3 +129,8 @@ body {
 .fl-dialog .fl-dialog-content ul li {
     margin: 0;
 }
+
+/* Useful for dialog content without height listener */
+.fl-scrollable {
+    overflow: auto;
+}

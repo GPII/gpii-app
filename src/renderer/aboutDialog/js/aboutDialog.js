@@ -36,8 +36,8 @@
                 version:           null
             },
 
-            version: "1.2.3",
-            userListeners: ["USB", "Finger"]
+            version: null,
+            userListeners: null
         },
 
         selectors: {
@@ -104,6 +104,13 @@
     });
 
 
+    /**
+     * Construct user listeners text.
+     *
+     * @param description {String} The description with a placeholder by the name "items"
+     * @param userListeners {String[]} The list of key in listeners for the user
+     * @returns {String} The constructed string
+     */
     gpii.psp.aboutDialog.getUserListenersText = function (description, userListeners) {
         return fluid.stringTemplate(description, { items: userListeners.join(", ") });
     };

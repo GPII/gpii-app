@@ -193,10 +193,25 @@ gpii.app.dialog.simpleEventChannel.deregisterIPCListenersBasedOnEvents = functio
     fluid.keys(events).forEach(gpii.app.dialog.simpleEventChannel.registerIPCListener);
 };
 
-gpii.app.dialog.simpleEventChannel.registerIPCListener = function (channel, event) {
-    ipcMain.on(channel, event.fire);
+
+/**
+ * Register single IPC socket channel
+ *
+ * @param channelName {String} The name of the channel to be listened to
+ * @param event {Object} The event to be fired when the channel is notified
+ */
+gpii.app.dialog.simpleEventChannel.registerIPCListener = function (channelName, event) {
+    ipcMain.on(channelName, function (/* event, args... */) {
+        event.fire.apply(event, [].slice.call(arguments, 1));
+    });
 };
 
-gpii.app.dialog.simpleEventChannel.deregisterIPCListener = function (channel) {
-    ipcMain.removeAllListeners(channel);
+
+/**
+ * Deregister a socket listener.
+ *
+ * @param channelName {String} The channel to be disconnected from
+ */
+gpii.app.dialog.simpleEventChannel.deregisterIPCListener = function (channelName) {
+    ipcMain.removeAllListeners(channelName);
 };
