@@ -7,6 +7,7 @@ require("gpii-testem");
 gpii.testem.instrumenter.runner({
     inputPath: "%gpii-app/",
     outputPath: "%gpii-app/instrumented",
+    sources:    ["./*.js", "./src/*.js", "./src/**/*.js"],
     excludes:   ["./node_modules/**/*", "./.git/**/*", "./reports/**/*", "./coverage/**/*", "./.idea/**/*", "./.vagrant/**/*", "./instrumented/**/*"],
-    nonSources: ["./**/*.!(js)", "./Gruntfile.js", "./tests.js", "./tests/**/*", "./tests/*"]
+    nonSources: ["./*.!(js)", "./**/*.!(js)", "./Gruntfile.js", "./tests.js", "./tests/**/*", "./tests/*", "./provisioning/*"]
 });
