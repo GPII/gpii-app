@@ -24,7 +24,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
     fluid.defaults("gpii.psp.titlebar", {
         gradeNames: ["fluid.viewComponent"],
         selectors: {
-            appName: ".flc-appName",
+            title: ".flc-title",
             closeBtn: ".flc-closeBtn"
         },
         events: {
@@ -33,13 +33,13 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         model: {
             messages: {
-                appName: null
+                title: null
             }
         },
 
         modelListeners: {
-            "messages.appName": {
-                this: "{that}.dom.appName",
+            "messages.title": {
+                this: "{that}.dom.title",
                 method: "text",
                 args: ["{change}.value"]
             }

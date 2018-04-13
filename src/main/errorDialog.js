@@ -133,6 +133,7 @@ fluid.defaults("gpii.app.errorDialog", {
         }
     },
 
+
     invokers: {
         show: {
             funcName: "gpii.app.errorDialog.show",
