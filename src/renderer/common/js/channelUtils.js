@@ -1,7 +1,7 @@
 /**
- * The footer component of the PSP window
+ * Channel utilities
  *
- * Defines the buttons contained in the footer of the PSP and their click handlers.
+ * Defines utilities for communication with the main process.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in

@@ -1,7 +1,7 @@
 /**
- * The footer component of the PSP window
+ * Generic utilities for the renderer
  *
- * Defines the buttons contained in the footer of the PSP and their click handlers.
+ * Contains utility functions and components shared between different BrowserWindows.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in

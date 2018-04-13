@@ -43,8 +43,8 @@ body {
     font-size: 1.5em;
 }
 
-.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-subhead {
-    margin: -12 0 10 0;
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-title + .fl-subtitle {
+    margin: -12px 0 10px 0;
     font-size: 0.9em;
 }
 

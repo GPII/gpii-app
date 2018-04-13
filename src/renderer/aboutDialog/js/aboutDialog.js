@@ -55,8 +55,8 @@
         },
 
         modelListeners: {
-            // Any change means that the whole view should be rerendered
-            "*": [{
+            // Any change means that the whole view should be re-rendered
+            "": [{
                 this: "{that}.dom.title",
                 method: "text",
                 args: "{that}.model.messages.title"
@@ -66,7 +66,7 @@
                 args: {
                     expander: {
                         func: "fluid.stringTemplate",
-                        args: ["{that}.model.messages.version", {item: "{that}.model.version"}]
+                        args: ["{that}.model.messages.version", {version: "{that}.model.version"}]
                     }
                 },
                 excludeSource: "init"
@@ -112,6 +112,6 @@
      * @returns {String} The constructed string
      */
     gpii.psp.aboutDialog.getUserListenersText = function (description, userListeners) {
-        return fluid.stringTemplate(description, { items: userListeners.join(", ") });
+        return fluid.stringTemplate(description, { listeners: userListeners.join(", ") });
     };
 })(fluid);

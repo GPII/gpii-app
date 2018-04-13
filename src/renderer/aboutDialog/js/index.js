@@ -37,12 +37,6 @@
                     model: {
                         version:       "{translatedAboutDialog}.model.version",
                         userListeners: "{translatedAboutDialog}.model.userListeners"
-                    },
-                    components: {
-                        // Simple placeholder required by the messageBundles
-                        channel: {
-                            type: "fluid.component"
-                        }
                     }
                 }
             }

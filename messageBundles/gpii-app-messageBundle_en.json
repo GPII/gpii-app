@@ -30,10 +30,9 @@
 
     "gpii_psp_aboutDialog_titlebarAppName": "About GPII Auto-personalization",
     "gpii_psp_aboutDialog_title": "GPII Auto-personalization",
-    "gpii_psp_aboutDialog_titlebarAppName": "About GPII Auto-personalization",
     "gpii_psp_aboutDialog_update": "Check for updates",
-    "gpii_psp_aboutDialog_userListenersText": "Keys that work on this machine: %items",
-    "gpii_psp_aboutDialog_version": "version %item",
+    "gpii_psp_aboutDialog_userListenersText": "Keys that work on this machine: %listeners",
+    "gpii_psp_aboutDialog_version": "version %version",
 
     "gpii_psp_footer_help": "Help"
 }

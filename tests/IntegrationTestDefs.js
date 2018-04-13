@@ -61,14 +61,15 @@ gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
 };
 
 gpii.tests.app.testMenu = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 2);
+    gpii.tests.app.testTemplateExists(menuTemplate, 4);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
-    gpii.tests.app.testItem(menuTemplate[1], "(No one keyed in)");
+    gpii.tests.app.testItem(menuTemplate[1], "About...");
+    gpii.tests.app.testItem(menuTemplate[3], "(No one keyed in)");
 };
 
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 6);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[5]);
+    gpii.tests.app.testTemplateExists(menuTemplate, 8);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[7]);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
 };
 
@@ -80,7 +81,7 @@ fluid.registerNamespace("gpii.tests.app.testDefs");
 
 gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
-    expect: 32,
+    expect: 36,
     config: {
         configName: "gpii.tests.production.config",
         configPath: "tests/configs"
@@ -170,19 +171,20 @@ gpii.tests.dev.testKeyInList = function (item) {
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 5);
+    gpii.tests.app.testTemplateExists(menuTemplate, 7);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     gpii.tests.dev.testKeyInList(menuTemplate[2]);
-    gpii.tests.app.testItem(menuTemplate[3], "(No one keyed in)");
-    gpii.tests.app.testItem(menuTemplate[4], "Exit GPII");
+    gpii.tests.app.testItem(menuTemplate[3], "About...");
+    gpii.tests.app.testItem(menuTemplate[5], "(No one keyed in)");
+    gpii.tests.app.testItem(menuTemplate[6], "Exit GPII");
 };
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 9);
+    gpii.tests.app.testTemplateExists(menuTemplate, 11);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     gpii.tests.dev.testKeyInList(menuTemplate[3]);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[7]);
-    gpii.tests.app.testItem(menuTemplate[8], "Exit GPII");
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[9]);
+    gpii.tests.app.testItem(menuTemplate[10], "Exit GPII");
 };
 
 gpii.tests.dev.testTrayTooltip = function (tray, activePrefSet) {
@@ -212,12 +214,12 @@ gpii.tests.dev.testTrayKeyedIn = function (tray, activePrefSet) {
 };
 
 gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 12);
+    gpii.tests.app.testTemplateExists(menuTemplate, 14);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     // the default pref set should be set
     gpii.tests.dev.testMultiContextKeyedIn(tray, menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
-    gpii.tests.app.testItem(menuTemplate[10], "Key-out of GPII");
-    gpii.tests.app.testItem(menuTemplate[11], "Exit GPII");
+    gpii.tests.app.testItem(menuTemplate[12], "Key-out of GPII");
+    gpii.tests.app.testItem(menuTemplate[13], "Exit GPII");
 };
 
 gpii.tests.dev.testChangedActivePrefSetMenu = function (tray, menuTemplate, prefSetClickedIdx) {
@@ -243,7 +245,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 161,
+    expect: 165,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
