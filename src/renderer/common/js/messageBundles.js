@@ -40,18 +40,17 @@
             }
         },
 
-        distributeOptions: {
-            distributeMessageBundlesChannel: {
-                record: {
-                    gradeNames: ["gpii.psp.messageBundles.channel"],
+        components: {
+            localeChannel: {
+                type: "gpii.psp.messageBundles.channel",
+                options: {
                     listeners: {
                         "onLocaleChanged.setLocale": {
                             func: "{messageBundles}.updateLocale",
                             args: "{arguments}.0"
                         }
                     }
-                },
-                target: "{that channel}.options"
+                }
             }
         }
     });
