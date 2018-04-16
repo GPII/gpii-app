@@ -74,24 +74,14 @@ fluid.defaults("gpii.app.settingsBroker", {
             funcName: "gpii.app.settingsBroker.applyPendingChanges",
             args: [
                 "{that}",
-                "{that}.model.pendingChanges",
-                "{arguments}.0" // liveness
-            ]
-        },
-        clearPendingChanges: {
-            funcName: "gpii.app.settingsBroker.clearPendingChanges",
-            args: [
-                "{that}",
-                "{that}.model.pendingChanges",
-                "{arguments}.0" // liveness
+                "{arguments}.0" // descriptor
             ]
         },
         undoPendingChanges: {
             funcName: "gpii.app.settingsBroker.undoPendingChanges",
             args: [
                 "{that}",
-                "{that}.model.pendingChanges",
-                "{arguments}.0" // liveness
+                "{arguments}.0" // descriptor
             ]
         },
         hasPendingChange: {
@@ -100,6 +90,17 @@ fluid.defaults("gpii.app.settingsBroker", {
                 "{that}.model.pendingChanges",
                 "{arguments}.0" // liveness
             ]
+        },
+        removePendingChanges: {
+            funcName: "gpii.app.settingsBroker.removePendingChanges",
+            args: [
+                "{that}",
+                "{arguments}.0" // pendingChanges
+            ]
+        },
+        clearPendingChanges: {
+            changePath: "pendingChanges",
+            value: []
         }
     },
     events: {
@@ -168,14 +169,16 @@ gpii.app.settingsBroker.filterPendingChanges = function (pendingChanges, livenes
  * @param pendingChanges {Array} An array containing all pending setting changes.
  * @param liveness {String} The liveness of the pending changes to be applied.
  */
-gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, pendingChanges, liveness) {
-    pendingChanges = gpii.app.settingsBroker.filterPendingChanges(pendingChanges, liveness);
+gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, descriptor) {
+    var changesToApply = descriptor.pendingChanges || settingsBroker.model.pendingChanges,
+        liveness = descriptor.liveness;
+    changesToApply = gpii.app.settingsBroker.filterPendingChanges(changesToApply, liveness);
 
-    fluid.each(pendingChanges, function (pendingChange) {
+    fluid.each(changesToApply, function (pendingChange) {
         settingsBroker.applySetting(pendingChange);
     });
 
-    settingsBroker.clearPendingChanges(liveness);
+    settingsBroker.removePendingChanges(changesToApply);
 };
 
 /**
@@ -188,32 +191,19 @@ gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, pendingC
  * @param pendingChanges {Array} An array containing all pending setting changes.
  * @param liveness {String} The liveness of the pending changes to be reverted.
  */
-gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, pendingChanges, liveness) {
-    pendingChanges = gpii.app.settingsBroker.filterPendingChanges(pendingChanges, liveness);
+gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, descriptor) {
+    var changesToUndo = descriptor.pendingChanges || settingsBroker.model.pendingChanges,
+        liveness = descriptor.liveness;
+    changesToUndo = gpii.app.settingsBroker.filterPendingChanges(changesToUndo, liveness);
 
-    fluid.each(pendingChanges, function (pendingChange) {
+    fluid.each(changesToUndo, function (pendingChange) {
         pendingChange = fluid.extend(true, pendingChange, {
             value: pendingChange.oldValue
         });
         settingsBroker.undoSetting(pendingChange);
     });
 
-    settingsBroker.clearPendingChanges(liveness);
-};
-
-/**
- * Removes the pending changes with the specified `liveness` from the queue. If no
- * `liveness` is provided, removes all pending changes.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
- * @param pendingChanges {Array} The pending changes to be removed.
- * @param liveness {String} The liveness of the pending changes to be removed.
- */
-gpii.app.settingsBroker.clearPendingChanges = function (settingsBroker, pendingChanges, liveness) {
-    var newPendingChanges = fluid.copy(pendingChanges);
-    fluid.remove_if(newPendingChanges, function (pendingChange) {
-        return !fluid.isValue(liveness) || pendingChange.liveness === liveness;
-    });
-    settingsBroker.applier.change("pendingChanges", newPendingChanges);
+    settingsBroker.removePendingChanges(changesToUndo);
 };
 
 /**
@@ -228,4 +218,23 @@ gpii.app.settingsBroker.clearPendingChanges = function (settingsBroker, pendingC
 gpii.app.settingsBroker.hasPendingChange = function (pendingChanges, liveness) {
     pendingChanges = gpii.app.settingsBroker.filterPendingChanges(pendingChanges, liveness);
     return pendingChanges.length > 0;
+};
+
+/**
+ * Removes the pending changes with the specified `liveness` from the queue. If no
+ * `liveness` is provided, removes all pending changes.
+ * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
+ * @param pendingChanges {Array} The pending changes to be removed.
+ * @param liveness {String} The liveness of the pending changes to be removed.
+ */
+gpii.app.settingsBroker.removePendingChanges = function (settingsBroker, changesToRemove) {
+    var pendingChanges = settingsBroker.model.pendingChanges;
+
+    pendingChanges = pendingChanges.filter(function (pendingChange) {
+        return !fluid.find_if(changesToRemove, function (changeToRemove) {
+            return pendingChange.path === changeToRemove.path;
+        }, false);
+    });
+
+    settingsBroker.applier.change("pendingChanges", pendingChanges);
 };

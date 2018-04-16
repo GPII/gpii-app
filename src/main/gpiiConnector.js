@@ -17,6 +17,8 @@
 require("./utils.js");
 
 var fluid = require("infusion");
+var settingGroups = fluid.require("%gpii-app/testData/grouping/settingGroups.json");
+
 var gpii = fluid.registerNamespace("gpii");
 
 /**
@@ -90,6 +92,11 @@ gpii.app.gpiiConnector.parseMessage = function (gpiiConnector, message) {
 
     if ((operation === "ADD" && path.length === 0) ||
             operation === "DELETE") {
+
+        //XXX For testing purposes only.
+        if (operation === "ADD" && payload.value) {
+            payload = settingGroups.payload;
+        }
         /*
          * Preferences change update has been received
          */
@@ -126,26 +133,21 @@ gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefSet
     });
 };
 
-/**
- * Creates a setting view model to be used in the settings window.
- * @param key {String} The name of the setting. Must be unique as
- * subsequent requests to the GPII API will use this key as identifier.
- * @param settingDescriptor {Object} A descriptor for the given setting
- * containing its title, description and constraints regarding its value.
- * @return {Object} The view model for the setting.
- */
-gpii.app.createSettingModel = function (key, settingDescriptor) {
-    return {
-        path: key,
-        value: settingDescriptor.value,
-        solutionName: settingDescriptor.solutionName,
-
-        schema: settingDescriptor.schema,
+gpii.app.extractSettings = function (parent) {
+    return fluid.hashToArray(parent.settingControls, "path", function (setting, settingDescriptor) {
+        setting.value = settingDescriptor.value;
+        setting.solutionName = settingDescriptor.solutionName;
+        setting.schema = settingDescriptor.schema;
 
         // XXX hardcoded as they're not currently supported by the API (pcpChannel)
-        liveness: settingDescriptor.liveness || "live",
-        memory: fluid.isValue(settingDescriptor.memory) ? settingDescriptor.memory : true
-    };
+        setting.liveness = settingDescriptor.liveness || "live";
+        setting.memory = fluid.isValue(settingDescriptor.memory) ? settingDescriptor.memory : true;
+
+        // Call recursively for the subsettings
+        if (settingDescriptor.settingControls) {
+            setting.settings = gpii.app.extractSettings(settingDescriptor);
+        }
+    });
 };
 
 /**
@@ -161,27 +163,27 @@ gpii.app.extractPreferencesData = function (message) {
     var value = message.value || {},
         preferences = value.preferences || {},
         contexts = preferences.contexts,
-        settingControls = value.settingControls,
         sets = [],
         activeSet = value.activeContextName || null,
-        settings = [];
+        settingGroups = [];
 
     if (contexts) {
         sets = fluid.hashToArray(contexts, "path");
     }
 
-    if (settingControls) {
-        settings = fluid.values(
-            fluid.transform(settingControls, function (settingDescriptor, settingKey) {
-                return gpii.app.createSettingModel(settingKey, settingDescriptor);
-            })
-        );
+    if (value.settingGroups) {
+        settingGroups = fluid.transform(value.settingGroups, function (settingGroup) {
+            return {
+                name: settingGroup.name,
+                settings: gpii.app.extractSettings(settingGroup)
+            };
+        });
     }
 
     return {
         sets: sets,
         activeSet: activeSet,
-        settings: settings
+        settingGroups: settingGroups
     };
 };
 
@@ -218,19 +220,17 @@ fluid.defaults("gpii.app.dev.gpiiConnector", {
  * for development.
  */
 gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
-    function applyManualLivenessFlag(settings) {
-        settings.forEach(function (setting) {
+    function applyLivenessFlag(settings) {
+        fluid.each(settings, function (setting) {
             // XXX a workaround as the Magnifier settings are missing the `solutionName` property
             if (setting.path.match("common\/magnifi")) {
                 setting.liveness = "manualRestart";
-            }
-        });
-    }
-
-    function applyOsLivenessFlag(settings) {
-        settings.forEach(function (setting) {
-            if (setting.path.match("common\/speechControl")) {
+            } else if (setting.path.match("common\/speechControl")) {
                 setting.liveness = "OSRestart";
+            }
+
+            if (setting.settings) {
+                applyLivenessFlag(setting.settings);
             }
         });
     }
@@ -244,8 +244,9 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
     }
 
     if (preferences) {
-        applyManualLivenessFlag(preferences.settings);
-        applyOsLivenessFlag(preferences.settings);
         applyPrefSetSound(preferences.sets);
+        fluid.each(preferences.settingGroups, function (settingGroup) {
+            applyLivenessFlag(settingGroup.settings);
+        });
     }
 };

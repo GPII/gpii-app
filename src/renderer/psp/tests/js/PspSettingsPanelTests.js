@@ -320,12 +320,12 @@
         settingComponents.forEach(function (settingContainer, idx) {
             jqUnit.assertEquals("SettingsPanel setting containers should have proper identifiers",
                 "flc-settingListRow-" + idx,
-                settingComponents[idx].settingPresenter.container.attr("class")
+                settingComponents[idx].handler.container.attr("class")
             );
 
             jqUnit.assertLeftHand("SettingsPanel subelements should have proper model values",
                 allSettingTypesFixture[idx],
-                settingComponents[idx].settingPresenter.model
+                settingComponents[idx].handler.model
             );
         });
     };
@@ -562,8 +562,8 @@
                     args: [
                         "{singleSettingPanelsMock}.stepperPanel.container",
                         false,
-                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
-                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
+                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.element.handler.options.styles",
+                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.element.handler.options.labels"
                     ]
                 }, [
                     {
@@ -590,8 +590,8 @@
                         args: [
                             "{singleSettingPanelsMock}.stepperPanel.container",
                             true,
-                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
-                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
+                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.element.handler.options.styles",
+                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.element.handler.options.labels"
                         ]
                     }, {
                         jQueryTrigger: "click",
@@ -668,8 +668,8 @@
                         "{singleSettingPanelsMock}.dropdownPanel.container",
                         false,
                         dropdownSettingFixture,
-                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
-                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
+                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.element.handler.options.styles",
+                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.element.handler.options.labels"
                     ]
                 }, {
                     funcName: "gpii.tests.psp.testWidgetMemoryIcon",
@@ -701,8 +701,8 @@
                             "{singleSettingPanelsMock}.dropdownPanel.container",
                             true,
                             dropdownSettingFixture,
-                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
-                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
+                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.element.handler.options.styles",
+                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.element.handler.options.labels"
                         ]
                     }
                 ], [
