@@ -39,5 +39,5 @@ body.theme-alt {
 }
 
 .theme-alt ::-webkit-scrollbar-thumb {
-    background-color: var(--alt-theme-background-color);
+    background-color: var(--main-color);
 }
