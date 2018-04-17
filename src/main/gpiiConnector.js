@@ -17,8 +17,7 @@
 require("./utils.js");
 
 var fluid = require("infusion");
-var settingGroups = fluid.require("%gpii-app/testData/grouping/settingGroups.json");
-
+var groupingTemplate = fluid.require("%gpii-app/testData/grouping/groupingTemplate.json");
 var gpii = fluid.registerNamespace("gpii");
 
 /**
@@ -30,7 +29,11 @@ fluid.defaults("gpii.app.gpiiConnector", {
     events: {
         onPreferencesUpdated: null,
         onSettingUpdated: null,
-        onSnapsetNameUpdated: null
+        onSnapsetNameUpdated: null,
+        groupSettings: {
+            event: "onMessageReceived",
+            args: "@expand:gpii.app.gpiiConnector.groupSettings({arguments}.0)"
+        }
     },
 
     listeners: {
@@ -55,6 +58,45 @@ fluid.defaults("gpii.app.gpiiConnector", {
         }
     }
 });
+
+/**
+ * Transforms the message received via the PSP channel by adapting it
+ * to the format expected by the PSP. The main thing that this function
+ * does is to create groups of settings. Each group has a name and a set
+ * of settings each of which can also have settings.
+ * @param message {Object} The received message.
+ */
+gpii.app.gpiiConnector.groupSettings = function (message) {
+    var payload = message.payload || {},
+        operation = payload.type,
+        path = payload.path,
+        value = payload.value || {},
+        settingControls = value.settingControls;
+
+    if (operation === "ADD" && path.length === 0 && settingControls) {
+        value.settingGroups = fluid.copy(groupingTemplate)
+            .map(function (templateGroup) {
+                var settingGroup = {
+                    name: templateGroup.name,
+                    settingControls: {}
+                };
+
+                fluid.each(templateGroup.settings, function (settingPath) {
+                    var settingDescriptor = settingControls[settingPath];
+                    if (settingDescriptor) {
+                        settingGroup.settingControls[settingPath] = fluid.copy(settingDescriptor);
+                    }
+                });
+
+                return settingGroup;
+            })
+            .filter(function (settingGroup) {
+                return fluid.keys(settingGroup.settingControls).length > 0;
+            });
+
+        delete value.settingControls;
+    }
+};
 
 /**
  * Sends a setting update request to GPII over the socket if necessary.
@@ -92,11 +134,6 @@ gpii.app.gpiiConnector.parseMessage = function (gpiiConnector, message) {
 
     if ((operation === "ADD" && path.length === 0) ||
             operation === "DELETE") {
-
-        //XXX For testing purposes only.
-        if (operation === "ADD" && payload.value) {
-            payload = settingGroups.payload;
-        }
         /*
          * Preferences change update has been received
          */

@@ -1,0 +1,33 @@
+[
+    {
+        "settings": [
+            "http://registry\\.gpii\\.net/common/DPIScale",
+            "http://registry\\.gpii\\.net/common/cursorSize",
+            "http://registry\\.gpii\\.net/common/selfVoicingEnabled",
+            "http://registry\\.gpii\\.net/common/supportTool",
+            "http://registry\\.gpii\\.net/common/volume"
+        ]
+    },
+    {
+        "name": "Colors",
+        "settings": [
+            "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled",
+            "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastTheme"
+        ]
+    },
+    {
+        "name": "UIO+",
+        "settings": [
+            "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/supportTool",
+            "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastEnabled",
+            "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastTheme"
+        ]
+    },
+    {
+        "settings": [
+            "http://registry\\.gpii\\.net/common/magnifierEnabled",
+            "http://registry\\.gpii\\.net/common/magnification",
+            "http://registry\\.gpii\\.net/common/magnifierPosition"
+        ]
+    }
+]
