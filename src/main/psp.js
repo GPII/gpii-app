@@ -75,9 +75,9 @@ fluid.defaults("gpii.app.pspInApp", {
         },
 
         onRestartNow: [{
-            func: "{that}.hide"
-        }, {
             listener: "{settingsBroker}.applyPendingChanges"
+        }, {
+            func: "{that}.events.onClosed.fire"
         }],
 
         onUndoChanges: {
@@ -176,10 +176,6 @@ fluid.defaults("gpii.app.psp", {
         "onClosed.closePsp": {
             funcName: "gpii.app.psp.closePSP",
             args: ["{psp}", "{settingsBroker}"]
-        },
-
-        "onRestartNow.closePsp": {
-            func: "{psp}.hide"
         },
 
         "onDisplayMetricsChanged": {
@@ -319,7 +315,7 @@ gpii.app.psp.handlePSPWindowFocusLost = function (psp, settingsBroker) {
     // The PSP cannot be hidden by clicking outside of it if there is an application
     // which requires a restart.
     if (psp.model.isShown && !settingsBroker.hasPendingChange("manualRestart")) {
-        psp.hide();
+        psp.events.onClosed.fire();
     }
 };
 
