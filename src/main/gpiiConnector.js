@@ -60,6 +60,45 @@ fluid.defaults("gpii.app.gpiiConnector", {
 });
 
 /**
+ * Creates recursively a `settingControls` object given a template settings
+ * group or a setting which may have subsettings and the original `settingControls`
+ * object that was received via the PSP channel.
+ * @param element {Object} An object (group of settings or an individual setting)
+ * which has settings.
+ * @param messageSettingControls {Object} The `settingControls` object received
+ * via the PSP channel
+ * @return a `settingControls` object for the passed `element` which will include
+ * information about the settings available for that element.
+ */
+gpii.app.gpiiConnector.getSettingControls = function (element, messageSettingControls) {
+    var settingControls = {};
+
+    fluid.each(element.settings, function (setting) {
+        var path = setting.path,
+            settingDescriptor = messageSettingControls[path];
+        if (settingDescriptor) {
+            settingControls[path] = fluid.copy(settingDescriptor);
+
+            // Add the solution name which is needed for the restart warning message.
+            if (setting.solutionName) {
+                settingControls[path].solutionName = setting.solutionName;
+            }
+
+            // Calculate the `settingControls` object for the subsettings if any.
+            if (setting.settings) {
+                var subsettingControls =
+                    gpii.app.gpiiConnector.getSettingControls(setting, messageSettingControls);
+                if (fluid.keys(subsettingControls).length > 0) {
+                    settingControls[path].settingControls = subsettingControls;
+                }
+            }
+        }
+    });
+
+    return settingControls;
+};
+
+/**
  * Transforms the message received via the PSP channel by adapting it
  * to the format expected by the PSP. The main thing that this function
  * does is to create groups of settings. Each group has a name and a set
@@ -71,24 +110,15 @@ gpii.app.gpiiConnector.groupSettings = function (message) {
         operation = payload.type,
         path = payload.path,
         value = payload.value || {},
-        settingControls = value.settingControls;
+        messageSettingControls = value.settingControls;
 
-    if (operation === "ADD" && path.length === 0 && settingControls) {
+    if (operation === "ADD" && path.length === 0 && messageSettingControls) {
         value.settingGroups = fluid.copy(groupingTemplate)
             .map(function (templateGroup) {
-                var settingGroup = {
+                return {
                     name: templateGroup.name,
-                    settingControls: {}
+                    settingControls: gpii.app.gpiiConnector.getSettingControls(templateGroup, messageSettingControls)
                 };
-
-                fluid.each(templateGroup.settings, function (settingPath) {
-                    var settingDescriptor = settingControls[settingPath];
-                    if (settingDescriptor) {
-                        settingGroup.settingControls[settingPath] = fluid.copy(settingDescriptor);
-                    }
-                });
-
-                return settingGroup;
             })
             .filter(function (settingGroup) {
                 return fluid.keys(settingGroup.settingControls).length > 0;
