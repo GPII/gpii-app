@@ -20,7 +20,7 @@
     var gpii = fluid.registerNamespace("gpii");
 
     /**
-     * A component responsible for showing the active preference set name for the
+     * A component responsible for showing the active preference set name and image for the
      * currently keyed in user or a dropdown in case there are two or more available
      * preference sets. When a dropdown is shown, the selected value by default is
      * the name of the active set. If a new value is selected from the dropdown, the
@@ -32,6 +32,8 @@
         selectors: {
             preferenceSetPicker: ".flc-prefSetPicker",
             activePreferenceSet: ".flc-activePreferenceSet",
+            activePreferenceSetImage: ".flc-activePreferenceSetImage",
+            activePreferenceSetName: ".flc-activePreferenceSetName",
             autosaveText: ".flc-autosaveText",
             keyOutBtn: ".flc-keyOutBtn"
         },
@@ -56,8 +58,8 @@
                 args: ["{change}.value"],
                 excludeSource: ["init", "psp.mainWindow"]
             },{
-                funcName: "gpii.psp.updateActiveSetElement",
-                args: ["{that}.dom.activePreferenceSet", "{that}.model.preferences"]
+                funcName: "gpii.psp.updateActiveSetElements",
+                args: ["{that}.dom.activePreferenceSetImage", "{that}.dom.activePreferenceSetName", "{that}.model.preferences"]
             }],
             "messages.autosaveText": {
                 this: "{that}.dom.autosaveText",
@@ -108,15 +110,17 @@
     });
 
     /**
-     * Updates the passed DOM element to contain the name of the active preference
-     * set. If there is no currently active preference set (e.g. if there is no
-     * keyed-in user), nothing should be displayed.
-     * @param activeSetElement {jQuery} A jQuery object representing the DOM element
-     * whose text is to be updated.
-     * @param preferences {Object} An object containing all preference set, as well
-     * as information about the currently active preference set.
+     * Updates the passed DOM elements which display the active preference set image and
+     * name. If currently there is no active preference set (e.g. if there is no keyed-in
+     * user), nothing should be displayed.
+     * @param activeSetImageElement {jQuery} A jQuery object representing the image for the
+     * active preference set.
+     * @param activeSetTextElement {jQuery} A jQuery object representing the text for the
+     * active preference set.
+     * @param preferences {Object} An object containing all preference set, as well as
+     * information about the currently active preference set.
      */
-    gpii.psp.updateActiveSetElement = function (activeSetElement, preferences) {
+    gpii.psp.updateActiveSetElements = function (activeSetImageElement, activeSetTextElement, preferences) {
         var activePreferenceSet = fluid.find_if(preferences.sets,
             function (preferenceSet) {
                 return preferenceSet.path === preferences.activeSet;
@@ -124,9 +128,11 @@
         );
 
         if (activePreferenceSet) {
-            activeSetElement.text(activePreferenceSet.name);
+            activeSetImageElement.attr("src", activePreferenceSet.imageSrc || "");
+            activeSetTextElement.text(activePreferenceSet.name);
         } else {
-            activeSetElement.empty();
+            activeSetImageElement.attr("src", "");
+            activeSetTextElement.empty();
         }
     };
 
@@ -159,8 +165,9 @@
      * preference set dropdown (in case there are multiple preference sets, it should
      * be shown, otherwise it should be hidden).
      * @param activePreferenceSetElem {jQuery} A jQuery object corresponding to the
-     * preference set label (in case there is a single preference set it should be
-     * show, otherwise it should be hidden).
+     * parent element which holds the preference set image and the preference set name
+     * (in case there is a single preference set it should be shown, otherwise it
+     * should be hidden).
      */
     gpii.psp.updateHeader = function (preferenceSets, preferenceSetPickerElem, activePreferenceSetElem) {
         if (gpii.psp.hasMultipleItems(preferenceSets)) {
