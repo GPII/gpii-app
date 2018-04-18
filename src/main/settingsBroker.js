@@ -72,15 +72,27 @@ fluid.defaults("gpii.app.settingsBroker", {
         },
         applyPendingChanges: {
             funcName: "gpii.app.settingsBroker.applyPendingChanges",
-            args: ["{that}", "{that}.model.pendingChanges"]
+            args: [
+                "{that}",
+                "{that}.model.pendingChanges",
+                "{arguments}.0" // liveness
+            ]
         },
         clearPendingChanges: {
-            changePath: "pendingChanges",
-            value: []
+            funcName: "gpii.app.settingsBroker.clearPendingChanges",
+            args: [
+                "{that}",
+                "{that}.model.pendingChanges",
+                "{arguments}.0" // liveness
+            ]
         },
         undoPendingChanges: {
             funcName: "gpii.app.settingsBroker.undoPendingChanges",
-            args: ["{that}", "{that}.model.pendingChanges"]
+            args: [
+                "{that}",
+                "{that}.model.pendingChanges",
+                "{arguments}.0" // liveness
+            ]
         },
         hasPendingChange: {
             funcName: "gpii.app.settingsBroker.hasPendingChange",
@@ -136,41 +148,84 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
 };
 
 /**
- * Applies all pending setting changes and clears the queue.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
- * @param pendingChanges {Array} An array containing all pending setting changes.
+ * Filters the passed `pendingChanges` based on the specified `liveness`. If there
+ * is no `liveness` provided, all `pendingChanges` will be returned.
+ * @param pendingChanges {Array} The pending changes to be filtered.
+ * @param liveness {String} The liveness which the resulting pending changes would
+ * have. Can be `undefined`.
+ * @return {Array} The filtered pending changes based on the specified liveness.
  */
-gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, pendingChanges) {
-    fluid.each(pendingChanges, function (pendingChange) {
-        settingsBroker.applySetting(pendingChange);
+gpii.app.settingsBroker.filterPendingChanges = function (pendingChanges, liveness) {
+    return pendingChanges.filter(function (pendingChange) {
+        return !fluid.isValue(liveness) || pendingChange.liveness === liveness;
     });
-    settingsBroker.clearPendingChanges();
 };
 
 /**
- * Cancels the application of pending changes and clears the queue. This
- * function is responsible for firing the appropriate events so that the PSP
- * interface can restore to its original state before the queueing of the
+ * Applies all pending setting changes with the given `liveness` and removes them
+ * from the queue. If no `liveness` is provided, all pending changes will be applied.
+ * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
+ * @param pendingChanges {Array} An array containing all pending setting changes.
+ * @param liveness {String} The liveness of the pending changes to be applied.
+ */
+gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, pendingChanges, liveness) {
+    pendingChanges = gpii.app.settingsBroker.filterPendingChanges(pendingChanges, liveness);
+
+    fluid.each(pendingChanges, function (pendingChange) {
+        settingsBroker.applySetting(pendingChange);
+    });
+
+    settingsBroker.clearPendingChanges(liveness);
+};
+
+/**
+ * Cancels the application of pending changes with the given `liveness` and removes
+ * them from the queue. If no `liveness` is provided, all pending changes will be
+ * discarded.This function is responsible for firing the appropriate events so that
+ * the PSP interface can restore to its original state before the queueing of the
  * setting changes.
  * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
  * @param pendingChanges {Array} An array containing all pending setting changes.
+ * @param liveness {String} The liveness of the pending changes to be reverted.
  */
-gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, pendingChanges) {
+gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, pendingChanges, liveness) {
+    pendingChanges = gpii.app.settingsBroker.filterPendingChanges(pendingChanges, liveness);
+
     fluid.each(pendingChanges, function (pendingChange) {
         pendingChange = fluid.extend(true, pendingChange, {
             value: pendingChange.oldValue
         });
         settingsBroker.undoSetting(pendingChange);
     });
-    settingsBroker.clearPendingChanges();
+
+    settingsBroker.clearPendingChanges(liveness);
 };
 
-gpii.app.settingsBroker.hasPendingChange = function (pendingChanges, liveness) {
-    if (!fluid.isValue(liveness)) {
-        return pendingChanges.length > 0;
-    }
-
-    return fluid.find_if(pendingChanges, function (change) {
-        return change.liveness === liveness;
+/**
+ * Removes the pending changes with the specified `liveness` from the queue. If no
+ * `liveness` is provided, removes all pending changes.
+ * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
+ * @param pendingChanges {Array} The pending changes to be removed.
+ * @param liveness {String} The liveness of the pending changes to be removed.
+ */
+gpii.app.settingsBroker.clearPendingChanges = function (settingsBroker, pendingChanges, liveness) {
+    var newPendingChanges = fluid.copy(pendingChanges);
+    fluid.remove_if(newPendingChanges, function (pendingChange) {
+        return !fluid.isValue(liveness) || pendingChange.liveness === liveness;
     });
+    settingsBroker.applier.change("pendingChanges", newPendingChanges);
+};
+
+/**
+ * Checks if there is at least one element in the `pendingChanges` with the specified
+ * `liveness`. If no `liveness` is provided, the function simply returns whether the
+ * `pendingChanges` array is not empty.
+ * @param pendingChanges {Array} An array containing pending setting changes.
+ * @param liveness {String} The liveness of the pending changes to be queried.
+ * @return {Boolean} `true` if there is at least one pending change (with the given
+ * `liveness`) and `false` otherwise.
+ */
+gpii.app.settingsBroker.hasPendingChange = function (pendingChanges, liveness) {
+    pendingChanges = gpii.app.settingsBroker.filterPendingChanges(pendingChanges, liveness);
+    return pendingChanges.length > 0;
 };

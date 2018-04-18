@@ -1,4 +1,5 @@
 {
+    "gpii_app_menu_about": "About...",
     "gpii_app_menu_psp": "Open PSP",
     "gpii_app_menu_notKeyedIn": "(No one keyed in)",
     "gpii_app_menu_keyedIn": "Keyed in with %snapsetName",
@@ -10,15 +11,13 @@
     "gpii_psp_splash_heading": "Not keyed in",
     "gpii_psp_splash_fullAppName": "GPII - Personal Settings Panel",
 
-    "gpii_psp_titlebar_appName": "GPII Settings",
+    "gpii_psp_mainWindow_titlebarAppName": "GPII Settings",
 
     "gpii_psp_header_autosaveText": "Auto-save is on",
     "gpii_psp_header_keyOut":"Key Out",
 
     "gpii_psp_settingPresenter_osRestart": "To change this setting,\nWindows requires a restart.",
     "gpii_psp_settingPresenter_osRestartRequired": "You changed this setting, which\nrequires Windows to restart.",
-    "gpii_psp_settingPresenter_appRestart": "%solutionName - To change this setting,\nthe app requires a restart.",
-    "gpii_psp_settingPresenter_appRestartRequired": "%solutionName - You changed this setting,\nwhich requires the app to restart.",
 
     "gpii_psp_baseRestartWarning_osName": "Windows",
     "gpii_psp_baseRestartWarning_osRestartText": "Windows needs to restart to apply your changes.",
@@ -26,6 +25,14 @@
     "gpii_psp_baseRestartWarning_undo": "Undo Changes",
     "gpii_psp_baseRestartWarning_applyNow": "Apply changes now",
     "gpii_psp_baseRestartWarning_restartNow": "Restart Now",
+
+    "gpii_psp_errorDialog_titlebarAppName": "GPII Error",
+
+    "gpii_psp_aboutDialog_titlebarAppName": "About GPII Auto-personalization",
+    "gpii_psp_aboutDialog_title": "GPII Auto-personalization",
+    "gpii_psp_aboutDialog_update": "Check for updates",
+    "gpii_psp_aboutDialog_userListenersText": "Keys that work on this machine: %listeners",
+    "gpii_psp_aboutDialog_version": "version %version",
 
     "gpii_psp_footer_help": "Help"
 }

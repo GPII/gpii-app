@@ -155,6 +155,7 @@ function mergeMessageBundles(loadedBundles) {
     return messageBundles;
 };
 
+
 /**
  * Creates a message bundles map where the keys are the available locales and the values
  * are also maps whose keys are the message keys and the values are the texts of the
@@ -167,7 +168,7 @@ function mergeMessageBundles(loadedBundles) {
  * contents of message bundle files.
  * @return {Object} The compiled message bundles map.
  */
-module.exports.compileMessageBundles = function (bundlesDirs, defaultLocale, fileType, parser) {
+function compileMessageBundles(bundlesDirs, defaultLocale, fileType, parser) {
     fileType = fileType || DEFAULT_FILE_TYPE;
     parser = parser || DEFAULT_PARSER;
 
@@ -185,4 +186,13 @@ module.exports.compileMessageBundles = function (bundlesDirs, defaultLocale, fil
     var compiledMessageBundle = includeFallbackOptions(rawMessageBundles, defaultLocale);
 
     return compiledMessageBundle;
+};
+
+
+module.exports = {
+    compileMessageBundles:  compileMessageBundles,
+
+    _mergeMessageBundles:    mergeMessageBundles,
+    _loadMessageBundles:     loadMessageBundles,
+    _includeFallbackOptions: includeFallbackOptions
 };

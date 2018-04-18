@@ -56,11 +56,6 @@
             restartIcon: ".flc-restartIcon",
             widget: ".flc-widget"
         },
-        styles: {
-            osRestartIcon: "fl-icon-osRestart",
-            appRestartIcon: "fl-icon-appRestart",
-            valueChanged: "fl-icon-filled"
-        },
         model: {
             path: null,
             solutionName: null,
@@ -115,14 +110,6 @@
                 args: ["{that}.model", "{change}.oldValue"],
                 excludeSource: ["init", "psp.mainWindow"]
             },
-            pendingChanges: {
-                funcName: "gpii.psp.settingPresenter.updateRestartIcon",
-                args: [
-                    "{that}",
-                    "{change}.value",
-                    "{that}.dom.restartIcon"
-                ]
-            },
             restartIconTooltip: {
                 this: "{that}.dom.restartIcon",
                 method: "attr",
@@ -146,8 +133,9 @@
                 args: ["id", "{that}.model.path"]
             },
             "onCreate.showMemoryIcon": {
-                funcName: "gpii.psp.settingPresenter.showMemoryIcon",
-                args: ["{that}", "{that}.dom.memoryIcon"]
+                this: "{that}.dom.memoryIcon",
+                method: "toggle",
+                args: ["{that}.model.memory"]
             },
             "onCreate.toggleRestartIcon": {
                 funcName: "gpii.psp.settingPresenter.toggleRestartIcon",
@@ -181,9 +169,8 @@
     };
 
     /**
-     * Returns the appropriate tooltip for the restart icon depending on whether the
-     * setting has has a "manualRestart" or an "OSRestart" liveness, and on whether the
-     * user has modified the setting's value.
+     * Returns the appropriate tooltip for the restart icon if the setting has has an
+     * OSRestart" liveness and based on whether the user has modified the setting's value.
      * @param setting {Object} An object representing the setting.
      * @param pendingChanges {Array} An array of all pending setting changes that the user
      * has made.
@@ -192,84 +179,25 @@
      * @return The tooltip for the restart icon.
      */
     gpii.psp.settingPresenter.getRestartIconTooltip = function (setting, pendingChanges, messages) {
-        var hasPendingChange = fluid.find_if(pendingChanges, function (change) {
-            return change.path === setting.path;
-        });
-
-        if (setting.liveness === "manualRestart") {
-            var tooltip = hasPendingChange ? messages.appRestartRequired : messages.appRestart;
-            if (tooltip) {
-                return fluid.stringTemplate(tooltip, {
-                    solutionName: fluid.isValue(setting.solutionName) ? setting.solutionName : setting.schema.title
-                });
-            }
-        }
-
         if (setting.liveness === "OSRestart") {
+            var hasPendingChange = fluid.find_if(pendingChanges, function (change) {
+                return change.path === setting.path;
+            });
+
             return hasPendingChange ? messages.osRestartRequired : messages.osRestart;
         }
     };
 
     /**
-     * A function responsible for showing, styling and adding the appropriate tooltip to
-     * the restart icon if the setting has a "manualRestart" or an "OSRestart" liveness.
+     * A function responsible for showing the restart icon if the setting has an "OSRestart"
+     * liveness.
      * @param that {Component} An instance of `gpii.psp.settingPresenter`.
      * @param restartIcon {jQuery} A jQuery object representing the restart icon.
      */
     gpii.psp.settingPresenter.toggleRestartIcon = function (that, restartIcon) {
-        var liveness = that.model.liveness,
-            styles = that.options.styles;
-
-        if (liveness === "manualRestart" || liveness === "OSRestart") {
-            var iconClass = liveness === "manualRestart" ? styles.appRestartIcon : styles.osRestartIcon;
-            restartIcon
-                .addClass(iconClass)
-                .show();
-        } else {
-            restartIcon.hide();
-        }
+        var isShown = that.model.liveness === "OSRestart";
+        restartIcon.toggle(isShown);
     };
-
-    /**
-     * A function responsible for restyling the restart icon and changing its tooltip when
-     * the user modifies the corresponding setting.
-     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
-     * @param pendingChanges {Array} An array of all pending setting changes that the user
-     * has made.
-     * @param restartIcon {jQuery} A jQuery object representing the restart icon.
-     */
-    gpii.psp.settingPresenter.updateRestartIcon = function (that, pendingChanges, restartIcon) {
-        var liveness = that.model.liveness,
-            path = that.model.path,
-            styles = that.options.styles;
-
-        if (liveness === "manualRestart" || liveness === "OSRestart") {
-            var pendingChange = fluid.find_if(pendingChanges, function (change) {
-                return change.path === path;
-            });
-
-            if (pendingChange) {
-                restartIcon.addClass(styles.valueChanged);
-            } else {
-                restartIcon.removeClass(styles.valueChanged);
-            }
-        }
-    };
-
-    /**
-     * A function responsible for showing a memory icon if the setting will be
-     * persisted after a user has changed it.
-     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
-     * @param memoryIcon {jQuery} A jQuery object representing the memory icon.
-     */
-    gpii.psp.settingPresenter.showMemoryIcon = function (that, memoryIcon) {
-        if (that.model.memory) {
-            memoryIcon.show();
-        } else {
-            memoryIcon.hide();
-        }
-    };
-
 
     /**
      * Renders all related markup for a setting:

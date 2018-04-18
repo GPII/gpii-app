@@ -27,8 +27,8 @@
         "shelljs": "0.3.0"
     },
     "scripts": {
-        "start": "npm run build && electron main.js",
-        "dev": "npm run build && electron main.js ./configs app.dev",
+        "start": "npm run build && electron .",
+        "dev": "npm run build && electron . ./configs app.dev",
         "build": "grunt compileMessages",
         "test": "npm run build && powershell provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; electron tests.js"
     }
