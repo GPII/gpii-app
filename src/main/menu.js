@@ -64,6 +64,11 @@ fluid.defaults("gpii.app.menuInApp", {
   * @param events {Object} An object containing the events that may be fired by items in the menu.
   */
 gpii.app.updateMenu = function (tray, menuTemplate, events) {
+    // Needed in order to get around this non graceful check: https://github.com/electron/electron/blob/v1.8.4/lib/browser/api/menu.js#L170
+    // The infusion's expander uses a context different than the current,
+    // which cases this Array check to fail.
+    menuTemplate = gpii.app.recontextualise(menuTemplate);
+
     menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
 
     tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));

@@ -148,3 +148,21 @@ gpii.app.timer.clear = function (that) {
         that.timer = null;
     }
 };
+
+/**
+ * Set proper context (the current) for elements such as arrays.
+ * This is needed in order for arrays to pass the more strict
+ * check of: `instanceof array`. In generally such checks are to be avoided
+ * in favor of the `fluid.isArray` function, but is useful when dealing with
+ * third party dependencies.
+ *
+ * @param option {Object} The object/array that needs to have its contexts fixed
+ * @returns {Object} The fixed object
+ */
+gpii.app.recontextualise = function (option) {
+    if (fluid.isPlainObject(option)) {
+        // simple approach to restore context of arrays
+        option = JSON.parse(JSON.stringify(option));
+    }
+    return option;
+};
