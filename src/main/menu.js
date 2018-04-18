@@ -9,7 +9,7 @@
  * compliance with this License.
  * The research leading to these results has re eived funding from the European Union's
  * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
- * You may obt vcfain a copy of the License at
+ * You may obtain a copy of the License at
  *
  * https://github.com/GPII/universal/blob/master/LICENSE.txt
  */
@@ -95,6 +95,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
                     "{that}.model.showPSP",
                     "{that}.model.keyedInSnapset",
                     "{that}.options.locales",
+                    "{that}.options.themes",
                     "{that}.options.snapsets",
                     "{that}.model.preferenceSetsMenuItems",
                     "{that}.model.showAbout",
@@ -107,6 +108,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
     },
     events: {
         onLocale: null,
+        onThemeChanged: null,
         onKeyIn: null,
         onExit: null
     },
@@ -115,6 +117,10 @@ fluid.defaults("gpii.app.menuInAppDev", {
         "onLocale.changeLocale": {
             changePath: "{app}.model.locale",
             value: "{arguments}.0.locale"
+        },
+        "onThemeChanged.changeTheme": {
+            changePath: "{app}.model.theme",
+            value: "{arguments}.0.theme"
         },
         // onKeyIn event is fired when a new user keys in through the task tray.
         // This should result in:
@@ -157,6 +163,23 @@ fluid.defaults("gpii.app.menuInAppDev", {
             click: "onLocale",
             args: {
                 locale: "fr"
+            }
+        }]
+    },
+
+    themes: {
+        label: "Theme...",
+        submenu: [{
+            label: "white",
+            click: "onThemeChanged",
+            args: {
+                theme: "white"
+            }
+        }, {
+            label: "dark",
+            click: "onThemeChanged",
+            args: {
+                theme: "dark"
             }
         }]
     },

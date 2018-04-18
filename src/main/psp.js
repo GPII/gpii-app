@@ -202,6 +202,15 @@ fluid.defaults("gpii.app.psp", {
                 "onLocaleChanged",
                 "{app}.model.locale"
             ]
+        },
+        "{app}.model.theme": {
+            funcName: "gpii.app.notifyWindow",
+            args: [
+                "{that}.pspWindow",
+                "onThemeChanged",
+                "{app}.model.theme"
+            ],
+            excludeSource: "init"
         }
     },
 

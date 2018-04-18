@@ -54,14 +54,15 @@
     };
 
     /**
-     * Updates the "theme" of the PSP `BrowserWindow`. Currently, the
-     * theme consists simply of a definition of a `--main-color` variable
-     * which is used for styling various widgets within the application.
+     * Updates the accent color in the PSP `BrowserWindow`. The accent
+     * color is taken into consideration only in the dark theme of the
+     * PSP and is used for different styles (e.g. button backgrounds,
+     * hover color for various inputs, etc).
      * @param theme {jQuery} The `style` tag which houses the application
      * theme definitions.
      * @param accentColor {String} The accent color used in the user's OS.
      */
-    gpii.psp.updateTheme = function (theme, accentColor) {
+    gpii.psp.updateAccentColor = function (theme, accentColor) {
         // The accent color is an 8-digit hex number whose last 2 digits
         // represent the alpha. In case the user has chosen his accent
         // color to be automatically picked by Windows, the accent color
@@ -72,6 +73,28 @@
             var mainColor = "#" + accentColor.slice(0, 6),
                 themeRules = ":root{ --main-color: " + mainColor + "; }";
             theme.text(themeRules);
+        }
+    };
+
+    /**
+     * Updates the theme of the PSP. There are two supported themes - a
+     * `dark` and a `white` theme. The `white` theme is the default one
+     * and it is applied automatically. In order to apply the `dark`
+     * theme, the "theme-alt" class needs to be added to the `body` element.
+     * @param container {jQuery} A jQuery object representing the body of
+     * the page displayed in the PSP `BrowserWindow`.
+     * @param themeClasses {Object} A hash containing mapping between a
+     * theme name and the corresponding CSS class which needs to be added
+     * to the `body`.
+     * @param theme {String} The name of the theme that is to be applied.
+     */
+    gpii.psp.updateTheme = function (container, themeClasses, theme) {
+        fluid.keys(themeClasses).forEach(function (themeKey) {
+            container.removeClass(themeClasses[themeKey]);
+        });
+
+        if (themeClasses[theme]) {
+            container.addClass(themeClasses[theme]);
         }
     };
 
@@ -118,6 +141,9 @@
             settingsList: "#flc-settingsList",
             restartWarning: "#flc-restartWarning",
             heightListenerContainer: "#flc-settingsList"
+        },
+        themeClasses: {
+            dark: "theme-alt"
         },
         components: {
             splash: {
@@ -222,11 +248,19 @@
                     "{arguments}.1"  // value
                 ]
             },
-            "updateTheme": {
-                funcName: "gpii.psp.updateTheme",
+            "updateAccentColor": {
+                funcName: "gpii.psp.updateAccentColor",
                 args: [
                     "{that}.dom.theme",
                     "{arguments}.0" // accentColor
+                ]
+            },
+            "updateTheme": {
+                funcName: "gpii.psp.updateTheme",
+                args: [
+                    "{that}.container",
+                    "{that}.options.themeClasses",
+                    "{arguments}.0" // theme
                 ]
             },
             "calculateHeight": {

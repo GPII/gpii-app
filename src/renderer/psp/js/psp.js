@@ -33,6 +33,9 @@
                             funcName: "{mainWindow}.updatePreferences"
                         },
                         onAccentColorChanged: {
+                            funcName: "{mainWindow}.updateAccentColor"
+                        },
+                        onThemeChanged: {
                             funcName: "{mainWindow}.updateTheme"
                         },
                         onSettingUpdated: {
