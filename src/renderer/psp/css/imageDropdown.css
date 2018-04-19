@@ -64,9 +64,14 @@
     padding-left: 4px;
 }
 
-.fl-imageDropdown .dropdown-menu li a:hover {
+.fl-imageDropdown .dropdown-menu li.active a,
+.fl-imageDropdown .dropdown-menu li:hover a {
     background-color: var(--main-theme-background-color);
     color: var(--main-theme-text-color);
+}
+
+.fl-imageDropdown .dropdown-menu li img {
+    margin-right: 4px;
 }
 
 /* Styles for alt (dark) theme */
@@ -99,6 +104,7 @@
     color: var(--alt-theme-text-color);
 }
 
-.theme-alt .fl-imageDropdown .dropdown-menu li a:hover {
+.theme-alt .fl-imageDropdown .dropdown-menu li.active a,
+.theme-alt .fl-imageDropdown .dropdown-menu li:hover a {
     background-color: var(--main-color);
 }

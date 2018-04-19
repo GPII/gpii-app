@@ -83,9 +83,12 @@
         gradeNames: "fluid.viewComponent",
 
         selectors: {
-            itemLink: ".flc-imageDropdown-itemLink",
             itemImage: ".flc-imageDropdown-itemImage",
             itemText: ".flc-imageDropdown-itemText"
+        },
+
+        styles: {
+            active: "active"
         },
 
         model: {
@@ -110,6 +113,10 @@
                 this: "{that}.dom.itemImage",
                 method: "attr",
                 args: ["src", "{change}.value"]
+            },
+            "{imageDropdown}.model.selection": {
+                funcName: "gpii.psp.widgets.imageDropdownPresenter.applyStyles",
+                args: ["{change}.value", "{that}.model.item", "{that}.container", "{that}.options.styles"]
             }
         },
 
@@ -122,6 +129,19 @@
         }
     });
 
+    /**
+     * Applies the appropriate styles depending on whether the item is
+     * the selected item for the dropdown.
+     * @param selection {String} The path of the selected item.
+     * @param item {Object} The current image dropdown item.
+     * @param container {jQuery} The DOM element representing the item.
+     * @param styles {Object} A hash containing mapping between CSS class
+     * keys and class names.
+     */
+    gpii.psp.widgets.imageDropdownPresenter.applyStyles = function (selection, item, container, styles) {
+        container.toggleClass(styles.active, item.path === selection);
+    };
+
     fluid.defaults("gpii.psp.widgets.imageDropdown", {
         gradeNames: ["gpii.psp.widgets.attrsExpander", "fluid.viewComponent"],
 
@@ -132,7 +152,7 @@
 
         modelListeners: {
             selection: {
-                funcName: "gpii.psp.widgets.imageDropdown.onSelectionChanged",
+                funcName: "gpii.psp.widgets.imageDropdown.updateDropdownHeader",
                 args: [
                     "{that}.dom.selectedItemImage",
                     "{that}.dom.selectedItemText",
@@ -186,7 +206,7 @@
                     },
                     markup: {
                         dropdownItem:
-                            "<a class=\"flc-imageDropdown-itemLink\" href=\"#\">" +
+                            "<a href=\"#\">" +
                                 "<img class=\"flc-imageDropdown-itemImage\">" +
                                 "<span class=\"flc-imageDropdown-itemText\"></span>" +
                             "</a>"
@@ -206,7 +226,7 @@
         }
     });
 
-    gpii.psp.widgets.imageDropdown.onSelectionChanged = function (selectedItemImage, selectedItemText, items, selection) {
+    gpii.psp.widgets.imageDropdown.updateDropdownHeader = function (selectedItemImage, selectedItemText, items, selection) {
         var selectedItem = fluid.find_if(items, function (item) {
                 return item.path === selection;
             }),
