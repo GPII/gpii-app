@@ -79,16 +79,58 @@
         renderOnInit: true
     });
 
+    fluid.defaults("gpii.psp.widgets.imageDropdownPresenter", {
+        gradeNames: "fluid.viewComponent",
+
+        selectors: {
+            itemLink: ".flc-imageDropdown-itemLink",
+            itemImage: ".flc-imageDropdown-itemImage",
+            itemText: ".flc-imageDropdown-itemText"
+        },
+
+        model: {
+            item: {}
+        },
+
+        listeners: {
+            "onCreate.addClickHandler": {
+                this: "{that}.container",
+                method: "click",
+                args: "{that}.updateSelection"
+            }
+        },
+
+        modelListeners: {
+            "item.name": {
+                this: "{that}.dom.itemText",
+                method: "text",
+                args: ["{change}.value"]
+            },
+            "item.imageSrc": {
+                this: "{that}.dom.itemImage",
+                method: "attr",
+                args: ["src", "{change}.value"]
+            }
+        },
+
+        invokers: {
+            updateSelection: {
+                this: "{that}.options.parent",
+                method: "updateSelection",
+                args: ["{that}.model.item"]
+            }
+        }
+    });
+
     fluid.defaults("gpii.psp.widgets.imageDropdown", {
-        gradeNames: ["gpii.psp.widgets.attrsExpander", "fluid.rendererComponent"],
+        gradeNames: ["gpii.psp.widgets.attrsExpander", "fluid.viewComponent"],
+
         model: {
             items: [],
             selection: null
         },
+
         modelListeners: {
-            items: {
-                func: "{that}.refreshView"
-            },
             selection: {
                 funcName: "gpii.psp.widgets.imageDropdown.onSelectionChanged",
                 args: [
@@ -97,71 +139,72 @@
                     "{that}.model.items",
                     "{change}.value"
                 ]
+            },
+            items: {
+                this: "{that}.events.onItemsChanged",
+                method: "fire"
             }
         },
+
         selectors: {
             selectedItemImage: ".flc-imageDropdown-selectedItemImage",
             selectedItemText: ".flc-imageDropdown-selectedItemText",
-            dropdownItem: ".flc-imageDropdown-item",
-            itemLink: ".flc-imageDropdown-itemLink",
-            itemImage: ".flc-imageDropdown-itemImage",
-            itemText: ".flc-imageDropdown-itemText"
+            dropdownMenu: ".flc-imageDropdown-menu"
         },
-        repeatingSelectors: ["dropdownItem"],
-        selectorsToIgnore: ["selectedItemImage", "selectedItemText"],
-        protoTree: {
-            expander: {
-                type: "fluid.renderer.repeat",
-                repeatID: "dropdownItem",
-                controlledBy: "items",
-                pathAs: "item",
-                tree: {
-                    itemLink: {
-                        decorators: [
-                            {
-                                type: "attrs",
-                                attributes: {
-                                    "data-path": "${{item}.path}"
-                                }
-                            }, {
-                                type: "jQuery",
-                                func: "click",
-                                args: "${{that}.updateSelection}"
-                            }
-                        ]
-                    },
-                    itemImage: {
-                        decorators: {
-                            attrs: {
-                                "src": "${{item}.imageSrc}"
-                            }
-                        }
-                    },
-                    itemText: "${{item}.name}"
-                }
-            }
+
+        events: {
+            onItemsChanged: null
         },
-        invokers: {
-            updateSelection: {
-                funcName: "gpii.psp.widgets.imageDropdown.updateSelection",
-                args: ["{that}", "{arguments}.0"]
-            }
-        },
+
         listeners: {
             "onCreate.addAttrs": {
                 "this": "{that}.container",
                 method: "attr",
                 args: ["{that}.options.attrs"]
+            },
+            "onCreate.notifyItemsChanged": {
+                func: "{that}.events.onItemsChanged.fire"
             }
         },
-        renderOnInit: true
-    });
 
-    gpii.psp.widgets.imageDropdown.updateSelection = function (that, event) {
-        var itemLink = event.currentTarget,
-            path = itemLink.getAttribute("data-path");
-        that.applier.change("selection", path);
-    };
+        components: {
+            dropdownItems: {
+                type: "gpii.psp.repeater",
+                createOnEvent: "onItemsChanged",
+                container: "{that}.dom.dropdownMenu",
+                options: {
+                    model: {
+                        items: "{imageDropdown}.model.items",
+                        selection: "{imageDropdown}.model.selection"
+                    },
+                    dynamicContainerMarkup: {
+                        container: "<li class=\"%containerClass\"></li>",
+                        containerClassPrefix: "flc-imageDropdown-item"
+                    },
+                    handlerOptions: {
+                        type: "gpii.psp.widgets.imageDropdownPresenter"
+                    },
+                    markup: {
+                        dropdownItem:
+                            "<a class=\"flc-imageDropdown-itemLink\" href=\"#\">" +
+                                "<img class=\"flc-imageDropdown-itemImage\">" +
+                                "<span class=\"flc-imageDropdown-itemText\"></span>" +
+                            "</a>"
+                    },
+                    invokers: {
+                        getMarkup: {
+                            funcName: "fluid.identity",
+                            args: ["{that}.options.markup.dropdownItem"]
+                        },
+                        updateSelection: {
+                            changePath: "selection",
+                            value: "{arguments}.0.path"
+                        }
+                    }
+                }
+            }
+        }
+    });
 
     gpii.psp.widgets.imageDropdown.onSelectionChanged = function (selectedItemImage, selectedItemText, items, selection) {
         var selectedItem = fluid.find_if(items, function (item) {
