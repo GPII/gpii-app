@@ -11,7 +11,7 @@ require("./index");
 
 // Code coverage harness, hooks into the jqUnit lifecycle and saves tests whenever the `onAllTestsDone` event is fired.
 // Must be hooked in before requiring any actual tests.
-jqUnit.onAllTestsDone.addListener(function() {
+jqUnit.onAllTestsDone.addListener(function () {
     if (global.__coverage__) {
         var filename = fluid.stringTemplate("coverage-tests-%timestamp.json", { timestamp: (new Date()).toISOString() });
         var coverageFilePath = path.resolve(__dirname, "../coverage", filename);
