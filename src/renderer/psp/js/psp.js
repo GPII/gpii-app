@@ -53,6 +53,7 @@
                 container: "#flc-body",
                 options: {
                     listeners: {
+                        onCreate: "{channel}.notifyPSPCreated",
                         onPSPClose: "{channel}.close",
                         onKeyOut: "{channel}.keyOut",
                         onSettingAltered: "{channel}.alterSetting",

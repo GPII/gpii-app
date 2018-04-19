@@ -311,15 +311,22 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
     }
 
     function applyPrefSetImages(prefSets) {
-        var images = [
-            "https://www.w3schools.com/howto/img_paris.jpg",
-            "https://www.w3schools.com/howto/img_mountains.jpg",
-            "https://www.w3schools.com/howto/img_mountains.jpg"
-        ];
+        var whiteThemeimages = [
+                "https://www.w3schools.com/howto/img_paris.jpg",
+                "https://www.w3schools.com/howto/img_mountains.jpg",
+                "https://www.w3schools.com/howto/img_mountains.jpg"
+            ],
+            darkThemeimages = [
+                "https://www.w3schools.com/howto/img_nature_wide.jpg",
+                "https://www.w3schools.com/howto/img_fjords_wide.jpg",
+                "https://www.w3schools.com/howto/img_mountains_wide.jpg"
+            ];
 
         prefSets.forEach(function (prefSet, index) {
-            var imageIndex = (index++) % images.length;
-            prefSet.imageSrc = images[imageIndex];
+            prefSet.imageMap = {
+                white: whiteThemeimages[index % whiteThemeimages.length],
+                dark: darkThemeimages[index % darkThemeimages.length]
+            };
         });
     }
 

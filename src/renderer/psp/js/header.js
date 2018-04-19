@@ -42,6 +42,7 @@
                 sets: [],
                 activeSet: null
             },
+            activePreferenceSet: {},
             messages: {
                 autosaveText: null,
                 keyOut: null
@@ -52,15 +53,26 @@
             onActivePreferenceSetAltered: null,
             onKeyOut: null
         },
+        modelRelay: {
+            "activePreferenceSet": {
+                target: "activePreferenceSet",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.psp.header.getActivePreferenceSet",
+                    args: ["{that}.model.preferences"]
+                }
+            }
+        },
         modelListeners: {
-            "preferences.activeSet": [{
+            "preferences.activeSet": {
                 funcName: "{that}.events.onActivePreferenceSetAltered.fire",
                 args: ["{change}.value"],
                 excludeSource: ["init", "psp.mainWindow"]
-            },{
+            },
+            "activePreferenceSet": {
                 funcName: "gpii.psp.updateActiveSetElements",
-                args: ["{that}.dom.activePreferenceSetImage", "{that}.dom.activePreferenceSetName", "{that}.model.preferences"]
-            }],
+                args: ["{that}.dom.activePreferenceSetImage", "{that}.dom.activePreferenceSetName", "{change}.value"]
+            },
             "messages.autosaveText": {
                 this: "{that}.dom.autosaveText",
                 method: "text",
@@ -109,6 +121,12 @@
         }
     });
 
+    gpii.psp.header.getActivePreferenceSet = function (preferences) {
+        return fluid.find_if(preferences.sets, function (preferenceSet) {
+            return preferenceSet.path === preferences.activeSet;
+        });
+    };
+
     /**
      * Updates the passed DOM elements which display the active preference set image and
      * name. If currently there is no active preference set (e.g. if there is no keyed-in
@@ -120,13 +138,7 @@
      * @param preferences {Object} An object containing all preference set, as well as
      * information about the currently active preference set.
      */
-    gpii.psp.updateActiveSetElements = function (activeSetImageElement, activeSetTextElement, preferences) {
-        var activePreferenceSet = fluid.find_if(preferences.sets,
-            function (preferenceSet) {
-                return preferenceSet.path === preferences.activeSet;
-            }
-        );
-
+    gpii.psp.updateActiveSetElements = function (activeSetImageElement, activeSetTextElement, activePreferenceSet) {
         if (activePreferenceSet) {
             activeSetImageElement.attr("src", activePreferenceSet.imageSrc || "");
             activeSetTextElement.text(activePreferenceSet.name);

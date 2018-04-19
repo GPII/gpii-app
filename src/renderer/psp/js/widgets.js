@@ -147,22 +147,33 @@
 
         model: {
             items: [],
-            selection: null
+            selection: null,
+            selectedItem: {}
         },
 
         modelListeners: {
-            selection: {
+            selectedItem: {
                 funcName: "gpii.psp.widgets.imageDropdown.updateDropdownHeader",
                 args: [
                     "{that}.dom.selectedItemImage",
                     "{that}.dom.selectedItemText",
-                    "{that}.model.items",
                     "{change}.value"
                 ]
             },
             items: {
                 this: "{that}.events.onItemsChanged",
                 method: "fire"
+            }
+        },
+
+        modelRelay: {
+            "selectedItem": {
+                target: "selectedItem",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.psp.widgets.imageDropdown.getSelectedItem",
+                    args: ["{that}.model.items", "{that}.model.selection"]
+                }
             }
         },
 
@@ -226,11 +237,14 @@
         }
     });
 
-    gpii.psp.widgets.imageDropdown.updateDropdownHeader = function (selectedItemImage, selectedItemText, items, selection) {
-        var selectedItem = fluid.find_if(items, function (item) {
-                return item.path === selection;
-            }),
-            itemImageSrc = fluid.get(selectedItem, "imageSrc") || "",
+    gpii.psp.widgets.imageDropdown.getSelectedItem = function (items, selection) {
+        return fluid.find_if(items, function (item) {
+            return item.path === selection;
+        });
+    };
+
+    gpii.psp.widgets.imageDropdown.updateDropdownHeader = function (selectedItemImage, selectedItemText, selectedItem) {
+        var itemImageSrc = fluid.get(selectedItem, "imageSrc") || "",
             itemText = fluid.get(selectedItem, "name") || "";
 
         selectedItemImage.attr("src", itemImageSrc);

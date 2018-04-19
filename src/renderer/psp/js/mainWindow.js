@@ -130,7 +130,8 @@
                 sets: [],
                 activeSet: null,
                 settingGroups: []
-            }
+            },
+            theme: null
         },
         selectors: {
             theme: "#flc-theme",
@@ -176,10 +177,14 @@
                 type: "gpii.psp.header",
                 container: "{that}.dom.header",
                 options: {
-                    model: {
-                        preferences: {
-                            sets: "{mainWindow}.model.preferences.sets",
-                            activeSet: "{mainWindow}.model.preferences.activeSet"
+                    modelRelay: {
+                        "preferences": {
+                            target: "preferences",
+                            singleTransform: {
+                                type: "fluid.transforms.free",
+                                func: "gpii.psp.mainWindow.getHeaderPreferences",
+                                args: ["{mainWindow}.model.preferences", "{mainWindow}.model.theme"]
+                            }
                         }
                     },
                     events: {
@@ -221,7 +226,15 @@
             }
         },
         modelListeners: {
-            "preferences": "{that}.events.onPreferencesUpdated"
+            preferences: "{that}.events.onPreferencesUpdated",
+            theme: {
+                funcName: "gpii.psp.updateTheme",
+                args: [
+                    "{that}.container",
+                    "{that}.options.themeClasses",
+                    "{change}.value" // theme
+                ]
+            }
         },
         listeners: {
             onActivePreferenceSetAltered: {
@@ -249,12 +262,8 @@
                 ]
             },
             "updateTheme": {
-                funcName: "gpii.psp.updateTheme",
-                args: [
-                    "{that}.container",
-                    "{that}.options.themeClasses",
-                    "{arguments}.0" // theme
-                ]
+                changePath: "theme",
+                value: "{arguments}.0"
             },
             "calculateHeight": {
                 funcName: "gpii.psp.calculateHeight",
@@ -281,4 +290,14 @@
             onUndoChanges: null
         }
     });
+
+    gpii.psp.mainWindow.getHeaderPreferences = function (preferences, theme) {
+        var headerPreferences = fluid.copy(preferences);
+
+        fluid.each(headerPreferences.sets, function (preferenceSet) {
+            preferenceSet.imageSrc = preferenceSet.imageMap[theme];
+        });
+
+        return headerPreferences;
+    };
 })(fluid);

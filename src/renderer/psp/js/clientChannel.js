@@ -145,6 +145,10 @@
                     "onUndoChanges",
                     "{arguments}.0" // pendingChanges
                 ]
+            },
+            notifyPSPCreated: {
+                func: "{that}.sendMessage",
+                args: ["onPSPCreated"]
             }
         }
     });
