@@ -53,7 +53,8 @@ fluid.defaults("gpii.app.dialog.restartDialog.channel", {
 
 /**
  * Register for events from the managed Electron `BrowserWindow` (the renderer process).
- * @param events {Object} Events that are to be mapped to dialog actions.
+ *
+ * @param {Object} events - Events that are to be mapped to dialog actions.
  */
 gpii.app.dialog.restartDialog.channel.register = function (events) {
     /*
@@ -130,8 +131,8 @@ fluid.defaults("gpii.app.dialog.restartDialog", {
 
 /**
  * Defines the logic for showing the "Restart required" dialog.
- * @param restartDialog {Component} The `gpii.app.restartDialog` component.
- * @param pendingChanges {Object[]} The list of pending changes that are to be listed.
+ * @param {Component} that - The `gpii.app.restartDialog` component.
+ * @param {Object[]} pendingChanges - The list of pending changes that are to be listed.
  */
 gpii.app.dialog.restartDialog.show = function (that, pendingChanges) {
     // change according to the new solutions

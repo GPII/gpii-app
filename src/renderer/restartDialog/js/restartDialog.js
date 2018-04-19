@@ -69,7 +69,7 @@
 
     /**
      * Sends a message to the main process.
-     * @param {...Any} The channel to be notified and the parameters to be passed
+     * @param {...Any} The - channel to be notified and the parameters to be passed
      * with the message.
      */
     gpii.restartDialog.channel.notifyChannel = function () {
@@ -78,8 +78,8 @@
 
     /**
      * Registers for events from the Main process.
-     * @param events {Object} Events map
-     * @param events.onPendingChangesReceived {Object} Event related to pending
+     * @param {Object} events - Events map
+     * @param {Object} events.onPendingChangesReceived - Event related to pending
      * changes received from the Main process
      */
     gpii.restartDialog.channel.register = function (events) {
@@ -141,8 +141,8 @@
      * corresponding DOM elements (list items) for each solution name and appends them
      * to their container. If the whole OS needs to be restarted, the function does not
      * have a visual effect.
-     * @param that {Component} The `gpii.restartDialog.restartWarning` instance.
-     * @param listElement {jQuery} A jQuery object representing the list into which the
+     * @param {Component} that - The `gpii.restartDialog.restartWarning` instance.
+     * @param {jQuery} listElement - A jQuery object representing the list into which the
      * solution name elements must be added.
      */
     gpii.restartDialog.restartWarning.modifySolutionNamesList = function (that, listElement) {

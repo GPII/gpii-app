@@ -1,4 +1,4 @@
-/**
+/*
  * A simple WebSocket wrapper
  *
  * An Infusion component which manages a WebSocket connection.
@@ -17,7 +17,7 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii"),
     WebSocket = require("ws");
 
-/**
+/*
  * This component provides means for opening a WebSocket connection to a URL,
  * sending messages through it and closing it. The component also fires events
  * when a connection is established (the `onConnected` event), if an error
@@ -69,9 +69,9 @@ fluid.defaults("gpii.app.ws", {
  * Establishes a connection to a URL which is built using the provided config
  * parameter. Attaches various listener to the connection which when called
  * will fire the appropriate event of the component.
- * @param that {Component} The `gpii.app.ws` instance.
- * @param config {Object} An object containing the hostname, port and path of
- * @param ignoreErrors {Boolean} Whether socket errors should be ignored if the
+ * @param {Component} that - The `gpii.app.ws` instance.
+ * @param {Object} config - An object containing the hostname, port and path of
+ * @param {Boolean} ignoreErrors - Whether socket errors should be ignored if the
  * connection cannot be established.
  * the URL to connect to.
  */
@@ -106,8 +106,8 @@ gpii.app.ws.connect = function (that, config, ignoreErrors) {
 /**
  * Sends a message through the WebSocket. The data that is to be sent is first
  * converted to a string representation (using JSON.stringify).
- * @param ws {Object} The already connected WebSocket instance if any.
- * @param data {Any} The data to send.
+ * @param {Object} ws - The already connected WebSocket instance if any.
+ * @param {Any} data - The data to send.
  */
 gpii.app.ws.send = function (ws, data) {
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -119,7 +119,7 @@ gpii.app.ws.send = function (ws, data) {
 
 /**
  * Closes gracefully the WebSocket connection.
- * @param ws {Object} The already connected WebSocket instance if any.
+ * @param {Object} ws - The already connected WebSocket instance if any.
  */
 gpii.app.ws.disconnect = function (ws) {
     if (ws) {

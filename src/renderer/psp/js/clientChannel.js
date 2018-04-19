@@ -23,22 +23,21 @@
 
     /**
      * Sends asynchronously a message to the main process.
-     * @param channel {String} The channel via which the message will
-     * be sent
-     * @oaram message {Any} The actual message that is to be sent.
+     *
+     * @param {String} channel - The channel via which the message will be sent.
+     * @param {Any} message - The actual message that is to be sent.
      */
     gpii.psp.clientChannel.sendMessage = function (channel, message) {
         ipcRenderer.send(channel, message);
     };
 
     /**
-     * A function which should be called whenever a settings is updated
-     * as a result of a user's input. Its purpose is to notify the main
-     * electron process for the change.
-     * @param clientChannel {Component} The `gpii.psp.clientChannel`
-     * instance.
-     * @param setting {Object} The setting which has been updated.
-     * @param oldValue {Any} The old value of the setting.
+     * A function which should be called whenever a settings is updated as a result of a user's input. Its purpose is to
+     * notify the main electron process for the change.
+     *
+     * @param {Component} clientChannel - The `gpii.psp.clientChannel` instance.
+     * @param {Object} setting - The setting which has been updated.
+     * @param {Any} oldValue - The old value of the setting.
      */
     gpii.psp.clientChannel.alterSetting = function (clientChannel, setting, oldValue) {
         setting = fluid.extend(true, {}, setting, {
@@ -50,7 +49,7 @@
     /**
      * Initializes the `clientChannel` component by registering listeners
      * for various messages sent by the main process.
-     * @param clientChannel {Component} The `clientChannel` component.
+     * @param {Component} clientChannel - The `clientChannel` component.
      */
     gpii.psp.clientChannel.initialize = function (clientChannel) {
         ipcRenderer.on("onPreferencesUpdated", function (event, preferences) {

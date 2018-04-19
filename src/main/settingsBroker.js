@@ -94,8 +94,8 @@ fluid.defaults("gpii.app.settingsBroker", {
  * require an application or OS restart, it will be applied immediately.
  * Otherwise, all queued settings will be applied once an explicit user
  * instruction is received.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
- * @param setting {Object} A descriptor of the setting which is to be applied.
+ * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
+ * @param {Object} setting - A descriptor of the setting which is to be applied.
  */
 gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
     // Apply the setting immediately, without queuing if it is live.
@@ -130,8 +130,8 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
 
 /**
  * Applies all pending setting changes and clears the queue.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
- * @param pendingChanges {Array} An array containing all pending setting changes.
+ * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
+ * @param {Array} pendingChanges - An array containing all pending setting changes.
  */
 gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, pendingChanges) {
     fluid.each(pendingChanges, function (pendingChange) {
@@ -145,8 +145,8 @@ gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, pendingC
  * function is responsible for firing the appropriate events so that the PSP
  * interface can restore to its original state before the queueing of the
  * setting changes.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
- * @param pendingChanges {Array} An array containing all pending setting changes.
+ * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
+ * @param {Array} pendingChanges - An array containing all pending setting changes.
  */
 gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, pendingChanges) {
     fluid.each(pendingChanges, function (pendingChange) {

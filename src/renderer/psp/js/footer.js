@@ -49,7 +49,7 @@
     /**
      * Opens the passed url externally using the default browser for the
      * OS (or set by the user).
-     * @param url {String} The url to open externally.
+     * @param {String} url - The url to open externally.
      */
     gpii.psp.openUrl = function (url) {
         shell.openExternal(url);

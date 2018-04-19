@@ -129,16 +129,14 @@
     });
 
     /**
-     * Returns the solution names (i.e. the names of the applications which should
-     * be restarted) that correspond to the currently pending setting changes. If
-     * a given setting does not have a solution name, its title will be used instead.
-     * If there is at least one setting which requires the OS to be restarted, then
-     * the only solution name that will be returned will be the OS name.
-     * @param labels {Object} An object containing various labels used throughout
-     * the component.
-     * @param pendingChanges {Array} An array containing all pending setting changes.
-     * @return the solutions names or titles corresponding to the applications
-     * that need to be restarted.
+     * Returns the solution names (i.e. the names of the applications which should be restarted) that correspond to the
+     * currently pending setting changes. If a given setting does not have a solution name, its title will be used
+     * instead. If there is at least one setting which requires the OS to be restarted, then the only solution name that
+     * will be returned will be the OS name.
+     *
+     * @param {Object} labels - An object containing various labels used throughout the component.
+     * @param {Array} pendingChanges - An array containing all pending setting changes.
+     * @return {Array} - The solutions names or titles corresponding to the applications that need to be restarted.
      */
     gpii.psp.baseRestartWarning.getSolutionsNames = function (labels, pendingChanges) {
         var isOSRestartNeeded = fluid.find_if(pendingChanges, function (pendingChange) {
@@ -163,9 +161,9 @@
     /**
      * Returns the text which is to be displayed in the component based on the solution
      * names corresponding to the pending setting changes.
-     * @param labels {Object} An object containing various labels used throughout
+     * @param {Object} labels - An object containing various labels used throughout
      * the component.
-     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * @param {Array} solutionNames - the solutions names or titles corresponding to the
      * applications that need to be restarted.
      * @return {String} The text which is to be displayed in the component.
      */
@@ -221,10 +219,10 @@
     /**
      * Shows or hides the restart warning based on whether there is at least one solution
      * name available. Also, it notifies that the height of the component has changed.
-     * @param restartWarning {Component} The `gpii.psp.restartWarning` instance.
-     * @param container {jQuery} The jQuery object representing the container of the
+     * @param {Component} restartWarning - The `gpii.psp.restartWarning` instance.
+     * @param {jQuery} container - The jQuery object representing the container of the
      * restart warning.
-     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * @param {Array} solutionNames - the solutions names or titles corresponding to the
      * applications that need to be restarted.
      */
     gpii.psp.restartWarning.toggleVisibility = function (restartWarning, container, solutionNames) {
@@ -242,12 +240,12 @@
     /**
      * Returns the CSS class which is to be applied to the icon in the component based
      * on whether an application or the whole OS needs to be restarted.
-     * @param labels {Object} An object containing various labels used throughout
+     * @param {Object} labels - An object containing various labels used throughout
      * the component.
-     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * @param {Array} solutionNames - the solutions names or titles corresponding to the
      * applications that need to be restarted.
-     * @param styles {Object} An object containing the CSS classes used in the component.
-     * @return the CSS class to be applied to the icon.
+     * @param {Object} styles - An object containing the CSS classes used in the component.
+     * @return {String} the CSS class to be applied to the icon.
      */
     gpii.psp.restartWarning.getRestartIcon = function (labels, solutionNames, styles) {
         return solutionNames[0] === labels.os ? styles.osRestartIcon : styles.applicationRestartIcon;
@@ -255,9 +253,9 @@
 
     /**
      * Updates the icon in the component based on the passed CSS class.
-     * @param restartIcon {jQuery} A jQuery object corresponding to the restart icon.
-     * @param restartIconClass {String} the CSS class to be applied to the icon.
-     * @param styles {Object} An object containing the CSS classes used in the component.
+     * @param {jQuery} restartIcon - A jQuery object corresponding to the restart icon.
+     * @param {String} restartIconClass - the CSS class to be applied to the icon.
+     * @param {Object} styles - An object containing the CSS classes used in the component.
      */
     gpii.psp.restartWarning.updateIcon = function (restartIcon, restartIconClass, styles) {
         restartIcon

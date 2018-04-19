@@ -152,8 +152,8 @@
     /**
      * A function which is executed while the user is dragging the
      * thumb of a slider.
-     * @param that {Component} An instance of a slider component.
-     * @param container {jQuery} The jQuery object representing the
+     * @param {Component} that - An instance of a slider component.
+     * @param {jQuery} container - The jQuery object representing the
      * slider input.
      */
     gpii.psp.widgets.onSlide = function (that, container) {

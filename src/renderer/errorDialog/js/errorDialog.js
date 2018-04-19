@@ -50,7 +50,7 @@
 
     /**
      * Sends a message to the main process.
-     * @param {...Any} The channel to be notified and the parameters to be passed
+     * @param {...Any} The - channel to be notified and the parameters to be passed
      * with the message.
      */
     gpii.errorDialog.channel.notifyChannel = function () {
@@ -59,7 +59,7 @@
 
     /**
      * Registers for events from the Main process.
-     * @param events {Object} Events map.
+     * @param {Object} events - Events map.
      */
     gpii.errorDialog.channel.register = function (events) {
         ipcRenderer.on("onErrorUpdate", function (event, config) {

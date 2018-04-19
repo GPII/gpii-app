@@ -58,7 +58,7 @@ fluid.defaults("gpii.app.errorDialog.channel", {
 
 /**
  * Register for events from the managed Electron `BrowserWindow` (the renderer process).
- * @param that {Component} The `gpii.app.errorDialog.channel` instance.
+ * @param {Component} that - The `gpii.app.errorDialog.channel` instance.
  */
 gpii.app.errorDialog.channel.register = function (that) {
     ipcMain.on("onErrorDialogCreated", function () {
@@ -151,19 +151,19 @@ fluid.defaults("gpii.app.errorDialog", {
  * Update the current state of the error dialog, and show it.
  * Update is required as we're using a single Electron `BrowserWindow`
  *
- * @param that {Component} The `gpii.app.errorDialog` component
- * @param errorConfig         {Object} Options for error dialog
- * @param errorConfig.title   {String} The error title
- * @param errorConfig.subhead {String} The error subheader
- * @param errorConfig.details {String} The details for the error
- * @param errorConfig.errCode {String} The error code
+ * @param {Component} that - The `gpii.app.errorDialog` component
+ * @param {Object} errorConfig - Options for error dialog
+ * @param {String} errorConfig.title - The error title
+ * @param {String} errorConfig.subhead - The error subheader
+ * @param {String} errorConfig.details - The details for the error
+ * @param {String} errorConfig.errCode - The error code
  */
 gpii.app.errorDialog.show = function (that, errorConfig) {
     that.dialogChannel.update(errorConfig);
     that.applier.change("isShown", true);
 };
 
-/**
+/*
  * A wrapper for the creation of error dialogs. See the documentation of the
  * `gpii.app.dialogWrapper` grade for more information.
  */

@@ -97,8 +97,8 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
  * trigger handler for it. Any trigger handlers for previously registered
  * triggers that have the same id as the current trigger will be destroyed
  * and will no longer be tracked.
- * @param that {Component} The `gpii.app.surveyTriggerManager` instance.
- * @param trigger {Object} The survey trigger which is to be registered.
+ * @param {Component} that - The `gpii.app.surveyTriggerManager` instance.
+ * @param {Object} trigger - The survey trigger which is to be registered.
  */
 gpii.app.surveyTriggerManager.registerTrigger = function (that, trigger) {
     that.removeTrigger(trigger);
@@ -106,10 +106,10 @@ gpii.app.surveyTriggerManager.registerTrigger = function (that, trigger) {
 };
 
 /**
- * Removes a trigger from the `surveyTriggerManager` by destroying its
- * corresponding trigger handler.
- * @param that {Component} The `gpii.app.surveyTriggerManager` instance.
- * @param trigger {Object} The survey trigger which is to be removed.
+ * Removes a trigger from the `surveyTriggerManager` by destroying its corresponding trigger handler.
+ *
+ * @param {Component} that - The `gpii.app.surveyTriggerManager` instance.
+ * @param {Object} trigger - The survey trigger which is to be removed.
  */
 gpii.app.surveyTriggerManager.removeTrigger = function (that, trigger) {
     var triggerId = trigger.id;
@@ -125,7 +125,7 @@ gpii.app.surveyTriggerManager.removeTrigger = function (that, trigger) {
 /**
  * Resets the `surveyTriggerManager` by destroying and removing all registered
  * trigger handlers.
- * @param that {Component} The `gpii.app.surveyTriggerManager` instance.
+ * @param {Component} that - The `gpii.app.surveyTriggerManager` instance.
  */
 gpii.app.surveyTriggerManager.reset = function (that) {
     var triggerHandlers = fluid.values(that.registeredTriggerHandlers);
@@ -136,11 +136,11 @@ gpii.app.surveyTriggerManager.reset = function (that) {
 };
 
 /**
- * Registers a dynamic `triggerHandler` component with its parent
- * `surveyTriggerManager` component. Necessary in order to be able to remove handlers
- * when they are no longer needed.
- * @param surveyTriggerManager {Component} The `gpii.app.surveyTriggerManager` instance.
- * @param triggerHandler {Component} The `gpii.app.triggerHandler` instance.
+ * Registers a dynamic `triggerHandler` component with its parent `surveyTriggerManager` component. Necessary in order
+ * to be able to remove handlers when they are no longer needed.
+ *
+ * @param {Component} surveyTriggerManager - The `gpii.app.surveyTriggerManager` instance.
+ * @param {Component} triggerHandler - The `gpii.app.triggerHandler` instance.
  */
 gpii.app.surveyTriggerManager.registerTriggerHandler = function (surveyTriggerManager, triggerHandler) {
     var triggerId = triggerHandler.model.trigger.id;
@@ -194,13 +194,13 @@ fluid.defaults("gpii.app.triggerHandler", {
 });
 
 /**
- * Retrieves the `gradeName` for a condition handler based on the condition's type.
- * An error will be thrown if there is no condition handler for the given type.
- * @param condition {Object} The condition for whose handler the type is to be
- * retrieved.
- * @param conditionHandlerGrades {Object} A hash whose keys represent all available
+ * Retrieves the `gradeName` for a condition handler based on the condition's type. An error will be thrown if there is
+ * no condition handler for the given type.
+ *
+ * @param {Object} condition - The condition for whose handler the type is to be retrieved.
+ * @param {Object} conditionHandlerGrades - A hash whose keys represent all available
  * condition types and the values are the corresponding gradeNames.
- * @return The `gradeName` which corresponds to the condition.
+ * @return {String} - The `gradeName` which corresponds to the condition.
  */
 gpii.app.triggerHandler.getConditionHandlerType = function (condition, conditionHandlerGrades) {
     var type = condition.type;
@@ -215,7 +215,7 @@ gpii.app.triggerHandler.getConditionHandlerType = function (condition, condition
  * A function of the `triggerHandler` which is invoked when a `conditionHandler` has
  * been satisfied. Its purpose is to determine if the whole trigger has occurred now
  * that one more condition is satisfied.
- * @param that {Component} The `gpii.app.triggerHandler` instance.
+ * @param {Component} that - The `gpii.app.triggerHandler` instance.
  */
 gpii.app.triggerHandler.onConditionSatisfied = function (that) {
     that.applier.change("satisfiedCount", that.model.satisfiedCount + 1);
@@ -250,10 +250,10 @@ fluid.defaults("gpii.app.conditionHandler", {
 });
 
 /**
- * A function which is called when a condition handler determines that its condition has
- * been satisfied. Responsible for firing the `onConditionSatisfied` event and destroying
- * the condition handler.
- * that {Component} The `gpii.app.conditionHandler` instance.
+ * A function which is called when a condition handler determines that its condition has been satisfied. Responsible for
+ * firing the `onConditionSatisfied` event and destroying the condition handler.
+ *
+ * @param {Component} that - The `gpii.app.conditionHandler` instance.
  */
 gpii.app.conditionHandler.handleSuccess = function (that) {
     that.events.onConditionSatisfied.fire(that.model.condition);
@@ -289,8 +289,8 @@ fluid.defaults("gpii.app.keyedInForHandler", {
 
 /**
  * Starts the `keyedInForHandler` timer.
- * @param that {Component} The `keyedInForHandler` instance.
- * @param keyedInTimestamp {Number} The timestamp when the user has keyed in.
+ * @param {Component} that - The `keyedInForHandler` instance.
+ * @param {Number} keyedInTimestamp - The timestamp when the user has keyed in.
  */
 gpii.app.keyedInForHandler.start = function (that, keyedInTimestamp) {
     var offset = Date.now() - keyedInTimestamp;
