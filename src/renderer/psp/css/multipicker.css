@@ -15,6 +15,10 @@
     margin-bottom: 10px;
 }
 
+.fl-multipicker .checkbox:last-of-type {
+    margin-bottom: 0;
+}
+
 .fl-multipicker .checkbox label input:checked ~ span::before {
     padding-top: 0;
     text-indent: -1px;

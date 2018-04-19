@@ -1,0 +1,65 @@
+[
+    {
+        "settings": [
+            {
+                "path": "http://registry\\.gpii\\.net/common/DPIScale"
+            },
+            {
+                "path": "http://registry\\.gpii\\.net/common/cursorSize"
+            },
+            {
+                "path": "http://registry\\.gpii\\.net/common/selfVoicingEnabled"
+            },
+            {
+                "path": "http://registry\\.gpii\\.net/common/supportTool"
+            },
+            {
+                "path": "http://registry\\.gpii\\.net/common/volume"
+            }
+        ]
+    },
+    {
+        "name": "Colors",
+        "settings": [
+            {
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled",
+                "settings": [
+                    {
+                        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastTheme"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "UIO+",
+        "settings": [
+            {
+                "path": "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/supportTool",
+                "solutionName": "UIO+"
+            },
+            {
+                "path": "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastEnabled",
+                "settings": [
+                    {
+                        "path": "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastTheme",
+                        "solutionName": "UIO+"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Magnifier",
+        "settings": [
+            {
+                "path": "http://registry\\.gpii\\.net/common/magnification",
+                "solutionName": "Magnifier"
+            },
+            {
+                "path": "http://registry\\.gpii\\.net/common/magnifierPosition",
+                "solutionName": "Magnifier"
+            }
+        ]
+    }
+]

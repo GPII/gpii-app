@@ -75,9 +75,9 @@ fluid.defaults("gpii.app.pspInApp", {
         },
 
         onRestartNow: [{
-            func: "{that}.hide"
-        }, {
             listener: "{settingsBroker}.applyPendingChanges"
+        }, {
+            func: "{that}.events.onClosed.fire"
         }],
 
         onUndoChanges: {
@@ -374,13 +374,16 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     /*
      * "Restart Required" functionality events
      */
-
-    ipcMain.on("onRestartNow", function () {
-        psp.events.onRestartNow.fire();
+    ipcMain.on("onRestartNow", function (event, pendingChanges) {
+        psp.events.onRestartNow.fire({
+            pendingChanges: pendingChanges
+        });
     });
 
-    ipcMain.on("onUndoChanges", function () {
-        psp.events.onUndoChanges.fire();
+    ipcMain.on("onUndoChanges", function (event, pendingChanges) {
+        psp.events.onUndoChanges.fire({
+            pendingChanges: pendingChanges
+        });
     });
 };
 
@@ -411,8 +414,13 @@ gpii.app.psp.hide = function (psp) {
 
 gpii.app.psp.closePSP = function (psp, settingsBroker) {
     psp.hide();
-    settingsBroker.applyPendingChanges("manualRestart");
-    settingsBroker.undoPendingChanges("OSRestart");
+
+    settingsBroker.applyPendingChanges({
+        liveness: "manualRestart"
+    });
+    settingsBroker.undoPendingChanges({
+        liveness: "OSRestart"
+    });
 };
 
 /**

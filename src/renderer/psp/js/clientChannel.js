@@ -134,11 +134,17 @@
             },
             restartNow: {
                 func: "{that}.sendMessage",
-                args: ["onRestartNow"]
+                args: [
+                    "onRestartNow",
+                    "{arguments}.0" // pendingChanges
+                ]
             },
             undoChanges: {
                 func: "{that}.sendMessage",
-                args: ["onUndoChanges"]
+                args: [
+                    "onUndoChanges",
+                    "{arguments}.0" // pendingChanges
+                ]
             }
         }
     });
