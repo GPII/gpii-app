@@ -6,3 +6,4 @@ provisioning/Npm.ps1
 provisioning/Tests.ps1
 instrumented
 reports
+coverage
