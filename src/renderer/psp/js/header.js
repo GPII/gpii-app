@@ -89,12 +89,6 @@
                         items: "{header}.model.preferences.sets",
                         selection: "{header}.model.preferences.activeSet"
                     },
-                    listeners: {
-                        "onDestroy.removeOptions": {
-                            funcName: "gpii.psp.onPreferenceSetPickerDestroy",
-                            args: ["{that}.container"]
-                        }
-                    },
                     attrs: {
                         "aria-label": "Preference set"
                     }
@@ -121,6 +115,14 @@
         }
     });
 
+    /**
+     * Given all preference sets and the name of the active preference set, returns an
+     * object representing the active preference set.
+     * @param preferences {Object} An object containing all preference set, as well as
+     * information about the currently active preference set.
+     * @return {Object} An object which contains the name, path, imageMap and the sound
+     * for the active preference set.
+     */
     gpii.psp.header.getActivePreferenceSet = function (preferences) {
         return fluid.find_if(preferences.sets, function (preferenceSet) {
             return preferenceSet.path === preferences.activeSet;
@@ -135,8 +137,7 @@
      * active preference set.
      * @param activeSetTextElement {jQuery} A jQuery object representing the text for the
      * active preference set.
-     * @param preferences {Object} An object containing all preference set, as well as
-     * information about the currently active preference set.
+     * @param activePreferenceSet {Object} An object representing the active preference set.
      */
     gpii.psp.updateActiveSetElements = function (activeSetImageElement, activeSetTextElement, activePreferenceSet) {
         if (activePreferenceSet) {
@@ -146,15 +147,6 @@
             activeSetImageElement.attr("src", "");
             activeSetTextElement.empty();
         }
-    };
-
-    /**
-     * A function which checks if an array object holds more than one element.
-     * @param arr {Array} The array to be checked.
-     * @return {Boolean} Whether the array has more than one element.
-     */
-    gpii.psp.hasMultipleItems = function (arr) {
-        return arr && arr.length > 1;
     };
 
     /**
@@ -189,16 +181,5 @@
             preferenceSetPickerElem.hide();
             activePreferenceSetElem.show();
         }
-    };
-
-    /**
-     * A listener which is invoked whenever the preference set picker component is
-     * destroyed. This function simply removes all options for the dropdown (actually
-     * represented as a <select> element) from the DOM.
-     * @param container {jQuery} A jQuery object representing the parent container
-     * of the preference set picker.
-     */
-    gpii.psp.onPreferenceSetPickerDestroy = function (container) {
-        container.find("option").remove();
     };
 })(fluid);

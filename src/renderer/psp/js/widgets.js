@@ -142,6 +142,21 @@
         container.toggleClass(styles.active, item.path === selection);
     };
 
+    /**
+     * A component which represents a dropdown whose elements have both an
+     * image (not mandatory) and text. As the `options` elements within a
+     * `select` tag do not support images, this component uses the custom
+     * dropdown mechanism provided by bootstrap. The component expects to
+     * be provided with an `items` array whose elements will be visually
+     * represented in the dropdown. Each item must have a `path` property
+     * which should uniquely identify the item and a `name` property which
+     * is the text to be displayed to the user. As already mentioned, the
+     * `imageSrc` property which is the URL of the image to be used in not
+     * obligatory. The `selection` model property is the path of the
+     * currently selected item in the image dropdown. It will be updated
+     * based on the user input (and of course based on the data with which
+     * the component is initialized).
+     */
     fluid.defaults("gpii.psp.widgets.imageDropdown", {
         gradeNames: ["gpii.psp.widgets.attrsExpander", "fluid.viewComponent"],
 
@@ -193,6 +208,8 @@
                 method: "attr",
                 args: ["{that}.options.attrs"]
             },
+            // Needed because the `dropdownItems` subcomponent will not be created
+            // if the `imageDropdown` component has `items` provided initially.
             "onCreate.notifyItemsChanged": {
                 func: "{that}.events.onItemsChanged.fire"
             }
@@ -237,12 +254,29 @@
         }
     });
 
+    /**
+     * Given the array of available items and the `path` of the currently selected
+     * item, returns the object representing the selected item.
+     * @param items {Array} The array of items which are visualized in the image
+     * dropdown.
+     * @param selection {String} The `path` of the currently selected item.
+     * @return {Object} The currently selected item object.
+     */
     gpii.psp.widgets.imageDropdown.getSelectedItem = function (items, selection) {
         return fluid.find_if(items, function (item) {
             return item.path === selection;
         });
     };
 
+    /**
+     * Updates the header of the image dropdown based on the selected item by
+     * setting the appropriate image source and text.
+     * @param selectedItemImage {jQuery} A jQuery object representing the image of
+     * the selected dropdown item.
+     * @param selectedItemText {jQuery} A jQuery object representing the text of
+     * the selected dropdown item.
+     * @param selectedItem {Object} The currently selected item object.
+     */
     gpii.psp.widgets.imageDropdown.updateDropdownHeader = function (selectedItemImage, selectedItemText, selectedItem) {
         var itemImageSrc = fluid.get(selectedItem, "imageSrc") || "",
             itemText = fluid.get(selectedItem, "name") || "";

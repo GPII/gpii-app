@@ -291,12 +291,25 @@
         }
     });
 
+    /**
+     * Given the preferences received via the PSP channel and the current theme
+     * for the PSP, creates an object which represents the preferences (i.e. the
+     * preference sets and the path of the active preference set) which are to
+     * be used in the `header` component. The applicable image for each set is
+     * determined based on the current application theme.
+     * @param preferences {Object} An object containing all preference set, as well as
+     * information about the currently active preference set.
+     * @param theme {String} The current theme of the application.
+     * @return {Object} The preferences object to be used in the `header` component
+     * with the correct images for each preference set.
+     */
     gpii.psp.mainWindow.getHeaderPreferences = function (preferences, theme) {
         var headerPreferences = fluid.copy(preferences);
 
         fluid.each(headerPreferences.sets, function (preferenceSet) {
             preferenceSet.imageSrc = preferenceSet.imageMap[theme];
         });
+        delete headerPreferences.settingGroups;
 
         return headerPreferences;
     };
