@@ -38,7 +38,7 @@ var bundle_en = {
 
 var loadedBundlesFixture = [{
     messages: bundle_en,
-    filename: "bundle_en.json"
+    filename: "bundle_en.json5"
 }, {
     messages: bundle_en_ca,
     filename: "bundle_en_ca.json"
@@ -114,7 +114,13 @@ jqUnit.test("Bundles loading", function () {
         return message1.filename < message2.filename;
     }
 
-    var loadedBundles = gpii.app.messageBundlesCompiler.loadMessageBundles([bundlesDir1, bundlesDir2], "json", JSON);
+    var loadedBundles = gpii.app.messageBundlesCompiler.loadMessageBundles(
+        [bundlesDir1, bundlesDir2],
+        {
+            "json":  JSON,
+            // Just for test purpose - the file is in json format
+            "json5": JSON
+        });
 
     jqUnit.assertDeepEq("Should load files from multiple directories properly",
         loadedBundlesFixture.sort(cmpFiles),

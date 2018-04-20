@@ -22,8 +22,7 @@ fluid.registerNamespace("gpii.app.messageBundlesCompiler");
 var fs = require("fs");
 var path = require("path");
 
-var DEFAULT_FILE_TYPE = "json",
-    DEFAULT_PARSER = JSON;
+var DEFAULT_PARSER = {"json": JSON};
 
 
 /**
@@ -115,16 +114,17 @@ gpii.app.messageBundlesCompiler.includeFallbackOptions = function (messageBundle
  * Collects all file names of the specified type from the given directory.
  * @param dir {String} The name of the directory from which files are to
  * be collected.
- * @param fileType {String} The file type that is to be searched for.
- * @returns {String[]} The list of matching file names.
+ * @param fileTypes {String[]} The file types that is to be searched for.
+ * @returns {String[]} The list of relative paths of matching files to the
+ * searched directory.
  */
-gpii.app.messageBundlesCompiler.collectFilesByType = function (dir, fileType) {
-    var typeRegex = "\\." + fileType + "$";
-
+gpii.app.messageBundlesCompiler.collectFilesByType = function (dir, fileTypes) {
     var filePaths = fs.readdirSync(dir)
         .filter(function matchesFileType(filename) {
-            return filename.match(typeRegex);
-        }).map(function (filename) {
+            var fileType = path.extname(filename).slice(1);
+            return fluid.contains(fileTypes, fileType);
+        })
+        .map(function (filename) {
             return path.join(dir, filename);
         });
 
@@ -134,16 +134,20 @@ gpii.app.messageBundlesCompiler.collectFilesByType = function (dir, fileType) {
 /**
  * Loads synchronously all message bundles from the passed directories.
  * @param bundlesDirs {String[]} The list of directrories' names containing message bundles.
- * @param fileType {String} The file type to be searched for in the given folders.
- * @param parser {FileParsers} A parser object that has a `parse` method. An example of such is `JSON`.
- * @returns {Object[]} A list of all collected messages by file name.
+ * @param parsers {FileParsers} Available parsers for the bundle files. Bundles for the
+ * provided file types will be used for collected.
+ * @returns {Object[]} A list of all collected messages by filename.
  */
-gpii.app.messageBundlesCompiler.loadMessageBundles = function (bundlesDirs, fileType, parser) {
+gpii.app.messageBundlesCompiler.loadMessageBundles = function (bundlesDirs, parsers) {
+    var fileTypes = fluid.keys(parsers);
+
     var bundleFiles = bundlesDirs.reduce(function (files, bundlesDir) {
-        return files.concat(gpii.app.messageBundlesCompiler.collectFilesByType(bundlesDir, fileType));
+        return files.concat(gpii.app.messageBundlesCompiler.collectFilesByType(bundlesDir, fileTypes));
     }, []);
 
     return bundleFiles.map(function (filePath) {
+        var fileType = path.extname(filePath).slice(1),
+            parser = parsers[fileType];
         return {
             messages: parser.parse(fs.readFileSync(filePath)),
             filename: path.basename(filePath)
@@ -193,22 +197,19 @@ gpii.app.messageBundlesCompiler.mergeMessageBundles = function (loadedBundles) {
  * @param bundlesDirs {String[]} An array of the directories from which message bundle
  * files are to be retrieved.
  * @param defaultLocale {String} The default locale to be used.
- * @param fileType {String} The extension of the message bundle files.
- * @param parser {Object} An object which provides means (a `parse` method) for parsing the
- * contents of message bundle files.
+ * @param parsers {FileParsers} Available parsers for bundle files.
  * @return {Object} The compiled message bundles map.
  */
-function compileMessageBundles(bundlesDirs, defaultLocale, fileType, parser) {
-    fileType = fileType || DEFAULT_FILE_TYPE;
-    parser = parser || DEFAULT_PARSER;
+function compileMessageBundles(bundlesDirs, defaultLocale, parsers) {
+    parsers = parsers || [DEFAULT_PARSER];
 
     var messageBundlesList;
 
     try {
-        messageBundlesList = gpii.app.messageBundlesCompiler.loadMessageBundles(bundlesDirs, fileType, parser);
+        messageBundlesList = gpii.app.messageBundlesCompiler.loadMessageBundles(bundlesDirs, parsers);
     } catch (err) {
         // ENOENT, SyntaxError
-        console.log(err.message);
+        fluid.fail(err.message);
         throw err;
     }
 
