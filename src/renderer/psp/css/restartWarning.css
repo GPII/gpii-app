@@ -1,3 +1,4 @@
+/* Default theme styles */
 .fl-restartWarning {
     margin-bottom: 8px;
     padding: 8px;
@@ -52,4 +53,19 @@
 
 .fl-restartWarning .fl-restartWarningBtn:hover {
     color: #2887db;
+}
+
+/* Styles for alt (dark) theme */
+.theme-alt .fl-restartWarning {
+    background-color: #ffffff;
+    color: #000000;
+    border-left-color: var(--main-color);
+}
+
+.theme-alt .fl-restartWarning .fl-restartIcon {
+    background-color: var(--main-color);
+}
+
+.theme-alt .fl-restartWarning .fl-restartWarningBtn {
+    color: var(--main-color);
 }
