@@ -15,10 +15,11 @@
 "use strict";
 
 var fluid = require("infusion");
+var gpii = fluid.registerNamespace("gpii");
 
 var jqUnit = fluid.require("node-jqunit", require, "jqUnit");
 
-var messagesCompiler = require("../messageBundlesCompiler.js");
+require("../messageBundlesCompiler.js");
 
 fluid.registerNamespace("gpii.tests.messageBundles.testDefs");
 
@@ -86,7 +87,7 @@ var DEFAULT_LOCALE = "en";
 jqUnit.test("Loaded bundles merging loaded", function () {
     jqUnit.expect(1);
 
-    var mergedBundles = messagesCompiler._mergeMessageBundles(loadedBundlesFixture);
+    var mergedBundles = gpii.app.messageBundlesCompiler.mergeMessageBundles(loadedBundlesFixture);
 
     jqUnit.assertDeepEq("Loaded bundles are merged correctly", mergedLoadedFilesFixture, mergedBundles);
 });
@@ -96,7 +97,7 @@ jqUnit.test("Loaded bundles merging loaded", function () {
 jqUnit.test("Fallback options are included properly", function () {
     jqUnit.expect(1);
 
-    var enhancedBundle = messagesCompiler._includeFallbackOptions(mergedLoadedFilesFixture, DEFAULT_LOCALE);
+    var enhancedBundle = gpii.app.messageBundlesCompiler.includeFallbackOptions(mergedLoadedFilesFixture, DEFAULT_LOCALE);
 
     jqUnit.assertDeepEq("Bundles have fallback options included properly", enhancedBundleFixture, enhancedBundle);
 });
@@ -113,7 +114,7 @@ jqUnit.test("Bundles loading", function () {
         return message1.filename < message2.filename;
     }
 
-    var loadedBundles = messagesCompiler._loadMessageBundles([bundlesDir1, bundlesDir2], "json", JSON);
+    var loadedBundles = gpii.app.messageBundlesCompiler.loadMessageBundles([bundlesDir1, bundlesDir2], "json", JSON);
 
     jqUnit.assertDeepEq("Should load files from multiple directories properly",
         loadedBundlesFixture.sort(cmpFiles),
