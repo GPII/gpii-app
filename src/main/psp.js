@@ -85,7 +85,7 @@ fluid.defaults("gpii.app.pspInApp", {
         },
 
         onActivePreferenceSetAltered: {
-            listener: "{settingsBroker}.clearPendingChanges"
+            listener: "{settingsBroker}.reset"
         },
 
         "{settingsBroker}.events.onRestartRequired": {
