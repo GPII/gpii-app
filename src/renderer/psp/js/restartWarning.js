@@ -192,6 +192,15 @@
         }
     };
 
+    /**
+     * Returns the label for the restart button depending on whether the OS needs to be
+     * restarted or not.
+     * @param messages {Object} An object containing various messages used throughout
+     * the component.
+     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * applications that need to be restarted.
+     * @return {String} The label for the restart button.
+     */
     gpii.psp.baseRestartWarning.generateRestartBtnLabel = function (messages, solutionNames) {
         return solutionNames[0] === messages.osName ? messages.restartNow : messages.applyNow;
     };
@@ -219,6 +228,15 @@
         }
     });
 
+
+    /**
+     * Checks if the provided `pendingChange` applies to any of the elements (or their)
+     * subsettings in the `settings` array.
+     * @param pendingChange {Object} A descriptor of a pending setting change.
+     * @param settings {Array} An array of settings which belong to the setting group.
+     * @return {Boolean} `true` if the `pendingChange` applies to any of the `settings`
+     * elements and `false` otherwise.
+     */
     gpii.psp.restartWarning.hasUpdatedSetting = function (pendingChange, settings) {
         return fluid.find_if(settings, function (setting) {
             // Check if the pending change applies to the setting itself
@@ -235,12 +253,29 @@
         }, false);
     };
 
+    /**
+     * Given all pending setting changes and the settings for the current settings group,
+     * the function returns only those pending changes which apply to the group.
+     * @param pendingChanges {Array} An array of all pending setting changes.
+     * @param settings {Array} An array of the settings for the settings group to which
+     * this restart warning belongs.
+     * @return {Array} An array of the pending settings changes which apply to the current
+     * settings group.
+     */
     gpii.psp.restartWarning.getPendingChanges = function (pendingChanges, settings) {
         return pendingChanges.filter(function (pendingChange) {
             return gpii.psp.restartWarning.hasUpdatedSetting(pendingChange, settings);
         });
     };
 
+    /**
+     * Shows or hides the restart warning depending on whether there is at least one app
+     * that needs to be restarted in order to apply the setting changes within the group.
+     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * applications that need to be restarted.
+     * @param container {jQuery} A jQuery object representing the element which contains
+     * the restart warning.
+     */
     gpii.psp.restartWarning.toggle = function (solutionNames, container) {
         container.toggle(solutionNames.length > 0);
     };

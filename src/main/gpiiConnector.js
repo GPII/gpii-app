@@ -200,8 +200,22 @@ gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefSet
     });
 };
 
-gpii.app.extractSettings = function (parent) {
-    return fluid.hashToArray(parent.settingControls, "path", function (setting, settingDescriptor) {
+/**
+ * For a given element which can be either a group of settings or a single setting,
+ * this function converts the `settingsControls` object into an array of setting
+ * objects which can be used in the PSP `BrowserWindow`. The function is called
+ * recursively for every other nested element which may have `settingControls`.
+ * @param element {Object} An object (group of settings or an individual setting)
+ * which has settings.
+ * @return {Array} An array of settings. Each of them must have a `schema` property
+ * which contains the setting's name, description, type and possible values, as well
+ * as a `value` property specifying the current setting value. The `solutionName`,
+ * `liveness` (describing whether a change to a setting's value requires a restart)
+ * and `memory` (whether a change to a setting's value is persisted) properties are
+ * optional.
+ */
+gpii.app.extractSettings = function (element) {
+    return fluid.hashToArray(element.settingControls, "path", function (setting, settingDescriptor) {
         setting.value = settingDescriptor.value;
         setting.solutionName = settingDescriptor.solutionName;
         setting.schema = settingDescriptor.schema;

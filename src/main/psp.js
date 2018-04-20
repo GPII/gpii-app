@@ -403,6 +403,15 @@ gpii.app.psp.hide = function (psp) {
     psp.applier.change("isShown", false);
 };
 
+/**
+ * Invoked whenever the user presses the close button in the upper right corner of
+ * the PSP `BrowserWindow`, clicks outside of it or confirms the application of
+ * given settings. The function takes care of hiding the PSP, applying pending
+ * changes which require application restarts and undoing setting changes that
+ * necessitate the OS to be restarted.
+ * @param psp {Component} The `gpii.app.psp` instance.
+ * @param settingsBroker {Component} The `gpii.app.settingsBroker` instance.
+ */
 gpii.app.psp.closePSP = function (psp, settingsBroker) {
     psp.hide();
 
