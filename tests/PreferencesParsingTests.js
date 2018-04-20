@@ -36,60 +36,95 @@ var multiPrefSetsFixture = {
     "value":{
         "userToken":"context1",
         "activeContextName":"gpii-default",
-        "settingControls":{
-            "http://registry\\.gpii\\.net/common/magnification":{
-                "value":1.5,
-                "schema":{
-                    "title":"Magnification",
-                    "description":"Level of magnification",
-                    "type":"number",
-                    "min":1,
-                    "divisibleBy":0.1
+        "settingGroups": [
+            {
+                "settingControls": {
+                    "http://registry\\.gpii\\.net/common/magnifierEnabled":{
+                        "value":true,
+                        "schema":{
+                            "title":"Magnifier",
+                            "description":"Magnifier",
+                            "type":"boolean"
+                        },
+                        "solutionName": "Magnifier",
+                        "settingControls": {
+                            "http://registry\\.gpii\\.net/common/magnification":{
+                                "value":2,
+                                "schema":{
+                                    "title":"Magnification",
+                                    "description":"Level of magnification",
+                                    "type":"number",
+                                    "min":1,
+                                    "divisibleBy":0.1
+                                },
+                                "solutionName": "Magnifier"
+                            },
+                            "http://registry\\.gpii\\.net/common/magnifierPosition":{
+                                "value":"Lens",
+                                "schema":{
+                                    "title":"Position",
+                                    "description":"Position of the magnified area",
+                                    "type":"string",
+                                    "enum":[
+                                        "FullScreen",
+                                        "Lens",
+                                        "LeftHalf",
+                                        "RightHalf",
+                                        "TopHalf",
+                                        "BottomHalf",
+                                        "Custom"
+                                    ]
+                                },
+                                "solutionName": "Magnifier"
+                            }
+                        }
+                    }
                 }
             },
-            "http://registry\\.gpii\\.net/common/magnifierPosition":{
-                "value":"Lens",
-                "schema":{
-                    "title":"Magnifier position",
-                    "description":"Position of the magnified area",
-                    "type":"string",
-                    "enum":[
-                        "FullScreen",
-                        "Lens",
-                        "LeftHalf",
-                        "RightHalf",
-                        "TopHalf",
-                        "BottomHalf",
-                        "Custom"
-                    ]
-                }
-            },
-            "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled":{
-                "value":true,
-                "schema":{
-                    "title":"High Contrast",
-                    "description":"Whether to enable/disable High Contrast",
-                    "type":"boolean"
-                },
-                "solutionName":"Windows High Contrast"
-            },
-            "http://registry\\.gpii\\.net/common/tracking":{
-                "value":[
-                    "mouse",
-                    "caret"
-                ],
-                "schema":{
-                    "title":"Tracking",
-                    "description":"Tracking mode of the screen magnifier",
-                    "type":"array",
-                    "enum":[
-                        "mouse",
-                        "caret",
-                        "focus"
-                    ]
+            {
+                "name": "UIO+",
+                "settingControls": {
+                    "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/supportTool":{
+                        "value":[
+                            "dictionary"
+                        ],
+                        "schema":{
+                            "title":"Support Tools",
+                            "description":"Whether to enable/disable certain support tools",
+                            "type":"array",
+                            "enum":[
+                                "dictionary"
+                            ]
+                        },
+                        "solutionName": "UIO+"
+                    },
+                    "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastEnabled":{
+                        "value":true,
+                        "schema":{
+                            "title":"High Contrast",
+                            "description":"Whether to enable/disable High Contrast",
+                            "type":"boolean"
+                        },
+                        "solutionName": "UIO+"
+                    },
+                    "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastTheme":{
+                        "value":"white-black",
+                        "schema":{
+                            "title":"High Contrast theme",
+                            "description":"High Contrast Theme",
+                            "type":"string",
+                            "enum":[
+                                "black-white",
+                                "white-black",
+                                "yellow-black",
+                                "black-yellow"
+                            ]
+                        },
+                        "solutionName": "UIO+"
+                    }
                 }
             }
-        },
+        ],
         "preferences":{
             "contexts":{
                 "gpii-default":{
@@ -122,11 +157,11 @@ jqUnit.test("Parse empty message", function () {
 
     jqUnit.assertDeepEq("There are no preference sets", [], preferences.sets);
     jqUnit.assertFalse("There is no active preference set", preferences.activeSet);
-    jqUnit.assertDeepEq("There are no settings", [], preferences.settings);
+    jqUnit.assertDeepEq("There are no settings", [], preferences.settingGroups);
 });
 
 jqUnit.test("Parse multiple preference sets message", function () {
-    jqUnit.expect(7);
+    jqUnit.expect(14);
 
     var preferences = gpii.app.extractPreferencesData(multiPrefSetsFixture);
 
@@ -138,11 +173,31 @@ jqUnit.test("Parse multiple preference sets message", function () {
     ], preferences.sets);
 
     jqUnit.assertEquals("Active preference set is parsed correctly", "gpii-default", preferences.activeSet);
-    jqUnit.assertEquals("There are 4 settings in the active set", 4, preferences.settings.length);
+    jqUnit.assertEquals("There are 2 setting groups in the active set", 2, preferences.settingGroups.length);
 
-    jqUnit.assertLeftHand("Slider (number) setting is correctly parsed", {
+    // Magnifier group tests
+    var magnifierGroup = preferences.settingGroups[0],
+        magnifierEnabledSetting = magnifierGroup.settings[0];
+
+    jqUnit.assertFalse("Magnifier group does not have a name", magnifierGroup.name);
+    jqUnit.assertEquals("Magnifier group has one top level setting", 1, magnifierGroup.settings.length);
+
+    jqUnit.assertLeftHand("Maginifier enabled setting (type: boolean) is correctly parsed", {
+        path: "http://registry\\.gpii\\.net/common/magnifierEnabled",
+        value: true,
+        schema: {
+            title: "Magnifier",
+            description: "Magnifier",
+            type: "boolean"
+        }
+    }, magnifierEnabledSetting);
+
+    jqUnit.assertEquals("There are 2 subsettings for the magnifier enabled setting", 2, magnifierEnabledSetting.settings.length);
+
+    jqUnit.assertLeftHand("Maginification subsetting (type: number) is correctly parsed", {
         path: "http://registry\\.gpii\\.net/common/magnification",
-        value: 1.5,
+        value: 2,
+        solutionName: "Magnifier",
         schema: {
             title: "Magnification",
             description: "Level of magnification",
@@ -150,40 +205,64 @@ jqUnit.test("Parse multiple preference sets message", function () {
             min: 1,
             divisibleBy: 0.1
         }
-    }, preferences.settings[0]);
+    }, magnifierEnabledSetting.settings[0]);
 
-    jqUnit.assertLeftHand("Dropdown (string) setting is correctly parsed", {
+    jqUnit.assertLeftHand("Position subsetting (type: string) is correctly parsed", {
         path: "http://registry\\.gpii\\.net/common/magnifierPosition",
         value: "Lens",
+        solutionName: "Magnifier",
         schema: {
-            title: "Magnifier position",
+            title: "Position",
             description: "Position of the magnified area",
             type: "string",
-            "enum": ["FullScreen", "Lens", "LeftHalf", "RightHalf", "TopHalf", "BottomHalf", "Custom"]
+            enum: ["FullScreen", "Lens", "LeftHalf", "RightHalf", "TopHalf", "BottomHalf", "Custom"]
         }
-    }, preferences.settings[1]);
+    }, magnifierEnabledSetting.settings[1]);
 
-    jqUnit.assertLeftHand("Switch (boolean) setting is correctly parsed", {
-        path: "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled",
+    // UIO+ group tests
+    var uioPlusGroup = preferences.settingGroups[1];
+
+    jqUnit.assertEquals("UIO+ group has a correct name", "UIO+", uioPlusGroup.name);
+    jqUnit.assertEquals("UIO+ group has 3 top level settings", 3, uioPlusGroup.settings.length);
+
+    jqUnit.assertLeftHand("Support tools setting (type: array) is correctly parsed", {
+        path: "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/supportTool",
+        value: [
+            "dictionary"
+        ],
+        solutionName: "UIO+",
+        schema: {
+            title: "Support Tools",
+            description: "Whether to enable/disable certain support tools",
+            type: "array",
+            enum: [
+                "dictionary"
+            ]
+        }
+    }, uioPlusGroup.settings[0]);
+
+    jqUnit.assertLeftHand("UIO+: Hight Contrast setting (type: boolean) is correctly parsed", {
+        path: "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastEnabled",
         value: true,
-        solutionName: "Windows High Contrast",
+        solutionName: "UIO+",
         schema: {
             title: "High Contrast",
             description: "Whether to enable/disable High Contrast",
             type: "boolean"
         }
-    }, preferences.settings[2]);
+    }, uioPlusGroup.settings[1]);
 
-    jqUnit.assertLeftHand("Multipicker (array) setting is correctly parsed", {
-        path: "http://registry\\.gpii\\.net/common/tracking",
-        value: ["mouse", "caret"],
+    jqUnit.assertLeftHand("UIO+: Hight Contrast theme setting (type: string) is correctly parsed", {
+        path: "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastTheme",
+        value: "white-black",
+        solutionName: "UIO+",
         schema: {
-            title: "Tracking",
-            description: "Tracking mode of the screen magnifier",
-            type: "array",
-            "enum": ["mouse", "caret", "focus"]
+            title: "High Contrast theme",
+            description: "High Contrast Theme",
+            type: "string",
+            enum: ["black-white", "white-black", "yellow-black", "black-yellow"]
         }
-    }, preferences.settings[3]);
+    }, uioPlusGroup.settings[2]);
 });
 
 jqUnit.test("Parse key out message", function () {
@@ -193,5 +272,5 @@ jqUnit.test("Parse key out message", function () {
 
     jqUnit.assertDeepEq("There are no preference sets", [], preferences.sets);
     jqUnit.assertFalse("There is no active preference set", preferences.activeSet);
-    jqUnit.assertDeepEq("There are no settings", [], preferences.settings);
+    jqUnit.assertDeepEq("There are no settings", [], preferences.settingGroups);
 });

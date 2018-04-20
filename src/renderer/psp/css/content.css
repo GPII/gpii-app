@@ -103,5 +103,12 @@
 
 .theme-alt .fl-settingsList *[class^="flc-settingListRow"] {
     background-color: var(--alt-theme-background-color);
-    border-bottom: none;
+}
+
+.theme-alt .fl-settingsList *[class^="flc-settingGroup"] {
+    border-bottom-color: var(--main-color);
+}
+
+.theme-alt .fl-settingsList *[class^="flc-settingGroup"]:nth-child(even) {
+    background-color: transparent;
 }
