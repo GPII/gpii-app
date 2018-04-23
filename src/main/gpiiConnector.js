@@ -65,12 +65,16 @@ fluid.defaults("gpii.app.gpiiConnector", {
  * object that was received via the PSP channel.
  * @param element {Object} An object (group of settings or an individual setting)
  * which has settings.
+ * @param groupSolutionName {String} The solutionName (i.e. the application to which
+ * this group pertains) of the group. If it is specified, none of the settings
+ * (including subsettings) within the group will have a solution name. If not specified,
+ * the solution name for each setting will be used (if provided).
  * @param messageSettingControls {Object} The `settingControls` object received
  * via the PSP channel
  * @return a `settingControls` object for the passed `element` which will include
  * information about the settings available for that element.
  */
-gpii.app.gpiiConnector.getSettingControls = function (element, messageSettingControls) {
+gpii.app.gpiiConnector.getSettingControls = function (element, groupSolutionName, messageSettingControls) {
     var settingControls = {};
 
     fluid.each(element.settings, function (setting) {
@@ -79,15 +83,15 @@ gpii.app.gpiiConnector.getSettingControls = function (element, messageSettingCon
         if (settingDescriptor) {
             settingControls[path] = fluid.copy(settingDescriptor);
 
-            // Add the solution name which is needed for the restart warning message.
-            if (setting.solutionName) {
-                settingControls[path].solutionName = setting.solutionName;
+            // No need for a solution name if the group already has one.
+            if (groupSolutionName) {
+                delete settingControls[path].solutionName;
             }
 
             // Calculate the `settingControls` object for the subsettings if any.
             if (setting.settings) {
                 var subsettingControls =
-                    gpii.app.gpiiConnector.getSettingControls(setting, messageSettingControls);
+                    gpii.app.gpiiConnector.getSettingControls(setting, groupSolutionName, messageSettingControls);
                 if (fluid.keys(subsettingControls).length > 0) {
                     settingControls[path].settingControls = subsettingControls;
                 }
@@ -117,7 +121,8 @@ gpii.app.gpiiConnector.groupSettings = function (message) {
             .map(function (templateGroup) {
                 return {
                     name: templateGroup.name,
-                    settingControls: gpii.app.gpiiConnector.getSettingControls(templateGroup, messageSettingControls)
+                    solutionName: templateGroup.solutionName,
+                    settingControls: gpii.app.gpiiConnector.getSettingControls(templateGroup, templateGroup.solutionName, messageSettingControls)
                 };
             })
             .filter(function (settingGroup) {
@@ -256,6 +261,7 @@ gpii.app.extractPreferencesData = function (message) {
         settingGroups = fluid.transform(value.settingGroups, function (settingGroup) {
             return {
                 name: settingGroup.name,
+                solutionName: settingGroup.solutionName,
                 settings: gpii.app.extractSettings(settingGroup)
             };
         });

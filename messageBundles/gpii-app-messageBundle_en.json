@@ -19,12 +19,12 @@
     "gpii_psp_settingPresenter_osRestart": "To change this setting,\nWindows requires a restart.",
     "gpii_psp_settingPresenter_osRestartRequired": "You changed this setting, which\nrequires Windows to restart.",
 
-    "gpii_psp_baseRestartWarning_osName": "Windows",
-    "gpii_psp_baseRestartWarning_osRestartText": "Windows needs to restart to apply your changes.",
-    "gpii_psp_baseRestartWarning_restartText": "These applications will restart when this GPII Settings panel closes: %solutions",
-    "gpii_psp_baseRestartWarning_undo": "Undo Changes",
-    "gpii_psp_baseRestartWarning_applyNow": "Apply changes now",
-    "gpii_psp_baseRestartWarning_restartNow": "Restart Now",
+    "gpii_psp_restartWarning_osName": "Windows",
+    "gpii_psp_restartWarning_osRestartText": "Windows needs to restart to apply your changes.",
+    "gpii_psp_restartWarning_restartText": "These applications will restart when this GPII Settings panel closes: %solutions",
+    "gpii_psp_restartWarning_undo": "Undo Changes",
+    "gpii_psp_restartWarning_applyNow": "Apply changes now",
+    "gpii_psp_restartWarning_restartNow": "Restart Now",
 
     "gpii_psp_errorDialog_titlebarAppName": "GPII Error",
 

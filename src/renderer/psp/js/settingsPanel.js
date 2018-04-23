@@ -356,12 +356,11 @@
             }
         },
         listeners: {
-            // TODO: Perhaps this won't be needed in the new approach.
-            // "onCreate.setSolutionName": {
-            //     this: "{that}.dom.solutionName",
-            //     method: "text",
-            //     args: "{that}.model.solutionName"
-            // },
+            "onCreate.setSolutionName": {
+                this: "{that}.dom.solutionName",
+                method: "text",
+                args: "{that}.model.solutionName"
+            },
             "onCreate.setTitle": {
                 this: "{that}.dom.title",
                 method: "text",
@@ -456,7 +455,8 @@
 
         model: {
             item:     {}, // from the repeater
-            name:     "{that}.model.item.name",
+            name: "{that}.model.item.name",
+            solutionName: "{that}.model.item.solutionName",
             settings: "{that}.model.item.settings"
         },
 
@@ -479,6 +479,7 @@
                 container: "{that}.dom.restartWarning",
                 options: {
                     model: {
+                        solutionName: "{settingGroupPresenter}.model.solutionName",
                         settings: "{settingGroupPresenter}.model.settings"
                     },
                     events: {
@@ -637,7 +638,7 @@
                 }
             },
             // Represents the list of the settings component
-            settingsVisualizer: {
+            settingsGroupVisualizer: {
                 type: "gpii.psp.settingGroupsVisualizer",
                 createOnEvent: "onTemplatesLoaded",
                 container: "{that}.container",
