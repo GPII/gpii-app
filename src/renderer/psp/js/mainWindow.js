@@ -83,6 +83,9 @@
     fluid.defaults("gpii.psp.mainWindow", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
         model: {
+            messages: {
+                titlebarAppName: null
+            },
             preferences: {
                 sets: [],
                 activeSet: null,
@@ -116,8 +119,10 @@
                 type: "gpii.psp.titlebar",
                 container: "{that}.dom.titlebar",
                 options: {
-                    labels: {
-                        appName: "GPII Settings"
+                    model: {
+                        messages: {
+                            title: "{mainWindow}.model.messages.titlebarAppName"
+                        }
                     },
                     listeners: {
                         "onClose": "{mainWindow}.events.onPSPClose"

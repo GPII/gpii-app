@@ -85,21 +85,22 @@ fluid.defaults("gpii.app.menuInAppDev", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
+                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.options.locales", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
             },
             priority: "last"
         }
     },
-    menuLabels: {
-        keyIn: "Key in ...",
-        exit: "Exit GPII"
-    },
     events: {
+        onLocale: null,
         onKeyIn: null,
         onExit: null
     },
 
     listeners: {
+        "onLocale.changeLocale": {
+            changePath: "{app}.model.locale",
+            value: "{arguments}.0.locale"
+        },
         // onKeyIn event is fired when a new user keys in through the task tray.
         // This should result in:
         // 1. key out the old keyed in user token
@@ -122,9 +123,32 @@ fluid.defaults("gpii.app.menuInAppDev", {
         }
     },
 
+    locales: {
+        label: "Locale",
+        submenu: [{
+            label: "bg",
+            click: "onLocale",
+            args: {
+                locale: "bg"
+            }
+        }, {
+            label: "en",
+            click: "onLocale",
+            args: {
+                locale: "en_us"
+            }
+        }, {
+            label: "missing",
+            click: "onLocale",
+            args: {
+                locale: "fr"
+            }
+        }]
+    },
+
     // The list of the default snapsets shown on the task tray menu for key-in
     snapsets: {
-        label: "{that}.options.menuLabels.keyIn",
+        label: "Key in ...",
         submenu: [{
             label: "Voice control with Increased Size",
             click: "onKeyIn",
@@ -212,7 +236,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
         }]
     },
     exit: {
-        label: "{that}.options.menuLabels.exit",
+        label: "Exit GPII",
         click: "onExit"
     }
 });
@@ -235,7 +259,14 @@ fluid.defaults("gpii.app.menu", {
         preferenceSetsMenuItems: [],  // Updated on `preferences` changed.
         keyedInSnapset: null,        // Must be updated when keyedInUserToken changes.
         keyOut: null,                 // May or may not be in the menu, must be updated when keyedInUserToken changes.
-        menuTemplate: []              // This is updated on change of keyedInUserToken.
+        menuTemplate: [],             // This is updated on change of keyedInUserToken.
+
+        messages: {
+            psp: null,
+            keyOut: null,
+            keyedIn: null,
+            notKeyedIn: null
+        }
     },
     modelRelay: {
         "keyedInSnapset": {
@@ -243,7 +274,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyedInSnapset",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.snapsetName", "{that}.options.menuLabels.keyedIn"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.snapsetName", "{that}.model.messages.keyedIn"]
             }
         },
         "keyOut": {
@@ -251,7 +282,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyOut",
-                args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.keyOut", "{that}.options.menuLabels.notKeyedIn"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.messages.keyOut", "{that}.model.messages.notKeyedIn"]
             }
         },
         "showPSP": {
@@ -259,7 +290,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getShowPSP",
-                args: ["{that}.model.keyedInUserToken", "{that}.options.menuLabels.psp"]
+                args: ["{that}.model.keyedInUserToken", "{that}.model.messages.psp"]
             }
         },
         "preferenceSetsMenuItems": {
@@ -279,12 +310,6 @@ fluid.defaults("gpii.app.menu", {
             },
             priority: "last"
         }
-    },
-    menuLabels: {
-        psp: "Open PSP",
-        keyedIn: "Keyed in with %snapsetName",    // string template
-        keyOut: "Key-out of GPII",
-        notKeyedIn: "(No one keyed in)"
     },
     events: {
         onPSP: null,

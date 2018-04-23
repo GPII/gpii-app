@@ -18,7 +18,23 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
+
+    /**
+     * Simple wrapper that enables translations for the `gpii.psp.errorDialog` component.
+     */
+    fluid.defaults("gpii.psp.translatedErrorDialog", {
+        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent"],
+
+        components: {
+            errorDialog: {
+                type: "gpii.psp.errorDialog",
+                container: "{translatedErrorDialog}.container"
+            }
+        }
+    });
+
+
     $(function () {
-        gpii.errorDialog(".fl-dialog");
+        gpii.psp.translatedErrorDialog(".fl-dialog");
     });
 })(fluid);

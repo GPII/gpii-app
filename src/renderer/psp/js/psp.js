@@ -20,9 +20,9 @@
     fluid.registerNamespace("gpii.psp");
 
     fluid.defaults("gpii.psp", {
-        gradeNames: ["fluid.component"],
+        gradeNames: ["fluid.component", "gpii.psp.messageBundles"],
         components: {
-            clientChannel: {
+            channel: {
                 type: "gpii.psp.clientChannel",
                 options: {
                     listeners: {
@@ -47,16 +47,15 @@
                 container: "#flc-body",
                 options: {
                     listeners: {
-                        onPSPClose: "{clientChannel}.close",
-                        onKeyOut: "{clientChannel}.keyOut",
-                        onSettingAltered: "{clientChannel}.alterSetting",
-                        onActivePreferenceSetAltered: "{clientChannel}.alterActivePreferenceSet",
-                        onHeightChanged: "{clientChannel}.changeContentHeight",
+                        onPSPClose: "{channel}.close",
+                        onKeyOut: "{channel}.keyOut",
+                        onSettingAltered: "{channel}.alterSetting",
+                        onActivePreferenceSetAltered: "{channel}.alterActivePreferenceSet",
+                        onHeightChanged: "{channel}.changeContentHeight",
 
-                        onRestartNow: "{clientChannel}.restartNow",
-                        onRestartLater: "{clientChannel}.restartLater",
-                        onUndoChanges: "{clientChannel}.undoChanges"
-
+                        onRestartNow:   "{channel}.restartNow",
+                        onRestartLater: "{channel}.restartLater",
+                        onUndoChanges:  "{channel}.undoChanges"
                     }
                 }
             }

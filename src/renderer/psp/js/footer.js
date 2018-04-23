@@ -24,13 +24,18 @@
         selectors: {
             helpBtn: ".flc-helpBtn"
         },
+        model: {
+            messages: {
+                help: null
+            }
+        },
         components: {
             helpBtn: {
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.helpBtn",
                 options: {
                     model: {
-                        label: "{footer}.options.labels.help"
+                        label: "{footer}.model.messages.help"
                     },
                     invokers: {
                         "onClick": "gpii.psp.openUrl({footer}.options.urls.help)"
@@ -40,9 +45,6 @@
         },
         urls: {
             help: "http://pmt.gpii.org/help"
-        },
-        labels: {
-            help: "Help"
         }
     });
 
