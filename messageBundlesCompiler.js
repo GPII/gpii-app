@@ -26,13 +26,35 @@ var DEFAULT_PARSER = {"json": JSON};
 
 
 /**
- * An object representing messages for the different locales.
- * @typedef {Object} MessageBundles
- * @property {Object} <locale> The locale
- *     @member {String} <full_grade_name_massageName> A label for the corresponding component. Notice that the key's prefix
- *     is the grade name separated by "_" and the postfix is the massage name which the component uses.
+ * Represents a single messages bundle, containing label names and messages for them.
  *
- * Example:
+ * A label for the corresponding component follows the format: <full_grade_name_messageName>.
+ * Notice that the key's prefix is the grade name separated by "_" and
+ * the postfix is the message name which the component uses.
+ *
+ * For example:
+ * ```
+ * {
+ *     gpii_app_menu_keyOut: "Key out",
+ *     ...
+ * }
+ * ```
+ * contains a key for component `gpii.app.menu` which the component simply refers with `keyOut`.
+ *
+ * @typedef {Object.<String, String>} Messages
+ */
+
+
+/**
+ * An object representing messages for the different locales.
+ * It follows the format:
+ * {
+ *     <locale>: <Messages>,
+ *     ...
+ * }
+ *
+ * Example with multiple locales:
+ * ```
  * {
  *      en: {
  *          gpii_app_menu_keyOut: "Key out",
@@ -43,17 +65,19 @@ var DEFAULT_PARSER = {"json": JSON};
  *          ...
  *      }
  * }
+ * ```
+ *
+ * @typedef {Object.<String, Messages>} MessageBundles
  */
 
 /**
  * A map of file extensions to parsers.
- * @typedef {Object} FileParsers
- * @property {Object} <fileType> The parser for the specified fileType
- *
  * Example: {
  *  "json": JSON,
  *  "json5": JSON5
  * }
+ *
+ * @typedef {Object.<String, String>} FileParsers
  */
 
 
@@ -201,7 +225,7 @@ gpii.app.messageBundlesCompiler.mergeMessageBundles = function (loadedBundles) {
  * @return {Object} The compiled message bundles map.
  */
 function compileMessageBundles(bundlesDirs, defaultLocale, parsers) {
-    parsers = parsers || [DEFAULT_PARSER];
+    parsers = parsers || DEFAULT_PARSER;
 
     var messageBundlesList;
 

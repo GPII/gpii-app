@@ -17,6 +17,62 @@
 
 var gpii = fluid.registerNamespace("gpii");
 
+
+
+/**
+ * Represents messages for a single component.
+ * It simply follows the format:
+ * ```
+ * {
+ *     <messageKey>: <message>,
+ *     ...
+ * }
+ * ```
+ *
+ * For example:
+ * ```
+ * {
+ *     keyOut: "Key out",
+ *     ...
+ * }
+ * ```
+ *
+ * @typedef {Object.<String, String>} ComponentMessages
+ */
+
+
+/**
+ * An object representing messages for all different components.
+ * Keys are individual component grade names (which contain
+ * _ instead of . as separators) and the values are maps of messages
+ * for a component.
+ * It follows the format:
+ * {
+ *     <full_component_name>: <ComponentMessages>,
+ *     ...
+ * }
+ *
+ * Example with multiple locales:
+ * ```
+ * {
+ *      gpii_app_menu: {
+ *          keyOut: "Key out",
+ *          keyedIn: "Keyed in with %snapsetName",
+ *          ...
+ *      },
+ *      gpii_app_psp_header: {
+ *          autosaveText": "Auto-save is on",
+ *          keyOut": "Key Out",
+ *          ...
+ *      },
+ *      ...
+ * }
+ * ```
+ *
+ * @typedef {Object.<String, ComponentMessages>} GroupedMessages
+ */
+
+
 /**
  * Holds all messages for the various components in the application (including
  * the renderer components). The model contains the current locale and the
@@ -172,9 +228,7 @@ gpii.app.messageBundles.getSimpleMessageKey = function (messageKey) {
  * Given a map which contains all messages for a given locale, this function groups the
  * messages by component grades.
  * @param {Object} messages A map with all the messages for a given locale.
- * @return {Object} A map whose keys are individual component grade names (which contain
- * _ instead of . as separators) and the values are maps whose keys are the simple
- * message keys and the values are the message strings themselves.
+ * @return {GroupedMessages}
  */
 gpii.app.messageBundles.groupMessagesByComponent = function (messages) {
     var groupedMessages = {};
