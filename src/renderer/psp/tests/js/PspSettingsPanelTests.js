@@ -62,6 +62,10 @@
         }
     };
 
+    var compositeSwitchSettingFixture = fluid.extend(true, {}, switchSettingFixture, {
+        settings: [textfieldSettingFixture, dropdownSettingFixture]
+    });
+
     var stepperSettingFixture = {
         path: "zoomPath",
         value: 1,
@@ -388,6 +392,15 @@
         });
     };
 
+    gpii.tests.psp.testSubsettingVisibility = function (container, visible) {
+        var subsettingsContainer = container.find(".flc-subsettings");
+        jqUnit.assertEquals(
+            "Widgets: Subsettings are correctly shown / hidden",
+            visible,
+            subsettingsContainer.is(":visible")
+        );
+    };
+
     gpii.tests.psp.testWidgetMemoryIcon = function (container, memory) {
         var memoryIcon = container.find(".flc-memoryIcon");
         jqUnit.assertEquals(
@@ -415,29 +428,6 @@
                 restartIcon.attr("title")
             );
         }
-    };
-
-    gpii.tests.psp.testAppRestartIcon = function (container, isModified, fixture, styles, labels) {
-        var restartIcon = $(".flc-restartIcon", container);
-        jqUnit.assertTrue(
-            "Widgets: App restart widget icon has the proper CSS class",
-            restartIcon.hasClass(styles.appRestartIcon)
-        );
-
-        jqUnit.assertFalse(
-            "Widgets: App restart widget icon does not have the OS restart CSS class",
-            restartIcon.hasClass(styles.osRestartIcon)
-        );
-
-        var label = isModified ? labels.appRestartRequired : labels.appRestart;
-        label = fluid.stringTemplate(label, {
-            solutionName: fixture.solutionName
-        });
-        jqUnit.assertEquals(
-            "Widget: Os restart widget has correct tooltip text",
-            label,
-            restartIcon.attr("title")
-        );
     };
 
     gpii.tests.psp.testStepperModelInteraction = function (container, expected) {
@@ -521,26 +511,32 @@
             name: "PSP widgets interaction tests",
             tests: [{
                 name: "Widgets: Switch - interactions test",
-                expect: 5,
+                expect: 8,
                 sequence: [{ // initiate `settingsVisualizer` creation
                     funcName: "{singleSettingPanelsMock}.switchPanel.events.onTemplatesLoaded.fire"
                 }, {
                     funcName: "gpii.tests.psp.testWidgetAccessibility",
                     args: [
                         ["@expand:$(.flc-switchUI-control, {singleSettingPanelsMock}.switchPanel.container)"],
-                        switchSettingFixture.path
+                        compositeSwitchSettingFixture.path
                     ]
                 }, {
                     funcName: "gpii.tests.psp.testWidgetMemoryIcon",
                     args: [
                         "{singleSettingPanelsMock}.switchPanel.container",
-                        switchSettingFixture.memory
+                        compositeSwitchSettingFixture.memory
                     ]
                 }, {
                     funcName: "gpii.tests.psp.testRestartIcon",
                     args: [
                         "{singleSettingPanelsMock}.switchPanel.container",
                         false
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testSubsettingVisibility",
+                    args: [
+                        "{singleSettingPanelsMock}.switchPanel.container",
+                        true
                     ]
                 }, [ // Test DOM interaction
                     { // simulate manual click from the user
@@ -551,18 +547,30 @@
                         listener: "jqUnit.assertDeepEq",
                         args: [
                             "Widgets: Switch - component notified for the update with proper path/value",
-                            [switchSettingFixture.path, !switchSettingFixture.value],
+                            [compositeSwitchSettingFixture.path, !compositeSwitchSettingFixture.value],
                             ["{arguments}.0.path", "{arguments}.0.value"]
+                        ]
+                    }, {
+                        funcName: "gpii.tests.psp.testSubsettingVisibility",
+                        args: [
+                            "{singleSettingPanelsMock}.switchPanel.container",
+                            false
                         ]
                     }
                 ], [ // Test model interaction (settingsVisualizer is already created)
                     { // simulate setting from PSP update
                         funcName: "{singleSettingPanelsMock}.switchPanel.events.onSettingUpdated.fire",
-                        args: [switchSettingFixture.path, switchSettingFixture.value]
+                        args: [compositeSwitchSettingFixture.path, compositeSwitchSettingFixture.value]
                     }, { // Test if rendered item updated
                         event: "{singleSettingPanelsMock}.switchPanel.events.onSettingUpdated",
                         listener: "gpii.tests.psp.testSwitchInteraction",
                         args: ["{singleSettingPanelsMock}.switchPanel.container", true]
+                    }, {
+                        funcName: "gpii.tests.psp.testSubsettingVisibility",
+                        args: [
+                            "{singleSettingPanelsMock}.switchPanel.container",
+                            true
+                        ]
                     }]
                 ]
             }, {
@@ -814,7 +822,7 @@
                     model: {
                         settingGroups: [
                             {
-                                settings: [switchSettingFixture]
+                                settings: [compositeSwitchSettingFixture]
                             }
                         ]
                     },

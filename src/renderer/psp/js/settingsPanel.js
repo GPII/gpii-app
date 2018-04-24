@@ -350,12 +350,12 @@
         },
         modelListeners: {
             value: [{
+                funcName: "gpii.psp.settingPresenter.toggleSubsettings",
+                args: ["{that}", "{change}.value", "{that}.dom.subsettings"]
+            }, {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model", "{change}.oldValue"],
                 excludeSource: ["init", "psp.mainWindow"]
-            }, {
-                funcName: "gpii.psp.settingPresenter.toggleSubsettings",
-                args: ["{that}", "{change}.value", "{that}.dom.subsettings"]
             }],
             restartIconTooltip: {
                 this: "{that}.dom.restartIcon",
