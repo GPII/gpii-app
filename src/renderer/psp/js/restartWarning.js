@@ -48,14 +48,6 @@
         },
 
         modelRelay: {
-            pendingChanges: {
-                target: "pendingChanges",
-                singleTransform: {
-                    type: "fluid.transforms.free",
-                    func: "gpii.psp.restartWarning.getPendingChanges",
-                    args: ["{settingsPanel}.model.pendingChanges", "{that}.model.settings"]
-                }
-            },
             solutionNames: {
                 target: "solutionNames",
                 singleTransform: {
@@ -253,7 +245,7 @@
      * @return {Array} An array of the pending settings changes which apply to the current
      * settings group.
      */
-    gpii.psp.restartWarning.getPendingChanges = function (pendingChanges, settings) {
+    gpii.psp.restartWarning.filterPendingChanges = function (pendingChanges, settings) {
         return pendingChanges.filter(function (pendingChange) {
             return gpii.psp.restartWarning.hasUpdatedSetting(pendingChange, settings);
         });

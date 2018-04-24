@@ -504,6 +504,16 @@
                         solutionName: "{settingGroupPresenter}.model.solutionName",
                         settings: "{settingGroupPresenter}.model.settings"
                     },
+                    modelRelay: {
+                        pendingChanges: {
+                            target: "pendingChanges",
+                            singleTransform: {
+                                type: "fluid.transforms.free",
+                                func: "gpii.psp.restartWarning.filterPendingChanges",
+                                args: ["{settingsPanel}.model.pendingChanges", "{that}.model.settings"]
+                            }
+                        }
+                    },
                     events: {
                         onRestartNow: "{settingsPanel}.events.onRestartNow",
                         onRestartLater: "{settingsPanel}.events.onRestartLater",

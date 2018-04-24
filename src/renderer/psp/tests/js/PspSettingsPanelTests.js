@@ -935,31 +935,17 @@
             $(restartWarning.container).is(":visible"));
     };
 
-    gpii.tests.psp.testRestartWarningText = function (restartWarning, solutionNames, osRestart) {
+    gpii.tests.psp.testRestartWarningText = function (restartWarning, osRestart, solutionNames) {
         var restartText = $(".flc-restartText", restartWarning.container).text().trim();
         if (osRestart) {
             jqUnit.assertEquals("Restart warning has correct OS restart text message",
-                restartWarning.options.labels.osRestartText,
+                restartWarning.model.messages.osRestartText,
                 restartText);
         } else {
             var expectedTextSuffix = solutionNames.join(", ");
             jqUnit.assertTrue("Restart warning has correct text message",
                 restartText.endsWith(expectedTextSuffix));
         }
-    };
-
-    gpii.tests.psp.testRestartWarningIcon = function (restartWarning, osRestart) {
-        var restartIcon = $(".flc-restartIcon", restartWarning.container),
-            styles = restartWarning.options.styles,
-            iconClass = osRestart ? styles.osRestartIcon : styles.applicationRestartIcon;
-        jqUnit.assertTrue("Restart warning has correct icon",
-            restartIcon.hasClass(iconClass));
-    };
-
-    gpii.tests.psp.testRestartWarningMessage = function (restartWarning, solutionNames, osRestart) {
-        gpii.tests.psp.testRestartWarningVisibility(restartWarning, true);
-        gpii.tests.psp.testRestartWarningText(restartWarning, solutionNames, osRestart);
-        gpii.tests.psp.testRestartWarningIcon(restartWarning, osRestart);
     };
 
     fluid.defaults("gpii.tests.psp.restartWarningTester", {
@@ -970,7 +956,7 @@
             tests:[
                 {
                     name: "Restart warning text, icon and buttons tests",
-                    expect: 13,
+                    expect: 6,
                     sequence: [
                         {
                             funcName: "gpii.tests.psp.testRestartWarningVisibility",
@@ -981,15 +967,11 @@
                                 [dropdownSettingFixture, multipickerSettingFixture]
                             ]
                         }, {
-                            event: "{restartWarning}.events.onHeightChanged",
-                            listener: "jqUnit.assert",
-                            args: ["When the restart warning is shown, onHeightChanged event is fired"]
-                        }, {
-                            funcName: "gpii.tests.psp.testRestartWarningMessage",
+                            funcName: "gpii.tests.psp.testRestartWarningText",
                             args: [
                                 "{restartWarning}",
-                                [dropdownSettingFixture.solutionName, multipickerSettingFixture.schema.title],
-                                false
+                                false,
+                                [dropdownSettingFixture.solutionName, multipickerSettingFixture.schema.title]
                             ]
                         }, {
                             funcName: "{restartWarning}.updatePendingChanges",
@@ -997,10 +979,9 @@
                                 [dropdownSettingFixture, multipickerSettingFixture, stepperSettingFixture]
                             ]
                         }, {
-                            funcName: "gpii.tests.psp.testRestartWarningMessage",
+                            funcName: "gpii.tests.psp.testRestartWarningText",
                             args: [
                                 "{restartWarning}",
-                                ["{restartWarning}.options.labels.os"],
                                 true
                             ]
                         },
@@ -1027,10 +1008,6 @@
                                 []
                             ]
                         }, {
-                            event: "{restartWarning}.events.onHeightChanged",
-                            listener: "jqUnit.assert",
-                            args: ["When the restart warning is hidden, onHeightChanged event is fired"]
-                        }, {
                             funcName: "gpii.tests.psp.testRestartWarningVisibility",
                             args: ["{restartWarning}.container", false]
                         }
@@ -1045,7 +1022,19 @@
         components: {
             restartWarning: {
                 type: "gpii.psp.restartWarning",
-                container: ".fl-restartWarning"
+                container: ".fl-restartWarning",
+                options: {
+                    model: {
+                        messages: {
+                            osName: "Windows",
+                            osRestartText: "Windows needs to restart to apply your changes.",
+                            restartText: "These applications will restart when this GPII Settings panel closes: %solutions",
+                            undo: "Undo Changes",
+                            applyNow: "Apply changes now",
+                            restartNow: "Restart Now"
+                        }
+                    }
+                }
             },
             restartWarningTester: {
                 type: "gpii.tests.psp.restartWarningTester"
