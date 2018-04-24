@@ -663,7 +663,7 @@
                 }
             },
             // Represents the list of the setting groups
-            settingsGroupVisualizer: {
+            settingGroupsVisualizer: {
                 type: "gpii.psp.settingGroupsVisualizer",
                 createOnEvent: "onTemplatesLoaded",
                 container: "{that}.container",
