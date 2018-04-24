@@ -103,8 +103,8 @@ fluid.defaults("gpii.app.surveyConnector", {
 fluid.defaults("gpii.app.staticSurveyConnector", {
     gradeNames: ["gpii.app.surveyConnector"],
     config: {
-        triggerFixture: "@expand:fluid.require({that}.options.paths.triggerFixture)",
-        surveyFixture: "@expand:fluid.require({that}.options.paths.surveyFixture)"
+        triggersFixture: "@expand:fluid.require({that}.options.paths.triggersFixture)",
+        surveysFixture: "@expand:fluid.require({that}.options.paths.surveysFixture)"
     },
     invokers: {
         requestTriggers: {
@@ -117,8 +117,8 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
         }
     },
     paths: {
-        triggerFixture: "%gpii-app/testData/survey/triggers.json",
-        surveyFixture: "%gpii-app/testData/survey/survey.json"
+        triggersFixture: "%gpii-app/testData/survey/triggers.json",
+        surveysFixture: "%gpii-app/testData/survey/survey.json"
     }
 });
 
@@ -128,7 +128,7 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
  * @param that {Component} The `gpii.app.staticSurveyConnector` instance.
  */
 gpii.app.staticSurveyConnector.requestTriggers = function (that) {
-    that.events.onTriggerDataReceived.fire(that.options.config.triggerFixture);
+    that.events.onTriggerDataReceived.fire(that.options.config.triggersFixture);
 };
 
 /**
@@ -138,14 +138,14 @@ gpii.app.staticSurveyConnector.requestTriggers = function (that) {
  * @param that {Component} The `gpii.app.staticSurveyConnector` instance.
  */
 gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that, triggerPayload) {
-    var fixture = fluid.copy(that.options.config.surveyFixture)[triggerPayload.id];
+    var surveyFixture = fluid.copy(that.options.config.surveysFixture)[triggerPayload.id];
 
     fluid.log("Trigger occurred: " + triggerPayload);
 
-    if (fixture) {
-        fixture.url = fluid.stringTemplate(fixture.url, that.model);
+    if (surveyFixture) {
+        surveyFixture.url = fluid.stringTemplate(surveyFixture.url, that.model);
 
-        that.events.onSurveyRequired.fire(fixture);
+        that.events.onSurveyRequired.fire(surveyFixture);
     } else {
         fluid.fail("Missing survey for trigger: " + triggerPayload.id);
     }
