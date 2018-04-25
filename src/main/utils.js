@@ -157,7 +157,7 @@ gpii.app.timer.clear = function (that) {
  * third party dependencies.
  * Related to: https://github.com/electron/electron/issues/12698
  *
- * @param {Object|Array} object - The object/array that needs to have its contexts fixed
+ * @param {Object|Array} object - The object/array that needs to have its contexts fixed.
  * @returns {Object} The fixed object
  */
 gpii.app.recontextualise = function (object) {
@@ -165,7 +165,7 @@ gpii.app.recontextualise = function (object) {
         return;
     }
     if (fluid.isArrayable(object)) {
-        object.constructor = Array;
+        object = [].slice.call(object);
     }
 
     fluid.each(object, function (value, key) {

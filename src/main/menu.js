@@ -68,6 +68,8 @@ gpii.app.updateMenu = function (tray, menuTemplate, events) {
     // Needed in order to get around this non graceful check: https://github.com/electron/electron/blob/v1.8.4/lib/browser/api/menu.js#L170
     // The infusion's expander applies a different contexts (generated with https://nodejs.org/api/vm.html)
     // than the current which cases this Array check to fail.
+    menuTemplate = gpii.app.recontextualise(menuTemplate);
+
     menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
 
     tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
