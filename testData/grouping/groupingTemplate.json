@@ -1,24 +1,5 @@
 [
     {
-        "settings": [
-            {
-                "path": "http://registry\\.gpii\\.net/common/DPIScale"
-            },
-            {
-                "path": "http://registry\\.gpii\\.net/common/cursorSize"
-            },
-            {
-                "path": "http://registry\\.gpii\\.net/common/selfVoicingEnabled"
-            },
-            {
-                "path": "http://registry\\.gpii\\.net/common/supportTool"
-            },
-            {
-                "path": "http://registry\\.gpii\\.net/common/volume"
-            }
-        ]
-    },
-    {
         "name": "Windows Hight Contrast",
         "solutionName": "Windows Hight Contrast",
         "settings": [
