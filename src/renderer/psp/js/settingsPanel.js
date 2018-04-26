@@ -25,26 +25,33 @@
 
 
     /**
-     * Utility function for retrieving the last sub-element of a container
+     * Utility function for retrieving the last  child element of a container.
      * @param container {jQuery} The jQuery container object
-     * @return {jQuery} A jQuery container object
+     * @return {jQuery} A jQuery container object representing the last child
+     * element if any.
      */
     gpii.psp.utils.getContainerLastChild = function (container) {
         return container.children().last();
     };
 
     /**
-     * A simple wrapper for the remove function
-     * @param container {jQuery} A jQuery object
+     * Removes the provided element from the DOM.
+     * @param container {jQuery} A jQuery object representing the element to
+     * be removed.
      */
-    gpii.psp.utils.removeContainer = function (container) {
-        if (container) {
-            container.remove();
+    gpii.psp.utils.removeElement = function (element) {
+        if (element) {
+            element.remove();
         }
     };
 
 
-
+    /**
+     * A component responsible for inserting the markup of an item and its
+     * container in the DOM and for removing that markup when the component
+     * gets destroyed. In order to accomplish the latter, the rendered
+     * container is saved within the component.
+     */
     fluid.defaults("gpii.psp.repeater.renderer", {
         gradeNames: "fluid.viewComponent",
 
@@ -54,7 +61,6 @@
         },
 
         model: {
-            // Save the container created
             renderedContainer: null
         },
         events: {
@@ -71,19 +77,19 @@
         },
         listeners: {
             "onDestroy.clearInjectedMarkup": {
-                funcName: "gpii.psp.utils.removeContainer",
+                funcName: "gpii.psp.utils.removeElement",
                 args: "{that}.model.renderedContainer"
             }
         },
         components: {
             /*
-             * Render the outer most container for the element
+             * Renders the container for the item's element, saves it and
+             * notifies when done.
              */
             renderElementContainer: {
                 type: "fluid.viewComponent",
                 container: "{that}.container",
                 options: {
-                    // TODO DOCS what magic is done here
                     listeners: {
                         "onCreate.render": {
                             this: "{that}.container",
@@ -104,7 +110,7 @@
                 }
             },
             /**
-             * Renders the markup inside the dedicated container
+             * Renders the markup of the item inside the dedicated container.
              */
             renderElementMarkup: {
                 type: "fluid.viewComponent",
@@ -134,20 +140,22 @@
         }
     });
 
-    /*
 
-        Generates something similar to:
-      <div class="flc-element-1">
-            // markup
-      </div>
-
+    /**
+     * A component which injects all the necessary markup for an item and
+     * initializes a handler of the corresponding `handlerType` to visualize
+     * a given item.
+     * Some of the component's options are the `item` which is to be visualized
+     * together with its `index` in the array of `items` from the `repeater`,
+     * the actual `markup` of both the container and the item itself which is
+     * to be inserted in the DOM and the `handlerType`.
      */
     fluid.defaults("gpii.psp.repeater.element", {
         gradeNames: "fluid.viewComponent",
 
-        item:           null, // XXX I really wished this was in the model
-        index:          null,
-        handlerOptions: null,
+        item:        null,
+        index:       null,
+        handlerType: null,
 
         markup: {
             container: null,
@@ -155,58 +163,59 @@
         },
 
         events: {
-            onElementRendered: null // thrown once all rendering is completed
+            onElementRendered: null // fired when the rendering of the item completes
         },
 
         components: {
-            renderer: { // injects the markup to the DOM; container + markup
+            renderer: {
                 type: "gpii.psp.repeater.renderer",
                 container: "{that}.container",
                 options: {
                     markup: "{element}.options.markup",
 
                     listeners: {
-                        // Avoid injection as we want to use a boiled event
                         onElementRendered: "{element}.events.onElementRendered.fire"
                     }
                 }
             },
             handler: {
-                type: "{that}.options.handlerOptions.type",
+                type: "{that}.options.handlerType",
                 createOnEvent: "onElementRendered",
                 container: "{arguments}.0",
                 options: {
                     model: {
                         item: "{element}.options.item"
-                    },
-                    parent: "{element}.options.handlerOptions.parent"
+                    }
                 }
             }
         }
     });
 
 
-    /*
-        Expects:
-            handlerType: "gpii.psp.groupElement" | "gpii.psp.settingElement"
-            getMarkup
-            items
-            container class
+    /**
+     * A component for visualizing multiple "similar" objects (such as settings,
+     * setting groups or image dropdown menu items). The component expects:
+     * - an `items` array in its model describing each of the items to be visualized.
+     * - a `handlerType` option which contains the grade name of a component which
+     * will be in charge of visually representing a single item.
+     * - a `getMarkup` invoker which accepts two arguments - the current item and
+     * its index in the array of `items` and returns the markup which is to be
+     * inserted in the DOM for the given item.
+     * - a `dynamicContainerMarkup` which holds the markup of the `container` in which
+     * the markup for the item returned by `getMarkup` will be inserted, as well as
+     * a `containerClassPrefix` which together with the index of the current item will
+     * be used to create a unique class name for the item's container.
      */
     fluid.defaults("gpii.psp.repeater", {
         gradeNames: "fluid.viewComponent",
 
         model: {
-            items: [] // the items to be repeated
+            items: []
         },
-        handlerOptions: {
-            type:   null,
-            parent: "{that}"
-        },
+        handlerType: null,
 
         invokers: {
-            // TODO docs
-            getMarkup: { // expected from parent
+            getMarkup: {
                 funcName: "fluid.notImplemented",
                 args: ["{arguments}.0"] // item
             }
@@ -214,7 +223,7 @@
 
         dynamicContainerMarkup: {
             container:            "<div class=\"%containerClass\"></div>",
-            containerClassPrefix: "flc-dynamicElement-%id"      // preferably altered by the parent
+            containerClassPrefix: "flc-dynamicElement-%id" // preferably altered by the implementor
         },
 
         dynamicComponents: {
@@ -223,14 +232,20 @@
                 container: "{that}.container",
                 sources: "{repeater}.model.items",
                 options: {
-                    // repeat by array
                     index: "{sourcePath}",
                     item:  "{source}",
-                    handlerOptions: "{repeater}.options.handlerOptions",
+                    handlerType: "{repeater}.options.handlerType",
 
                     markup: {
-                        // TODO think about moving inside
-                        container: "@expand:gpii.psp.repeater.getIndexedContainerMarkup({repeater}.options.dynamicContainerMarkup, {that}.options.index)",
+                        container: {
+                            expander: {
+                                funcName: "gpii.psp.repeater.getIndexedContainerMarkup",
+                                args: [
+                                    "{repeater}.options.dynamicContainerMarkup",
+                                    "{that}.options.index"
+                                ]
+                            }
+                        },
                         // generated dynamicaly using the current item
                         element: "@expand:{repeater}.getMarkup({that}.options.item, {that}.options.index)"
                     }
@@ -251,19 +266,19 @@
      * @returns {String}
      */
     gpii.psp.repeater.getIndexedContainerMarkup = function (markup, containerIndex) {
-        // Remove the "." prefix
         var containerClass = fluid.stringTemplate(markup.containerClassPrefix, { id: containerIndex });
         return fluid.stringTemplate(markup.container, { containerClass: containerClass });
     };
 
 
-
     /**
-     * Creates the binding with the already rendered DOM elements.
-     * Expects: widget configuration and model
+     * A component which is responsible for visually presenting a setting.
+     * It initializes the DOM elements, updates the UI when necessary and
+     * fires the appropriate event when a setting's value is changed. Note
+     * that a setting can also have subsetting whose visualization will be
+     * delegated to a component of type `gpii.psp.settingsVisualizer`.
      */
     fluid.defaults("gpii.psp.settingPresenter", {
-        // TODO repreater handler base component
         gradeNames: "fluid.viewComponent",
         selectors: {
             solutionName: ".flc-solutionName:eq(0)",
@@ -275,8 +290,8 @@
             subsettings: ".flc-subsettings:eq(0)"
         },
         model: {
-            item: {}, // passed by repeater
-            // TODO DEV
+            item: {}, // passed by the repeater
+
             path:         "{that}.model.item.path",
             solutionName: "{that}.model.item.solutionName",
             value:        "{that}.model.item.value",
@@ -305,14 +320,7 @@
                 }
             }
         },
-        members: {
-            // Keep a reference to the parent component
-            // This way the parent (options provider) can be dynamically decided
-            parent: "{{that}.options.parent}"
-        },
-        // TODO tried with "gpii.psp.settingsVisualizer" but it won't work
-        // looks like this is not used
-        widgetConfig: "@expand:{that}.parent.options.widgetExemplars.getExemplarBySchemaType({that}.model.item.schema.type)",
+        widgetConfig: "@expand:{settingsExemplars}.widgetExemplars.getExemplarBySchemaType({that}.model.item.schema.type)",
 
         events: {
             onSettingUpdated: "{settingsPanel}.events.onSettingUpdated",
@@ -342,12 +350,12 @@
         },
         modelListeners: {
             value: [{
+                funcName: "gpii.psp.settingPresenter.toggleSubsettings",
+                args: ["{that}", "{change}.value", "{that}.dom.subsettings"]
+            }, {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model", "{change}.oldValue"],
                 excludeSource: ["init", "psp.mainWindow"]
-            }, {
-                funcName: "gpii.psp.settingPresenter.onValueChanged",
-                args: ["{that}", "{change}.value", "{that}.dom.subsettings"]
             }],
             restartIconTooltip: {
                 this: "{that}.dom.restartIcon",
@@ -356,12 +364,11 @@
             }
         },
         listeners: {
-            // TODO: Perhaps this won't be needed in the new approach.
-            // "onCreate.setSolutionName": {
-            //     this: "{that}.dom.solutionName",
-            //     method: "text",
-            //     args: "{that}.model.solutionName"
-            // },
+            "onCreate.setSolutionName": {
+                this: "{that}.dom.solutionName",
+                method: "text",
+                args: "{that}.model.solutionName"
+            },
             "onCreate.setTitle": {
                 this: "{that}.dom.title",
                 method: "text",
@@ -398,7 +405,15 @@
         }
     });
 
-    gpii.psp.settingPresenter.onValueChanged = function (that, value, subsettingsElement) {
+    /**
+     * Shows or hides the subsettings for a setting whose type is `boolean` depending on the
+     * setting's value.
+     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
+     * @param value {Any} The new value of a setting.
+     * @param subsettingsElement {jQuery} A jQuery element representing the container of the
+     * subsetting elements.
+     */
+    gpii.psp.settingPresenter.toggleSubsettings = function (that, value, subsettingsElement) {
         if (that.model.schema.type === "boolean") {
             subsettingsElement.toggle(value);
         }
@@ -416,7 +431,7 @@
 
     /**
      * Returns the appropriate tooltip for the restart icon if the setting has has an
-     * OSRestart" liveness and based on whether the user has modified the setting's value.
+     * "OSRestart" liveness and based on whether the user has modified the setting's value.
      * @param setting {Object} An object representing the setting.
      * @param pendingChanges {Array} An array of all pending setting changes that the user
      * has made.
@@ -445,6 +460,12 @@
         restartIcon.toggle(isShown);
     };
 
+
+    /**
+     * A component which is responsible for visually presenting a setting
+     * group. It also houses the `restartWarning` component which is separate
+     * for each setting group.
+     */
     fluid.defaults("gpii.psp.settingGroupPresenter", {
         gradeNames: "fluid.viewComponent",
 
@@ -455,8 +476,9 @@
         },
 
         model: {
-            item:     {}, // from the repeater
-            name:     "{that}.model.item.name",
+            item: {}, // passed by the repeater
+            name: "{that}.model.item.name",
+            solutionName: "{that}.model.item.solutionName",
             settings: "{that}.model.item.settings"
         },
 
@@ -479,7 +501,18 @@
                 container: "{that}.dom.restartWarning",
                 options: {
                     model: {
+                        solutionName: "{settingGroupPresenter}.model.solutionName",
                         settings: "{settingGroupPresenter}.model.settings"
+                    },
+                    modelRelay: {
+                        pendingChanges: {
+                            target: "pendingChanges",
+                            singleTransform: {
+                                type: "fluid.transforms.free",
+                                func: "gpii.psp.restartWarning.filterPendingChanges",
+                                args: ["{settingsPanel}.model.pendingChanges", "{that}.model.settings"]
+                            }
+                        }
                     },
                     events: {
                         onRestartNow: "{settingsPanel}.events.onRestartNow",
@@ -499,23 +532,27 @@
         }
     });
 
+    /**
+     * A special instance of a `gpii.psp.repeater` responsible for visualizing setting
+     * groups. The groups to be visualized have to be passed in the `items` property of
+     * the model. This component also requires to be configured with the `group` markup
+     * (or more precisely, the group markup will be fetched by the resource loader) and
+     * to have a `widgetExemplars` object containing various widget related options.
+     */
     fluid.defaults("gpii.psp.settingGroupsVisualizer", {
         gradeNames: "gpii.psp.repeater",
 
-        /// Expected from parent
+        // Expected from parent
         model: {
             items: null // settingGroups
         },
 
-        widgetExemplars: null, // passed from parent
+        widgetExemplars: null, // passed by parent
         markup: {
             group: null
         },
 
-        handlerOptions: {
-            type:   "gpii.psp.settingGroupPresenter",
-            parent: "{that}"
-        },
+        handlerType:   "gpii.psp.settingGroupPresenter",
 
         dynamicContainerMarkup: {
             containerClassPrefix: "flc-settingGroup-%id"
@@ -523,27 +560,19 @@
 
         invokers: {
             getMarkup: {
-                funcName: "gpii.psp.settingGroupsVisualizer.getMarkup",
-                args: [
-                    "{that}.options.markup",
-                    "{arguments}.0",
-                    "{arguments}.1"
-                ]
+                funcName: "fluid.identity",
+                args: ["{that}.options.markup.group"]
             }
         }
     });
 
-    gpii.psp.settingGroupsVisualizer.getMarkup = function (markup/*, group */) {
-        return fluid.stringTemplate(markup.group);
-    };
 
-    /*
-     * TODO
-     * With markup given, visualizes the list of settings passed - rendering and binding of each.
-     * Expects:
-     *   - settings list;
-     *   - widgetExemplars containing widget related options;
-     *   - markup
+    /**
+     * A special instance of a `gpii.psp.repeater` responsible for visualizing settings.
+     * They have to be passed in the `items` property of the model. This component also
+     * requires to be configured with the `setting` markup (it will be fetched by the
+     * resource loader) and to have a `widgetExemplars` object containing various widget
+     * related options.
      */
     fluid.defaults("gpii.psp.settingsVisualizer", {
         gradeNames: "gpii.psp.repeater",
@@ -552,12 +581,9 @@
             items: null // settings
         },
 
-        handlerOptions: {
-            type:   "gpii.psp.settingPresenter",
-            parent: "{that}"
-        },
+        handlerType:   "gpii.psp.settingPresenter",
 
-        widgetExemplars: null, // passed from parent
+        widgetExemplars: null, // passed by parent
         markup: {
             setting: null
             // per widget exemplar property
@@ -636,8 +662,8 @@
                     }
                 }
             },
-            // Represents the list of the settings component
-            settingsVisualizer: {
+            // Represents the list of the setting groups
+            settingGroupsVisualizer: {
                 type: "gpii.psp.settingGroupsVisualizer",
                 createOnEvent: "onTemplatesLoaded",
                 container: "{that}.container",

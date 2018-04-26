@@ -122,7 +122,7 @@
 
         invokers: {
             updateSelection: {
-                this: "{that}.options.parent",
+                this: "{dropdownItems}",
                 method: "updateSelection",
                 args: ["{that}.model.item"]
             }
@@ -229,9 +229,7 @@
                         container: "<li class=\"%containerClass\"></li>",
                         containerClassPrefix: "flc-imageDropdown-item"
                     },
-                    handlerOptions: {
-                        type: "gpii.psp.widgets.imageDropdownPresenter"
-                    },
+                    handlerType: "gpii.psp.widgets.imageDropdownPresenter",
                     markup: {
                         dropdownItem:
                             "<a href=\"#\">" +

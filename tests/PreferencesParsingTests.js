@@ -38,6 +38,7 @@ var multiPrefSetsFixture = {
         "activeContextName":"gpii-default",
         "settingGroups": [
             {
+                "solutionName": "Magnifier",
                 "settingControls": {
                     "http://registry\\.gpii\\.net/common/magnifierEnabled":{
                         "value":true,
@@ -46,7 +47,6 @@ var multiPrefSetsFixture = {
                             "description":"Magnifier",
                             "type":"boolean"
                         },
-                        "solutionName": "Magnifier",
                         "settingControls": {
                             "http://registry\\.gpii\\.net/common/magnification":{
                                 "value":2,
@@ -56,8 +56,7 @@ var multiPrefSetsFixture = {
                                     "type":"number",
                                     "min":1,
                                     "divisibleBy":0.1
-                                },
-                                "solutionName": "Magnifier"
+                                }
                             },
                             "http://registry\\.gpii\\.net/common/magnifierPosition":{
                                 "value":"Lens",
@@ -74,8 +73,7 @@ var multiPrefSetsFixture = {
                                         "BottomHalf",
                                         "Custom"
                                     ]
-                                },
-                                "solutionName": "Magnifier"
+                                }
                             }
                         }
                     }
@@ -83,6 +81,7 @@ var multiPrefSetsFixture = {
             },
             {
                 "name": "UIO+",
+                "solutionName": "UIO+",
                 "settingControls": {
                     "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/supportTool":{
                         "value":[
@@ -95,8 +94,7 @@ var multiPrefSetsFixture = {
                             "enum":[
                                 "dictionary"
                             ]
-                        },
-                        "solutionName": "UIO+"
+                        }
                     },
                     "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastEnabled":{
                         "value":true,
@@ -104,8 +102,7 @@ var multiPrefSetsFixture = {
                             "title":"High Contrast",
                             "description":"Whether to enable/disable High Contrast",
                             "type":"boolean"
-                        },
-                        "solutionName": "UIO+"
+                        }
                     },
                     "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastTheme":{
                         "value":"white-black",
@@ -119,8 +116,7 @@ var multiPrefSetsFixture = {
                                 "yellow-black",
                                 "black-yellow"
                             ]
-                        },
-                        "solutionName": "UIO+"
+                        }
                     }
                 }
             }
@@ -161,7 +157,7 @@ jqUnit.test("Parse empty message", function () {
 });
 
 jqUnit.test("Parse multiple preference sets message", function () {
-    jqUnit.expect(14);
+    jqUnit.expect(16);
 
     var preferences = gpii.app.extractPreferencesData(multiPrefSetsFixture);
 
@@ -180,6 +176,7 @@ jqUnit.test("Parse multiple preference sets message", function () {
         magnifierEnabledSetting = magnifierGroup.settings[0];
 
     jqUnit.assertFalse("Magnifier group does not have a name", magnifierGroup.name);
+    jqUnit.assertEquals("Maginifier group has correct solution name", "Magnifier", magnifierGroup.solutionName);
     jqUnit.assertEquals("Magnifier group has one top level setting", 1, magnifierGroup.settings.length);
 
     jqUnit.assertLeftHand("Maginifier enabled setting (type: boolean) is correctly parsed", {
@@ -197,7 +194,6 @@ jqUnit.test("Parse multiple preference sets message", function () {
     jqUnit.assertLeftHand("Maginification subsetting (type: number) is correctly parsed", {
         path: "http://registry\\.gpii\\.net/common/magnification",
         value: 2,
-        solutionName: "Magnifier",
         schema: {
             title: "Magnification",
             description: "Level of magnification",
@@ -210,7 +206,6 @@ jqUnit.test("Parse multiple preference sets message", function () {
     jqUnit.assertLeftHand("Position subsetting (type: string) is correctly parsed", {
         path: "http://registry\\.gpii\\.net/common/magnifierPosition",
         value: "Lens",
-        solutionName: "Magnifier",
         schema: {
             title: "Position",
             description: "Position of the magnified area",
@@ -223,6 +218,7 @@ jqUnit.test("Parse multiple preference sets message", function () {
     var uioPlusGroup = preferences.settingGroups[1];
 
     jqUnit.assertEquals("UIO+ group has a correct name", "UIO+", uioPlusGroup.name);
+    jqUnit.assertEquals("UIO+ group has correct solution name", "UIO+", uioPlusGroup.solutionName);
     jqUnit.assertEquals("UIO+ group has 3 top level settings", 3, uioPlusGroup.settings.length);
 
     jqUnit.assertLeftHand("Support tools setting (type: array) is correctly parsed", {
@@ -230,7 +226,6 @@ jqUnit.test("Parse multiple preference sets message", function () {
         value: [
             "dictionary"
         ],
-        solutionName: "UIO+",
         schema: {
             title: "Support Tools",
             description: "Whether to enable/disable certain support tools",
@@ -244,7 +239,6 @@ jqUnit.test("Parse multiple preference sets message", function () {
     jqUnit.assertLeftHand("UIO+: Hight Contrast setting (type: boolean) is correctly parsed", {
         path: "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastEnabled",
         value: true,
-        solutionName: "UIO+",
         schema: {
             title: "High Contrast",
             description: "Whether to enable/disable High Contrast",
@@ -255,7 +249,6 @@ jqUnit.test("Parse multiple preference sets message", function () {
     jqUnit.assertLeftHand("UIO+: Hight Contrast theme setting (type: string) is correctly parsed", {
         path: "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastTheme",
         value: "white-black",
-        solutionName: "UIO+",
         schema: {
             title: "High Contrast theme",
             description: "High Contrast Theme",

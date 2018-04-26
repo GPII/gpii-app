@@ -32,7 +32,15 @@ fluid.defaults("gpii.app.gpiiConnector", {
         onSnapsetNameUpdated: null,
         groupSettings: {
             event: "onMessageReceived",
-            args: "@expand:gpii.app.gpiiConnector.groupSettings({arguments}.0)"
+            args: {
+                expander: {
+                    funcName: "gpii.app.gpiiConnector.groupSettings",
+                    args: [
+                        groupingTemplate,
+                        "{arguments}.0" // message
+                    ]
+                }
+            }
         }
     },
 
@@ -65,12 +73,16 @@ fluid.defaults("gpii.app.gpiiConnector", {
  * object that was received via the PSP channel.
  * @param element {Object} An object (group of settings or an individual setting)
  * which has settings.
+ * @param groupSolutionName {String} The solutionName (i.e. the application to which
+ * this group pertains) of the group. If it is specified, none of the settings
+ * (including subsettings) within the group will have a solution name. If not specified,
+ * the solution name for each setting will be used (if provided).
  * @param messageSettingControls {Object} The `settingControls` object received
  * via the PSP channel
  * @return a `settingControls` object for the passed `element` which will include
  * information about the settings available for that element.
  */
-gpii.app.gpiiConnector.getSettingControls = function (element, messageSettingControls) {
+gpii.app.gpiiConnector.getSettingControls = function (element, groupSolutionName, messageSettingControls) {
     var settingControls = {};
 
     fluid.each(element.settings, function (setting) {
@@ -79,19 +91,24 @@ gpii.app.gpiiConnector.getSettingControls = function (element, messageSettingCon
         if (settingDescriptor) {
             settingControls[path] = fluid.copy(settingDescriptor);
 
-            // Add the solution name which is needed for the restart warning message.
-            if (setting.solutionName) {
-                settingControls[path].solutionName = setting.solutionName;
+            // No need for a solution name if the group already has one.
+            if (groupSolutionName) {
+                delete settingControls[path].solutionName;
             }
 
             // Calculate the `settingControls` object for the subsettings if any.
             if (setting.settings) {
                 var subsettingControls =
-                    gpii.app.gpiiConnector.getSettingControls(setting, messageSettingControls);
-                if (fluid.keys(subsettingControls).length > 0) {
+                    gpii.app.gpiiConnector.getSettingControls(setting, groupSolutionName, messageSettingControls);
+                if (gpii.app.isHashNotEmpty(subsettingControls)) {
                     settingControls[path].settingControls = subsettingControls;
                 }
             }
+
+            // Add a flag to the original setting descriptor to indicate that the setting
+            // has been assigned to a group. Needed to determine which settings should go
+            // into the default group.
+            settingDescriptor.grouped = true;
         }
     });
 
@@ -99,13 +116,69 @@ gpii.app.gpiiConnector.getSettingControls = function (element, messageSettingCon
 };
 
 /**
+ *Given the `settingControls` object which was part of the message received
+ * via the PSP channel, this function creates setting groups based on the
+ * `groupingTemplate`. Each object in the resulting array represents a single
+ * group that is to be visualized in the PSP and will definitely have at least
+ * one setting present.
+ * @param groupingTemplate {Array} A template array which serves for constructing
+ * setting groups.
+ * @result {Object[]} An array of setting groups each of which containing at
+ * least one setting.
+ */
+gpii.app.gpiiConnector.createGroupsFromTemplate = function (groupingTemplate, messageSettingControls) {
+    return fluid.copy(groupingTemplate)
+        .map(function (templateGroup) {
+            return {
+                name: templateGroup.name,
+                solutionName: templateGroup.solutionName,
+                settingControls: gpii.app.gpiiConnector.getSettingControls(templateGroup, templateGroup.solutionName, messageSettingControls)
+            };
+        })
+        .filter(function (settingGroup) {
+            return gpii.app.isHashNotEmpty(settingGroup.settingControls);
+        });
+};
+
+/**
+ *Given the `settingControls` object which was part of the message received
+ * via the PSP channel, this function creates a default group of settings, i.e.
+ * it will contain all settings which have not been assigned to other groups
+ * based on the `groupingTemplate`.
+ * @param messageSettingControls {Object} The `settingControls` object from the
+ * PSP channel message.
+ * @result {Object} The default group or `undefined` if there are no settings
+ * which do not belong to other groups.
+ */
+gpii.app.gpiiConnector.createDefaultGroup = function (messageSettingControls) {
+    var defaultGroup = {
+        settingControls: {}
+    };
+
+    fluid.each(messageSettingControls, function (settingDescriptor, path) {
+        if (!settingDescriptor.grouped) {
+            defaultGroup.settingControls[path] = fluid.copy(settingDescriptor);
+        }
+    });
+
+    if (gpii.app.isHashNotEmpty(defaultGroup.settingControls)) {
+        return defaultGroup;
+    }
+};
+
+/**
  * Transforms the message received via the PSP channel by adapting it
  * to the format expected by the PSP. The main thing that this function
  * does is to create groups of settings. Each group has a name and a set
  * of settings each of which can also have settings.
+ * @param groupingTemplate {Array} A template array which serves for constructing
+ * setting groups. Each group within the template must have a `settings` element
+ * which specifies the paths and possibly the subsettings of these settings, and
+ * optionally a `name` which will be displayed as a title for the group and a
+ * `solutionName` which will be used in the restart warning text.
  * @param message {Object} The received message.
  */
-gpii.app.gpiiConnector.groupSettings = function (message) {
+gpii.app.gpiiConnector.groupSettings = function (groupingTemplate, message) {
     var payload = message.payload || {},
         operation = payload.type,
         path = payload.path,
@@ -113,19 +186,21 @@ gpii.app.gpiiConnector.groupSettings = function (message) {
         messageSettingControls = value.settingControls;
 
     if (operation === "ADD" && path.length === 0 && messageSettingControls) {
-        value.settingGroups = fluid.copy(groupingTemplate)
-            .map(function (templateGroup) {
-                return {
-                    name: templateGroup.name,
-                    settingControls: gpii.app.gpiiConnector.getSettingControls(templateGroup, messageSettingControls)
-                };
-            })
-            .filter(function (settingGroup) {
-                return fluid.keys(settingGroup.settingControls).length > 0;
-            });
+        // First, add the groups which can be constructed from the grouping template
+        value.settingGroups = gpii.app.gpiiConnector.createGroupsFromTemplate(groupingTemplate, messageSettingControls);
 
+        // Then create a default group with all settings that have not yet been assigned
+        // to other groups.
+        var defaultGroup = gpii.app.gpiiConnector.createDefaultGroup(messageSettingControls);
+        if (defaultGroup) {
+            value.settingGroups.unshift(defaultGroup);
+        }
+
+        // Remove the `settingControls` element as it is no longer needed.
         delete value.settingControls;
     }
+
+    return message;
 };
 
 /**
@@ -200,8 +275,22 @@ gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefSet
     });
 };
 
-gpii.app.extractSettings = function (parent) {
-    return fluid.hashToArray(parent.settingControls, "path", function (setting, settingDescriptor) {
+/**
+ * For a given element which can be either a group of settings or a single setting,
+ * this function converts the `settingsControls` object into an array of setting
+ * objects which can be used in the PSP `BrowserWindow`. The function is called
+ * recursively for every other nested element which may have `settingControls`.
+ * @param element {Object} An object (group of settings or an individual setting)
+ * which has settings.
+ * @return {Array} An array of settings. Each of them must have a `schema` property
+ * which contains the setting's name, description, type and possible values, as well
+ * as a `value` property specifying the current setting value. The `solutionName`,
+ * `liveness` (describing whether a change to a setting's value requires a restart)
+ * and `memory` (whether a change to a setting's value is persisted) properties are
+ * optional.
+ */
+gpii.app.extractSettings = function (element) {
+    return fluid.hashToArray(element.settingControls, "path", function (setting, settingDescriptor) {
         setting.value = settingDescriptor.value;
         setting.solutionName = settingDescriptor.solutionName;
         setting.schema = settingDescriptor.schema;
@@ -242,6 +331,7 @@ gpii.app.extractPreferencesData = function (message) {
         settingGroups = fluid.transform(value.settingGroups, function (settingGroup) {
             return {
                 name: settingGroup.name,
+                solutionName: settingGroup.solutionName,
                 settings: gpii.app.extractSettings(settingGroup)
             };
         });

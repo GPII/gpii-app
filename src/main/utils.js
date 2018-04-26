@@ -93,6 +93,16 @@ gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
     }
 };
 
+/**
+ * Checks if a hash is not empty, i.e. if it contains at least one key.
+ * Note that the values are not examined.
+ * @param hash {Object} An arbitrary object.
+ * @return `true` is the hash has at least one key and `false` otherwise.
+ */
+gpii.app.isHashNotEmpty = function (hash) {
+    return hash && fluid.keys(hash).length > 0;
+};
+
 /*
  * A simple wrapper for the native timeout. Responsible for clearing the interval
  * upon component destruction.
