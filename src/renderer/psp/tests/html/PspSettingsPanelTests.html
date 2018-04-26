@@ -10,6 +10,8 @@
         <link rel="stylesheet" href="../../../common/css/heightObservable.css">
         <link rel="stylesheet" href="../../css/button.css">
         <link rel="stylesheet" href="../../css/dropdown.css">
+        <link rel="stylesheet" href="../../css/header.css">
+        <link rel="stylesheet" href="../../css/imageDropdown.css">
         <link rel="stylesheet" href="../../css/multipicker.css">
         <link rel="stylesheet" href="../../css/slider.css">
         <link rel="stylesheet" href="../../css/switch.css">
@@ -56,12 +58,16 @@
         <script type="text/javascript" src="../../../../../node_modules/infusion/src/framework/enhancement/js/ContextAwareness.js"></script>
         <script type="text/javascript" src="../../../../../node_modules/infusion/tests/test-core/utils/js/IoCTestUtils.js"></script>
 
+        <!-- Needed for the image dropdown to function properly -->
+        <script type="text/javascript" src="../../../../../node_modules/winstrap/dist/js/vendor/bootstrap.min.js"></script>
+
         <!-- These are the files to be tested -->
         <script type="text/javascript" src="../../../common/js/heightObservable.js"></script>
         <script type="text/javascript" src="../../js/widgets.js"></script>
         <script type="text/javascript" src="../../js/exemplars.js"></script>
         <script type="text/javascript" src="../../js/settingsPanel.js"></script>
         <script type="text/javascript" src="../../js/restartWarning.js"></script>
+        <script type="text/javascript" src="../../js/header.js"></script>
 
 
         <!--  These are tests that have been written using this page as data -->
@@ -101,6 +107,30 @@
                     <span class="flc-btnLabel"></span>
                 </button>
             </div>
+        </div>
+
+        <div class="flc-header fl-header">
+            <div class="flc-prefSetPicker fl-imageDropdown dropdown">
+                <button class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                    <img class="flc-imageDropdown-selectedItemImage">
+                    <span class="flc-imageDropdown-selectedItemText"></span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="flc-imageDropdown-menu dropdown-menu" role="menu">
+                </ul>
+            </div>
+
+            <span class="flc-activePreferenceSet fl-activePreferenceSet">
+                <img class="flc-activePreferenceSetImage fl-activePreferenceSetImage">
+                <span class="flc-activePreferenceSetName" tabindex="0"></span>
+            </span>
+            <div class="flc-autosaveHint fl-autosaveHint">
+                <span class="fl-icon fl-icon-memory"></span>
+                <span class="flc-autosaveText"></span>
+            </div>
+            <button class="flc-keyOutBtn btn fl-btn fl-keyOutBtn">
+                <span class="flc-btnLabel fl-btnLabel"></span>
+            </button>
         </div>
     </body>
 </html>

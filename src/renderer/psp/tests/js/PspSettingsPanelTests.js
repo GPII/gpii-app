@@ -1071,10 +1071,88 @@
         }
     });
 
+    var multiPreferencesFixture = {
+        sets: [  
+            {  
+                name: "Default preferences",
+                path: "gpii-default",
+                imageSrc: "https://www.w3schools.com/howto/img_paris.jpg"
+            },
+            {  
+                name: "bright",
+                path: "bright",
+                imageSrc: "https://www.w3schools.com/howto/img_mountains.jpg"
+            },
+            {  
+                name: "noise",
+                path: "noise",
+                imageSrc: "https://www.w3schools.com/howto/img_mountains.jpg"
+            },
+            {  
+                name: "bright and noise",
+                path: "brightandnoise",
+                imageSrc: "https://www.w3schools.com/howto/img_paris.jpg"
+            }
+        ],
+        activeSet: "gpii-default"
+    };
+
+    gpii.tests.psp.testHeaderInitialState = function (container, preferences) {
+        jqUnit.assert("Header rendered");
+    };
+
+    fluid.defaults("gpii.tests.psp.headerTester", {
+        gradeNames: ["fluid.test.testCaseHolder"],
+
+        modules: [{
+            name: "Header tests",
+            tests:[
+                {
+                    name: "Header dropdown and active preference set tests",
+                    expect: 1,
+                    sequence: [
+                        {
+                            funcName: "{header}.applier.change",
+                            args: ["preferences", multiPreferencesFixture]
+                        }, 
+                        {
+                            funcName: "{header}.events.onPreferencesUpdated.fire",
+                        }, {
+                            funcName: "gpii.tests.psp.testHeaderInitialState",
+                            args: ["{header}.container", multiPreferencesFixture]
+                        }
+                    ]
+                }
+            ]
+        }]
+    });
+
+    fluid.defaults("gpii.tests.psp.headerTests", {
+        gradeNames: ["fluid.test.testEnvironment"],
+        components: {
+            header: {
+                type: "gpii.psp.header",
+                container: ".flc-header",
+                options: {
+                    model: {
+                        messages: {
+                            autosaveText: "Auto-save is on",
+                            keyOut:"Key Out"
+                        }
+                    }
+                }
+            },
+            headerTester: {
+                type: "gpii.tests.psp.headerTester"
+            }
+        }
+    });
+
     $(function () {
         fluid.test.runTests([
             "gpii.tests.psp.attrsExpanderTests",
             "gpii.tests.psp.restartWarningTests",
+            "gpii.tests.psp.headerTests",
             "gpii.tests.psp.settingsPanelTestsWrapper"
         ]);
     });

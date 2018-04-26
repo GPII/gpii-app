@@ -158,7 +158,7 @@
      * @return {String} The type of the preferenceSetPicker subcomponent.
      */
     gpii.psp.getPreferenceSetPickerType = function (preferenceSets) {
-        return gpii.psp.hasMultipleItems(preferenceSets) ? "gpii.psp.widgets.imageDropdown" : "fluid.emptySubcomponent";
+        return preferenceSets.length > 1 ? "gpii.psp.widgets.imageDropdown" : "fluid.emptySubcomponent";
     };
 
     /**
@@ -174,7 +174,7 @@
      * should be hidden).
      */
     gpii.psp.updateHeader = function (preferenceSets, preferenceSetPickerElem, activePreferenceSetElem) {
-        if (gpii.psp.hasMultipleItems(preferenceSets)) {
+        if (preferenceSets.length > 1) {
             preferenceSetPickerElem.show();
             activePreferenceSetElem.hide();
         } else {

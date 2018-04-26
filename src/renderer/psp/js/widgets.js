@@ -145,7 +145,7 @@
     /**
      * A component which represents a dropdown whose elements have both an
      * image (not mandatory) and text. As the `options` elements within a
-     * `select` tag do not support images, this component uses the custom
+     * `select` tag does not support images, this component uses the custom
      * dropdown mechanism provided by bootstrap. The component expects to
      * be provided with an `items` array whose elements will be visually
      * represented in the dropdown. Each item must have a `path` property
