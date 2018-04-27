@@ -165,14 +165,14 @@ var keyOutFixture = {
 
 jqUnit.test("Group message without settings", function () {
     jqUnit.expect(1);
-    var channelMessage = gpii.app.gpiiConnector.groupSettings(groupingTemplate, emptyFixture);
+    var channelMessage = gpii.app.dev.gpiiConnector.groupSettings(groupingTemplate, emptyFixture);
     jqUnit.assertFalse("Empty message does not have a value", channelMessage.value);
 });
 
 jqUnit.test("Group setting tests", function () {
     jqUnit.expect(13);
 
-    var channelMessage = gpii.app.gpiiConnector.groupSettings(groupingTemplate, settingGroupsFixture),
+    var channelMessage = gpii.app.dev.gpiiConnector.groupSettings(groupingTemplate, settingGroupsFixture),
         payload = channelMessage.payload,
         value = payload.value,
         settingGroups = value.settingGroups;
@@ -275,6 +275,6 @@ jqUnit.test("Group setting tests", function () {
 
 jqUnit.test("Group key out message", function () {
     jqUnit.expect(1);
-    var channelMessage = gpii.app.gpiiConnector.groupSettings(groupingTemplate, keyOutFixture);
+    var channelMessage = gpii.app.dev.gpiiConnector.groupSettings(groupingTemplate, keyOutFixture);
     jqUnit.assertFalse("Key out message does not have a value", channelMessage.value);
 });
