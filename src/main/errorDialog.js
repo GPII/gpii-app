@@ -114,14 +114,10 @@ fluid.defaults("gpii.app.errorDialog", {
         dialogChannel: {
             type: "gpii.app.errorDialog.channel",
             options: {
+                events: {
+                    onContentHeightChanged: "{errorDialog}.events.onContentHeightChanged"
+                },
                 listeners: {
-                    onContentHeightChanged: {
-                        func: "{dialog}.resize",
-                        args: [
-                            "{errorDialog}.options.config.attrs.width", // only the height is dynamic
-                            "{arguments}.0" // windowHeight
-                        ]
-                    },
                     onErrorDialogCreated: {
                         funcName: "{errorDialog}.show"
                     },
