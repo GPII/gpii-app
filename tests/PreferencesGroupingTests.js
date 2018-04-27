@@ -62,13 +62,13 @@ var emptyFixture = {
     "type":"ADD"
 };
 
-var settingGroupsFixture = {  
-   "type":"modelChanged",
-   "payload":{  
-        "path":[  
+var settingGroupsFixture = {
+    "type":"modelChanged",
+    "payload":{
+        "path":[
         ],
         "type":"ADD",
-        "value":{  
+        "value":{
             "userToken":"snapset_1a",
             "activeContextName":"gpii-default",
             "settingControls":{
@@ -83,9 +83,9 @@ var settingGroupsFixture = {
                         "divisibleBy":0.1
                     }
                 },
-                "http://registry\\.gpii\\.net/common/DPIScale":{  
+                "http://registry\\.gpii\\.net/common/DPIScale":{
                     "value":1.25,
-                    "schema":{  
+                    "schema":{
                         "title":"DPI Scale",
                         "description":"DPI scale factor on default monitor",
                         "type":"number",
@@ -94,9 +94,9 @@ var settingGroupsFixture = {
                         "divisibleBy":0.25
                     }
                 },
-                "http://registry\\.gpii\\.net/common/cursorSize":{  
+                "http://registry\\.gpii\\.net/common/cursorSize":{
                     "value":1,
-                    "schema":{  
+                    "schema":{
                         "title":"Cursor Size",
                         "description":"Cursor size",
                         "type":"number",
@@ -143,17 +143,17 @@ var settingGroupsFixture = {
                         ]
                     }
                 }
-         },
-         "preferences":{  
-            "name":"Larger 125%",
-            "contexts":{  
-               "gpii-default":{  
-                  "name":"Default preferences"
-               }
+            },
+            "preferences":{
+                "name":"Larger 125%",
+                "contexts":{
+                    "gpii-default":{
+                        "name":"Default preferences"
+                    }
+                }
             }
-         }
-      }
-   }
+        }
+    }
 };
 
 var keyOutFixture = {
@@ -183,9 +183,9 @@ jqUnit.test("Group setting tests", function () {
     jqUnit.assertEquals("The default group contains 2 settings", 2, fluid.keys(defaultGroup.settingControls).length);
 
     var dpiScaleKey = "http://registry\\.gpii\\.net/common/DPIScale";
-    jqUnit.assertLeftHand("The default group contains the DPI scale setting", { 
+    jqUnit.assertLeftHand("The default group contains the DPI scale setting", {
         value: 1.25,
-        schema: {  
+        schema: {
             title: "DPI Scale",
             description: "DPI scale factor on default monitor",
             type: "number",
@@ -198,7 +198,7 @@ jqUnit.test("Group setting tests", function () {
     var cursorSizeKey = "http://registry\\.gpii\\.net/common/cursorSize";
     jqUnit.assertLeftHand("The default group contains the cursorSize setting", {
         value: 1,
-        schema: {  
+        schema: {
             title: "Cursor Size",
             description: "Cursor size",
             type: "number",
@@ -214,14 +214,14 @@ jqUnit.test("Group setting tests", function () {
 
     var uioPlusSupportToolKey = "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/supportTool";
     jqUnit.assertLeftHand("UIO+ group contains the supportTool setting", {
-        value: [  
+        value: [
             "dictionary"
         ],
-        schema: {  
+        schema: {
             title: "Support Tools",
             description: "Whether to enable/disable certain support tools",
             type: "array",
-            enum: [  
+            enum: [
                 "dictionary"
             ]
         }
@@ -231,7 +231,7 @@ jqUnit.test("Group setting tests", function () {
         uioPlusHighContrastEnabled = uioPlusGroup.settingControls[uioPlusHighContrastEnabledKey];
     jqUnit.assertLeftHand("UIO+ group contains the hightContrastEnabled setting", {
         value: true,
-        schema: {  
+        schema: {
             title: "High Contrast",
             description: "Whether to enable/disable High Contrast",
             type: "boolean"
@@ -239,15 +239,15 @@ jqUnit.test("Group setting tests", function () {
     }, uioPlusHighContrastEnabled);
 
     jqUnit.assertEquals("UIO+ high contrast enabled setting has one subsetting", 1, fluid.keys(uioPlusHighContrastEnabled.settingControls).length);
-    
+
     var uioPlusHighContrastThemeKey = "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastTheme";
     jqUnit.assertLeftHand("UIO+ group contains the highContrastTheme setting", {
         value: "white-black",
-        schema: {  
+        schema: {
             title: "High Contrast theme",
             description: "High Contrast Theme",
             type: "string",
-            enum: [  
+            enum: [
                 "black-white",
                 "white-black",
                 "yellow-black",
@@ -261,9 +261,9 @@ jqUnit.test("Group setting tests", function () {
     jqUnit.assertEquals("Magnifier group has correct solutionName", "Magnifier", magnifierGroup.solutionName);
 
     var maginificationKey = "http://registry\\.gpii\\.net/common/magnification";
-    jqUnit.assertLeftHand("Magnifier group contains the Magnification setting", { 
+    jqUnit.assertLeftHand("Magnifier group contains the Magnification setting", {
         value: 2,
-        schema: {  
+        schema: {
             title: "Magnification",
             description: "Level of magnification",
             type: "number",
