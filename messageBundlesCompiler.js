@@ -15,11 +15,72 @@
 
 "use strict";
 
+var fluid = require("infusion");
+var gpii = fluid.registerNamespace("gpii");
+fluid.registerNamespace("gpii.app.messageBundlesCompiler");
+
 var fs = require("fs");
 var path = require("path");
 
-var DEFAULT_FILE_TYPE = "json",
-    DEFAULT_PARSER = JSON;
+var DEFAULT_PARSER = {"json": JSON};
+
+
+/**
+ * Represents a single messages bundle, containing label names and messages for them.
+ *
+ * A label for the corresponding component follows the format: <full_grade_name_messageName>.
+ * Notice that the key's prefix is the grade name separated by "_" and
+ * the postfix is the message name which the component uses.
+ *
+ * For example:
+ * ```
+ * {
+ *     gpii_app_menu_keyOut: "Key out",
+ *     ...
+ * }
+ * ```
+ * contains a key for component `gpii.app.menu` which the component simply refers with `keyOut`.
+ *
+ * @typedef {Object.<String, String>} Messages
+ */
+
+
+/**
+ * An object representing messages for the different locales.
+ * It follows the format:
+ * {
+ *     <locale>: <Messages>,
+ *     ...
+ * }
+ *
+ * Example with multiple locales:
+ * ```
+ * {
+ *      en: {
+ *          gpii_app_menu_keyOut: "Key out",
+ *          ...
+ *      },
+ *      bg: {
+ *          gpii_app_menu_keyOut: "Излез",
+ *          ...
+ *      }
+ * }
+ * ```
+ *
+ * @typedef {Object.<String, Messages>} MessageBundles
+ */
+
+/**
+ * A map of file extensions to parsers.
+ * Example: {
+ *  "json": JSON,
+ *  "json5": JSON5
+ * }
+ *
+ * @typedef {Object.<String, String>} FileParsers
+ */
+
+
 
 /**
  * Generates a list of the least to the most specific locales that can be used.
@@ -29,7 +90,7 @@ var DEFAULT_FILE_TYPE = "json",
  * @returns {String[]} A list of locales. For example, for the "fr_FR" locale and
  * in case the default locale is "en", the function would return ["en", "fr", "fr_FR"].
  */
-function getLocaleVersions(locale, defaultLocale) {
+gpii.app.messageBundlesCompiler.getLocaleVersions = function (locale, defaultLocale) {
     var segments = locale.split("_");
 
     var versions = segments.map(function (segment, index) {
@@ -41,22 +102,24 @@ function getLocaleVersions(locale, defaultLocale) {
     }
 
     return versions;
-}
+};
 
 /**
  * In case there are only partial messages for a given locale, this function adds
- * the missing messages using the messages for all versions of the locale in the
- * order in which they are returned by the `getLocaleVersions` function.
- * @param messageBundles {Object} A raw map of collected bundles. It is of type
- * { locale1: { key1: message1, ... }, locale2: { key2: message2 }, ... }
+ * missing messages to this locale. It uses the messages from less specific locales,
+ * ending with the default locale. For example if we have a default locale of `bg`
+ * and a partial `en_us` bundle, a message will be first looked in the `en` bundles
+ * and only then in the `bg`.
+ *
+ * @param messageBundles {MessageBundles} A raw map of collected bundles.
  * @param defaultLocale {String} The default locale to be used.
- * @returns {Object} The enhanced message bundles object.
+ * @returns {MessageBundles} The enhanced message bundles object.
  */
-function includeFallbackOptions(messageBundles, defaultLocale) {
+gpii.app.messageBundlesCompiler.includeFallbackOptions = function (messageBundles, defaultLocale) {
     var result = {};
 
     Object.keys(messageBundles).forEach(function (locale) {
-        var localeVersions = getLocaleVersions(locale, defaultLocale),
+        var localeVersions = gpii.app.messageBundlesCompiler.getLocaleVersions(locale, defaultLocale),
             messageBundle = {};
 
         localeVersions.forEach(function (localeVersion) {
@@ -69,22 +132,23 @@ function includeFallbackOptions(messageBundles, defaultLocale) {
     });
 
     return result;
-}
+};
 
 /**
  * Collects all file names of the specified type from the given directory.
  * @param dir {String} The name of the directory from which files are to
  * be collected.
- * @param fileType {String} The file type that is to be searched for.
- * @returns {String[]} The list of matching file names.
+ * @param fileTypes {String[]} The file types that is to be searched for.
+ * @returns {String[]} The list of relative paths of matching files to the
+ * searched directory.
  */
-function collectFilesByType(dir, fileType) {
-    var typeRegex = "\\." + fileType + "$";
-
+gpii.app.messageBundlesCompiler.collectFilesByType = function (dir, fileTypes) {
     var filePaths = fs.readdirSync(dir)
         .filter(function matchesFileType(filename) {
-            return filename.match(typeRegex);
-        }).map(function (filename) {
+            var fileType = path.extname(filename).slice(1);
+            return fluid.contains(fileTypes, fileType);
+        })
+        .map(function (filename) {
             return path.join(dir, filename);
         });
 
@@ -94,16 +158,20 @@ function collectFilesByType(dir, fileType) {
 /**
  * Loads synchronously all message bundles from the passed directories.
  * @param bundlesDirs {String[]} The list of directrories' names containing message bundles.
- * @param fileType {String} The file type to be searched for in the given folders.
- * @param parser {Object} A parser object that has a `parse` method. An example of such is `JSON`.
- * @returns {Object[]} A list of all collected messages by file name.
+ * @param parsers {FileParsers} Available parsers for the bundle files. Bundles for the
+ * provided file types will be used for collected.
+ * @returns {Object[]} A list of all collected messages by filename.
  */
-function loadMessageBundles(bundlesDirs, fileType, parser) {
+gpii.app.messageBundlesCompiler.loadMessageBundles = function (bundlesDirs, parsers) {
+    var fileTypes = fluid.keys(parsers);
+
     var bundleFiles = bundlesDirs.reduce(function (files, bundlesDir) {
-        return files.concat(collectFilesByType(bundlesDir, fileType));
+        return files.concat(gpii.app.messageBundlesCompiler.collectFilesByType(bundlesDir, fileTypes));
     }, []);
 
     return bundleFiles.map(function (filePath) {
+        var fileType = path.extname(filePath).slice(1),
+            parser = parsers[fileType];
         return {
             messages: parser.parse(fs.readFileSync(filePath)),
             filename: path.basename(filePath)
@@ -117,35 +185,25 @@ function loadMessageBundles(bundlesDirs, fileType, parser) {
  * @param filename {String} The name of the file.
  * @returns {String} The locale, e.g. "en" or "en_us".
  */
-function extractLocaleFromFilename(filename) {
+gpii.app.messageBundlesCompiler.extractLocaleFromFilename = function (filename) {
     // strip file extension
     filename = filename.split(".")[0];
 
     var localeSegStart = filename.indexOf("_") + 1;
     return filename.slice(localeSegStart);
-}
+};
 
 /**
  * Merges all different bundles grouping them by locale.
  * @param loadedBundles {Object[]} A list of all messages by file name.
- * @returns {Object} Returns the grouped and merged messages.
- * For example:
- *   {
- *      en: {
- *          key: message,
- *          ...
- *      },
- *      bg: {
- *          key: message,
- *          ...
- *      }
- *   }
+ * @returns {MessageBundles} Returns the grouped and merged messages. Note that
+ * there might be missing messages.
  */
-function mergeMessageBundles(loadedBundles) {
+gpii.app.messageBundlesCompiler.mergeMessageBundles = function (loadedBundles) {
     var messageBundles = {};
 
     loadedBundles.forEach(function (bundle) {
-        var locale = extractLocaleFromFilename(bundle.filename),
+        var locale = gpii.app.messageBundlesCompiler.extractLocaleFromFilename(bundle.filename),
             prevMessages = messageBundles[locale] || {};
 
         // merge with the new file's messages
@@ -163,36 +221,27 @@ function mergeMessageBundles(loadedBundles) {
  * @param bundlesDirs {String[]} An array of the directories from which message bundle
  * files are to be retrieved.
  * @param defaultLocale {String} The default locale to be used.
- * @param fileType {String} The extension of the message bundle files.
- * @param parser {Object} An object which provides means (a `parse` method) for parsing the
- * contents of message bundle files.
+ * @param parsers {FileParsers} Available parsers for bundle files.
  * @return {Object} The compiled message bundles map.
  */
-function compileMessageBundles(bundlesDirs, defaultLocale, fileType, parser) {
-    fileType = fileType || DEFAULT_FILE_TYPE;
-    parser = parser || DEFAULT_PARSER;
+function compileMessageBundles(bundlesDirs, defaultLocale, parsers) {
+    parsers = parsers || DEFAULT_PARSER;
 
     var messageBundlesList;
 
     try {
-        messageBundlesList = loadMessageBundles(bundlesDirs, fileType, parser);
+        messageBundlesList = gpii.app.messageBundlesCompiler.loadMessageBundles(bundlesDirs, parsers);
     } catch (err) {
         // ENOENT, SyntaxError
-        console.log(err.message);
+        fluid.fail(err.message);
         throw err;
     }
 
-    var rawMessageBundles = mergeMessageBundles(messageBundlesList);
-    var compiledMessageBundle = includeFallbackOptions(rawMessageBundles, defaultLocale);
+    var rawMessageBundles = gpii.app.messageBundlesCompiler.mergeMessageBundles(messageBundlesList);
+    var compiledMessageBundle = gpii.app.messageBundlesCompiler.includeFallbackOptions(rawMessageBundles, defaultLocale);
 
     return compiledMessageBundle;
 };
 
 
-module.exports = {
-    compileMessageBundles:  compileMessageBundles,
-
-    _mergeMessageBundles:    mergeMessageBundles,
-    _loadMessageBundles:     loadMessageBundles,
-    _includeFallbackOptions: includeFallbackOptions
-};
+module.exports.compileMessageBundles = compileMessageBundles;

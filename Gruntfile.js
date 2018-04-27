@@ -36,7 +36,7 @@ module.exports = function (grunt) {
     grunt.registerMultiTask("compileMessages", function () {
         var compileMessageBundles = require(this.data.messageCompilerPath).compileMessageBundles;
 
-        var compiledMessageBundles = compileMessageBundles(this.data.messagesDirs, "en", "json", JSON);
+        var compiledMessageBundles = compileMessageBundles(this.data.messagesDirs, "en", {"json": JSON});
 
         grunt.file.write(this.data.resultFilePath, JSON.stringify(compiledMessageBundles, null, 4));
     });
