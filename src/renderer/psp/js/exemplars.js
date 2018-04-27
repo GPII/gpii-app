@@ -64,7 +64,7 @@
 
     fluid.defaults("gpii.psp.exemplar.settingsVisualizer", {
         gradeNames: "gpii.psp.exemplar",
-        resourceName: "settingRow.html"
+        resourceName: "setting.html"
     });
 
     fluid.defaults("gpii.psp.exemplar.settingGroupsVisualizer", {

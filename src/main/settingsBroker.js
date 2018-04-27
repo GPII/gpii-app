@@ -150,10 +150,10 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
 
 /**
  * Filters the passed `pendingChanges` based on the specified `liveness`.
- * @param pendingChanges {Array} The pending changes to be filtered.
+ * @param pendingChanges {Object[]} The pending changes to be filtered.
  * @param [liveness] {String} The liveness which the resulting pending changes would
  * have. If not specified, all `pendingChanges` will be returned.
- * @return {Array} The filtered pending changes based on the specified `liveness`.
+ * @return {Object[]} The filtered pending changes based on the specified `liveness`.
  */
 gpii.app.settingsBroker.filterPendingChanges = function (pendingChanges, liveness) {
     return pendingChanges.filter(function (pendingChange) {
@@ -167,7 +167,7 @@ gpii.app.settingsBroker.filterPendingChanges = function (pendingChanges, livenes
  * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
  * @param [descriptor] {Object} An object specifying which pending changes should
  * be applied.
- * @param [descriptor.pendingChanges] {Array} An array containing the pending
+ * @param [descriptor.pendingChanges] {Object[]} An array containing the pending
  * setting changes to be applied. If not specified, all pending changes from the
  * `settingsBroker` will be applied.
  * @param [descriptor.liveness] {String} The liveness of the pending changes to be
@@ -196,7 +196,7 @@ gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, descript
  * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
  * @param [descriptor] {Object} An object specifying which pending changes should
  * be cancelled / undone.
- * @param [descriptor.pendingChanges] {Array} An array containing the pending
+ * @param [descriptor.pendingChanges] {Object[]} An array containing the pending
  * setting changes to be cancelled. If not specified, all pending changes from the
  * `settingsBroker` will be cancelled.
  * @param [descriptor.liveness] {String} The liveness of the pending changes to be
@@ -223,7 +223,7 @@ gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, descripto
 /**
  * Checks if there is at least one element in the `pendingChanges` with the specified
  * `liveness`.
- * @param pendingChanges {Array} An array containing pending setting changes.
+ * @param pendingChanges {Object[]} An array containing pending setting changes.
  * @param [liveness] {String} The liveness of the pending changes to be queried. If
  * not provided, the function simply returns whether the `pendingChanges` array is not
  * empty.
@@ -238,7 +238,7 @@ gpii.app.settingsBroker.hasPendingChange = function (pendingChanges, liveness) {
 /**
  * Removes the specified pending changes from the queue.
  * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
- * @param changesToRemove {Array} The pending changes to be removed.
+ * @param changesToRemove {Object[]} The pending changes to be removed.
  */
 gpii.app.settingsBroker.removePendingChanges = function (settingsBroker, changesToRemove) {
     var pendingChanges = settingsBroker.model.pendingChanges;

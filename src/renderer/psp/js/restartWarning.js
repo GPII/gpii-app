@@ -159,7 +159,7 @@
      * @param pendingChanges {Array} An array containing all pending setting changes.
      * @param [solutionName] {String} An optional solution name with which the restart
      * warning can be configured.
-     * @return the solutions names or titles corresponding to the applications
+     * @return {String[]} the solutions names or titles corresponding to the applications
      * that need to be restarted.
      */
     gpii.psp.restartWarning.getSolutionsNames = function (messages, pendingChanges, solutionName) {

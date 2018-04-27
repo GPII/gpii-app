@@ -68,26 +68,98 @@ fluid.defaults("gpii.app.gpiiConnector", {
 });
 
 /**
- * Creates recursively a `settingControls` object given a template settings
- * group or a setting which may have subsettings and the original `settingControls`
- * object that was received via the PSP channel.
+ * An object containing information about the type of the setting and its possible
+ * values, as well as some additional meta information.
+ * @typedef {Object} SettingSchema
+ * @property {String} title The name of the setting which is displayed to the user.
+ * @property {String} description Contains additional information about the setting.
+ * @property {String} type The type of the setting which will later on determine the
+ * widget which will be used to visually represent the setting. Possible values are
+ * "boolean", "string", "array", "number".
+ * @property {Number} [min] The minimal value a setting with a type "number" can have.
+ * @property {Number} [max] The maximal value a setting with a type "number" can have.
+ * @property {Number} [divisibleBy] The setting's value must be a multiple of this
+ * number.
+ * @property {String[]} [enum] An array of the values which a "string" type setting
+ * can have.
+ */
+
+
+/**
+ * Represents a setting as described in the PSP channel message.
+ * @typedef {Object} ChannelSettingDescriptor
+ * @property {String|Number|Array|Boolean} value The value of the setting. The type
+ * of this property depends on the `schema.type` property.
+ * @property {SettingSchema} schema
+ * @property {String} [solutionName] The application to which this setting belongs.
+ * @property {String} [liveness] Describes whether a change in the setting value will
+ * require a restart of either an application or the whole OS. Possible values are
+ * "live", "liveRestart", "manualRestart", "OSRestart".
+ * @property {Boolean} [memory] Will have a `true` value if the setting's value will
+ * be persisted in the cloud when modified, and `false` otherwise.
+ */
+
+
+/**
+  * Represents the `settingControls` object from the PSP channel message. Contains
+  * information about each setting that is to be displayed in the PSP. Each key in
+  * this hash is a unique setting's path.
+  * @typedef {Object.<String, ChannelSettingDescriptor>} ChannelSettingControls
+  */
+
+
+/**
+ * Represents a setting after the grouping transformation has been applied to the
+ * original PSP channel message. Almost identical to the ChannelSettingDescriptor
+ * except for the possible presence of a nested PSPSettingDescriptor object.
+ * @typedef {Object} PSPSettingDescriptor
+ * @property {String|Number|Array|Boolean} value @see ChannelSettingDescriptor.value.
+ * @property {SettingSchema} schema
+ * @property {PSPSettingDescriptor} [settingControls] Represents the subsettings
+ * (if any) which this setting has.
+ * @property {String} [solutionName] @see ChannelSettingDescriptor.solutionName.
+ * @property {String} [liveness] @see ChannelSettingDescriptor.liveness.
+ * @property {Boolean} [memory] @see ChannelSettingDescriptor.memory.
+ */
+
+
+/**
+ * Represents the `settingControls` object obtained after the original message received
+ * via the PSP channel has been modified so that grouping is applied to its settings.
+ * Each key in this hash is a unique setting's path.
+ * @typedef {Object.<String, PSPSettingDescriptor>} PSPSettingControls
+ */
+
+
+/**
+ * Represents a group of setting created when the grouping algorithm is applied to the
+ * original PSP channel message.
+ * @typedef {Object} PSPSettingGroup
+ * @property {String} [name] The name of the group.
+ * @property {String} [solutionName] The application whose restart will be needed if a
+ * setting in this group is modified. It will be used in the restart warning message.
+ * @property {PSPSettingControls} settingControls
+ */
+
+
+/**
+ * Creates recursively a PSPSettingControls object given a template settings
+ * group or a setting which may have subsettings and a ChannelSettingControls object.
  * @param element {Object} An object (group of settings or an individual setting)
  * which has settings.
  * @param groupSolutionName {String} The solutionName (i.e. the application to which
  * this group pertains) of the group. If it is specified, none of the settings
  * (including subsettings) within the group will have a solution name. If not specified,
  * the solution name for each setting will be used (if provided).
- * @param messageSettingControls {Object} The `settingControls` object received
- * via the PSP channel
- * @return a `settingControls` object for the passed `element` which will include
- * information about the settings available for that element.
+ * @param channelSettingControls {ChannelSettingControls}
+ * @return {PSPSettingControls}
  */
-gpii.app.gpiiConnector.getSettingControls = function (element, groupSolutionName, messageSettingControls) {
+gpii.app.gpiiConnector.getSettingControls = function (element, groupSolutionName, channelSettingControls) {
     var settingControls = {};
 
     fluid.each(element.settings, function (setting) {
         var path = setting.path,
-            settingDescriptor = messageSettingControls[path];
+            settingDescriptor = channelSettingControls[path];
         if (settingDescriptor) {
             settingControls[path] = fluid.copy(settingDescriptor);
 
@@ -99,7 +171,7 @@ gpii.app.gpiiConnector.getSettingControls = function (element, groupSolutionName
             // Calculate the `settingControls` object for the subsettings if any.
             if (setting.settings) {
                 var subsettingControls =
-                    gpii.app.gpiiConnector.getSettingControls(setting, groupSolutionName, messageSettingControls);
+                    gpii.app.gpiiConnector.getSettingControls(setting, groupSolutionName, channelSettingControls);
                 if (gpii.app.isHashNotEmpty(subsettingControls)) {
                     settingControls[path].settingControls = subsettingControls;
                 }
@@ -116,23 +188,23 @@ gpii.app.gpiiConnector.getSettingControls = function (element, groupSolutionName
 };
 
 /**
- *Given the `settingControls` object which was part of the message received
- * via the PSP channel, this function creates setting groups based on the
- * `groupingTemplate`. Each object in the resulting array represents a single
- * group that is to be visualized in the PSP and will definitely have at least
+ * Given a ChannelSettingControls object, this function creates setting groups
+ * based on the `groupingTemplate`. Each object in the resulting array represents a
+ * single group that is to be visualized in the PSP and will definitely have at least
  * one setting present.
  * @param groupingTemplate {Array} A template array which serves for constructing
  * setting groups.
- * @result {Object[]} An array of setting groups each of which containing at
+ * @param channelSettingControls {ChannelSettingControls}
+ * @return {PSPSettingGroup[]} An array of setting groups each of which containing at
  * least one setting.
  */
-gpii.app.gpiiConnector.createGroupsFromTemplate = function (groupingTemplate, messageSettingControls) {
+gpii.app.gpiiConnector.createGroupsFromTemplate = function (groupingTemplate, channelSettingControls) {
     return fluid.copy(groupingTemplate)
         .map(function (templateGroup) {
             return {
                 name: templateGroup.name,
                 solutionName: templateGroup.solutionName,
-                settingControls: gpii.app.gpiiConnector.getSettingControls(templateGroup, templateGroup.solutionName, messageSettingControls)
+                settingControls: gpii.app.gpiiConnector.getSettingControls(templateGroup, templateGroup.solutionName, channelSettingControls)
             };
         })
         .filter(function (settingGroup) {
@@ -141,21 +213,19 @@ gpii.app.gpiiConnector.createGroupsFromTemplate = function (groupingTemplate, me
 };
 
 /**
- *Given the `settingControls` object which was part of the message received
- * via the PSP channel, this function creates a default group of settings, i.e.
- * it will contain all settings which have not been assigned to other groups
- * based on the `groupingTemplate`.
- * @param messageSettingControls {Object} The `settingControls` object from the
- * PSP channel message.
- * @result {Object} The default group or `undefined` if there are no settings
- * which do not belong to other groups.
+ * Given a ChannelSettingControls object, this function creates a default group
+ * of settings, i.e. it will contain all settings which have not been assigned to
+ * other groups based on the `groupingTemplate`. Will return `undefined` if there
+ * are no such settings.
+ * @param channelSettingControls {ChannelSettingControls}
+ * @return {PSPSettingGroup}
  */
-gpii.app.gpiiConnector.createDefaultGroup = function (messageSettingControls) {
+gpii.app.gpiiConnector.createDefaultGroup = function (channelSettingControls) {
     var defaultGroup = {
         settingControls: {}
     };
 
-    fluid.each(messageSettingControls, function (settingDescriptor, path) {
+    fluid.each(channelSettingControls, function (settingDescriptor, path) {
         if (!settingDescriptor.grouped) {
             defaultGroup.settingControls[path] = fluid.copy(settingDescriptor);
         }
@@ -170,7 +240,8 @@ gpii.app.gpiiConnector.createDefaultGroup = function (messageSettingControls) {
  * Transforms the message received via the PSP channel by adapting it
  * to the format expected by the PSP. The main thing that this function
  * does is to create groups of settings. Each group has a name and a set
- * of settings each of which can also have settings.
+ * of settings each of which can also have settings. Note that this function
+ * modifies the passed `message` object argument.
  * @param groupingTemplate {Array} A template array which serves for constructing
  * setting groups. Each group within the template must have a `settings` element
  * which specifies the paths and possibly the subsettings of these settings, and
@@ -183,15 +254,15 @@ gpii.app.gpiiConnector.groupSettings = function (groupingTemplate, message) {
         operation = payload.type,
         path = payload.path,
         value = payload.value || {},
-        messageSettingControls = value.settingControls;
+        channelSettingControls = value.settingControls;
 
-    if (operation === "ADD" && path.length === 0 && messageSettingControls) {
+    if (operation === "ADD" && path.length === 0 && channelSettingControls) {
         // First, add the groups which can be constructed from the grouping template
-        value.settingGroups = gpii.app.gpiiConnector.createGroupsFromTemplate(groupingTemplate, messageSettingControls);
+        value.settingGroups = gpii.app.gpiiConnector.createGroupsFromTemplate(groupingTemplate, channelSettingControls);
 
         // Then create a default group with all settings that have not yet been assigned
         // to other groups.
-        var defaultGroup = gpii.app.gpiiConnector.createDefaultGroup(messageSettingControls);
+        var defaultGroup = gpii.app.gpiiConnector.createDefaultGroup(channelSettingControls);
         if (defaultGroup) {
             value.settingGroups.unshift(defaultGroup);
         }
