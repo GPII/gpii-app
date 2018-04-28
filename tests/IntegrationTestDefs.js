@@ -1,4 +1,4 @@
- /**
+/**
  * PSP Integration Test Definitions
  *
  * Integration tests for the menu and tray components of the PSP both for the development
@@ -23,7 +23,6 @@ require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.app");
 
-// TODO: Is there a way to do this directly in the sequence?
 gpii.tests.app.testInitialMenu = function (menu) {
     var menuTemplate = menu.model.menuTemplate;
     gpii.tests.app.testMenu(menuTemplate);
@@ -131,7 +130,7 @@ gpii.tests.app.testDefs = {
 
 fluid.registerNamespace("gpii.tests.dev");
 
-var prefSetsInDevStartIdx = 4;
+var prefSetsInDevStartIdx = 5;
 gpii.tests.dev.testMultiContextKeyedIn = function (tray, menuTemplate, activeSetIdx) {
     gpii.tests.app.testItem(menuTemplate[1], "Keyed in with Multiple Contexts");
     gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx], "Default preferences");
@@ -171,19 +170,19 @@ gpii.tests.dev.testKeyInList = function (item) {
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 4);
+    gpii.tests.app.testTemplateExists(menuTemplate, 5);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
-    gpii.tests.dev.testKeyInList(menuTemplate[1]);
-    gpii.tests.app.testItem(menuTemplate[2], "(No one keyed in)");
-    gpii.tests.app.testItem(menuTemplate[3], "Exit GPII");
+    gpii.tests.dev.testKeyInList(menuTemplate[2]);
+    gpii.tests.app.testItem(menuTemplate[3], "(No one keyed in)");
+    gpii.tests.app.testItem(menuTemplate[4], "Exit GPII");
 };
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 8);
+    gpii.tests.app.testTemplateExists(menuTemplate, 9);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
-    gpii.tests.dev.testKeyInList(menuTemplate[2]);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[6]);
-    gpii.tests.app.testItem(menuTemplate[7], "Exit GPII");
+    gpii.tests.dev.testKeyInList(menuTemplate[3]);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[7]);
+    gpii.tests.app.testItem(menuTemplate[8], "Exit GPII");
 };
 
 gpii.tests.dev.testTrayTooltip = function (tray, expectedTooltip) {
@@ -193,7 +192,7 @@ gpii.tests.dev.testTrayTooltip = function (tray, expectedTooltip) {
 gpii.tests.dev.testTrayKeyedOut = function (tray) {
     jqUnit.assertValue("Tray is available", tray);
     jqUnit.assertEquals("No user keyed-in icon", tray.options.icons.keyedOut, tray.model.icon);
-    gpii.tests.dev.testTrayTooltip(tray, tray.options.tooltips.defaultTooltip);
+    gpii.tests.dev.testTrayTooltip(tray, tray.model.messages.defaultTooltip);
 };
 
 gpii.tests.dev.testTrayKeyedIn = function (tray, expectedTooltip) {
@@ -203,17 +202,20 @@ gpii.tests.dev.testTrayKeyedIn = function (tray, expectedTooltip) {
 };
 
 gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 11);
+    gpii.tests.app.testTemplateExists(menuTemplate, 12);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     // the default pref set should be set
     gpii.tests.dev.testMultiContextKeyedIn(tray, menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
-    gpii.tests.app.testItem(menuTemplate[9], "Key-out of GPII");
-    gpii.tests.app.testItem(menuTemplate[10], "Exit GPII");
+    gpii.tests.app.testItem(menuTemplate[10], "Key-out of GPII");
+    gpii.tests.app.testItem(menuTemplate[11], "Exit GPII");
 };
 
 gpii.tests.dev.testChangedActivePrefSetMenu = function (tray, menuTemplate, prefSetClickedIdx) {
-    gpii.tests.dev.testMultiContextKeyedIn(tray, menuTemplate,
-                      /*activeSetIdx=*/prefSetClickedIdx);
+    gpii.tests.dev.testMultiContextKeyedIn(
+        tray,
+        menuTemplate,
+        /*activeSetIdx=*/prefSetClickedIdx
+    );
 };
 
 gpii.tests.dev.testActiveSetChanged = function (tray, menuTemplate, prefSetItemClickedIdx, preferences) {

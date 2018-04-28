@@ -58,7 +58,11 @@ fluid.defaults("gpii.app.tray", {
         pendingChanges: [],
         icon: "{that}.options.icons.keyedOut",
         preferences: "{app}.model.preferences",
-        tooltip: ""
+        tooltip: "",
+        messages: {
+            pendingChanges: null,
+            defaultTooltip: null
+        }
     },
     modelRelay: {
         "icon": {
@@ -74,7 +78,7 @@ fluid.defaults("gpii.app.tray", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.getTrayTooltip",
-                args: ["{that}.model.preferences", "{that}.model.pendingChanges", "{that}.options.tooltips"]
+                args: ["{that}.model.preferences", "{that}.model.pendingChanges", "{that}.model.messages"]
             }
         }
     },
@@ -85,9 +89,9 @@ fluid.defaults("gpii.app.tray", {
             excludeSource: "init"
         },
         "tooltip": {
-            "this": "{that}.tray",
-            method: "setToolTip",
-            args: "{that}.model.tooltip"
+            funcName: "gpii.app.tray.setTrayTooltip",
+            args: ["{that}.tray", "{that}.model.tooltip"],
+            excludeSource: "init"
         }
     },
     listeners: {
@@ -95,10 +99,6 @@ fluid.defaults("gpii.app.tray", {
             this: "{that}.tray",
             method: "destroy"
         }
-    },
-    tooltips: {
-        pendingChanges: "There are pending changes",
-        defaultTooltip: "(No one keyed in)"
     }
 });
 
@@ -113,12 +113,23 @@ gpii.app.tray.setTrayIcon = function (tray, icon) {
 };
 
 /**
+  * Sets the tooltip for the Electron Tray icon. If a falsy value is provided,
+  * the current tooltip will be removed.
+  * @param {Tray} tray - An instance of an Electron Tray.
+  * @param {String} tooltip - The tooltip to be set.
+  */
+gpii.app.tray.setTrayTooltip = function (tray, tooltip) {
+    tooltip = tooltip || "";
+    tray.setToolTip(tooltip);
+};
+
+/**
  * Creates the Electron Tray.
  *
  * @param {Object} options - A configuration object for the tray that will be created.
  * @param {Function} openPSP - A function for showing the PSP window. Should be called whenever the user left clicks on
  * the tray icon or uses the PSP window shortcut.
- * @return {Object} - The tray object.
+ * @return {Tray} - The tray object.
  */
 gpii.app.makeTray = function (options, openPSP) {
     var tray = new Tray(fluid.module.resolvePath(options.icons.keyedOut));
@@ -157,12 +168,12 @@ gpii.app.getTrayIcon = function (keyedInUserToken, pendingChanges, icons) {
  * @param {Object} preferences - An object describing the preference sets (including the
  * active one) for the currently keyed-in user (if any).
  * @param {Array} pendingChanges - An array containing all pending setting changes.
- * @param {Object} tooltips - An object containing all possible tooltip texts.
+ * @param {Object} messages - An object containing different messages for the tray tooltip.
  * @return {String} - The tooltip label for the Electron Tray.
  */
-gpii.app.getTrayTooltip = function (preferences, pendingChanges, tooltips) {
+gpii.app.getTrayTooltip = function (preferences, pendingChanges, messages) {
     if (pendingChanges && pendingChanges.length > 0) {
-        return tooltips.pendingChanges;
+        return messages.pendingChanges;
     }
 
     var activePreferenceSet = fluid.find_if(preferences.sets,
@@ -171,5 +182,5 @@ gpii.app.getTrayTooltip = function (preferences, pendingChanges, tooltips) {
         }
     );
 
-    return activePreferenceSet ? activePreferenceSet.name : tooltips.defaultTooltip;
+    return activePreferenceSet ? activePreferenceSet.name : messages.defaultTooltip;
 };

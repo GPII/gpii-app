@@ -30,6 +30,8 @@ jqUnit.onAllTestsDone.addListener(function () {
 
 // Run the electron app tests with code coverage.
 require("./tests/AppTests.js");
+require("./tests/MessageBundlesTests.js");
+require("./tests/MessageBundlesCompilerTests.js");
 require("./tests/PreferencesParsingTests.js");
 require("./tests/IntegrationTests.js");
 

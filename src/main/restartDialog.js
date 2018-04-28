@@ -20,12 +20,13 @@ var ipcMain = require("electron").ipcMain;
 
 require("./dialog.js");
 
+
 /**
  * A component that serves as simple interface for communication with the
  * electron `BrowserWindow` restart dialog.
  */
 fluid.defaults("gpii.app.dialog.restartDialog.channel", {
-    gradeNames: ["fluid.component"],
+    gradeNames: ["gpii.app.i18n.channel"],
 
     events: {
         onClosed: null, // provided by parent component

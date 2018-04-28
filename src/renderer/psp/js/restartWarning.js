@@ -28,22 +28,35 @@
      * when the user presses either of the three action buttons.
      * Includes three actions:
      * Cancel (undo changes); Restart now; Close and Restart later
-     * See `labels` property for up-to-date list.
      */
     fluid.defaults("gpii.psp.baseRestartWarning", {
         gradeNames: ["fluid.viewComponent"],
         model: {
             pendingChanges: [],
             solutionNames: [],
-            restartText: ""
+            restartText: "",
+
+            messages: {
+                osName: null,
+                osRestartText: null,
+                restartText: null,
+
+                undo: null,
+                restartLater: null,
+                restartNow: null
+            }
         },
+
         modelRelay: {
             solutionNames: {
                 target: "solutionNames",
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.baseRestartWarning.getSolutionsNames",
-                    args: ["{that}.options.labels", "{that}.model.pendingChanges"]
+                    args: [
+                        "{that}.model.messages",
+                        "{that}.model.pendingChanges"
+                    ]
                 }
             },
             restartText: {
@@ -51,7 +64,10 @@
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.baseRestartWarning.generateRestartText",
-                    args: ["{that}.options.labels", "{that}.model.solutionNames"]
+                    args: [
+                        "{that}.model.messages",
+                        "{that}.model.solutionNames"
+                    ]
                 }
             }
         },
@@ -74,7 +90,7 @@
                 container: "{that}.dom.undo",
                 options: {
                     model: {
-                        label: "{baseRestartWarning}.options.labels.undo"
+                        label: "{baseRestartWarning}.model.messages.undo"
                     },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onUndoChanges.fire"
@@ -86,7 +102,7 @@
                 container: "{that}.dom.restartNow",
                 options: {
                     model: {
-                        label: "{baseRestartWarning}.options.labels.restartNow"
+                        label: "{baseRestartWarning}.model.messages.restartNow"
                     },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onRestartNow.fire"
@@ -98,7 +114,7 @@
                 container: "{that}.dom.restartLater",
                 options: {
                     model: {
-                        label: "{baseRestartWarning}.options.labels.restartLater"
+                        label: "{baseRestartWarning}.model.messages.restartLater"
                     },
                     invokers: {
                         onClick: "{baseRestartWarning}.events.onRestartLater.fire"
@@ -116,15 +132,6 @@
             onRestartNow: null,
             onRestartLater: null,
             onUndoChanges: null
-        },
-        labels: {
-            os: "Windows",
-            osRestartText: "Windows needs to restart to apply your changes",
-            restartText: "To apply your changes, the following applications need to restart: %solutions",
-
-            undo: "Cancel\n(Undo Changes)",
-            restartNow: "Restart Now",
-            restartLater: "Close and\nRestart Later"
         }
     });
 
@@ -134,17 +141,17 @@
      * instead. If there is at least one setting which requires the OS to be restarted, then the only solution name that
      * will be returned will be the OS name.
      *
-     * @param {Object} labels - An object containing various labels used throughout the component.
+     * @param {Object} messages - An object containing various messages used throughout the component.
      * @param {Array} pendingChanges - An array containing all pending setting changes.
      * @return {Array} - The solutions names or titles corresponding to the applications that need to be restarted.
      */
-    gpii.psp.baseRestartWarning.getSolutionsNames = function (labels, pendingChanges) {
+    gpii.psp.baseRestartWarning.getSolutionsNames = function (messages, pendingChanges) {
         var isOSRestartNeeded = fluid.find_if(pendingChanges, function (pendingChange) {
             return pendingChange.liveness === "OSRestart";
         });
 
         if (isOSRestartNeeded) {
-            return [labels.os];
+            return [messages.osName];
         }
 
         return fluid.accumulate(pendingChanges, function (pendingChange, solutionNames) {
@@ -161,18 +168,20 @@
     /**
      * Returns the text which is to be displayed in the component based on the solution
      * names corresponding to the pending setting changes.
-     * @param {Object} labels - An object containing various labels used throughout
+     * @param {Object} messages - An object containing various messages used throughout
      * the component.
      * @param {Array} solutionNames - the solutions names or titles corresponding to the
      * applications that need to be restarted.
      * @return {String} The text which is to be displayed in the component.
      */
-    gpii.psp.baseRestartWarning.generateRestartText = function (labels, solutionNames) {
-        if (solutionNames[0] === labels.os) {
-            return labels.osRestartText;
+    gpii.psp.baseRestartWarning.generateRestartText = function (messages, solutionNames) {
+        if (solutionNames[0] === messages.osName) {
+            return messages.osRestartText;
         }
 
-        return fluid.stringTemplate(labels.restartText, { solutions: solutionNames.join(", ")});
+        if (messages.restartText) {
+            return fluid.stringTemplate(messages.restartText, { solutions: solutionNames.join(", ")});
+        }
     };
 
     /**
@@ -190,7 +199,7 @@
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.psp.restartWarning.getRestartIcon",
-                    args: ["{that}.options.labels", "{that}.model.solutionNames", "{that}.options.styles"]
+                    args: ["{that}.model.messages", "{that}.model.solutionNames", "{that}.options.styles"]
                 }
             }
         },
@@ -240,15 +249,15 @@
     /**
      * Returns the CSS class which is to be applied to the icon in the component based
      * on whether an application or the whole OS needs to be restarted.
-     * @param {Object} labels - An object containing various labels used throughout
+     * @param {Object} messages - An object containing various messages used throughout
      * the component.
      * @param {Array} solutionNames - the solutions names or titles corresponding to the
      * applications that need to be restarted.
      * @param {Object} styles - An object containing the CSS classes used in the component.
      * @return {String} the CSS class to be applied to the icon.
      */
-    gpii.psp.restartWarning.getRestartIcon = function (labels, solutionNames, styles) {
-        return solutionNames[0] === labels.os ? styles.osRestartIcon : styles.applicationRestartIcon;
+    gpii.psp.restartWarning.getRestartIcon = function (messages, solutionNames, styles) {
+        return solutionNames[0] === messages.osName ? styles.osRestartIcon : styles.applicationRestartIcon;
     };
 
     /**

@@ -28,9 +28,7 @@ require("./restartDialog.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
-
-require("./networkCheck.js");
-
+require("../common/messageBundles.js");
 
 /**
  * Promise that resolves when the electron application is ready.
@@ -48,12 +46,13 @@ require("electron").app.on("ready", gpii.app.electronAppListener);
 // Override default behaviour - don't exit process once all windows are closed
 require("electron").app.on("window-all-closed", fluid.identity);
 
+
 /**
  * A component to manage the app. When  the PSP application is fully functional,
  * the `onPSPReady` event will be fired.
  */
 fluid.defaults("gpii.app", {
-    gradeNames: "fluid.modelComponent",
+    gradeNames: ["fluid.modelComponent", "gpii.app.messageBundles"],
     model: {
         keyedInUserToken: null,
         snapsetName: null,
