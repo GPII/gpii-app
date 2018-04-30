@@ -19,50 +19,35 @@
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
-
     fluid.registerNamespace("gpii.psp");
-    fluid.registerNamespace("gpii.psp.utils");
 
     /**
-     * Utility function for retrieving the last sub-element of a container
-     * @param container {jQuery} The jQuery container object
-     * @return {jQuery} A jQuery container object
-     */
-    gpii.psp.utils.getContainerLastChild = function (container) {
-        return container.children().last();
-    };
-
-    /**
-     * A simple wrapper for the remove function
-     * @param container {jQuery} A jQuery object
-     */
-    gpii.psp.utils.removeContainer = function (container) {
-        if (container) {
-            container.remove();
-        }
-    };
-
-    /**
-     * Creates the binding with the already rendered DOM elements.
-     * Expects: widget configuration and model
+     * A component which is responsible for visually presenting a setting.
+     * It initializes the DOM elements, updates the UI when necessary and
+     * fires the appropriate event when a setting's value is changed. Note
+     * that a setting can also have subsetting whose visualization will be
+     * delegated to a component of type `gpii.psp.settingsVisualizer`.
      */
     fluid.defaults("gpii.psp.settingPresenter", {
         gradeNames: "fluid.viewComponent",
         selectors: {
-            solutionName: ".flc-solutionName",
-            title: ".flc-title",
-            titleLabel: ".flc-titleLabel",
-            memoryIcon: ".flc-memoryIcon",
-            restartIcon: ".flc-restartIcon",
-            widget: ".flc-widget"
+            solutionName: ".flc-solutionName:eq(0)",
+            title: ".flc-title:eq(0)",
+            titleLabel: ".flc-titleLabel:eq(0)",
+            memoryIcon: ".flc-memoryIcon:eq(0)",
+            restartIcon: ".flc-restartIcon:eq(0)",
+            widget: ".flc-widget:eq(0)",
+            subsettings: ".flc-subsettings:eq(0)"
         },
         model: {
-            path: null,
-            solutionName: null,
-            value: null,
-            schema: null,
-            liveness: null, // "live", "liveRestart", "manualRestart", "OSRestart"
-            memory: null,
+            item: {}, // passed by the repeater
+
+            path:         "{that}.model.item.path",
+            solutionName: "{that}.model.item.solutionName",
+            value:        "{that}.model.item.value",
+            schema:       "{that}.model.item.schema",
+            liveness:     "{that}.model.item.liveness", // "live", "liveRestart", "manualRestart", "OSRestart"
+            memory:       "{that}.model.item.memory",
 
             messages: {
                 osRestart: null,
@@ -85,15 +70,12 @@
                 }
             }
         },
-        widgetConfig: {
-            widgetOptions: null,
-            grade: null
-        },
+        widgetConfig: "@expand:{settingsExemplars}.widgetExemplars.getExemplarBySchemaType({that}.model.item.schema.type)",
 
         events: {
-            onSettingUpdated: null,
-            onSettingAltered: null,
-            onRestartRequired: null
+            onSettingUpdated: "{settingsPanel}.events.onSettingUpdated",
+            onSettingAltered: "{settingsPanel}.events.onSettingAltered",
+            onRestartRequired: "{settingsPanel}.events.onRestartRequired"
         },
 
         components: {
@@ -102,14 +84,29 @@
                 container: "{that}.dom.widget",
                 // XXX currently, we exploit a misbehavior of expanding the `model` options, even if there's been expansion
                 options: "{settingPresenter}.options.widgetConfig.options.widgetOptions"
+            },
+            subsettings: {
+                type: "gpii.psp.settingsVisualizer",
+                container: "{that}.dom.subsettings",
+                options: {
+                    markup:          "{settingGroupsVisualizer}.options.markup",
+                    widgetExemplars: "{settingGroupsVisualizer}.options.widgetExemplars",
+
+                    model: {
+                        items: "{settingPresenter}.model.item.settings"
+                    }
+                }
             }
         },
         modelListeners: {
-            value: {
+            value: [{
+                funcName: "gpii.psp.settingPresenter.toggleSubsettings",
+                args: ["{that}", "{change}.value", "{that}.dom.subsettings"]
+            }, {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model", "{change}.oldValue"],
                 excludeSource: ["init", "psp.mainWindow"]
-            },
+            }],
             restartIconTooltip: {
                 this: "{that}.dom.restartIcon",
                 method: "attr",
@@ -159,6 +156,20 @@
     });
 
     /**
+     * Shows or hides the subsettings for a setting whose type is `boolean` depending on the
+     * setting's value.
+     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
+     * @param value {Any} The new value of a setting.
+     * @param subsettingsElement {jQuery} A jQuery element representing the container of the
+     * subsetting elements.
+     */
+    gpii.psp.settingPresenter.toggleSubsettings = function (that, value, subsettingsElement) {
+        if (that.model.schema.type === "boolean") {
+            subsettingsElement.toggle(value);
+        }
+    };
+
+    /**
      * Notifies the corresponding widget components about an update on the setting
      * in case the update is reffering current setting
      */
@@ -170,7 +181,7 @@
 
     /**
      * Returns the appropriate tooltip for the restart icon if the setting has has an
-     * OSRestart" liveness and based on whether the user has modified the setting's value.
+     * "OSRestart" liveness and based on whether the user has modified the setting's value.
      * @param setting {Object} An object representing the setting.
      * @param pendingChanges {Array} An array of all pending setting changes that the user
      * has made.
@@ -199,273 +210,158 @@
         restartIcon.toggle(isShown);
     };
 
+
     /**
-     * Renders all related markup for a setting:
-     * - container;
-     * - setting markup;
-     * - widget markup
-     * It also removes the injected markup on destroy
-     * Expects: markup
-     * Saves the newly created setting outer container internally
+     * A component which is responsible for visually presenting a setting
+     * group. It also houses the `restartWarning` component which is separate
+     * for each setting group.
      */
-    fluid.defaults("gpii.psp.settingRenderer", {
+    fluid.defaults("gpii.psp.settingGroupPresenter", {
         gradeNames: "fluid.viewComponent",
 
-        markup: {
-            container: null,
-            setting: null,
-            widget: null
+        selectors: {
+            name: ".flc-groupName",
+            settings: ".flc-settings:eq(0)",
+            restartWarning: ".flc-restartWarning"
         },
 
         model: {
-            // Save the container created
-            settingContainer: null
+            item: {}, // passed by the repeater
+            name: "{that}.model.item.name",
+            solutionName: "{that}.model.item.solutionName",
+            settings: "{that}.model.item.settings"
         },
-        events: {
-            onSettingContainerRendered: null,
-            onSettingMarkupRendered: null,
-            onWidgetMarkupRendered: null
-        },
-        listeners: {
-            "onDestroy.clearInjectedMarkup": {
-                funcName: "gpii.psp.utils.removeContainer",
-                args: "{that}.model.settingContainer"
-            }
-        },
+
         components: {
-            /*
-             * Render the outer most container for the setting
-             */
-            renderSettingContainer: {
-                type: "fluid.viewComponent",
-                container: "{that}.container",
+            settings: {
+                type: "gpii.psp.settingsVisualizer",
+                container: "{that}.dom.settings",
                 options: {
-                    listeners: {
-                        "onCreate.render": {
-                            this: "{that}.container",
-                            method: "append",
-                            args: ["{settingRenderer}.options.markup.container"]
-                        },
-                        "onCreate.updateContainer": {
-                            funcName: "{settingRenderer}.setContainer",
-                            args: "@expand:gpii.psp.utils.getContainerLastChild({that}.container)",
-                            priority: "after:render"
-                        },
-                        "onCreate.notify": {
-                            funcName: "{settingRenderer}.events.onSettingContainerRendered.fire",
-                            // Get the newly created container
-                            priority: "after:updateContainer"
-                        }
+                    // TODO
+                    markup:          "{settingGroupsVisualizer}.options.markup",
+                    widgetExemplars: "{settingGroupsVisualizer}.options.widgetExemplars",
+
+                    model: {
+                        items: "{settingGroupPresenter}.model.settings"
                     }
                 }
             },
-            /**
-             * Renders the setting markup inside the dedicated container
-             */
-            renderSettingMarkup: {
-                type: "fluid.viewComponent",
-                container: "{that}.model.settingContainer",
-                createOnEvent: "onSettingContainerRendered",
+            restartWarning: {
+                type: "gpii.psp.restartWarning",
+                container: "{that}.dom.restartWarning",
                 options: {
-                    widgetContainerClass: ".flc-widget",
-                    listeners: {
-                        "onCreate.render": {
-                            this: "{that}.container",
-                            method: "append",
-                            args: "{settingRenderer}.options.markup.setting"
-                        },
-                        "onCreate.notify": {
-                            funcName: "{settingRenderer}.events.onSettingMarkupRendered.fire",
-                            /*
-                             * Get the widget container.
-                             * Should match single element (jQuery returns an array of matches)
-                             */
-                            args: "@expand:$({that}.options.widgetContainerClass, {that}.container)",
-                            priority: "after:render"
+                    model: {
+                        solutionName: "{settingGroupPresenter}.model.solutionName",
+                        settings: "{settingGroupPresenter}.model.settings"
+                    },
+                    modelRelay: {
+                        pendingChanges: {
+                            target: "pendingChanges",
+                            singleTransform: {
+                                type: "fluid.transforms.free",
+                                func: "gpii.psp.restartWarning.filterPendingChanges",
+                                args: ["{settingsPanel}.model.pendingChanges", "{that}.model.settings"]
+                            }
                         }
-                    }
-                }
-            },
-            /*
-             * Render widget related markup
-             */
-            renderWidgetMarkup: {
-                type: "fluid.viewComponent",
-                // the widget container
-                container: "{arguments}.0",
-                createOnEvent: "onSettingMarkupRendered",
-                options: {
-                    listeners: {
-                        "onCreate.render": {
-                            this: "{that}.container",
-                            method: "append",
-                            args: "{settingRenderer}.options.markup.widget"
-                        },
-                        "onCreate.notify": {
-                            funcName: "{settingRenderer}.events.onWidgetMarkupRendered.fire",
-                            priority: "after:render"
-                        }
+                    },
+                    events: {
+                        onRestartNow: "{settingsPanel}.events.onRestartNow",
+                        onRestartLater: "{settingsPanel}.events.onRestartLater",
+                        onUndoChanges: "{settingsPanel}.events.onUndoChanges"
                     }
                 }
             }
         },
-        invokers: {
-            setContainer: {
-                changePath: "settingContainer",
-                value: "{arguments}.0"
+
+        listeners: {
+            "onCreate.setLabel": {
+                this: "{that}.dom.name",
+                method: "text",
+                args: "{that}.model.name"
             }
         }
     });
 
     /**
-     * Handles visualization of single setting.
-     * Expects: markup for the all containers and the widget; widgetConfig needed for the setting; the setting
+     * A special instance of a `gpii.psp.repeater` responsible for visualizing setting
+     * groups. The groups to be visualized have to be passed in the `items` property of
+     * the model. This component also requires to be configured with the `group` markup
+     * (or more precisely, the group markup will be fetched by the resource loader) and
+     * to have a `widgetExemplars` object containing various widget related options.
      */
-    fluid.defaults("gpii.psp.settingVisualizer",  {
-        gradeNames: "fluid.viewComponent",
+    fluid.defaults("gpii.psp.settingGroupsVisualizer", {
+        gradeNames: "gpii.psp.repeater",
 
-        setting: null,
-        widgetConfig: null,
+        // Expected from parent
+        model: {
+            items: null // settingGroups
+        },
+
+        widgetExemplars: null, // passed by parent
         markup: {
-            container: null,
-            setting: null,
-            widget: null
+            group: null
         },
 
-        events: {
-            onSettingRendered: null,
-            onRestartRequired: null,
+        handlerType:   "gpii.psp.settingGroupPresenter",
 
-            onSettingAltered: null,  // provided by parent component
-            onSettingUpdated: null  // provided by parent component
+        dynamicContainerMarkup: {
+            containerClassPrefix: "flc-settingGroup-%id"
         },
 
-        components: {
-            settingRenderer: {
-                type: "gpii.psp.settingRenderer",
-                container: "{that}.container",
-
-                options: {
-                    markup: "{settingVisualizer}.options.markup",
-                    listeners: {
-                        "onWidgetMarkupRendered.notify": {
-                            funcName: "{settingVisualizer}.events.onSettingRendered.fire",
-                            // pass the created by the subcomponent container
-                            args: "{that}.model.settingContainer"
-                        }
-                    }
-                }
-            },
-            settingPresenter: {
-                type: "gpii.psp.settingPresenter",
-                createOnEvent: "onSettingRendered",
-                container: "{arguments}.0",
-                options: {
-                    widgetConfig: "{settingVisualizer}.options.widgetConfig",
-                    model: "{settingVisualizer}.options.setting",
-                    events: {
-                        onSettingAltered: "{settingVisualizer}.events.onSettingAltered",
-                        onSettingUpdated: "{settingVisualizer}.events.onSettingUpdated",
-                        onRestartRequired: "{settingVisualizer}.events.onRestartRequired"
-                    }
-                }
+        invokers: {
+            getMarkup: {
+                funcName: "fluid.identity",
+                args: ["{that}.options.markup.group"]
             }
         }
     });
 
 
-    /*
-     * With markup given, visualizes the list of settings passed - rendering and binding of each.
-     * Expects:
-     *   - settings list;
-     *   - widgetExemplars containing widget related options;
-     *   - markup
+    /**
+     * A special instance of a `gpii.psp.repeater` responsible for visualizing settings.
+     * They have to be passed in the `items` property of the model. This component also
+     * requires to be configured with the `setting` markup (it will be fetched by the
+     * resource loader) and to have a `widgetExemplars` object containing various widget
+     * related options.
      */
     fluid.defaults("gpii.psp.settingsVisualizer", {
-        gradeNames: "fluid.viewComponent",
+        gradeNames: "gpii.psp.repeater",
 
         model: {
-            settings: null
+            items: null // settings
         },
-        widgetExemplars: [],
+
+        handlerType:   "gpii.psp.settingPresenter",
+
+        widgetExemplars: null, // passed by parent
         markup: {
             setting: null
             // per widget exemplar property
         },
         dynamicContainerMarkup: {
-            container: "<div class=\"%containerClass\"></div>",
             containerClassPrefix: "flc-settingListRow-%id"
         },
-        events: {
-            onSettingCreated: null
-        },
-        modelListeners: {
-            settings: {
-                func: "{that}.updateSettingsPresentations",
-                args: ["{that}", "{that}.model.settings"]
-            }
-        },
+
         invokers: {
-            updateSettingsPresentations: {
-                funcName: "gpii.psp.settingsVisualizer.updateSettingsPresentations"
-            }
-        },
-        dynamicComponents: {
-            settingVisualizer: {
-                type: "gpii.psp.settingVisualizer",
-                container: "{that}.container",
-                createOnEvent: "onSettingCreated",
-                options: {
-                    settingIndex: "{arguments}.0",
-                    setting: "{arguments}.1",
-
-                    events: {
-                        onSettingAltered: "{settingsPanel}.events.onSettingAltered",
-                        onSettingUpdated: "{settingsPanel}.events.onSettingUpdated",
-                        onRestartRequired: "{settingsPanel}.events.onRestartRequired"
-                    },
-
-                    widgetConfig: "@expand:{settingsVisualizer}.options.widgetExemplars.getExemplarBySchemaType({that}.options.setting.schema.type)",
-                    markup: {
-                        container: "@expand:gpii.psp.settingsVisualizer.getIndexedContainerMarkup({settingsVisualizer}.options.dynamicContainerMarkup, {that}.options.settingIndex)",
-                        setting: "{settingsVisualizer}.options.markup.setting", // markup.setting",
-                        widget: "@expand:gpii.psp.getProperty({settingsVisualizer}.options.markup, {that}.options.widgetConfig.options.grade)"
-                    }
-                }
+            getMarkup: {
+                funcName: "gpii.psp.settingsVisualizer.getMarkup",
+                args: [
+                    "{that}.options.markup",
+                    "{that}.options.widgetExemplars",
+                    "{arguments}.0",
+                    "{arguments}.1"
+                ]
             }
         }
     });
 
-    /**
-     * Constructs the markup for the indexed container - sets proper index.
-     *
-     * @param markup {Object}
-     * @param markup.containerClassPrefix {String} The class prefix for the indexed container.
-     *   Should have a `id` interpolated expression.
-     * @param markup.container {String} The markup which is to be interpolated with the container index.
-     *   Should have a `containerClass` interpolated expression.
-     * @param containerIndex {Number} The index for the container
-     * @return {String}
-     */
-    gpii.psp.settingsVisualizer.getIndexedContainerMarkup = function (markup, containerIndex) {
-        // Remove the "." prefix
-        var containerClass = fluid.stringTemplate(markup.containerClassPrefix, { id: containerIndex });
-        return fluid.stringTemplate(markup.container, { containerClass: containerClass });
+    gpii.psp.settingsVisualizer.getMarkup = function (markup, widgetExemplars, setting) {
+        var widgetConfig = widgetExemplars.getExemplarBySchemaType(setting.schema.type);
+        var widgetMarkup = markup[widgetConfig.options.grade];
+
+        return fluid.stringTemplate(markup.setting, {widgetMarkup: widgetMarkup});
     };
 
-    /**
-     * Simple getter for the property that supports complex keys containing '.' (dots).
-     */
-    gpii.psp.getProperty = function (obj, property) {
-        return obj && obj[property];
-    };
-
-
-    gpii.psp.settingsVisualizer.updateSettingsPresentations = function (that, settings) {
-        settings.forEach(function (setting, settingIndex) {
-            that.events.onSettingCreated.fire(settingIndex, setting);
-        });
-    };
 
     /**
      * The top most component for representation of list of settings.
@@ -473,9 +369,10 @@
      * Expects: list of settings
      */
     fluid.defaults("gpii.psp.settingsPanel", {
-        gradeNames: "fluid.viewComponent",
+        gradeNames: "gpii.psp.heightObservable",
         model: {
-            settings: []
+            pendingChanges: [],
+            settingGroups: []
         },
         components: {
             settingsExemplars: {
@@ -490,6 +387,9 @@
                         },
                         settingsVisualizerExemplar: {
                             type: "gpii.psp.exemplar.settingsVisualizer"
+                        },
+                        settingGroupsVisualizerExemplar: {
+                            type: "gpii.psp.exemplar.settingGroupsVisualizer"
                         }
                     }
                 }
@@ -497,22 +397,31 @@
             resourcesLoader: {
                 type: "fluid.resourceLoader",
                 options: {
-                    resources: "@expand:gpii.psp.settingsPanel.getResourcesToFetch({settingsExemplars}.settingsVisualizerExemplar, {settingsExemplars}.widgetExemplarsList)",
+                    resources: {
+                        expander: {
+                            funcName: "gpii.psp.settingsPanel.getResourcesToFetch",
+                            args: [
+                                "{settingsExemplars}.settingGroupsVisualizerExemplar",
+                                "{settingsExemplars}.settingsVisualizerExemplar",
+                                "{settingsExemplars}.widgetExemplarsList"
+                            ]
+                        }
+                    },
                     listeners: {
                         onResourcesLoaded: "{settingsPanel}.events.onTemplatesLoaded"
                     }
                 }
             },
-            // Represents the list of the settings component
-            settingsVisualizer: {
-                type: "gpii.psp.settingsVisualizer",
+            // Represents the list of the setting groups
+            settingGroupsVisualizer: {
+                type: "gpii.psp.settingGroupsVisualizer",
                 createOnEvent: "onTemplatesLoaded",
                 container: "{that}.container",
                 options: {
                     widgetExemplars: "{settingsExemplars}.widgetExemplars",
                     markup: "@expand:gpii.psp.settingsPanel.flattenResources({resourcesLoader}.resources)",
                     model: {
-                        settings: "{settingsPanel}.model.settings"
+                        items: "{settingsPanel}.model.settingGroups"
                     }
                 }
             }
@@ -521,7 +430,17 @@
             onTemplatesLoaded: null,
             onSettingAltered: null,
             onSettingUpdated: null, // passed from outside
-            onRestartRequired: null
+            onRestartRequired: null,
+
+            onRestartNow: null,
+            onRestartLater: null,
+            onUndoChanges: null
+        },
+        invokers: {
+            updatePendingChanges: {
+                changePath: "pendingChanges",
+                value: "{arguments}.0"
+            }
         }
     });
 
@@ -556,7 +475,7 @@
      *   Note: it has a fixed key.
      * @param widgetExemplarsList {Object[]} The list of `gpii.psp.exemplar`-s
      */
-    gpii.psp.settingsPanel.getResourcesToFetch = function (settingExemplar, widgetExemplarsList) {
+    gpii.psp.settingsPanel.getResourcesToFetch = function (settingGroupExemplar, settingExemplar, widgetExemplarsList) {
         function getWidgetResources(exemplars) {
             return exemplars.reduce(function (markup, exemplar) {
                 markup[exemplar.options.grade] = exemplar.options.template;
@@ -565,6 +484,7 @@
         }
 
         var settingsVisualizerMarkup = {
+            group: settingGroupExemplar.options.template,
             setting:  settingExemplar.options.template
         };
         var widgetsMarkup = getWidgetResources(widgetExemplarsList);

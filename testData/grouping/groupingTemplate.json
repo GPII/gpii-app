@@ -1,0 +1,45 @@
+[
+    {
+        "name": "Windows Hight Contrast",
+        "solutionName": "Windows Hight Contrast",
+        "settings": [
+            {
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled",
+                "settings": [
+                    {
+                        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastTheme"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "UIO+",
+        "solutionName": "UIO+",
+        "settings": [
+            {
+                "path": "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/supportTool"
+            },
+            {
+                "path": "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastEnabled",
+                "settings": [
+                    {
+                        "path": "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastTheme"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Magnifier",
+        "solutionName": "Magnifier",
+        "settings": [
+            {
+                "path": "http://registry\\.gpii\\.net/common/magnification"
+            },
+            {
+                "path": "http://registry\\.gpii\\.net/common/magnifierPosition"
+            }
+        ]
+    }
+]

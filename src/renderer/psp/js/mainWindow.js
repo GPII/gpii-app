@@ -106,7 +106,7 @@
             preferences: {
                 sets: [],
                 activeSet: null,
-                settings: []
+                settingGroups: []
             }
         },
         selectors: {
@@ -168,20 +168,6 @@
                 container: "{that}.dom.settingsList",
                 createOnEvent: "{mainWindow}.events.onPreferencesUpdated",
                 options: {
-                    model: {
-                        settings: "{mainWindow}.model.preferences.settings"
-                    },
-                    events: {
-                        onSettingAltered: "{mainWindow}.events.onSettingAltered",
-                        onSettingUpdated: "{mainWindow}.events.onSettingUpdated",
-                        onRestartRequired: "{mainWindow}.events.onRestartRequired"
-                    }
-                }
-            },
-            restartWarning: {
-                type: "gpii.psp.restartWarning",
-                container: "{that}.dom.restartWarning",
-                options: {
                     listeners: {
                         onHeightChanged: {
                             funcName: "{mainWindow}.updateHeight"
@@ -190,7 +176,14 @@
                             funcName: "{that}.updatePendingChanges"
                         }
                     },
+                    model: {
+                        settingGroups: "{mainWindow}.model.preferences.settingGroups"
+                    },
                     events: {
+                        onSettingAltered: "{mainWindow}.events.onSettingAltered",
+                        onSettingUpdated: "{mainWindow}.events.onSettingUpdated",
+                        onRestartRequired: "{mainWindow}.events.onRestartRequired",
+
                         onRestartNow: "{mainWindow}.events.onRestartNow",
                         onUndoChanges: "{mainWindow}.events.onUndoChanges"
                     }
