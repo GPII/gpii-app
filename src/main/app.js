@@ -58,7 +58,8 @@ fluid.defaults("gpii.app", {
         preferences: {
             sets: [],
             activeSet: null
-        }
+        },
+        theme: "{that}.options.defaultTheme"
     },
     // prerequisites
     members: {
@@ -138,7 +139,12 @@ fluid.defaults("gpii.app", {
         },
         psp: {
             type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    theme: "{app}.model.theme"
+                }
+            }
         },
         tray: {
             type: "gpii.app.tray",
@@ -227,7 +233,8 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.exit",
             args: "{that}"
         }
-    }
+    },
+    defaultTheme: "white"
 });
 
 

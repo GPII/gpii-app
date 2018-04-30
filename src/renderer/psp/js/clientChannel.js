@@ -69,6 +69,10 @@
             clientChannel.events.onAccentColorChanged.fire(accentColor);
         });
 
+        ipcRenderer.on("onThemeChanged", function (event, theme) {
+            clientChannel.events.onThemeChanged.fire(theme);
+        });
+
         ipcRenderer.on("onRestartRequired", function (event, pendingChanges) {
             clientChannel.events.onRestartRequired.fire(pendingChanges);
         });
@@ -85,6 +89,7 @@
             onPreferencesUpdated: null,
             onSettingUpdated: null,
             onAccentColorChanged: null,
+            onThemeChanged: null,
             onRestartRequired: null
         },
         listeners: {
@@ -140,6 +145,10 @@
                     "onUndoChanges",
                     "{arguments}.0" // pendingChanges
                 ]
+            },
+            notifyPSPCreated: {
+                func: "{that}.sendMessage",
+                args: ["onPSPCreated"]
             }
         }
     });

@@ -20,6 +20,16 @@
     cursor: default;
 }
 
+.fl-header .fl-activePreferenceSetImage {
+    width: 30px;
+    height: 30px;
+}
+
+.fl-header .fl-activePreferenceSetImage:not([src]),
+.fl-header .fl-activePreferenceSetImage[src=""] {
+    display: none;
+}
+
 .fl-header .fl-autosaveHint {
     clear: both;
     cursor: default;

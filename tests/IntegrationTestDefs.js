@@ -131,7 +131,7 @@ gpii.tests.app.testDefs = {
 
 fluid.registerNamespace("gpii.tests.dev");
 
-var prefSetsInDevStartIdx = 5;
+var prefSetsInDevStartIdx = 6;
 gpii.tests.dev.testMultiContextKeyedIn = function (tray, menuTemplate, activeSetIdx) {
     gpii.tests.app.testItem(menuTemplate[1], "Keyed in with Multiple Contexts");
     gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx], "Default preferences");
@@ -171,20 +171,20 @@ gpii.tests.dev.testKeyInList = function (item) {
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 7);
+    gpii.tests.app.testTemplateExists(menuTemplate, 8);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
-    gpii.tests.dev.testKeyInList(menuTemplate[2]);
-    gpii.tests.app.testItem(menuTemplate[3], "About...");
-    gpii.tests.app.testItem(menuTemplate[5], "(No one keyed in)");
-    gpii.tests.app.testItem(menuTemplate[6], "Exit GPII");
+    gpii.tests.dev.testKeyInList(menuTemplate[3]);
+    gpii.tests.app.testItem(menuTemplate[4], "About...");
+    gpii.tests.app.testItem(menuTemplate[6], "(No one keyed in)");
+    gpii.tests.app.testItem(menuTemplate[7], "Exit GPII");
 };
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 11);
+    gpii.tests.app.testTemplateExists(menuTemplate, 12);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
-    gpii.tests.dev.testKeyInList(menuTemplate[3]);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[9]);
-    gpii.tests.app.testItem(menuTemplate[10], "Exit GPII");
+    gpii.tests.dev.testKeyInList(menuTemplate[4]);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[10]);
+    gpii.tests.app.testItem(menuTemplate[11], "Exit GPII");
 };
 
 gpii.tests.dev.testTrayTooltip = function (tray, activePrefSet) {
@@ -214,12 +214,12 @@ gpii.tests.dev.testTrayKeyedIn = function (tray, activePrefSet) {
 };
 
 gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 14);
+    gpii.tests.app.testTemplateExists(menuTemplate, 15);
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     // the default pref set should be set
     gpii.tests.dev.testMultiContextKeyedIn(tray, menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
-    gpii.tests.app.testItem(menuTemplate[12], "Key-out of GPII");
-    gpii.tests.app.testItem(menuTemplate[13], "Exit GPII");
+    gpii.tests.app.testItem(menuTemplate[13], "Key-out of GPII");
+    gpii.tests.app.testItem(menuTemplate[14], "Exit GPII");
 };
 
 gpii.tests.dev.testChangedActivePrefSetMenu = function (tray, menuTemplate, prefSetClickedIdx) {
@@ -290,14 +290,14 @@ gpii.tests.dev.testDefs = {
         args: ["{that}.app.tray", "{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMultiPrefSetMenu"
     }, { // simulate choosing different pref set
-        func: "{that}.app.tray.menu.model.menuTemplate.6.click"
+        func: "{that}.app.tray.menu.model.menuTemplate.7.click"
     }, { // test Active Pref Set changed
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         path: "menuTemplate",
         args: [
             "{that}.app.tray",
             "{that}.app.tray.menu.model.menuTemplate",
-            /*prefSetItemClickedIdx=*/6,
+            /*prefSetItemClickedIdx=*/7,
             "{that}.app.model.preferences"
         ],
         listener: "gpii.tests.dev.testActiveSetChanged"

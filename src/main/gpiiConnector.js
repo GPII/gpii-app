@@ -264,8 +264,30 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
         });
     }
 
+    function applyPrefSetImages(prefSets) {
+        var whiteThemeimages = [
+                "https://www.w3schools.com/howto/img_paris.jpg",
+                "https://www.w3schools.com/howto/img_mountains.jpg",
+                "https://www.w3schools.com/howto/img_mountains.jpg"
+            ],
+            darkThemeimages = [
+                "https://www.w3schools.com/howto/img_nature_wide.jpg",
+                "https://www.w3schools.com/howto/img_fjords_wide.jpg",
+                "https://www.w3schools.com/howto/img_mountains_wide.jpg"
+            ];
+
+        prefSets.forEach(function (prefSet, index) {
+            prefSet.imageMap = {
+                white: whiteThemeimages[index % whiteThemeimages.length],
+                dark: darkThemeimages[index % darkThemeimages.length]
+            };
+        });
+    }
+
     if (preferences) {
         applyPrefSetSound(preferences.sets);
+        applyPrefSetImages(preferences.sets);
+
         fluid.each(preferences.settingGroups, function (settingGroup) {
             applyLivenessFlag(settingGroup.settings);
         });

@@ -143,6 +143,8 @@ fluid.defaults("gpii.app.psp", {
         pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs)"
     },
     events: {
+        onPSPCreated: null, // fired when the `BrowserWindow` is functional
+
         onSettingAltered: null,
         onActivePreferenceSetAltered: null,
 
@@ -166,6 +168,9 @@ fluid.defaults("gpii.app.psp", {
         "onCreate.initPSPWindowListeners": {
             listener: "gpii.app.psp.initPSPWindowListeners",
             args: ["{that}"]
+        },
+        "onPSPCreated.onThemeChanged": {
+            func: "{that}.onThemeChanged"
         },
 
         "onDestroy.cleanupElectron": {
@@ -202,6 +207,10 @@ fluid.defaults("gpii.app.psp", {
                 "onLocaleChanged",
                 "{app}.model.locale"
             ]
+        },
+        "{app}.model.theme": {
+            func: "{that}.onThemeChanged",
+            excludeSource: "init"
         }
     },
 
@@ -242,6 +251,14 @@ fluid.defaults("gpii.app.psp", {
         hideRestartWarning: {
             func: "{psp}.notifyPSPWindow",
             args: ["onRestartRequired", []]
+        },
+        onThemeChanged: {
+            funcName: "gpii.app.notifyWindow",
+            args: [
+                "{that}.pspWindow",
+                "onThemeChanged",
+                "{that}.model.theme"
+            ]
         }
     }
 });
@@ -341,6 +358,10 @@ gpii.app.psp.initPSPWindowListeners = function (psp) {
  * @param psp {Component} The `gpii.app.psp` instance.
  */
 gpii.app.initPSPWindowIPC = function (app, psp) {
+    ipcMain.on("onPSPCreated", function () {
+        psp.events.onPSPCreated.fire();
+    });
+
     ipcMain.on("onPSPClose", function () {
         psp.events.onClosed.fire();
     });

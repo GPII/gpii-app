@@ -1071,10 +1071,224 @@
         }
     });
 
+    var multiPreferencesFixture = {
+        sets: [
+            {
+                name: "Default preferences",
+                path: "gpii-default",
+                imageSrc: "https://www.w3schools.com/howto/img_paris.jpg"
+            },
+            {
+                name: "bright",
+                path: "bright",
+                imageSrc: "https://www.w3schools.com/howto/img_mountains.jpg"
+            },
+            {
+                name: "noise",
+                path: "noise",
+                imageSrc: "https://www.w3schools.com/howto/img_mountains.jpg"
+            },
+            {
+                name: "bright and noise",
+                path: "brightandnoise",
+                imageSrc: "https://www.w3schools.com/howto/img_paris.jpg"
+            }
+        ],
+        activeSet: "gpii-default"
+    };
+
+    var singlePreferenceFixture = {
+        sets: [
+            {
+                name: "Default preferences",
+                path: "gpii-default",
+                imageSrc: "https://www.w3schools.com/howto/img_paris.jpg"
+            }
+        ],
+        activeSet: "gpii-default"
+    };
+
+    gpii.tests.psp.getActivePreferenceSet = function (preferences) {
+        return fluid.find_if(preferences.sets, function (preferenceSet) {
+            return preferenceSet.path === preferences.activeSet;
+        });
+    };
+
+    gpii.tests.psp.selectDropdownItem = function (dropdownContainer, itemIndex) {
+        var dropdownToggle = dropdownContainer.find(".dropdown-toggle");
+        dropdownToggle.click(); // show the menu
+
+        var dropdownMenuItems = $(".flc-imageDropdown-item", dropdownContainer);
+        dropdownMenuItems[itemIndex].click(); // select the dropdown item with the given index
+    };
+
+    gpii.tests.psp.testHeaderItem = function (textElement, imageElement, preferenceSet) {
+        jqUnit.assertEquals(
+            "Header: The provided item has a correct image",
+            preferenceSet.imageSrc,
+            imageElement.attr("src")
+        );
+
+        jqUnit.assertEquals(
+            "Header: The provided item has correct text",
+            preferenceSet.name,
+            textElement.text().trim()
+        );
+    };
+
+    gpii.tests.psp.testSelectedDropdownItem = function (element, preferenceSet) {
+        var selectedItemText = element.find(".flc-imageDropdown-selectedItemText"),
+            selectedItemImage = element.find(".flc-imageDropdown-selectedItemImage");
+        gpii.tests.psp.testHeaderItem(selectedItemText, selectedItemImage, preferenceSet);
+    };
+
+    gpii.tests.psp.testImageDropdown = function (element, preferences) {
+        var activePreferenceSet = gpii.tests.psp.getActivePreferenceSet(preferences);
+        gpii.tests.psp.testSelectedDropdownItem(element, activePreferenceSet);
+
+        var dropdownMenu = element.find(".flc-imageDropdown-menu"),
+            dropdownMenuItems = dropdownMenu.find(".flc-imageDropdown-item");
+
+        dropdownMenuItems.each(function (index, dropdownMenuItem) {
+            var dropdownMenuItemImage = $(dropdownMenuItem).find(".flc-imageDropdown-itemImage"),
+                dropdownMenuItemText = $(dropdownMenuItem).find(".flc-imageDropdown-itemText"),
+                preferenceSet = preferences.sets[index];
+
+            gpii.tests.psp.testHeaderItem(dropdownMenuItemText, dropdownMenuItemImage, preferenceSet);
+            if (preferenceSet.path === preferences.activeSet) {
+                jqUnit.assertTrue(
+                    "Header: The active element in the dropdown has the correct class",
+                    $(dropdownMenuItem).hasClass("active")
+                );
+            }
+        });
+    };
+
+    gpii.tests.psp.testActivePreferenceSet = function (element, preferences) {
+        var prefSetText = element.find(".flc-activePreferenceSetName"),
+            prefSetImage = element.find(".flc-activePreferenceSetImage");
+        gpii.tests.psp.testHeaderItem(prefSetText, prefSetImage, preferences.sets[0]);
+    };
+
+    gpii.tests.psp.testHeaderState = function (container, preferences) {
+        var hasMultipleSets = preferences.sets.length > 1,
+            preferenceSetPicker = container.find(".flc-prefSetPicker"),
+            activePreferenceSet = container.find(".flc-activePreferenceSet");
+
+        jqUnit.assertEquals(
+            "Header: Preference set picker element has correct visibility",
+            hasMultipleSets,
+            preferenceSetPicker.is(":visible")
+        );
+
+        jqUnit.assertEquals(
+            "Header: Active preference set element has correct visibility",
+            !hasMultipleSets,
+            activePreferenceSet.is(":visible")
+        );
+
+        if (hasMultipleSets) {
+            gpii.tests.psp.testImageDropdown(preferenceSetPicker, preferences);
+        } else {
+            gpii.tests.psp.testActivePreferenceSet(activePreferenceSet, preferences);
+        }
+    };
+
+    fluid.defaults("gpii.tests.psp.headerTester", {
+        gradeNames: ["fluid.test.testCaseHolder"],
+
+        modules: [{
+            name: "Header tests",
+            tests:[
+                { // Tests when there are multiple available preference sets (i.e. a dropdown is present in the header).
+                    name: "Header dropdown tests",
+                    expect: 16,
+                    sequence: [
+                        { // Set the preferences.
+                            funcName: "{header}.applier.change",
+                            args: ["preferences", multiPreferencesFixture]
+                        }, { // Fire `onPreferencesUpdated` so that the header can be created.
+                            funcName: "{header}.events.onPreferencesUpdated.fire"
+                        }, { // Test the selected dropdown items and the dropdown menu.
+                            funcName: "gpii.tests.psp.testHeaderState",
+                            args: ["{header}.container", multiPreferencesFixture]
+                        }, {
+                            funcName: "gpii.tests.psp.selectDropdownItem",
+                            args: ["{header}.preferenceSetPicker.container", 2]
+                        }, {
+                            event: "{header}.events.onActivePreferenceSetAltered",
+                            listener: "jqUnit.assertEquals",
+                            args: [
+                                "Header: The active preference set was correctly changed",
+                                multiPreferencesFixture.sets[2].path,
+                                "{arguments}.0"
+                            ]
+                        }, {
+                            funcName: "gpii.tests.psp.testSelectedDropdownItem",
+                            args: [
+                                "{header}.preferenceSetPicker.container",
+                                multiPreferencesFixture.sets[2]
+                            ]
+                        }
+                    ]
+                }, { // Tests when there is just a single available preference set (and no dropdown in the header)
+                    name: "Header active preference set tests",
+                    expect: 4,
+                    sequence: [
+                        {
+                            funcName: "{header}.applier.change",
+                            args: ["preferences", singlePreferenceFixture]
+                        }, {
+                            funcName: "{header}.events.onPreferencesUpdated.fire"
+                        }, {
+                            funcName: "gpii.tests.psp.testHeaderState",
+                            args: ["{header}.container", singlePreferenceFixture]
+                        }
+                    ]
+                }, {
+                    name: "Header key out button tests",
+                    expect: 1,
+                    sequence: [
+                        {
+                            jQueryTrigger: "click",
+                            element: "@expand:$(.flc-keyOutBtn, {header}.container)"
+                        }, {
+                            event: "{header}.events.onKeyOut",
+                            listener: "jqUnit.assert",
+                            args: ["Header: clicking the key out button fires the appropriate event"]
+                        }
+                    ]
+                }
+            ]
+        }]
+    });
+
+    fluid.defaults("gpii.tests.psp.headerTests", {
+        gradeNames: ["fluid.test.testEnvironment"],
+        components: {
+            header: {
+                type: "gpii.psp.header",
+                container: ".flc-header",
+                options: {
+                    model: {
+                        messages: {
+                            autosaveText: "Auto-save is on",
+                            keyOut:"Key Out"
+                        }
+                    }
+                }
+            },
+            headerTester: {
+                type: "gpii.tests.psp.headerTester"
+            }
+        }
+    });
+
     $(function () {
         fluid.test.runTests([
             "gpii.tests.psp.attrsExpanderTests",
             "gpii.tests.psp.restartWarningTests",
+            "gpii.tests.psp.headerTests",
             "gpii.tests.psp.settingsPanelTestsWrapper"
         ]);
     });
