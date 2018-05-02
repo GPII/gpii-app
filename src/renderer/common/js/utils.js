@@ -38,6 +38,17 @@
     };
 
     /**
+     * Plays a sound identified by an absolute path or a URL to it.
+     * @param soundPath {String} The path or URL of the sound to play.
+     */
+    gpii.psp.playSound = function (soundPath) {
+        if (soundPath) {
+            var sound = new Audio(soundPath);
+            sound.play();
+        }
+    };
+
+    /**
      * Replace all anchor tags that are not "#" links to use external browser.
      */
     gpii.psp.interceptLinks = function () {

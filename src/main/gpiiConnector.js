@@ -29,7 +29,19 @@ fluid.defaults("gpii.app.gpiiConnector", {
     events: {
         onPreferencesUpdated: null,
         onSettingUpdated: null,
-        onSnapsetNameUpdated: null
+        onSnapsetNameUpdated: null,
+        resolveAssetPaths: {
+            event: "onPreferencesUpdated",
+            args: {
+                expander: {
+                    funcName: "gpii.app.gpiiConnector.resolveAssetPaths",
+                    args: [
+                        "{assetsManager}",
+                        "{arguments}.0" // preferences
+                    ]
+                }
+            }
+        }
     },
 
     listeners: {
@@ -54,6 +66,24 @@ fluid.defaults("gpii.app.gpiiConnector", {
         }
     }
 });
+
+/**
+ * Modifies the passed `preferences` by resolving paths to any assets which
+ * may be specified as properties of the preference sets.
+ * @param assetsManager {Component} The `gpii.app.assetsManager` instance.
+ * @param preferences {Object} The preferences received via the PSP channel.
+ */
+gpii.app.gpiiConnector.resolveAssetPaths = function (assetsManager, preferences) {
+    if (preferences) {
+        fluid.each(preferences.sets, function (prefSet) {
+            var imageMapKeys = fluid.keys(prefSet.imageMap);
+            fluid.each(imageMapKeys, function (imageMapKey) {
+                prefSet.imageMap[imageMapKey] =
+                    assetsManager.resolveAssetPath(prefSet.imageMap[imageMapKey]);
+            });
+        });
+    }
+};
 
 /**
  * Sends a setting update request to GPII over the socket if necessary.
@@ -256,25 +286,9 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
         });
     }
 
-    function applyPrefSetSound(prefSets) {
-        prefSets.forEach(function (prefSet, index) {
-            var soundSrc = (index % 2 === 0) ? "sound1.mp3" : "sound2.mp3",
-                resolvedSrc = fluid.module.resolvePath("%gpii-app/src/sounds/" + soundSrc);
-            prefSet.soundSrc = resolvedSrc;
-        });
-    }
-
     function applyPrefSetImages(prefSets) {
-        var whiteThemeimages = [
-                "https://www.w3schools.com/howto/img_paris.jpg",
-                "https://www.w3schools.com/howto/img_mountains.jpg",
-                "https://www.w3schools.com/howto/img_mountains.jpg"
-            ],
-            darkThemeimages = [
-                "https://www.w3schools.com/howto/img_nature_wide.jpg",
-                "https://www.w3schools.com/howto/img_fjords_wide.jpg",
-                "https://www.w3schools.com/howto/img_mountains_wide.jpg"
-            ];
+        var whiteThemeimages = ["paris.jpg", "mountains.jpg", "lights.jpg"],
+            darkThemeimages = ["nature_wide.jpg", "fjords_wide.jpg", "mountains_wide.jpg"];
 
         prefSets.forEach(function (prefSet, index) {
             prefSet.imageMap = {
@@ -285,7 +299,6 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
     }
 
     if (preferences) {
-        applyPrefSetSound(preferences.sets);
         applyPrefSetImages(preferences.sets);
 
         fluid.each(preferences.settingGroups, function (settingGroup) {

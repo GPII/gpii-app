@@ -121,7 +121,8 @@ fluid.defaults("gpii.app.psp", {
 
     model:  {
         keyedInUserToken: null,
-        isShown: false
+        isShown: false,
+        theme: null
     },
 
     /*
@@ -139,12 +140,33 @@ fluid.defaults("gpii.app.psp", {
         backgroundColor: "transparent"
     },
 
+    sounds: {
+        keyedIn: "keyedIn.mp3",
+        activeSetChanged: "activeSetChanged.mp3"
+    },
+
+    params: {
+        theme: "{that}.model.theme",
+        sounds: {
+            keyedIn: {
+                expander: {
+                    funcName: "{assetsManager}.resolveAssetPath",
+                    args: ["{that}.options.sounds.keyedIn"]
+                }
+            },
+            activeSetChanged: {
+                expander: {
+                    funcName: "{assetsManager}.resolveAssetPath",
+                    args: ["{that}.options.sounds.activeSetChanged"]
+                }
+            }
+        }
+    },
+
     members: {
-        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs)"
+        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs, {that}.options.params)"
     },
     events: {
-        onPSPCreated: null, // fired when the `BrowserWindow` is functional
-
         onSettingAltered: null,
         onActivePreferenceSetAltered: null,
 
@@ -168,9 +190,6 @@ fluid.defaults("gpii.app.psp", {
         "onCreate.initPSPWindowListeners": {
             listener: "gpii.app.psp.initPSPWindowListeners",
             args: ["{that}"]
-        },
-        "onPSPCreated.onThemeChanged": {
-            func: "{that}.onThemeChanged"
         },
 
         "onDestroy.cleanupElectron": {
@@ -296,7 +315,6 @@ gpii.app.psp.show = function (psp) {
     gpii.app.psp.moveToScreen(psp.pspWindow);
     psp.pspWindow.focus();
     psp.applier.change("isShown", true);
-    psp.notifyPSPWindow("onPSPOpen");
 };
 
 /**
@@ -358,10 +376,6 @@ gpii.app.psp.initPSPWindowListeners = function (psp) {
  * @param psp {Component} The `gpii.app.psp` instance.
  */
 gpii.app.initPSPWindowIPC = function (app, psp) {
-    ipcMain.on("onPSPCreated", function () {
-        psp.events.onPSPCreated.fire();
-    });
-
     ipcMain.on("onPSPClose", function () {
         psp.events.onClosed.fire();
     });
@@ -472,16 +486,18 @@ gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
 };
 
 /**
- * Creates an Electron `BrowserWindow` that is to be used as the PSP window
- *
- * @param {Object} windowOptions Raw options to be passed to the `BrowserWindow`
+ * Creates an Electron `BrowserWindow` that is to be used as the PSP window.
+ * @param {Object} windowOptions The raw `BrowserWindow` settings.
+ * @param {Object} params options that are to be supplied to the render process of
+ * the newly created `BrowserWindow`.
  * @return {Object} The created Electron `BrowserWindow`
  */
-gpii.app.psp.makePSPWindow = function (windowOptions) {
+gpii.app.psp.makePSPWindow = function (windowOptions, params) {
     var pspWindow = new BrowserWindow(windowOptions);
 
     var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
     pspWindow.loadURL(url);
+    pspWindow.params = params || {};
 
     gpii.app.psp.moveOffScreen(pspWindow);
 

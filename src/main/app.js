@@ -18,6 +18,7 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
+require("./assetsManager.js");
 require("./ws.js");
 require("./factsManager.js");
 require("./dialogManager.js");
@@ -78,6 +79,9 @@ fluid.defaults("gpii.app", {
         },
         installID: {
             type: "gpii.installID"
+        },
+        assetsManager: {
+            type: "gpii.app.assetsManager"
         },
         factsManager: {
             type: "gpii.app.factsManager"

@@ -247,7 +247,6 @@ gpii.app.recontextualise = function (object) {
 
     fluid.each(object, function (value, key) {
         if (fluid.isArrayable(object[key])) {
-            // console.log(value);
             object[key] = [].slice.call(object[key]);
         }
         gpii.app.recontextualise(object[key]);

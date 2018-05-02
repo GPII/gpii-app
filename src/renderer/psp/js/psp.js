@@ -21,14 +21,15 @@
 
     fluid.defaults("gpii.psp", {
         gradeNames: ["fluid.component", "gpii.psp.messageBundles"],
+        model: {
+            theme: null,
+            sounds: {}
+        },
         components: {
             channel: {
                 type: "gpii.psp.clientChannel",
                 options: {
                     listeners: {
-                        onPSPOpen: {
-                            funcName: "{mainWindow}.playActivePrefSetSound"
-                        },
                         onPreferencesUpdated: {
                             funcName: "{mainWindow}.updatePreferences"
                         },
@@ -52,8 +53,11 @@
                 type: "gpii.psp.mainWindow",
                 container: "#flc-body",
                 options: {
+                    model: {
+                        theme: "{psp}.model.theme",
+                        sounds: "{psp}.model.sounds"
+                    },
                     listeners: {
-                        onCreate: "{channel}.notifyPSPCreated",
                         onPSPClose: "{channel}.close",
                         onKeyOut: "{channel}.keyOut",
                         onSettingAltered: "{channel}.alterSetting",
