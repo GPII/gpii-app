@@ -65,7 +65,9 @@
                         onHeightChanged: "{channel}.changeContentHeight",
 
                         onRestartNow:   "{channel}.restartNow",
-                        onUndoChanges:  "{channel}.undoChanges"
+                        onUndoChanges:  "{channel}.undoChanges",
+
+                        onSignInRequested: "{channel}.requestSignIn"
                     }
                 }
             }

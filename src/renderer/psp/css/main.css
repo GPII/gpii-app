@@ -7,6 +7,15 @@ body {
     user-select: none;
 }
 
+.fl-psp {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    font-size: 17px;
+    line-height: 1.4;
+}
+
 ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 5px;

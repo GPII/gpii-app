@@ -50,10 +50,6 @@
             userListeners: ".flc-contentUserListeners"
         },
 
-        events: {
-            onButtonClicked: null
-        },
-
         modelListeners: {
             // Any change means that the whole view should be re-rendered
             "": [{

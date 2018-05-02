@@ -23,12 +23,9 @@
 
     /**
      * Sends asynchronously a message to the main process.
-     * @param channel {String} The channel via which the message will
-     * be sent
-     * @oaram message {Any} The actual message that is to be sent.
      */
-    gpii.psp.clientChannel.sendMessage = function (channel, message) {
-        ipcRenderer.send(channel, message);
+    gpii.psp.clientChannel.sendMessage = function () {
+        ipcRenderer.send.apply(null, arguments);
     };
 
     /**
@@ -139,6 +136,14 @@
                 args: [
                     "onUndoChanges",
                     "{arguments}.0" // pendingChanges
+                ]
+            },
+            requestSignIn: {
+                func: "{that}.sendMessage",
+                args: [
+                    "onSignInRequested",
+                    "{arguments}.0", // email
+                    "{arguments}.1"  // password
                 ]
             }
         }

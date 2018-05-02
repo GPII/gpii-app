@@ -1,4 +1,5 @@
 {
+    "gpii_app_menu_about": "Относно...",
     "gpii_app_menu_psp": "Отвори ППН",
     "gpii_app_menu_notKeyedIn": "(Не сте влезли)",
     "gpii_app_menu_keyedIn": "Вписан с %snapsetName",
@@ -7,10 +8,21 @@
     "gpii_app_tray_defaultTooltip": "GPII: В готовност",
     "gpii_app_tray_prefSetTooltip": "GPII: %prefSet",
 
-    "gpii_psp_splash_heading": "Не сте вписан",
-    "gpii_psp_splash_fullAppName": "GPII - Персонален Панел за Настройки",
-
     "gpii_psp_mainWindow_titlebarAppName": "GPII Настройки",
+
+    "gpii_psp_signIn_signInHeader": "Никой не е вписан",
+
+    "gpii_psp_signIn_titleIntro": "GPII Авто-персонализиране",
+    "gpii_psp_signIn_subtitleIntro": "Автоматично настройва компютъра ви по начина, по който желаете.",
+
+    "gpii_psp_signIn_title": "Използвайте вашия GPII ключ за да се впишете",
+    "gpii_psp_signIn_subtitle": "Или се впишете с вашия акаунт долу",
+
+    "gpii_psp_signIn_emailTextInputLabel": "Имейл",
+    "gpii_psp_signIn_passwordInputLabel": "Парола",
+    "gpii_psp_signIn_signInButton": "Впиши ме",
+    "gpii_psp_signIn_signUpButton": "Създай акаунт",
+    "gpii_psp_signIn_forgotPasswordButton": "Забравена парола?",
 
     "gpii_psp_header_autosaveText": "Автоматично запазване е включено",
     "gpii_psp_header_keyOut":"Отпиши се",

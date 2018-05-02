@@ -38,22 +38,6 @@
     };
 
     /**
-     * Shows or hides the splash window according to the current
-     * preference sets. The splash window should only be hidden when
-     * there are no preference sets passed (the user is keyed out).
-     *
-     * @param splash {Object} The splash component
-     * @param sets {Object[]} The current preference sets
-     */
-    gpii.psp.toggleSplashWindow = function (splash, sets) {
-        if (sets && sets.length > 0) {
-            splash.hide();
-        } else {
-            splash.show();
-        }
-    };
-
-    /**
      * Updates the accent color in the PSP `BrowserWindow`. The accent
      * color is taken into consideration only in the dark theme of the
      * PSP and is used for different styles (e.g. button backgrounds,
@@ -99,6 +83,28 @@
     };
 
     /**
+     * Shows or hides the appropriate view (the sign in view or the psp view)
+     * depending on the current preferences. If there is at least one preference
+     * set, it is considered that the user has keyed in and hence the psp view
+     * will be shown. Otherwise, the sign in view will be displayed.
+     *
+     * @param {jQuery} signInView The signIn view container
+     * @param {jQuery} pspView The psp view container
+     * @param {Object} preferences An object representing the available
+     * preference set, the active preference set and the available settings.
+     */
+    gpii.psp.toggleView = function (signInView, pspView, preferences) {
+        if (preferences.sets && preferences.sets.length > 0) {
+            signInView.hide();
+            pspView.show();
+        } else {
+            signInView.show();
+            pspView.hide();
+        }
+    };
+
+
+    /**
      * Responsible for drawing the settings list
      *
      * Note: currently only single update of available setting is supported
@@ -118,6 +124,9 @@
             sounds: {}
         },
         selectors: {
+            signIn: ".flc-signIn",
+            psp:    ".flc-settingsEditor",
+
             theme: "#flc-theme",
             titlebar: "#flc-titlebar",
             header: "#flc-header",
@@ -131,18 +140,6 @@
             dark: "theme-alt"
         },
         components: {
-            splash: {
-                type: "gpii.psp.splash",
-                container: "{that}.container",
-                options: {
-                    listeners: {
-                        "{mainWindow}.events.onPreferencesUpdated": {
-                            funcName: "gpii.psp.toggleSplashWindow",
-                            args: ["{that}", "{mainWindow}.model.preferences.sets"]
-                        }
-                    }
-                }
-            },
             titlebar: {
                 type: "gpii.psp.titlebar",
                 container: "{that}.dom.titlebar",
@@ -178,6 +175,17 @@
                     }
                 }
             },
+
+            signInPage: {
+                type: "gpii.psp.signIn",
+                container: ".flc-signIn",
+                options: {
+                    events: {
+                        onSignInRequested: "{mainWindow}.events.onSignInRequested"
+                    }
+                }
+            },
+
             settingsPanel: {
                 type: "gpii.psp.settingsPanel",
                 container: "{that}.dom.settingsList",
@@ -225,7 +233,27 @@
                 ]
             }
         },
+        listeners: {
+            "onCreate.setInitialView": {
+                funcName: "{that}.toggleView",
+                args: ["{that}.model.preferences"]
+            },
+            "onPreferencesUpdated.toggleView": {
+                funcName: "{that}.toggleView",
+                args: [
+                    "{arguments}.0" // preferences
+                ]
+            }
+        },
         invokers: {
+            toggleView: {
+                funcName: "gpii.psp.toggleView",
+                args: [
+                    "{that}.dom.signIn",
+                    "{that}.dom.psp",
+                    "{arguments}.0" // preferences
+                ]
+            },
             "updatePreferences": {
                 changePath: "preferences",
                 value: "{arguments}.0",
@@ -255,6 +283,8 @@
             }
         },
         events: {
+            onSignInRequested: null,
+
             onPreferencesUpdated: null,
 
             onSettingAltered: null, // the setting was altered by the user
