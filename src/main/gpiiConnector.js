@@ -199,6 +199,10 @@ gpii.app.extractSettings = function (element) {
  */
 gpii.app.extractPreferencesData = function (message) {
     var value = message.value || {},
+        // Whether the PSP should be closed when the user clicks outside. The default
+        // value is `true` (in case this is not specified in the payload). Note that
+        // the latter will always be the case in the keyed out payload!
+        closePSPOnBlur = fluid.isValue(value.closePSPOnBlur) ? value.closePSPOnBlur : true,
         preferences = value.preferences || {},
         contexts = preferences.contexts,
         sets = [],
@@ -214,7 +218,8 @@ gpii.app.extractPreferencesData = function (message) {
             return {
                 name: settingGroup.name,
                 solutionName: settingGroup.solutionName,
-                settings: gpii.app.extractSettings(settingGroup)
+                settings: gpii.app.extractSettings(settingGroup),
+                closePSPOnBlur: closePSPOnBlur
             };
         });
     }
@@ -222,7 +227,8 @@ gpii.app.extractPreferencesData = function (message) {
     return {
         sets: sets,
         activeSet: activeSet,
-        settingGroups: settingGroups
+        settingGroups: settingGroups,
+        closePSPOnBlur: closePSPOnBlur
     };
 };
 

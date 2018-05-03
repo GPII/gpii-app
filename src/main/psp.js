@@ -122,7 +122,8 @@ fluid.defaults("gpii.app.psp", {
     model:  {
         keyedInUserToken: null,
         isShown: false,
-        theme: null
+        theme: null,
+        preferences: {}
     },
 
     /*
@@ -344,12 +345,19 @@ gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changed
 };
 
 /**
- * Handle PSPWindow's blur event, which is fired when the window loses focus
+ * Handle PSPWindow's blur event, which is fired when the window loses focus. The PSP
+ * will be closed if there are no applications which require a restart in order for their
+ * settings to be applied and also if it is a user's preference for the PSP to close when
+ * clicking outside (this should be specified in the PSP channel message). In case there
+ * is no keyed-in user, the default behavior is for the PSP to close when a blur event
+ * occurs.
+ * @param psp {Component} The `gpii.app.psp` instance.
+ * @param settingsBroker {Component} The `gpii.app.settingsBroker` instance.
  */
 gpii.app.psp.handlePSPWindowFocusLost = function (psp, settingsBroker) {
-    // The PSP cannot be hidden by clicking outside of it if there is an application
-    // which requires a restart.
-    if (psp.model.isShown && !settingsBroker.hasPendingChange("manualRestart")) {
+    var isShown = psp.model.isShown,
+        closePSPOnBlur = psp.model.preferences.closePSPOnBlur;
+    if (isShown && closePSPOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
         psp.events.onClosed.fire();
     }
 };

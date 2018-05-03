@@ -58,7 +58,8 @@ fluid.defaults("gpii.app", {
         snapsetName: null,
         preferences: {
             sets: [],
-            activeSet: null
+            activeSet: null,
+            closePSPOnBlur: null
         },
         theme: "{that}.options.defaultTheme"
     },
@@ -146,6 +147,7 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
+                    preferences: "{app}.model.preferences",
                     theme: "{app}.model.theme"
                 }
             }
