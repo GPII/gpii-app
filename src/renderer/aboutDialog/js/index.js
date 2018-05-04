@@ -1,7 +1,7 @@
 /**
- * Initializes the restart dialog
+ * Initializes the about dialog
  *
- * Creates the restart dialog once the document has been loaded.
+ * Creates the about dialog once the document has been loaded.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -23,7 +23,7 @@
 
     /**
      * Wrapper that enables translations for the `gpii.psp.aboutDialog` component and
-     * applies interception of all anchor tags on the page, so that an external browser is used
+     * applies interception of all anchor tags on the page so that an external browser is used
      * for loading them.
      */
     fluid.defaults("gpii.psp.translatedAboutDialog", {

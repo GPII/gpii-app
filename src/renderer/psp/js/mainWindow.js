@@ -90,11 +90,11 @@
      *
      * @param {jQuery} signInView The signIn view container
      * @param {jQuery} pspView The psp view container
-     * @param {Object} preferences An object representing the available
+     * @param {Boolean} keyedIn Whether there is a keyed in user or not.
      * preference set, the active preference set and the available settings.
      */
-    gpii.psp.toggleView = function (signInView, pspView, preferences) {
-        if (preferences.sets && preferences.sets.length > 0) {
+    gpii.psp.toggleView = function (signInView, pspView, keyedIn) {
+        if (keyedIn) {
             signInView.hide();
             pspView.show();
         } else {
@@ -122,6 +122,16 @@
             },
             theme: null,
             sounds: {}
+        },
+        modelRelay: {
+            keyedIn: {
+                target: "keyedIn",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.psp.mainWindow.getKeyedIn",
+                    args: ["{that}.model.preferences"]
+                }
+            }
         },
         selectors: {
             signIn: ".flc-signIn",
@@ -222,7 +232,7 @@
                 func: "{that}.events.onPreferencesUpdated.fire"
             }, {
                 funcName: "gpii.psp.mainWindow.playSoundNotification",
-                args: ["{change}.value", "{change}.oldValue", "{that}.model.sounds"]
+                args: ["{that}", "{change}.value", "{change}.oldValue"]
             }],
             theme: {
                 funcName: "gpii.psp.updateTheme",
@@ -235,14 +245,10 @@
         },
         listeners: {
             "onCreate.setInitialView": {
-                funcName: "{that}.toggleView",
-                args: ["{that}.model.preferences"]
+                funcName: "{that}.toggleView"
             },
             "onPreferencesUpdated.toggleView": {
-                funcName: "{that}.toggleView",
-                args: [
-                    "{arguments}.0" // preferences
-                ]
+                funcName: "{that}.toggleView"
             }
         },
         invokers: {
@@ -251,7 +257,7 @@
                 args: [
                     "{that}.dom.signIn",
                     "{that}.dom.psp",
-                    "{arguments}.0" // preferences
+                    "{that}.model.keyedIn"
                 ]
             },
             "updatePreferences": {
@@ -302,38 +308,46 @@
     });
 
     /**
+     * Returns whether there is a currently keyed in user.
+     * @param preferences {Object} An object containing all preference set, as well as
+     * information about the currently active preference set.
+     * @return `true` if there is currently a keyed in user and `false` otherwise.
+     */
+    gpii.psp.mainWindow.getKeyedIn = function (preferences) {
+        return preferences && preferences.sets && preferences.sets.length > 0;
+    };
+
+    /**
      * Plays a sound notification in the following scenarios: when the user keyes in
      * or when the user changes the active preference set (either via the dropdown in
      * the PSP or through the context menu).
+     * @param that {Component} The `gpii.psp.mainWindow` instance.
      * @param preferences {Object} An object containing all preference set, as well as
      * information about the currently active preference set.
      * @param oldPreferences {Object} The previous value for the user's preferences.
-     * @param sounds {Object} An object containing paths to the various sounds that can
-     * be played.
      */
-    gpii.psp.mainWindow.playSoundNotification = function (preferences, oldPreferences, sounds) {
+    gpii.psp.mainWindow.playSoundNotification = function (that, preferences, oldPreferences) {
         // The user is not / is no longer keyed in. No need for notification.
-        if (preferences.sets.length === 0) {
+        if (!that.model.keyedIn) {
             return;
         }
 
-        // The user was not keyed in before but now he is. Play the keyed in sound.
+        // The user was not keyed in before but now is. Play the keyed in sound.
         if (oldPreferences.sets.length === 0) {
-            gpii.psp.playSound(sounds.keyedIn);
+            gpii.psp.playSound(that.model.sounds.keyedIn);
             return;
         }
 
         // The user is the same but the active set is different now.
         if (preferences.activeSet !== oldPreferences.activeSet) {
-            gpii.psp.playSound(sounds.activeSetChanged);
+            gpii.psp.playSound(that.model.sounds.activeSetChanged);
         }
     };
 
     /**
      * Given the preferences received via the PSP channel and the current theme
-     * for the PSP, creates an object which represents the preferences (i.e. the
-     * preference sets and the path of the active preference set) which are to
-     * be used in the `header` component. The applicable image for each set is
+     * for the PSP, creates an object which represents the preferences which are
+     * to be used in the `header` component. The applicable image for each set is
      * determined based on the current application theme.
      * @param preferences {Object} An object containing all preference set, as well as
      * information about the currently active preference set.
@@ -347,7 +361,6 @@
         fluid.each(headerPreferences.sets, function (preferenceSet) {
             preferenceSet.imageSrc = preferenceSet.imageMap[theme];
         });
-        delete headerPreferences.settingGroups;
 
         return headerPreferences;
     };

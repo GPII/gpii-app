@@ -23,8 +23,8 @@
 }
 
 .fl-header .fl-activePreferenceSetImage {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
 }
 
 .fl-header .fl-activePreferenceSetImage:not([src]),

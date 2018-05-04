@@ -218,8 +218,7 @@ gpii.app.extractPreferencesData = function (message) {
             return {
                 name: settingGroup.name,
                 solutionName: settingGroup.solutionName,
-                settings: gpii.app.extractSettings(settingGroup),
-                closePSPOnBlur: closePSPOnBlur
+                settings: gpii.app.extractSettings(settingGroup)
             };
         });
     }

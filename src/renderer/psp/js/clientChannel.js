@@ -22,13 +22,6 @@
     fluid.registerNamespace("gpii.psp.clientChannel");
 
     /**
-     * Sends asynchronously a message to the main process.
-     */
-    gpii.psp.clientChannel.sendMessage = function () {
-        ipcRenderer.send.apply(null, arguments);
-    };
-
-    /**
      * A function which should be called whenever a settings is updated
      * as a result of a user's input. Its purpose is to notify the main
      * electron process for the change.
@@ -92,7 +85,7 @@
         },
         invokers: {
             sendMessage: {
-                funcName: "gpii.psp.clientChannel.sendMessage"
+                funcName: "gpii.psp.channel.notifyChannel"
             },
             close: {
                 func: "{that}.sendMessage",

@@ -125,12 +125,11 @@ body {
     clear: both;
 }
 
-/* Override winstrap styles */
 .fl-dialog .fl-dialog-content ul li {
     margin: 0;
 }
 
-/* Useful for dialog content without height listener */
+/* Useful for dialog content without a height listener */
 .fl-scrollable {
     overflow: auto;
 }

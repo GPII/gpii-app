@@ -76,7 +76,6 @@
                         },
                         "onCreate.notify": {
                             funcName: "{renderer}.events.onContainerRendered.fire",
-                            // Get the newly created container
                             priority: "after:updateContainer"
                         }
                     }
@@ -219,7 +218,7 @@
                                 ]
                             }
                         },
-                        // generated dynamicaly using the current item
+                        // generated dynamically using the current item
                         element: "@expand:{repeater}.getMarkup({that}.options.item, {that}.options.index)"
                     }
                 }

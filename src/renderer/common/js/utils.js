@@ -20,15 +20,6 @@
         shell = require("electron").shell;
 
     /**
-     * A function which checks if an array object holds more than one element.
-     * @param arr {Array} The array to be checked.
-     * @return {Boolean} Whether the array has more than one element.
-     */
-    gpii.psp.hasMultipleItems = function (arr) {
-        return arr && arr.length > 1;
-    };
-
-    /**
      * Opens the passed url externally using the default browser for the
      * OS (or set by the user).
      * @param url {String} The url to open externally.
@@ -49,7 +40,8 @@
     };
 
     /**
-     * Replace all anchor tags that are not "#" links to use external browser.
+     * Replaces all anchor tags that are not "#" links to open in an
+     * external browser.
      */
     gpii.psp.interceptLinks = function () {
         jQuery(document).on("click", "a:not([href^='#'])", function (event) {

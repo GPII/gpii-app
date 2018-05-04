@@ -42,20 +42,11 @@
 
         invokers: {
             notify: {
-                funcName: "gpii.psp.errorDialog.channel.notifyChannel"
+                funcName: "gpii.psp.channel.notifyChannel"
             }
         }
     });
 
-
-    /**
-     * Sends a message to the main process.
-     * @param {...Any} The channel to be notified and the parameters to be passed
-     * with the message.
-     */
-    gpii.psp.errorDialog.channel.notifyChannel = function () {
-        ipcRenderer.send.apply(null, arguments);
-    };
 
     /**
      * Registers for events from the Main process.

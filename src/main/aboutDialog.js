@@ -1,7 +1,7 @@
 /**
  * About page BrowserWindow Dialog
  *
- * Introduces a component that uses an Electron BrowserWindow to represent a "About" dialog.
+ * Introduces a component that uses an Electron BrowserWindow to represent an "About" dialog.
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -21,7 +21,7 @@ var app = require("electron").app;
 require("./dialog.js");
 
 /**
- * Simple connector with the corresponding BrowserWindow
+ * Simple connector for the About BrowserWindow
  */
 fluid.defaults("gpii.app.aboutDialog.channel", {
     gradeNames: ["gpii.app.dialog.simpleEventChannel", "gpii.app.i18n.channel"],
@@ -62,4 +62,3 @@ fluid.defaults("gpii.app.aboutDialog", {
         }
     }
 });
-

@@ -1,7 +1,7 @@
 /**
  * The about dialog
  *
- * Represents an about dialog, that can be closed by the user.
+ * Represents an about dialog that can be closed by the user.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -20,7 +20,7 @@
 
 
     /**
-     * Represents the controller for the about dialog,
+     * Represents the controller for the about dialog
      * that gives information for the application version,
      * user listeners (keys) and some useful links.
      */
@@ -101,9 +101,9 @@
 
 
     /**
-     * Construct user listeners text.
+     * Constructs the user listeners text.
      *
-     * @param description {String} The description with a placeholder by the name "items"
+     * @param description {String} The description with a placeholder by the name "listeners"
      * @param userListeners {String[]} The list of key in listeners for the user
      * @returns {String} The constructed string
      */

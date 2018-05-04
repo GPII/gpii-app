@@ -46,7 +46,6 @@ fluid.defaults("gpii.app.menuInApp", {
             listener: "{psp}.show"
         },
 
-        // TODO
         "onAbout.showAbout": {
             listener: "{dialogManager}.show",
             args: ["aboutDialog"]
@@ -510,8 +509,8 @@ gpii.app.menu.getSimpleMenuItem = function (label, event, payload) {
 };
 
 /**
- * Generate simple Electron context menu separator item.
- * @returns {Object}
+ * Generate a simple Electron context menu separator item.
+ * @returns {Object} The separator menu item.
  */
 gpii.app.menu.getSeparatorItem = function () {
     return {type: "separator"};

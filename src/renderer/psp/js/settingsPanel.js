@@ -355,6 +355,13 @@
         }
     });
 
+    /**
+     * Returns the markup for a particular setting based on its type.
+     * @param markup {Object} A hash containing markup fetched by the `resourceLoader`.
+     * @param widgetExemplars {Object} The `gpii.psp.widgetExemplars` object.
+     * @param setting {Object} A setting object.
+     * @return {String} The markup for the specified setting.
+     */
     gpii.psp.settingsVisualizer.getMarkup = function (markup, widgetExemplars, setting) {
         var widgetConfig = widgetExemplars.getExemplarBySchemaType(setting.schema.type);
         var widgetMarkup = markup[widgetConfig.options.grade];
