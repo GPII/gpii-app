@@ -34,7 +34,8 @@ require("./SurveyTriggerManagerTestsDefs.js");
 require("./SequentialDialogsTestDefs.js");
 require("./WebviewTestDefs.js");
 
-fluid.setLogging(fluid.logLevel.FATAL);
+// TODO: Review this following CI run.
+//fluid.setLogging(fluid.logLevel.FATAL);
 
 fluid.registerNamespace("gpii.tests.app");
 
