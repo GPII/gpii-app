@@ -7,7 +7,6 @@ var jqUnit = require("node-jqunit");
 
 require("gpii-universal");
 require("gpii-windows/index.js");
-require("./index");
 
 // Code coverage harness, hooks into the jqUnit lifecycle and saves tests whenever the `onAllTestsDone` event is fired.
 // Must be hooked in before requiring any actual tests.
