@@ -18,7 +18,6 @@ var fluid = require("infusion"),
 
 fluid.setLogging(true);
 
-require("gpii-universal");
 
 // The PSP will have a single instance. If an attempt to start a second instance is made,
 // the second one will be closed and the callback provided to `app.makeSingleInstance`
@@ -30,9 +29,17 @@ var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirect
     }
 });
 
-// Close the PSP if there is another  instance of it already running.
+if (appIsRunning) {
+    app.quit();
+    return;
+}
+
+// this module is loaded relatively slow
+require("gpii-universal");
+
+// Close the PSP if there is another instance of it already running.
 var gpiiIsRunning = !gpii.singleInstance.registerInstance();
-if (appIsRunning || gpiiIsRunning) {
+if (gpiiIsRunning) {
     app.quit();
     return;
 }
