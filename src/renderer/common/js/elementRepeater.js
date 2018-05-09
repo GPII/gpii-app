@@ -188,13 +188,14 @@
 
         invokers: {
             getMarkup: {
-                funcName: "fluid.notImplemented",
-                args: ["{arguments}.0"] // item
+                funcName: "fluid.identity",
+                args: ["{that}.options.markup"]
             }
         },
 
         dynamicContainerMarkup: {
             container:            "<div class=\"%containerClass\"></div>",
+            // TODO rename to containerClassTpl
             containerClassPrefix: "flc-dynamicElement-%id" // preferably altered by the implementor
         },
 

@@ -25,6 +25,7 @@ require("./dialogManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
+require("./quickSetStrip.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
@@ -141,6 +142,10 @@ fluid.defaults("gpii.app", {
                     }
                 }
             }
+        },
+        qss: {
+            type: "gpii.app.qss",
+            createOnEvent: "onPSPPrerequisitesReady"
         },
         psp: {
             type: "gpii.app.pspInApp",

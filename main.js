@@ -30,6 +30,7 @@ var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirect
 });
 
 if (appIsRunning) {
+    console.log("Another instance of gpii-app is running!")
     app.quit();
     return;
 }
