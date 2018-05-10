@@ -94,7 +94,7 @@
         gradeNames: ["gpii.psp.repeater"],
 
         dynamicContainerMarkup: {
-            container: "<a class=\"%containerClass\"></a>",
+            container: "<button class=\"%containerClass\" tabindex=0></button>",
             containerClassPrefix: "fl-quickSetStrip-button"
         },
         // TODO get handler based on setting type

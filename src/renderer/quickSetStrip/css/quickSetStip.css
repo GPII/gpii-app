@@ -1,6 +1,10 @@
 /* TODO show borders of the whole window for dev purposes  */
 body {
     border: 2px solid #eee;
+
+    /* override properties */
+    margin: 0;
+    overflow: hidden;
 }
 
 
@@ -13,23 +17,12 @@ body {
 }
 
 .fl-quickSetStrip-button {
-    height: 70px;
-    width: 70px;
+    height: 80px;
+    width:  80px;
 
     border: 3px solid #83CBEF;
 
     cursor: pointer;
-
-    user-select: none;
-
-    /* center text */
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-
-    flex-wrap: wrap;
 }
 
 
@@ -39,4 +32,13 @@ body {
 
 .fl-quickSetStrip-button:active {
     background-color: #83CBEF;
+    color: white;
+}
+
+.fl-quickSetStrip-button:focus {
+    border: 5px solid red;
+}
+
+.fl-quickSetStrip-button:disabled {
+    background-color: #ccc;
 }
