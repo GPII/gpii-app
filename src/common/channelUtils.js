@@ -1,7 +1,7 @@
 /**
- * PSP utility functions
+ * Electron browser window IPC utilities
  *
- * A set of utility function used throughout the components used in the main process of the PSP.
+ * A set of utility for communication between the main and renderer processes.
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
