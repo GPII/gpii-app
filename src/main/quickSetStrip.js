@@ -22,11 +22,14 @@ require("./dialog.js");
  * TODO
  */
 fluid.defaults("gpii.app.qss.channel", {
-    gradeNames: ["gpii.app.dialog.simpleEventChannel", "gpii.app.i18n.channel"],
+    gradeNames: ["gpii.app.dialog.simpleChannelListener", "gpii.app.i18n.channel"],
+    ipcTarget: require("electron").ipcMain,
 
     events: {
         onQssClosed: null,
-        onQssButtonClicked: null
+        onQssButtonClicked: null,
+        onQssButtonMouseEnter: null,
+        onQssButtonMouseLeave: null
     }
 });
 
@@ -71,7 +74,16 @@ fluid.defaults("gpii.app.qss", {
                     onQssButtonClicked: {
                         funcName: "console.log",
                         args: ["Item clicked: ", "{arguments}.0"]
+                    },
+                    onQssButtonMouseEnter: {
+                        funcName: "console.log",
+                        args: ["Item Enter: ", "{arguments}.0"]
+                    },
+                    onQssButtonMouseLeave: {
+                        funcName: "console.log",
+                        args: ["Item Leave: ", "{arguments}.0"]
                     }
+
                 }
             }
         }

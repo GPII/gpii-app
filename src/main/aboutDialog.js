@@ -19,12 +19,14 @@ var fluid = require("infusion");
 var app = require("electron").app;
 
 require("./dialog.js");
+require("../common/channelUtils.js");
 
 /**
  * Simple connector for the About BrowserWindow
  */
 fluid.defaults("gpii.app.aboutDialog.channel", {
     gradeNames: ["gpii.app.dialog.simpleEventChannel", "gpii.app.i18n.channel"],
+    ipcTarget: require("electron").ipcMain,
 
     events: {
         onAboutDialogClosed: null
