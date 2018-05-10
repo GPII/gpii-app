@@ -32,22 +32,59 @@
         }
     });
 
+    /**
+     * TODO
+     * add timeout?
+     */
+    fluid.defaults("gpii.psp.elementRepeater.hovarable", {
+        events: {
+            onMouseEnter: null,
+            onMouseLeave: null
+        },
+
+        listeners: {
+            "onCreate.addHoverHandler": {
+                this: "{that}.container",
+                method: "hover",
+                args: [
+                    "{that}.events.onMouseEnter.fire",
+                    "{that}.events.onMouseLeave.fire"
+                ]
+            }
+        }
+    });
+
+
+    /**
+     * TODO
+     */
     fluid.defaults("gpii.psp.quickSetStrip.buttonPresenter", {
-        gradeNames: ["gpii.psp.elementRepeater.clickable", "fluid.viewComponent"],
+        gradeNames: [
+            "gpii.psp.elementRepeater.clickable",
+            "gpii.psp.elementRepeater.hovarable",
+            "fluid.viewComponent"
+        ],
 
         model: {
             item: {}
         },
 
+        // pass hover item as it is in order to use its position
+        // TODO probably use something like https://stackoverflow.com/questions/3234977/using-jquery-how-to-get-click-coordinates-on-the-target-element
+        events: {
+            onMouseEnter: "{list}.events.onButtonMouseEnter",
+            onMouseLeave: "{list}.events.onButtonMouseLeave"
+        },
+
         listeners: {
+            onClicked: {
+                funcName: "{list}.events.onButtonClicked.fire",
+                args: ["{that}.model.item"]
+            },
             "onCreate.renderLabel": {
                 this: "{that}.container",
                 method: "text",
                 args: ["{that}.model.item.label"]
-            },
-            onClicked: {
-                funcName: "console.log",
-                args: "Clicked"
             }
         }
     });
@@ -62,7 +99,34 @@
         },
         // TODO get handler based on setting type
         handlerType: "gpii.psp.quickSetStrip.buttonPresenter",
-        markup: ""
+        markup: null,
+
+
+        events: {
+            onButtonClicked: null,
+            onButtonMouseEnter: null,
+            onButtonMouseLeave: null
+        }
+    });
+
+
+    fluid.defaults("gpii.psp.channelListener", {
+        gradeNames: "gpii.app.dialog.simpleChannelListener",
+        ipcTarget: require("electron").ipcRenderer,
+
+        // TODO add events from the main process
+        events: {}
+    });
+
+    fluid.defaults("gpii.psp.channelNotifier", {
+        gradeNames: "gpii.app.dialog.simpleChannelNotifier",
+        ipcTarget: require("electron").ipcRenderer,
+
+        events: {
+            onQssButtonClicked: null,
+            onQssButtonMouseEnter: null,
+            onQssButtonMouseLeave: null
+        }
     });
 
     /**
@@ -72,11 +136,7 @@
         gradeNames: ["fluid.viewComponent"],
 
         model: {
-            settings: [
-                {label: "More ..."},
-                {label: "Some long long long long setting label"},
-                {label: "Key out"}
-            ]
+            settings: []
         },
 
         components: {
@@ -89,9 +149,19 @@
                     }
                 }
             },
-            // TODO
-            // channel: {
-            // }
+            channelListener: {
+                type: "gpii.psp.channelListener"
+            },
+            channelNotifier: {
+                type: "gpii.psp.channelNotifier",
+                options: {
+                    events: {
+                        onQssButtonClicked:    "{quickSetStripList}.events.onButtonClicked",
+                        onQssButtonMouseEnter: "{quickSetStripList}.events.onButtonMouseEnter",
+                        onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave"
+                    }
+                }
+            }
         }
     });
 })(fluid);

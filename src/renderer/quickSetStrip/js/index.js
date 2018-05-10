@@ -51,6 +51,16 @@
         });
 
         /// XXX for dev in browser
-        //gpii.psp.quickSetStrip(".flc-quickSetStrip");
+        // gpii.psp.quickSetStrip(".flc-quickSetStrip", {
+        //     model: {
+        //         settings: [
+        //             {label: "More ..."},
+        //             {label: "Some long long long long setting label"},
+        //             {label: "Caption"},
+        //             {label: "Languages"},
+        //             {label: "Key out"}
+        //         ]
+        //     }
+        // });
     });
 })(fluid);
