@@ -18,6 +18,74 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
+    /**
+     * Register keyup events on a DOM element. Once a key is pressed a
+     * corresponding component's event is fired, if event by a special name
+     * is supplied for it.
+     * Every special component event follow the format: `on<KeyName>Clicked`
+     * where the available <KeyName>s can be view here:
+     * https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
+     *
+     * N.B.! The <KeyName> for the space bar is "Spacebar", which differs from the name
+     * in the specification which is simply " "
+     */
+    fluid.defaults("gpii.qss.elementRepeater.keyListener", {
+        events: {}, // given by implementor
+
+        listeners: {
+            "onCreate.addClickHandler": {
+                this: "{that}.container",
+                method: "keyup",
+                args: "{that}.registerKeyPress"
+            }
+        },
+
+        invokers: {
+            registerKeyPress: {
+                funcName: "gpii.qss.elementRepeater.keyListener.registerKeyPress",
+                args: ["{that}.events", "{arguments}.0"]
+            }
+        }
+    });
+
+    /**
+     * TODO
+     */
+    gpii.qss.elementRepeater.keyListener.registerKeyPress = function (events, KeyboardEvent) {
+        // Make use of a relatively new feature https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+        var keyName;
+
+        // rename Space key in order to achieve proper generic method for key presses
+        // The full list of key names can be view here: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
+        if (KeyboardEvent.key === " ") {
+            keyName = "Spacebar";
+        } else { // e.g. ArrowDown, Enter
+            keyName = KeyboardEvent.key;
+        }
+
+        var eventName = "on" + keyName + "Clicked";
+
+        // Check whether such key press is observed
+        if (events[eventName]) {
+            events[eventName].fire();
+        }
+    };
+
+
+    fluid.defaults("gpii.qss.elementRepeater.qssKeyListener", {
+        gradeNames: "gpii.qss.elementRepeater.keyListener",
+
+        events: {
+            onArrowDownClicked: null,
+            onArrowUpClicked: null,
+            onArrowLeftClicked: null,
+            onArrowRightClicked: null,
+            onEnterClicked: null,
+            onSpacebarClicked: null
+        }
+    });
+
+
     fluid.defaults("gpii.qss.elementRepeater.clickable", {
         events: {
             onClicked: null
@@ -61,6 +129,7 @@
         gradeNames: [
             "gpii.qss.elementRepeater.clickable",
             "gpii.qss.elementRepeater.hoverable",
+            "gpii.qss.elementRepeater.qssKeyListener",
             "fluid.viewComponent"
         ],
 
@@ -76,14 +145,39 @@
         },
 
         listeners: {
-            onClicked: {
-                funcName: "{list}.events.onButtonClicked.fire",
-                args: ["{that}.model.item"]
-            },
             "onCreate.renderLabel": {
                 this: "{that}.container",
                 method: "text",
                 args: ["{that}.model.item.label"]
+            },
+
+            // Element interaction events
+
+            onClicked: {
+                funcName: "{list}.events.onButtonClicked.fire",
+                args: ["{that}.model.item"]
+            },
+
+            onArrowUpClicked: {
+                funcName: "console.log",
+                args: ["{that}.model.item"]
+            },
+            onArrowDownClicked: {
+                funcName: "console.log",
+                args: ["{that}.model.item"]
+            },
+
+            onArrowLeftClicked: {
+                funcName: "console.log",
+                args: ["{that}.model.item"]
+            },
+            onArrowRightClicked: {
+                funcName: "console.log",
+                args: ["{that}.model.item"]
+            },
+            onSpacebarClicked: {
+                funcName: "console.log",
+                args: ["{that}.model.item"]
             }
         }
     });
