@@ -47,7 +47,6 @@ gpii.testem.instrumenter.runner({
         "./node_modules/winstrap/dist/css/winstrap.min.css",
         "./node_modules/winstrap/dist/js/vendor/bootstrap.min.js",
         "./provisioning/*",
-        //"./src/icons/*",
         "./tests.js",
         "./tests/**/*",
         "./tests/*"

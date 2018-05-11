@@ -1,7 +1,9 @@
 /* eslint-env node */
 "use strict";
 
-var fs = require("fs");
+var fluid = require("infusion");
+
+var fs = require("graceful-fs");
 var path = require("path");
 var jqUnit = require("node-jqunit");
 
@@ -27,7 +29,7 @@ jqUnit.onAllTestsDone.addListener(function () {
     }
 });
 
-// Run the electron app tests with code coverage.
+// Run the electron app tests with code coverage if possible.
 require("./tests/AppTests.js");
 require("./tests/MessageBundlesTests.js");
 require("./tests/MessageBundlesCompilerTests.js");
