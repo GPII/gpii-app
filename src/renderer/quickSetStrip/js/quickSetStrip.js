@@ -54,7 +54,6 @@
         }
     });
 
-
     /**
      * TODO
      */
@@ -89,6 +88,17 @@
         }
     });
 
+    fluid.defaults("gpii.qss.toggleButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        listeners: {
+            onCreate: {
+                this: "console",
+                method: "log",
+                args: ["toggleButtonPresenter"]
+            }
+        }
+    });
+
 
     fluid.defaults("gpii.qss.list", {
         gradeNames: ["gpii.psp.repeater"],
@@ -101,13 +111,27 @@
         handlerType: "gpii.qss.buttonPresenter",
         markup: null,
 
-
         events: {
             onButtonClicked: null,
             onButtonMouseEnter: null,
             onButtonMouseLeave: null
+        },
+
+        invokers: {
+            getHandlerType: {
+                funcName: "gpii.qss.list.getHandlerType",
+                args: ["{arguments}.0"] // item
+            }
         }
     });
+
+    gpii.qss.list.getHandlerType = function (item) {
+        if (item.type === "toggle") {
+            return "gpii.qss.toggleButtonPresenter";
+        }
+
+        return "gpii.qss.buttonPresenter";
+    };
 
 
     fluid.defaults("gpii.qss.channelListener", {

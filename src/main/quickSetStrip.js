@@ -48,7 +48,7 @@ fluid.defaults("gpii.app.qss", {
             settings: [
                 {label: "More ..."},
                 {label: "Some long long long long setting label"},
-                {label: "Caption"},
+                {label: "Caption", type: "toggle"},
                 {label: "Languages"},
                 {label: "Key out"}
             ]

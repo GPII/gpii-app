@@ -190,6 +190,10 @@
             getMarkup: {
                 funcName: "fluid.identity",
                 args: ["{that}.options.markup"]
+            },
+            getHandlerType: {
+                funcName: "fluid.identity",
+                args: ["{that}.options.handlerType"]
             }
         },
 
@@ -207,7 +211,7 @@
                 options: {
                     index: "{sourcePath}",
                     item:  "{source}",
-                    handlerType: "{repeater}.options.handlerType",
+                    handlerType: "@expand:{repeater}.getHandlerType({that}.options.item)",
 
                     markup: {
                         container: {
