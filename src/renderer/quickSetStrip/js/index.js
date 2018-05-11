@@ -22,7 +22,7 @@
     var windowInitialParams = electron.remote.getCurrentWindow().params;
 
     /**
-     * Wrapper that enables translations for the `gpii.psp.QuickSetStrip` component and
+     * Wrapper that enables translations for the `gpii.qss` component and
      * applies interception of all anchor tags on the page so that an external browser is used
      * for loading them.
      */
@@ -31,7 +31,7 @@
 
         components: {
             quickSetStrip: {
-                type: "gpii.psp.quickSetStrip",
+                type: "gpii.qss",
                 container: "{translatedQuickSetStrip}.container",
                 options: {
                     model: {
@@ -51,7 +51,7 @@
         });
 
         /// XXX for dev in browser
-        // gpii.psp.quickSetStrip(".flc-quickSetStrip", {
+        // gpii.qss(".flc-quickSetStrip", {
         //     model: {
         //         settings: [
         //             {label: "More ..."},

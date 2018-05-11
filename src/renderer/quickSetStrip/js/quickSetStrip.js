@@ -18,7 +18,7 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-    fluid.defaults("gpii.psp.elementRepeater.clickable", {
+    fluid.defaults("gpii.qss.elementRepeater.clickable", {
         events: {
             onClicked: null
         },
@@ -36,7 +36,7 @@
      * TODO
      * add timeout?
      */
-    fluid.defaults("gpii.psp.elementRepeater.hovarable", {
+    fluid.defaults("gpii.qss.elementRepeater.hoverable", {
         events: {
             onMouseEnter: null,
             onMouseLeave: null
@@ -58,10 +58,10 @@
     /**
      * TODO
      */
-    fluid.defaults("gpii.psp.quickSetStrip.buttonPresenter", {
+    fluid.defaults("gpii.qss.buttonPresenter", {
         gradeNames: [
-            "gpii.psp.elementRepeater.clickable",
-            "gpii.psp.elementRepeater.hovarable",
+            "gpii.qss.elementRepeater.clickable",
+            "gpii.qss.elementRepeater.hoverable",
             "fluid.viewComponent"
         ],
 
@@ -90,7 +90,7 @@
     });
 
 
-    fluid.defaults("gpii.psp.quickSetStrip.list", {
+    fluid.defaults("gpii.qss.list", {
         gradeNames: ["gpii.psp.repeater"],
 
         dynamicContainerMarkup: {
@@ -98,7 +98,7 @@
             containerClassPrefix: "fl-quickSetStrip-button"
         },
         // TODO get handler based on setting type
-        handlerType: "gpii.psp.quickSetStrip.buttonPresenter",
+        handlerType: "gpii.qss.buttonPresenter",
         markup: null,
 
 
@@ -110,7 +110,7 @@
     });
 
 
-    fluid.defaults("gpii.psp.channelListener", {
+    fluid.defaults("gpii.qss.channelListener", {
         gradeNames: "gpii.app.dialog.simpleChannelListener",
         ipcTarget: require("electron").ipcRenderer,
 
@@ -118,7 +118,7 @@
         events: {}
     });
 
-    fluid.defaults("gpii.psp.channelNotifier", {
+    fluid.defaults("gpii.qss.channelNotifier", {
         gradeNames: "gpii.app.dialog.simpleChannelNotifier",
         ipcTarget: require("electron").ipcRenderer,
 
@@ -132,7 +132,7 @@
     /**
      * TODO
      */
-    fluid.defaults("gpii.psp.quickSetStrip", {
+    fluid.defaults("gpii.qss", {
         gradeNames: ["fluid.viewComponent"],
 
         model: {
@@ -141,7 +141,7 @@
 
         components: {
             quickSetStripList: {
-                type: "gpii.psp.quickSetStrip.list",
+                type: "gpii.qss.list",
                 container: "{that}.container",
                 options: {
                     model: {
@@ -150,10 +150,10 @@
                 }
             },
             channelListener: {
-                type: "gpii.psp.channelListener"
+                type: "gpii.qss.channelListener"
             },
             channelNotifier: {
-                type: "gpii.psp.channelNotifier",
+                type: "gpii.qss.channelNotifier",
                 options: {
                     events: {
                         onQssButtonClicked:    "{quickSetStripList}.events.onButtonClicked",
