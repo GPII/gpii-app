@@ -35,11 +35,11 @@
         "start": "npm run build && electron main.js",
         "dev": "npm run build && electron main.js ./configs app.dev",
         "build": "grunt compileMessages",
-        "test": "npm run build && powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron tests.js",
-        "precoverage": "npm run precoverage:clean && npm run precoverage:instrument",
-        "precoverage:clean": "node node_modules/rimraf/bin.js coverage instrumented reports && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
-        "precoverage:instrument": "node tests/lib/instrumentSource.js",
-        "coverage": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron ./instrumented/tests.js",
-        "postcoverage": "node node_modules/nyc/bin/nyc.js report"
+        "pretest": "npm run pretest:clean && npm run pretest:instrument",
+        "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
+        "pretest:instrument": "node tests/lib/instrumentSource.js",
+        "test": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron ./instrumented/tests.js",
+        "posttest": "node node_modules/nyc/bin/nyc.js report",
+        "test:noCoverage": "npm run build && powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron tests.js"
     }
 }
