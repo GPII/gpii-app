@@ -21,6 +21,7 @@ body {
     width:  80px;
 
     border: 3px solid #83CBEF;
+    background-color: white;
 
     cursor: pointer;
 }
@@ -30,15 +31,20 @@ body {
     background-color: #eee;
 }
 
-.fl-quickSetStrip-button:active {
-    background-color: #83CBEF;
-    color: white;
-}
-
 .fl-quickSetStrip-button:focus {
     border: 5px solid red;
 }
 
 .fl-quickSetStrip-button:disabled {
-    background-color: #ccc;
+    background-color: #ddd;
+}
+
+.fl-quickSetStrip-button:active {
+    background-color: #83CBEF;
+    color: white;
+}
+
+
+.fl-quickSetStrip-button-menu .active {
+    background: linear-gradient(#83CBEF 30%, white);
 }
