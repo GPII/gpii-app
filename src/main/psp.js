@@ -101,8 +101,8 @@ fluid.defaults("gpii.app.pspInApp", {
 /**
  * Either hides or shows the warning in the PSP.
  *
- * @param psp {Component} The `gpii.app.psp` component
- * @param pendingChanges {Object[]} A list of the current state of pending changes
+ * @param {Component} psp - The `gpii.app.psp` component
+ * @param {Object[]} pendingChanges - A list of the current state of pending changes
  */
 gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
     if (pendingChanges.length === 0) {
@@ -284,16 +284,6 @@ fluid.defaults("gpii.app.psp", {
 });
 
 /**
- * Shows the PSP window in the lower part of the primary display and focuses it. Actually, the PSP window is always
- * shown but it may be positioned off the screen.  This is a workaround for the flickering issue observed when the
- * content displayed in the PSP window changes. (Electron does not rerender web pages when the `BrowserWindow` is
- * hidden).
- *
- * @param {Component} psp - The `gpii.app.psp` instance.
- * @param {Object} pspWindow - An Electron `BrowserWindow`.
- */
-
-/**
  * Moves the PSP to the lower right part of the screen. This function in conjunction with `gpii.app.psp.moveOffScreen`
  * help avoid the flickering issue when the content of the PSP window changes.
  *
@@ -351,8 +341,8 @@ gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changed
  * clicking outside (this should be specified in the PSP channel message). In case there
  * is no keyed-in user, the default behavior is for the PSP to close when a blur event
  * occurs.
- * @param psp {Component} The `gpii.app.psp` instance.
- * @param settingsBroker {Component} The `gpii.app.settingsBroker` instance.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
  */
 gpii.app.psp.handlePSPWindowFocusLost = function (psp, settingsBroker) {
     var isShown = psp.model.isShown,
@@ -458,8 +448,8 @@ gpii.app.psp.hide = function (psp) {
  * given settings. The function takes care of hiding the PSP, applying pending
  * changes which require application restarts and undoing setting changes that
  * necessitate the OS to be restarted.
- * @param psp {Component} The `gpii.app.psp` instance.
- * @param settingsBroker {Component} The `gpii.app.settingsBroker` instance.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param  {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
  */
 gpii.app.psp.closePSP = function (psp, settingsBroker) {
     psp.hide();

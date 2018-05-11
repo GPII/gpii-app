@@ -149,7 +149,7 @@ gpii.app.makeTray = function (options, openPSP) {
  * @param {String} keyedInUserToken - The token if the keyed-in user or `null` if
  * there is no such.
  * @param {Object} icons - An object containing all possible icon paths.
- * @return The path to the icon for the Electron Tray.
+ * @return {String} The path to the icon for the Electron Tray.
  */
 gpii.app.getTrayIcon = function (keyedInUserToken, icons) {
     return keyedInUserToken ? icons.keyedIn : icons.keyedOut;
@@ -160,7 +160,7 @@ gpii.app.getTrayIcon = function (keyedInUserToken, icons) {
  * @param {Object} preferences - An object describing the preference sets (including the
  * active one) for the currently keyed-in user (if any).
  * @param {Object} messages - An object containing differen messages for the tray tooltip.
- * @return The tooltip label for the Electron Tray.
+ * @return {String} The tooltip label for the Electron Tray.
  */
 gpii.app.getTrayTooltip = function (preferences, messages) {
     var activePreferenceSet = fluid.find_if(preferences.sets,

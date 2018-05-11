@@ -96,8 +96,8 @@ gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
 /**
  * Checks if a hash is not empty, i.e. if it contains at least one key.
  * Note that the values are not examined.
- * @param hash {Object} An arbitrary object.
- * @return `true` is the hash has at least one key and `false` otherwise.
+ * @param {Object} hash - An arbitrary object.
+ * @return {Boolean} `true` is the hash has at least one key and `false` otherwise.
  */
 gpii.app.isHashNotEmpty = function (hash) {
     return hash && fluid.keys(hash).length > 0;
@@ -187,7 +187,7 @@ fluid.defaults("gpii.app.dialog.simpleEventChannel", {
  * Registers simple IPC socket listeners for all given events. In case anything is written to
  * the channel, the corresponding event is triggered.
  *
- * @param events {Object} The events to be used.
+ * @param {Object} events - The events to be used.
  */
 gpii.app.dialog.simpleEventChannel.registerIPCListeners = function (events) {
     fluid.each(events, function (event, eventName) {
@@ -198,7 +198,7 @@ gpii.app.dialog.simpleEventChannel.registerIPCListeners = function (events) {
 /**
  * Deregisters all socket listeners for the specified events.
  *
- * @param events {Object} The events to be used.
+ * @param {Object} events - The events to be used.
  */
 gpii.app.dialog.simpleEventChannel.deregisterIPCListeners = function (events) {
     fluid.keys(events).forEach(gpii.app.dialog.simpleEventChannel.registerIPCListener);
@@ -208,8 +208,8 @@ gpii.app.dialog.simpleEventChannel.deregisterIPCListeners = function (events) {
 /**
  * Registers a single IPC socket channel.
  *
- * @param channelName {String} The name of the channel to be listened to.
- * @param event {Object} The event to be fired when the channel is notified.
+ * @param {String} channelName - The name of the channel to be listened to.
+ * @param {Object} event - The event to be fired when the channel is notified.
  */
 gpii.app.dialog.simpleEventChannel.registerIPCListener = function (channelName, event) {
     ipcMain.on(channelName, function (/* event, args... */) {
@@ -221,7 +221,7 @@ gpii.app.dialog.simpleEventChannel.registerIPCListener = function (channelName, 
 /**
  * Deregisters a socket listener.
  *
- * @param channelName {String} The channel to be disconnected from.
+ * @param {String} channelName - The channel to be disconnected from.
  */
 gpii.app.dialog.simpleEventChannel.deregisterIPCListener = function (channelName) {
     ipcMain.removeAllListeners(channelName);
@@ -236,7 +236,7 @@ gpii.app.dialog.simpleEventChannel.deregisterIPCListener = function (channelName
  * Related to: https://github.com/electron/electron/issues/12698
  *
  * @param {Object|Array} object - The object/array that needs to have its contexts fixed.
- * @returns {Object} The fixed object
+ * @return {Object} The fixed object
  */
 gpii.app.recontextualise = function (object) {
     if (!fluid.isPlainObject(object)) {

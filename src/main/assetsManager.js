@@ -41,10 +41,10 @@ fluid.defaults("gpii.app.assetsManager", {
 /**
  * Returns the absolute path to an asset given its `filename` and the absolute
  * path of the assets directory. The latter can be prefixed with a module name.
- * @param assetsDir {String} The path (possibly starting with a module name) to
+ * @param {String} assetsDir - The path (possibly starting with a module name) to
  * the assets folder.
- * @param filename {String} The simple name of the asset including the extension.
- * @return the absolute path to the asset.
+ * @param {String} filename - The simple name of the asset including the extension.
+ * @return {String} the absolute path to the asset.
  */
 gpii.app.assetsManager.resolveAssetPath = function (assetsDir, filename) {
     return fluid.module.resolvePath(assetsDir + filename);

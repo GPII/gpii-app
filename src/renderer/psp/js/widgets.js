@@ -132,10 +132,10 @@
     /**
      * Applies the appropriate styles depending on whether the item is
      * the selected item for the dropdown.
-     * @param selection {String} The path of the selected item.
-     * @param item {Object} The current image dropdown item.
-     * @param container {jQuery} The DOM element representing the item.
-     * @param styles {Object} A hash containing mapping between CSS class
+     * @param {String} selection - The path of the selected item.
+     * @param {Object} item - The current image dropdown item.
+     * @param {jQuery} container - The DOM element representing the item.
+     * @param {Object} styles - A hash containing mapping between CSS class
      * keys and class names.
      */
     gpii.psp.widgets.imageDropdownPresenter.applyStyles = function (selection, item, container, styles) {
@@ -255,9 +255,9 @@
     /**
      * Given the array of available items and the `path` of the currently selected
      * item, returns the object representing the selected item.
-     * @param items {Array} The array of items which are visualized in the image
+     * @param {Array} items - The array of items which are visualized in the image
      * dropdown.
-     * @param selection {String} The `path` of the currently selected item.
+     * @param {String} selection - The `path` of the currently selected item.
      * @return {Object} The currently selected item object.
      */
     gpii.psp.widgets.imageDropdown.getSelectedItem = function (items, selection) {
@@ -269,11 +269,11 @@
     /**
      * Updates the header of the image dropdown based on the selected item by
      * setting the appropriate image source and text.
-     * @param selectedItemImage {jQuery} A jQuery object representing the image of
+     * @param {jQuery} selectedItemImage - A jQuery object representing the image of
      * the selected dropdown item.
-     * @param selectedItemText {jQuery} A jQuery object representing the text of
+     * @param {jQuery} selectedItemText - A jQuery object representing the text of
      * the selected dropdown item.
-     * @param selectedItem {Object} The currently selected item object.
+     * @param {Object} selectedItem - The currently selected item object.
      */
     gpii.psp.widgets.imageDropdown.updateDropdownHeader = function (selectedItemImage, selectedItemText, selectedItem) {
         var itemImageSrc = fluid.get(selectedItem, "imageSrc") || "",

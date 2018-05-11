@@ -70,8 +70,8 @@ fluid.defaults("gpii.app.gpiiConnector", {
 /**
  * Modifies the passed `preferences` by resolving paths to any assets which
  * may be specified as properties of the preference sets.
- * @param assetsManager {Component} The `gpii.app.assetsManager` instance.
- * @param preferences {Object} The preferences received via the PSP channel.
+ * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
+ * @param {Object} preferences - The preferences received via the PSP channel.
  */
 gpii.app.gpiiConnector.resolveAssetPaths = function (assetsManager, preferences) {
     if (preferences) {
@@ -390,14 +390,15 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
 /**
  * Creates recursively a PSPSettingControls object given a template settings
  * group or a setting which may have subsettings and a ChannelSettingControls object.
- * @param element {Object} An object (group of settings or an individual setting)
+ * @param {Object} element - An object (group of settings or an individual setting)
  * which has settings.
- * @param groupSolutionName {String} The solutionName (i.e. the application to which
+ * @param {String} groupSolutionName - The solutionName (i.e. the application to which
  * this group pertains) of the group. If it is specified, none of the settings
  * (including subsettings) within the group will have a solution name. If not specified,
  * the solution name for each setting will be used (if provided).
- * @param channelSettingControls {ChannelSettingControls}
- * @return {PSPSettingControls}
+ * @param {ChannelSettingControls} channelSettingControls the `settingControls` object
+ * from the PSP channel message
+ * @return {PSPSettingControls} The resulting PSPSettingControls object.
  */
 gpii.app.dev.gpiiConnector.getSettingControls = function (element, groupSolutionName, channelSettingControls) {
     var settingControls = {};
@@ -437,9 +438,10 @@ gpii.app.dev.gpiiConnector.getSettingControls = function (element, groupSolution
  * based on the `groupingTemplate`. Each object in the resulting array represents a
  * single group that is to be visualized in the PSP and will definitely have at least
  * one setting present.
- * @param groupingTemplate {Array} A template array which serves for constructing
+ * @param {Array} groupingTemplate - A template array which serves for constructing
  * setting groups.
- * @param channelSettingControls {ChannelSettingControls}
+ * @param {ChannelSettingControls} channelSettingControls - the `settingControls` object
+ * from the PSP channel message
  * @return {PSPSettingGroup[]} An array of setting groups each of which containing at
  * least one setting.
  */
@@ -462,8 +464,10 @@ gpii.app.dev.gpiiConnector.createGroupsFromTemplate = function (groupingTemplate
  * of settings, i.e. it will contain all settings which have not been assigned to
  * other groups based on the `groupingTemplate`. Will return `undefined` if there
  * are no such settings.
- * @param channelSettingControls {ChannelSettingControls}
- * @return {PSPSettingGroup}
+ * @param {ChannelSettingControls} channelSettingControls - the `settingControls` object
+ * from the PSP channel message
+ * @return {PSPSettingGroup} A PSPSettingGroup object representing the default setting
+ * group.
  */
 gpii.app.dev.gpiiConnector.createDefaultGroup = function (channelSettingControls) {
     var defaultGroup = {
@@ -487,12 +491,13 @@ gpii.app.dev.gpiiConnector.createDefaultGroup = function (channelSettingControls
  * does is to create groups of settings. Each group has a name and a set
  * of settings each of which can also have settings. Note that this function
  * modifies the passed `message` object argument.
- * @param groupingTemplate {Array} A template array which serves for constructing
+ * @param {Array} groupingTemplate - A template array which serves for constructing
  * setting groups. Each group within the template must have a `settings` element
  * which specifies the paths and possibly the subsettings of these settings, and
  * optionally a `name` which will be displayed as a title for the group and a
  * `solutionName` which will be used in the restart warning text.
- * @param message {Object} The received message.
+ * @param {Object} message - The received message.
+ * @return {Object} The PSP channel message adapted to the expected format.
  */
 gpii.app.dev.gpiiConnector.groupSettings = function (groupingTemplate, message) {
     var payload = message.payload || {},

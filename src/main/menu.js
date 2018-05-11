@@ -401,7 +401,7 @@ fluid.defaults("gpii.app.menu", {
 });
 
 /**
- *  Object representing options for a `Electron` `ContextMenu` item.
+ * Object representing options for a `Electron` `ContextMenu` item.
  * @typedef {Object} ElectronMenuItem
  * @property {String} label The label that will be visualized in the menu
  * @property {String} enabled Whether the menu item is enabled
@@ -498,7 +498,7 @@ gpii.app.menu.getPreferenceSetsMenuItems = function (preferenceSets, activeSet) 
   * @param {String} label - The label of the item.
   * @param {String} event - The event to be triggered on click.
   * @param {Object} [payload] - The payload that is to be supplied with the on click event.
-  * @return {ElectronMenuItem}
+  * @return {ElectronMenuItem} A simple selectable Electron menu item.
   */
 gpii.app.menu.getSimpleMenuItem = function (label, event, payload) {
     return {
@@ -510,7 +510,7 @@ gpii.app.menu.getSimpleMenuItem = function (label, event, payload) {
 
 /**
  * Generate a simple Electron context menu separator item.
- * @returns {Object} The separator menu item.
+ * @return {Object} The separator menu item.
  */
 gpii.app.menu.getSeparatorItem = function () {
     return {type: "separator"};

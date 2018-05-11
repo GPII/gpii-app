@@ -76,7 +76,7 @@
 
     /**
      * Registers a listener for the  `onLocaleChanged` event from the main process.
-     * @param events {Object} A map of all events for the `channel` component.
+     * @param {Object} events - A map of all events for the `channel` component.
      */
     gpii.psp.messageBundles.channel.register = function (events) {
         ipcRenderer.on("onLocaleChanged", function (event, locale) {

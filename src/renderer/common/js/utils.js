@@ -22,7 +22,7 @@
     /**
      * Opens the passed url externally using the default browser for the
      * OS (or set by the user).
-     * @param url {String} The url to open externally.
+     * @param {String} url - The url to open externally.
      */
     gpii.psp.openUrlExternally = function (url) {
         shell.openExternal(url);
@@ -30,7 +30,7 @@
 
     /**
      * Plays a sound identified by an absolute path or a URL to it.
-     * @param soundPath {String} The path or URL of the sound to play.
+     * @param {String} soundPath - The path or URL of the sound to play.
      */
     gpii.psp.playSound = function (soundPath) {
         if (soundPath) {

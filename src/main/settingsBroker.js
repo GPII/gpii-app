@@ -150,8 +150,8 @@ gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
 
 /**
  * Filters the passed `pendingChanges` based on the specified `liveness`.
- * @param pendingChanges {Object[]} The pending changes to be filtered.
- * @param [liveness] {String} The liveness which the resulting pending changes would
+ * @param {Object[]} pendingChanges - The pending changes to be filtered.
+ * @param {String} [liveness] - The liveness which the resulting pending changes would
  * have. If not specified, all `pendingChanges` will be returned.
  * @return {Object[]} The filtered pending changes based on the specified `liveness`.
  */
@@ -165,12 +165,12 @@ gpii.app.settingsBroker.filterPendingChanges = function (pendingChanges, livenes
  * Applies the pending setting changes in the `descriptor` with the given `liveness`
  * and removes them from the queue.
  * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
- * @param [descriptor] {Object} An object specifying which pending changes should
+ * @param {Object} [descriptor] - An object specifying which pending changes should
  * be applied.
- * @param [descriptor.pendingChanges] {Object[]} An array containing the pending
+ * @param {Object[]} [descriptor.pendingChanges] - An array containing the pending
  * setting changes to be applied. If not specified, all pending changes from the
  * `settingsBroker` will be applied.
- * @param [descriptor.liveness] {String} The liveness of the pending changes to be
+ * @param {String} [descriptor.liveness] - The liveness of the pending changes to be
  * applied. If not specified, the `liveness` of the settings won't be taken into
  * account.
  */
@@ -194,12 +194,12 @@ gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, descript
  * for firing the appropriate events so that the PSP interface can restore to its
  * original state before the queueing of the setting changes.
  * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
- * @param [descriptor] {Object} An object specifying which pending changes should
+ * @param {Object} [descriptor] - An object specifying which pending changes should
  * be cancelled / undone.
- * @param [descriptor.pendingChanges] {Object[]} An array containing the pending
+ * @param {Object[]} [descriptor.pendingChanges] - An array containing the pending
  * setting changes to be cancelled. If not specified, all pending changes from the
  * `settingsBroker` will be cancelled.
- * @param [descriptor.liveness] {String} The liveness of the pending changes to be
+ * @param {String} [descriptor.liveness] - The liveness of the pending changes to be
  * cancelled. If not specified, the `liveness` of the settings won't be taken into
  * account.
  */
@@ -223,8 +223,8 @@ gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, descripto
 /**
  * Checks if there is at least one element in the `pendingChanges` with the specified
  * `liveness`.
- * @param pendingChanges {Object[]} An array containing pending setting changes.
- * @param [liveness] {String} The liveness of the pending changes to be queried. If
+ * @param {Object[]} pendingChanges - An array containing pending setting changes.
+ * @param {String} [liveness] - The liveness of the pending changes to be queried. If
  * not provided, the function simply returns whether the `pendingChanges` array is not
  * empty.
  * @return {Boolean} `true` if there is at least one pending change (with the given
@@ -237,8 +237,8 @@ gpii.app.settingsBroker.hasPendingChange = function (pendingChanges, liveness) {
 
 /**
  * Removes the specified pending changes from the queue.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
- * @param changesToRemove {Object[]} The pending changes to be removed.
+ * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
+ * @param {Object[]} changesToRemove - The pending changes to be removed.
  */
 gpii.app.settingsBroker.removePendingChanges = function (settingsBroker, changesToRemove) {
     var pendingChanges = settingsBroker.model.pendingChanges;

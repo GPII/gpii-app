@@ -158,9 +158,9 @@
     /**
      * Shows or hides the subsettings for a setting whose type is `boolean` depending on the
      * setting's value.
-     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
-     * @param value {Any} The new value of a setting.
-     * @param subsettingsElement {jQuery} A jQuery element representing the container of the
+     * @param {Component} that - An instance of `gpii.psp.settingPresenter`.
+     * @param {Any} value - The new value of a setting.
+     * @param {jQuery} subsettingsElement - A jQuery element representing the container of the
      * subsetting elements.
      */
     gpii.psp.settingPresenter.toggleSubsettings = function (that, value, subsettingsElement) {
@@ -170,8 +170,11 @@
     };
 
     /**
-     * Notifies the corresponding widget components about an update on the setting
-     * in case the update is reffering current setting
+     * Notifies the corresponding widget components about an update of the setting
+     * in case the update is referring to the current setting.
+     * @param {Component} that - An instance of `gpii.psp.settingPresenter`.
+     * @param {String} path - The path of the updated setting.
+     * @param {Any} newValue - The new value of the updated setting.
      */
     gpii.psp.settingPresenter.updateModelIfNeeded = function (that, path, newValue) {
         if (path === that.model.path) {
@@ -477,8 +480,10 @@
     /**
      * Resources that are to be fetched - settings inner container and widgets'.
      *
-     * @param {Object} settingExemplar - A 'gpii.psp.exemplar.settingsVisualizer' object.
-     *   Note: it has a fixed key.
+     * @param {Object} settingGroupExemplar - A `gpii.psp.exemplar.settingGroupsVisualizer`
+     * object.
+     * @param {Object} settingExemplar - A `gpii.psp.exemplar.settingsVisualizer` object.
+     * Note: it has a fixed key.
      * @param {Object[]} widgetExemplarsList - The list of `gpii.psp.exemplar`-s
      * @return {Object} - An object describin the resources to fetch.
      */
