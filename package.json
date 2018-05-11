@@ -35,7 +35,7 @@
         "start": "npm run build && electron main.js",
         "dev": "npm run build && electron main.js ./configs app.dev",
         "build": "grunt compileMessages",
-        "pretest": "npm run pretest:clean && npm run pretest:instrument",
+        "pretest": "npm run pretest:clean && npm run pretest:instrument && npm run build",
         "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
         "pretest:instrument": "node tests/lib/instrumentSource.js",
         "test": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron ./instrumented/tests.js",
