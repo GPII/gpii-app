@@ -154,10 +154,10 @@
      * have such, its title will be used instead. If there is at least one setting which
      * requires the OS to be restarted, then the only solution name that will be returned
      * will be the OS name.
-     * @param messages {Object} An object containing various messages used throughout
+     * @param {Object} messages - An object containing various messages used throughout
      * the component.
-     * @param pendingChanges {Array} An array containing all pending setting changes.
-     * @param [solutionName] {String} An optional solution name with which the restart
+     * @param {Array} pendingChanges - An array containing all pending setting changes.
+     * @param {String} [solutionName] - An optional solution name with which the restart
      * warning can be configured.
      * @return {String[]} the solutions names or titles corresponding to the applications
      * that need to be restarted.
@@ -183,9 +183,9 @@
     /**
      * Returns the text which is to be displayed in the component based on the solution
      * names corresponding to the pending setting changes.
-     * @param messages {Object} An object containing various messages used throughout
+     * @param {Object} messages - An object containing various messages used throughout
      * the component.
-     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * @param {Array} solutionNames - the solutions names or titles corresponding to the
      * applications that need to be restarted.
      * @return {String} The text which is to be displayed in the component.
      */

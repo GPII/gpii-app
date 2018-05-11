@@ -155,7 +155,7 @@ fluid.defaults("gpii.app.dialog", {
 /**
  * Registers a listener to be called whenever the `display-metrics-changed`
  * event is emitted by the electron screen.
- * @param that {Component} The `gpii.app.dialog` component.
+ * @param {Component} that - The `gpii.app.dialog` component.
  */
 gpii.app.dialog.addDisplayMetricsListener = function (that) {
     electron.screen.on("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
@@ -164,8 +164,8 @@ gpii.app.dialog.addDisplayMetricsListener = function (that) {
 /**
  * Handle electron's display-metrics-changed event by resizing the dialog if
  * necessary.
- * @param that {Component} The `gpii.app.dialog` component.
- * @param changedMetrics {Array} An array of strings that describe the changes.
+ * @param {Component} that - The `gpii.app.dialog` component.
+ * @param {Array} changedMetrics - An array of strings that describe the changes.
  * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
  */
 gpii.app.dialog.handleDisplayMetricsChange = function (that, changedMetrics) {
@@ -180,7 +180,7 @@ gpii.app.dialog.handleDisplayMetricsChange = function (that, changedMetrics) {
  * be done when the component gets destroyed in order to avoid memory leaks,
  * as some dialogs are created and destroyed dynamically (i.e. before the
  * PSP application terminates).
- * @param that {Component} The `gpii.app.dialog` component.
+ * @param {Component} that - The `gpii.app.dialog` component.
  */
 gpii.app.dialog.removeDisplayMetricsListener = function (that) {
     electron.screen.removeListener("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
@@ -188,8 +188,8 @@ gpii.app.dialog.removeDisplayMetricsListener = function (that) {
 
 /**
  * Builds a file URL inside the application **Working Directory**.
- * @param prefixPath {String} Prefix for the file path, e.g. "src/renderer"
- * @param suffixPath {String} Suffix for the file path, e.g. "index.html"
+ * @param {String} prefixPath - Prefix for the file path, e.g. "src/renderer"
+ * @param {String} suffixPath - Suffix for the file path, e.g. "index.html"
  * @return {String} The generated URL
  */
 gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
@@ -208,9 +208,9 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
 /**
  * Creates a dialog. This is done up front to avoid the delay from creating a new
  * dialog every time a new message should be displayed.
- * @param windowOptions {Object} The raw Electron `BrowserWindow` settings
- * @param url {String} The URL to be loaded in the `BrowserWindow`
- * @param params {Object} Options that are to be supplied to the render process of
+ * @param {Object} windowOptions - The raw Electron `BrowserWindow` settings
+ * @param {String} url - The URL to be loaded in the `BrowserWindow`
+ * @param {Object} params -  Options that are to be supplied to the render process of
  * the newly created BrowserWindow
  * @return {BrowserWindow} The Electron `BrowserWindow` component
  */
@@ -232,8 +232,8 @@ gpii.app.dialog.makeDialog = function (windowOptions, url, params) {
  * In case it is shown, resets the position and shows the current dialog (`BrowserWindow`).
  * The reset is needed in order to handle cases such as resolution or
  * DPI settings changes.
- * @param dialog {Component} The diolog component to be shown
- * @param isShown {Boolean} Whether the window has to be shown
+ * @param {Component} dialog - The diolog component to be shown
+ * @param {Boolean} isShown - Whether the window has to be shown
  */
 gpii.app.dialog.toggle = function (dialog, isShown) {
     if (isShown) {
@@ -246,9 +246,9 @@ gpii.app.dialog.toggle = function (dialog, isShown) {
 
 /**
  * Resizes the current window and repositions it to match the new size.
- * @param that {Component} The `gpii.app.dialog` instance
- * @param windowWidth {Number} The new width for the window
- * @param windowHeight {Number} The new height for the window
+ * @param {Component} that - The `gpii.app.dialog` instance
+ * @param {Number} windowWidth - The new width for the window
+ * @param {Number} windowHeight - The new height for the window
  */
 gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
     var bounds = gpii.app.getDesiredWindowBounds(windowWidth, windowHeight);
@@ -298,8 +298,8 @@ fluid.defaults("gpii.app.dialogWrapper", {
 /**
  * Responsible for firing the `onDialogCreate` event which in turn creates the
  * wrapped dialog component.
- * @param that {Component} The `gpii.app.dialogWrapper` instance.
- * @param options {Object} An object containing the various properties for the
+ * @param {Component} that - The `gpii.app.dialogWrapper` instance.
+ * @param {Object} options - An object containing the various properties for the
  * dialog which is to be created.
  */
 gpii.app.dialogWrapper.show = function (that, options) {
@@ -308,7 +308,7 @@ gpii.app.dialogWrapper.show = function (that, options) {
 
 /**
  * Responsible for hiding the wrapped dialog if it exists.
- * @param that {Component} The `gpii.app.dialogWrapper` instance.
+ * @param {Component} that - The `gpii.app.dialogWrapper` instance.
  */
 gpii.app.dialogWrapper.hide = function (that) {
     if (that.dialog) {
@@ -318,7 +318,7 @@ gpii.app.dialogWrapper.hide = function (that) {
 
 /**
  * Responsible for closing the wrapped dialog if it exists.
- * @param that {Component} The `gpii.app.dialogWrapper` instance.
+ * @param {Component} that - The `gpii.app.dialogWrapper` instance.
  */
 gpii.app.dialogWrapper.close = function (that) {
     if (that.dialog) {

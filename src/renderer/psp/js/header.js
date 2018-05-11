@@ -118,7 +118,7 @@
     /**
      * Given all preference sets and the name of the active preference set, returns an
      * object representing the active preference set.
-     * @param preferences {Object} An object containing all preference set, as well as
+     * @param {Object} preferences - An object containing all preference set, as well as
      * information about the currently active preference set.
      * @return {Object} An object which contains the name, path, imageMap and the sound
      * for the active preference set.
@@ -133,11 +133,11 @@
      * Updates the passed DOM elements which display the active preference set image and
      * name. If currently there is no active preference set (e.g. if there is no keyed-in
      * user), nothing should be displayed.
-     * @param activeSetImageElement {jQuery} A jQuery object representing the image for the
+     * @param {jQuery} activeSetImageElement - A jQuery object representing the image for the
      * active preference set.
-     * @param activeSetTextElement {jQuery} A jQuery object representing the text for the
+     * @param {jQuery} activeSetTextElement - A jQuery object representing the text for the
      * active preference set.
-     * @param activePreferenceSet {Object} An object representing the active preference set.
+     * @param {Object} activePreferenceSet - An object representing the active preference set.
      */
     gpii.psp.updateActiveSetElements = function (activeSetImageElement, activeSetTextElement, activePreferenceSet) {
         if (activePreferenceSet) {
@@ -154,7 +154,7 @@
      * is more than one available preference set, the type should be a dropdown.
      * Otherwise, the component should not initialize and ignore all its config
      * properties (and hence must have an emptySubcomponent type).
-     * @param preferenceSets {Array} An array of the current preference sets.
+     * @param {Array} preferenceSets - An array of the current preference sets.
      * @return {String} The type of the preferenceSetPicker subcomponent.
      */
     gpii.psp.getPreferenceSetPickerType = function (preferenceSets) {
@@ -164,11 +164,11 @@
     /**
      * Updates the DOM elements corresponding to the header component whenever new
      * preferences are received.
-     * @param preferenceSets {Array} An array containing the new preferece sets.
-     * @param preferenceSetPickerElem {jQuery} A jQuery object corresponding to the
+     * @param {Array} preferenceSets - An array containing the new preferece sets.
+     * @param {jQuery} preferenceSetPickerElem - A jQuery object corresponding to the
      * preference set dropdown (in case there are multiple preference sets, it should
      * be shown, otherwise it should be hidden).
-     * @param activePreferenceSetElem {jQuery} A jQuery object corresponding to the
+     * @param {jQuery} activePreferenceSetElem - A jQuery object corresponding to the
      * parent element which holds the preference set image and the preference set name
      * (in case there is a single preference set it should be shown, otherwise it
      * should be hidden).

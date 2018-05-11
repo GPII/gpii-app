@@ -102,8 +102,8 @@ fluid.defaults("gpii.app.tray", {
 
 /**
   * Sets the icon for the Electron Tray which represents the GPII application.
-  * @param tray {Object} An instance of an Electron Tray.
-  * @param icon {String} The simple path to the icon file.
+  * @param {Object} tray - An instance of an Electron Tray.
+  * @param {String} icon - The simple path to the icon file.
   */
 gpii.app.tray.setTrayIcon = function (tray, icon) {
     var iconPath = fluid.module.resolvePath(icon);
@@ -113,8 +113,8 @@ gpii.app.tray.setTrayIcon = function (tray, icon) {
 /**
   * Sets the tooltip for the Electron Tray icon. If a falsy value is provided,
   * the current tooltip will be removed.
-  * @param tray {Object} An instance of an Electron Tray.
-  * @param tooltip {String} The tooltip to be set.
+  * @param {Tray} tray - An instance of an Electron Tray.
+  * @param {String} tooltip - The tooltip to be set.
   */
 gpii.app.tray.setTrayTooltip = function (tray, tooltip) {
     tooltip = tooltip || "";
@@ -122,11 +122,13 @@ gpii.app.tray.setTrayTooltip = function (tray, tooltip) {
 };
 
 /**
-  * Creates the Electron Tray
-  * @param options {Object} A configuration object for the tray that will be created.
-  * @param openPSP {Function} A function for showing the PSP window. Should be called
-  * whenever the user left clicks on the tray icon or uses the PSP window shortcut.
-  */
+ * Creates the Electron Tray.
+ *
+ * @param {Object} options - A configuration object for the tray that will be created.
+ * @param {Function} openPSP - A function for showing the PSP window. Should be called whenever the user left clicks on
+ * the tray icon or uses the PSP window shortcut.
+ * @return {Tray} - The tray object.
+ */
 gpii.app.makeTray = function (options, openPSP) {
     var tray = new Tray(fluid.module.resolvePath(options.icons.keyedOut));
 
@@ -144,9 +146,9 @@ gpii.app.makeTray = function (options, openPSP) {
 /**
  * Returns the path to the icon for the Electron Tray based on whether there is a
  * keyed-in user.
- * @param keyedInUserToken {String} The token if the keyed-in user or `null` if
+ * @param {String} keyedInUserToken - The token if the keyed-in user or `null` if
  * there is no such.
- * @param icons {Object} An object containing all possible icon paths.
+ * @param {Object} icons - An object containing all possible icon paths.
  * @return The path to the icon for the Electron Tray.
  */
 gpii.app.getTrayIcon = function (keyedInUserToken, icons) {
@@ -155,9 +157,9 @@ gpii.app.getTrayIcon = function (keyedInUserToken, icons) {
 
 /**
  * Returns the tooltip for the Electron Tray based on the active preference set.
- * @param preferences {Object} An object describing the preference sets (including the
+ * @param {Object} preferences - An object describing the preference sets (including the
  * active one) for the currently keyed-in user (if any).
- * @param messages {Object} An object containing differen messages for the tray tooltip.
+ * @param {Object} messages - An object containing differen messages for the tray tooltip.
  * @return The tooltip label for the Electron Tray.
  */
 gpii.app.getTrayTooltip = function (preferences, messages) {

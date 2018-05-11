@@ -84,12 +84,11 @@
     });
 
     /**
-     * Sets up listeners which track whether the webview has fully loaded.
-     * If so, the `loaded` property of the `gpii.survey.popup` component is
-     * set to true.
-     * @param that {Component} The `gpii.survey.popup` instance.
-     * @param webview {jQuery} The jQuery object corresponding to the
-     * webview element.
+     * Sets up listeners which track whether the webview has fully loaded. If so, the `loaded` property of the
+     * `gpii.survey.popup` component is set to true.
+     *
+     * @param {Component} that - The `gpii.survey.popup` instance.
+     * @param {jQuery} webview - The jQuery object corresponding to the webview element.
      */
     gpii.survey.popup.initLoadListener = function (that, webview) {
         webview.on("did-start-loading", function () {
@@ -102,12 +101,12 @@
     };
 
     /**
-     * Enables execution of commands within the webivew. A command can be
-     * thought of as a collection of JavaScript statements.
-     * @param that {Component} The `gpii.survey.popup` instance.
-     * @param webview {jQuery} The jQuery object corresponding to the
-     * webview element.
-     * @param
+     * Enables execution of commands within the webivew. A command can be thought of as a collection of JavaScript
+     * statements.
+     *
+     * @param {Component} that - The `gpii.survey.popup` instance.
+     * @param {jQuery} webview - The jQuery object corresponding to the webview element.
+     * @param {String} command - The command to execute.
      */
     gpii.survey.popup.executeCommand = function (that, webview, command) {
         // Check if the command can be executed immediately
@@ -123,14 +122,12 @@
     };
 
     /**
-     * Changes the URL of the page which is to be loaded in the webview
-     * and passes the appropriate configuration parameters to the webivew
-     * once its DOM has loaded.
-     * @param webview {jQuery} The jQuery object corresponding to the
-     * webview element.
-     * @param options {Object} An object containing configuration
-     * parameters for the page to be shown - such as its URL and whether
-     * the survey should close automatically when it is submitted.
+     * Changes the URL of the page which is to be loaded in the webview and passes the appropriate configuration
+     * parameters to the webview once its DOM has loaded.
+     *
+     * @param {jQuery} webview - The jQuery object corresponding to the webview element.
+     * @param {Object} options - An object containing configuration parameters for the page to be shown - such as its
+     * URL and whether the survey should close automatically when it is submitted.
      */
     gpii.survey.popup.openSurvey = function (webview, options) {
         webview.one("dom-ready", function () {
@@ -140,14 +137,12 @@
     };
 
     /**
-     * Registers a callback to be invoked whenever the webview sends
-     * a message to the host `BrowserWindow`. What this function does
-     * is to simply fire the `onIPCMessage` event (which will in fact
-     * forward the message via the corresponding channel to the main
-     * process).
-     * @param that {Component} The `gpii.survey.popup` instance.
-     * @param webview {jQuery} The jQuery object corresponding to the
-     * webview element.
+     * Registers a callback to be invoked whenever the webview sends a message to the host `BrowserWindow`. What this
+     * function does is to simply fire the `onIPCMessage` event (which will in fact forward the message via the
+     * corresponding channel to the main process).
+     *
+     * @param {Component} that - The `gpii.survey.popup` instance.
+     * @param {jQuery} webview - The jQuery object corresponding to the webview element.
      */
     gpii.survey.popup.addIPCListener = function (that, webview) {
         // The `ipc-message` listener can be added only once. It will not
@@ -158,11 +153,10 @@
     };
 
     /**
-     * Responsible for opening a link in the OS browser if the webview
-     * fires the `new-window` event. The latter happens when the user
-     * clicks on an anchor tag whose target is `_blank`.
-     * @param webview {jQuery} The jQuery object corresponding to the
-     * webview element.
+     * Responsible for opening a link in the OS browser if the webview fires the `new-window` event. The latter happens
+     * when the user clicks on an anchor tag whose target is `_blank`.
+     *
+     * @param {jQuery} webview - The jQuery object corresponding to the webview element.
      */
     gpii.survey.popup.addNewWindowListener = function (webview) {
         // Registering a `new-window` listener can be done only once as it
@@ -177,12 +171,12 @@
     };
 
     /**
-     * Injects custom CSS (asynchronously from files on the file system)
-     * into the guest survey page when it has been fully loaded.
-     * @param webview {jQuery} The jQuery object corresponding to the
-     * webview element.
-     * @param cssFiles {Array} An array of relative paths to the css files
-     * whose content is to be injected into the webview.
+     * Injects custom CSS (asynchronously from files on the file system) into the guest survey page when it has been
+     * fully loaded.
+     *
+     * @param {jQuery} webview - The jQuery object corresponding to the webview element.
+     * @param {Array} cssFiles - An array of relative paths to the css files whose content is to be injected into the
+     * webview.
      */
     gpii.survey.popup.injectCSS = function (webview, cssFiles) {
         // The CSS should be injected every time a new page is loaded into

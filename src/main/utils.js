@@ -35,15 +35,14 @@ gpii.app.isWin10OS = function () {
 };
 
 /**
-* Gets the desired bounds (i.e. the coordinates and the width and
-* height, the latter two being restricted by the corresponding
-* dimensions of the primary display) of an Electron `BrowserWindow`
-* given its width and height. If used in the `window.setBounds`
-* function of the `BrowserWindow`, the window will be positioned
-* in  the lower right corner of the primary display.
-* @param width {Number} The width of the `BrowserWindow`.
-* @param height {Number} The height of the `BrowserWindow`.
-* @return {{x: Number, y: Number, width: Number, height: Number}}
+ * Gets the desired bounds (i.e. the coordinates and the width and height, the latter two being restricted by the
+ * corresponding dimensions of the primary display) of an Electron `BrowserWindow` given its width and height. If used
+ * in the `window.setBounds` function of the `BrowserWindow`, the window will be positioned in  the lower right corner
+ * of the primary display.
+ *
+ * @param {Number} width - The width of the `BrowserWindow`.
+ * @param {Number} height - The height of the `BrowserWindow`.
+ * @return {{x: Number, y: Number, width: Number, height: Number}} - The bounds represented as an object.
 */
 gpii.app.getDesiredWindowBounds = function (width, height) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
@@ -60,7 +59,8 @@ gpii.app.getDesiredWindowBounds = function (width, height) {
 /**
  * Positions an Electron `BrowserWindow` in the lower right corner of
  * the primary display.
- * @param dialogWindow {BrowserWindow} The window which is to be positioned.
+ *
+ * @param {BrowserWindow} dialogWindow - The window which is to be positioned.
  */
 gpii.app.positionWindow = function (dialogWindow) {
     var size = dialogWindow.getSize(),
@@ -69,9 +69,9 @@ gpii.app.positionWindow = function (dialogWindow) {
 };
 
 /**
- * A function which capitalizes its input text. It does nothing
- * if the provided argument is `null` or `undefined`.
- * @param text {String} The input text.
+ * A function which capitalizes its input text. It does nothing if the provided argument is `null` or `undefined`.
+ *
+ * @param {String} text - The input text.
  * @return {String} the capitalized version of the input text.
  */
 gpii.app.capitalize = function (text) {
@@ -83,9 +83,9 @@ gpii.app.capitalize = function (text) {
 /**
  * Sends a message to the given Electron `BrowserWindow`
  *
- * @param window {Object} An Electron `BrowserWindow` object
- * @param messageChannel {String} The channel to which the message to be sent
- * @param message {String}
+ * @param {Object} browserWindow - An Electron `BrowserWindow` object
+ * @param {String} messageChannel - The channel to which the message to be sent
+ * @param {String} message - The message to be sent.
  */
 gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
     if (browserWindow) {
@@ -138,11 +138,11 @@ fluid.defaults("gpii.app.timer", {
 });
 
 /**
- * Starts a timer. In `timeoutDuration` milliseconds, the `onTimerFinished`
- * event will be fired. Any previously registered timers will be cleared
- * upon the invokation of this function.
- * that {Component} The `gpii.app.timer` instance.
- * timeoutDuration {Number} The timeout duration in milliseconds.
+ * Starts a timer. In `timeoutDuration` milliseconds, the `onTimerFinished` event will be fired. Any previously
+ * registered timers will be cleared upon the invokation of this function.
+ *
+ * @param {Component} that -The `gpii.app.timer` instance.
+ * @param {Number} timeoutDuration -The timeout duration in milliseconds.
  */
 gpii.app.timer.start = function (that, timeoutDuration) {
     that.clear();
@@ -151,7 +151,8 @@ gpii.app.timer.start = function (that, timeoutDuration) {
 
 /**
  * Clears the timer.
- * that {Component} The `gpii.app.timer` instance.
+ *
+ * @param {Component} that -The `gpii.app.timer` instance.
  */
 gpii.app.timer.clear = function (that) {
     if (that.timer) {

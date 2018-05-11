@@ -60,8 +60,8 @@ gpii.app.waitDialog.clearTimers = function (that) {
 /**
  * Either shows or hides the wait dialog, depending on the `isShown` flag state
  *
- * @param that {Component} The `gpii.app.waitDialog` instance
- * @param isShown {Boolean} The state of the dialog
+ * @param {Component} that - The `gpii.app.waitDialog` instance
+ * @param {Boolean} isShown - The state of the dialog
  */
 gpii.app.waitDialog.toggle = function (that, isShown) {
     if (isShown) {
@@ -76,7 +76,7 @@ gpii.app.waitDialog.toggle = function (that, isShown) {
  * Records the time it was shown in `dialogStartTime` which we need when
  * dismissing it (checking whether it's been displayed for the minimum amount of time)
  *
- * @param that {Component} the gpii.app instance
+ * @param {Component} that - the gpii.app instance
  */
 gpii.app.waitDialog.show = function (that) {
     that.positionWindow();
@@ -103,7 +103,7 @@ gpii.app.waitDialog.show = function (that) {
  * Dismisses the dialog. If less than `that.dialogMinDisplayTime` ms have passed since we first displayed
  * the window, the function waits until `dialogMinDisplayTime` has passed before dismissing it.
  *
- * @param that {Component} the gpii.app instance
+ * @param {Component} that - the gpii.app instance
  */
 gpii.app.waitDialog.hide = function (that) {
     if (that.dismissWaitTimeout) {

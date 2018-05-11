@@ -114,8 +114,8 @@ fluid.defaults("gpii.app.settingsBroker", {
  * require an application or OS restart, it will be applied immediately.
  * Otherwise, all queued settings will be applied once an explicit user
  * instruction is received.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
- * @param setting {Object} A descriptor of the setting which is to be applied.
+ * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
+ * @param {Object} setting - A descriptor of the setting which is to be applied.
  */
 gpii.app.settingsBroker.enqueue = function (settingsBroker, setting) {
     // Apply the setting immediately, without queuing if it is live.
@@ -164,7 +164,7 @@ gpii.app.settingsBroker.filterPendingChanges = function (pendingChanges, livenes
 /**
  * Applies the pending setting changes in the `descriptor` with the given `liveness`
  * and removes them from the queue.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
+ * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
  * @param [descriptor] {Object} An object specifying which pending changes should
  * be applied.
  * @param [descriptor.pendingChanges] {Object[]} An array containing the pending
@@ -193,7 +193,7 @@ gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, descript
  * given `liveness` and removes them from the queue. This function is responsible
  * for firing the appropriate events so that the PSP interface can restore to its
  * original state before the queueing of the setting changes.
- * @param settingsBroker {Component} An instance of `gpii.app.settingsBroker`.
+ * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
  * @param [descriptor] {Object} An object specifying which pending changes should
  * be cancelled / undone.
  * @param [descriptor.pendingChanges] {Object[]} An array containing the pending

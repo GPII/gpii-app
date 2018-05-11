@@ -21,7 +21,7 @@ var fluid = require("gpii-universal"),
     gpii = fluid.registerNamespace("gpii");
 
 require("gpii-windows/index.js");
-require("../node_modules/gpii-universal/gpii/node_modules/testing");
+fluid.require("%gpii-universal/gpii/node_modules/testing");
 
 gpii.loadTestingSupport();
 
