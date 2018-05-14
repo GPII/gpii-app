@@ -36,6 +36,14 @@ fluid.defaults("gpii.app.pspInApp", {
     model: {
         keyedInUserToken: "{app}.model.keyedInUserToken"
     },
+
+    modelListeners: {
+        "{qss}.model.isShown": {
+            funcName: "gpii.app.pspInApp.applyOffset",
+            args: ["{that}", "{qss}.options.config.attrs.height", "{change}.value"]
+        }
+    },
+
     listeners: {
         "onActivePreferenceSetAltered.notifyChannel": {
             listener: "{gpiiConnector}.updateActivePrefSet",
@@ -89,7 +97,7 @@ fluid.defaults("gpii.app.pspInApp", {
         },
 
         "{settingsBroker}.events.onRestartRequired": {
-            funcName: "gpii.app.togglePspRestartWarning",
+            funcName: "gpii.app.pspInApp.togglePspRestartWarning",
             args: [
                 "{that}",
                 "{arguments}.0" // pendingChanges
@@ -98,13 +106,36 @@ fluid.defaults("gpii.app.pspInApp", {
     }
 });
 
+
+/**
+ * Apply offset for the PSP window. Currently only the QSS requires
+ * offsetting the PSP.
+ *
+ * @param {Component} psp - The `gpii.app.psp` instance
+ * @param {Number} qssHeight - The height of the QSS
+ * @param {Boolean} isQssShown - Whether the QSS is shown
+ */
+gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
+    if (isQssShown) {
+        psp.options.heightOffset = qssHeight;
+    } else {
+        // reset the heightOffset
+        psp.options.heightOffset = null;
+    }
+
+    // In case the psp is shown, make sure the offset takes effect
+    if (psp.model.isShown) {
+        psp.show();
+    }
+};
+
 /**
  * Either hides or shows the warning in the PSP.
  *
  * @param psp {Component} The `gpii.app.psp` component
  * @param pendingChanges {Object[]} A list of the current state of pending changes
  */
-gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
+gpii.app.pspInApp.togglePspRestartWarning = function (psp, pendingChanges) {
     if (pendingChanges.length === 0) {
         psp.hideRestartWarning();
     } else {
@@ -140,6 +171,10 @@ fluid.defaults("gpii.app.psp", {
         skipTaskbar: true,
         backgroundColor: "transparent"
     },
+
+    // In case we want to have some heightOffset from the screen edge.
+    // This is useful when we have QSS which should be below the PSP.
+    heightOffset: null,
 
     sounds: {
         keyedIn: "keyedIn.mp3",
@@ -298,12 +333,18 @@ fluid.defaults("gpii.app.psp", {
  * with `gpii.app.psp.moveOffScreen` help avoid the flickering issue when the content
  * of the PSP window changes.
  * @param pspWindow {Object} An Electron `BrowserWindow`.
+ * @param {Number} heightOffset The offset from the bottom of the screen.
  */
-gpii.app.psp.moveToScreen = function (pspWindow) {
+gpii.app.psp.moveToScreen = function (pspWindow, heightOffset) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
         windowSize = pspWindow.getSize(),
         windowX = screenSize.width - windowSize[0],
         windowY = screenSize.height - windowSize[1];
+
+    if (heightOffset) {
+        windowY -= heightOffset;
+    }
+
     pspWindow.setPosition(windowX, windowY);
 };
 
@@ -313,7 +354,7 @@ gpii.app.psp.moveToScreen = function (pspWindow) {
  * @param psp {Component} The `gpii.app.psp` instance.
  */
 gpii.app.psp.show = function (psp) {
-    gpii.app.psp.moveToScreen(psp.pspWindow);
+    gpii.app.psp.moveToScreen(psp.pspWindow, psp.options.heightOffset);
     psp.pspWindow.focus();
     psp.applier.change("isShown", true);
 };
@@ -372,7 +413,6 @@ gpii.app.psp.initPSPWindowListeners = function (psp) {
 
     // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-blur
     pspWindow.on("blur", psp.events.onPSPWindowFocusLost.fire);
-
     // https://github.com/electron/electron/blob/master/docs/api/screen.md#event-display-metrics-changed
     electron.screen.on("display-metrics-changed", psp.events.onDisplayMetricsChanged.fire);
 };

@@ -60,8 +60,8 @@ fluid.defaults("gpii.app.qss", {
 
     config: {
         attrs: {
-            width: 1000,
-            height: 200
+            width: 400,
+            height: 81
         },
         params: {
             settings: null
