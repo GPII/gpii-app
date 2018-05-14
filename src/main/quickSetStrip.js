@@ -19,9 +19,9 @@ var fluid = require("infusion");
 require("./dialog.js");
 
 /**
- * TODO
+ * Listens for events from the renderer process (the BrowserWindow).
  */
-fluid.defaults("gpii.app.qss.channel", {
+fluid.defaults("gpii.app.qss.channelListener", {
     gradeNames: ["gpii.app.dialog.simpleChannelListener", "gpii.app.i18n.channel"],
     ipcTarget: require("electron").ipcMain,
 
@@ -45,13 +45,7 @@ fluid.defaults("gpii.app.qss", {
             height: 200
         },
         params: {
-            settings: [
-                {label: "More ..."},
-                {label: "Some long long long long setting label"},
-                {label: "Caption", type: "toggle"},
-                {label: "Languages"},
-                {label: "Key out"}
-            ]
+            settings: null
         },
         fileSuffixPath: "quickSetStrip/index.html"
     },
@@ -63,8 +57,8 @@ fluid.defaults("gpii.app.qss", {
     },
 
     components: {
-        channel: {
-            type: "gpii.app.qss.channel",
+        channelListener: {
+            type: "gpii.app.qss.channelListener",
             options: {
                 listeners: {
                     onQssClosed: {
@@ -86,6 +80,27 @@ fluid.defaults("gpii.app.qss", {
 
                 }
             }
+        }
+    }
+});
+
+/**
+ * Loads the initial settings from a local configuration file.
+ */
+fluid.defaults("gpii.app.staticQss", {
+    gradeNames: "gpii.app.qss",
+
+    qssSettingsPath: "%gpii-app/testData/qss/settings.json",
+    loadedSettings: {
+        expander: {
+            funcName: "fluid.require",
+            args: "@expand:fluid.module.resolvePath({that}.options.qssSettingsPath)"
+        }
+    },
+
+    config: {
+        params: {
+            settings: "{that}.options.loadedSettings.qssSettings"
         }
     }
 });

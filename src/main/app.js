@@ -144,7 +144,7 @@ fluid.defaults("gpii.app", {
             }
         },
         qss: {
-            type: "gpii.app.qss",
+            type: "gpii.app.staticQss",
             createOnEvent: "onPSPPrerequisitesReady"
         },
         psp: {
