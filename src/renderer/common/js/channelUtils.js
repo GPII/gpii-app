@@ -31,4 +31,32 @@
     gpii.psp.channel.notifyChannel = function () {
         ipcRenderer.send.apply(null, arguments);
     };
+
+
+    /**
+     * Listen for events from the main process.
+     * It expects component events to be supplied and it uses their keys as
+     * channel names to which it attaches. Once data from a specific channel is
+     * received a corresponding event is fired.
+     */
+    fluid.defaults("gpii.psp.channelListener", {
+        gradeNames: "gpii.app.dialog.simpleChannelListener",
+        ipcTarget: ipcRenderer,
+
+        events: {} // defined by implementor
+    });
+
+
+    /**
+     * Send data to the main process.
+     * It expects component events to be supplied and it uses their keys as
+     * channel names to which it sends data. Data is sent once a matching event
+     * is fired.
+     */
+    fluid.defaults("gpii.psp.channelNotifier", {
+        gradeNames: "gpii.app.dialog.simpleChannelNotifier",
+        ipcTarget: ipcRenderer,
+
+        events: {} // defined by implementor
+    });
 })(fluid);

@@ -131,6 +131,6 @@ fluid.defaults("gpii.app.dialog.simpleChannelNotifier", {
 gpii.app.dialog.simpleChannelNotifier.registerIPCNotifiers = function (ipcTarget, events) {
     fluid.each(events, function (event, eventName) {
         // send data to a channel named after the event name
-        event.addListener(ipcTarget.send.bind(ipcTarget.send, eventName));
+        event.addListener(ipcTarget.send.bind(ipcTarget, eventName));
     });
 };

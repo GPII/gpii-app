@@ -22,7 +22,7 @@ require("./dialog.js");
  * Listens for events from the renderer process (the BrowserWindow).
  */
 fluid.defaults("gpii.app.qss.channelListener", {
-    gradeNames: ["gpii.app.dialog.simpleChannelListener", "gpii.app.i18n.channel"],
+    gradeNames: ["gpii.app.dialog.simpleChannelListener"],
     ipcTarget: require("electron").ipcMain,
 
     events: {
@@ -32,6 +32,20 @@ fluid.defaults("gpii.app.qss.channelListener", {
         onQssButtonMouseLeave: null
     }
 });
+
+/**
+ * Notifies the render process for main events.
+ */
+fluid.defaults("gpii.app.qss.channelNotifier", {
+    gradeNames: ["gpii.app.dialog.simpleChannelNotifier", "gpii.app.i18n.channel"],
+    // TODO improve `i18n.channel` to use event instead of a direct notifying
+    ipcTarget: "{dialog}.dialog.webContents", // get the closest dialog
+
+    events: {
+        onSettingUpdated: null
+    }
+});
+
 
 /**
  * Component that represents the Quick Set strip
@@ -57,6 +71,26 @@ fluid.defaults("gpii.app.qss", {
     },
 
     components: {
+        channelNotifier: {
+            type: "gpii.app.qss.channelNotifier",
+            options: {
+                // XXX dev
+                listeners: {
+                    onCreate: {
+                        funcName: "setTimeout",
+                        args: [
+                            "{that}.events.onSettingUpdated.fire",
+                            6000,
+                            "Oh Hello setting update"
+                        ]
+                    },
+                    onSettingUpdated: {
+                        "funcName": "console.log",
+                        args: ["Sending setting: ", "{arguments}.0"]
+                    }
+                }
+            }
+        },
         channelListener: {
             type: "gpii.app.qss.channelListener",
             options: {

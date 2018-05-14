@@ -193,7 +193,10 @@
         }
     });
 
-
+    /**
+     * Represents the list of qss settings. It renders the settings and listens
+     * for events on them.
+     */
     fluid.defaults("gpii.qss.list", {
         gradeNames: ["gpii.psp.repeater"],
 
@@ -227,28 +230,8 @@
         return "gpii.qss.buttonPresenter";
     };
 
-
-    fluid.defaults("gpii.qss.channelListener", {
-        gradeNames: "gpii.app.dialog.simpleChannelListener",
-        ipcTarget: require("electron").ipcRenderer,
-
-        // TODO add events from the main process
-        events: {}
-    });
-
-    fluid.defaults("gpii.qss.channelNotifier", {
-        gradeNames: "gpii.app.dialog.simpleChannelNotifier",
-        ipcTarget: require("electron").ipcRenderer,
-
-        events: {
-            onQssButtonClicked: null,
-            onQssButtonMouseEnter: null,
-            onQssButtonMouseLeave: null
-        }
-    });
-
     /**
-     * TODO
+     * Represents the QSS as a whole.
      */
     fluid.defaults("gpii.qss", {
         gradeNames: ["fluid.viewComponent"],
@@ -268,12 +251,26 @@
                 }
             },
             channelListener: {
-                type: "gpii.qss.channelListener"
-            },
-            channelNotifier: {
-                type: "gpii.qss.channelNotifier",
+                type: "gpii.psp.channelListener",
                 options: {
                     events: {
+                        // Add events from the main process to be listened for
+                        onSettingUpdated: null
+                    },
+                    // XXX dev
+                    listeners: {
+                        onSettingUpdated: {
+                            funcName: "console.log",
+                            args: ["Settings updated: ", "{arguments}.0"]
+                        }
+                    }
+                }
+            },
+            channelNotifier: {
+                type: "gpii.psp.channelNotifier",
+                options: {
+                    events: {
+                        // Add events the main process to be notified for
                         onQssButtonClicked:    "{quickSetStripList}.events.onButtonClicked",
                         onQssButtonMouseEnter: "{quickSetStripList}.events.onButtonMouseEnter",
                         onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave"
