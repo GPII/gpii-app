@@ -16,6 +16,8 @@
 
 var fluid = require("infusion");
 
+var gpii = fluid.registerNamespace("gpii");
+
 require("./dialog.js");
 
 /**
@@ -48,10 +50,13 @@ fluid.defaults("gpii.app.qss.channelNotifier", {
 
 
 /**
- * Component that represents the Quick Set strip
+ * Component that represents the Quick Set strip.
  */
 fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog"],
+
+    // whether showing of the QSS is allowed
+    disabled: false,
 
     config: {
         attrs: {
@@ -62,12 +67,6 @@ fluid.defaults("gpii.app.qss", {
             settings: null
         },
         fileSuffixPath: "quickSetStrip/index.html"
-    },
-
-    listeners: {
-        "onCreate": {
-            funcName: "{that}.show"
-        }
     },
 
     components: {
@@ -115,8 +114,23 @@ fluid.defaults("gpii.app.qss", {
                 }
             }
         }
+    },
+    invokers: {
+        showIfPossible: {
+            funcName: "gpii.app.qss.showIfPossible",
+            args: ["{that}"]
+        }
     }
 });
+
+/**
+ * Show the window in case QSS is not disabled.
+ */
+gpii.app.qss.showIfPossible = function (that) {
+    if (!that.options.disabled) {
+        that.show();
+    }
+};
 
 /**
  * Loads the initial settings from a local configuration file.

@@ -166,6 +166,18 @@ fluid.defaults("gpii.app", {
                 },
                 events: {
                     onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
+                },
+                listeners: {
+                    onTrayIconClicked: [{
+                        func: "{qss}.showIfPossible"
+                    }, {
+                        func: "{psp}.show"
+                    }],
+                    onShortcutUsed: [{
+                        func: "{qss}.showIfPossible"
+                    }, {
+                        func: "{psp}.show"
+                    }]
                 }
             }
         }

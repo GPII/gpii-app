@@ -30,7 +30,7 @@ fluid.defaults("gpii.app.tray", {
         tray: {
             expander: {
                 funcName: "gpii.app.makeTray",
-                args: ["{that}.options", "{psp}.show"]
+                args: ["{that}.options", "{that}.events"]
             }
         }
     },
@@ -50,7 +50,9 @@ fluid.defaults("gpii.app.tray", {
         }
     },
     events: {
-        onActivePreferenceSetAltered: null // passed from parent
+        onActivePreferenceSetAltered: null, // passed from parent
+        onTrayIconClicked: null,
+        onShortcutUsed: null
     },
     model: {
         keyedInUserToken: null,
@@ -124,18 +126,18 @@ gpii.app.tray.setTrayTooltip = function (tray, tooltip) {
 /**
   * Creates the Electron Tray
   * @param options {Object} A configuration object for the tray that will be created.
-  * @param openPSP {Function} A function for showing the PSP window. Should be called
+  * @param {Function} events A function for showing the PSP window. Should be called
   * whenever the user left clicks on the tray icon or uses the PSP window shortcut.
   */
-gpii.app.makeTray = function (options, openPSP) {
+gpii.app.makeTray = function (options, events) {
     var tray = new Tray(fluid.module.resolvePath(options.icons.keyedOut));
 
     tray.on("click", function () {
-        openPSP();
+        events.onTrayIconClicked.fire();
     });
 
     globalShortcut.register(options.shortcut, function () {
-        openPSP();
+        events.onShortcutUsed.fire(options.shortcut);
     });
 
     return tray;
