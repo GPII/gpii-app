@@ -22,10 +22,11 @@
         "eslint-config-fluid": "1.3.0",
         "fluid-grunt-eslint": "18.1.2",
         "gpii-testem": "2.1.1-dev.20180508T091631Z.1168649",
-        "graceful-fs": "^4.1.11",
+        "graceful-fs": "4.1.11",
         "grunt": "1.0.2",
         "grunt-jsonlint": "1.1.0",
         "grunt-shell": "2.1.0",
+        "mkdirp": "0.5.1",
         "nyc": "11.7.1",
         "rimraf": "2.6.2",
         "shelljs": "0.3.0"
@@ -34,11 +35,11 @@
         "start": "npm run build && electron .",
         "dev": "npm run build && electron . ./configs app.dev",
         "build": "grunt compileMessages",
-        "test": "npm run build && powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron tests.js",
-        "precoverage": "npm run precoverage:clean && npm run precoverage:instrument",
-        "precoverage:clean": "node node_modules/rimraf/bin.js coverage/* instrumented/* reports/*",
-        "precoverage:instrument": "node tests/lib/instrumentSource.js",
-        "coverage": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron ./instrumented/tests.js",
-        "postcoverage": "node node_modules/nyc/bin/nyc.js report"
+        "pretest": "npm run pretest:clean && npm run pretest:instrument && npm run build",
+        "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
+        "pretest:instrument": "node tests/lib/instrumentSource.js",
+        "test": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron ./instrumented/tests.js",
+        "posttest": "node node_modules/nyc/bin/nyc.js report",
+        "test:noCoverage": "npm run build && powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron tests.js"
     }
 }

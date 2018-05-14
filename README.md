@@ -40,11 +40,10 @@ cd v:\
 npm test
 ```
 
-### Generating a Coverage Report
-
-To generate a code coverage report in a VM, open a terminal (in the VM), go to the folder with gpii-app and run the test script:
+This will also instrument the code and generate a coverage report in the `reports` subdirectory.  If you want to run
+the tests without collecting code coverage data, you can use commands like the following instead:
 
 ```
 cd v:\
-npm run coverage
+npm run test:noCoverage
 ```
