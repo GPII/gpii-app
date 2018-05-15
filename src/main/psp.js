@@ -525,7 +525,7 @@ gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
     var pspWindow = psp.pspWindow,
         wasShown = psp.model.isShown,
         height = Math.max(contentHeight, minHeight),
-        bounds = gpii.app.getDesiredWindowBounds(width, height);
+        bounds = gpii.app.getDesiredWindowBounds(width, height, psp.options.heightOffset);
 
     if (wasShown) {
         // The coordinates and the dimensions of the PSP must be set with a single
