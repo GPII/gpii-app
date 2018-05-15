@@ -31,7 +31,9 @@ fluid.defaults("gpii.app.qss.channelListener", {
         onQssClosed: null,
         onQssButtonClicked: null,
         onQssButtonMouseEnter: null,
-        onQssButtonMouseLeave: null
+        onQssButtonMouseLeave: null,
+
+        onQssSettingAltered: null
     }
 });
 
@@ -61,7 +63,7 @@ fluid.defaults("gpii.app.qss", {
     config: {
         attrs: {
             width: 400,
-            height: 81
+            height: 80
         },
         params: {
             settings: null
@@ -100,15 +102,19 @@ fluid.defaults("gpii.app.qss", {
                     // XXX DEV
                     onQssButtonClicked: {
                         funcName: "console.log",
-                        args: ["Item clicked: "]//, "{arguments}.0"]
+                        args: ["Item clicked: ", "{arguments}.0"]
                     },
                     onQssButtonMouseEnter: {
                         funcName: "console.log",
-                        args: ["Item Enter: "]//, "{arguments}.0"]
+                        args: ["Item Enter: ", "{arguments}.0"]
                     },
                     onQssButtonMouseLeave: {
                         funcName: "console.log",
-                        args: ["Item Leave: "] //, "{arguments}.0"]
+                        args: ["Item Leave: ", "{arguments}.0"]
+                    },
+                    onQssSettingAltered: {
+                        funcName: "console.log",
+                        args: ["Setting altered:", "{arguments}.0"]
                     }
 
                 }
@@ -138,17 +144,17 @@ gpii.app.qss.showIfPossible = function (that) {
 fluid.defaults("gpii.app.staticQss", {
     gradeNames: "gpii.app.qss",
 
-    qssSettingsPath: "%gpii-app/testData/qss/settings.json",
+    settingsPath: "%gpii-app/testData/qss/settings.json",
     loadedSettings: {
         expander: {
             funcName: "fluid.require",
-            args: "@expand:fluid.module.resolvePath({that}.options.qssSettingsPath)"
+            args: "@expand:fluid.module.resolvePath({that}.options.settingsPath)"
         }
     },
 
     config: {
         params: {
-            settings: "{that}.options.loadedSettings.qssSettings"
+            settings: "{that}.options.loadedSettings"
         }
     }
 });

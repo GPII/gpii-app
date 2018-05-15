@@ -45,5 +45,7 @@
     "gpii_psp_aboutDialog_userListenersText": "Keys that work on this machine: %listeners",
     "gpii_psp_aboutDialog_version": "version %version",
 
-    "gpii_psp_footer_help": "Help"
+    "gpii_psp_footer_help": "Help",
+
+    "gpii_qss_toggleButtonPresenter_caption": "[now ON]"
 }

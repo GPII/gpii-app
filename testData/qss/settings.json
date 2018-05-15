@@ -1,9 +1,20 @@
-{
-    "qssSettings": [
-        {"type": "", "label": "More ..."},
-        {"type": "", "label": "Some long long long long setting label"},
-        {"type": "toggle", "label": "Caption"},
-        {"type": "", "label": "Languages"},
-        {"type": "", "label": "Key out"}
-    ]
-}
+[
+    {
+        "type": "",
+        "label": "More ..."
+    }, {
+        "type": "",
+        "label": "Some long long long long setting label"
+    }, {   
+        "type": "toggle",
+        "label": "Caption",
+        "path": "Caption",
+        "value": false
+    }, {
+        "type": "",
+        "label": "Languages"
+    }, {
+        "type": "",
+        "label": "Key out"
+    }
+]

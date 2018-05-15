@@ -45,5 +45,7 @@
     "gpii_psp_aboutDialog_userListenersText": "Средства за вписване за тази машина: %listeners",
     "gpii_psp_aboutDialog_version": "версия %version",
 
-    "gpii_psp_footer_help": "Помощ"
+    "gpii_psp_footer_help": "Помощ",
+
+    "gpii_qss_toggleButtonPresenter_caption": "[ВКЛ.]"
 }

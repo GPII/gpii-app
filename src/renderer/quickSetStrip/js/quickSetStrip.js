@@ -134,19 +134,43 @@
         ],
 
         model: {
-            item: {}
+            item: {},
+            value: "{that}.model.item.value"
+        },
+
+        modelListeners: {
+            value: {
+                funcName: "{that}.events.onSettingAltered.fire",
+                args: ["{that}.model.item", "{change}.value"],
+                excludeSource: "init"
+            }
+        },
+
+        selectors: {
+            label: ".flc-qss-btnLabel",
+            caption: ".flc-qss-btnCaption"
+        },
+
+        attrs: {
+            role: "button"
         },
 
         // pass hover item as it is in order to use its position
         // TODO probably use something like https://stackoverflow.com/questions/3234977/using-jquery-how-to-get-click-coordinates-on-the-target-element
         events: {
             onMouseEnter: "{list}.events.onButtonMouseEnter",
-            onMouseLeave: "{list}.events.onButtonMouseLeave"
+            onMouseLeave: "{list}.events.onButtonMouseLeave",
+            onSettingAltered: "{list}.events.onSettingAltered"
         },
 
         listeners: {
+            "onCreate.addAttrs": {
+                "this": "{that}.container",
+                method: "attr",
+                args: ["{that}.options.attrs"]
+            },
             "onCreate.renderLabel": {
-                this: "{that}.container",
+                this: "{that}.dom.label",
                 method: "text",
                 args: ["{that}.model.item.label"]
             },
@@ -157,7 +181,6 @@
                 funcName: "{list}.events.onButtonClicked.fire",
                 args: ["{that}.model.item"]
             },
-
             onArrowUpClicked: {
                 funcName: "console.log",
                 args: ["{that}.model.item"]
@@ -184,14 +207,56 @@
 
     fluid.defaults("gpii.qss.toggleButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
+        model: {
+            messages: {
+                caption: null
+            }
+        },
+        attrs: {
+            role: "switch"
+        },
+        modelRelay: {
+            "caption": {
+                target: "caption",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.qss.toggleButtonPresenter.getCaption",
+                    args: ["{that}.model.value", "{that}.model.messages"]
+                }
+            }
+        },
+        modelListeners: {
+            value: {
+                this: "{that}.container",
+                method: "attr",
+                args: ["aria-checked", "{change}.value"]
+            },
+            caption: {
+                this: "{that}.dom.caption",
+                method: "text",
+                args: ["{change}.value"]
+            }
+        },
         listeners: {
-            onCreate: {
-                this: "console",
-                method: "log",
-                args: ["toggleButtonPresenter"]
+            onClicked: "{that}.toggle()",
+            onEnterClicked: "{that}.toggle()",
+            onSpacebarClicked: "{that}.toggle()"
+        },
+        invokers: {
+            toggle: {
+                funcName: "gpii.qss.toggleButtonPresenter.toggle",
+                args: ["{that}"]
             }
         }
     });
+
+    gpii.qss.toggleButtonPresenter.getCaption = function (value, messages) {
+        return value ? messages.caption : "";
+    };
+
+    gpii.qss.toggleButtonPresenter.toggle = function (that) {
+        that.applier.change("value", !that.model.value);
+    };
 
     /**
      * Represents the list of qss settings. It renders the settings and listens
@@ -201,8 +266,12 @@
         gradeNames: ["gpii.psp.repeater"],
 
         dynamicContainerMarkup: {
-            container: "<button class=\"%containerClass\" tabindex=0></button>",
-            containerClassPrefix: "fl-quickSetStrip-button"
+            container:
+                "<div class=\"%containerClass\" tabindex=0>" +
+                    "<span class=\"flc-qss-btnLabel fl-qss-btnLabel\"></span>" +
+                    "<div class=\"flc-qss-btnCaption fl-qss-btnCaption\"></div>" +
+                "</div>",
+            containerClassPrefix: "fl-qss-button"
         },
         // TODO get handler based on setting type
         handlerType: "gpii.qss.buttonPresenter",
@@ -211,7 +280,9 @@
         events: {
             onButtonClicked: null,
             onButtonMouseEnter: null,
-            onButtonMouseLeave: null
+            onButtonMouseLeave: null,
+
+            onSettingAltered: null
         },
 
         invokers: {
@@ -273,7 +344,9 @@
                         // Add events the main process to be notified for
                         onQssButtonClicked:    "{quickSetStripList}.events.onButtonClicked",
                         onQssButtonMouseEnter: "{quickSetStripList}.events.onButtonMouseEnter",
-                        onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave"
+                        onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave",
+
+                        onQssSettingAltered: "{quickSetStripList}.events.onSettingAltered"
                     }
                 }
             }
