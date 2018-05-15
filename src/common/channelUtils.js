@@ -17,6 +17,9 @@
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
 
+// XXX find a better way to collect system events
+var systemEventNames = fluid.keys(fluid.component().events);
+
 
 /**
  * Generic channel component for communication with BroserWindows
@@ -63,10 +66,11 @@ fluid.defaults("gpii.app.dialog.simpleChannelListener", {
  * Registers simple IPC socket listeners for all given events. In case anything is written to
  * the channel, the corresponding event is triggered.
  *
- * @param events {Object} The events to be used.
+ * @param {Object} events - The events to be used including the system ones.
  */
 gpii.app.dialog.simpleChannelListener.registerIPCListeners = function (that, events) {
-    fluid.each(events, function (event, eventName) {
+    var userEvents = fluid.censorKeys(events, systemEventNames);
+    fluid.each(userEvents, function (event, eventName) {
         that.registerIPCListener(eventName, event);
     });
 };
@@ -126,11 +130,13 @@ fluid.defaults("gpii.app.dialog.simpleChannelNotifier", {
  * Registers simple IPC socket listeners for all given events. In case anything is written to
  * the channel, the corresponding event is triggered.
  *
- * @param events {Object} The events to be used.
+ * @param {Object} ipcTarget - The events to be used.
+ * @param {Object} events - The events to be used including the system ones.
  */
 gpii.app.dialog.simpleChannelNotifier.registerIPCNotifiers = function (ipcTarget, events) {
-    fluid.each(events, function (event, eventName) {
+    var userEvents = fluid.censorKeys(events, systemEventNames);
+    fluid.each(userEvents, function (event, eventName) {
         // send data to a channel named after the event name
-        event.addListener(ipcTarget.send.bind(ipcTarget, eventName));
+        events[eventName].addListener(ipcTarget.send.bind(ipcTarget, eventName));
     });
 };
