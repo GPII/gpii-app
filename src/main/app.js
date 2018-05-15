@@ -144,7 +144,7 @@ fluid.defaults("gpii.app", {
             }
         },
         qss: {
-            type: "gpii.app.staticQss",
+            type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady"
         },
         psp: {
@@ -169,7 +169,7 @@ fluid.defaults("gpii.app", {
                 },
                 listeners: {
                     onTrayIconClicked: [{
-                        func: "{qss}.show",
+                        func: "{qssWrapper}.qss.show",
                         args: [
                             {shortcut: false}
                         ]
@@ -179,7 +179,7 @@ fluid.defaults("gpii.app", {
                     onShortcutUsed: [{
                         func: "{psp}.show"
                     }, {
-                        func: "{qss}.show",
+                        func: "{qssWrapper}.qss.show",
                         args: [
                             {shortcut: true}
                         ]

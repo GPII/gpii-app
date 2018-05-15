@@ -40,7 +40,7 @@
      * received a corresponding event is fired.
      */
     fluid.defaults("gpii.psp.channelListener", {
-        gradeNames: "gpii.app.dialog.simpleChannelListener",
+        gradeNames: "gpii.app.common.simpleChannelListener",
         ipcTarget: ipcRenderer,
 
         events: {} // defined by implementor
@@ -54,7 +54,7 @@
      * is fired.
      */
     fluid.defaults("gpii.psp.channelNotifier", {
-        gradeNames: "gpii.app.dialog.simpleChannelNotifier",
+        gradeNames: "gpii.app.common.simpleChannelNotifier",
         ipcTarget: ipcRenderer,
 
         events: {} // defined by implementor

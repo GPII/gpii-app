@@ -294,6 +294,7 @@
             label: ".flc-btnLabel"
         },
         attrs: {
+            "aria-label": "{button}.model.decButtonLabel"
             // user provided attributes
         },
         listeners: {

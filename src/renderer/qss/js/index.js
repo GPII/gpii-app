@@ -26,16 +26,16 @@
      * applies interception of all anchor tags on the page so that an external browser is used
      * for loading them.
      */
-    fluid.defaults("gpii.psp.translatedQuickSetStrip", {
+    fluid.defaults("gpii.psp.translatedQss", {
         gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
 
         components: {
             quickSetStrip: {
                 type: "gpii.qss",
-                container: "{translatedQuickSetStrip}.container",
+                container: "{translatedQss}.container",
                 options: {
                     model: {
-                        settings: "{translatedQuickSetStrip}.model.settings"
+                        settings: "{translatedQss}.model.settings"
                     }
                 }
             }
@@ -44,7 +44,7 @@
 
 
     jQuery(function () {
-        gpii.psp.translatedQuickSetStrip(".flc-quicksetstrip", {
+        gpii.psp.translatedQss(".flc-quicksetstrip", {
             model: {
                 settings: windowInitialParams.settings
             }

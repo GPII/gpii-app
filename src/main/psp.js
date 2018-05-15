@@ -38,9 +38,9 @@ fluid.defaults("gpii.app.pspInApp", {
     },
 
     modelListeners: {
-        "{qss}.model.isShown": {
+        "{qss}.qss.model.isShown": {
             funcName: "gpii.app.pspInApp.applyOffset",
-            args: ["{that}", "{qss}.options.config.attrs.height", "{change}.value"]
+            args: ["{that}", "{qss}.qss.options.config.attrs.height", "{change}.value"]
         }
     },
 

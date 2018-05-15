@@ -1,0 +1,28 @@
+.fl-dialog-content.fl-qssStepperWidget-content {
+    /* lower the default dialog padding */
+    padding: 2px;
+}
+
+.fl-qssStepperWidget-tip .fl-tipTitle {
+    font-weight: bold;
+}
+
+
+.fl-qssStepperWidget-controls {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 0 30px 0;
+}
+
+.fl-qssStepperWidget-controls button {
+    margin: 5px;
+
+    width: 60%;
+}
+
+fl-qssStepperWidget-footer {
+    margin-bottom: 15px;
+}

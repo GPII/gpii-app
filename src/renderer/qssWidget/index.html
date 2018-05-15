@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <title>Quick Set Strip</title>
+        <link rel="stylesheet" href="../common/css/dialog.css">
+        <link rel="stylesheet" href="../common/css/titlebar.css">
+        <link rel="stylesheet" href="../psp/css/button.css">
+        <link rel="stylesheet" href="css/qssWidget.css">
+
+        <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+
+        <script type="text/javascript" src="js/qssStepperWidget.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+
+        <script type="text/javascript" src="../common/js/titlebar.js"></script>
+        <script type="text/javascript" src="../psp/js/widgets.js"></script>
+
+        <script type="text/javascript" src="../../common/channelUtils.js"></script>
+
+        <!-- TODO use for menu -->
+        <!-- <script type="text/javascript" src="../common/js/elementRepeater.js"></script> -->
+        <script type="text/javascript" src="../common/js/channelUtils.js"></script>
+
+        <script type="text/javascript" src="../../common/messageBundles.js"></script>
+        <script type="text/javascript" src="../common/js/messageBundles.js"></script>
+    </head>
+    <body>
+        <div class="flc-qssWidget fl-dialog">
+            <div class="fl-dialog-contentWrapper">
+                <div class="flc-titlebar fl-titlebar">
+                    <span class="flc-title fl-appName" tabindex="0"></span>
+                    <button class="flc-closeBtn fl-closeBtn btn btn-regular">&#x2715;</button>
+                </div>
+
+                <!-- the Stepper Widget -->
+                <div class="fl-dialog-content fl-scrollable fl-qssStepperWidget-content">
+                    <div class="fl-qssStepperWidget-tip">
+                        <div class="flc-tipTitle fl-tipTitle"></div>
+                        <div class="flc-tipSubtitle fl-tipSubtitle"></div>
+                    </div>
+
+                    <div class="fl-qssStepperWidget-controls">
+                        <button class="flc-qssStepperWidget-incBtn btn fl-btn">
+                            <span class="flc-btnLabel fl-btnLabel">Larger(&#8657;)</span>
+                        </button>
+                        <button class="flc-qssStepperWidget-decBtn btn fl-btn">
+                            <span class="flc-btnLabel fl-btnLabel">Smaller(&#8659;)</span>
+                        </button>
+                    </div>
+
+                    <div class="flc-qssStepperWidget-footerTip fl-qssStepperWidget-footerTip"></div>
+                </div>
+                <div class="fl-dialog-footer"></div>
+            </div>
+        </div>
+    </body>
+</html>

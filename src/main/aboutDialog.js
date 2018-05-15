@@ -19,19 +19,8 @@ var fluid = require("infusion");
 var app = require("electron").app;
 
 require("./dialog.js");
-require("../common/channelUtils.js");
+require("./quickSetStrip.js");
 
-/**
- * Simple connector for the About BrowserWindow
- */
-fluid.defaults("gpii.app.aboutDialog.channel", {
-    gradeNames: ["gpii.app.dialog.simpleEventChannel", "gpii.app.i18n.channel"],
-    ipcTarget: require("electron").ipcMain,
-
-    events: {
-        onAboutDialogClosed: null
-    }
-});
 
 /**
  * Component that represents the About dialog
@@ -52,15 +41,22 @@ fluid.defaults("gpii.app.aboutDialog", {
     },
 
     components: {
-        channel: {
-            type: "gpii.app.aboutDialog.channel",
+        channelListener: {
+            type: "gpii.app.channelListener",
             options: {
+                events: {
+                    onAboutDialogClosed: null
+                },
                 listeners: {
                     onAboutDialogClosed: {
                         func: "{aboutDialog}.hide"
                     }
                 }
             }
+        },
+        // notify for i18n events
+        channelNotifier: {
+            type: "gpii.app.channelNotifier"
         }
     }
 });

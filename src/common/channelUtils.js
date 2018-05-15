@@ -25,7 +25,7 @@ var systemEventNames = fluid.keys(fluid.component().events);
  * Generic channel component for communication with BroserWindows
  * It simply registers listeners for the passed events.
  */
-fluid.defaults("gpii.app.dialog.simpleChannelListener", {
+fluid.defaults("gpii.app.common.simpleChannelListener", {
     gradeNames: "fluid.component",
 
     events: {}, // to be passed by implementor
@@ -33,18 +33,18 @@ fluid.defaults("gpii.app.dialog.simpleChannelListener", {
 
     listeners: {
         "onCreate.registerIpcListeners": {
-            funcName: "gpii.app.dialog.simpleChannelListener.registerIPCListeners",
+            funcName: "gpii.app.common.simpleChannelListener.registerIPCListeners",
             args: ["{that}", "{that}.events"]
         },
         "onDestroy.deregisterIpcListeners": {
-            funcName: "gpii.app.dialog.simpleChannelListener.deregisterIPCListeners",
+            funcName: "gpii.app.common.simpleChannelListener.deregisterIPCListeners",
             args: ["{that}", "{that}.events"]
         }
     },
 
     invokers: {
         registerIPCListener: {
-            funcName: "gpii.app.dialog.simpleChannelListener.registerIPCListener",
+            funcName: "gpii.app.common.simpleChannelListener.registerIPCListener",
             args: [
                 "{that}.options.ipcTarget",
                 "{arguments}.0", // channelName
@@ -52,7 +52,7 @@ fluid.defaults("gpii.app.dialog.simpleChannelListener", {
             ]
         },
         deregisterIPCListener: {
-            funcName: "gpii.app.dialog.simpleChannelListener.deregisterIPCListener",
+            funcName: "gpii.app.common.simpleChannelListener.deregisterIPCListener",
             args: [
                 "{that}.options.ipcTarget",
                 "{arguments}.0" // channelName
@@ -68,7 +68,7 @@ fluid.defaults("gpii.app.dialog.simpleChannelListener", {
  *
  * @param {Object} events - The events to be used including the system ones.
  */
-gpii.app.dialog.simpleChannelListener.registerIPCListeners = function (that, events) {
+gpii.app.common.simpleChannelListener.registerIPCListeners = function (that, events) {
     var userEvents = fluid.censorKeys(events, systemEventNames);
     fluid.each(userEvents, function (event, eventName) {
         that.registerIPCListener(eventName, event);
@@ -80,7 +80,7 @@ gpii.app.dialog.simpleChannelListener.registerIPCListeners = function (that, eve
  *
  * @param events {Object} The events to be used.
  */
-gpii.app.dialog.simpleChannelListener.deregisterIPCListeners = function (that, events) {
+gpii.app.common.simpleChannelListener.deregisterIPCListeners = function (that, events) {
     fluid.keys(events).forEach(that.registerIPCListener);
 };
 
@@ -91,7 +91,7 @@ gpii.app.dialog.simpleChannelListener.deregisterIPCListeners = function (that, e
  * @param channelName {String} The name of the channel to be listened to.
  * @param event {Object} The event to be fired when the channel is notified.
  */
-gpii.app.dialog.simpleChannelListener.registerIPCListener = function (ipcTarget, channelName, event) {
+gpii.app.common.simpleChannelListener.registerIPCListener = function (ipcTarget, channelName, event) {
     ipcTarget.on(channelName, function (/* event, args... */) {
         event.fire.apply(event, [].slice.call(arguments, 1));
     });
@@ -103,13 +103,13 @@ gpii.app.dialog.simpleChannelListener.registerIPCListener = function (ipcTarget,
  *
  * @param channelName {String} The channel to be disconnected from.
  */
-gpii.app.dialog.simpleChannelListener.deregisterIPCListener = function (ipcTarget, channelName) {
+gpii.app.common.simpleChannelListener.deregisterIPCListener = function (ipcTarget, channelName) {
     ipcTarget.removeAllListeners(channelName);
 };
 
 
 
-fluid.defaults("gpii.app.dialog.simpleChannelNotifier", {
+fluid.defaults("gpii.app.common.simpleChannelNotifier", {
     gradeNames: "fluid.component",
 
     events: {}, // to be passed by implementor
@@ -117,7 +117,7 @@ fluid.defaults("gpii.app.dialog.simpleChannelNotifier", {
 
     listeners: {
         "onCreate.registerIPCNotifiers": {
-            funcName: "gpii.app.dialog.simpleChannelNotifier.registerIPCNotifiers",
+            funcName: "gpii.app.common.simpleChannelNotifier.registerIPCNotifiers",
             args: [
                 "{that}.options.ipcTarget",
                 "{that}.events"
@@ -133,7 +133,7 @@ fluid.defaults("gpii.app.dialog.simpleChannelNotifier", {
  * @param {Object} ipcTarget - The events to be used.
  * @param {Object} events - The events to be used including the system ones.
  */
-gpii.app.dialog.simpleChannelNotifier.registerIPCNotifiers = function (ipcTarget, events) {
+gpii.app.common.simpleChannelNotifier.registerIPCNotifiers = function (ipcTarget, events) {
     var userEvents = fluid.censorKeys(events, systemEventNames);
     fluid.each(userEvents, function (event, eventName) {
         // send data to a channel named after the event name

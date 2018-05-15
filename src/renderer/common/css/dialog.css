@@ -3,6 +3,11 @@
  */
 body {
     background-color: transparent;
+
+    /* override properties */
+    margin: 0;
+    /* uncomment when proper way for content scrolling is found */
+    /* overflow: hidden; */
 }
 
 /*
