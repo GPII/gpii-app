@@ -44,13 +44,15 @@ gpii.app.isWin10OS = function () {
 * @param height {Number} The height of the `BrowserWindow`.
 * @return {{x: Number, y: Number, width: Number, height: Number}}
 */
-gpii.app.getDesiredWindowBounds = function (width, height) {
+gpii.app.getDesiredWindowBounds = function (width, height, heightOffset) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    heightOffset = heightOffset ? heightOffset : 0;
+
     width = Math.ceil(Math.min(width, screenSize.width));
     height = Math.ceil(Math.min(height, screenSize.height));
     return {
         x: Math.ceil(screenSize.width - width),
-        y: Math.ceil(screenSize.height - height),
+        y: Math.ceil(screenSize.height - height - heightOffset),
         width: width,
         height: height
     };
