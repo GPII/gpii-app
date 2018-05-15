@@ -33,7 +33,7 @@
         events: {}, // given by implementor
 
         listeners: {
-            "onCreate.addClickHandler": {
+            "onCreate.addKeyPressHandler": {
                 this: "{that}.container",
                 method: "keyup",
                 args: "{that}.registerKeyPress"
@@ -127,9 +127,9 @@
      */
     fluid.defaults("gpii.qss.buttonPresenter", {
         gradeNames: [
-            "gpii.qss.elementRepeater.clickable",
-            "gpii.qss.elementRepeater.hoverable",
             "gpii.qss.elementRepeater.qssKeyListener",
+            "gpii.qss.elementRepeater.hoverable",
+            "gpii.qss.elementRepeater.clickable",
             "fluid.viewComponent"
         ],
 

@@ -100,15 +100,15 @@ fluid.defaults("gpii.app.qss", {
                     // XXX DEV
                     onQssButtonClicked: {
                         funcName: "console.log",
-                        args: ["Item clicked: ", "{arguments}.0"]
+                        args: ["Item clicked: "]//, "{arguments}.0"]
                     },
                     onQssButtonMouseEnter: {
                         funcName: "console.log",
-                        args: ["Item Enter: ", "{arguments}.0"]
+                        args: ["Item Enter: "]//, "{arguments}.0"]
                     },
                     onQssButtonMouseLeave: {
                         funcName: "console.log",
-                        args: ["Item Leave: ", "{arguments}.0"]
+                        args: ["Item Leave: "] //, "{arguments}.0"]
                     }
 
                 }
