@@ -294,7 +294,7 @@
     });
 
     gpii.qss.list.getHandlerType = function (item) {
-        if (item.type === "toggle") {
+        if (item.type === "boolean") {
             return "gpii.qss.toggleButtonPresenter";
         }
 
