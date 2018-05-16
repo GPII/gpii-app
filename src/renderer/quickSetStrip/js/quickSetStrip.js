@@ -312,6 +312,21 @@
         that.applier.change("value", !that.model.value);
     };
 
+    fluid.defaults("gpii.qss.closeButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        listeners: {
+            onClicked: "{that}.closeQss()",
+            onEnterPressed: "{that}.closeQss()",
+            onSpacebarPressed: "{that}.closeQss()"
+        },
+        invokers: {
+            closeQss: {
+                this: "{qss}.events.onQssClosed",
+                method: "fire"
+            }
+        }
+    });
+
     /**
      * Represents the list of qss settings. It renders the settings and listens
      * for events on them.
@@ -363,6 +378,10 @@
             return "gpii.qss.toggleButtonPresenter";
         }
 
+        if (item.type === "close") {
+            return "gpii.qss.closeButtonPresenter";
+        }
+
         return "gpii.qss.buttonPresenter";
     };
 
@@ -388,7 +407,8 @@
         },
 
         events: {
-            onQssOpen: null
+            onQssOpen: null,
+            onQssClosed: null
         },
 
         components: {
@@ -423,6 +443,7 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
+                        onQssClosed: "{qss}.events.onQssClosed",
                         onQssButtonClicked:    "{quickSetStripList}.events.onButtonClicked",
                         onQssButtonMouseEnter: "{quickSetStripList}.events.onButtonMouseEnter",
                         onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave",
