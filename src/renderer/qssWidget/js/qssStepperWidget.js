@@ -19,33 +19,9 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-    // TODO use in about dialog
-    fluid.defaults("gpii.psp.textHolder", {
-        modelListeners: {
-            // Any change means that the whole view should be re-rendered
-            "messages": {
-                funcName: "gpii.psp.renderText",
-                args: [
-                    "{that}",
-                    "{that}.options.selectors",
-                    "{that}.model.messages"
-                ]
-            }
-        }
-    });
-
-    gpii.psp.renderText = function (that, selectors, messages) {
-        fluid.each(selectors, function (value, key) {
-            var element = that.dom.locate(key);
-            if (element && messages[key]) {
-                element.text(messages[key]);
-            }
-        });
-    };
-
 
     fluid.defaults("gpii.qssWidget.stepper.contentHandler", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.textHolder"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         model: {
             messages: {
@@ -78,7 +54,7 @@
                         label: "{contentHandler}.model.messages.incrementButton"
                     },
                     invokers: {
-                        onClick: "{stepper}.events.onIncButtonClicked.fire"
+                        onClick: "{stepper}.increment"
                     }
                 }
             },
@@ -90,7 +66,7 @@
                         label: "{contentHandler}.model.messages.decrementButton"
                     },
                     invokers: {
-                        onClick: "{stepper}.events.onDecButtonClicked.fire"
+                        onClick: "{stepper}.decrement"
                     }
                 }
             }
@@ -107,12 +83,49 @@
             messages: {
                 titlebarAppName: "This is programmable"
             },
-            setting: null // the currently handled setting
+            // XXX dev
+            setting: {
+                value: 10,
+                divisibleBy: 1
+            } // the currently handled setting
         },
 
-        events: {
-            onIncButtonClicked: null,
-            onDecButtonClicked: null
+        modelListeners: {
+            setting: {
+                func: "{channelNotifier}.events.onQssSettingAltered.fire",
+                args: ["{change}.value"],
+                includeSource: "settingAlter"
+            }
+        },
+
+        invokers: {
+            increment: {
+                changePath: "setting.value",
+                value: {
+                    expander: {
+                        funcName: "gpii.qssWidget.stepper.sum",
+                        args: [
+                            "{that}.model.setting.value",
+                            "{that}.model.setting.divisibleBy"
+                        ]
+                    }
+                },
+                source: "settingAlter"
+            },
+            decrement: {
+                changePath: "setting.value",
+                value: {
+                    expander: {
+                        funcName: "gpii.qssWidget.stepper.sum",
+                        args: [
+                            "{that}.model.setting.value",
+                            "{that}.model.setting.divisibleBy",
+                            true
+                        ]
+                    }
+                },
+                source: "settingAlter"
+            }
         },
 
 
@@ -160,10 +173,24 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
-                        onQssWidgetClosed: null
+                        onQssWidgetClosed: null,
+                        onQssSettingAltered: null
                     }
                 }
             }
         }
     });
+
+
+    /**
+     * Either add or subtract two values.
+     *
+     * @param {Number} a - The initial value
+     * @param {Number} b - The that is to be added or subtracted
+     * @param {Boolean} shouldSubtract - Whether subtraction to be done
+     * @returns {Number} The summed value.
+     */
+    gpii.qssWidget.stepper.sum = function (a, b, shouldSubtract) {
+        return a + (shouldSubtract ? -b : b);
+    };
 })(fluid);

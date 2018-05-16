@@ -26,7 +26,11 @@
      * internationalizable.
      */
     fluid.defaults("gpii.psp.signIn", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
+        gradeNames: [
+            "fluid.viewComponent",
+            "gpii.psp.heightObservable",
+            "gpii.psp.selectorsTextRenderer"
+        ],
 
         model: {
             messages: {
@@ -104,15 +108,6 @@
         },
 
         modelListeners: {
-            // Any change means that the whole view should be re-rendered
-            "messages": {
-                funcName: "gpii.psp.signIn.renderText",
-                args: [
-                    "{that}",
-                    "{that}.options.selectors",
-                    "{that}.model.messages"
-                ]
-            },
             "error": {
                 funcName: "gpii.psp.signIn.toggleError",
                 args: [
@@ -185,27 +180,5 @@
         } else {
             errorContainer.hide();
         }
-    };
-
-
-    /**
-     * Sets text to dom elements using jQuery.
-     * Text to an element is added ONLY if there exist
-     * a message with the same name as the element's selector property.
-     * Example:
-     *  selector - { signInHeader: ".flc-signInHeader" }
-     *  uses a message of the type - { messages: { signInHeader: "Header text" } }
-     *
-     * @param {Component} that - The `gpii.psp.signIn` instance.
-     * @param {Object} selectors - The viewComponent's selectors
-     * @param {Object} messages - The translated text
-     */
-    gpii.psp.signIn.renderText = function (that, selectors, messages) {
-        fluid.each(selectors, function (value, key) {
-            var element = that.dom.locate(key);
-            if (element && messages[key]) {
-                element.text(messages[key]);
-            }
-        });
     };
 })(fluid);

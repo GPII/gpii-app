@@ -18,8 +18,6 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-    var electron = require("electron");
-
     /**
      * Wrapper that enables translations for the `gpii.qss` component and
      * applies interception of all anchor tags on the page so that an external browser is used

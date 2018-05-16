@@ -177,11 +177,16 @@ fluid.defaults("gpii.app.qssWidget", {
             type: "gpii.app.channelListener",
             options: {
                 events: {
-                    onQssWidgetClosed: null
+                    onQssWidgetClosed: null,
+                    onQssSettingAltered: null
                 },
                 listeners: {
                     onQssWidgetClosed: {
                         func: "{qssWidget}.hide"
+                    },
+                    onQssSettingAltered: { // XXX dev
+                        funcName: "console.log",
+                        args: ["Settings Altered: ", "{arguments}.0"]
                     }
                 }
             }

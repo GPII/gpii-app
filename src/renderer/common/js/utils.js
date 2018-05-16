@@ -62,4 +62,48 @@
             }
         }
     });
+
+
+
+    /**
+     * Render text for DOM elements referenced by component's
+     * selectors. It simply adds text (using jquery .text) method)
+     * to every selector element in case there exists a message
+     * by the same name as the selector's.
+     */
+    fluid.defaults("gpii.psp.selectorsTextRenderer", {
+        modelListeners: {
+            // Any change means that the whole view should be re-rendered
+            "messages": {
+                funcName: "gpii.psp.selectorsTextRenderer.renderText",
+                args: [
+                    "{that}",
+                    "{that}.options.selectors",
+                    "{that}.model.messages"
+                ]
+            }
+        }
+    });
+
+
+    /**
+     * Sets text to dom elements using jQuery.
+     * Text is added to an element ONLY if there exist
+     * a message with the same name as the element's selector property.
+     * Example:
+     *  selector - { signInHeader: ".flc-signInHeader" }
+     *  uses a message of the type - { messages: { signInHeader: "Header text" } }
+     *
+     * @param {Component} that - The `gpii.psp.signIn` instance.
+     * @param {Object} selectors - The viewComponent's selectors
+     * @param {Object} messages - The translated text
+     */
+    gpii.psp.selectorsTextRenderer.renderText = function (that, selectors, messages) {
+        fluid.each(selectors, function (value, key) {
+            var element = that.dom.locate(key);
+            if (element && messages[key]) {
+                element.text(messages[key]);
+            }
+        });
+    };
 })(fluid, jQuery);
