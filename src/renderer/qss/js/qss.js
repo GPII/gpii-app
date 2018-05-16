@@ -200,7 +200,10 @@
 
             onClicked: [{
                 funcName: "{list}.events.onButtonClicked.fire",
-                args: ["{that}.model.item"]
+                args: [
+                    "{that}.model.item",
+                    "@expand:gpii.qss.getElementMetrics({that}.container)" // target
+                ]
             }, {
                 func: "{that}.removeHighlight"
             }],
@@ -247,6 +250,7 @@
         }
     });
 
+
     gpii.qss.buttonPresenter.onTabPressed = function (qssList, index, KeyboardEvent) {
         qssList.changeFocus(index, !KeyboardEvent.shiftKey);
     };
@@ -258,6 +262,23 @@
                 .focus();
         }
     };
+
+    /**
+     * Return the metrics of a clicked element. These can be used
+     * for positioning. Note that the position is relative to the right.
+     *
+     * @param {Object} target - The DOM element which
+     * positioning metrics are needed.
+     * @returns {{width: Number, height: Number, offsetRight}}
+     */
+    gpii.qss.getElementMetrics = function (target) {
+        return {
+            offsetRight: $(window).width() - target.offset().left,
+            height:      target.outerHeight(),
+            width:       target.outerWidth()
+        };
+    };
+
 
     fluid.defaults("gpii.qss.toggleButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],

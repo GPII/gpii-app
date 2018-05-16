@@ -102,7 +102,8 @@ fluid.defaults("gpii.app.dialog", {
     },
     listeners: {
         "onCreate.positionWindow": {
-            func: "{that}.positionWindow"
+            func: "{that}.positionWindow",
+            args: []
         },
         "onCreate.addDisplayMetricsListener": {
             func: "gpii.app.dialog.addDisplayMetricsListener",
@@ -127,7 +128,11 @@ fluid.defaults("gpii.app.dialog", {
     invokers: {
         positionWindow: {
             funcName: "gpii.app.positionWindow",
-            args: ["{that}.dialog"]
+            args: [
+                "{that}.dialog",
+                "{arguments}.0", // offsetX
+                "{arguments}.1"  // offsetY
+            ]
         },
         resize: {
             funcName: "gpii.app.dialog.resize",

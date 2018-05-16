@@ -159,7 +159,9 @@ fluid.defaults("gpii.app.qssWidget", {
     config: {
         attrs: {
             width: 300,
-            height: 500
+            height: 300,
+            alwaysOnTop: true,
+            transparent: false
         },
         fileSuffixPath: "qssWidget/index.html"
     },
@@ -168,8 +170,8 @@ fluid.defaults("gpii.app.qssWidget", {
         channelNotifier: {
             type: "gpii.app.channelNotifier",
             options: {
-                // XXX dev
-                listeners: {
+                events: {
+                    onSettingUpdated: null
                 }
             }
         },
@@ -193,25 +195,46 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     },
     invokers: {
-        showWidget: {
-            funcName: "gpii.app.qssWidget.showWidget",
+        show: {
+            funcName: "gpii.app.qssWidget.show",
             args: [
                 "{that}",
-                "{arguments}.0" // control
+                "{arguments}.0", // setting
+                "{arguments}.1"  // elementMetrics
             ]
         }
     }
 });
 
-gpii.app.qssWidget.showWidget = function (that, control) {
-    var setting = control.setting;
 
-    if (controlType === "increment") {
 
-    }
+/**
+ * Show the widget window and position it relatively to the
+ * specified element. The window is positioned centered over
+ * the element.
+ *
+ * @param {Component} that - The `gpii.app.qssWidget` instance
+ * @param {Object} setting - The qssSetting object
+ * @param {Object} elementMetrics - The metrics of the relative element
+ * @param {Number} elementMetrics.width - The width of the element
+ * @param {Number} elementMetrics.height - The height of the element
+ * @param {Number} elementMetrics.offsetRight - The offset of the element from the
+ * right of its window's.
+ */
+gpii.app.qssWidget.show = function (that, setting, elementMetrics) {
+    // Find the offset for the window to be centered over the element
+    var windowWidth = that.dialog.getSize()[0];
+    // change offset to element's center
+    var offsetX = elementMetrics.offsetRight - (elementMetrics.width / 2);
+    // set offset to window center
+    offsetX -= windowWidth / 2;
 
-    // TODO how do we get there?
-    var controlPosition = control.position; //
+    that.channelNotifier.events.onSettingUpdated.fire(setting);
+
+    // TODO toggle sets position?
+    that.applier.change("isShown", true);
+    // reposition window properly
+    that.positionWindow(offsetX, elementMetrics.height);
 };
 
 
@@ -248,24 +271,30 @@ fluid.defaults("gpii.app.qssWrapper", {
                     }
                 },
                 listeners: {
-                    // "{that}.channelListener.events.onQssButtonClicked": {
-                    //     qssWidget: {
-                    //         // TODO The show method decides whether it is a menu or increase widget?
-                    //         func: "{qssWidget}.show",
-                    //         args: "{arguments}.0" // clickedElement
-                    //     }
-                    // }
+                    "{channelListener}.events.onQssButtonClicked": {
+                        func: "{qssWidget}.show",
+                        args: [
+                            "{arguments}.0", // setting
+                            "{arguments}.1"  // elementMetrics
+                        ]
+                    }
                 }
             }
         },
         qssWidget: {
             type: "gpii.app.qssWidget",
             options: {
-                listeners: {
-                    // XXX dev
-                    "onCreate.log": {
-                        func: "{that}.show"
+                modelListeners: {
+                    // Ensure the widget window is closed with the QSS
+                    "{gpii.app.qss}.model.isShown": {
+                        // it won't hurt if this is called
+                        // even on QSS show
+                        func: "{that}.hide"
                     }
+                },
+
+                listeners: {
+                    // TODO
                 }
             }
         }
