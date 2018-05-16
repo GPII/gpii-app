@@ -1,31 +1,31 @@
 [
     {
-        "type": "close",
-        "label": "Close"
+        "type": "more",
+        "label": "More ..."
     }, {
-        "type": "keyIn",
-        "label": "Key In"
-    }, {
-        "type": "number",
-        "label": "Text Size"
-    }, {
-        "type": "number",
-        "label": "Screen Size"
-    }, {   
-        "type": "boolean",
-        "label": "Captions",
-        "path": "Captions",
-        "value": false
+        "type": "array",
+        "label": "High / Low Contrast"
     }, {   
         "type": "boolean",
         "label": "Read Aloud",
         "path": "Read Aloud",
         "value": false
+    }, {   
+        "type": "boolean",
+        "label": "Captions",
+        "path": "Captions",
+        "value": false
     }, {
-        "type": "array",
-        "label": "High / Low Contrast"
+        "type": "number",
+        "label": "Screen Size"
     }, {
-        "type": "more",
-        "label": "More ..."
+        "type": "number",
+        "label": "Text Size"
+    }, {
+        "type": "keyIn",
+        "label": "Key In"
+    }, {
+        "type": "close",
+        "label": "Close"
     }
 ]

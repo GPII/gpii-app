@@ -63,11 +63,11 @@
             keyName = KeyboardEvent.key;
         }
 
-        var eventName = "on" + keyName + "Clicked";
+        var eventName = "on" + keyName + "Pressed";
 
         // Check whether such key press is observed
         if (events[eventName]) {
-            events[eventName].fire();
+            events[eventName].fire(KeyboardEvent);
         }
     };
 
@@ -76,12 +76,13 @@
         gradeNames: "gpii.qss.elementRepeater.keyListener",
 
         events: {
-            onArrowDownClicked: null,
-            onArrowUpClicked: null,
-            onArrowLeftClicked: null,
-            onArrowRightClicked: null,
-            onEnterClicked: null,
-            onSpacebarClicked: null
+            onArrowDownPressed: null,
+            onArrowUpPressed: null,
+            onArrowLeftPressed: null,
+            onArrowRightPressed: null,
+            onEnterPressed: null,
+            onSpacebarPressed: null,
+            onTabPressed: null
         }
     });
 
@@ -151,6 +152,10 @@
             caption: ".flc-qss-btnCaption"
         },
 
+        styles: {
+            highlighted: "fl-highlighted"
+        },
+
         attrs: {
             role: "button"
         },
@@ -158,6 +163,8 @@
         // pass hover item as it is in order to use its position
         // TODO probably use something like https://stackoverflow.com/questions/3234977/using-jquery-how-to-get-click-coordinates-on-the-target-element
         events: {
+            onButtonFocus: "{list}.events.onButtonFocus",
+
             onMouseEnter: "{list}.events.onButtonMouseEnter",
             onMouseLeave: "{list}.events.onButtonMouseLeave",
             onSettingAltered: "{list}.events.onSettingAltered"
@@ -174,36 +181,83 @@
                 method: "text",
                 args: ["{that}.model.item.label"]
             },
+            "onCreate.addBlurListener": {
+                this: "{that}.container",
+                method: "on",
+                args: ["blur", "{that}.removeHighlight"]
+            },
+
+            onButtonFocus: {
+                funcName: "gpii.qss.buttonPresenter.focusButton",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{arguments}.0" // index
+                ]
+            },
 
             // Element interaction events
 
-            onClicked: {
+            onClicked: [{
                 funcName: "{list}.events.onButtonClicked.fire",
                 args: ["{that}.model.item"]
-            },
-            onArrowUpClicked: {
+            }, {
+                func: "{that}.removeHighlight"
+            }],
+            onArrowUpPressed: {
                 funcName: "console.log",
                 args: ["{that}.model.item"]
             },
-            onArrowDownClicked: {
+            onArrowDownPressed: {
                 funcName: "console.log",
                 args: ["{that}.model.item"]
             },
-
-            onArrowLeftClicked: {
+            onArrowLeftPressed: {
+                func: "{gpii.qss.list}.changeFocus",
+                args: [
+                    "{that}.model.index",
+                    true
+                ]
+            },
+            onArrowRightPressed: {
+                func: "{gpii.qss.list}.changeFocus",
+                args: [
+                    "{that}.model.index"
+                ]
+            },
+            onSpacebarPressed: {
                 funcName: "console.log",
                 args: ["{that}.model.item"]
             },
-            onArrowRightClicked: {
-                funcName: "console.log",
-                args: ["{that}.model.item"]
-            },
-            onSpacebarClicked: {
-                funcName: "console.log",
-                args: ["{that}.model.item"]
+            onTabPressed: {
+                funcName: "gpii.qss.buttonPresenter.onTabPressed",
+                args: [
+                    "{gpii.qss.list}",
+                    "{that}.model.index",
+                    "{arguments}.0"
+                ]
+            }
+        },
+        invokers: {
+            removeHighlight: {
+                this: "{that}.container",
+                method: "removeClass",
+                args: ["{that}.options.styles.highlighted"]
             }
         }
     });
+
+    gpii.qss.buttonPresenter.onTabPressed = function (qssList, index, KeyboardEvent) {
+        qssList.changeFocus(index, !KeyboardEvent.shiftKey);
+    };
+
+    gpii.qss.buttonPresenter.focusButton = function (that, container, index) {
+        if (that.model.index === index) {
+            container
+                .addClass(that.options.styles.highlighted)
+                .focus();
+        }
+    };
 
     fluid.defaults("gpii.qss.toggleButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
@@ -239,8 +293,8 @@
         },
         listeners: {
             onClicked: "{that}.toggle()",
-            onEnterClicked: "{that}.toggle()",
-            onSpacebarClicked: "{that}.toggle()"
+            onEnterPressed: "{that}.toggle()",
+            onSpacebarPressed: "{that}.toggle()"
         },
         invokers: {
             toggle: {
@@ -278,6 +332,8 @@
         markup: null,
 
         events: {
+            onButtonFocus: null,
+
             onButtonClicked: null,
             onButtonMouseEnter: null,
             onButtonMouseLeave: null,
@@ -289,6 +345,15 @@
             getHandlerType: {
                 funcName: "gpii.qss.list.getHandlerType",
                 args: ["{arguments}.0"] // item
+            },
+            changeFocus: {
+                funcName: "gpii.qss.list.changeFocus",
+                args: [
+                    "{that}",
+                    "{that}.model.items",
+                    "{arguments}.0", // index
+                    "{arguments}.1" // backwards
+                ]
             }
         }
     });
@@ -301,6 +366,17 @@
         return "gpii.qss.buttonPresenter";
     };
 
+    gpii.qss.list.changeFocus = function (that, items, index, backwards) {
+        var increment = backwards ? -1 : 1,
+            nextIndex = (index + increment) % items.length;
+
+        if (nextIndex < 0) {
+            nextIndex += items.length;
+        }
+
+        that.events.onButtonFocus.fire(nextIndex);
+    };
+
     /**
      * Represents the QSS as a whole.
      */
@@ -309,6 +385,10 @@
 
         model: {
             settings: []
+        },
+
+        events: {
+            onQssOpen: null
         },
 
         components: {
@@ -326,6 +406,7 @@
                 options: {
                     events: {
                         // Add events from the main process to be listened for
+                        onQssOpen: "{qss}.events.onQssOpen",
                         onSettingUpdated: null
                     },
                     // XXX dev
@@ -350,6 +431,35 @@
                     }
                 }
             }
+        },
+
+        listeners: {
+            "onCreate.disableTabKey": {
+                funcName: "gpii.qss.disableTabKey"
+            },
+            "onQssOpen": {
+                funcName: "gpii.qss.onQssOpen",
+                args: [
+                    "{quickSetStripList}",
+                    "{that}.model.settings",
+                    "{arguments}.0" // params
+                ]
+            }
         }
     });
+
+    gpii.qss.disableTabKey = function () {
+        $(document).on("keydown", function (KeyboardEvent) {
+            if (KeyboardEvent.key === "Tab") {
+                KeyboardEvent.preventDefault();
+            }
+        });
+    };
+
+    gpii.qss.onQssOpen = function (qssList, settings, params) {
+        if (params.shortcut) {
+            var keyOutBtnIndex = settings.length - 1;
+            qssList.events.onButtonFocus.fire(keyOutBtnIndex);
+        }
+    };
 })(fluid);

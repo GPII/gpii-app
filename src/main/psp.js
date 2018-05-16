@@ -125,7 +125,7 @@ gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
 
     // In case the psp is shown, make sure the offset takes effect
     if (psp.model.isShown) {
-        psp.show();
+        gpii.app.psp.moveToScreen(psp.pspWindow, psp.options.heightOffset);
     }
 };
 

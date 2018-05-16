@@ -156,7 +156,8 @@
                 container: "{arguments}.0",
                 options: {
                     model: {
-                        item: "{element}.options.item"
+                        item: "{element}.options.item",
+                        index: "{element}.options.index"
                     }
                 }
             }

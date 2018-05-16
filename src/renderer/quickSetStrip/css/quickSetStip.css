@@ -5,7 +5,6 @@ body {
 
 .fl-qss {
     display: flex;
-    flex-direction: row-reverse;
     background-color: white;
     position: absolute;
     bottom: 0;
@@ -37,6 +36,10 @@ body {
 }
 
 .fl-qss-button:focus {
+    outline: none;
+}
+
+.fl-qss-button.fl-highlighted {
     border: 3px solid #ff0000;
 }
 

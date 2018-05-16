@@ -169,14 +169,20 @@ fluid.defaults("gpii.app", {
                 },
                 listeners: {
                     onTrayIconClicked: [{
-                        func: "{qss}.showIfPossible"
+                        func: "{qss}.show",
+                        args: [
+                            {shortcut: false}
+                        ]
                     }, {
                         func: "{psp}.show"
                     }],
                     onShortcutUsed: [{
-                        func: "{qss}.showIfPossible"
-                    }, {
                         func: "{psp}.show"
+                    }, {
+                        func: "{qss}.show",
+                        args: [
+                            {shortcut: true}
+                        ]
                     }]
                 }
             }

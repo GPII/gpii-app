@@ -46,6 +46,7 @@ fluid.defaults("gpii.app.qss.channelNotifier", {
     ipcTarget: "{dialog}.dialog.webContents", // get the closest dialog
 
     events: {
+        onQssOpen: null,
         onSettingUpdated: null
     }
 });
@@ -71,10 +72,17 @@ fluid.defaults("gpii.app.qss", {
         fileSuffixPath: "quickSetStrip/index.html"
     },
 
+    events: {
+        onQssOpen: null
+    },
+
     components: {
         channelNotifier: {
             type: "gpii.app.qss.channelNotifier",
             options: {
+                events: {
+                    onQssOpen: "{qss}.events.onQssOpen"
+                },
                 // XXX dev
                 listeners: {
                     onCreate: {
@@ -122,9 +130,12 @@ fluid.defaults("gpii.app.qss", {
         }
     },
     invokers: {
-        showIfPossible: {
-            funcName: "gpii.app.qss.showIfPossible",
-            args: ["{that}"]
+        show: {
+            funcName: "gpii.app.qss.show",
+            args: [
+                "{that}",
+                "{arguments}.0" // params
+            ]
         }
     }
 });
@@ -132,9 +143,10 @@ fluid.defaults("gpii.app.qss", {
 /**
  * Show the window in case QSS is not disabled.
  */
-gpii.app.qss.showIfPossible = function (that) {
+gpii.app.qss.show = function (that, params) {
     if (!that.options.disabled) {
-        that.show();
+        that.applier.change("isShown", true);
+        that.events.onQssOpen.fire(params);
     }
 };
 
