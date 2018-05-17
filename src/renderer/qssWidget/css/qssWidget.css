@@ -18,9 +18,20 @@
 }
 
 .fl-qssStepperWidget-controls button {
-    margin: 5px;
-
     width: 60%;
+
+    margin: 5px;
+    /* override fl-btn */
+    padding-top: 0;
+
+    background-color: #033A50;
+
+    font-size: 1.5em;
+    border-radius: 5px;
+}
+
+.fl-arrowUp, .fl-arrowDown {
+    font-size: 1.7em;
 }
 
 fl-qssStepperWidget-footer {
