@@ -19,6 +19,7 @@ var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
 
 require("./dialog.js");
+require("./blurrable.js");
 require("../common/channelUtils.js");
 
 
@@ -46,7 +47,7 @@ fluid.defaults("gpii.app.channelNotifier", {
  * Component that represents the Quick Set strip.
  */
 fluid.defaults("gpii.app.qss", {
-    gradeNames: ["gpii.app.dialog"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
 
     // whether showing of the QSS is allowed
     disabled: false,
@@ -66,6 +67,8 @@ fluid.defaults("gpii.app.qss", {
     events: {
         onQssOpen: null
     },
+
+    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget"],
 
     components: {
         channelNotifier: {
@@ -130,6 +133,15 @@ fluid.defaults("gpii.app.qss", {
             }
         }
     },
+    listeners: {
+        "onCreate.initBlurrable": {
+            func: "{that}.initBlurrable",
+            args: ["{that}.dialog"]
+        },
+        onBlur: {
+            func: "{that}.hide"
+        }
+    },
     invokers: {
         show: {
             funcName: "gpii.app.qss.show",
@@ -154,7 +166,7 @@ gpii.app.qss.show = function (that, params) {
 
 
 fluid.defaults("gpii.app.qssWidget", {
-    gradeNames: ["gpii.app.dialog"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
 
     config: {
         attrs: {
@@ -165,6 +177,8 @@ fluid.defaults("gpii.app.qssWidget", {
         },
         fileSuffixPath: "qssWidget/index.html"
     },
+
+    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss"],
 
     components: {
         channelNotifier: {
@@ -192,6 +206,15 @@ fluid.defaults("gpii.app.qssWidget", {
                     }
                 }
             }
+        }
+    },
+    listeners: {
+        "onCreate.initBlurrable": {
+            func: "{that}.initBlurrable",
+            args: ["{that}.dialog"]
+        },
+        onBlur: {
+            func: "{that}.hide"
         }
     },
     invokers: {

@@ -24,6 +24,7 @@ var BrowserWindow     = electron.BrowserWindow,
 var gpii              = fluid.registerNamespace("gpii");
 
 require("./utils.js");
+require("./blurrable.js");
 
 
 /**
@@ -148,7 +149,7 @@ gpii.app.pspInApp.togglePspRestartWarning = function (psp, pendingChanges) {
  * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.psp", {
-    gradeNames: "fluid.modelComponent",
+    gradeNames: ["fluid.modelComponent", "gpii.app.blurrable"],
 
     model:  {
         keyedInUserToken: null,
@@ -175,6 +176,8 @@ fluid.defaults("gpii.app.psp", {
     // In case we want to have some heightOffset from the screen edge.
     // This is useful when we have QSS which should be below the PSP.
     heightOffset: null,
+
+    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssWidget"],
 
     sounds: {
         keyedIn: "keyedIn.mp3",
@@ -211,8 +214,7 @@ fluid.defaults("gpii.app.psp", {
 
         onClosed: null,
 
-        onDisplayMetricsChanged: null,
-        onPSPWindowFocusLost: null
+        onDisplayMetricsChanged: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -226,6 +228,10 @@ fluid.defaults("gpii.app.psp", {
         "onCreate.initPSPWindowListeners": {
             listener: "gpii.app.psp.initPSPWindowListeners",
             args: ["{that}"]
+        },
+        "onCreate.initBlurrable": {
+            func: "{that}.initBlurrable",
+            args: ["{that}.pspWindow"]
         },
 
         "onDestroy.cleanupElectron": {
@@ -248,8 +254,8 @@ fluid.defaults("gpii.app.psp", {
             ]
         },
 
-        "onPSPWindowFocusLost": {
-            funcName: "gpii.app.psp.handlePSPWindowFocusLost",
+        "onBlur": {
+            funcName: "gpii.app.psp.handleBlur",
             args: ["{that}", "{settingsBroker}"]
         }
     },
@@ -395,7 +401,7 @@ gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changed
  * @param psp {Component} The `gpii.app.psp` instance.
  * @param settingsBroker {Component} The `gpii.app.settingsBroker` instance.
  */
-gpii.app.psp.handlePSPWindowFocusLost = function (psp, settingsBroker) {
+gpii.app.psp.handleBlur = function (psp, settingsBroker) {
     var isShown = psp.model.isShown,
         closePSPOnBlur = psp.model.preferences.closePSPOnBlur;
     if (isShown && closePSPOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
@@ -409,10 +415,6 @@ gpii.app.psp.handlePSPWindowFocusLost = function (psp, settingsBroker) {
  * @param psp {Component} The `gpii.app.psp` instance.
  */
 gpii.app.psp.initPSPWindowListeners = function (psp) {
-    var pspWindow = psp.pspWindow;
-
-    // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-blur
-    pspWindow.on("blur", psp.events.onPSPWindowFocusLost.fire);
     // https://github.com/electron/electron/blob/master/docs/api/screen.md#event-display-metrics-changed
     electron.screen.on("display-metrics-changed", psp.events.onDisplayMetricsChanged.fire);
 };
