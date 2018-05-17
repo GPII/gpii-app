@@ -17,53 +17,64 @@ var fluid = require("infusion"),
     BrowserWindow = require("electron").BrowserWindow,
     gpii = fluid.registerNamespace("gpii");
 
+
 fluid.defaults("gpii.app.blurrable", {
     gradeNames: ["fluid.component"],
 
     linkedWindowsGrades: [],
 
     events: {
-        onFocusLost: null, // internal event
         onBlur: null
     },
 
     listeners: {
-        onFocusLost: {
-            funcName: "gpii.app.blurrable.onFocusLost",
-            args: ["{that}", "{that}.options.linkedWindowsGrades"]
+        onBlur: {
+            funcName: "console.log",
+            args: ["Lost: ", "{arguments}.0"]
         }
     },
 
     invokers: {
-        initBlurrable: {
-            funcName: "gpii.app.blurrable.initBlurrable",
+        setBlurTarget: {
+            funcName: "gpii.app.blurrable.setBlurTarget",
             args: [
                 "{that}",
+                "{that}.options.linkedWindowsGrades",
                 "{arguments}.0" // targetWindow
             ]
         }
     }
 });
 
-gpii.app.blurrable.initBlurrable = function (that, targetWindow) {
+
+gpii.app.blurrable.isWindowRelated = function (window, linkedGrades) {
+    return linkedGrades.some(function (linkedWindowGrade) {
+        if (window && window.gradeNames) {
+            return window.gradeNames.indexOf(linkedWindowGrade) >= 0;
+        }
+    });
+}
+
+
+/**
+ * If the focused window is not any of the related notify. 
+ *
+ * @param targetWindow
+ * @param relatedGrades
+ * @param onFocusLost
+ */
+gpii.app.blurrable.setBlurTarget = function (that, relatedGrades, targetWindow) {
     // Initialize the listener
-    targetWindow.on("blur", that.events.onFocusLost.fire);
+    targetWindow.once("blur", function () {
+        // the focused electron window
+        var focusedWindow = BrowserWindow.getFocusedWindow();
 
-    // Attach the grade names as window parameters
-    if (targetWindow) {
-        targetWindow.gradeNames = that.options.gradeNames;
-    }
-};
-
-gpii.app.blurrable.onFocusLost = function (that, linkedWindowsGrades) {
-    var focusedWindow = BrowserWindow.getFocusedWindow(),
-        allowBlur = !linkedWindowsGrades.some(function (linkedWindowGrade) {
-            if (focusedWindow && focusedWindow.gradeNames) {
-                return focusedWindow.gradeNames.indexOf(linkedWindowGrade) >= 0;
-            }
-        });
-
-    if (allowBlur) {
-        that.events.onBlur.fire();
-    }
+        if (focusedWindow && gpii.app.blurrable.isWindowRelated(focusedWindow, relatedGrades)) {
+            // init with a different window
+            that.setBlurTarget(focusedWindow);
+        } else {
+            // XXX dev fired arg
+            that.events.onBlur.fire(that.options.gradeNames.slice(-1));
+        }
+    });
 };

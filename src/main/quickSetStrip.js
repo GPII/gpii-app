@@ -68,7 +68,7 @@ fluid.defaults("gpii.app.qss", {
         onQssOpen: null
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget"],
+    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget", "gpii.app.qss"],
 
     components: {
         channelNotifier: {
@@ -118,11 +118,11 @@ fluid.defaults("gpii.app.qss", {
                     },
                     onQssButtonMouseEnter: {
                         funcName: "console.log",
-                        args: ["Item Enter: ", "{arguments}.0"]
+                        args: ["Item Enter: ", "{arguments}.0.target.offsetLeft"]
                     },
                     onQssButtonMouseLeave: {
                         funcName: "console.log",
-                        args: ["Item Leave: ", "{arguments}.0"]
+                        args: ["Item Leave: ", "{arguments}.0.target.offsetLeft"]
                     },
                     onQssSettingAltered: {
                         funcName: "console.log",
@@ -134,10 +134,6 @@ fluid.defaults("gpii.app.qss", {
         }
     },
     listeners: {
-        "onCreate.initBlurrable": {
-            func: "{that}.initBlurrable",
-            args: ["{that}.dialog"]
-        },
         onBlur: {
             func: "{that}.hide"
         }
@@ -158,6 +154,7 @@ fluid.defaults("gpii.app.qss", {
  */
 gpii.app.qss.show = function (that, params) {
     if (!that.options.disabled) {
+        that.setBlurTarget(that.dialog);
         that.applier.change("isShown", true);
         that.events.onQssOpen.fire(params);
     }
@@ -178,7 +175,7 @@ fluid.defaults("gpii.app.qssWidget", {
         fileSuffixPath: "qssWidget/index.html"
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss"],
+    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssWidget"],
 
     components: {
         channelNotifier: {
@@ -209,10 +206,6 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     },
     listeners: {
-        "onCreate.initBlurrable": {
-            func: "{that}.initBlurrable",
-            args: ["{that}.dialog"]
-        },
         onBlur: {
             func: "{that}.hide"
         }
@@ -258,6 +251,7 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics) {
     that.applier.change("isShown", true);
     // reposition window properly
     that.positionWindow(offsetX, elementMetrics.height);
+    that.setBlurTarget(that.dialog);
 };
 
 
