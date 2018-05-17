@@ -20,7 +20,19 @@
         "label": "Screen Size"
     }, {
         "type": "number",
-        "label": "Text Size"
+        "label": "Text Size",
+        "value": 10,
+        "divisibleBy": 1
+    }, {
+        "type": "array",
+        "label": "Language",
+        "value": "English",
+        "enum": [
+            "English",
+            "Deutsch",
+            "Español",
+            "Български"
+        ]
     }, {
         "type": "keyIn",
         "label": "Key In"

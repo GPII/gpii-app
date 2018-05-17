@@ -363,8 +363,7 @@
                 "</div>",
             containerClassPrefix: "fl-qss-button"
         },
-        // TODO get handler based on setting type
-        handlerType: "gpii.qss.buttonPresenter",
+
         markup: null,
 
         events: {

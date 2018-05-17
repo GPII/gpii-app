@@ -54,7 +54,12 @@
             widget: {
                 type: "@expand:gpii.psp.qssWidget.getWidgetType({arguments}.0)",
                 createOnEvent: "onSettingUpdated",
-                container: "{qssWidget}.container"
+                container: "{qssWidget}.container",
+                options: {
+                    model: {
+                        setting: "{qssWidget}.model.setting"
+                    }
+                }
             },
             // TODO send data from the main process
             channelListener: {
@@ -79,14 +84,17 @@
         },
 
         listeners: {
-            onSettingUpdated: {
+            onSettingUpdated: [{
+                changePath: "setting",
+                value: "{arguments}.0"
+            }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: [
                     "{that}.dom.stepper",
                     "{that}.dom.menu",
                     "{arguments}.0" // setting
                 ]
-            }
+            }]
         }
     });
 

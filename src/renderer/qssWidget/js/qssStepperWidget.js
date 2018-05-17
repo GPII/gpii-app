@@ -82,12 +82,7 @@
         model: {
             messages: {
                 titlebarAppName: "This is programmable"
-            },
-            // XXX dev
-            setting: {
-                value: 10,
-                divisibleBy: 1
-            } // the currently handled setting
+            }
         },
 
         modelListeners: {
