@@ -81,7 +81,7 @@
 
         model: {
             messages: {
-                titlebarAppName: "This is programmable"
+                titlebarAppName: "Change Text Size"
             },
             // XXX dev
             setting: {

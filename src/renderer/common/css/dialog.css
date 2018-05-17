@@ -20,12 +20,21 @@ body {
     left: 0;
 }
 
+/*
+ * Take up the whole window space
+ */
 .fl-dialog .fl-dialog-contentWrapper {
-    padding: 8px 8px 0 8px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    padding: 0 8px 0 8px;
     background-color: #83CBEF;
 }
 
 .fl-dialog .fl-dialog-content {
+    flex: 1;
+
     padding: 12px;
 
     background-color: #ffffff;
