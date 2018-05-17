@@ -1,7 +1,8 @@
 /**
- * Initializes the QuickSetStrip widget window
+ * The quick set strip widget
  *
- * Creates the Quick Set Strip widget once the document has been loaded.
+ * Represents the quick set strip stepper widget. It is used for
+ * incrementing/decrementing a setting.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -18,7 +19,7 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-    jQuery(function () {
-        gpii.psp.translatedQssWidget(".flc-qssWidget");
+    fluid.defaults("gpii.qssWidget.menu", {
+        gradeNames: ["fluid.modelComponent"]
     });
 })(fluid);

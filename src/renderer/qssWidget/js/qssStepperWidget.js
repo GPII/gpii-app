@@ -148,35 +148,6 @@
             contentHandler: {
                 type: "gpii.qssWidget.stepper.contentHandler",
                 container: ".flc-qssWidget"
-            },
-
-
-            // TODO send data from the main process
-            channelListener: {
-                type: "gpii.psp.channelListener",
-                options: {
-                    events: {
-                        // Add events from the main process to be listened for
-                        onSettingUpdated: null
-                    },
-                    // XXX dev
-                    listeners: {
-                        onSettingUpdated: {
-                            funcName: "console.log",
-                            args: ["Settings updated: ", "{arguments}.0"]
-                        }
-                    }
-                }
-            },
-            channelNotifier: {
-                type: "gpii.psp.channelNotifier",
-                options: {
-                    events: {
-                        // Add events the main process to be notified for
-                        onQssWidgetClosed: null,
-                        onQssSettingAltered: null
-                    }
-                }
             }
         }
     });
