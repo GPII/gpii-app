@@ -128,7 +128,6 @@ fluid.defaults("gpii.app.qss", {
                         funcName: "console.log",
                         args: ["Setting altered:", "{arguments}.0"]
                     }
-
                 }
             }
         }

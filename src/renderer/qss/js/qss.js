@@ -69,11 +69,11 @@
         // pass hover item as it is in order to use its position
         // TODO probably use something like https://stackoverflow.com/questions/3234977/using-jquery-how-to-get-click-coordinates-on-the-target-element
         events: {
-            onButtonFocus: "{list}.events.onButtonFocus",
+            onButtonFocus: "{gpii.qss.list}.events.onButtonFocus",
 
-            onMouseEnter: "{list}.events.onButtonMouseEnter",
-            onMouseLeave: "{list}.events.onButtonMouseLeave",
-            onSettingAltered: "{list}.events.onSettingAltered"
+            onMouseEnter: "{gpii.qss.list}.events.onButtonMouseEnter",
+            onMouseLeave: "{gpii.qss.list}.events.onButtonMouseLeave",
+            onSettingAltered: "{gpii.qss.list}.events.onSettingAltered"
         },
 
         listeners: {
@@ -151,6 +151,41 @@
             width:       target.outerWidth()
         };
     };
+
+
+    fluid.defaults("gpii.qss.stepperButtonPresenter", {
+        gradeNames: ["gpii.qssWidget.baseStepper", "gpii.qss.buttonPresenter"],
+
+        model: {
+            // used by baseStepper
+            stepperParams: {
+                divisibleBy: "{that}.model.item.divisibleBy",
+                min:         "{that}.model.item.min",
+                max:         "{that}.model.item.max"
+            }
+        },
+
+
+        listeners: {
+            onArrowUpPressed: [{
+                func: "{that}.increment"
+            }, {
+                func: "{that}.activateBtn"
+            }],
+            onArrowDownPressed: [{
+                func: "{that}.decrement"
+            }, {
+                func: "{that}.activateBtn"
+            }]
+        },
+
+        invokers: {
+            activateBtn: {
+                funcName: "gpii.qssWidget.stepper.activateButton",
+                args: ["{that}.container", "{that}.model.value", "{that}.model.stepperParams"]
+            }
+        }
+    });
 
 
     fluid.defaults("gpii.qss.toggleButtonPresenter", {
@@ -254,7 +289,6 @@
                 "</div>",
             containerClassPrefix: "fl-qss-button"
         },
-
         markup: null,
 
         events: {
@@ -276,19 +310,19 @@
     });
 
     gpii.qss.list.getHandlerType = function (item) {
-        if (item.type === "boolean") {
+        switch (item.type) {
+        case "boolean":
             return "gpii.qss.toggleButtonPresenter";
-        }
-
-        if (item.type === "close") {
-            return "gpii.qss.closeButtonPresenter";
-        }
-
-        if (item.type === "array") {
+        case "number":
+            return "gpii.qss.stepperButtonPresenter";
+        case "array":
             return "gpii.qss.menuButtonPresenter";
-        }
+        case "close":
+            return "gpii.qss.closeButtonPresenter";
 
-        return "gpii.qss.buttonPresenter";
+        default:
+            return "gpii.qss.buttonPresenter";
+        };
     };
 
     /**

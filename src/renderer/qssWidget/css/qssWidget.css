@@ -53,14 +53,21 @@
         background-color: #ffea00;
         color: black;
     }
-    0%, 100%   {
-        background-color: #0f4797;
-        color: white;
+}
+
+@keyframes stepperErrorActivation {
+    0% {
+        background-color: #CC0000;
+        color: black;
     }
 }
 
-.fl-qssStepperWidget-btn.fl-qssWidgetBtn-trigger {
+.fl-qssStepperWidgetBtn-stepperActivation {
     animation: stepperActivation 0.5s;
+}
+
+.fl-qssStepperWidgetBtn-stepperErrorActivation {
+    animation: stepperErrorActivation 0.5s;
 }
 
 .fl-arrowUp, .fl-arrowDown {

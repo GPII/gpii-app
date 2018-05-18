@@ -331,6 +331,13 @@
             items: null // settings
         },
 
+        listeners: {
+            onCreate: {
+                funcName: "console.log",
+                args: "{that}"
+            }
+        },
+
         handlerType:   "gpii.psp.settingPresenter",
 
         widgetExemplars: null, // passed by parent
