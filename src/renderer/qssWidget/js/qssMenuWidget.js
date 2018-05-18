@@ -76,6 +76,9 @@
                     styles: {
                         disabled: "disabled"
                     },
+                    events: {
+                        onItemFocus: null
+                    },
                     invokers: {
                         updateValue: {
                             funcName: "gpii.qssWidget.menu.updateValue",
@@ -84,6 +87,15 @@
                                 "{menu}",
                                 "{that}.container",
                                 "{arguments}.0" // value
+                            ]
+                        },
+                        changeFocus: {
+                            funcName: "gpii.qssWidget.menu.changeFocus",
+                            args: [
+                                "{that}",
+                                "{that}.model.items",
+                                "{arguments}.0", // index
+                                "{arguments}.1" // backwards
                             ]
                         }
                     },
@@ -105,8 +117,19 @@
         }
     });
 
+    gpii.qssWidget.menu.changeFocus = function (that, items, index, backwards) {
+        var increment = backwards ? -1 : 1,
+            nextIndex = (index + increment) % items.length;
+
+        if (nextIndex < 0) {
+            nextIndex += items.length;
+        }
+
+        that.events.onItemFocus.fire(nextIndex);
+    };
+
     gpii.qssWidget.menu.updateValue = function (that, menu, container, value) {
-        if (!that.model.disabled) {
+        if (!that.model.disabled && that.model.value !== value) {
             that.applier.change("value", value, null, "settingAlter");
 
             // Disable interactions with the window as it is about to close
@@ -124,7 +147,7 @@
     };
 
     fluid.defaults("gpii.qssWidget.menu.presenter", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.qss.elementRepeater.keyListener"],
         model: {
             item: null
         },
@@ -146,11 +169,41 @@
                 includeSource: "settingAlter"
             }]
         },
+        events: {
+            onItemFocus: "{repeater}.events.onItemFocus",
+            onSpacebarPressed: null,
+            onEnterPressed: null,
+            onArrowUpPressed: null,
+            onArrowDownPressed: null
+        },
         listeners: {
             "onCreate.addClickHandler": {
                 this: "{that}.container",
                 method: "click",
                 args: "{that}.activate"
+            },
+            onItemFocus: {
+                funcName: "gpii.qssWidget.menu.presenter.focusItem",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{arguments}.0" // index
+                ]
+            },
+            onSpacebarPressed: "{that}.activate()",
+            onEnterPressed: "{that}.activate()",
+            onArrowUpPressed: {
+                func: "{repeater}.changeFocus",
+                args: [
+                    "{that}.model.index",
+                    true
+                ]
+            },
+            onArrowDownPressed: {
+                func: "{repeater}.changeFocus",
+                args: [
+                    "{that}.model.index"
+                ]
             }
         },
         invokers: {
@@ -160,6 +213,12 @@
             }
         }
     });
+
+    gpii.qssWidget.menu.presenter.focusItem = function (that, container, index) {
+        if (that.model.index === index) {
+            container.focus();
+        }
+    };
 
     gpii.qssWidget.menu.presenter.toggleCheckmark = function (value, item, container) {
         container.attr("aria-checked", item === value);

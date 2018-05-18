@@ -99,6 +99,11 @@
     content: "\2714";
 }
 
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:focus {
+    border: 2px solid #ff0000;
+    outline: none;
+}
+
 @keyframes menuItemActivation {
     0%, 100%   {
         background-color: #ffffff;
