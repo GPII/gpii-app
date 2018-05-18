@@ -1,14 +1,24 @@
-.fl-dialog-content.fl-qssStepperWidget-content {
-    /* lower the default dialog padding */
+.fl-qssWidget {
+    font-family: Arial;
+}
+
+.fl-dialog-content.fl-qssStepperWidget,
+.fl-dialog-content.fl-qssMenuWidget {
     padding: 2px;
 }
 
-.fl-qssStepperWidget-tip .fl-tipTitle {
+.fl-qssWidget .fl-qssWidget-tip .fl-tipTitle {
+    font-size: 15px;
     font-weight: bold;
 }
 
-.fl-qssStepperWidget-tip,
-.fl-qssStepperWidget-footerTip {
+.fl-qssWidget .fl-qssWidget-tip .fl-tipSubtitle,
+.fl-qssWidget .fl-qssWidget-footerTip {
+    font-size: 14px;
+}
+
+.fl-qssWidget-tip,
+.fl-qssWidget-footerTip {
     margin: 1px;
 }
 
@@ -33,9 +43,9 @@
     border-radius: 5px;
 }
 
-@keyframes activate {
+@keyframes stepperActivation {
     10% {
-        background-color: #FFEA00;
+        background-color: #ffea00;
         color: black;
     }
     0%, 100%   {
@@ -45,15 +55,57 @@
 }
 
 .fl-qssStepperWidget-btn.fl-qssWidgetBtn-trigger {
-    animation: activate 0.5s;
+    animation: stepperActivation 0.5s;
 }
 
 .fl-arrowUp, .fl-arrowDown {
     font-size: 1.6em;
 }
 
-fl-qssStepperWidget-footer {
+.fl-qssStepperWidget-footer {
     margin-bottom: 15px;
 }
 
+.fl-qssMenuWidget .fl-qssWidget-tip {
+    margin-bottom: 30px;
+}
 
+.fl-qssMenuWidget .fl-qssWidgetMenu-item {
+    position: relative;
+    margin: 0 5px 5px 5px;
+    padding: 10px 5px;
+    border: 2px solid #0f4797;
+    border-radius: 5px;
+
+    background-color: #ffffff;
+    text-align: center;
+    color: #0f4797;
+
+    cursor: pointer;
+}
+
+.fl-qssMenuWidget .fl-qssWidgetMenu-item[aria-checked=true]:before {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+
+    font-size: 24px;
+    font-weight: bold;
+    content: "\2714";
+}
+
+@keyframes menuItemActivation {
+    0%, 100%   {
+        background-color: #ffffff;
+        color: #0f4797;
+    }
+    50% {
+        background-color: #ffea00;
+        color: #000000;
+    }
+}
+
+.fl-qssMenuWidget .fl-qssWidgetMenu-item.active {
+    animation: menuItemActivation 0.25s 2;
+}

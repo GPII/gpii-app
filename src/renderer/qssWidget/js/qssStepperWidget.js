@@ -186,7 +186,7 @@
 
             contentHandler: {
                 type: "gpii.qssWidget.stepper.contentHandler",
-                container: ".flc-qssWidget"
+                container: ".flc-qssStepperWidget"
             },
             // register window key listeners
             windowKeyListener: {

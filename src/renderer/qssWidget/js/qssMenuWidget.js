@@ -20,9 +20,13 @@
     var gpii = fluid.registerNamespace("gpii");
 
     fluid.defaults("gpii.qssWidget.menu", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
         model: {
-            setting: {}
+            setting: {},
+            messages: {
+                tipTitle: "To Choose Setting Options",
+                tipSubtitle: "Use mouse or Up/Down arrow keys, then press Enter to select."
+            }
         },
         modelListeners: {
             setting: {
@@ -31,19 +35,37 @@
             }
         },
         selectors: {
-            menuWidget: ".flc-qssMenuWidget"
+            menuControls: ".flc-qssMenuWidget-controls",
+            tipTitle: ".flc-tipTitle",
+            tipSubtitle: ".flc-tipSubtitle"
         },
         components: {
+            titlebar: {
+                type: "gpii.psp.titlebar",
+                container: ".flc-titlebar",
+                options: {
+                    model: {
+                        messages: {
+                            title: "{menu}.model.setting.label"
+                        }
+                    },
+                    events: {
+                        onClose: "{channelNotifier}.events.onQssWidgetClosed"
+                    }
+                }
+            },
             repeater: {
+                // TODO Perhaps add "createOnEvent" so that the component can be recreated
+                // whenever the setting changes (e.g. if the change is made via the PSP)
                 type: "gpii.psp.repeater",
-                container: "{menu}.dom.menuWidget",
+                container: "{menu}.dom.menuControls",
                 options: {
                     model: {
                         items: "{menu}.model.setting.enum",
                         value: "{menu}.model.setting.value"
                     },
                     dynamicContainerMarkup: {
-                        container: "<button class=\"%containerClass\"></button>",
+                        container: "<div role=\"radio\" class=\"%containerClass fl-qssWidgetMenu-item\" tabindex=\"0\"></div>",
                         containerClassPrefix: "flc-qssWidgetMenu-item"
                     },
                     handlerType: "gpii.qssWidget.menu.presenter",
@@ -82,18 +104,26 @@
             "onCreate.addClickHandler": {
                 this: "{that}.container",
                 method: "click",
-                args: "{that}.updateValue"
+                args: "{that}.activate"
             }
         },
         invokers: {
-            updateValue: {
-                func: "{repeater}.updateValue",
-                args: ["{that}.model.item"]
+            activate: {
+                funcName: "gpii.qssWidget.menu.presenter.activate",
+                args: ["{repeater}", "{that}.model.item", "{that}.container", "{that}.options.styles"]
             }
         }
     });
 
     gpii.qssWidget.menu.presenter.applyStyles = function (value, item, container, styles) {
-        container.toggleClass(styles.active, item === value);
+        container.attr("aria-checked", item === value);
+        container.removeClass(styles.active);
+    };
+
+    gpii.qssWidget.menu.presenter.activate = function (repeater, item, container, styles) {
+        if (repeater.model.value !== item) {
+            repeater.updateValue(item);
+            container.addClass(styles.active);
+        }
     };
 })(fluid);

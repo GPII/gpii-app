@@ -28,7 +28,7 @@
         <script type="text/javascript" src="../common/js/messageBundles.js"></script>
     </head>
     <body>
-        <div class="flc-qssWidget fl-dialog">
+        <div class="flc-qssWidget fl-qssWidget fl-dialog">
             <div class="fl-dialog-contentWrapper">
                 <div class="flc-titlebar fl-titlebar">
                     <span class="flc-title fl-appName" tabindex="0"></span>
@@ -36,8 +36,8 @@
                 </div>
 
                 <!-- the Stepper Widget -->
-                <div class="flc-qssStepperWidget fl-dialog-content fl-scrollable fl-qssStepperWidget-content">
-                    <div class="fl-qssStepperWidget-tip">
+                <div class="flc-qssStepperWidget fl-dialog-content fl-scrollable fl-qssStepperWidget">
+                    <div class="fl-qssWidget-tip">
                         <div class="flc-tipTitle fl-tipTitle"></div>
                         <div class="flc-tipSubtitle fl-tipSubtitle"></div>
                     </div>
@@ -55,11 +55,16 @@
                         </button>
                     </div>
 
-                    <div class="flc-qssStepperWidget-footerTip fl-qssStepperWidget-footerTip"></div>
+                    <div class="flc-qssStepperWidget-footerTip fl-qssWidget-footerTip"></div>
                 </div>
 
                 <!-- the Menu Widget -->
-                <div class="flc-qssMenuWidget fl-dialog-content fl-scrollable fl-qssStepperWidget-content">
+                <div class="flc-qssMenuWidget fl-dialog-content fl-scrollable fl-qssMenuWidget">
+                    <div class="fl-qssWidget-tip">
+                        <div class="flc-tipTitle fl-tipTitle"></div>
+                        <div class="flc-tipSubtitle fl-tipSubtitle"></div>
+                    </div>
+                    <div role="radiogroup" class="flc-qssMenuWidget-controls"></div>
                 </div>
                 <div class="fl-dialog-footer"></div>
             </div>
