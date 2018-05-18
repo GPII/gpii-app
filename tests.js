@@ -3,9 +3,7 @@
 
 var fluid = require("infusion");
 
-//var fs = require("graceful-fs");
-// TODO: Remove or document once we confirm whether this affects the coverage reporting in CI.
-var fs = require("fs");
+var fs = require("graceful-fs");
 var path = require("path");
 var jqUnit = require("node-jqunit");
 
