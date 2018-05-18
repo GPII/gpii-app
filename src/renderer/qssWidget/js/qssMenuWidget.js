@@ -22,6 +22,7 @@
     fluid.defaults("gpii.qssWidget.menu", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
         model: {
+            disabled: false,
             setting: {},
             messages: {
                 tipTitle: "To Choose Setting Options",
@@ -39,6 +40,7 @@
             tipTitle: ".flc-tipTitle",
             tipSubtitle: ".flc-tipSubtitle"
         },
+        closeDelay: 1200,
         components: {
             titlebar: {
                 type: "gpii.psp.titlebar",
@@ -61,6 +63,7 @@
                 container: "{menu}.dom.menuControls",
                 options: {
                     model: {
+                        disabled: "{menu}.model.disabled",
                         items: "{menu}.model.setting.enum",
                         value: "{menu}.model.setting.value"
                     },
@@ -70,16 +73,55 @@
                     },
                     handlerType: "gpii.qssWidget.menu.presenter",
                     markup: null,
+                    styles: {
+                        disabled: "disabled"
+                    },
                     invokers: {
                         updateValue: {
-                            changePath: "value",
-                            value: "{arguments}.0"
+                            funcName: "gpii.qssWidget.menu.updateValue",
+                            args: [
+                                "{that}",
+                                "{menu}",
+                                "{that}.container",
+                                "{arguments}.0" // value
+                            ]
+                        }
+                    },
+                    listeners: {
+                        onCreate: {
+                            this: "{that}.container",
+                            method: "removeClass",
+                            args: ["{that}.options.styles.disabled"]
                         }
                     }
                 }
             }
+        },
+        invokers: {
+            close: {
+                funcName: "gpii.qssWidget.menu.close",
+                args: ["{that}", "{channelNotifier}"]
+            }
         }
     });
+
+    gpii.qssWidget.menu.updateValue = function (that, menu, container, value) {
+        if (!that.model.disabled) {
+            that.applier.change("value", value, null, "settingAlter");
+
+            // Disable interactions with the window as it is about to close
+            that.applier.change("disabled", true);
+            container.addClass(that.options.styles.disabled);
+
+            menu.close();
+        }
+    };
+
+    gpii.qssWidget.menu.close = function (that, channelNotifier) {
+        setTimeout(function () {
+            channelNotifier.events.onQssWidgetClosed.fire();
+        }, that.options.closeDelay);
+    };
 
     fluid.defaults("gpii.qssWidget.menu.presenter", {
         gradeNames: ["fluid.viewComponent"],
@@ -95,10 +137,14 @@
                 method: "text",
                 args: ["{change}.value"]
             },
-            "{repeater}.model.value": {
-                funcName: "gpii.qssWidget.menu.presenter.applyStyles",
-                args: ["{change}.value", "{that}.model.item", "{that}.container", "{that}.options.styles"]
-            }
+            "{repeater}.model.value": [{
+                funcName: "gpii.qssWidget.menu.presenter.toggleCheckmark",
+                args: ["{change}.value", "{that}.model.item", "{that}.container"]
+            }, {
+                funcName: "gpii.qssWidget.menu.presenter.animateActivation",
+                args: ["{change}.value", "{that}.model.item", "{that}.container", "{that}.options.styles"],
+                includeSource: "settingAlter"
+            }]
         },
         listeners: {
             "onCreate.addClickHandler": {
@@ -109,21 +155,17 @@
         },
         invokers: {
             activate: {
-                funcName: "gpii.qssWidget.menu.presenter.activate",
-                args: ["{repeater}", "{that}.model.item", "{that}.container", "{that}.options.styles"]
+                func: "{repeater}.updateValue",
+                args: ["{that}.model.item"]
             }
         }
     });
 
-    gpii.qssWidget.menu.presenter.applyStyles = function (value, item, container, styles) {
+    gpii.qssWidget.menu.presenter.toggleCheckmark = function (value, item, container) {
         container.attr("aria-checked", item === value);
-        container.removeClass(styles.active);
     };
 
-    gpii.qssWidget.menu.presenter.activate = function (repeater, item, container, styles) {
-        if (repeater.model.value !== item) {
-            repeater.updateValue(item);
-            container.addClass(styles.active);
-        }
+    gpii.qssWidget.menu.presenter.animateActivation = function (value, item, container, styles) {
+        container.toggleClass(styles.active, item === value);
     };
 })(fluid);

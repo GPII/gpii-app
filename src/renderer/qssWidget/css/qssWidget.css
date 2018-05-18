@@ -70,7 +70,11 @@
     margin-bottom: 30px;
 }
 
-.fl-qssMenuWidget .fl-qssWidgetMenu-item {
+.fl-qssMenuWidget .fl-qssMenuWidget-controls.disabled {
+    pointer-events: none;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
     position: relative;
     margin: 0 5px 5px 5px;
     padding: 10px 5px;
@@ -84,7 +88,7 @@
     cursor: pointer;
 }
 
-.fl-qssMenuWidget .fl-qssWidgetMenu-item[aria-checked=true]:before {
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:before {
     position: absolute;
     top: 50%;
     left: 5px;
@@ -106,6 +110,6 @@
     }
 }
 
-.fl-qssMenuWidget .fl-qssWidgetMenu-item.active {
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item.active {
     animation: menuItemActivation 0.25s 2;
 }
