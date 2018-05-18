@@ -101,8 +101,7 @@
 
 
     gpii.qssWidget.stepper.activateButton = function (button) {
-        console.log("toggling");
-        button.removeClass("fl-incBtn-trigger");
+        button.removeClass("fl-qssWidgetBtn-trigger");
         // Avoid browser optimization
         // inspired by https://stackoverflow.com/a/30072037/2276288
         button[0].offsetWidth;

@@ -27,7 +27,7 @@
     margin: 5px;
     padding-top: 0;
 
-    background-color: #033A50;
+    background-color: #0f4797;
 
     font-size: 1.5em;
     border-radius: 5px;
@@ -39,7 +39,7 @@
         color: black;
     }
     0%, 100%   {
-        background-color: #033A50;
+        background-color: #0f4797;
         color: white;
     }
 }
