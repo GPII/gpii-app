@@ -20,6 +20,21 @@
     var gpii = fluid.registerNamespace("gpii");
 
 
+    fluid.defaults("gpii.qssWidget.stepperKeyListeners", {
+        gradeNames: ["gpii.qss.elementRepeater.keyListener", "fluid.component"],
+
+        // set listeners on the window object
+        target: { expander: { funcName: "jQuery", args: [window] } },
+
+        events: {
+            onArrowDownPressed: null,
+            onArrowUpPressed: null
+        }
+    });
+
+    /**
+     * TODO
+     */
     fluid.defaults("gpii.qssWidget.stepper.contentHandler", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
@@ -43,6 +58,17 @@
             tipSubtitle: ".flc-tipSubtitle",
 
             footerTip: ".flc-qssStepperWidget-footerTip"
+        },
+
+        invokers: {
+            activateIncBtn: {
+                funcName: "gpii.qssWidget.stepper.activateButton",
+                args: "{that}.dom.incButton"
+            },
+            activateDecBtn: {
+                funcName: "gpii.qssWidget.stepper.activateButton",
+                args: "{that}.dom.decButton"
+            }
         },
 
         components: {
@@ -72,6 +98,17 @@
             }
         }
     });
+
+
+    gpii.qssWidget.stepper.activateButton = function (button) {
+        console.log("toggling");
+        button.removeClass("fl-incBtn-trigger");
+        // Avoid browser optimization
+        // inspired by https://stackoverflow.com/a/30072037/2276288
+        button[0].offsetWidth;
+
+        button.addClass("fl-qssWidgetBtn-trigger");
+    };
 
     /**
      * Represents the QSS stepper widget.
@@ -128,6 +165,14 @@
             }
         },
 
+        listeners: {
+            "onCreate.log": {
+                this: "console",
+                method: "log",
+                args: [{ expander: { funcName: "jQuery", args: [window] } }]
+            }
+        },
+
 
         components: {
             titlebar: {
@@ -148,6 +193,34 @@
             contentHandler: {
                 type: "gpii.qssWidget.stepper.contentHandler",
                 container: ".flc-qssWidget"
+            },
+            // register window key listeners
+            windowKeyListener: {
+                type: "fluid.component",
+                options: {
+                    gradeNames: "gpii.qss.elementRepeater.keyListener",
+
+                    // set listeners on the window object
+                    target: { expander: { funcName: "jQuery", args: [window] } },
+
+                    events: {
+                        onArrowDownPressed: null,
+                        onArrowUpPressed: null
+                    },
+
+                    listeners: {
+                        onArrowUpPressed: [{
+                            func: "{stepper}.increment"
+                        }, {
+                            func: "{contentHandler}.activateIncBtn"
+                        }],
+                        onArrowDownPressed: [{
+                            func: "{stepper}.decrement"
+                        }, {
+                            func: "{contentHandler}.activateDecBtn"
+                        }]
+                    }
+                }
             },
 
 

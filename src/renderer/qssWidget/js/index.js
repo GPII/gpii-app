@@ -28,8 +28,7 @@
 
         components: {
             qssStepper: {
-                type: "gpii.qssWidget.stepper",
-                container: "{translatedQssWidget}.container"
+                type: "gpii.qssWidget.stepper"
             }
         }
     });

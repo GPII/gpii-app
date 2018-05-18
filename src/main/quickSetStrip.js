@@ -134,9 +134,9 @@ fluid.defaults("gpii.app.qss", {
         }
     },
     listeners: {
-        onBlur: {
-            func: "{that}.hide"
-        }
+        // onBlur: {
+        //     func: "{that}.hide"
+        // }
     },
     invokers: {
         show: {
@@ -206,9 +206,9 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     },
     listeners: {
-        onBlur: {
-            func: "{that}.hide"
-        }
+        // onBlur: {
+        //     func: "{that}.hide"
+        // }
     },
     invokers: {
         show: {

@@ -7,6 +7,10 @@
     font-weight: bold;
 }
 
+.fl-qssStepperWidget-tip,
+.fl-qssStepperWidget-footerTip {
+    margin: 1px;
+}
 
 .fl-qssStepperWidget-controls {
     width: 100%;
@@ -29,6 +33,21 @@
     border-radius: 5px;
 }
 
+@keyframes activate {
+    10% {
+        background-color: #FFEA00;
+        color: black;
+    }
+    0%, 100%   {
+        background-color: #033A50;
+        color: white;
+    }
+}
+
+.fl-qssStepperWidget-btn.fl-qssWidgetBtn-trigger {
+    animation: activate 0.5s;
+}
+
 .fl-arrowUp, .fl-arrowDown {
     font-size: 1.6em;
 }
@@ -36,3 +55,5 @@
 fl-qssStepperWidget-footer {
     margin-bottom: 15px;
 }
+
+

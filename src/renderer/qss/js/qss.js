@@ -18,61 +18,8 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-    /**
-     * Register keyup events on a DOM element. Once a key is pressed a
-     * corresponding component's event is fired, if event by a special name
-     * is supplied for it.
-     * Every special component event follow the format: `on<KeyName>Clicked`
-     * where the available <KeyName>s can be view here:
-     * https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
-     *
-     * N.B.! The <KeyName> for the space bar is "Spacebar", which differs from the name
-     * in the specification which is simply " "
-     */
-    fluid.defaults("gpii.qss.elementRepeater.keyListener", {
-        events: {}, // given by implementor
 
-        listeners: {
-            "onCreate.addKeyPressHandler": {
-                this: "{that}.container",
-                method: "keyup",
-                args: "{that}.registerKeyPress"
-            }
-        },
-
-        invokers: {
-            registerKeyPress: {
-                funcName: "gpii.qss.elementRepeater.keyListener.registerKeyPress",
-                args: ["{that}.events", "{arguments}.0"]
-            }
-        }
-    });
-
-    /**
-     * TODO
-     */
-    gpii.qss.elementRepeater.keyListener.registerKeyPress = function (events, KeyboardEvent) {
-        // Make use of a relatively new feature https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
-        var keyName;
-
-        // rename Space key in order to achieve proper generic method for key presses
-        // The full list of key names can be view here: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
-        if (KeyboardEvent.key === " ") {
-            keyName = "Spacebar";
-        } else { // e.g. ArrowDown, Enter
-            keyName = KeyboardEvent.key;
-        }
-
-        var eventName = "on" + keyName + "Pressed";
-
-        // Check whether such key press is observed
-        if (events[eventName]) {
-            events[eventName].fire(KeyboardEvent);
-        }
-    };
-
-
-    fluid.defaults("gpii.qss.elementRepeater.qssKeyListener", {
+    fluid.defaults("gpii.qss.qssKeyListener", {
         gradeNames: "gpii.qss.elementRepeater.keyListener",
 
         events: {
@@ -86,49 +33,12 @@
         }
     });
 
-
-    fluid.defaults("gpii.qss.elementRepeater.clickable", {
-        events: {
-            onClicked: null
-        },
-
-        listeners: {
-            "onCreate.addClickHandler": {
-                this: "{that}.container",
-                method: "click",
-                args: "{that}.events.onClicked.fire"
-            }
-        }
-    });
-
-    /**
-     * TODO
-     * add timeout?
-     */
-    fluid.defaults("gpii.qss.elementRepeater.hoverable", {
-        events: {
-            onMouseEnter: null,
-            onMouseLeave: null
-        },
-
-        listeners: {
-            "onCreate.addHoverHandler": {
-                this: "{that}.container",
-                method: "hover",
-                args: [
-                    "{that}.events.onMouseEnter.fire",
-                    "{that}.events.onMouseLeave.fire"
-                ]
-            }
-        }
-    });
-
     /**
      * TODO
      */
     fluid.defaults("gpii.qss.buttonPresenter", {
         gradeNames: [
-            "gpii.qss.elementRepeater.qssKeyListener",
+            "gpii.qss.qssKeyListener",
             "gpii.qss.elementRepeater.hoverable",
             "gpii.qss.elementRepeater.clickable",
             "fluid.viewComponent"

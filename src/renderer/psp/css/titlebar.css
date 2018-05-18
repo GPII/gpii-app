@@ -1,5 +1,6 @@
 /* Default theme styles */
 .fl-titlebar {
+    padding-top: 0;
     background-color: var(--main-theme-background-color);
     color: var(--main-theme-text-color);
 }
