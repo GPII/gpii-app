@@ -168,7 +168,7 @@ fluid.defaults("gpii.app.psp", {
         frame: false,
         fullscreenable: false,
         resizable: false,
-        alwaysOnTop: true,
+        // alwaysOnTop: true,
         skipTaskbar: true,
         backgroundColor: "transparent"
     },
@@ -177,7 +177,7 @@ fluid.defaults("gpii.app.psp", {
     // This is useful when we have QSS which should be below the PSP.
     heightOffset: null,
 
-    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssWidget"],
+    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.psp"],
 
     sounds: {
         keyedIn: "keyedIn.mp3",
@@ -203,7 +203,7 @@ fluid.defaults("gpii.app.psp", {
     },
 
     members: {
-        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs, {that}.options.params)"
+        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs, {that}.options.params, {that}.options.gradeNames)"
     },
     events: {
         onSettingAltered: null,
@@ -228,10 +228,6 @@ fluid.defaults("gpii.app.psp", {
         "onCreate.initPSPWindowListeners": {
             listener: "gpii.app.psp.initPSPWindowListeners",
             args: ["{that}"]
-        },
-        "onCreate.initBlurrable": {
-            func: "{that}.initBlurrable",
-            args: ["{that}.pspWindow"]
         },
 
         "onDestroy.cleanupElectron": {
@@ -363,6 +359,7 @@ gpii.app.psp.show = function (psp) {
     gpii.app.psp.moveToScreen(psp.pspWindow, psp.options.heightOffset);
     psp.pspWindow.focus();
     psp.applier.change("isShown", true);
+    psp.setBlurTarget(psp.pspWindow);
 };
 
 /**
@@ -548,12 +545,13 @@ gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
  * the newly created `BrowserWindow`.
  * @return {Object} The created Electron `BrowserWindow`
  */
-gpii.app.psp.makePSPWindow = function (windowOptions, params) {
+gpii.app.psp.makePSPWindow = function (windowOptions, params, gradeNames) {
     var pspWindow = new BrowserWindow(windowOptions);
 
     var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
     pspWindow.loadURL(url);
     pspWindow.params = params || {};
+    pspWindow.gradeNames = gradeNames;
 
     gpii.app.psp.moveOffScreen(pspWindow);
 
