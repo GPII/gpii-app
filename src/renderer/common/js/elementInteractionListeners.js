@@ -80,6 +80,10 @@
             "onCreate.addKeyPressHandler": {
                 funcName: "gpii.qss.elementRepeater.keyListener.registerListener",
                 args: ["{that}"]
+            },
+            "onDestroy.clearListeners": {
+                funcName: "gpii.qss.elementRepeater.keyListener.deregisterListener",
+                args: ["{that}"]
             }
         },
 
@@ -94,7 +98,13 @@
     gpii.qss.elementRepeater.keyListener.registerListener = function (that) {
         var target = that.options.target || that.container;
 
-        target.keyup(that.registerKeyPress);
+        target.on("keyup", that.registerKeyPress);
+    };
+
+    gpii.qss.elementRepeater.keyListener.deregisterListener = function (that) {
+        var target = that.options.target || that.container;
+
+        target.off("keyup");
     };
 
     /**
