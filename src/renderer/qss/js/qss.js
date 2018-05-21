@@ -109,40 +109,30 @@
             // Element interaction events
 
             onClicked: [{
-                funcName: "{list}.events.onButtonClicked.fire",
-                args: [
-                    "{that}.model.item",
-                    "@expand:gpii.qss.getElementMetrics({that}.container)" // target
-                ]
+                func: "{that}.activate"
             }, {
                 func: "{that}.removeHighlight"
             }],
-            onArrowUpPressed: {
-                funcName: "console.log",
-                args: ["{that}.model.item"]
-            },
-            onArrowDownPressed: {
-                funcName: "console.log",
-                args: ["{that}.model.item"]
-            },
-            onArrowLeftPressed: {
+            "onArrowLeftPressed.changeFocus": {
                 func: "{gpii.qss.list}.changeFocus",
                 args: [
                     "{that}.model.index",
                     true
                 ]
             },
-            onArrowRightPressed: {
+            "onArrowRightPressed.changeFocus": {
                 func: "{gpii.qss.list}.changeFocus",
                 args: [
                     "{that}.model.index"
                 ]
             },
-            onSpacebarPressed: {
-                funcName: "console.log",
-                args: ["{that}.model.item"]
+            "onSpacebarPressed.activate": {
+                func: "{that}.activate"
             },
-            onTabPressed: {
+            "onEnterPressed.activate": {
+                func: "{that}.activate"
+            },
+            "onTabPressed.changeFocus": {
                 funcName: "gpii.qss.buttonPresenter.onTabPressed",
                 args: [
                     "{gpii.qss.list}",
@@ -152,6 +142,10 @@
             }
         },
         invokers: {
+            activate: {
+                funcName: "gpii.qss.buttonPresenter.activate",
+                args: ["{that}", "{that}.container", "{list}"]
+            },
             removeHighlight: {
                 this: "{that}.container",
                 method: "removeClass",
@@ -160,6 +154,11 @@
         }
     });
 
+    gpii.qss.buttonPresenter.activate = function (that, container, qssList) {
+        var metrics = gpii.qss.getElementMetrics(container),
+            setting = that.model.item;
+        qssList.events.onButtonClicked.fire(setting, metrics);
+    };
 
     gpii.qss.buttonPresenter.onTabPressed = function (qssList, index, KeyboardEvent) {
         qssList.changeFocus(index, !KeyboardEvent.shiftKey);
