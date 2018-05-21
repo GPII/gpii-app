@@ -1,10 +1,22 @@
 [
     {
         "type": "more",
-        "label": "More ..."
+        "label": "More ...",
+        "path": "More..."
     }, {
         "type": "array",
-        "label": "High / Low Contrast"
+        "label": "High / Low Contrast",
+        "path": "High / Low Contrast",
+        "enum": [
+            "Low Contrast 3",
+            "Low Contrast 2",
+            "Brown on Light Green",
+            "Black on Yellow",
+            "Yellow on Black",
+            "White on Black",
+            "Black on White",
+            "Regular Contrast"
+        ]
     }, {   
         "type": "boolean",
         "label": "Read Aloud",
@@ -17,15 +29,20 @@
         "value": false
     }, {
         "type": "number",
-        "label": "Screen Size"
+        "label": "Screen Size",
+        "path": "Screen Size",
+        "value": 1,
+        "divisibleBy": 0.25
     }, {
         "type": "number",
         "label": "Text Size",
+        "path": "Text Size",
         "value": 10,
         "divisibleBy": 1
     }, {
         "type": "array",
         "label": "Language",
+        "path": "Language",
         "value": "English",
         "enum": [
             "English",
@@ -35,9 +52,11 @@
         ]
     }, {
         "type": "keyIn",
-        "label": "Key In"
+        "label": "Key In",
+        "path": "Key In"
     }, {
         "type": "close",
-        "label": "Close"
+        "label": "Close",
+        "path": "Close"
     }
 ]

@@ -165,6 +165,10 @@ gpii.app.qss.show = function (that, params) {
 fluid.defaults("gpii.app.qssWidget", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
 
+    model: {
+        setting: {}
+    },
+
     config: {
         attrs: {
             width: 300,
@@ -218,11 +222,30 @@ fluid.defaults("gpii.app.qssWidget", {
                 "{arguments}.0", // setting
                 "{arguments}.1"  // elementMetrics
             ]
+        },
+        toggle: {
+            funcName: "gpii.app.qssWidget.toggle",
+            args: [
+                "{that}",
+                "{arguments}.0", // setting
+                "{arguments}.1"  // elementMetrics
+            ]
         }
     }
 });
 
+gpii.app.qssWidget.toggle = function (that, setting, elementMetrics) {
+    if (that.model.isShown && that.model.setting.path === setting.path) {
+        that.hide();
+        return;
+    }
 
+    if (setting.type === "array" || setting.type === "number") {
+        that.show(setting, elementMetrics);
+    } else {
+        that.hide();
+    }
+};
 
 /**
  * Show the widget window and position it relatively to the
@@ -249,6 +272,7 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics) {
 
     // TODO toggle sets position?
     that.applier.change("isShown", true);
+    that.applier.change("setting", setting);
     // reposition window properly
     that.positionWindow(offsetX, elementMetrics.height);
     that.setBlurTarget(that.dialog);
@@ -289,7 +313,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                 },
                 listeners: {
                     "{channelListener}.events.onQssButtonClicked": {
-                        func: "{qssWidget}.show",
+                        func: "{qssWidget}.toggle",
                         args: [
                             "{arguments}.0", // setting
                             "{arguments}.1"  // elementMetrics
