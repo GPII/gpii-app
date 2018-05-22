@@ -20,7 +20,7 @@ var fluid  = require("infusion"),
 
 
 require("node-jqunit", require, "jqUnit");
-require("../node_modules/kettle/lib/test/KettleTestUtils.http.js");
+fluid.require("%kettle/lib/test/KettleTestUtils.http.js");
 require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.settingsBroker.testDefs");

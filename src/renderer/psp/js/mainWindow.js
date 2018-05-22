@@ -21,17 +21,16 @@
     fluid.registerNamespace("gpii.psp");
 
     /**
-     * Calculates the total height of the PSP assuming that the settings panel is
-     * displayed fully, without the need for it to scroll (i.e. if there were enough
-     * vertical space for the whole document).
-     * @param mainWindow {Component} An instance of mainWindow.
-     * @param container {jQuery} A jQuery object representing the mainWindow container.
-     * @param content {jQuery} A jQuery object representing the content of the
-     * document between the header and footer. This container is scrollable.
-     * @param settingsList {jQuery} A jQuery object representing the container in
-     * which the various widgets will have their containers inserted.
-     * @param {Number} The height of the PSP assuming the settings panel is displayed
-     * fully.
+     * Calculates the total height of the PSP assuming that the settings panel is displayed fully, without the need for
+     * it to scroll (i.e. if there were enough vertical space for the whole document).
+     *
+     * @param {Component} mainWindow - An instance of mainWindow.
+     * @param {jQuery} container - A jQuery object representing the mainWindow container.
+     * @param {jQuery} content - A jQuery object representing the content of the document between the header and footer.
+     * This container is scrollable.
+     * @param {jQuery} settingsList - A jQuery object representing the container in which the various widgets will have
+     * their containers inserted.
+     * @return {Number} - The height of the PSP assuming the settings panel is displayed fully.
      */
     gpii.psp.calculateHeight = function (mainWindow, container, content, settingsList) {
         return container.outerHeight(true) - content.height() + settingsList.height();
@@ -42,8 +41,8 @@
      * preference sets. The splash window should only be hidden when
      * there are no preference sets passed (the user is keyed out).
      *
-     * @param splash {Object} The splash component
-     * @param sets {Object[]} The current preference sets
+     * @param {Object} splash - The splash component
+     * @param {Object[]} sets - The current preference sets
      */
     gpii.psp.toggleSplashWindow = function (splash, sets) {
         if (sets && sets.length > 0) {
@@ -57,9 +56,9 @@
      * Updates the "theme" of the PSP `BrowserWindow`. Currently, the
      * theme consists simply of a definition of a `--main-color` variable
      * which is used for styling various widgets within the application.
-     * @param theme {jQuery} The `style` tag which houses the application
+     * @param {jQuery} theme - The `style` tag which houses the application
      * theme definitions.
-     * @param accentColor {String} The accent color used in the user's OS.
+     * @param {String} accentColor - The accent color used in the user's OS.
      */
     gpii.psp.updateTheme = function (theme, accentColor) {
         // The accent color is an 8-digit hex number whose last 2 digits

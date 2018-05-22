@@ -118,7 +118,7 @@ fluid.defaults("gpii.app.surveyDialog", {
  * hidden or interacted with in any other way. Note that the `closed` event fires
  * both when it is closed programatically or via the close button in the upper
  * right corner.
- * @param that {Component} The `gpii.app.surveyDialog` instance.
+ * @param {Component} that - The `gpii.app.surveyDialog` instance.
  */
 gpii.app.surveyDialog.initClosedListener = function (that) {
     that.dialog.on("closed", function () {
@@ -128,7 +128,7 @@ gpii.app.surveyDialog.initClosedListener = function (that) {
 
 /**
  * Initializes the IPC listeners needed for the communication with the `BrowserWindow`.
- * @param that {Component} The `gpii.app.surveyDialog` instance.
+ * @param {Component} that - The `gpii.app.surveyDialog` instance.
  */
 gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
     // We need to ensure that the `BrowserWindow` has been completely created before
@@ -150,8 +150,8 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
 
 /**
  * Notifies the survey pop-up that `surveyUrl` should be loaded in the webview.
- * @param that {Component} The `gpii.app.surveyDialog` instance.
- * @param config {Object} An object containing the configuration options for the
+ * @param {Component} that - The `gpii.app.surveyDialog` instance.
+ * @param {Object} config - An object containing the configuration options for the
  * survey to be shown.
  */
 gpii.app.surveyDialog.openSurvey = function (that, config) {
@@ -202,8 +202,8 @@ fluid.defaults("gpii.app.survey", {
 /**
  * Responsible for firing the `onDialogCreate` event which in turn creates the
  * wrapped `surveyDialog` component.
- * @param that {Component} The `gpii.app.survey` instance.
- * @param options {Object} An object containing the various properties for the
+ * @param {Component} that - The `gpii.app.survey` instance.
+ * @param {Object} options - An object containing the various properties for the
  * `surveyDialog` which is to be created.
  */
 gpii.app.survey.show = function (that, options) {

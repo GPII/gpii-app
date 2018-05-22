@@ -76,8 +76,8 @@ fluid.defaults("gpii.app.surveyManager", {
 /**
  * Registers all survey triggers received via the `surveyConnector` with
  * the `surveyTriggerManager`.
- * @param surveyTriggerManager {Component} The `gpii.app.surveyTriggerManager` instance.
- * @param triggers {Array} An array representing the received triggers.
+ * @param {Component} surveyTriggerManager - The `gpii.app.surveyTriggerManager` instance.
+ * @param {Array} triggers - An array representing the received triggers.
  */
 gpii.app.surveyManager.registerTriggers = function (surveyTriggerManager, triggers) {
     fluid.each(triggers, function (trigger) {

@@ -65,7 +65,7 @@ fluid.defaults("gpii.app.dialogManager.queue", {
 
 /**
  * Clears the dialog queue.
- * @param that {Component} The `gpii.app.dialogManager.queue` instance.
+ * @param {Component} that - The `gpii.app.dialogManager.queue` instance.
  */
 gpii.app.dialogManager.queue.clear = function (that) {
     that.queue = [];
@@ -75,7 +75,7 @@ gpii.app.dialogManager.queue.clear = function (that) {
  * Removes the first element in the queue (which represents the options
  * of the error dialog that has just been closed) and shows the next
  * dialog if there are any items in the queue.
- * @param that {Component} The `gpii.app.dialogManager.queue` object
+ * @param {Component} that - The `gpii.app.dialogManager.queue` object
  */
 gpii.app.dialogManager.queue.processNext = function (that) {
     that.queue.shift();
@@ -84,8 +84,8 @@ gpii.app.dialogManager.queue.processNext = function (that) {
 
 /**
  * Shows a dialog given its configuration options from the queue.
- * @param that {Component} The `gpii.app.dialogManager.queue` instance.
- * @param dialog {Component} The dialog to be shown.
+ * @param {Component} that - The `gpii.app.dialogManager.queue` instance.
+ * @param {Component} dialog - The dialog to be shown.
  */
 gpii.app.dialogManager.queue.showDialog = function (that, dialog) {
     if (that.queue.length > 0) {
@@ -98,8 +98,8 @@ gpii.app.dialogManager.queue.showDialog = function (that, dialog) {
  * Queues a dialog to be shown in the future. If this is the only dialog in the
  * queue, it will be shown immediately. Otherwise, it will be shown once the
  * previous dialog is closed.
- * @param that {Component} The `gpii.app.dialogManager.queue` instance.
- * @param options {Object} The configuration options of the dialog to be queued.
+ * @param {Component} that - The `gpii.app.dialogManager.queue` instance.
+ * @param {Object} options - The configuration options of the dialog to be queued.
  */
 gpii.app.dialogManager.queue.enqueue = function (that, options) {
     that.queue.push(options);
@@ -226,8 +226,8 @@ fluid.defaults("gpii.app.dialogManager", {
 /**
  * Invoked whenever an error dialog has changed its visibility (i.e. it has
  * either be shown or hidden).
- * @param errorQueue {Component} The `gpii.app.dialogManager.queue` instance.
- * @param isShown {Boolean} Whether the error dialog is shown or not.
+ * @param {Component} errorQueue - The `gpii.app.dialogManager.queue` instance.
+ * @param {Boolean} isShown - Whether the error dialog is shown or not.
  */
 gpii.app.dialogManager.errorDialogToggled = function (errorQueue, isShown) {
     if (!isShown) {
@@ -238,8 +238,8 @@ gpii.app.dialogManager.errorDialogToggled = function (errorQueue, isShown) {
 /**
  * Retrieves a dialog component that is a subcomponent of the `dialogManager`
  * given its IoCSS selector.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param selector {String} The IoCSS selector of the component to be fetched.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be fetched.
  * @return {Component} The dialog component corresponding to the given selector
  * or `undefined` if no such is found.
  */
@@ -253,11 +253,11 @@ gpii.app.dialogManager.get = function (dialogManager, selector) {
 /**
  * Depending on the value of the `display` argument, either shows or hides a
  * component given its IoCSS selector.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param selector {String} The IoCSS selector of the component to be shown.
- * @param display {Boolean} If `true`, the corresponding dialog will be shown.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be shown.
+ * @param {Boolean} display - If `true`, the corresponding dialog will be shown.
  * Otherwise, it will be hidden.
- * @param [options] {Object} An object containing configuration options for
+ * @param {Object} [options] - An object containing configuration options for
  * the dialog in case it needs to be shown.
  */
 gpii.app.dialogManager.toggle = function (dialogManager, selector, display, options) {
@@ -272,9 +272,9 @@ gpii.app.dialogManager.toggle = function (dialogManager, selector, display, opti
  * Shows a dialog component given its IoCSS selector. The dialog may not be shown
  * direclty but instead added to a queue.
  *
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param selector {String} The IoCSS selector of the component to be shown.
- * @param [options] {Object} An object containing configuration options for
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be shown.
+ * @param {Object} [options] - An object containing configuration options for
  * the dialog which is to be shown.
  */
 gpii.app.dialogManager.show = function (dialogManager, selector, options) {
@@ -290,8 +290,8 @@ gpii.app.dialogManager.show = function (dialogManager, selector, options) {
 
 /**
  * Hides a dialog component given its IoCSS selector.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param selector {String} The IoCSS selector of the component to be hidden.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be hidden.
  */
 gpii.app.dialogManager.hide = function (dialogManager, selector) {
     var dialog = dialogManager.get(selector);
@@ -302,8 +302,8 @@ gpii.app.dialogManager.hide = function (dialogManager, selector) {
 
 /**
  * Closes a dialog component given its IoCSS selector.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param selector {String} The IoCSS selector of the component to be closed.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be closed.
  */
 gpii.app.dialogManager.close = function (dialogManager, selector) {
     var dialog = dialogManager.get(selector);
@@ -315,8 +315,8 @@ gpii.app.dialogManager.close = function (dialogManager, selector) {
 /**
  * A function responsible for closing all dialogs which need to be closed
  * whenever the user keyes out of the PSP.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param keyedInUserToken {String} The token of the currently keyed in user.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} keyedInUserToken - The token of the currently keyed in user.
  */
 gpii.app.dialogManager.closeDialogsOnKeyOut = function (dialogManager, keyedInUserToken) {
     if (!fluid.isValue(keyedInUserToken)) {
