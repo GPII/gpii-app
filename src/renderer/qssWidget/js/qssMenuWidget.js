@@ -93,15 +93,6 @@
                                 "{that}.container",
                                 "{arguments}.0" // value
                             ]
-                        },
-                        changeFocus: {
-                            funcName: "gpii.qssWidget.menu.changeFocus",
-                            args: [
-                                "{that}",
-                                "{that}.model.items",
-                                "{arguments}.0", // index
-                                "{arguments}.1" // backwards
-                            ]
                         }
                     },
                     listeners: {
@@ -134,17 +125,6 @@
         } else if (activationParams.key === "ArrowDown") {
             that.events.onItemFocus.fire(0);
         }
-    };
-
-    gpii.qssWidget.menu.changeFocus = function (that, items, index, backwards) {
-        var increment = backwards ? -1 : 1,
-            nextIndex = (index + increment) % items.length;
-
-        if (nextIndex < 0) {
-            nextIndex += items.length;
-        }
-
-        that.events.onItemFocus.fire(nextIndex);
     };
 
     gpii.qssWidget.menu.updateValue = function (that, menu, container, value) {
@@ -191,39 +171,24 @@
         events: {
             onItemFocus: "{repeater}.events.onItemFocus",
             onSpacebarPressed: null,
-            onEnterPressed: null,
-            onArrowUpPressed: null,
-            onArrowDownPressed: null
+            onEnterPressed: null
         },
         listeners: {
             "onCreate.addClickHandler": {
-                this: "{that}.container",
-                method: "click",
-                args: "{that}.activate"
+                funcName: "gpii.qssWidget.menu.presenter.addClickHandler",
+                args: ["{that}", "{focusManager}", "{that}.container"]
             },
             onItemFocus: {
                 funcName: "gpii.qssWidget.menu.presenter.focusItem",
                 args: [
                     "{that}",
+                    "{focusManager}",
                     "{that}.container",
                     "{arguments}.0" // index
                 ]
             },
             onSpacebarPressed: "{that}.activate()",
-            onEnterPressed: "{that}.activate()",
-            onArrowUpPressed: {
-                func: "{repeater}.changeFocus",
-                args: [
-                    "{that}.model.index",
-                    true
-                ]
-            },
-            onArrowDownPressed: {
-                func: "{repeater}.changeFocus",
-                args: [
-                    "{that}.model.index"
-                ]
-            }
+            onEnterPressed: "{that}.activate()"
         },
         invokers: {
             activate: {
@@ -233,9 +198,16 @@
         }
     });
 
-    gpii.qssWidget.menu.presenter.focusItem = function (that, container, index) {
+    gpii.qssWidget.menu.presenter.addClickHandler = function (that, focusManager, container) {
+        container.on("click", function () {
+            focusManager.focusElement(container, false);
+            that.activate();
+        });
+    };
+
+    gpii.qssWidget.menu.presenter.focusItem = function (that, focusManager, container, index) {
         if (that.model.index === index) {
-            container.focus();
+            focusManager.focusElement(container, true);
         }
     };
 

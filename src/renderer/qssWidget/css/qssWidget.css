@@ -2,7 +2,7 @@
     font-family: Arial;
 }
 
-.fl-qssWidget .fl-focused {
+.fl-qssWidget .fl-highlighted {
     border: 2px solid #ff0000 !important;
     outline: none !important;
 }

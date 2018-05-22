@@ -19,6 +19,11 @@
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell;
 
+    // Fixes the JavaScript modulo bug.
+    gpii.psp.modulo = function (a, b) {
+        return ((a % b) + b) % b;
+    };
+
     /**
      * Opens the passed url externally using the default browser for the
      * OS (or set by the user).

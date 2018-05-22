@@ -22,7 +22,8 @@
         gradeNames: ["fluid.viewComponent"],
         styles: {
             focusable: "fl-focusable",
-            focused: "fl-focused"
+            focused: "fl-focused", // a marker class for the element focused via click or keyboard
+            highlighted: "fl-highlighted" // applies hightlight only when interacted via keyboard
         },
 
         components: {
@@ -48,19 +49,35 @@
         listeners: {
             "onTabPressed.impl": {
                 func: "{that}.onTabPressed"
+            },
+            "onCreate.disableTabKey": {
+                funcName: "gpii.qss.focusManager.disableTabKey"
+            },
+            "onDestroy.enableTabKey": {
+                funcName: "gpii.qss.focusManager.enableTabKey"
             }
         },
         invokers: {
-            getFocusIndex: {
-                funcName: "gpii.qss.focusManager.getFocusIndex",
+            getFocusInfo: {
+                funcName: "gpii.qss.focusManager.getFocusInfo",
                 args: ["{that}.container", "{that}.options.styles"]
             },
             focus: {
                 funcName: "gpii.qss.focusManager.focus",
                 args: [
+                    "{that}",
                     "{that}.container",
-                    "{that}.options.styles",
-                    "{arguments}.0" // index
+                    "{arguments}.0", // index
+                    "{arguments}.1" // applyHighlight
+                ]
+            },
+            focusElement: {
+                funcName: "gpii.qss.focusManager.focusElement",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{arguments}.0", // element
+                    "{arguments}.1" // applyHighlight
                 ]
             },
             focusNext: {
@@ -81,69 +98,87 @@
         }
     });
 
-    gpii.qss.focusManager.getFocusIndex = function (container, styles) {
+    gpii.qss.focusManager.disableTabKey = function () {
+        $(document).on("keydown.focusManager", function (KeyboardEvent) {
+            if (KeyboardEvent.key === "Tab") {
+                KeyboardEvent.preventDefault();
+            }
+        });
+    };
+
+    gpii.qss.focusManager.enableTabKey = function () {
+        $(document).off("keydown.focusManager");
+    };
+
+    gpii.qss.focusManager.getFocusInfo = function (container, styles) {
         var focusableElements = container.find("." + styles.focusable),
-            focusedElement = container.find("." + styles.focused);
+            focusedElement = container.find("." + styles.focused),
+            focusIndex = -1;
 
         if (focusedElement.length > 0) {
-            return jQuery.inArray(focusedElement[0], focusableElements);
+            focusIndex = jQuery.inArray(focusedElement[0], focusableElements);
         }
 
-        return -1;
+        return {
+            focusableElements: focusableElements,
+            focusIndex: focusIndex
+        };
     };
 
-    gpii.qss.focusManager.changeFocus = function (that, items, index, backwards) {
-        var increment = backwards ? -1 : 1,
-            nextIndex = (index + increment) % items.length;
+    gpii.qss.focusManager.focus = function (that, container, index, applyHighlight) {
+        var selector = fluid.stringTemplate(".%focusable:eq(%index)", {
+            focusable: that.options.styles.focusable,
+            index: index
+        });
 
-        if (nextIndex < 0) {
-            nextIndex += items.length;
-        }
-
-        that.events.onButtonFocus.fire(nextIndex);
+        var elementToFocus = container.find(selector);
+        that.focusElement(elementToFocus, applyHighlight);
     };
 
-    gpii.qss.focusManager.focus = function (container, styles, index) {
-        var focusableElements = container.find("." + styles.focusable);
-        if (!focusableElements[index]) {
+    gpii.qss.focusManager.focusElement = function (that, container, element, applyHighlight) {
+        var styles = that.options.styles;
+        if (!element.hasClass(styles.focusable)) {
             return;
         }
 
+        var focusableElements = container.find("." + styles.focusable);
         focusableElements.removeClass(styles.focused);
-        jQuery(focusableElements[index])
+        focusableElements.removeClass(styles.highlighted);
+
+        element
             .addClass(styles.focused)
+            .toggleClass(styles.highlighted, applyHighlight)
             .focus();
     };
 
-    gpii.qss.focusManager.focusNext = function (that, container) {
-        var focusIndex = that.getFocusIndex(),
+    gpii.qss.focusManager.focusNext = function (that) {
+        var focusInfo = that.getFocusInfo(),
+            focusableElements = focusInfo.focusableElements,
+            focusIndex = focusInfo.focusIndex,
             nextIndex;
 
         if (focusIndex < 0) {
             nextIndex = 0;
         } else {
-            var focusableElements = container.find("." + that.options.styles.focusable);
-            nextIndex = (focusIndex + 1) % focusableElements.length;
+            nextIndex = gpii.psp.modulo(focusIndex + 1, focusableElements.length);
         }
 
-        that.focus(nextIndex);
+        that.focus(nextIndex, true);
     };
 
-    gpii.qss.focusManager.focusPrevious = function (that, container) {
-        var focusIndex = that.getFocusIndex(),
-            focusableElements = container.find("." + that.options.styles.focusable),
+    gpii.qss.focusManager.focusPrevious = function (that) {
+        var focusInfo = that.getFocusInfo(),
+            focusableElements = focusInfo.focusableElements,
+            focusIndex = focusInfo.focusIndex,
             previousIndex;
 
         if (focusIndex < 0) {
             previousIndex = focusableElements.length - 1;
         } else {
-            previousIndex = focusIndex - 1;
-            if (previousIndex < 0) {
-                previousIndex += focusableElements.length;
-            }
+            previousIndex = gpii.psp.modulo(focusIndex - 1, focusableElements.length);
         }
 
-        that.focus(previousIndex);
+        that.focus(previousIndex, true);
     };
 
     gpii.qss.focusManager.onTabPressed = function (that, KeyboardEvent) {

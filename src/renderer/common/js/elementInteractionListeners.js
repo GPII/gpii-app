@@ -103,7 +103,6 @@
     gpii.qss.elementRepeater.keyListener.registerKeyPress = function (events, KeyboardEvent) {
         // Make use of a relatively new feature https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
         var keyName;
-        KeyboardEvent.preventDefault();
 
         // rename Space key in order to achieve proper generic method for key presses
         // The full list of key names can be view here: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
