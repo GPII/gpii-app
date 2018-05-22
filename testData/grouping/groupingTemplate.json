@@ -1,7 +1,7 @@
 [
     {
-        "name": "Windows Hight Contrast",
-        "solutionName": "Windows Hight Contrast",
+        "name": "Windows High Contrast",
+        "solutionName": "Windows High Contrast",
         "settings": [
             {
                 "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastEnabled",

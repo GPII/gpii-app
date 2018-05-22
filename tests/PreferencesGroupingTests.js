@@ -229,7 +229,7 @@ jqUnit.test("Group setting tests", function () {
 
     var uioPlusHighContrastEnabledKey = "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastEnabled",
         uioPlusHighContrastEnabled = uioPlusGroup.settingControls[uioPlusHighContrastEnabledKey];
-    jqUnit.assertLeftHand("UIO+ group contains the hightContrastEnabled setting", {
+    jqUnit.assertLeftHand("UIO+ group contains the highContrastEnabled setting", {
         value: true,
         schema: {
             title: "High Contrast",
