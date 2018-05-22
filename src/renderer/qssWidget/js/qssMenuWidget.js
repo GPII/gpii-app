@@ -57,6 +57,10 @@
                     }
                 }
             },
+            focusManager: {
+                type: "gpii.qss.verticalFocusManager",
+                container: "{menu}.container"
+            },
             repeater: {
                 // TODO Perhaps add "createOnEvent" so that the component can be recreated
                 // whenever the setting changes (e.g. if the change is made via the PSP)
@@ -69,7 +73,7 @@
                         value: "{menu}.model.setting.value"
                     },
                     dynamicContainerMarkup: {
-                        container: "<div role=\"radio\" class=\"%containerClass fl-qssWidgetMenu-item\" tabindex=\"0\"></div>",
+                        container: "<div role=\"radio\" class=\"%containerClass fl-qssWidgetMenu-item fl-focusable\" tabindex=\"0\"></div>",
                         containerClassPrefix: "flc-qssWidgetMenu-item"
                     },
                     handlerType: "gpii.qssWidget.menu.presenter",

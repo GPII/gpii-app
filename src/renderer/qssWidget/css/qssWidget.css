@@ -2,6 +2,11 @@
     font-family: Arial;
 }
 
+.fl-qssWidget .fl-focused {
+    border: 2px solid #ff0000 !important;
+    outline: none !important;
+}
+
 .fl-dialog-content.fl-qssStepperWidget,
 .fl-dialog-content.fl-qssMenuWidget {
     padding: 2px;
@@ -100,7 +105,6 @@
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:focus {
-    border: 2px solid #ff0000;
     outline: none;
 }
 
