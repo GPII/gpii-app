@@ -58,7 +58,8 @@
                 options: {
                     model: {
                         setting: "{qssWidget}.model.setting"
-                    }
+                    },
+                    activationParams: "{arguments}.1"
                 }
             },
             // TODO send data from the main process

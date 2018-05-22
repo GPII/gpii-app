@@ -220,7 +220,8 @@ fluid.defaults("gpii.app.qssWidget", {
             args: [
                 "{that}",
                 "{arguments}.0", // setting
-                "{arguments}.1"  // elementMetrics
+                "{arguments}.1",  // elementMetrics
+                "{arguments}.2"// activationParams
             ]
         },
         toggle: {
@@ -228,20 +229,21 @@ fluid.defaults("gpii.app.qssWidget", {
             args: [
                 "{that}",
                 "{arguments}.0", // setting
-                "{arguments}.1"  // elementMetrics
+                "{arguments}.1",  // elementMetrics
+                "{arguments}.2"// activationParams
             ]
         }
     }
 });
 
-gpii.app.qssWidget.toggle = function (that, setting, elementMetrics) {
+gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationParams) {
     if (that.model.isShown && that.model.setting.path === setting.path) {
         that.hide();
         return;
     }
 
     if (setting.type === "array" || setting.type === "number") {
-        that.show(setting, elementMetrics);
+        that.show(setting, elementMetrics, activationParams);
     } else {
         that.hide();
     }
@@ -260,7 +262,7 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics) {
  * @param {Number} elementMetrics.offsetRight - The offset of the element from the
  * right of its window's.
  */
-gpii.app.qssWidget.show = function (that, setting, elementMetrics) {
+gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
     // Find the offset for the window to be centered over the element
     var windowWidth = that.dialog.getSize()[0];
     // change offset to element's center
@@ -268,7 +270,8 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics) {
     // set offset to window center
     offsetX -= windowWidth / 2;
 
-    that.channelNotifier.events.onSettingUpdated.fire(setting);
+    activationParams = activationParams || {};
+    that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
     // TODO toggle sets position?
     that.applier.change("isShown", true);
@@ -316,7 +319,8 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssWidget}.toggle",
                         args: [
                             "{arguments}.0", // setting
-                            "{arguments}.1"  // elementMetrics
+                            "{arguments}.1",  // elementMetrics
+                            "{arguments}.2" // activationParams
                         ]
                     }
                 }

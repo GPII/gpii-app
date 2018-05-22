@@ -40,6 +40,7 @@
             tipTitle: ".flc-tipTitle",
             tipSubtitle: ".flc-tipSubtitle"
         },
+        activationParams: {},
         closeDelay: 1200,
         components: {
             titlebar: {
@@ -100,10 +101,14 @@
                         }
                     },
                     listeners: {
-                        onCreate: {
+                        "onCreate.enable": {
                             this: "{that}.container",
                             method: "removeClass",
                             args: ["{that}.options.styles.disabled"]
+                        },
+                        "onCreate.processParams": {
+                            funcName: "gpii.qssWidget.menu.processParams",
+                            args: ["{that}", "{menu}.options.activationParams"]
                         }
                     }
                 }
@@ -116,6 +121,16 @@
             }
         }
     });
+
+    gpii.qssWidget.menu.processParams = function (that, activationParams) {
+        var items = that.model.items;
+
+        if (activationParams.key === "ArrowUp") {
+            that.events.onItemFocus.fire(items.length - 1);
+        } else if (activationParams.key === "ArrowDown") {
+            that.events.onItemFocus.fire(0);
+        }
+    };
 
     gpii.qssWidget.menu.changeFocus = function (that, items, index, backwards) {
         var increment = backwards ? -1 : 1,

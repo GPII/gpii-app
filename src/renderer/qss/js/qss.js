@@ -144,7 +144,12 @@
         invokers: {
             activate: {
                 funcName: "gpii.qss.buttonPresenter.activate",
-                args: ["{that}", "{that}.container", "{list}"]
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
             },
             removeHighlight: {
                 this: "{that}.container",
@@ -154,10 +159,10 @@
         }
     });
 
-    gpii.qss.buttonPresenter.activate = function (that, container, qssList) {
+    gpii.qss.buttonPresenter.activate = function (that, container, qssList, activationParams) {
         var metrics = gpii.qss.getElementMetrics(container),
             setting = that.model.item;
-        qssList.events.onButtonClicked.fire(setting, metrics);
+        qssList.events.onButtonClicked.fire(setting, metrics, activationParams);
     };
 
     gpii.qss.buttonPresenter.onTabPressed = function (qssList, index, KeyboardEvent) {
@@ -257,6 +262,24 @@
         }
     });
 
+    fluid.defaults("gpii.qss.menuButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        listeners: {
+            onArrowUpPressed: {
+                funcName: "{that}.activate",
+                args: [
+                    {key: "ArrowUp"}
+                ]
+            },
+            onArrowDownPressed: {
+                funcName: "{that}.activate",
+                args: [
+                    {key: "ArrowDown"}
+                ]
+            }
+        }
+    });
+
     /**
      * Represents the list of qss settings. It renders the settings and listens
      * for events on them.
@@ -309,6 +332,10 @@
 
         if (item.type === "close") {
             return "gpii.qss.closeButtonPresenter";
+        }
+
+        if (item.type === "array") {
+            return "gpii.qss.menuButtonPresenter";
         }
 
         return "gpii.qss.buttonPresenter";
