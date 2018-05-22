@@ -14,7 +14,7 @@ require("gpii-windows/index.js");
 // Must be hooked in before requiring any actual tests.
 jqUnit.onAllTestsDone.addListener(function () {
     if (global.__coverage__) {
-        var filename = fluid.stringTemplate("coverage-tests-%timestamp.json", { timestamp: (new Date()).toISOString() });
+        var filename = fluid.stringTemplate("coverage-tests-%timestamp.json", { timestamp: (new Date()).toISOString().replace(/:/g, "-") });
         var coverageFilePath = path.resolve(__dirname, "../coverage", filename);
         try {
             var coverageData = JSON.stringify(global.__coverage__, null, 2);
