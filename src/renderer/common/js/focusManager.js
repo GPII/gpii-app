@@ -232,10 +232,10 @@
             onArrowRightPressed: "{windowKeyListener}.events.onArrowRightPressed"
         },
         listeners: {
-            "onArrowRightPressed.impl": {
+            "onArrowLeftPressed.impl": {
                 func: "{that}.focusPrevious"
             },
-            "onArrowLeftPressed.impl": {
+            "onArrowRightPressed.impl": {
                 func: "{that}.focusNext"
             }
         }

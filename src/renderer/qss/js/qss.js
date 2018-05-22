@@ -62,10 +62,6 @@
             caption: ".flc-qss-btnCaption"
         },
 
-        styles: {
-            highlighted: "fl-highlighted"
-        },
-
         attrs: {
             role: "button"
         },
@@ -91,16 +87,11 @@
                 method: "text",
                 args: ["{that}.model.item.label"]
             },
-            "onCreate.addBlurListener": {
-                this: "{that}.container",
-                method: "on",
-                args: ["blur", "{that}.removeHighlight"]
-            },
-
             onButtonFocus: {
                 funcName: "gpii.qss.buttonPresenter.focusButton",
                 args: [
                     "{that}",
+                    "{focusManager}",
                     "{that}.container",
                     "{arguments}.0" // index
                 ]
@@ -109,36 +100,16 @@
             // Element interaction events
 
             onClicked: [{
-                func: "{that}.activate"
+                func: "{focusManager}.focusElement",
+                args: ["{that}.container", false]
             }, {
-                func: "{that}.removeHighlight"
+                func: "{that}.activate"
             }],
-            "onArrowLeftPressed.changeFocus": {
-                func: "{gpii.qss.list}.changeFocus",
-                args: [
-                    "{that}.model.index",
-                    true
-                ]
-            },
-            "onArrowRightPressed.changeFocus": {
-                func: "{gpii.qss.list}.changeFocus",
-                args: [
-                    "{that}.model.index"
-                ]
-            },
             "onSpacebarPressed.activate": {
                 func: "{that}.activate"
             },
             "onEnterPressed.activate": {
                 func: "{that}.activate"
-            },
-            "onTabPressed.changeFocus": {
-                funcName: "gpii.qss.buttonPresenter.onTabPressed",
-                args: [
-                    "{gpii.qss.list}",
-                    "{that}.model.index",
-                    "{arguments}.0"
-                ]
             }
         },
         invokers: {
@@ -150,11 +121,6 @@
                     "{list}",
                     "{arguments}.0" // activationParams
                 ]
-            },
-            removeHighlight: {
-                this: "{that}.container",
-                method: "removeClass",
-                args: ["{that}.options.styles.highlighted"]
             }
         }
     });
@@ -165,18 +131,11 @@
         qssList.events.onButtonClicked.fire(setting, metrics, activationParams);
     };
 
-    gpii.qss.buttonPresenter.onTabPressed = function (qssList, index, KeyboardEvent) {
-        qssList.changeFocus(index, !KeyboardEvent.shiftKey);
-    };
-
-    gpii.qss.buttonPresenter.focusButton = function (that, container, index) {
+    gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index) {
         if (that.model.index === index) {
-            container
-                .addClass(that.options.styles.highlighted)
-                .focus();
+            focusManager.focusElement(container, true);
         }
     };
-
     /**
      * Return the metrics of a clicked element. These can be used
      * for positioning. Note that the position is relative to the right.
@@ -289,7 +248,7 @@
 
         dynamicContainerMarkup: {
             container:
-                "<div class=\"%containerClass\" tabindex=0>" +
+                "<div class=\"%containerClass fl-focusable\" tabindex=\"0\">" +
                     "<span class=\"flc-qss-btnLabel fl-qss-btnLabel\"></span>" +
                     "<div class=\"flc-qss-btnCaption fl-qss-btnCaption\"></div>" +
                 "</div>",
@@ -312,15 +271,6 @@
             getHandlerType: {
                 funcName: "gpii.qss.list.getHandlerType",
                 args: ["{arguments}.0"] // item
-            },
-            changeFocus: {
-                funcName: "gpii.qss.list.changeFocus",
-                args: [
-                    "{that}",
-                    "{that}.model.items",
-                    "{arguments}.0", // index
-                    "{arguments}.1" // backwards
-                ]
             }
         }
     });
@@ -339,17 +289,6 @@
         }
 
         return "gpii.qss.buttonPresenter";
-    };
-
-    gpii.qss.list.changeFocus = function (that, items, index, backwards) {
-        var increment = backwards ? -1 : 1,
-            nextIndex = (index + increment) % items.length;
-
-        if (nextIndex < 0) {
-            nextIndex += items.length;
-        }
-
-        that.events.onButtonFocus.fire(nextIndex);
     };
 
     /**
@@ -376,6 +315,10 @@
                         items: "{quickSetStrip}.model.settings"
                     }
                 }
+            },
+            focusManager: {
+                type: "gpii.qss.horizontalFocusManager",
+                container: "{qss}.container"
             },
             channelListener: {
                 type: "gpii.psp.channelListener",
@@ -411,9 +354,6 @@
         },
 
         listeners: {
-            "onCreate.disableTabKey": {
-                funcName: "gpii.qss.disableTabKey"
-            },
             "onQssOpen": {
                 funcName: "gpii.qss.onQssOpen",
                 args: [
@@ -424,14 +364,6 @@
             }
         }
     });
-
-    gpii.qss.disableTabKey = function () {
-        $(document).on("keydown", function (KeyboardEvent) {
-            if (KeyboardEvent.key === "Tab") {
-                KeyboardEvent.preventDefault();
-            }
-        });
-    };
 
     gpii.qss.onQssOpen = function (qssList, settings, params) {
         if (params.shortcut) {

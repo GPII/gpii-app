@@ -41,6 +41,7 @@ body {
 
 .fl-qss-button.fl-highlighted {
     border: 3px solid #ff0000;
+    outline: none;
 }
 
 .fl-qss-button:disabled {
