@@ -69,10 +69,10 @@
         // pass hover item as it is in order to use its position
         // TODO probably use something like https://stackoverflow.com/questions/3234977/using-jquery-how-to-get-click-coordinates-on-the-target-element
         events: {
-            onButtonFocus: "{gpii.qss.list}.events.onButtonFocus",
+            onMouseEnter: null,
+            onMouseLeave: null,
 
-            onMouseEnter: "{gpii.qss.list}.events.onButtonMouseEnter",
-            onMouseLeave: "{gpii.qss.list}.events.onButtonMouseLeave",
+            onButtonFocus: "{gpii.qss.list}.events.onButtonFocus",
             onSettingAltered: "{gpii.qss.list}.events.onSettingAltered"
         },
 
@@ -94,6 +94,22 @@
                     "{focusManager}",
                     "{that}.container",
                     "{arguments}.0" // index
+                ]
+            },
+
+            onMouseEnter: {
+                func: "{gpii.qss.list}.events.onButtonMouseEnter",
+                args: [
+                    "{that}.model.item",
+                    "@expand:gpii.qss.getElementMetrics({arguments}.0.target)"
+                ]
+            },
+            onMouseLeave: {
+                func: "{gpii.qss.list}.events.onButtonMouseLeave",
+                // TODO is this needed?
+                args: [
+                    "{that}.model.item",
+                    "@expand:gpii.qss.getElementMetrics({arguments}.0.target)"
                 ]
             },
 
@@ -140,11 +156,13 @@
      * Return the metrics of a clicked element. These can be used
      * for positioning. Note that the position is relative to the right.
      *
-     * @param {Object} target - The DOM element which
+     * @param {jQuery|Object} target - The DOM element which
      * positioning metrics are needed.
      * @returns {{width: Number, height: Number, offsetRight}}
      */
     gpii.qss.getElementMetrics = function (target) {
+        // ensure we're working with jquery object
+        target = $(target);
         return {
             offsetRight: $(window).width() - target.offset().left,
             height:      target.outerHeight(),

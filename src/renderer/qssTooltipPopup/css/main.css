@@ -1,0 +1,14 @@
+.fl-qssTooltip {
+    border: 1px solid #000000;
+    border-radius: 15px;
+    padding: 10px;
+    background-color: #EEEEEE;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.fl-qssTooltip div {
+    text-align: center;
+}

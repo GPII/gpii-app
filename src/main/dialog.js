@@ -22,6 +22,7 @@ var BrowserWindow = require("electron").BrowserWindow;
 var gpii  = fluid.registerNamespace("gpii");
 
 require("./utils.js");
+require("../common/channelUtils.js");
 
 
 /**
@@ -366,3 +367,22 @@ fluid.defaults("gpii.app.i18n.channel", {
         }
     }
 });
+
+/**
+ * Listens for events from the renderer process (the BrowserWindow).
+ */
+fluid.defaults("gpii.app.channelListener", {
+    gradeNames: ["gpii.app.common.simpleChannelListener"],
+    ipcTarget: require("electron").ipcMain
+});
+
+/**
+ * Notifies the render process for main events.
+ */
+fluid.defaults("gpii.app.channelNotifier", {
+    gradeNames: ["gpii.app.common.simpleChannelNotifier", "gpii.app.i18n.channel"],
+    // TODO improve `i18n.channel` to use event instead of a direct notifying
+    ipcTarget: "{dialog}.dialog.webContents" // get the closest dialog
+});
+
+

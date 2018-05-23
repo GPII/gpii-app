@@ -19,28 +19,9 @@ var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
 
 require("./dialog.js");
+require("./quickSetStrip/qssTooltipDialog.js");
 require("./blurrable.js");
 require("../common/channelUtils.js");
-
-
-
-// TODO extract to a common place
-/**
- * Listens for events from the renderer process (the BrowserWindow).
- */
-fluid.defaults("gpii.app.channelListener", {
-    gradeNames: ["gpii.app.common.simpleChannelListener"],
-    ipcTarget: require("electron").ipcMain
-});
-
-/**
- * Notifies the render process for main events.
- */
-fluid.defaults("gpii.app.channelNotifier", {
-    gradeNames: ["gpii.app.common.simpleChannelNotifier", "gpii.app.i18n.channel"],
-    // TODO improve `i18n.channel` to use event instead of a direct notifying
-    ipcTarget: "{dialog}.dialog.webContents" // get the closest dialog
-});
 
 
 /**
@@ -280,6 +261,8 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationP
  * right of its window's.
  */
 gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
+    console.log("Showing... ", that.options.gradeNames);
+    console.log(setting, elementMetrics);
     // Find the offset for the window to be centered over the element
     var windowWidth = that.dialog.getSize()[0];
     // change offset to element's center
@@ -339,7 +322,19 @@ fluid.defaults("gpii.app.qssWrapper", {
                             "{arguments}.1",  // elementMetrics
                             "{arguments}.2" // activationParams
                         ]
-                    }
+                    },
+
+                    "{channelListener}.events.onQssButtonMouseEnter": {
+                        func: "{qssTooltip}.show",
+                        args: [
+                            "{arguments}.0", // setting
+                            "{arguments}.1"  // metrics
+                        ]
+                    },
+                    // "{channelListener}.events.onQssButtonMouseLeave": {
+                    //     func: "{qssTooltip}.hide"
+                    // }
+
                 }
             }
         },
@@ -359,6 +354,9 @@ fluid.defaults("gpii.app.qssWrapper", {
                     // TODO
                 }
             }
+        },
+        qssTooltip: {
+            type: "gpii.app.qssTooltipDialog"
         }
     }
 });

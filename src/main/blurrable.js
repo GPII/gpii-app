@@ -53,11 +53,11 @@ gpii.app.blurrable.isWindowRelated = function (window, linkedGrades) {
             return window.gradeNames.indexOf(linkedWindowGrade) >= 0;
         }
     });
-}
+};
 
 
 /**
- * If the focused window is not any of the related notify. 
+ * If the focused window is not any of the related notify.
  *
  * @param targetWindow
  * @param relatedGrades
