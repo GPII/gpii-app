@@ -236,7 +236,7 @@ jqUnit.test("Parse multiple preference sets message", function () {
         }
     }, uioPlusGroup.settings[0]);
 
-    jqUnit.assertLeftHand("UIO+: Hight Contrast setting (type: boolean) is correctly parsed", {
+    jqUnit.assertLeftHand("UIO+: High Contrast setting (type: boolean) is correctly parsed", {
         path: "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastEnabled",
         value: true,
         schema: {
@@ -246,7 +246,7 @@ jqUnit.test("Parse multiple preference sets message", function () {
         }
     }, uioPlusGroup.settings[1]);
 
-    jqUnit.assertLeftHand("UIO+: Hight Contrast theme setting (type: string) is correctly parsed", {
+    jqUnit.assertLeftHand("UIO+: High Contrast theme setting (type: string) is correctly parsed", {
         path: "http://registry\\.gpii\\.net/applications/net\\.gpii\\.uioPlus.http://registry\\.gpii\\.net/common/highContrastTheme",
         value: "white-black",
         schema: {

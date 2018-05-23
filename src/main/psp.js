@@ -133,8 +133,8 @@ gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
 /**
  * Either hides or shows the warning in the PSP.
  *
- * @param psp {Component} The `gpii.app.psp` component
- * @param pendingChanges {Object[]} A list of the current state of pending changes
+ * @param {Component} psp - The `gpii.app.psp` component
+ * @param {Object[]} pendingChanges - A list of the current state of pending changes
  */
 gpii.app.pspInApp.togglePspRestartWarning = function (psp, pendingChanges) {
     if (pendingChanges.length === 0) {
@@ -321,21 +321,10 @@ fluid.defaults("gpii.app.psp", {
 });
 
 /**
- * Shows the PSP window in the lower part of the primary display and focuses it.
- * Actually, the PSP window is always shown but it may be positioned off the screen.
- * This is a workaround for the flickering issue observed when the content displayed in
- * the PSP window changes. (Electron does not rerender web pages when the
- * `BrowserWindow` is hidden).
- * @param psp {Component} The `gpii.app.psp` instance.
- * @param pspWindow {Object} An Electron `BrowserWindow`.
- */
-
-/**
- * Moves the PSP to the lower right part of the screen. This function in conjunction
- * with `gpii.app.psp.moveOffScreen` help avoid the flickering issue when the content
- * of the PSP window changes.
- * @param pspWindow {Object} An Electron `BrowserWindow`.
- * @param {Number} heightOffset The offset from the bottom of the screen.
+ * Moves the PSP to the lower right part of the screen. This function in conjunction with `gpii.app.psp.moveOffScreen`
+ * help avoid the flickering issue when the content of the PSP window changes.
+ *
+ * @param {Object} pspWindow - An Electron `BrowserWindow`.
  */
 gpii.app.psp.moveToScreen = function (pspWindow, heightOffset) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
@@ -353,7 +342,7 @@ gpii.app.psp.moveToScreen = function (pspWindow, heightOffset) {
 /**
  * Shows the PSP window by moving it to the lower right part of the screen and changes
  * the `isShown` model property accordingly.
- * @param psp {Component} The `gpii.app.psp` instance.
+ * @param {Component} psp - The `gpii.app.psp` instance.
  */
 gpii.app.psp.show = function (psp) {
     gpii.app.psp.moveToScreen(psp.pspWindow, psp.options.heightOffset);
@@ -364,10 +353,10 @@ gpii.app.psp.show = function (psp) {
 
 /**
  * Handle electron's display-metrics-changed event, by resizing the PSP when necessary.
- * @param psp {Component} The `gpii.app.psp` instance.
- * @param event {event} An Electron `event`.
- * @param display {Object} The Electron `Display` object.
- * @param changedMetrics {Array} An array of strings that describe the changes. Possible
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param {event} event - An Electron `event`.
+ * @param {Object} display - The Electron `Display` object.
+ * @param {Array} changedMetrics - An array of strings that describe the changes. Possible
  * changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
  */
 gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changedMetrics) {
@@ -395,8 +384,8 @@ gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changed
  * clicking outside (this should be specified in the PSP channel message). In case there
  * is no keyed-in user, the default behavior is for the PSP to close when a blur event
  * occurs.
- * @param psp {Component} The `gpii.app.psp` instance.
- * @param settingsBroker {Component} The `gpii.app.settingsBroker` instance.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
  */
 gpii.app.psp.handleBlur = function (psp, settingsBroker) {
     var isShown = psp.model.isShown,
@@ -409,7 +398,7 @@ gpii.app.psp.handleBlur = function (psp, settingsBroker) {
 /**
  * A function which should be called to init various listeners related to
  * the PSP window.
- * @param psp {Component} The `gpii.app.psp` instance.
+ * @param {Component} psp - The `gpii.app.psp` instance.
  */
 gpii.app.psp.initPSPWindowListeners = function (psp) {
     // https://github.com/electron/electron/blob/master/docs/api/screen.md#event-display-metrics-changed
@@ -419,8 +408,8 @@ gpii.app.psp.initPSPWindowListeners = function (psp) {
 /**
  * Initialises the connection between the Electron process and
  * the PSP's `BrowserWindow` instance
- * @param app {Component} The `gpii.app` instance.
- * @param psp {Component} The `gpii.app.psp` instance.
+ * @param {Component} app - The `gpii.app` instance.
+ * @param {Component} psp - The `gpii.app.psp` instance.
  */
 gpii.app.initPSPWindowIPC = function (app, psp) {
     ipcMain.on("onPSPClose", function () {
@@ -471,7 +460,7 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
  * Moves the PSP to a non-visible part of the screen. This function in conjunction
  * with `gpii.app.psp.moveToScreen` help avoid the flickering issue when the content
  * of the PSP window changes.
- * @param pspWindow {Object} An Electron `BrowserWindow`.
+ * @param {Object} pspWindow - An Electron `BrowserWindow`.
  */
 gpii.app.psp.moveOffScreen = function (pspWindow) {
     // Move the PSP so far away that even if there is an additional screen attached,
@@ -484,7 +473,7 @@ gpii.app.psp.moveOffScreen = function (pspWindow) {
 /**
  * Hides the PSP window by moving it off the screen and changes the `isShown` model
  * property accordingly.
- * @param psp {Component} The `gpii.app.psp` instance.
+ * @param {Component} psp - The `gpii.app.psp` instance.
  */
 gpii.app.psp.hide = function (psp) {
     gpii.app.psp.moveOffScreen(psp.pspWindow);
@@ -497,8 +486,8 @@ gpii.app.psp.hide = function (psp) {
  * given settings. The function takes care of hiding the PSP, applying pending
  * changes which require application restarts and undoing setting changes that
  * necessitate the OS to be restarted.
- * @param psp {Component} The `gpii.app.psp` instance.
- * @param settingsBroker {Component} The `gpii.app.settingsBroker` instance.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param  {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
  */
 gpii.app.psp.closePSP = function (psp, settingsBroker) {
     psp.hide();
@@ -515,10 +504,10 @@ gpii.app.psp.closePSP = function (psp, settingsBroker) {
  * Resizes the PSP window and positions it appropriately based on the new height
  * of its content. Makes sure that the window is no higher than the available
  * height of the work area in the primary display.
- * @param psp {Object} A `gpii.app.psp` instance.
- * @param width {Number} The desired width of the BrowserWindow.
- * @param contentHeight {Number} The new height of the BrowserWindow's content.
- * @param minHeight {Number} The minimum height which the BrowserWindow must have.
+ * @param {Object} psp - A `gpii.app.psp` instance.
+ * @param {Number} width - The desired width of the BrowserWindow.
+ * @param {Number} contentHeight - The new height of the BrowserWindow's content.
+ * @param {Number} minHeight - The minimum height which the BrowserWindow must have.
  */
 gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
     var pspWindow = psp.pspWindow,
@@ -540,8 +529,8 @@ gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
 
 /**
  * Creates an Electron `BrowserWindow` that is to be used as the PSP window.
- * @param {Object} windowOptions The raw `BrowserWindow` settings.
- * @param {Object} params options that are to be supplied to the render process of
+ * @param {Object} windowOptions - The raw `BrowserWindow` settings.
+ * @param {Object} params - options that are to be supplied to the render process of
  * the newly created `BrowserWindow`.
  * @return {Object} The created Electron `BrowserWindow`
  */
@@ -562,7 +551,7 @@ gpii.app.psp.makePSPWindow = function (windowOptions, params, gradeNames) {
  * This function takes care of notifying the PSP window whenever the
  * user changes the accent color of the OS theme. Available only if
  * the application is used on Windows 10.
- * @param psp {Object} The `gpii.app.psp` instance
+ * @param {Object} psp - The `gpii.app.psp` instance
  */
 gpii.app.psp.registerAccentColorListener = function (psp) {
     if (gpii.app.isWin10OS()) {

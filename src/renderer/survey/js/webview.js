@@ -36,7 +36,9 @@
      * application distinguish between regular links that should open in a
      * new browser window and the 'break out' link which should also
      * close the survey pop-up.
-     * @param target {Element} The DOM element to be checked.
+     *
+     * @param {Element} target - The DOM element to be checked.
+     * @return {Boolean} - `true` if the target is a breakout link, `false` otherwise.
      */
     gpii.webview.isBreakOutLink = function (target) {
         return target && target.nodeName === "A" && target.target === "_blank"
@@ -44,17 +46,17 @@
     };
 
     /**
-     * Checks whether a given DOM element is a close button within the
-     * survey's content.
-     * @param target {Element} The DOM element to be checked.
+     * Checks whether a given DOM element is a close button within the survey's content.
+     *
+     * @param {Element} target - The DOM element to be checked.
+     * @return {Boolean} - `true` if the button is a close button, `false` otherwise.
      */
     gpii.webview.isCloseButton = function (target) {
         return target && target.classList.contains("flc-closeBtn");
     };
 
     /**
-     * Sends an IPC message to the hosting `BrowserWindow` indicating that
-     * the survey should be closed.
+     * Sends an IPC message to the hosting `BrowserWindow` indicating that the survey should be closed.
      */
     gpii.webview.closeSurvey = function () {
         ipcRenderer.sendToHost("onSurveyClose");

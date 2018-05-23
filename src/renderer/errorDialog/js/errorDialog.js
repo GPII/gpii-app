@@ -50,7 +50,7 @@
 
     /**
      * Registers for events from the Main process.
-     * @param events {Object} Events map.
+     * @param {Object} events - Events map.
      */
     gpii.psp.errorDialog.channel.register = function (events) {
         ipcRenderer.on("onErrorUpdate", function (event, config) {

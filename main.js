@@ -37,6 +37,7 @@ if (appIsRunning) {
 
 // this module is loaded relatively slow
 require("gpii-universal");
+require("./index");
 
 // Close the PSP if there is another instance of it already running.
 var gpiiIsRunning = !gpii.singleInstance.registerInstance();
@@ -46,8 +47,6 @@ if (gpiiIsRunning) {
 }
 
 require("gpii-windows/index.js");
-require("./src/main/logging.js");
-require("./src/main/app.js");
 
 kettle.config.loadConfig({
     configName: kettle.config.getConfigName("app.testing"),

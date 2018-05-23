@@ -21,17 +21,16 @@
     fluid.registerNamespace("gpii.psp");
 
     /**
-     * Calculates the total height of the PSP assuming that the settings panel is
-     * displayed fully, without the need for it to scroll (i.e. if there were enough
-     * vertical space for the whole document).
-     * @param mainWindow {Component} An instance of mainWindow.
-     * @param container {jQuery} A jQuery object representing the mainWindow container.
-     * @param content {jQuery} A jQuery object representing the content of the
-     * document between the header and footer. This container is scrollable.
-     * @param settingsList {jQuery} A jQuery object representing the container in
-     * which the various widgets will have their containers inserted.
-     * @param {Number} The height of the PSP assuming the settings panel is displayed
-     * fully.
+     * Calculates the total height of the PSP assuming that the settings panel is displayed fully, without the need for
+     * it to scroll (i.e. if there were enough vertical space for the whole document).
+     *
+     * @param {Component} mainWindow - An instance of mainWindow.
+     * @param {jQuery} container - A jQuery object representing the mainWindow container.
+     * @param {jQuery} content - A jQuery object representing the content of the document between the header and footer.
+     * This container is scrollable.
+     * @param {jQuery} settingsList - A jQuery object representing the container in which the various widgets will have
+     * their containers inserted.
+     * @return {Number} - The height of the PSP assuming the settings panel is displayed fully.
      */
     gpii.psp.calculateHeight = function (mainWindow, container, content, settingsList) {
         return container.outerHeight(true) - content.height() + settingsList.height();
@@ -42,9 +41,9 @@
      * color is taken into consideration only in the dark theme of the
      * PSP and is used for different styles (e.g. button backgrounds,
      * hover color for various inputs, etc).
-     * @param theme {jQuery} The `style` tag which houses the application
+     * @param {jQuery} theme - The `style` tag which houses the application
      * theme definitions.
-     * @param accentColor {String} The accent color used in the user's OS.
+     * @param {String} accentColor - The accent color used in the user's OS.
      */
     gpii.psp.updateAccentColor = function (theme, accentColor) {
         // The accent color is an 8-digit hex number whose last 2 digits
@@ -65,12 +64,12 @@
      * `dark` and a `white` theme. The `white` theme is the default one
      * and it is applied automatically. In order to apply the `dark`
      * theme, the "theme-alt" class needs to be added to the `body` element.
-     * @param container {jQuery} A jQuery object representing the body of
+     * @param {jQuery} container - A jQuery object representing the body of
      * the page displayed in the PSP `BrowserWindow`.
-     * @param themeClasses {Object} A hash containing mapping between a
+     * @param {Object} themeClasses - A hash containing mapping between a
      * theme name and the corresponding CSS class which needs to be added
      * to the `body`.
-     * @param theme {String} The name of the theme that is to be applied.
+     * @param {String} theme - The name of the theme that is to be applied.
      */
     gpii.psp.updateTheme = function (container, themeClasses, theme) {
         fluid.keys(themeClasses).forEach(function (themeKey) {
@@ -88,9 +87,9 @@
      * set, it is considered that the user has keyed in and hence the psp view
      * will be shown. Otherwise, the sign in view will be displayed.
      *
-     * @param {jQuery} signInView The signIn view container
-     * @param {jQuery} pspView The psp view container
-     * @param {Boolean} keyedIn Whether there is a keyed in user or not.
+     * @param {jQuery} signInView - The signIn view container
+     * @param {jQuery} pspView - The psp view container
+     * @param {Boolean} keyedIn - Whether there is a keyed in user or not.
      * preference set, the active preference set and the available settings.
      */
     gpii.psp.toggleView = function (signInView, pspView, keyedIn) {
@@ -309,9 +308,9 @@
 
     /**
      * Returns whether there is a currently keyed in user.
-     * @param preferences {Object} An object containing all preference set, as well as
+     * @param {Object} preferences - An object containing all preference set, as well as
      * information about the currently active preference set.
-     * @return `true` if there is currently a keyed in user and `false` otherwise.
+     * @return {Boolean} `true` if there is currently a keyed in user and `false` otherwise.
      */
     gpii.psp.mainWindow.getKeyedIn = function (preferences) {
         return preferences && preferences.sets && preferences.sets.length > 0;
@@ -321,10 +320,10 @@
      * Plays a sound notification in the following scenarios: when the user keyes in
      * or when the user changes the active preference set (either via the dropdown in
      * the PSP or through the context menu).
-     * @param that {Component} The `gpii.psp.mainWindow` instance.
-     * @param preferences {Object} An object containing all preference set, as well as
+     * @param {Component} that - The `gpii.psp.mainWindow` instance.
+     * @param {Object} preferences - An object containing all preference set, as well as
      * information about the currently active preference set.
-     * @param oldPreferences {Object} The previous value for the user's preferences.
+     * @param {Object} oldPreferences - The previous value for the user's preferences.
      */
     gpii.psp.mainWindow.playSoundNotification = function (that, preferences, oldPreferences) {
         // The user is not / is no longer keyed in. No need for notification.
@@ -349,9 +348,9 @@
      * for the PSP, creates an object which represents the preferences which are
      * to be used in the `header` component. The applicable image for each set is
      * determined based on the current application theme.
-     * @param preferences {Object} An object containing all preference set, as well as
+     * @param {Object} preferences - An object containing all preference set, as well as
      * information about the currently active preference set.
-     * @param theme {String} The current theme of the application.
+     * @param {String} theme - The current theme of the application.
      * @return {Object} The preferences object to be used in the `header` component
      * with the correct images for each preference set.
      */

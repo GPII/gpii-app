@@ -21,7 +21,7 @@ var fluid = require("gpii-universal"),
     gpii = fluid.registerNamespace("gpii");
 
 require("gpii-windows/index.js");
-require("../node_modules/gpii-universal/gpii/node_modules/testing");
+fluid.require("%gpii-universal/gpii/node_modules/testing");
 
 gpii.loadTestingSupport();
 
@@ -34,7 +34,8 @@ require("./SurveyTriggerManagerTestsDefs.js");
 require("./SequentialDialogsTestDefs.js");
 require("./WebviewTestDefs.js");
 
-fluid.setLogging(fluid.logLevel.FATAL);
+// TODO: Review this following CI run.
+//fluid.setLogging(fluid.logLevel.FATAL);
 
 fluid.registerNamespace("gpii.tests.app");
 

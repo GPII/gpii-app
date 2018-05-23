@@ -154,10 +154,10 @@
      * have such, its title will be used instead. If there is at least one setting which
      * requires the OS to be restarted, then the only solution name that will be returned
      * will be the OS name.
-     * @param messages {Object} An object containing various messages used throughout
+     * @param {Object} messages - An object containing various messages used throughout
      * the component.
-     * @param pendingChanges {Array} An array containing all pending setting changes.
-     * @param [solutionName] {String} An optional solution name with which the restart
+     * @param {Array} pendingChanges - An array containing all pending setting changes.
+     * @param {String} [solutionName] - An optional solution name with which the restart
      * warning can be configured.
      * @return {String[]} the solutions names or titles corresponding to the applications
      * that need to be restarted.
@@ -183,9 +183,9 @@
     /**
      * Returns the text which is to be displayed in the component based on the solution
      * names corresponding to the pending setting changes.
-     * @param messages {Object} An object containing various messages used throughout
+     * @param {Object} messages - An object containing various messages used throughout
      * the component.
-     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * @param {Array} solutionNames - the solutions names or titles corresponding to the
      * applications that need to be restarted.
      * @return {String} The text which is to be displayed in the component.
      */
@@ -202,9 +202,9 @@
     /**
      * Returns the label for the restart button depending on whether the OS needs to be
      * restarted or not.
-     * @param messages {Object} An object containing various messages used throughout
+     * @param {Object} messages - An object containing various messages used throughout
      * the component.
-     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * @param {Array} solutionNames - the solutions names or titles corresponding to the
      * applications that need to be restarted.
      * @return {String} The label for the restart button.
      */
@@ -215,8 +215,8 @@
     /**
      * Checks if the provided `pendingChange` applies to any of the elements (or their)
      * subsettings in the `settings` array.
-     * @param pendingChange {Object} A descriptor of a pending setting change.
-     * @param settings {Array} An array of settings which belong to the setting group.
+     * @param {Object} pendingChange - A descriptor of a pending setting change.
+     * @param {Array} settings - An array of settings which belong to the setting group.
      * @return {Boolean} `true` if the `pendingChange` applies to any of the `settings`
      * elements and `false` otherwise.
      */
@@ -239,8 +239,8 @@
     /**
      * Given all pending setting changes and the settings for the current settings group,
      * the function returns only those pending changes which apply to the group.
-     * @param pendingChanges {Array} An array of all pending setting changes.
-     * @param settings {Array} An array of the settings for the settings group to which
+     * @param {Array} pendingChanges - An array of all pending setting changes.
+     * @param {Array} settings - An array of the settings for the settings group to which
      * this restart warning belongs.
      * @return {Array} An array of the pending settings changes which apply to the current
      * settings group.
@@ -254,9 +254,9 @@
     /**
      * Shows or hides the restart warning depending on whether there is at least one app
      * that needs to be restarted in order to apply the setting changes within the group.
-     * @param solutionNames {Array} the solutions names or titles corresponding to the
+     * @param {Array} solutionNames - the solutions names or titles corresponding to the
      * applications that need to be restarted.
-     * @param container {jQuery} A jQuery object representing the element which contains
+     * @param {jQuery} container - A jQuery object representing the element which contains
      * the restart warning.
      */
     gpii.psp.restartWarning.toggle = function (solutionNames, container) {

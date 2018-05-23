@@ -338,9 +338,10 @@ fluid.defaults("gpii.app.errorHandler", {
 });
 
 /**
- * A function which is called whenever an error occurs while keying in. Note that a real error
- * would have its `isError` property set to true.
- * @param error {Object} The error which has occurred.
+ * A function which is called whenever an error occurs while keying in. Note that a real error would have its `isError`
+ * property set to true.
+ *
+ * @param {Object} error - The error which has occurred.
  */
 gpii.app.errorHandler.onKeyInError = function (error) {
     if (error.isError) {
@@ -352,10 +353,10 @@ gpii.app.errorHandler.onKeyInError = function (error) {
 
 /**
  * Handles the process of displaying errors through the usage of the "error dialog".
- * @param app {Component} An instance of gpii.app.
- * @param dialogManager {Component} An instance of `gpii.app.dialogManager`.
- * @param errorsDescription {Object} A map with more detailed description for the errors.
- * @param error {Object} The error which has occurred.
+ * @param {Component} that - An instance of gpii.app.
+ * @param {Component} dialogManager - An instance of `gpii.app.dialogManager`.
+ * @param {Object} errorsDescription - A map with more detailed description for the errors.
+ * @param {Object} error - The error which has occurred.
  */
 gpii.app.errorHandler.handleUncaughtException = function (that, dialogManager, errorsDescription, error) {
     var errCode = error && error.code,
@@ -383,11 +384,11 @@ gpii.app.errorHandler.handleUncaughtException = function (that, dialogManager, e
 /**
  * Register a global listener for all fluid exceptions.
  *
- * @param errorHandler {Component} The `gpii.app.errorHandler` component
+ * @param {Component} errorHandler - The `gpii.app.errorHandler` component
  */
 gpii.app.errorHandler.registerErrorListener = function (errorHandler) {
     fluid.onUncaughtException.addListener(function (err) {
-        fluid.log(err);
+        fluid.log("Uncaught Exception", err);
         errorHandler.handleUncaughtException(err);
     }, "gpii.app.errorHandler", "last");
 };
@@ -399,7 +400,7 @@ gpii.app.fireAppReady = function (fireFn) {
 /**
   * Keys into the GPII.
   * Currently uses an url to key in although this should be changed to use Electron IPC.
-  * @param token {String} The token to key in with.
+  * @param {String} token - The token to key in with.
   */
 gpii.app.keyIn = function (token) {
     request("http://localhost:8081/user/" + token + "/login", function (/* error, response */) {
@@ -410,7 +411,7 @@ gpii.app.keyIn = function (token) {
 /**
   * Keys out of the GPII.
   * Currently uses an url to key out although this should be changed to use Electron IPC.
-  * @param token {String} The token to key out with.
+  * @param {String} token - The token to key out with.
   * @return {Promise} A promise that will be resolved/rejected when the request is finished.
   */
 gpii.app.keyOut = function (token) {
@@ -419,8 +420,8 @@ gpii.app.keyOut = function (token) {
         //TODO Put in some error logging
         if (error) {
             togo.reject(error);
-            fluid.log(response);
-            fluid.log(body);
+            fluid.log("Key out response:", response);
+            fluid.log("Key out body:", body);
         } else {
             togo.resolve();
         }
@@ -445,7 +446,7 @@ gpii.app.performQuit = function () {
 
 /**
   * Handles the exit of the Electron Application.
-  * @param that {Component} An instance of gpii.app
+  * @param {Component} that - An instance of gpii.app
   */
 gpii.app.exit = function (that) {
     if (that.model.keyedInUserToken) {
@@ -460,8 +461,8 @@ gpii.app.exit = function (that) {
 
 /**
  * Handles when a user token is keyed out through other means besides the task tray key out feature.
- * @param that {Component} An instance of gpii.app
- * @param keyedOutUserToken {String} The token that was keyed out.
+ * @param {Component} that - An instance of gpii.app
+ * @param {String} keyedOutUserToken - The token that was keyed out.
  */
 gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
     var currentKeyedInUserToken = that.model.keyedInUserToken;

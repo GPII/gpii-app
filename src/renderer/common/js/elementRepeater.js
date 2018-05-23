@@ -235,13 +235,13 @@
     /**
      * Constructs the markup for the indexed container - sets proper index.
      *
-     * @param markup {Object}
-     * @param markup.containerClassPrefix {String} The class prefix for the indexed container.
-     *   Should have a `id` interpolated expression.
-     * @param markup.container {String} The markup which is to be interpolated with the container index.
-     *   Should have a `containerClass` interpolated expression.
-     * @param containerIndex {Number} The index for the container
-     * @returns {String}
+     * @param {Object} markup - An object containing various HTML markup.
+     * @param {String} markup.containerClassPrefix - The class prefix for the indexed container.
+     * Should have a `id` interpolated expression.
+     * @param {String} markup.container - The markup which is to be interpolated with the container index.
+     * Should have a `containerClass` interpolated expression.
+     * @param {Number} containerIndex - The index for the container.
+     * @return {String} the markup for the indexed container.
      */
     gpii.psp.repeater.getIndexedContainerMarkup = function (markup, containerIndex) {
         var containerClass = fluid.stringTemplate(markup.containerClassPrefix, { id: containerIndex });
@@ -250,7 +250,7 @@
 
     /**
      * Utility function for retrieving the last  child element of a container.
-     * @param container {jQuery} The jQuery container object
+     * @param {jQuery} container - The jQuery container object
      * @return {jQuery} A jQuery container object representing the last child
      * element if any.
      */
@@ -260,7 +260,7 @@
 
     /**
      * Removes the provided element from the DOM.
-     * @param container {jQuery} A jQuery object representing the element to
+     * @param {jQuery} element - A jQuery object representing the element to
      * be removed.
      */
     gpii.psp.removeElement = function (element) {

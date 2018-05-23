@@ -103,9 +103,9 @@
     /**
      * Constructs the user listeners text.
      *
-     * @param description {String} The description with a placeholder by the name "listeners"
-     * @param userListeners {String[]} The list of key in listeners for the user
-     * @returns {String} The constructed string
+     * @param {String} description - The description with a placeholder by the name "listeners"
+     * @param {String[]} userListeners - The list of key in listeners for the user
+     * @return {String} The constructed string
      */
     gpii.psp.aboutDialog.getUserListenersText = function (description, userListeners) {
         return fluid.stringTemplate(description, { listeners: userListeners.join(", ") });

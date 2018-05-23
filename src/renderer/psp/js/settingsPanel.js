@@ -158,9 +158,9 @@
     /**
      * Shows or hides the subsettings for a setting whose type is `boolean` depending on the
      * setting's value.
-     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
-     * @param value {Any} The new value of a setting.
-     * @param subsettingsElement {jQuery} A jQuery element representing the container of the
+     * @param {Component} that - An instance of `gpii.psp.settingPresenter`.
+     * @param {Any} value - The new value of a setting.
+     * @param {jQuery} subsettingsElement - A jQuery element representing the container of the
      * subsetting elements.
      */
     gpii.psp.settingPresenter.toggleSubsettings = function (that, value, subsettingsElement) {
@@ -170,8 +170,11 @@
     };
 
     /**
-     * Notifies the corresponding widget components about an update on the setting
-     * in case the update is reffering current setting
+     * Notifies the corresponding widget components about an update of the setting
+     * in case the update is referring to the current setting.
+     * @param {Component} that - An instance of `gpii.psp.settingPresenter`.
+     * @param {String} path - The path of the updated setting.
+     * @param {Any} newValue - The new value of the updated setting.
      */
     gpii.psp.settingPresenter.updateModelIfNeeded = function (that, path, newValue) {
         if (path === that.model.path) {
@@ -182,12 +185,11 @@
     /**
      * Returns the appropriate tooltip for the restart icon if the setting has has an
      * "OSRestart" liveness and based on whether the user has modified the setting's value.
-     * @param setting {Object} An object representing the setting.
-     * @param pendingChanges {Array} An array of all pending setting changes that the user
+     * @param {Object} setting - An object representing the setting.
+     * @param {Array} pendingChanges - An array of all pending setting changes that the user
      * has made.
-     * @param messages {Object} A set of messages to choose from when calculating the restart
-     * icon tooltip.
-     * @return The tooltip for the restart icon.
+     * @param {Object} messages - A set of messages to choose from when calculating the restart icon tooltip label.
+     * @return {String} - The tooltip label for the restart icon.
      */
     gpii.psp.settingPresenter.getRestartIconTooltip = function (setting, pendingChanges, messages) {
         if (setting.liveness === "OSRestart") {
@@ -202,8 +204,8 @@
     /**
      * A function responsible for showing the restart icon if the setting has an "OSRestart"
      * liveness.
-     * @param that {Component} An instance of `gpii.psp.settingPresenter`.
-     * @param restartIcon {jQuery} A jQuery object representing the restart icon.
+     * @param {Component} that - An instance of `gpii.psp.settingPresenter`.
+     * @param {jQuery} restartIcon -  A jQuery object representing the restart icon.
      */
     gpii.psp.settingPresenter.toggleRestartIcon = function (that, restartIcon) {
         var isShown = that.model.liveness === "OSRestart";
@@ -364,9 +366,9 @@
 
     /**
      * Returns the markup for a particular setting based on its type.
-     * @param markup {Object} A hash containing markup fetched by the `resourceLoader`.
-     * @param widgetExemplars {Object} The `gpii.psp.widgetExemplars` object.
-     * @param setting {Object} A setting object.
+     * @param {Object} markup - A hash containing markup fetched by the `resourceLoader`.
+     * @param {Object} widgetExemplars - The `gpii.psp.widgetExemplars` object.
+     * @param {Object} setting - A setting object.
      * @return {String} The markup for the specified setting.
      */
     gpii.psp.settingsVisualizer.getMarkup = function (markup, widgetExemplars, setting) {
@@ -460,7 +462,7 @@
 
     /**
      * Returns list of exemplars.
-     * @param exemplars {Object} The `gpii.psp.widgetExemplars` object
+     * @param {Object} exemplars - The `gpii.psp.widgetExemplars` object
      * @return {Object[]} A list of `gpii.psp.exemplar` objects
      */
     gpii.psp.settingsPanel.getExemplarsList = function (exemplars) {
@@ -471,7 +473,7 @@
     /**
      * Simplifies the `fluid.resourcesLoader`'s resource object, to supply only the fetched data.
      *
-     * @param resources {Object} The `fluid.resourceLoader`'s `resource` object after fetch.
+     * @param {Object} resources - The `fluid.resourceLoader`'s `resource` object after fetch.
      * @return {Object} Object with properties like: `{resourceKey}: {resourceText}`
      */
     gpii.psp.settingsPanel.flattenResources = function (resources) {
@@ -485,9 +487,12 @@
     /**
      * Resources that are to be fetched - settings inner container and widgets'.
      *
-     * @param settingExemplar {Object} A 'gpii.psp.exemplar.settingsVisualizer' object.
-     *   Note: it has a fixed key.
-     * @param widgetExemplarsList {Object[]} The list of `gpii.psp.exemplar`-s
+     * @param {Object} settingGroupExemplar - A `gpii.psp.exemplar.settingGroupsVisualizer`
+     * object.
+     * @param {Object} settingExemplar - A `gpii.psp.exemplar.settingsVisualizer` object.
+     * Note: it has a fixed key.
+     * @param {Object[]} widgetExemplarsList - The list of `gpii.psp.exemplar`-s
+     * @return {Object} - An object describin the resources to fetch.
      */
     gpii.psp.settingsPanel.getResourcesToFetch = function (settingGroupExemplar, settingExemplar, widgetExemplarsList) {
         function getWidgetResources(exemplars) {

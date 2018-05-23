@@ -25,10 +25,10 @@
      * A function which should be called whenever a settings is updated
      * as a result of a user's input. Its purpose is to notify the main
      * electron process for the change.
-     * @param clientChannel {Component} The `gpii.psp.clientChannel`
+     * @param {Component} clientChannel - The `gpii.psp.clientChannel`
      * instance.
-     * @param setting {Object} The setting which has been updated.
-     * @param oldValue {Any} The old value of the setting.
+     * @param {Object} setting - The setting which has been updated.
+     * @param {Any} oldValue - The old value of the setting.
      */
     gpii.psp.clientChannel.alterSetting = function (clientChannel, setting, oldValue) {
         setting = fluid.extend(true, {}, setting, {
@@ -40,7 +40,7 @@
     /**
      * Initializes the `clientChannel` component by registering listeners
      * for various messages sent by the main process.
-     * @param clientChannel {Component} The `clientChannel` component.
+     * @param {Component} clientChannel - The `clientChannel` component.
      */
     gpii.psp.clientChannel.initialize = function (clientChannel) {
         ipcRenderer.on("onPreferencesUpdated", function (event, preferences) {

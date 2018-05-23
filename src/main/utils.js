@@ -42,7 +42,7 @@ gpii.app.isWin10OS = function () {
  * @param {Number} height - The height of the `BrowserWindow`.
  * @param {Number} offsetY - The y bottom offset.
  * @param {Number} offsetX - The x right offset.
- * @returns {{x: Number, y: Number}} The desired window position
+ * @return {{x: Number, y: Number}} The desired window position
  */
 gpii.app.computeWindowPosition = function (width, height, offsetX, offsetY) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
@@ -98,7 +98,8 @@ gpii.app.getDesiredWindowBounds = function (width, height, offsetY, offsetX) {
 /**
  * Positions an Electron `BrowserWindow` in the lower right corner of
  * the primary display.
- * @param dialogWindow {BrowserWindow} The window which is to be positioned.
+ *
+ * @param {BrowserWindow} dialogWindow - The window which is to be positioned.
  */
 gpii.app.positionWindow = function (dialogWindow, offsetX, offsetY) {
     var size = dialogWindow.getSize(),
@@ -108,9 +109,9 @@ gpii.app.positionWindow = function (dialogWindow, offsetX, offsetY) {
 };
 
 /**
- * A function which capitalizes its input text. It does nothing
- * if the provided argument is `null` or `undefined`.
- * @param text {String} The input text.
+ * A function which capitalizes its input text. It does nothing if the provided argument is `null` or `undefined`.
+ *
+ * @param {String} text - The input text.
  * @return {String} the capitalized version of the input text.
  */
 gpii.app.capitalize = function (text) {
@@ -122,9 +123,9 @@ gpii.app.capitalize = function (text) {
 /**
  * Sends a message to the given Electron `BrowserWindow`
  *
- * @param window {Object} An Electron `BrowserWindow` object
- * @param messageChannel {String} The channel to which the message to be sent
- * @param message {String}
+ * @param {Object} browserWindow - An Electron `BrowserWindow` object
+ * @param {String} messageChannel - The channel to which the message to be sent
+ * @param {String} message - The message to be sent.
  */
 gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
     if (browserWindow) {
@@ -135,8 +136,8 @@ gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
 /**
  * Checks if a hash is not empty, i.e. if it contains at least one key.
  * Note that the values are not examined.
- * @param hash {Object} An arbitrary object.
- * @return `true` is the hash has at least one key and `false` otherwise.
+ * @param {Object} hash - An arbitrary object.
+ * @return {Boolean} `true` is the hash has at least one key and `false` otherwise.
  */
 gpii.app.isHashNotEmpty = function (hash) {
     return hash && fluid.keys(hash).length > 0;
@@ -177,11 +178,11 @@ fluid.defaults("gpii.app.timer", {
 });
 
 /**
- * Starts a timer. In `timeoutDuration` milliseconds, the `onTimerFinished`
- * event will be fired. Any previously registered timers will be cleared
- * upon the invokation of this function.
- * that {Component} The `gpii.app.timer` instance.
- * timeoutDuration {Number} The timeout duration in milliseconds.
+ * Starts a timer. In `timeoutDuration` milliseconds, the `onTimerFinished` event will be fired. Any previously
+ * registered timers will be cleared upon the invokation of this function.
+ *
+ * @param {Component} that -The `gpii.app.timer` instance.
+ * @param {Number} timeoutDuration -The timeout duration in milliseconds.
  */
 gpii.app.timer.start = function (that, timeoutDuration) {
     that.clear();
@@ -190,7 +191,8 @@ gpii.app.timer.start = function (that, timeoutDuration) {
 
 /**
  * Clears the timer.
- * that {Component} The `gpii.app.timer` instance.
+ *
+ * @param {Component} that -The `gpii.app.timer` instance.
  */
 gpii.app.timer.clear = function (that) {
     if (that.timer) {
@@ -198,7 +200,6 @@ gpii.app.timer.clear = function (that) {
         that.timer = null;
     }
 };
-
 
 /**
  * Set proper context for arrays.
@@ -209,7 +210,7 @@ gpii.app.timer.clear = function (that) {
  * Related to: https://github.com/electron/electron/issues/12698
  *
  * @param {Object|Array} object - The object/array that needs to have its contexts fixed.
- * @returns {Object} The fixed object
+ * @return {Object} The fixed object
  */
 gpii.app.recontextualise = function (object) {
     if (!fluid.isPlainObject(object)) {
