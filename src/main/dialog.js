@@ -151,6 +151,10 @@ fluid.defaults("gpii.app.dialog", {
             changePath: "isShown",
             value: false
         },
+        focus: {
+            this: "{that}.dialog",
+            method: "focus"
+        },
         close: {
             this: "{that}.dialog",
             method: "close"
@@ -295,6 +299,10 @@ fluid.defaults("gpii.app.dialogWrapper", {
             funcName: "gpii.app.dialogWrapper.hide",
             args: ["{that}"]
         },
+        focus: {
+            funcName: "gpii.app.dialogWrapper.focus",
+            args: ["{that}"]
+        },
         close: {
             funcName: "gpii.app.dialogWrapper.close",
             args: ["{that}"]
@@ -320,6 +328,12 @@ gpii.app.dialogWrapper.show = function (that, options) {
 gpii.app.dialogWrapper.hide = function (that) {
     if (that.dialog) {
         that.dialog.hide();
+    }
+};
+
+gpii.app.dialogWrapper.focus = function (that) {
+    if (that.dialog) {
+        that.dialog.focus();
     }
 };
 

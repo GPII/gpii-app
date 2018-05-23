@@ -47,6 +47,7 @@
         },
 
         events: {
+            onWidgetBlur: null,
             onSettingUpdated: null
         },
 
@@ -60,6 +61,38 @@
                         setting: "{qssWidget}.model.setting"
                     },
                     activationParams: "{arguments}.1"
+                }
+            },
+            windowKeyListener: {
+                type: "fluid.component",
+                options: {
+                    gradeNames: "gpii.qss.elementRepeater.keyListener",
+                    target: {
+                        expander: {
+                            funcName: "jQuery",
+                            args: [window]
+                        }
+                    },
+                    events: {
+                        onArrowLeftPressed: null,
+                        onArrowRightPressed: null
+                    },
+                    listeners: {
+                        onArrowLeftPressed: {
+                            funcName: "gpii.psp.qssWidget.blur",
+                            args: [
+                                "{qssWidget}",
+                                "{arguments}.0" // KeyboardEvent
+                            ]
+                        },
+                        onArrowRightPressed: {
+                            funcName: "gpii.psp.qssWidget.blur",
+                            args: [
+                                "{qssWidget}",
+                                "{arguments}.0" // KeyboardEvent
+                            ]
+                        }
+                    }
                 }
             },
             // TODO send data from the main process
@@ -78,7 +111,8 @@
                     events: {
                         // Add events the main process to be notified for
                         onQssWidgetClosed: null,
-                        onQssSettingAltered: null
+                        onQssSettingAltered: null,
+                        onQssWidgetBlur: "{qssWidget}.events.onWidgetBlur"
                     }
                 }
             }
@@ -98,6 +132,13 @@
             }]
         }
     });
+
+    gpii.psp.qssWidget.blur = function (qssWidget, KeyboardEvent) {
+        qssWidget.events.onWidgetBlur.fire({
+            setting: qssWidget.model.setting,
+            key: KeyboardEvent.key
+        });
+    };
 
     gpii.psp.qssWidget.getWidgetType = function (setting) {
         return setting.type === "number" ? "gpii.qssWidget.stepper" : "gpii.qssWidget.menu";

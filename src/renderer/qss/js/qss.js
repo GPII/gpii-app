@@ -399,10 +399,33 @@
         }
     });
 
+    gpii.qss.getSettingIndex = function (settings, setting) {
+        return settings.findIndex(function (currentSetting) {
+            return currentSetting.path === setting.path;
+        });
+    };
+
     gpii.qss.onQssOpen = function (qssList, settings, params) {
+        // Focus the first element (in the presentation order) if the QSS is
+        // opened using the global shortcut.
         if (params.shortcut) {
             var keyOutBtnIndex = settings.length - 1;
             qssList.events.onButtonFocus.fire(keyOutBtnIndex);
+            return;
+        }
+
+        // Focus a button corresponding to a given setting or the previous or
+        // following button depending on the activation parameters.
+        if (params.setting) {
+            var settingIndex = gpii.qss.getSettingIndex(settings, params.setting);
+
+            if (params.key === "ArrowLeft") {
+                settingIndex = gpii.psp.modulo(settingIndex - 1, settings.length);
+            } else if (params.key === "ArrowRight") {
+                settingIndex = gpii.psp.modulo(settingIndex + 1, settings.length);
+            }
+
+            qssList.events.onButtonFocus.fire(settingIndex);
         }
     };
 })(fluid);

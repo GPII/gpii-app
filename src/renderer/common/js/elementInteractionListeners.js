@@ -104,7 +104,7 @@
     gpii.qss.elementRepeater.keyListener.deregisterListener = function (that) {
         var target = that.options.target || that.container;
 
-        target.off("keyup");
+        target.off("keyup", that.registerKeyPress);
     };
 
     /**

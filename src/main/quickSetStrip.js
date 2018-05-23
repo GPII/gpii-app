@@ -154,7 +154,14 @@ fluid.defaults("gpii.app.qss", {
 gpii.app.qss.show = function (that, params) {
     if (!that.options.disabled) {
         that.setBlurTarget(that.dialog);
-        that.applier.change("isShown", true);
+
+        // Show the QSS or focus it if it is already shown.
+        if (that.model.isShown) {
+            that.focus();
+        } else {
+            that.applier.change("isShown", true);
+        }
+
         that.events.onQssOpen.fire(params);
     }
 };
@@ -194,16 +201,27 @@ fluid.defaults("gpii.app.qssWidget", {
             options: {
                 events: {
                     onQssWidgetClosed: null,
-                    onQssSettingAltered: null
+                    onQssSettingAltered: null,
+                    onQssWidgetBlur: null
                 },
                 listeners: {
-                    onQssWidgetClosed: {
+                    onQssWidgetClosed: [{
                         func: "{qssWidget}.hide"
-                    },
+                    }, {
+                        func: "{gpii.app.qss}.focus"
+                    }],
                     onQssSettingAltered: { // XXX dev
                         funcName: "console.log",
                         args: ["Settings Altered: ", "{arguments}.0"]
-                    }
+                    },
+                    onQssWidgetBlur: [{
+                        func: "{qssWidget}.hide"
+                    }, {
+                        func: "{gpii.app.qss}.show",
+                        args: [
+                            "{arguments}.0" // params
+                        ]
+                    }]
                 }
             }
         }

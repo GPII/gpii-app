@@ -51,8 +51,8 @@ gpii.app.computeWindowPosition = function (width, height, offsetX, offsetY) {
         desiredY;
 
     // restrict offset to be positive
-    offsetY = offsetY > 0 ? offsetY : 0;
-    offsetX = offsetX > 0 ? offsetX : 0;
+    offsetY = Math.max(0, offsetY);
+    offsetX = Math.max(0, offsetX);
 
     // position relatively to the bottom right corner
     // note that as offset is positive we're restricting window
