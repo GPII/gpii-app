@@ -112,7 +112,7 @@
      * Represents the QSS stepper widget.
      */
     fluid.defaults("gpii.qssWidget.stepper", {
-        gradeNames: ["gpii.qssWidget.baseStepper"],
+        gradeNames: ["gpii.qssWidget.baseStepper", "fluid.viewComponent"],
 
         model: {
             messages: {
@@ -164,7 +164,10 @@
                     }
                 }
             },
-
+            focusManager: {
+                type: "gpii.qss.focusManager",
+                container: "{stepper}.container"
+            },
             contentHandler: {
                 type: "gpii.qssWidget.stepper.contentHandler",
                 container: ".flc-qssStepperWidget",
@@ -202,6 +205,24 @@
                     }
                 }
             }
+        },
+
+        listeners: {
+            "onCreate.processParams": {
+                funcName: "gpii.qssWidget.stepper.processParams",
+                args: ["{focusManager}", "{stepper}.options.activationParams"]
+            }
         }
     });
+
+    gpii.qssWidget.stepper.processParams = function (focusManager, activationParams) {
+        switch (activationParams.key) {
+        case "Spacebar":
+        case "Enter":
+            focusManager.focus(0, true); // focus the close button with a navigation highlight
+            break;
+        default:
+            focusManager.focus(0, false); // clear the focus rectangle and move it to the close button
+        }
+    };
 })(fluid);

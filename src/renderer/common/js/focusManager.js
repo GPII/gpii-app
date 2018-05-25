@@ -50,17 +50,26 @@
             "onTabPressed.impl": {
                 func: "{that}.onTabPressed"
             },
-            "onCreate.disableTabKey": {
-                funcName: "gpii.qss.focusManager.disableTabKey"
+            "onCreate.addListeners": {
+                funcName: "gpii.qss.focusManager.addListeners",
+                args: ["{that}"]
             },
-            "onDestroy.enableTabKey": {
-                funcName: "gpii.qss.focusManager.enableTabKey"
+            "onDestroy.removeListeners": {
+                funcName: "gpii.qss.focusManager.removeListeners"
             }
         },
         invokers: {
             getFocusInfo: {
                 funcName: "gpii.qss.focusManager.getFocusInfo",
                 args: ["{that}.container", "{that}.options.styles"]
+            },
+            removeHighlight: {
+                funcName: "gpii.qss.focusManager.removeHighlight",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{arguments}.0" // clearFocus
+                ]
             },
             focus: {
                 funcName: "gpii.qss.focusManager.focus",
@@ -98,16 +107,20 @@
         }
     });
 
-    gpii.qss.focusManager.disableTabKey = function () {
+    gpii.qss.focusManager.addListeners = function (that) {
         $(document).on("keydown.focusManager", function (KeyboardEvent) {
             if (KeyboardEvent.key === "Tab") {
                 KeyboardEvent.preventDefault();
             }
         });
+
+        $(document).on("click.focusManager", function () {
+            that.removeHighlight(false);
+        });
     };
 
-    gpii.qss.focusManager.enableTabKey = function () {
-        $(document).off("keydown.focusManager");
+    gpii.qss.focusManager.removeListeners = function () {
+        $(document).off(".focusManager");
     };
 
     gpii.qss.focusManager.getFocusInfo = function (container, styles) {
@@ -123,6 +136,16 @@
             focusableElements: focusableElements,
             focusIndex: focusIndex
         };
+    };
+
+    gpii.qss.focusManager.removeHighlight = function (that, container, clearFocus) {
+        var styles = that.options.styles,
+            focusableElements = container.find("." + styles.focusable);
+        focusableElements.removeClass(styles.highlighted);
+
+        if (clearFocus) {
+            focusableElements.removeClass(styles.focused);
+        }
     };
 
     gpii.qss.focusManager.focus = function (that, container, index, applyHighlight) {
@@ -141,9 +164,7 @@
             return;
         }
 
-        var focusableElements = container.find("." + styles.focusable);
-        focusableElements.removeClass(styles.focused);
-        focusableElements.removeClass(styles.highlighted);
+        that.removeHighlight(true);
 
         element
             .addClass(styles.focused)

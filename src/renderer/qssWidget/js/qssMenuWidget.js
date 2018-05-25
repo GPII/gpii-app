@@ -103,7 +103,7 @@
                         },
                         "onCreate.processParams": {
                             funcName: "gpii.qssWidget.menu.processParams",
-                            args: ["{that}", "{menu}.options.activationParams"]
+                            args: ["{that}", "{focusManager}", "{menu}.options.activationParams"]
                         }
                     }
                 }
@@ -117,13 +117,22 @@
         }
     });
 
-    gpii.qssWidget.menu.processParams = function (that, activationParams) {
+    gpii.qssWidget.menu.processParams = function (that, focusManager, activationParams) {
         var items = that.model.items;
 
-        if (activationParams.key === "ArrowUp") {
+        switch (activationParams.key) {
+        case "ArrowUp":
             that.events.onItemFocus.fire(items.length - 1);
-        } else if (activationParams.key === "ArrowDown") {
+            break;
+        case "ArrowDown":
             that.events.onItemFocus.fire(0);
+            break;
+        case "Spacebar":
+        case "Enter":
+            focusManager.focus(0, true); // focus the close button with a navigation highlight
+            break;
+        default:
+            focusManager.focus(0, false); // clear the focus rectangle and move it to the close button
         }
     };
 

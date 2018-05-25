@@ -106,10 +106,16 @@
                 func: "{that}.activate"
             }],
             "onSpacebarPressed.activate": {
-                func: "{that}.activate"
+                func: "{that}.activate",
+                args: [
+                    {key: "Spacebar"}
+                ]
             },
             "onEnterPressed.activate": {
-                func: "{that}.activate"
+                func: "{that}.activate",
+                args: [
+                    {key: "Enter"}
+                ]
             }
         },
         invokers: {
