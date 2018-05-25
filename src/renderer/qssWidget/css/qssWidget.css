@@ -2,9 +2,12 @@
     font-family: Arial;
 }
 
+.fl-qssWidget .fl-focused {
+    outline: none !important;
+}
+
 .fl-qssWidget .fl-highlighted {
     border: 2px solid #ff0000 !important;
-    outline: none !important;
 }
 
 .fl-dialog-content.fl-qssStepperWidget,
