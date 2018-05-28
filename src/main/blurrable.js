@@ -48,7 +48,7 @@ fluid.defaults("gpii.app.blurrable", {
 
 
 gpii.app.blurrable.isWindowRelated = function (window, linkedGrades) {
-    return linkedGrades.some(function (linkedWindowGrade) {
+    return linkedGrades && linkedGrades.some(function (linkedWindowGrade) {
         if (window && window.gradeNames) {
             return window.gradeNames.indexOf(linkedWindowGrade) >= 0;
         }

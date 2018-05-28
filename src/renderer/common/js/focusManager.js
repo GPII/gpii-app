@@ -44,7 +44,9 @@
             }
         },
         events: {
-            onTabPressed: "{windowKeyListener}.events.onTabPressed"
+            onTabPressed: "{windowKeyListener}.events.onTabPressed",
+            onElementFocused: null,
+            onFocusLost: null
         },
         listeners: {
             "onTabPressed.impl": {
@@ -84,7 +86,6 @@
                 funcName: "gpii.qss.focusManager.focusElement",
                 args: [
                     "{that}",
-                    "{that}.container",
                     "{arguments}.0", // element
                     "{arguments}.1" // applyHighlight
                 ]
@@ -125,11 +126,11 @@
 
     gpii.qss.focusManager.getFocusInfo = function (container, styles) {
         var focusableElements = container.find("." + styles.focusable),
-            focusedElement = container.find("." + styles.focused),
+            focusedElement = container.find("." + styles.focused)[0],
             focusIndex = -1;
 
-        if (focusedElement.length > 0) {
-            focusIndex = jQuery.inArray(focusedElement[0], focusableElements);
+        if (focusedElement) {
+            focusIndex = jQuery.inArray(focusedElement, focusableElements);
         }
 
         return {
@@ -145,6 +146,7 @@
 
         if (clearFocus) {
             focusableElements.removeClass(styles.focused);
+            that.events.onFocusLost.fire();
         }
     };
 
@@ -158,7 +160,7 @@
         that.focusElement(elementToFocus, applyHighlight);
     };
 
-    gpii.qss.focusManager.focusElement = function (that, container, element, applyHighlight) {
+    gpii.qss.focusManager.focusElement = function (that, element, applyHighlight) {
         var styles = that.options.styles;
         if (!element.hasClass(styles.focusable)) {
             return;
@@ -170,6 +172,8 @@
             .addClass(styles.focused)
             .toggleClass(styles.highlighted, applyHighlight)
             .focus();
+
+        that.events.onElementFocused.fire(element);
     };
 
     gpii.qss.focusManager.focusNext = function (that) {

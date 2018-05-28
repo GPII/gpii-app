@@ -1,3 +1,7 @@
+body {
+    background-color: transparent;
+}
+
 .fl-qssTooltip {
     border: 1px solid #000000;
     border-radius: 15px;

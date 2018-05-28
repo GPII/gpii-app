@@ -71,6 +71,7 @@
         events: {
             onMouseEnter: null,
             onMouseLeave: null,
+            onButtonFocused: "{gpii.qss.list}.events.onButtonFocused",
 
             onButtonFocus: "{gpii.qss.list}.events.onButtonFocus",
             onSettingAltered: "{gpii.qss.list}.events.onSettingAltered"
@@ -87,6 +88,16 @@
                 method: "text",
                 args: ["{that}.model.item.label"]
             },
+
+            "{focusManager}.events.onElementFocused": {
+                funcName: "gpii.qss.buttonPresenter.notifyButtonFocused",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{arguments}.0"     // element
+                ]
+            },
+
             onButtonFocus: {
                 funcName: "gpii.qss.buttonPresenter.focusButton",
                 args: [
@@ -101,7 +112,7 @@
                 func: "{gpii.qss.list}.events.onButtonMouseEnter",
                 args: [
                     "{that}.model.item",
-                    "@expand:gpii.qss.getElementMetrics({arguments}.0.target)"
+                    "@expand:gpii.qss.getElementMetrics({that}.container)"
                 ]
             },
             onMouseLeave: {
@@ -109,7 +120,7 @@
                 // TODO is this needed?
                 args: [
                     "{that}.model.item",
-                    "@expand:gpii.qss.getElementMetrics({arguments}.0.target)"
+                    "@expand:gpii.qss.getElementMetrics({that}.container)"
                 ]
             },
 
@@ -153,6 +164,15 @@
         qssList.events.onButtonClicked.fire(setting, metrics, activationParams);
     };
 
+    gpii.qss.buttonPresenter.notifyButtonFocused = function (that, container, focusedElement) {
+        if (container.is(focusedElement)) {
+            // TODO generalize this behaviour with the other container related events
+            that.events.onButtonFocused.fire(
+                that.model.item,
+                gpii.qss.getElementMetrics(focusedElement));
+        }
+    };
+
     gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index) {
         if (that.model.index === index) {
             focusManager.focusElement(container, true);
@@ -162,12 +182,11 @@
      * Return the metrics of a clicked element. These can be used
      * for positioning. Note that the position is relative to the right.
      *
-     * @param {jQuery|Object} target - The DOM element which
+     * @param {jQuery} target - The DOM element which
      * positioning metrics are needed.
      * @returns {{width: Number, height: Number, offsetRight}}
      */
     gpii.qss.getElementMetrics = function (target) {
-        // ensure we're working with jquery object
         target = $(target);
         return {
             offsetRight: $(window).width() - target.offset().left,
@@ -318,6 +337,7 @@
         events: {
             onButtonFocus: null,
 
+            onButtonFocused: null,
             onButtonClicked: null,
             onButtonMouseEnter: null,
             onButtonMouseLeave: null,
@@ -400,12 +420,14 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
-                        onQssClosed: "{qss}.events.onQssClosed",
+                        onQssClosed:           "{qss}.events.onQssClosed",
+                        onQssButtonFocused:    "{quickSetStripList}.events.onButtonFocused",
+                        onQssButtonsFocusLost: "{focusManager}.events.onFocusLost",
                         onQssButtonClicked:    "{quickSetStripList}.events.onButtonClicked",
                         onQssButtonMouseEnter: "{quickSetStripList}.events.onButtonMouseEnter",
                         onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave",
 
-                        onQssSettingAltered: "{quickSetStripList}.events.onSettingAltered"
+                        onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered"
                     }
                 }
             }

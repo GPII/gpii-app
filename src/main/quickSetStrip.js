@@ -37,7 +37,8 @@ fluid.defaults("gpii.app.qss", {
         attrs: {
             width: 720,
             height: 80,
-            alwaysOnTop: true
+            alwaysOnTop: true,
+            transparent: false
         },
         params: {
             settings: null
@@ -81,6 +82,8 @@ fluid.defaults("gpii.app.qss", {
             options: {
                 events: {
                     onQssClosed: null,
+                    onQssButtonFocused: null,
+                    onQssButtonsFocusLost: null,
                     onQssButtonClicked: null,
                     onQssButtonMouseEnter: null,
                     onQssButtonMouseLeave: null,
@@ -96,6 +99,14 @@ fluid.defaults("gpii.app.qss", {
                     onQssButtonClicked: {
                         funcName: "console.log",
                         args: ["Item clicked: ", "{arguments}.0"]
+                    },
+                    onQssButtonFocused: {
+                        funcName: "console.log",
+                        args: ["Focused: ", "{arguments}.0", "{arguments}.1"]
+                    },
+                    onQssButtonsFocusLost: {
+                        funcName: "console.log",
+                        args: ["Focused LOST: "]
                     },
                     onQssButtonMouseEnter: {
                         funcName: "console.log",
@@ -260,6 +271,7 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationP
  * @param {Number} elementMetrics.offsetRight - The offset of the element from the
  * right of its window's.
  */
+// TODO show when setting is changed?
 gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
     console.log("Showing... ", that.options.gradeNames);
     console.log(setting, elementMetrics);
@@ -274,6 +286,7 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
     // TODO toggle sets position?
+    // modelListener for position?
     that.applier.change("isShown", true);
     that.applier.change("setting", setting);
     // reposition window properly
@@ -296,14 +309,6 @@ fluid.defaults("gpii.app.qssWrapper", {
             args: "@expand:fluid.module.resolvePath({that}.options.settingsPath)"
         }
     },
-
-    // listeners: {
-    //     "qssMain.events.onQssButtonClicked": {
-    //         func: "{that}.qssWidget.showMaybe"
-    //     },
-    //     "qssWidget.events.onBoundReached",
-    //     "qssWidget.events.onSettingAltered",// -> to pcp itself
-    // },
 
     components : {
         qss: {
@@ -331,6 +336,17 @@ fluid.defaults("gpii.app.qssWrapper", {
                             "{arguments}.1"  // metrics
                         ]
                     },
+                    "{channelListener}.events.onQssButtonFocused": {
+                        func: "{qssTooltip}.show",
+                        args: [
+                            "{arguments}.0", // setting
+                            "{arguments}.1"  // metrics
+                        ]
+                    },
+                    "{channelListener}.events.onQssButtonsFocusLost": {
+                        func: "{qssTooltip}.hide"
+                    },
+                    /// XXX DEV
                     // "{channelListener}.events.onQssButtonMouseLeave": {
                     //     func: "{qssTooltip}.hide"
                     // }
@@ -348,10 +364,6 @@ fluid.defaults("gpii.app.qssWrapper", {
                         // even on QSS show
                         func: "{that}.hide"
                     }
-                },
-
-                listeners: {
-                    // TODO
                 }
             }
         },

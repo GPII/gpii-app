@@ -20,6 +20,9 @@ require("../dialog.js");
 require("../blurrable.js");
 require("../../common/channelUtils.js");
 
+var gpii = fluid.registerNamespace("gpii");
+
+
 fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
 
@@ -28,11 +31,12 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     },
 
     config: {
+        showInactive: true, // not focused when shown
+
         attrs: {
             width: 200,
             height: 300,
-            alwaysOnTop: true,
-            transparent: true
+            alwaysOnTop: true
         },
         fileSuffixPath: "qssTooltipPopup/index.html"
     },
@@ -43,7 +47,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     invokers: {
         show: {
             // TODO split to some generic parts
-            funcName: "gpii.app.qssWidget.show",
+            funcName: "gpii.app.qssTooltipDialog.show",
             args: [
                 "{that}",
                 "{arguments}.0",
@@ -61,8 +65,49 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                     // update message in the tooltip
                     // expect this message to be translated
                     onSettingUpdated: null
+                },
+                modelListeners: {
+                    setting: {
+                        func: "{that}.events.onSettingUpdated",
+                        args: ["{change}.value"]
+                    }
                 }
             }
         }
     }
 });
+
+
+/**
+ * Retrieve element position.
+ */
+function getTooltipPosition(dialog, elementMetrics) {
+    // change offset to element's element right corner
+    var offsetX = elementMetrics.offsetRight - elementMetrics.width;
+
+    return {
+        offsetX: offsetX,
+        offsetY: elementMetrics.height
+    };
+}
+
+
+// TODO reuse widget show
+gpii.app.qssTooltipDialog.show = function (that, setting, elementMetrics) {
+    console.log("Showing... ", that.options.gradeNames);
+    console.log(setting, elementMetrics);
+
+    var offset = getTooltipPosition(that.dialog, elementMetrics);
+
+    // trigger update in the tooltip BrowserWindow
+    // and keep the last shown setting
+    that.applier.change("setting", setting);
+
+    // Trigger the showing mechanism
+    that.applier.change("isShown", true);
+    // reposition window properly
+    that.positionWindow(offset.offsetX, offset.offsetY);
+
+    // TODO is this needed as it is not even focused?
+    that.setBlurTarget(that.dialog);
+};

@@ -56,6 +56,9 @@ fluid.defaults("gpii.app.dialog", {
     },
 
     config: {
+        showInactive: false,
+
+        // dialog creation options
         attrs: {        // raw attributes used in `BrowserWindow` generation
             width: 800,
             height: 600,
@@ -95,7 +98,7 @@ fluid.defaults("gpii.app.dialog", {
     modelListeners: {
         isShown: {
             funcName: "gpii.app.dialog.toggle",
-            args: ["{that}", "{change}.value"],
+            args: ["{that}", "{change}.value", "{that}.options.config.showInactive"],
             namespace: "impl"
         }
     },
@@ -246,11 +249,16 @@ gpii.app.dialog.makeDialog = function (windowOptions, url, params, gradeNames) {
  * DPI settings changes.
  * @param {Component} dialog - The diolog component to be shown
  * @param {Boolean} isShown - Whether the window has to be shown
+ * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
-gpii.app.dialog.toggle = function (dialog, isShown) {
+gpii.app.dialog.toggle = function (dialog, isShown, showInactive) {
+    var showMethod = showInactive ?
+        dialog.dialog.showInactive :
+        dialog.dialog.show;
+
     if (isShown) {
         dialog.positionWindow();
-        dialog.dialog.show();
+        showMethod.call(dialog.dialog);
     } else {
         dialog.dialog.hide();
     }
