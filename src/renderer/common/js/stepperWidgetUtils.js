@@ -103,7 +103,7 @@
     /**
      * TODO
      */
-    gpii.qssWidget.stepper.activateButton = function (button, value, restrictions) {
+    gpii.qssWidget.stepper.animateButton = function (button, value, restrictions) {
         var triggerClass;
 
         var animationClasses = {

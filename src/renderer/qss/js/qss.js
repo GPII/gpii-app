@@ -62,6 +62,10 @@
             caption: ".flc-qss-btnCaption"
         },
 
+        styles: {
+            activated: "fl-activated"
+        },
+
         attrs: {
             role: "button"
         },
@@ -69,6 +73,7 @@
         // pass hover item as it is in order to use its position
         // TODO probably use something like https://stackoverflow.com/questions/3234977/using-jquery-how-to-get-click-coordinates-on-the-target-element
         events: {
+            onQssWidgetToggled: "{gpii.qss}.events.onQssWidgetToggled",
             onButtonFocus: "{gpii.qss.list}.events.onButtonFocus",
 
             onMouseEnter: "{gpii.qss.list}.events.onButtonMouseEnter",
@@ -94,6 +99,15 @@
                     "{focusManager}",
                     "{that}.container",
                     "{arguments}.0" // index
+                ]
+            },
+            onQssWidgetToggled: {
+                funcName: "gpii.qss.buttonPresenter.onQssWidgetToggled",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{arguments}.0", // setting
+                    "{arguments}.1" // isShown
                 ]
             },
 
@@ -131,10 +145,15 @@
         }
     });
 
+    gpii.qss.buttonPresenter.onQssWidgetToggled = function (that, container, setting, isShown) {
+        var activatedClass = that.options.styles.activated;
+        container.toggleClass(activatedClass, isShown && that.model.item.path === setting.path);
+    };
+
     gpii.qss.buttonPresenter.activate = function (that, container, qssList, activationParams) {
         var metrics = gpii.qss.getElementMetrics(container),
             setting = that.model.item;
-        qssList.events.onButtonClicked.fire(setting, metrics, activationParams);
+        qssList.events.onButtonActivated.fire(setting, metrics, activationParams);
     };
 
     gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index) {
@@ -176,18 +195,18 @@
             onArrowUpPressed: [{
                 func: "{that}.increment"
             }, {
-                func: "{that}.activateBtn"
+                func: "{that}.animateButton"
             }],
             onArrowDownPressed: [{
                 func: "{that}.decrement"
             }, {
-                func: "{that}.activateBtn"
+                func: "{that}.animateButton"
             }]
         },
 
         invokers: {
-            activateBtn: {
-                funcName: "gpii.qssWidget.stepper.activateButton",
+            animateButton: {
+                funcName: "gpii.qssWidget.stepper.animateButton",
                 args: ["{that}.container", "{that}.model.value", "{that}.model.stepperParams"]
             }
         }
@@ -300,7 +319,7 @@
         events: {
             onButtonFocus: null,
 
-            onButtonClicked: null,
+            onButtonActivated: null,
             onButtonMouseEnter: null,
             onButtonMouseLeave: null,
 
@@ -343,7 +362,8 @@
 
         events: {
             onQssOpen: null,
-            onQssClosed: null
+            onQssClosed: null,
+            onQssWidgetToggled: null
         },
 
         components: {
@@ -366,6 +386,7 @@
                     events: {
                         // Add events from the main process to be listened for
                         onQssOpen: "{qss}.events.onQssOpen",
+                        onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
                         onSettingUpdated: null
                     },
                     // XXX dev
@@ -383,7 +404,7 @@
                     events: {
                         // Add events the main process to be notified for
                         onQssClosed: "{qss}.events.onQssClosed",
-                        onQssButtonClicked:    "{quickSetStripList}.events.onButtonClicked",
+                        onQssButtonActivated:    "{quickSetStripList}.events.onButtonActivated",
                         onQssButtonMouseEnter: "{quickSetStripList}.events.onButtonMouseEnter",
                         onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave",
 

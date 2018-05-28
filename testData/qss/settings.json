@@ -32,8 +32,8 @@
         "label": "Screen Size",
         "path": "Screen Size",
         "value": 1,
-        "min": 5,
-        "max": 0,
+        "min": 0.25,
+        "max": 3,
         "divisibleBy": 0.25
     }, {
         "type": "number",
