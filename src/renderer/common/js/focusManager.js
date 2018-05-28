@@ -18,12 +18,24 @@
 (function (fluid, jQuery) {
     var gpii = fluid.registerNamespace("gpii");
 
+    /**
+     * A component responsible for managing focus within a container. All elements in the
+     * container that can gain focus must have the class "fl-focusable". The currently
+     * focused element (can be only one at any given time) will have the "fl-focused" class which
+     * is simply a marker class used when computing which should be the next or previous element
+     * to focus. The "fl-highlighted" class is added to a focused element if the element has gained
+     * focus via keyboard interaction. This allows different CSS styles depending on whether the
+     * element has been focused using the keyboard or via click/touch.
+     *
+     * This is the base grade for a focus manager which enables focusing of elements using the
+     * Tab / Shift + Tab keys.
+     */
     fluid.defaults("gpii.qss.focusManager", {
         gradeNames: ["fluid.viewComponent"],
         styles: {
             focusable: "fl-focusable",
-            focused: "fl-focused", // a marker class for the element focused via click or keyboard
-            highlighted: "fl-highlighted" // applies hightlight only when interacted via keyboard
+            focused: "fl-focused",
+            highlighted: "fl-highlighted"
         },
 
         components: {
@@ -84,7 +96,6 @@
                 funcName: "gpii.qss.focusManager.focusElement",
                 args: [
                     "{that}",
-                    "{that}.container",
                     "{arguments}.0", // element
                     "{arguments}.1" // applyHighlight
                 ]
@@ -107,6 +118,12 @@
         }
     });
 
+    /**
+     * Adds the necessary listeners so that the default Tab key behavior is overridden and
+     * also in order to detect clicks in the document. All listeners have the jQuery namespace
+     * "focusManager" so that they can be easily deregistered.
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     */
     gpii.qss.focusManager.addListeners = function (that) {
         $(document).on("keydown.focusManager", function (KeyboardEvent) {
             if (KeyboardEvent.key === "Tab") {
@@ -119,10 +136,23 @@
         });
     };
 
+    /**
+     * Deregisters the listeners related to the focus manager (i.e. listeners with the namespace
+     * "focusManager") when the component is destroyed.
+     */
     gpii.qss.focusManager.removeListeners = function () {
         $(document).off(".focusManager");
     };
 
+    /**
+     * Returns information about the focusable elements in the page as well as the index of
+     * the currently focused element.
+     * @param {jQuery} container The jQuery element representing the container in which this
+     * focus manager handles focus.
+     * @param {Object} styles A styles object containing various classes related to focusing
+     * of elements
+     * @return {Object} Information about the focusable elements.
+     */
     gpii.qss.focusManager.getFocusInfo = function (container, styles) {
         var focusableElements = container.find("." + styles.focusable),
             focusedElement = container.find("." + styles.focused),
@@ -138,6 +168,16 @@
         };
     };
 
+    /**
+     * Removes the keyboard navigation highlight (i.e. the "fl-highlighted" class) from all
+     * focusable elements within the container of the focus manager and optionally clears
+     * the marker "fl-focused" class.
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {jQuery} container The jQuery element representing the container in which this
+     * focus manager handles focus.
+     * @param {Boolean} clearFocus Whether the marker "fl-focused" class should be removed
+     * as well.
+     */
     gpii.qss.focusManager.removeHighlight = function (that, container, clearFocus) {
         var styles = that.options.styles,
             focusableElements = container.find("." + styles.focusable);
@@ -148,6 +188,16 @@
         }
     };
 
+    /**
+     * Focuses a focusable element with a given index in the container and optionally applies
+     * the keyboard navigation highlight (the "fl-highlighted" class).
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {jQuery} container The jQuery element representing the container in which this
+     * focus manager handles focus.
+     * @param {Number} index The index of the focusable element to be focused.
+     * @param {Boolean} applyHighlight Whether the keyboard navigation highlight should be
+     * applied to the element which is to be focused.
+     */
     gpii.qss.focusManager.focus = function (that, container, index, applyHighlight) {
         var selector = fluid.stringTemplate(".%focusable:eq(%index)", {
             focusable: that.options.styles.focusable,
@@ -158,7 +208,15 @@
         that.focusElement(elementToFocus, applyHighlight);
     };
 
-    gpii.qss.focusManager.focusElement = function (that, container, element, applyHighlight) {
+    /**
+     * Focuses the given focusable element and optionally applies the keyboard navigation
+     * highlight (the "fl-highlighted" class).
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {jQuery} element A jQuery object representing the element to be focused.
+     * @param {Boolean} applyHighlight Whether the keyboard navigation highlight should be
+     * applied to the element which is to be focused.
+     */
+    gpii.qss.focusManager.focusElement = function (that, element, applyHighlight) {
         var styles = that.options.styles;
         if (!element.hasClass(styles.focusable)) {
             return;
@@ -172,6 +230,12 @@
             .focus();
     };
 
+    /**
+     * Focuses the next available focusable element. If the last focusable element has
+     * been reached, the first element will be focused, then the second and so on. Note
+     * that the keyboard navigation highlight will be applied in this case.
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     */
     gpii.qss.focusManager.focusNext = function (that) {
         var focusInfo = that.getFocusInfo(),
             focusableElements = focusInfo.focusableElements,
@@ -187,6 +251,12 @@
         that.focus(nextIndex, true);
     };
 
+    /**
+     * Focuses the previous available focusable element. If the first focusable element has
+     * been reached, the last element will be focused, then the last but one and so on. Note
+     * that the keyboard navigation highlight will be applied in this case.
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     */
     gpii.qss.focusManager.focusPrevious = function (that) {
         var focusInfo = that.getFocusInfo(),
             focusableElements = focusInfo.focusableElements,
@@ -202,6 +272,12 @@
         that.focus(previousIndex, true);
     };
 
+    /**
+     * Focuses the next available focusable element when the Tab key is pressed. If the Tab
+     * key is pressed in conjunction with the Shift key, the previous focusable element will
+     * receive the focus.
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     */
     gpii.qss.focusManager.onTabPressed = function (that, KeyboardEvent) {
         if (KeyboardEvent.shiftKey) {
             that.focusPrevious();
@@ -210,6 +286,11 @@
         }
     };
 
+    /**
+     * An instance of a focus manager which enables focusing of elements both by using the Tab /
+     * Shift + Tab keys and by using the Arrow Up and Arrow Down keys. Note that the keyboard
+     * navigation highlight will be applied in this case.
+     */
     fluid.defaults("gpii.qss.verticalFocusManager", {
         gradeNames: ["gpii.qss.focusManager"],
         components: {
@@ -236,6 +317,10 @@
         }
     });
 
+    /**
+     * An instance of a focus manager which enables focusing of elements both by using the Tab /
+     * Shift + Tab keys and by using the Arrow Left and Arrow Right keys.
+     */
     fluid.defaults("gpii.qss.horizontalFocusManager", {
         gradeNames: ["gpii.qss.focusManager"],
         components: {
