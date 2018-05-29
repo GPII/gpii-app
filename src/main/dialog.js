@@ -79,7 +79,7 @@ fluid.defaults("gpii.app.dialog", {
             height: 600,
             show: false,
             frame: false,
-            transparent: false,
+            transparent: true,
             alwaysOnTop: true,
             skipTaskbar: true,
             resizable: false

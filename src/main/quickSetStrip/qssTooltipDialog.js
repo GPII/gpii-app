@@ -23,12 +23,70 @@ require("../../common/channelUtils.js");
 var gpii = fluid.registerNamespace("gpii");
 
 
+
+/**
+ * TODO
+ */
+fluid.defaults("gpii.app.dialog.delayedShow", {
+    gradeNames: ["gpii.app.timer"],
+
+    // the desired delay in milliseconds
+    showDelay: null,
+
+    listeners: {
+        onTimerFinished: {
+            func: "{that}._show"
+            // arguments are passed with the event
+        }
+    },
+
+    invokers: {
+        // _show: null, // expected from implementor
+        // _hide: null,
+        show: {
+            funcName: "gpii.app.dialog.delayedShow.show",
+            args: [
+                "{that}",
+                "{that}.options.showDelay",
+                "{arguments}" // showArgs
+            ]
+        },
+        hide: {
+            funcName: "gpii.app.dialog.delayedShow.hide",
+            args: ["{that}"]
+        }
+    }
+});
+
+gpii.app.dialog.delayedShow.show = function (that, delay, showArgs) {
+    // process raw arguments
+    showArgs = fluid.values(showArgs);
+
+    if (Number.isInteger(delay)) {
+        that.start(delay, showArgs);
+    } else {
+        // simply trigger a show synchronously
+        that.events.onTimerFinished.fire.apply(that.events.onTimerFinished, showArgs);
+    }
+};
+
+gpii.app.dialog.delayedShow.hide = function (that) {
+    // clear any existing timer
+    that.clear();
+
+    that._hide();
+};
+
+
+
 fluid.defaults("gpii.app.qssTooltipDialog", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.delayedShow"],
 
     model: {
         setting: null
     },
+
+    showDelay: 500,
 
     config: {
         showInactive: true, // not focused when shown
@@ -53,14 +111,20 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                 "{arguments}.1"
             ]
         },
-        show: {
+        _show: {
             // TODO split to some generic parts
-            funcName: "gpii.app.qssTooltipDialog.show",
+            funcName: "gpii.app.qssTooltipDialog._show",
             args: [
                 "{that}",
                 "{arguments}.0",
                 "{arguments}.1"
             ]
+        },
+        // same as `gpii.app.dialog.hide`
+        // needed as `gpii.app.dialog.delayedShow` overrides `show` and `hide` methods
+        _hide: {
+            changePath: "isShown",
+            value: false
         }
     },
 
@@ -105,15 +169,12 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, elementMetri
 };
 
 // TODO reuse widget show
-gpii.app.qssTooltipDialog.show = function (that, setting, elementMetrics) {
-    console.log("Showing... ", that.options.gradeNames);
-    console.log(setting, elementMetrics);
-
+gpii.app.qssTooltipDialog._show = function (that, setting, elementMetrics) {
     var offset = getTooltipPosition(that.dialog, elementMetrics);
 
     // trigger update in the tooltip BrowserWindow
     // and keep the last shown setting
-    that.applier.change("setting", null, "DELETE");
+    that.applier.change("setting", null, "DELETE"); // ensure previous state is not merged
     that.applier.change("setting", setting);
 
     // Trigger the showing mechanism

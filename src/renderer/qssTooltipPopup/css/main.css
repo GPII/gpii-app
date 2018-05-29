@@ -14,7 +14,7 @@ body {
     border: 1px solid #000000;
     border-radius: 15px;
     padding: 10px;
-    background-color: #EEEEEE;
+    background-color: #FFFFFF;
 
     display: flex;
     flex-direction: column;
@@ -42,7 +42,7 @@ body {
     /* overlay with tooltip border */
     margin-top: -1px;
     margin-right: -44px;
-    border-top-color: #EEEEEE;
+    border-top-color: #FFFFFF;
 }
 
 .fl-footer-arrow .fl-arrow-border {

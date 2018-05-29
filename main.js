@@ -18,6 +18,8 @@ var fluid = require("infusion"),
 
 fluid.setLogging(true);
 
+app.disableHardwareAcceleration();
+
 
 // The PSP will have a single instance. If an attempt to start a second instance is made,
 // the second one will be closed and the callback provided to `app.makeSingleInstance`
