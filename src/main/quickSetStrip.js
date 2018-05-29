@@ -329,15 +329,15 @@ fluid.defaults("gpii.app.qssWrapper", {
                         ]
                     },
 
-                    "{channelListener}.events.onQssButtonMouseEnter": {
-                        func: "{qssTooltip}.show",
-                        args: [
-                            "{arguments}.0", // setting
-                            "{arguments}.1"  // metrics
-                        ]
-                    },
+                    // "{channelListener}.events.onQssButtonMouseEnter": {
+                    //     func: "{qssTooltip}.showIfPossible",
+                    //     args: [
+                    //         "{arguments}.0", // setting
+                    //         "{arguments}.1"  // metrics
+                    //     ]
+                    // },
                     "{channelListener}.events.onQssButtonFocused": {
-                        func: "{qssTooltip}.show",
+                        func: "{qssTooltip}.showIfPossible",
                         args: [
                             "{arguments}.0", // setting
                             "{arguments}.1"  // metrics

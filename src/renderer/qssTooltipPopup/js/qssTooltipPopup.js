@@ -40,8 +40,15 @@
 
         invokers: {
             update: {
-                changePath: "messages",
-                value: "{arguments}.0"
+                // simple way to avoid merging leaving previous tooltip values
+                funcName: "fluid.fireChanges",
+                args: [
+                    "{that}.applier",
+                    [
+                        {path: "messages", value: { header: "", body: "", footer: "" }},
+                        {path: "messages", value: "{arguments}.0"}
+                    ]
+                ]
             }
         },
 
@@ -52,7 +59,7 @@
                     listeners: {
                         onSettingUpdated: {
                             func: "{qssTooltipPopup}.update",
-                            args: ["{arguments}.0.tooltip"]
+                            args: ["{arguments}.0"]
                         }
                     },
                     events: {

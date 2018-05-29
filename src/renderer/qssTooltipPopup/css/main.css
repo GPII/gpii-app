@@ -3,6 +3,14 @@ body {
 }
 
 .fl-qssTooltip {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.fl-qssTooltip-content {
+    flex: 1;
+
     border: 1px solid #000000;
     border-radius: 15px;
     padding: 10px;
@@ -10,9 +18,34 @@ body {
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
-.fl-qssTooltip div {
+.fl-qssTooltip-content div {
     text-align: center;
+}
+
+
+.fl-footer-arrow {
+    width: 100%;
+}
+
+.fl-footer-arrow .fl-arrow,
+.fl-footer-arrow .fl-arrow-border {
+    float: right;
+    border: 22px solid transparent;
+    border-bottom: 0;
+    width: 5%;
+}
+
+.fl-footer-arrow .fl-arrow {
+    /* overlay with tooltip border */
+    margin-top: -1px;
+    margin-right: -44px;
+    border-top-color: #EEEEEE;
+}
+
+.fl-footer-arrow .fl-arrow-border {
+    margin-right: 21px;
+    border-top-color: #000000;
 }

@@ -27,7 +27,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
 
     model: {
-        setting: {}
+        setting: null
     },
 
     config: {
@@ -45,14 +45,21 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     linkedWindowsGrades: null,
 
     invokers: {
+        showIfPossible: {
+            funcName: "gpii.app.qssTooltipDialog.showIfPossible",
+            args: [
+                "{that}",
+                "{arguments}.0",
+                "{arguments}.1"
+            ]
+        },
         show: {
             // TODO split to some generic parts
             funcName: "gpii.app.qssTooltipDialog.show",
             args: [
                 "{that}",
                 "{arguments}.0",
-                "{arguments}.1",
-                "{arguments}.2"
+                "{arguments}.1"
             ]
         }
     },
@@ -67,9 +74,9 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                     onSettingUpdated: null
                 },
                 modelListeners: {
-                    setting: {
-                        func: "{that}.events.onSettingUpdated",
-                        args: ["{change}.value"]
+                    "{qssTooltipDialog}.model.setting": {
+                        func: "{that}.events.onSettingUpdated.fire",
+                        args: ["{change}.value.tooltip"]
                     }
                 }
             }
@@ -91,6 +98,11 @@ function getTooltipPosition(dialog, elementMetrics) {
     };
 }
 
+gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, elementMetrics) {
+    if (setting && fluid.isValue(setting.tooltip)) {
+        that.show(setting, elementMetrics);
+    }
+};
 
 // TODO reuse widget show
 gpii.app.qssTooltipDialog.show = function (that, setting, elementMetrics) {
@@ -101,6 +113,7 @@ gpii.app.qssTooltipDialog.show = function (that, setting, elementMetrics) {
 
     // trigger update in the tooltip BrowserWindow
     // and keep the last shown setting
+    that.applier.change("setting", null, "DELETE");
     that.applier.change("setting", setting);
 
     // Trigger the showing mechanism

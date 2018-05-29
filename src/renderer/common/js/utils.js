@@ -112,7 +112,7 @@
 
         fluid.each(selectors, function (value, key) {
             var element = that.dom.locate(key);
-            if (element && messages[key]) {
+            if (element && fluid.isValue(messages[key])) {
                 element.text(messages[key]);
             }
         });
