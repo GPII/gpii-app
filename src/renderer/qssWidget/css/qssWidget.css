@@ -119,12 +119,8 @@
 }
 
 @keyframes menuItemActivation {
-    0%, 100%   {
-        background-color: #ffffff;
-        color: #0f4797;
-    }
     50% {
-        background-color: #ffea00;
+        background: #ffea00;
         color: #000000;
     }
 }

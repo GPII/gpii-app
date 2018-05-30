@@ -70,7 +70,8 @@
                     model: {
                         disabled: "{menu}.model.disabled",
                         items: "{menu}.model.setting.enum",
-                        value: "{menu}.model.setting.value"
+                        value: "{menu}.model.setting.value",
+                        styles: "{menu}.model.setting.styles"
                     },
                     dynamicContainerMarkup: {
                         container: "<div role=\"radio\" class=\"%containerClass fl-qssWidgetMenu-item fl-focusable\" tabindex=\"0\"></div>",
@@ -187,6 +188,10 @@
                 funcName: "gpii.qssWidget.menu.presenter.addClickHandler",
                 args: ["{that}", "{focusManager}", "{that}.container"]
             },
+            "onCreate.applyStyles": {
+                funcName: "gpii.qssWidget.menu.presenter.applyStyles",
+                args: ["{that}", "{that}.container", "{repeater}.model.styles"]
+            },
             onItemFocus: {
                 funcName: "gpii.qssWidget.menu.presenter.focusItem",
                 args: [
@@ -226,5 +231,12 @@
 
     gpii.qssWidget.menu.presenter.animateActivation = function (value, item, container, styles) {
         container.toggleClass(styles.active, item === value);
+    };
+
+    gpii.qssWidget.menu.presenter.applyStyles = function (that, container, styles) {
+        var elementStyles = fluid.get(styles, that.model.item);
+        if (elementStyles) {
+            container.css(elementStyles);
+        }
     };
 })(fluid);
