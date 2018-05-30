@@ -75,7 +75,7 @@
         "path": "Captions",
         "value": false,
         "tooltip": {
-            "header": "To turn %state Captions or Subtitles",
+            "header": "To turn on/off Captions or Subtitles",
             "body": "Use the mouse or press Enter",
             "footer": "Work with Windows Media Player and Youtube.com on Chrome"
         }

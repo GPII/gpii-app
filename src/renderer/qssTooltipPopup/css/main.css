@@ -3,9 +3,10 @@ body {
 }
 
 .fl-qssTooltip {
-    display: flex;
     flex-direction: column;
-    height: 100%;
+
+    position: absolute;
+    bottom: 0;
 }
 
 .fl-qssTooltip-content {
@@ -23,8 +24,12 @@ body {
 
 .fl-qssTooltip-content div {
     text-align: center;
+    margin: 2px 0 2px 0;
 }
 
+.fl-qssTooltip-content .flc-tooltipHeader {
+    font-weight: bold;
+}
 
 .fl-footer-arrow {
     width: 100%;
