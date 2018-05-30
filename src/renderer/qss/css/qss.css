@@ -32,7 +32,7 @@ body {
 }
 
 .fl-qss-button:hover {
-    background-color: #eee;
+    filter: brightness(95%);
 }
 
 .fl-qss-button:focus {
@@ -48,14 +48,14 @@ body {
     background-color: #ddd;
 }
 
-.fl-qss-button.activated,
 .fl-qss-button[aria-checked=true] {
     background-color: #83CBEF;
     color: white;
 }
 
-.fl-qss-button-menu.activated {
-    background: linear-gradient(#83cbef 30%, #ffffff);
+.fl-qss-button.fl-activated {
+    background: linear-gradient(#83cbef, #ffffff);
+    font-weight: bold;
 }
 
 .fl-qss-button .fl-qss-btnCaption {

@@ -63,7 +63,7 @@
 
         invokers: {
             activateIncBtn: {
-                funcName: "gpii.qssWidget.stepper.activateButton",
+                funcName: "gpii.qssWidget.stepper.animateButton",
                 args: [
                     "{that}.dom.incButton",
                     "{that}.model.setting.value",
@@ -71,7 +71,7 @@
                 ]
             },
             activateDecBtn: {
-                funcName: "gpii.qssWidget.stepper.activateButton",
+                funcName: "gpii.qssWidget.stepper.animateButton",
                 args: [
                     "{that}.dom.decButton",
                     "{that}.model.setting.value",

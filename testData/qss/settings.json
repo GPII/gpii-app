@@ -7,6 +7,48 @@
         "type": "array",
         "label": "High / Low Contrast",
         "path": "High / Low Contrast",
+        "styles": {
+            "Low Contrast 3": {
+                "background-color": "#6bbfeb",
+                "color": "#1a91f7",
+                "border-color": "#656565"
+            },
+            "Low Contrast 2": {
+                "background-color": "#fec52b",
+                "color": "#6d2d0d",
+                "border-color": "#656565"
+            },
+            "Brown on Light Green": {
+                "background-color": "#93ff94",
+                "color": "#633f11",
+                "border-color": "#656565"
+            },
+            "Black on Yellow": {
+                "background-color": "#ffff33",
+                "color": "#000000",
+                "border-color": "#656565"
+            },
+            "Yellow on Black": {
+                "background-color": "#000000",
+                "color": "#ffff33",
+                "border-color": "#656565"
+            },
+            "White on Black": {
+                "background-color": "#000000",
+                "color": "#ffffff",
+                "border-color": "#656565"
+            },
+            "Black on White": {
+                "background-color": "#ffffff",
+                "color": "#000000",
+                "border-color": "#656565"
+            },
+            "Regular Contrast": {
+                "background": "linear-gradient(to right, #919191, #ffffff)",
+                "color": "#000000",
+                "border-color": "#656565"
+            }
+        },
         "enum": [
             "Low Contrast 3",
             "Low Contrast 2",
@@ -42,8 +84,8 @@
         "label": "Screen Size",
         "path": "Screen Size",
         "value": 1,
-        "min": 5,
-        "max": 0,
+        "min": 0.25,
+        "max": 3,
         "divisibleBy": 0.25
     }, {
         "type": "number",

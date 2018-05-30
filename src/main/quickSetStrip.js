@@ -47,7 +47,8 @@ fluid.defaults("gpii.app.qss", {
     },
 
     events: {
-        onQssOpen: null
+        onQssOpen: null,
+        onQssWidgetToggled: null
     },
 
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget", "gpii.app.qss"],
@@ -58,6 +59,7 @@ fluid.defaults("gpii.app.qss", {
             options: {
                 events: {
                     onQssOpen: "{qss}.events.onQssOpen",
+                    onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
                     onSettingUpdated: null
                 },
                 listeners: {
@@ -84,7 +86,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssClosed: null,
                     onQssButtonFocused: null,
                     onQssButtonsFocusLost: null,
-                    onQssButtonClicked: null,
+                    onQssButtonActivated: null,
                     onQssButtonMouseEnter: null,
                     onQssButtonMouseLeave: null,
 
@@ -96,30 +98,22 @@ fluid.defaults("gpii.app.qss", {
                         func: "{qss}.hide"
                     },
                     // XXX DEV
-                    // onQssButtonClicked: {
-                    //     funcName: "console.log",
-                    //     args: ["Item clicked: ", "{arguments}.0"]
-                    // },
-                    // onQssButtonFocused: {
-                    //     funcName: "console.log",
-                    //     args: ["Focused: ", "{arguments}.0", "{arguments}.1"]
-                    // },
-                    // onQssButtonsFocusLost: {
-                    //     funcName: "console.log",
-                    //     args: ["Focused LOST: "]
-                    // },
-                    // onQssButtonMouseEnter: {
-                    //     funcName: "console.log",
-                    //     args: ["Item Enter: ", "{arguments}.0.target.offsetLeft"]
-                    // },
-                    // onQssButtonMouseLeave: {
-                    //     funcName: "console.log",
-                    //     args: ["Item Leave: ", "{arguments}.0.target.offsetLeft"]
-                    // },
-                    // onQssSettingAltered: {
-                    //     funcName: "console.log",
-                    //     args: ["Setting altered:", "{arguments}.0"]
-                    // }
+                    onQssButtonActivated: {
+                        funcName: "console.log",
+                        args: ["Item clicked: ", "{arguments}.0"]
+                    },
+                    onQssButtonMouseEnter: {
+                        funcName: "console.log",
+                        args: ["Item Enter: ", "{arguments}.0.target.offsetLeft"]
+                    },
+                    onQssButtonMouseLeave: {
+                        funcName: "console.log",
+                        args: ["Item Leave: ", "{arguments}.0.target.offsetLeft"]
+                    },
+                    onQssSettingAltered: {
+                        funcName: "console.log",
+                        args: ["Setting altered:", "{arguments}.0"]
+                    }
                 }
             }
         }
@@ -179,6 +173,10 @@ fluid.defaults("gpii.app.qssWidget", {
 
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssWidget"],
 
+    events: {
+        onQssWidgetToggled: null
+    },
+
     components: {
         channelNotifier: {
             type: "gpii.app.channelNotifier",
@@ -233,6 +231,12 @@ fluid.defaults("gpii.app.qssWidget", {
                 "{arguments}.2"// activationParams
             ]
         },
+        hide: {
+            funcName: "gpii.app.qssWidget.hide",
+            args: [
+                "{that}"
+            ]
+        },
         toggle: {
             funcName: "gpii.app.qssWidget.toggle",
             args: [
@@ -284,12 +288,17 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
     // TODO toggle sets position?
-    // modelListener for position?
-    that.applier.change("isShown", true);
     that.applier.change("setting", setting);
+    that.applier.change("isShown", true);
+    that.events.onQssWidgetToggled.fire(setting, true);
     // reposition window properly
     that.positionWindow(offsetX, elementMetrics.height);
     that.setBlurTarget(that.dialog);
+};
+
+gpii.app.qssWidget.hide = function (that) {
+    that.applier.change("isShown", false);
+    that.events.onQssWidgetToggled.fire(that.model.setting, false);
 };
 
 
@@ -317,8 +326,11 @@ fluid.defaults("gpii.app.qssWrapper", {
                         settings: "{qssWrapper}.options.loadedSettings"
                     }
                 },
+                events: {
+                    onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
+                },
                 listeners: {
-                    "{channelListener}.events.onQssButtonClicked": [{
+                    "{channelListener}.events.onQssButtonActivated": [{
                         func: "{qssWidget}.toggle",
                         args: [
                             "{arguments}.0", // setting
