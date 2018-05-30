@@ -378,7 +378,18 @@
             },
             focusManager: {
                 type: "gpii.qss.horizontalFocusManager",
-                container: "{qss}.container"
+                container: "{qss}.container",
+                options: {
+                    invokers: {
+                        onTabPressed: {
+                            funcName: "gpii.qss.onTabPressed",
+                            args: [
+                                "{that}",
+                                "{arguments}.0" // KeyboardEvent
+                            ]
+                        }
+                    }
+                }
             },
             channelListener: {
                 type: "gpii.psp.channelListener",
@@ -425,6 +436,14 @@
             }
         }
     });
+
+    gpii.qss.onTabPressed = function (that, KeyboardEvent) {
+        if (KeyboardEvent.shiftKey) {
+            that.focusNext();
+        } else {
+            that.focusPrevious();
+        }
+    };
 
     gpii.qss.getSettingIndex = function (settings, setting) {
         return settings.findIndex(function (currentSetting) {
