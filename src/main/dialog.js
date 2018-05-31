@@ -51,6 +51,10 @@ var enableTransparency = gpii.app.dialog.isTrasparencyEnabled();
  * with the `isShown` property of the component
  * and handles Electron objects cleanup upon destruction.
  *
+ * TODO positioning
+ *  Positioning of the window is relative to the bottom right corner of the screen (contrary to the 
+ *  behaviour of the Electron positioning approach) as most windows are positioned in that exact region.
+ *
  * Requires:
  * - (optional) `attrs` - used as raw options for `BrowserWindow` generation.
  *   For full options list:  https://github.com/electron/electron/blob/master/docs/api/browser-window.md
@@ -67,7 +71,14 @@ fluid.defaults("gpii.app.dialog", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
-        isShown: false
+        isShown: false,
+        // the positions of the window,
+        // represented as offset from the bottom right corner;
+        // by default the window is positioned in the bottom right corner
+        offset: {
+            x: 0,
+            y: 0
+        }
     },
 
     config: {
@@ -122,7 +133,7 @@ fluid.defaults("gpii.app.dialog", {
     },
     listeners: {
         "onCreate.positionWindow": {
-            func: "{that}.positionWindow",
+            func: "{that}.repositionWindow",
             args: []
         },
         "onCreate.addDisplayMetricsListener": {
@@ -146,14 +157,26 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
+        // TODO rename to positionDialog
         positionWindow: {
-            funcName: "gpii.app.positionWindow",
+            funcName: "gpii.app.dialog.positionDialog",
             args: [
-                "{that}.dialog",
+                "{that}",
                 "{arguments}.0", // offsetX
                 "{arguments}.1"  // offsetY
             ]
         },
+        repositionWindow: {
+            func: "{that}.positionWindow",
+            args: [
+                "{that}.model.offset.x", // offsetX
+                "{that}.model.offset.y", // offsetX
+            ]
+        },
+        // getDialogOffset: {
+        //     funcName: "gpii.browserWindow.getWindowOffset",
+        //     args: ["{that}.dialog"]
+        // },
         resize: {
             funcName: "gpii.app.dialog.resize",
             args: [
@@ -180,6 +203,22 @@ fluid.defaults("gpii.app.dialog", {
         }
     }
 });
+
+
+/**
+ * TODO
+ * In case offset is not given, the current offset will be used
+ *
+ * @param that
+ * @param [offsetX]
+ * @param [offsetY]
+ * @returns {undefined}
+ */
+gpii.app.dialog.positionDialog = function (that, offsetX, offsetY) {
+    that.applier.change("offset", { x: offsetX, y: offsetY });
+    
+    gpii.browserWindow.positionWindow(that.dialog, offsetX, offsetY);
+};
 
 /**
  * Registers a listener to be called whenever the `display-metrics-changed`
@@ -266,16 +305,16 @@ gpii.app.dialog.makeDialog = function (windowOptions, url, params, gradeNames) {
  * @param {Boolean} isShown - Whether the window has to be shown
  * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
-gpii.app.dialog.toggle = function (dialog, isShown, showInactive) {
+gpii.app.dialog.toggle = function (that, isShown, showInactive) {
     var showMethod = showInactive ?
-        dialog.dialog.showInactive :
-        dialog.dialog.show;
+        that.dialog.showInactive :
+        that.dialog.show;
 
     if (isShown) {
-        dialog.positionWindow();
-        showMethod.call(dialog.dialog);
+        that.repositionWindow();
+        showMethod.call(that.dialog);
     } else {
-        dialog.dialog.hide();
+        that.dialog.hide();
     }
 };
 
@@ -286,7 +325,12 @@ gpii.app.dialog.toggle = function (dialog, isShown, showInactive) {
  * @param {Number} windowHeight - The new height for the window
  */
 gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
-    var bounds = gpii.app.getDesiredWindowBounds(windowWidth, windowHeight);
+    var offset = that.model.offset;
+
+    // TODO move to the browserWindow utils section
+    var bounds = gpii.browserWindow.getDesiredWindowBounds(windowWidth, windowHeight, offset.x, offset.y);
+    // XXX DEV
+    console.log(bounds);
     that.dialog.setBounds(bounds);
 };
 
