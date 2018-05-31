@@ -114,8 +114,8 @@ gpii.browserWindow.getDesiredWindowBounds = function (width, height, offsetY, of
     return {
         x: position.x,
         y: position.y,
-        width: width,
-        height: height
+        width: Math.ceil(width),
+        height: Math.ceil(height)
     };
 };
 

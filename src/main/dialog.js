@@ -16,28 +16,16 @@
 "use strict";
 
 var fluid         = require("infusion");
-var electron      = require("electron");
 var BrowserWindow = require("electron").BrowserWindow;
 
 var gpii  = fluid.registerNamespace("gpii");
 
+require("./resizable.js");
 require("./utils.js");
 require("../common/channelUtils.js");
 
 
 fluid.registerNamespace("gpii.app.dialog");
-// As proposed here: https://github.com/electron/electron/issues/3155
-//
-// Ref. https://electronjs.org/docs/api/system-preferences#systempreferencesisaeroglassenabled-windows
-gpii.app.dialog.isTrasparencyEnabled = function () {
-    if (process.platform === "win32") {
-        return  electron.systemPreferences.isAeroGlassEnabled();
-    }
-
-    return false;
-};
-
-var enableTransparency = gpii.app.dialog.isTrasparencyEnabled();
 
 
 /**
@@ -68,7 +56,7 @@ var enableTransparency = gpii.app.dialog.isTrasparencyEnabled();
  *   `fileSuffixPath = "waitDialog/index.html"`
  */
 fluid.defaults("gpii.app.dialog", {
-    gradeNames: ["fluid.modelComponent"],
+    gradeNames: ["fluid.modelComponent", "gpii.app.resizable"],
 
     model: {
         isShown: false,
@@ -128,28 +116,10 @@ fluid.defaults("gpii.app.dialog", {
             namespace: "impl"
         }
     },
-    events: {
-        onDisplayMetricsChanged: null
-    },
     listeners: {
         "onCreate.positionWindow": {
             func: "{that}.repositionWindow",
             args: []
-        },
-        "onCreate.addDisplayMetricsListener": {
-            func: "gpii.app.dialog.addDisplayMetricsListener",
-            args: ["{that}"]
-        },
-        "onDisplayMetricsChanged.handleDisplayMetricsChange": {
-            func: "gpii.app.dialog.handleDisplayMetricsChange",
-            args: [
-                "{that}",
-                "{arguments}.2" // changedMetrics
-            ]
-        },
-        "onDestroy.removeDisplayMetricsListener": {
-            func: "gpii.app.dialog.removeDisplayMetricsListener",
-            args: ["{that}"]
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -218,40 +188,6 @@ gpii.app.dialog.positionDialog = function (that, offsetX, offsetY) {
     that.applier.change("offset", { x: offsetX, y: offsetY });
     
     gpii.browserWindow.positionWindow(that.dialog, offsetX, offsetY);
-};
-
-/**
- * Registers a listener to be called whenever the `display-metrics-changed`
- * event is emitted by the electron screen.
- * @param {Component} that - The `gpii.app.dialog` component.
- */
-gpii.app.dialog.addDisplayMetricsListener = function (that) {
-    electron.screen.on("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
-};
-
-/**
- * Handle electron's display-metrics-changed event by resizing the dialog if
- * necessary.
- * @param {Component} that - The `gpii.app.dialog` component.
- * @param {Array} changedMetrics - An array of strings that describe the changes.
- * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
- */
-gpii.app.dialog.handleDisplayMetricsChange = function (that, changedMetrics) {
-    if (!changedMetrics.includes("scaleFactor")) {
-        var attrs = that.options.config.attrs;
-        that.resize(attrs.width, attrs.height);
-    }
-};
-
-/**
- * Removes the listener for the `display-metrics-changed` event. This should
- * be done when the component gets destroyed in order to avoid memory leaks,
- * as some dialogs are created and destroyed dynamically (i.e. before the
- * PSP application terminates).
- * @param {Component} that - The `gpii.app.dialog` component.
- */
-gpii.app.dialog.removeDisplayMetricsListener = function (that) {
-    electron.screen.removeListener("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
 };
 
 /**

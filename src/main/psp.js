@@ -23,6 +23,7 @@ var BrowserWindow     = electron.BrowserWindow,
     systemPreferences = electron.systemPreferences;
 var gpii              = fluid.registerNamespace("gpii");
 
+require("./resizable.js");
 require("./utils.js");
 require("./blurrable.js");
 
@@ -149,7 +150,7 @@ gpii.app.pspInApp.togglePspRestartWarning = function (psp, pendingChanges) {
  * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.psp", {
-    gradeNames: ["fluid.modelComponent", "gpii.app.blurrable"],
+    gradeNames: ["fluid.modelComponent", "gpii.app.blurrable", "gpii.app.resizable"],
 
     model:  {
         keyedInUserToken: null,
@@ -161,16 +162,17 @@ fluid.defaults("gpii.app.psp", {
     /*
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
      */
-    attrs: {
-        width: 450,
-        height: 600,
-        show: true,
-        frame: false,
-        fullscreenable: false,
-        resizable: false,
-        // alwaysOnTop: true,
-        skipTaskbar: true,
-        backgroundColor: "transparent"
+    config: {
+        attrs: {
+            width: 450,
+            height: 600,
+            show: true,
+            frame: false,
+            fullscreenable: false,
+            resizable: false,
+            skipTaskbar: true,
+            backgroundColor: "transparent"
+        }
     },
 
     // In case we want to have some heightOffset from the screen edge.
@@ -203,7 +205,7 @@ fluid.defaults("gpii.app.psp", {
     },
 
     members: {
-        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs, {that}.options.params, {that}.options.gradeNames)"
+        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.config.attrs, {that}.options.params, {that}.options.gradeNames)"
     },
     events: {
         onSettingAltered: null,
@@ -214,7 +216,8 @@ fluid.defaults("gpii.app.psp", {
 
         onClosed: null,
 
-        onDisplayMetricsChanged: null
+        onContentHeightChanged: null,
+        onPSPWindowFocusLost: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -225,8 +228,8 @@ fluid.defaults("gpii.app.psp", {
             listener: "gpii.app.psp.registerAccentColorListener",
             args: ["{that}"]
         },
-        "onCreate.initPSPWindowListeners": {
-            listener: "gpii.app.psp.initPSPWindowListeners",
+        "onCreate.initBlurListener": {
+            listener: "gpii.app.psp.initBlurListener",
             args: ["{that}"]
         },
 
@@ -239,17 +242,7 @@ fluid.defaults("gpii.app.psp", {
             funcName: "gpii.app.psp.closePSP",
             args: ["{psp}", "{settingsBroker}"]
         },
-
-        "onDisplayMetricsChanged": {
-            funcName: "gpii.app.psp.handleDisplayMetricsChange",
-            args: [
-                "{that}",
-                "{arguments}.0", // event
-                "{arguments}.1", // display
-                "{arguments}.2"  // changedMetrics
-            ]
-        },
-
+        
         "onBlur": {
             funcName: "gpii.app.psp.handleBlur",
             args: ["{that}", "{settingsBroker}"]
@@ -292,10 +285,9 @@ fluid.defaults("gpii.app.psp", {
             funcName: "gpii.app.psp.resize",
             args: [
                 "{that}",
-                "{that}.options.attrs.width",
-                "{arguments}.0", // contentHeight
-                "{that}.options.attrs.height",
-                "{arguments}.1"  // forceResize
+                "{arguments}.0",  // width
+                "{arguments}.1",  // height
+                "{that}.options.config.attrs.height"
             ]
         },
         showRestartWarning: {
@@ -352,40 +344,7 @@ gpii.app.psp.show = function (psp) {
 };
 
 /**
- * Handle electron's display-metrics-changed event, by resizing the PSP when necessary.
- * @param {Component} psp - The `gpii.app.psp` instance.
- * @param {event} event - An Electron `event`.
- * @param {Object} display - The Electron `Display` object.
- * @param {Array} changedMetrics - An array of strings that describe the changes. Possible
- * changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
- */
-gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changedMetrics) {
-    // In older versions of Electron (e.g. 1.4.1) whenever the DPI was changed, one
-    // `display-metrics-changed` event was fired. In newer versions (e.g. 1.8.1) the
-    // `display-metrics-changed` event is fired multiple times. The change of the DPI
-    // appears to be applied at different times on different machines. On some as soon
-    // as the first `display-metrics-changed` event is fired, the DPI changes are
-    // applied. On others, this is not the case until the event is fired again. That is
-    // why the resizing should happen only the second (or third) time the
-    // `display-metrics-changed` event is fired in which case the changedMetrics argument
-    // will not include the `scaleFactor` string. For more information please take a look
-    // at https://issues.gpii.net/browse/GPII-2890.
-    if (!changedMetrics.includes("scaleFactor")) {
-        // Use the initial size of the PSP when the DPI is changed. The PSP will resize
-        // one more time when the heightChangeListener kicks in.
-        psp.resize(psp.options.attrs.height);
-    }
-};
-
-/**
- * Handle PSPWindow's blur event, which is fired when the window loses focus. The PSP
- * will be closed if there are no applications which require a restart in order for their
- * settings to be applied and also if it is a user's preference for the PSP to close when
- * clicking outside (this should be specified in the PSP channel message). In case there
- * is no keyed-in user, the default behavior is for the PSP to close when a blur event
- * occurs.
- * @param {Component} psp - The `gpii.app.psp` instance.
- * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
+ * Handle PSPWindow's blur event, which is fired when the window loses focus
  */
 gpii.app.psp.handleBlur = function (psp, settingsBroker) {
     var isShown = psp.model.isShown,
@@ -396,13 +355,14 @@ gpii.app.psp.handleBlur = function (psp, settingsBroker) {
 };
 
 /**
- * A function which should be called to init various listeners related to
- * the PSP window.
- * @param {Component} psp - The `gpii.app.psp` instance.
+ * A function which should be called to init the blur listener for the PSP.
+ * @param psp {Component} The `gpii.app.psp` instance.
  */
-gpii.app.psp.initPSPWindowListeners = function (psp) {
-    // https://github.com/electron/electron/blob/master/docs/api/screen.md#event-display-metrics-changed
-    electron.screen.on("display-metrics-changed", psp.events.onDisplayMetricsChanged.fire);
+gpii.app.psp.initBlurListener = function (psp) {
+    var pspWindow = psp.pspWindow;
+
+    // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-blur
+    pspWindow.on("blur", psp.events.onPSPWindowFocusLost.fire);
 };
 
 /**
@@ -430,7 +390,7 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     });
 
     ipcMain.on("onContentHeightChanged", function (event, contentHeight) {
-        psp.resize(contentHeight);
+        psp.events.onContentHeightChanged.fire(contentHeight);
     });
 
     /*
@@ -512,7 +472,7 @@ gpii.app.psp.closePSP = function (psp, settingsBroker) {
 gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
     var pspWindow = psp.pspWindow,
         wasShown = psp.model.isShown,
-        height = Math.max(contentHeight, minHeight),
+        height = Math.max(contentHeight, minHeight || 0),
         bounds = gpii.browserWindow.getDesiredWindowBounds(width, height, psp.options.heightOffset);
 
     if (wasShown) {
