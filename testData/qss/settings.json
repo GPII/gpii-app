@@ -6,7 +6,7 @@
     }, {
         "type": "array",
         "label": "High / Low Contrast",
-        "path": "High / Low Contrast",
+        "path": "http://registry.gpii.net/common/highContrastTheme",
         "styles": {
             "Low Contrast 3": {
                 "background-color": "#6bbfeb",
@@ -64,15 +64,19 @@
             "body": "Use Mouse or Up/Down arrow keys",
             "footer": "Work with Windows, Edge and some other apps"
         }
-    }, {   
+    }, { 
+        "path": "http://registry\\.gpii\\.net/common/magnification/enabled",
+        "label": "Enable Magnifier",
+        "tooltip": {
+            "header":  "Whether to enable/disable magnification" ,
+            "body": "Use Mouse or Up/Down arrow keys"
+        },
         "type": "boolean",
-        "label": "Read Aloud",
-        "path": "Read Aloud",
-        "value": false
+        "default": false
     }, {   
         "type": "boolean",
         "label": "Captions",
-        "path": "Captions",
+        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
         "value": false,
         "tooltip": {
             "header": "To turn on/off Captions or Subtitles",
@@ -81,19 +85,21 @@
         }
     }, {
         "type": "number",
-        "label": "Screen Size",
-        "path": "Screen Size",
+        "path": "http://registry\\.gpii\\.net/common/DPIScale",
+        "label": "DPI Scale",
+        "tooltip": { "header": "DPI scale factor on default monitor" },
         "value": 1,
-        "min": 0.25,
-        "max": 3,
+        "min": 1,
+        "max": 2,
         "divisibleBy": 0.25
     }, {
         "type": "number",
         "label": "Text Size",
-        "path": "Text Size",
-        "value": 10,
-        "max": 15,
-        "divisibleBy": 1,
+        "path": "http://registry\\.gpii\\.net/common/fontSize",
+        "value": 12,
+        "min": 10,
+        "max": 13,
+        "divisibleBy": 0.5,
         "tooltip": {
             "header": "To Change Text Size",
             "body": "Use Mouse or Up/Down arrow key. You can also try Ctrl - and Ctrl + at any time",
@@ -102,7 +108,7 @@
     }, {
         "type": "array",
         "label": "Language",
-        "path": "Language",
+        "path": "http://registry.gpii.net/common/language",
         "value": "English",
         "enum": [
             "English",
@@ -116,6 +122,21 @@
             "footer": "Work with Windows, Edge and many other apps"
         }
     }, {
+        "path": "http://registry\\.gpii\\.net/common/magnifierPosition",
+        "value":"Lens",
+        "label":"Magnifier Position",
+         "tooltip": { "header":"Position of the magnified area"},
+        "type": "array",
+        "enum":[
+            "FullScreen",
+            "Lens",
+            "LeftHalf",
+            "RightHalf",
+            "TopHalf",
+            "BottomHalf",
+            "Custom"
+        ]
+    },  {
         "type": "keyIn",
         "label": "Key In",
         "path": "Key In"

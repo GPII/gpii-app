@@ -57,8 +57,7 @@ fluid.defaults("gpii.app.settingsBroker", {
             ]
         },
         applySetting: {
-            this: "{that}.events.onSettingApplied",
-            method: "fire",
+            func: "{that}.events.onSettingApplied.fire",
             args: ["{arguments}.0"] // setting
         },
         undoSetting: {

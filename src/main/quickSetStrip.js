@@ -48,7 +48,8 @@ fluid.defaults("gpii.app.qss", {
 
     events: {
         onQssOpen: null,
-        onQssWidgetToggled: null
+        onQssWidgetToggled: null,
+        onQssSettingAltered: null
     },
 
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget", "gpii.app.qss"],
@@ -90,7 +91,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssButtonMouseEnter: null,
                     onQssButtonMouseLeave: null,
 
-                    onQssSettingAltered: null
+                    onQssSettingAltered: "{qss}.events.onQssSettingAltered"
                 },
 
                 listeners: {
@@ -172,7 +173,8 @@ fluid.defaults("gpii.app.qssWidget", {
     linkedWindowsGrades: ["gpii.app.qssWidget"],
 
     events: {
-        onQssWidgetToggled: null
+        onQssWidgetToggled: null,
+        onQssSettingAltered: null
     },
 
     components: {
@@ -189,7 +191,7 @@ fluid.defaults("gpii.app.qssWidget", {
             options: {
                 events: {
                     onQssWidgetClosed: null,
-                    onQssSettingAltered: null,
+                    onQssSettingAltered: "{qssWidget}.events.onQssSettingAltered",
                     onQssWidgetBlur: null
                 },
                 listeners: {
@@ -308,6 +310,10 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     },
 
+    events: {
+        onQssSettingAltered: null
+    },
+
     components : {
         qss: {
             type: "gpii.app.qss",
@@ -318,7 +324,8 @@ fluid.defaults("gpii.app.qssWrapper", {
                     }
                 },
                 events: {
-                    onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
+                    onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled",
+                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered"
                 },
                 listeners: {
                     "{channelListener}.events.onQssButtonActivated": {
@@ -335,6 +342,9 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssWidget: {
             type: "gpii.app.qssWidget",
             options: {
+                events: {
+                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered"
+                },
                 modelListeners: {
                     // Ensure the widget window is closed with the QSS
                     "{gpii.app.qss}.model.isShown": {
