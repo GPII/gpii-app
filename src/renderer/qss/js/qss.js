@@ -78,7 +78,7 @@
             onButtonFocused: "{gpii.qss.list}.events.onButtonFocused",
             onQssWidgetToggled: "{gpii.qss}.events.onQssWidgetToggled",
 
-            onButtonFocus: "{gpii.qss.list}.events.onButtonFocus",
+            onButtonFocusRequired: "{gpii.qss.list}.events.onButtonFocusRequired",
             onSettingAltered: "{gpii.qss.list}.events.onSettingAltered"
         },
 
@@ -103,7 +103,7 @@
                 ]
             },
 
-            onButtonFocus: {
+            onButtonFocusRequired: {
                 funcName: "gpii.qss.buttonPresenter.focusButton",
                 args: [
                     "{that}",
@@ -131,7 +131,6 @@
             },
             onMouseLeave: {
                 func: "{gpii.qss.list}.events.onButtonMouseLeave",
-                // TODO is this needed?
                 args: [
                     "{that}.model.item",
                     "@expand:gpii.qss.getElementMetrics({that}.container)"
@@ -185,7 +184,6 @@
 
     gpii.qss.buttonPresenter.notifyButtonFocused = function (that, container, focusedElement) {
         if (container.is(focusedElement)) {
-            // TODO generalize this behaviour with the other container related events
             that.events.onButtonFocused.fire(
                 that.model.item,
                 gpii.qss.getElementMetrics(focusedElement));
@@ -206,7 +204,6 @@
      * @returns {{width: Number, height: Number, offsetRight}}
      */
     gpii.qss.getElementMetrics = function (target) {
-        target = $(target);
         return {
             offsetRight: $(window).width() - target.offset().left,
             height:      target.outerHeight(),
@@ -354,8 +351,9 @@
         markup: null,
 
         events: {
-            onButtonFocus: null,
+            onButtonFocusRequired: null,
 
+            // external events
             onButtonFocused: null,
             onButtonActivated: null,
             onButtonMouseEnter: null,
@@ -455,7 +453,7 @@
                         onQssClosed:           "{qss}.events.onQssClosed",
                         onQssButtonFocused:    "{quickSetStripList}.events.onButtonFocused",
                         onQssButtonsFocusLost: "{focusManager}.events.onFocusLost",
-                        onQssButtonActivated:    "{quickSetStripList}.events.onButtonActivated",
+                        onQssButtonActivated:  "{quickSetStripList}.events.onButtonActivated",
                         onQssButtonMouseEnter: "{quickSetStripList}.events.onButtonMouseEnter",
                         onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave",
 
@@ -496,7 +494,7 @@
         // opened using the global shortcut.
         if (params.shortcut) {
             var keyOutBtnIndex = settings.length - 1;
-            qssList.events.onButtonFocus.fire(keyOutBtnIndex);
+            qssList.events.onButtonFocusRequired.fire(keyOutBtnIndex);
             return;
         }
 
@@ -511,7 +509,7 @@
                 settingIndex = gpii.psp.modulo(settingIndex + 1, settings.length);
             }
 
-            qssList.events.onButtonFocus.fire(settingIndex);
+            qssList.events.onButtonFocusRequired.fire(settingIndex);
         }
     };
 })(fluid);

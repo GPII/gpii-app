@@ -219,6 +219,15 @@ fluid.defaults("gpii.app.qssWidget", {
             func: "{that}.hide"
         }
     },
+    modelListeners: {
+        "isShown": {
+            func: "{that}.events.onQssWidgetToggled",
+            args: [
+                "{that}.model.setting",
+                "{change}.value"        // state
+            ]
+        }
+    },
     invokers: {
         show: {
             funcName: "gpii.app.qssWidget.show",
@@ -227,12 +236,6 @@ fluid.defaults("gpii.app.qssWidget", {
                 "{arguments}.0", // setting
                 "{arguments}.1",  // elementMetrics
                 "{arguments}.2"// activationParams
-            ]
-        },
-        hide: {
-            funcName: "gpii.app.qssWidget.hide",
-            args: [
-                "{that}"
             ]
         },
         toggle: {
@@ -273,7 +276,6 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationP
  * @param {Number} elementMetrics.offsetRight - The offset of the element from the
  * right of its window's.
  */
-// TODO show when setting is changed?
 gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
     // Find the offset for the window to be centered over the element
     var windowWidth = that.dialog.getSize()[0];
@@ -285,19 +287,11 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     activationParams = activationParams || {};
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
-    // TODO toggle sets position?
     that.applier.change("setting", setting);
     that.applier.change("isShown", true);
-    that.events.onQssWidgetToggled.fire(setting, true);
     // reposition window properly
     that.positionWindow(offsetX, elementMetrics.height);
 };
-
-gpii.app.qssWidget.hide = function (that) {
-    that.applier.change("isShown", false);
-    that.events.onQssWidgetToggled.fire(that.model.setting, false);
-};
-
 
 
 /**
@@ -327,37 +321,13 @@ fluid.defaults("gpii.app.qssWrapper", {
                     onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
                 },
                 listeners: {
-                    "{channelListener}.events.onQssButtonActivated": [{
+                    "{channelListener}.events.onQssButtonActivated": {
                         func: "{qssWidget}.toggle",
                         args: [
                             "{arguments}.0", // setting
                             "{arguments}.1", // elementMetrics
                             "{arguments}.2"  // activationParams
                         ]
-                    }, {
-                        func: "{qssTooltip}.hide"
-                    }],
-
-                    "{channelListener}.events.onQssButtonMouseEnter": {
-                        func: "{qssTooltip}.showIfPossible",
-                        args: [
-                            "{arguments}.0", // setting
-                            "{arguments}.1"  // metrics
-                        ]
-                    },
-                    "{channelListener}.events.onQssButtonFocused": {
-                        func: "{qssTooltip}.showIfPossible",
-                        args: [
-                            "{arguments}.0", // setting
-                            "{arguments}.1"  // metrics
-                        ]
-                    },
-                    "{channelListener}.events.onQssButtonsFocusLost": {
-                        func: "{qssTooltip}.hide"
-                    },
-                    /// XXX DEV
-                    "{channelListener}.events.onQssButtonMouseLeave": {
-                        func: "{qssTooltip}.hide"
                     }
                 }
             }
@@ -376,7 +346,35 @@ fluid.defaults("gpii.app.qssWrapper", {
             }
         },
         qssTooltip: {
-            type: "gpii.app.qssTooltipDialog"
+            type: "gpii.app.qssTooltipDialog",
+            options: {
+                listeners: {
+                    "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": {
+                        func: "{that}.showIfPossible",
+                        args: [
+                            "{arguments}.0", // setting
+                            "{arguments}.1"  // metrics
+                        ]
+                    },
+                    "{gpii.app.qss}.channelListener.events.onQssButtonFocused": {
+                        func: "{that}.showIfPossible",
+                        args: [
+                            "{arguments}.0", // setting
+                            "{arguments}.1"  // metrics
+                        ]
+                    },
+
+                    "{gpii.app.qss}.channelListener.events.onQssButtonActivated": {
+                        func: "{that}.hide"
+                    },
+                    "{gpii.app.qss}.channelListener.events.onQssButtonsFocusLost": {
+                        func: "{that}.hide"
+                    },
+                    "{gpii.app.qss}.channelListener.events.onQssButtonMouseLeave": {
+                        func: "{that}.hide"
+                    }
+                }
+            }
         }
     }
 });

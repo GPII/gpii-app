@@ -393,4 +393,57 @@ fluid.defaults("gpii.app.channelNotifier", {
     ipcTarget: "{dialog}.dialog.webContents" // get the closest dialog
 });
 
+/**
+ * TODO
+ */
+fluid.defaults("gpii.app.dialog.delayedShow", {
+    gradeNames: ["gpii.app.timer"],
 
+    // the desired delay in milliseconds
+    showDelay: null,
+
+    listeners: {
+        onTimerFinished: {
+            func: "{that}._show"
+            // arguments are passed with the event
+        }
+    },
+
+    invokers: {
+        // _show: null, // expected from implementor
+        // _hide: null,
+        show: {
+            funcName: "gpii.app.dialog.delayedShow.show",
+            args: [
+                "{that}",
+                "{that}.options.showDelay",
+                "{arguments}" // showArgs
+            ]
+        },
+        hide: {
+            funcName: "gpii.app.dialog.delayedShow.hide",
+            args: ["{that}"]
+        }
+    }
+});
+
+gpii.app.dialog.delayedShow.show = function (that, delay, showArgs) {
+    // process raw arguments
+    showArgs = fluid.values(showArgs);
+
+    if (!fluid.isValue(delay)) {
+        // simply trigger a show synchronously
+        that.events.onTimerFinished.fire.apply(that.events.onTimerFinished, showArgs);
+    } else if (Number.isInteger(delay)) {
+        that.start(delay, showArgs);
+    } else {
+        fluid.fail("Dialog's delay must be a number.");
+    }
+};
+
+gpii.app.dialog.delayedShow.hide = function (that) {
+    // clear any existing timer
+    that.clear();
+
+    that._hide();
+};

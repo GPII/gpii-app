@@ -17,9 +17,8 @@
 "use strict";
 (function (fluid) {
     /**
-     * Represents the controller for the qssTooltip dialog
-     * that gives information for the application version,
-     * user listeners (keys) and some useful links.
+     * Represents the controller for the QSS tooltip that is used to provide
+     * information about the current setting.
      */
     fluid.defaults("gpii.qss.qssTooltipPopup", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
@@ -40,11 +39,11 @@
 
         invokers: {
             update: {
-                // simple way to avoid merging leaving previous tooltip values
                 funcName: "fluid.fireChanges",
                 args: [
                     "{that}.applier",
                     [
+                        // simple way to avoid get rid of previous state leftovers
                         {path: "messages", value: { header: "", body: "", footer: "" }},
                         {path: "messages", value: "{arguments}.0"}
                     ]
