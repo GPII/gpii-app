@@ -63,18 +63,18 @@
 
         invokers: {
             activateIncBtn: {
-                funcName: "gpii.qssWidget.stepper.animateButton",
+                funcName: "gpii.qssWidget.stepper.activateIncButton",
                 args: [
+                    "{stepper}",
                     "{that}.dom.incButton",
-                    "{that}.model.setting.value",
                     "{that}.model.setting" // only restrictions will be used
                 ]
             },
             activateDecBtn: {
-                funcName: "gpii.qssWidget.stepper.animateButton",
+                funcName: "gpii.qssWidget.stepper.activateDecButton",
                 args: [
+                    "{stepper}",
                     "{that}.dom.decButton",
-                    "{that}.model.setting.value",
                     "{that}.model.setting"
                 ]
             }
@@ -89,7 +89,7 @@
                         label: "{contentHandler}.model.messages.incrementButton"
                     },
                     invokers: {
-                        onClick: "{stepper}.increment"
+                        onClick: "{contentHandler}.activateIncBtn"
                     }
                 }
             },
@@ -101,7 +101,7 @@
                         label: "{contentHandler}.model.messages.decrementButton"
                     },
                     invokers: {
-                        onClick: "{stepper}.decrement"
+                        onClick: "{contentHandler}.activateDecBtn"
                     }
                 }
             }
@@ -192,16 +192,8 @@
                     },
 
                     listeners: {
-                        onArrowUpPressed: [{
-                            func: "{stepper}.increment"
-                        }, {
-                            func: "{contentHandler}.activateIncBtn"
-                        }],
-                        onArrowDownPressed: [{
-                            func: "{stepper}.decrement"
-                        }, {
-                            func: "{contentHandler}.activateDecBtn"
-                        }]
+                        onArrowUpPressed: "{contentHandler}.activateIncBtn",
+                        onArrowDownPressed: "{contentHandler}.activateDecBtn"
                     }
                 }
             }
@@ -214,6 +206,17 @@
             }
         }
     });
+
+    gpii.qssWidget.stepper.activateIncButton = function (qssStepper, button, restrictions) {
+        qssStepper.increment();
+        gpii.qssWidget.stepper.animateButton(button, qssStepper.model.value, restrictions);
+    };
+
+    gpii.qssWidget.stepper.activateDecButton = function (qssStepper, button, restrictions) {
+        qssStepper.decrement();
+        gpii.qssWidget.stepper.animateButton(button, qssStepper.model.value, restrictions);
+    };
+
 
     gpii.qssWidget.stepper.processParams = function (focusManager, activationParams) {
         switch (activationParams.key) {
