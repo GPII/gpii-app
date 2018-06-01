@@ -181,7 +181,4 @@ gpii.app.qssTooltipDialog._show = function (that, setting, elementMetrics) {
     that.applier.change("isShown", true);
     // reposition window properly
     that.positionWindow(offset.offsetX, offset.offsetY);
-
-    // TODO is this needed as it is not even focused?
-    that.setBlurTarget(that.dialog);
 };

@@ -119,9 +119,9 @@ fluid.defaults("gpii.app.qss", {
         }
     },
     listeners: {
-        // onBlur: {
-        //     func: "{that}.hide"
-        // }
+        onBlur: {
+            func: "{that}.hide"
+        }
     },
     invokers: {
         show: {
@@ -139,8 +139,6 @@ fluid.defaults("gpii.app.qss", {
  */
 gpii.app.qss.show = function (that, params) {
     if (!that.options.disabled) {
-        that.setBlurTarget(that.dialog);
-
         // Show the QSS or focus it if it is already shown.
         if (that.model.isShown) {
             that.focus();
@@ -171,7 +169,7 @@ fluid.defaults("gpii.app.qssWidget", {
         fileSuffixPath: "qssWidget/index.html"
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssWidget"],
+    linkedWindowsGrades: ["gpii.app.qssWidget"],
 
     events: {
         onQssWidgetToggled: null
@@ -217,9 +215,9 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     },
     listeners: {
-        // onBlur: {
-        //     func: "{that}.hide"
-        // }
+        onBlur: {
+            func: "{that}.hide"
+        }
     },
     invokers: {
         show: {
@@ -293,7 +291,6 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     that.events.onQssWidgetToggled.fire(setting, true);
     // reposition window properly
     that.positionWindow(offsetX, elementMetrics.height);
-    that.setBlurTarget(that.dialog);
 };
 
 gpii.app.qssWidget.hide = function (that) {
@@ -362,7 +359,6 @@ fluid.defaults("gpii.app.qssWrapper", {
                     "{channelListener}.events.onQssButtonMouseLeave": {
                         func: "{qssTooltip}.hide"
                     }
-
                 }
             }
         },

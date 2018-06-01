@@ -25,21 +25,6 @@ require("./utils.js");
 require("../common/channelUtils.js");
 
 
-fluid.registerNamespace("gpii.app.dialog");
-// As proposed here: https://github.com/electron/electron/issues/3155
-//
-// Ref. https://electronjs.org/docs/api/system-preferences#systempreferencesisaeroglassenabled-windows
-gpii.app.dialog.isTrasparencyEnabled = function () {
-    if (process.platform === "win32") {
-        return  electron.systemPreferences.isAeroGlassEnabled();
-    }
-
-    return false;
-};
-
-var enableTransparency = gpii.app.dialog.isTrasparencyEnabled();
-
-
 /**
  * Base dialog component that provides initialization of
  * an Electron `BrowserWindow` and the generation of
