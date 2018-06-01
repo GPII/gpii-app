@@ -56,7 +56,9 @@
             }
         },
         events: {
-            onTabPressed: "{windowKeyListener}.events.onTabPressed"
+            onTabPressed: "{windowKeyListener}.events.onTabPressed",
+            onElementFocused: null,
+            onFocusLost: null
         },
         listeners: {
             "onTabPressed.impl": {
@@ -155,11 +157,11 @@
      */
     gpii.qss.focusManager.getFocusInfo = function (container, styles) {
         var focusableElements = container.find("." + styles.focusable),
-            focusedElement = container.find("." + styles.focused),
+            focusedElement = container.find("." + styles.focused)[0],
             focusIndex = -1;
 
-        if (focusedElement.length > 0) {
-            focusIndex = jQuery.inArray(focusedElement[0], focusableElements);
+        if (focusedElement) {
+            focusIndex = jQuery.inArray(focusedElement, focusableElements);
         }
 
         return {
@@ -185,6 +187,7 @@
 
         if (clearFocus) {
             focusableElements.removeClass(styles.focused);
+            that.events.onFocusLost.fire();
         }
     };
 
@@ -228,6 +231,8 @@
             .addClass(styles.focused)
             .toggleClass(styles.highlighted, applyHighlight)
             .focus();
+
+        that.events.onElementFocused.fire(element);
     };
 
     /**

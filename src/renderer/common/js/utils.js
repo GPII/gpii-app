@@ -19,6 +19,8 @@
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell;
 
+    fluid.registerNamespace("gpii.psp");
+
     // Fixes the JavaScript modulo bug.
     gpii.psp.modulo = function (a, b) {
         return ((a % b) + b) % b;
@@ -104,9 +106,13 @@
      * @param {Object} messages - The translated text
      */
     gpii.psp.selectorsTextRenderer.renderText = function (that, selectors, messages) {
+        if (!messages) {
+            return;
+        }
+
         fluid.each(selectors, function (value, key) {
             var element = that.dom.locate(key);
-            if (element && messages[key]) {
+            if (element && fluid.isValue(messages[key])) {
                 element.text(messages[key]);
             }
         });

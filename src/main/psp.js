@@ -348,7 +348,6 @@ gpii.app.psp.show = function (psp) {
     gpii.app.psp.moveToScreen(psp.pspWindow, psp.options.heightOffset);
     psp.pspWindow.focus();
     psp.applier.change("isShown", true);
-    psp.setBlurTarget(psp.pspWindow);
 };
 
 /**

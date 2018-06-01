@@ -73,11 +73,12 @@
         // pass hover item as it is in order to use its position
         // TODO probably use something like https://stackoverflow.com/questions/3234977/using-jquery-how-to-get-click-coordinates-on-the-target-element
         events: {
+            onMouseEnter: null,
+            onMouseLeave: null,
+            onButtonFocused: "{gpii.qss.list}.events.onButtonFocused",
             onQssWidgetToggled: "{gpii.qss}.events.onQssWidgetToggled",
-            onButtonFocus: "{gpii.qss.list}.events.onButtonFocus",
 
-            onMouseEnter: "{gpii.qss.list}.events.onButtonMouseEnter",
-            onMouseLeave: "{gpii.qss.list}.events.onButtonMouseLeave",
+            onButtonFocusRequired: "{gpii.qss.list}.events.onButtonFocusRequired",
             onSettingAltered: "{gpii.qss.list}.events.onSettingAltered"
         },
 
@@ -92,7 +93,17 @@
                 method: "text",
                 args: ["{that}.model.item.label"]
             },
-            onButtonFocus: {
+
+            "{focusManager}.events.onElementFocused": {
+                funcName: "gpii.qss.buttonPresenter.notifyButtonFocused",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{arguments}.0"     // element
+                ]
+            },
+
+            onButtonFocusRequired: {
                 funcName: "gpii.qss.buttonPresenter.focusButton",
                 args: [
                     "{that}",
@@ -108,6 +119,21 @@
                     "{that}.container",
                     "{arguments}.0", // setting
                     "{arguments}.1" // isShown
+                ]
+            },
+
+            onMouseEnter: {
+                func: "{gpii.qss.list}.events.onButtonMouseEnter",
+                args: [
+                    "{that}.model.item",
+                    "@expand:gpii.qss.getElementMetrics({that}.container)"
+                ]
+            },
+            onMouseLeave: {
+                func: "{gpii.qss.list}.events.onButtonMouseLeave",
+                args: [
+                    "{that}.model.item",
+                    "@expand:gpii.qss.getElementMetrics({that}.container)"
                 ]
             },
 
@@ -156,6 +182,14 @@
         qssList.events.onButtonActivated.fire(setting, metrics, activationParams);
     };
 
+    gpii.qss.buttonPresenter.notifyButtonFocused = function (that, container, focusedElement) {
+        if (container.is(focusedElement)) {
+            that.events.onButtonFocused.fire(
+                that.model.item,
+                gpii.qss.getElementMetrics(focusedElement));
+        }
+    };
+
     gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index) {
         if (that.model.index === index) {
             focusManager.focusElement(container, true);
@@ -165,7 +199,7 @@
      * Return the metrics of a clicked element. These can be used
      * for positioning. Note that the position is relative to the right.
      *
-     * @param {Object} target - The DOM element which
+     * @param {jQuery} target - The DOM element which
      * positioning metrics are needed.
      * @returns {{width: Number, height: Number, offsetRight}}
      */
@@ -317,8 +351,10 @@
         markup: null,
 
         events: {
-            onButtonFocus: null,
+            onButtonFocusRequired: null,
 
+            // external events
+            onButtonFocused: null,
             onButtonActivated: null,
             onButtonMouseEnter: null,
             onButtonMouseLeave: null,
@@ -414,12 +450,14 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
-                        onQssClosed: "{qss}.events.onQssClosed",
-                        onQssButtonActivated:    "{quickSetStripList}.events.onButtonActivated",
+                        onQssClosed:           "{qss}.events.onQssClosed",
+                        onQssButtonFocused:    "{quickSetStripList}.events.onButtonFocused",
+                        onQssButtonsFocusLost: "{focusManager}.events.onFocusLost",
+                        onQssButtonActivated:  "{quickSetStripList}.events.onButtonActivated",
                         onQssButtonMouseEnter: "{quickSetStripList}.events.onButtonMouseEnter",
                         onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave",
 
-                        onQssSettingAltered: "{quickSetStripList}.events.onSettingAltered"
+                        onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered"
                     }
                 }
             }
@@ -456,7 +494,7 @@
         // opened using the global shortcut.
         if (params.shortcut) {
             var keyOutBtnIndex = settings.length - 1;
-            qssList.events.onButtonFocus.fire(keyOutBtnIndex);
+            qssList.events.onButtonFocusRequired.fire(keyOutBtnIndex);
             return;
         }
 
@@ -471,7 +509,7 @@
                 settingIndex = gpii.psp.modulo(settingIndex + 1, settings.length);
             }
 
-            qssList.events.onButtonFocus.fire(settingIndex);
+            qssList.events.onButtonFocusRequired.fire(settingIndex);
         }
     };
 })(fluid);

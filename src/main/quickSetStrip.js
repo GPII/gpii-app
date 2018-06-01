@@ -19,28 +19,9 @@ var fluid = require("infusion");
 var gpii = fluid.registerNamespace("gpii");
 
 require("./dialog.js");
+require("./quickSetStrip/qssTooltipDialog.js");
 require("./blurrable.js");
 require("../common/channelUtils.js");
-
-
-
-// TODO extract to a common place
-/**
- * Listens for events from the renderer process (the BrowserWindow).
- */
-fluid.defaults("gpii.app.channelListener", {
-    gradeNames: ["gpii.app.common.simpleChannelListener"],
-    ipcTarget: require("electron").ipcMain
-});
-
-/**
- * Notifies the render process for main events.
- */
-fluid.defaults("gpii.app.channelNotifier", {
-    gradeNames: ["gpii.app.common.simpleChannelNotifier", "gpii.app.i18n.channel"],
-    // TODO improve `i18n.channel` to use event instead of a direct notifying
-    ipcTarget: "{dialog}.dialog.webContents" // get the closest dialog
-});
 
 
 /**
@@ -56,7 +37,8 @@ fluid.defaults("gpii.app.qss", {
         attrs: {
             width: 720,
             height: 80,
-            alwaysOnTop: true
+            alwaysOnTop: true,
+            transparent: false
         },
         params: {
             settings: null
@@ -102,6 +84,8 @@ fluid.defaults("gpii.app.qss", {
             options: {
                 events: {
                     onQssClosed: null,
+                    onQssButtonFocused: null,
+                    onQssButtonsFocusLost: null,
                     onQssButtonActivated: null,
                     onQssButtonMouseEnter: null,
                     onQssButtonMouseLeave: null,
@@ -135,9 +119,9 @@ fluid.defaults("gpii.app.qss", {
         }
     },
     listeners: {
-        // onBlur: {
-        //     func: "{that}.hide"
-        // }
+        onBlur: {
+            func: "{that}.hide"
+        }
     },
     invokers: {
         show: {
@@ -155,8 +139,6 @@ fluid.defaults("gpii.app.qss", {
  */
 gpii.app.qss.show = function (that, params) {
     if (!that.options.disabled) {
-        that.setBlurTarget(that.dialog);
-
         // Show the QSS or focus it if it is already shown.
         if (that.model.isShown) {
             that.focus();
@@ -187,7 +169,7 @@ fluid.defaults("gpii.app.qssWidget", {
         fileSuffixPath: "qssWidget/index.html"
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssWidget"],
+    linkedWindowsGrades: ["gpii.app.qssWidget"],
 
     events: {
         onQssWidgetToggled: null
@@ -233,9 +215,18 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     },
     listeners: {
-        // onBlur: {
-        //     func: "{that}.hide"
-        // }
+        onBlur: {
+            func: "{that}.hide"
+        }
+    },
+    modelListeners: {
+        "isShown": {
+            func: "{that}.events.onQssWidgetToggled",
+            args: [
+                "{that}.model.setting",
+                "{change}.value"        // state
+            ]
+        }
     },
     invokers: {
         show: {
@@ -245,12 +236,6 @@ fluid.defaults("gpii.app.qssWidget", {
                 "{arguments}.0", // setting
                 "{arguments}.1",  // elementMetrics
                 "{arguments}.2"// activationParams
-            ]
-        },
-        hide: {
-            funcName: "gpii.app.qssWidget.hide",
-            args: [
-                "{that}"
             ]
         },
         toggle: {
@@ -302,20 +287,11 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     activationParams = activationParams || {};
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
-    // TODO toggle sets position?
     that.applier.change("setting", setting);
     that.applier.change("isShown", true);
-    that.events.onQssWidgetToggled.fire(setting, true);
     // reposition window properly
     that.positionWindow(offsetX, elementMetrics.height);
-    that.setBlurTarget(that.dialog);
 };
-
-gpii.app.qssWidget.hide = function (that) {
-    that.applier.change("isShown", false);
-    that.events.onQssWidgetToggled.fire(that.model.setting, false);
-};
-
 
 
 /**
@@ -331,14 +307,6 @@ fluid.defaults("gpii.app.qssWrapper", {
             args: "@expand:fluid.module.resolvePath({that}.options.settingsPath)"
         }
     },
-
-    // listeners: {
-    //     "qssMain.events.onQssButtonActivated": {
-    //         func: "{that}.qssWidget.showMaybe"
-    //     },
-    //     "qssWidget.events.onBoundReached",
-    //     "qssWidget.events.onSettingAltered",// -> to pcp itself
-    // },
 
     components : {
         qss: {
@@ -357,8 +325,8 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssWidget}.toggle",
                         args: [
                             "{arguments}.0", // setting
-                            "{arguments}.1",  // elementMetrics
-                            "{arguments}.2" // activationParams
+                            "{arguments}.1", // elementMetrics
+                            "{arguments}.2"  // activationParams
                         ]
                     }
                 }
@@ -374,10 +342,37 @@ fluid.defaults("gpii.app.qssWrapper", {
                         // even on QSS show
                         func: "{that}.hide"
                     }
-                },
-
+                }
+            }
+        },
+        qssTooltip: {
+            type: "gpii.app.qssTooltipDialog",
+            options: {
                 listeners: {
-                    // TODO
+                    "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": {
+                        func: "{that}.showIfPossible",
+                        args: [
+                            "{arguments}.0", // setting
+                            "{arguments}.1"  // metrics
+                        ]
+                    },
+                    "{gpii.app.qss}.channelListener.events.onQssButtonFocused": {
+                        func: "{that}.showIfPossible",
+                        args: [
+                            "{arguments}.0", // setting
+                            "{arguments}.1"  // metrics
+                        ]
+                    },
+
+                    "{gpii.app.qss}.channelListener.events.onQssButtonActivated": {
+                        func: "{that}.hide"
+                    },
+                    "{gpii.app.qss}.channelListener.events.onQssButtonsFocusLost": {
+                        func: "{that}.hide"
+                    },
+                    "{gpii.app.qss}.channelListener.events.onQssButtonMouseLeave": {
+                        func: "{that}.hide"
+                    }
                 }
             }
         }

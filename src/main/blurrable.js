@@ -1,7 +1,7 @@
 /**
- * A simple WebSocket wrapper
+ * Manage blurring of Electron windows
  *
- * An Infusion component which manages a WebSocket connection.
+ * 
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -21,6 +21,8 @@ var fluid = require("infusion"),
 fluid.defaults("gpii.app.blurrable", {
     gradeNames: ["fluid.component"],
 
+    // the list of windows that should not cause blur of the
+    // current one; The current window should also be supplied
     linkedWindowsGrades: [],
 
     events: {
@@ -31,50 +33,67 @@ fluid.defaults("gpii.app.blurrable", {
         onBlur: {
             funcName: "console.log",
             args: ["Lost: ", "{arguments}.0"]
+        },
+        "onCreate.initBlurListener": {
+            funcName: "gpii.app.blurrable.initBlurListener",
+            args: ["{that}", "{that}.options.linkedWindowsGrades"]
         }
     },
 
     invokers: {
-        setBlurTarget: {
-            funcName: "gpii.app.blurrable.setBlurTarget",
+        initComplexBlurListener: {
+            funcName: "gpii.app.blurrable.initComplexBlurListener",
             args: [
                 "{that}",
-                "{that}.options.linkedWindowsGrades",
-                "{arguments}.0" // targetWindow
+                "{that}.options.linkedWindowsGrades"
             ]
         }
     }
 });
 
 
-gpii.app.blurrable.isWindowRelated = function (window, linkedGrades) {
-    return linkedGrades.some(function (linkedWindowGrade) {
+gpii.app.blurrable.isWindowRelated = function (linkedGrades, window) {
+    return linkedGrades && linkedGrades.some(function (linkedWindowGrade) {
         if (window && window.gradeNames) {
             return window.gradeNames.indexOf(linkedWindowGrade) >= 0;
         }
     });
-}
+};
 
 
 /**
- * If the focused window is not any of the related notify. 
+ * Set blur listeners if blur targets exist.
  *
- * @param targetWindow
+ * @param that
  * @param relatedGrades
- * @param onFocusLost
+ * @returns {undefined}
  */
-gpii.app.blurrable.setBlurTarget = function (that, relatedGrades, targetWindow) {
-    // Initialize the listener
-    targetWindow.once("blur", function () {
-        // the focused electron window
-        var focusedWindow = BrowserWindow.getFocusedWindow();
+gpii.app.blurrable.initBlurListener = function (that, relatedGrades) {
+    if (relatedGrades && relatedGrades.length > 0) {
+        that.initComplexBlurListener();
+    }
+};
 
-        if (focusedWindow && gpii.app.blurrable.isWindowRelated(focusedWindow, relatedGrades)) {
-            // init with a different window
-            that.setBlurTarget(focusedWindow);
-        } else {
-            // XXX dev fired arg
-            that.events.onBlur.fire(that.options.gradeNames.slice(-1));
-        }
+/**
+ * If the focused window is not any of the related notify.
+ *
+ * @param that
+ * @param relatedGrades
+ */
+gpii.app.blurrable.initComplexBlurListener = function (that, relatedGrades) {
+    // Initialize the listener
+    var linkedWindows = BrowserWindow.getAllWindows()
+        .filter(gpii.app.blurrable.isWindowRelated.bind(null, relatedGrades));
+
+    fluid.each(linkedWindows, function (window) {
+        window.on("blur", function () {
+            // the newly focused electron window
+            var focusedWindow = BrowserWindow.getFocusedWindow();
+
+            if (!focusedWindow || !gpii.app.blurrable.isWindowRelated(relatedGrades, focusedWindow)) {
+                // XXX dev fired arg
+                that.events.onBlur.fire(that.options.gradeNames.slice(-1));
+            }
+        });
     });
 };

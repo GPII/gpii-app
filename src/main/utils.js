@@ -170,7 +170,8 @@ fluid.defaults("gpii.app.timer", {
             funcName: "gpii.app.timer.start",
             args: [
                 "{that}",
-                "{arguments}.0" // timeoutDuration
+                "{arguments}.0", // timeoutDuration
+                "{arguments}.1"  // eventArguments
             ]
         },
         clear: {
@@ -186,10 +187,17 @@ fluid.defaults("gpii.app.timer", {
  *
  * @param {Component} that -The `gpii.app.timer` instance.
  * @param {Number} timeoutDuration -The timeout duration in milliseconds.
+ * @param {Any[]} eventArguments - Events to be passed with the fired event.
  */
-gpii.app.timer.start = function (that, timeoutDuration) {
+gpii.app.timer.start = function (that, timeoutDuration, eventArguments) {
+    var timeoutArgs = [
+        that.events.onTimerFinished.fire,
+        timeoutDuration
+    ]
+        .concat(eventArguments);
+
     that.clear();
-    that.timer = setTimeout(that.events.onTimerFinished.fire, timeoutDuration);
+    that.timer = setTimeout.apply(setTimeout, timeoutArgs);
 };
 
 /**

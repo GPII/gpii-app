@@ -58,7 +58,12 @@
             "White on Black",
             "Black on White",
             "Regular Contrast"
-        ]
+        ],
+        "tooltip": {
+            "header": "To choose different High and Low Contrast Options",
+            "body": "Use Mouse or Up/Down arrow keys",
+            "footer": "Work with Windows, Edge and some other apps"
+        }
     }, {   
         "type": "boolean",
         "label": "Read Aloud",
@@ -68,7 +73,12 @@
         "type": "boolean",
         "label": "Captions",
         "path": "Captions",
-        "value": false
+        "value": false,
+        "tooltip": {
+            "header": "To turn on/off Captions or Subtitles",
+            "body": "Use the mouse or press Enter",
+            "footer": "Work with Windows Media Player and Youtube.com on Chrome"
+        }
     }, {
         "type": "number",
         "label": "Screen Size",
@@ -83,7 +93,12 @@
         "path": "Text Size",
         "value": 10,
         "max": 15,
-        "divisibleBy": 1
+        "divisibleBy": 1,
+        "tooltip": {
+            "header": "To Change Text Size",
+            "body": "Use Mouse or Up/Down arrow key. You can also try Ctrl - and Ctrl + at any time",
+            "footer": "Work with Windows, Chrome, Firefox, Edge and some other apps"
+        }
     }, {
         "type": "array",
         "label": "Language",
@@ -94,7 +109,12 @@
             "Deutsch",
             "Español",
             "Български"
-        ]
+        ],
+        "tooltip": {
+            "header": "To Change Language",
+            "body": "Use Mouse or Up/Down arrow keys",
+            "footer": "Work with Windows, Edge and many other apps"
+        }
     }, {
         "type": "keyIn",
         "label": "Key In",
@@ -102,6 +122,9 @@
     }, {
         "type": "close",
         "label": "Close",
-        "path": "Close"
+        "path": "Close",
+        "tooltip": {
+            "header": "To Close this Quick Set Strip"
+        }
     }
 ]

@@ -22,6 +22,7 @@ var BrowserWindow = require("electron").BrowserWindow;
 var gpii  = fluid.registerNamespace("gpii");
 
 require("./utils.js");
+require("../common/channelUtils.js");
 
 
 /**
@@ -55,6 +56,9 @@ fluid.defaults("gpii.app.dialog", {
     },
 
     config: {
+        showInactive: false,
+
+        // dialog creation options
         attrs: {        // raw attributes used in `BrowserWindow` generation
             width: 800,
             height: 600,
@@ -94,7 +98,7 @@ fluid.defaults("gpii.app.dialog", {
     modelListeners: {
         isShown: {
             funcName: "gpii.app.dialog.toggle",
-            args: ["{that}", "{change}.value"],
+            args: ["{that}", "{change}.value", "{that}.options.config.showInactive"],
             namespace: "impl"
         }
     },
@@ -245,11 +249,16 @@ gpii.app.dialog.makeDialog = function (windowOptions, url, params, gradeNames) {
  * DPI settings changes.
  * @param {Component} dialog - The diolog component to be shown
  * @param {Boolean} isShown - Whether the window has to be shown
+ * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
-gpii.app.dialog.toggle = function (dialog, isShown) {
+gpii.app.dialog.toggle = function (dialog, isShown, showInactive) {
+    var showMethod = showInactive ?
+        dialog.dialog.showInactive :
+        dialog.dialog.show;
+
     if (isShown) {
         dialog.positionWindow();
-        dialog.dialog.show();
+        showMethod.call(dialog.dialog);
     } else {
         dialog.dialog.hide();
     }
@@ -366,3 +375,75 @@ fluid.defaults("gpii.app.i18n.channel", {
         }
     }
 });
+
+/**
+ * Listens for events from the renderer process (the BrowserWindow).
+ */
+fluid.defaults("gpii.app.channelListener", {
+    gradeNames: ["gpii.app.common.simpleChannelListener"],
+    ipcTarget: require("electron").ipcMain
+});
+
+/**
+ * Notifies the render process for main events.
+ */
+fluid.defaults("gpii.app.channelNotifier", {
+    gradeNames: ["gpii.app.common.simpleChannelNotifier", "gpii.app.i18n.channel"],
+    // TODO improve `i18n.channel` to use event instead of a direct notifying
+    ipcTarget: "{dialog}.dialog.webContents" // get the closest dialog
+});
+
+/**
+ * TODO
+ */
+fluid.defaults("gpii.app.dialog.delayedShow", {
+    gradeNames: ["gpii.app.timer"],
+
+    // the desired delay in milliseconds
+    showDelay: null,
+
+    listeners: {
+        onTimerFinished: {
+            func: "{that}._show"
+            // arguments are passed with the event
+        }
+    },
+
+    invokers: {
+        // _show: null, // expected from implementor
+        // _hide: null,
+        show: {
+            funcName: "gpii.app.dialog.delayedShow.show",
+            args: [
+                "{that}",
+                "{that}.options.showDelay",
+                "{arguments}" // showArgs
+            ]
+        },
+        hide: {
+            funcName: "gpii.app.dialog.delayedShow.hide",
+            args: ["{that}"]
+        }
+    }
+});
+
+gpii.app.dialog.delayedShow.show = function (that, delay, showArgs) {
+    // process raw arguments
+    showArgs = fluid.values(showArgs);
+
+    if (!fluid.isValue(delay)) {
+        // simply trigger a show synchronously
+        that.events.onTimerFinished.fire.apply(that.events.onTimerFinished, showArgs);
+    } else if (Number.isInteger(delay)) {
+        that.start(delay, showArgs);
+    } else {
+        fluid.fail("Dialog's delay must be a number.");
+    }
+};
+
+gpii.app.dialog.delayedShow.hide = function (that) {
+    // clear any existing timer
+    that.clear();
+
+    that._hide();
+};
