@@ -34,6 +34,8 @@ gpii.app.isWin10OS = function () {
 };
 
 
+fluid.registerNamespace("gpii.browserWindow");
+
 /**
  * Compute the position of the given window from the bottom right corner.
  * It ensures that the window is not positioned outside of the screen.
@@ -44,7 +46,7 @@ gpii.app.isWin10OS = function () {
  * @param {Number} offsetX - The x right offset.
  * @return {{x: Number, y: Number}} The desired window position
  */
-gpii.app.computeWindowPosition = function (width, height, offsetX, offsetY) {
+gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, offsetY) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
 
     var desiredX,
@@ -73,6 +75,25 @@ gpii.app.computeWindowPosition = function (width, height, offsetX, offsetY) {
     };
 };
 
+
+
+// /**
+//  * Get the position relative from the lower right corner of the screen for the given BrowserWindow.
+//  *
+//  * @param {Electron.BrowserWindow} dialogWindow
+//  * @returns {{offsetX: Number, offsetY: Number}} The window offset from the bottom right corner of the screen
+//  */
+// gpii.browserWindow.getWindowOffset = function (dialogWindow) {
+//     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+//         dialogSize = dialogWindow.getSize(),
+//         dialogPosition = dialogWindow.getPosition();
+
+//     return {
+//         offsetX: screenSize.width - (dialogPosition[0] + dialogSize[0]),
+//         offsetY: screenSize.height - (dialogPosition[1] + dialogSize[1])
+//     };
+// };
+
 /**
  * Gets the desired bounds (i.e. the coordinates and the width and
  * height, the latter two being restricted by the corresponding
@@ -87,14 +108,14 @@ gpii.app.computeWindowPosition = function (width, height, offsetX, offsetY) {
  * @param {Number} offsetX - The x right offset.
  * @return {{x: Number, y: Number, width: Number, height: Number}}
  */
-gpii.app.getDesiredWindowBounds = function (width, height, offsetY, offsetX) {
-    var position = gpii.app.computeWindowPosition(width, height, offsetX, offsetY);
+gpii.browserWindow.getDesiredWindowBounds = function (width, height, offsetY, offsetX) {
+    var position = gpii.browserWindow.computeWindowPosition(width, height, offsetX, offsetY);
 
     return {
         x: position.x,
         y: position.y,
-        width: width,
-        height: height
+        width: Math.ceil(width),
+        height: Math.ceil(height)
     };
 };
 
@@ -104,9 +125,9 @@ gpii.app.getDesiredWindowBounds = function (width, height, offsetY, offsetX) {
  *
  * @param {BrowserWindow} dialogWindow - The window which is to be positioned.
  */
-gpii.app.positionWindow = function (dialogWindow, offsetX, offsetY) {
+gpii.browserWindow.positionWindow = function (dialogWindow, offsetX, offsetY) {
     var size = dialogWindow.getSize(),
-        position = gpii.app.computeWindowPosition(size[0], size[1], offsetX, offsetY);
+        position = gpii.browserWindow.computeWindowPosition(size[0], size[1], offsetX, offsetY);
 
     dialogWindow.setPosition(position.x, position.y);
 };

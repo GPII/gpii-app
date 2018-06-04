@@ -16,13 +16,16 @@
 "use strict";
 
 var fluid         = require("infusion");
-var electron      = require("electron");
 var BrowserWindow = require("electron").BrowserWindow;
 
 var gpii  = fluid.registerNamespace("gpii");
 
+require("./resizable.js");
 require("./utils.js");
 require("../common/channelUtils.js");
+
+
+fluid.registerNamespace("gpii.app.dialog");
 
 
 /**
@@ -35,6 +38,10 @@ require("../common/channelUtils.js");
  * It also provides show/hide operations of the window through interaction
  * with the `isShown` property of the component
  * and handles Electron objects cleanup upon destruction.
+ *
+ * TODO positioning
+ *  Positioning of the window is relative to the bottom right corner of the screen (contrary to the 
+ *  behaviour of the Electron positioning approach) as most windows are positioned in that exact region.
  *
  * Requires:
  * - (optional) `attrs` - used as raw options for `BrowserWindow` generation.
@@ -49,10 +56,17 @@ require("../common/channelUtils.js");
  *   `fileSuffixPath = "waitDialog/index.html"`
  */
 fluid.defaults("gpii.app.dialog", {
-    gradeNames: ["fluid.modelComponent"],
+    gradeNames: ["fluid.modelComponent", "gpii.app.resizable"],
 
     model: {
-        isShown: false
+        isShown: false,
+        // the positions of the window,
+        // represented as offset from the bottom right corner;
+        // by default the window is positioned in the bottom right corner
+        offset: {
+            x: 0,
+            y: 0
+        }
     },
 
     config: {
@@ -102,28 +116,10 @@ fluid.defaults("gpii.app.dialog", {
             namespace: "impl"
         }
     },
-    events: {
-        onDisplayMetricsChanged: null
-    },
     listeners: {
         "onCreate.positionWindow": {
-            func: "{that}.positionWindow",
+            func: "{that}.repositionWindow",
             args: []
-        },
-        "onCreate.addDisplayMetricsListener": {
-            func: "gpii.app.dialog.addDisplayMetricsListener",
-            args: ["{that}"]
-        },
-        "onDisplayMetricsChanged.handleDisplayMetricsChange": {
-            func: "gpii.app.dialog.handleDisplayMetricsChange",
-            args: [
-                "{that}",
-                "{arguments}.2" // changedMetrics
-            ]
-        },
-        "onDestroy.removeDisplayMetricsListener": {
-            func: "gpii.app.dialog.removeDisplayMetricsListener",
-            args: ["{that}"]
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -131,14 +127,26 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
+        // TODO rename to positionDialog
         positionWindow: {
-            funcName: "gpii.app.positionWindow",
+            funcName: "gpii.app.dialog.positionDialog",
             args: [
-                "{that}.dialog",
+                "{that}",
                 "{arguments}.0", // offsetX
                 "{arguments}.1"  // offsetY
             ]
         },
+        repositionWindow: {
+            func: "{that}.positionWindow",
+            args: [
+                "{that}.model.offset.x", // offsetX
+                "{that}.model.offset.y", // offsetX
+            ]
+        },
+        // getDialogOffset: {
+        //     funcName: "gpii.browserWindow.getWindowOffset",
+        //     args: ["{that}.dialog"]
+        // },
         resize: {
             funcName: "gpii.app.dialog.resize",
             args: [
@@ -166,38 +174,20 @@ fluid.defaults("gpii.app.dialog", {
     }
 });
 
-/**
- * Registers a listener to be called whenever the `display-metrics-changed`
- * event is emitted by the electron screen.
- * @param {Component} that - The `gpii.app.dialog` component.
- */
-gpii.app.dialog.addDisplayMetricsListener = function (that) {
-    electron.screen.on("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
-};
 
 /**
- * Handle electron's display-metrics-changed event by resizing the dialog if
- * necessary.
- * @param {Component} that - The `gpii.app.dialog` component.
- * @param {Array} changedMetrics - An array of strings that describe the changes.
- * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
+ * TODO
+ * In case offset is not given, the current offset will be used
+ *
+ * @param that
+ * @param [offsetX]
+ * @param [offsetY]
+ * @returns {undefined}
  */
-gpii.app.dialog.handleDisplayMetricsChange = function (that, changedMetrics) {
-    if (!changedMetrics.includes("scaleFactor")) {
-        var attrs = that.options.config.attrs;
-        that.resize(attrs.width, attrs.height);
-    }
-};
-
-/**
- * Removes the listener for the `display-metrics-changed` event. This should
- * be done when the component gets destroyed in order to avoid memory leaks,
- * as some dialogs are created and destroyed dynamically (i.e. before the
- * PSP application terminates).
- * @param {Component} that - The `gpii.app.dialog` component.
- */
-gpii.app.dialog.removeDisplayMetricsListener = function (that) {
-    electron.screen.removeListener("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
+gpii.app.dialog.positionDialog = function (that, offsetX, offsetY) {
+    that.applier.change("offset", { x: offsetX, y: offsetY });
+    
+    gpii.browserWindow.positionWindow(that.dialog, offsetX, offsetY);
 };
 
 /**
@@ -251,16 +241,16 @@ gpii.app.dialog.makeDialog = function (windowOptions, url, params, gradeNames) {
  * @param {Boolean} isShown - Whether the window has to be shown
  * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
-gpii.app.dialog.toggle = function (dialog, isShown, showInactive) {
+gpii.app.dialog.toggle = function (that, isShown, showInactive) {
     var showMethod = showInactive ?
-        dialog.dialog.showInactive :
-        dialog.dialog.show;
+        that.dialog.showInactive :
+        that.dialog.show;
 
     if (isShown) {
-        dialog.positionWindow();
-        showMethod.call(dialog.dialog);
+        that.repositionWindow();
+        showMethod.call(that.dialog);
     } else {
-        dialog.dialog.hide();
+        that.dialog.hide();
     }
 };
 
@@ -271,7 +261,12 @@ gpii.app.dialog.toggle = function (dialog, isShown, showInactive) {
  * @param {Number} windowHeight - The new height for the window
  */
 gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
-    var bounds = gpii.app.getDesiredWindowBounds(windowWidth, windowHeight);
+    var offset = that.model.offset;
+
+    // TODO move to the browserWindow utils section
+    var bounds = gpii.browserWindow.getDesiredWindowBounds(windowWidth, windowHeight, offset.x, offset.y);
+    // XXX DEV
+    console.log(bounds);
     that.dialog.setBounds(bounds);
 };
 
