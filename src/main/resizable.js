@@ -43,7 +43,8 @@ fluid.defaults("gpii.app.resizable", {
         // helper variables needed for display metrics changes
         displayMetricsChanged: {
             timer: null,
-            wasShown: null
+            wasShown: null,
+            wasFocused: null
         }
     },
     events: {
@@ -90,7 +91,7 @@ fluid.defaults("gpii.app.resizable", {
 /**
  * Registers a listener to be called whenever the `display-metrics-changed`
  * event is emitted by the electron screen.
- * @param that {Component} The `gpii.app.resizable` component.
+ * @param {Component} that The `gpii.app.resizable` component.
  */
 gpii.app.resizable.addDisplayMetricsListener = function (that) {
     electron.screen.on("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
@@ -99,9 +100,9 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
 /**
  * Should be called whenever a change in the size of the component's
  * content is detected from within the content itself.
- * @param that {Component} The `gpii.app.resizable` component.
- * @param width {Number} The updated width of the componet's content.
- * @param height {Number} The updated height of the componet's content.
+ * @param {Component} that The `gpii.app.resizable` component.
+ * @param {Number} width The updated width of the componet's content.
+ * @param {Number} height The updated height of the componet's content.
  */
 gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
     that.width = width;
@@ -112,11 +113,13 @@ gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
 /**
  * Handle electron's display-metrics-changed event by resizing the component if
  * necessary.
- * @param that {Component} The `gpii.app.resizable` component.
- * @param changedMetrics {Array} An array of strings that describe the changes.
+ * @param {Component} that The `gpii.app.resizable` component.
+ * @param {Array} changedMetrics An array of strings that describe the changes.
  * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
  */
 gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) {
+    var dialog = that.dialog || that.pspWindow
+
     // In older versions of Electron (e.g. 1.4.1) whenever the DPI was changed, one
     // `display-metrics-changed` event was fired. In newer versions (e.g. 1.8.1) the
     // `display-metrics-changed` event is fired multiple times. The change of the DPI
@@ -140,18 +143,27 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
 
         that.resize(width, height);
 
-        // reset the timer state
+        // reset state
         that.displayMetricsChanged.timer = null;
         if (that.displayMetricsChanged.wasShown) {
-            that.show();
+            // low level show
+            if (that.displayMetricsChanged.wasFocused) {
+                dialog.show();
+            } else {
+                // without a focus; We want to restore the previously focused window
+                dialog.showInactive();
+            }
         }
     }
 
     // in case this is the first call notification of the display-metrics-changed event
     // hide the dialog, and keep its state
-    if (!that.displayMetricsChange.timer) {
+    if (!that.displayMetricsChanged.timer) {
         that.displayMetricsChanged.wasShown = that.model.isShown;
-        that.hide();
+
+        that.displayMetricsChanged.wasFocused = dialog.isFocused();
+        // low level hide
+        dialog.hide();
     }
 
     // to ensure the DPI change has taken place, wait for a while after its last event
@@ -162,7 +174,7 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
 /**
  * Removes the listener for the `display-metrics-changed` event. This should
  * be done when the component gets destroyed in order to avoid memory leaks.
- * @param that {Component} The `gpii.app.resizable` component.
+ * @param {Component} that - The `gpii.app.resizable` component.
  */
 gpii.app.resizable.removeDisplayMetricsListener = function (that) {
     electron.screen.removeListener("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);

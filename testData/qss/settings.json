@@ -64,15 +64,16 @@
             "body": "Use Mouse or Up/Down arrow keys",
             "footer": "Work with Windows, Edge and some other apps"
         }
-    }, { 
-        "path": "http://registry\\.gpii\\.net/common/magnification/enabled",
-        "label": "Enable Magnifier",
-        "tooltip": {
-            "header":  "Whether to enable/disable magnification" ,
-            "body": "Use Mouse or Up/Down arrow keys"
-        },
+    }, {
+        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrast/enabled",
+        "label": "High Contrast",
         "type": "boolean",
-        "default": false
+        "tooltip": {
+            "header": "Whether to enable/disable High Contrast",
+            "body": "Use the mouse or press Enter",
+            "footer": "Work with Windows Media Player and Youtube.com on Chrome"
+        },
+        "value": false
     }, {   
         "type": "boolean",
         "label": "Captions",
