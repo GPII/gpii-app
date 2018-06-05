@@ -258,7 +258,10 @@
         // dynamic components except the first one are suffixed with "-<source_index>"
         var dynamicCmpName = dynamicCmpBaseName + (index !== "0" ? "-" + index : "");
 
-        that[dynamicCmpName].handler.applier.change("item", newValue, null, "itemUpdate");
+        // XXX DEV
+        console.log(dynamicCmpName);
+
+        that[dynamicCmpName].handler.applier.change("item", newValue, null, "gpii.psp.repeater.itemUpdate");
     };
 
     /**

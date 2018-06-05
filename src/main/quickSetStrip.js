@@ -79,7 +79,7 @@ fluid.defaults("gpii.app.qss", {
                     },
                     onSettingUpdated: {
                         "funcName": "console.log",
-                        args: ["Sending setting: ", "{arguments}.0"]
+                        args: ["Sending Updated QSS: ", "{arguments}.0"]
                     }
                 }
             }
@@ -107,17 +107,17 @@ fluid.defaults("gpii.app.qss", {
                         funcName: "console.log",
                         args: ["Item clicked: ", "{arguments}.0"]
                     },
-                    onQssButtonMouseEnter: {
-                        funcName: "console.log",
-                        args: ["Item Enter: ", "{arguments}.0.target.offsetLeft"]
-                    },
-                    onQssButtonMouseLeave: {
-                        funcName: "console.log",
-                        args: ["Item Leave: ", "{arguments}.0.target.offsetLeft"]
-                    },
+                    // onQssButtonMouseEnter: {
+                    //     funcName: "console.log",
+                    //     args: ["Item Enter: ", "{arguments}.0.target.offsetLeft"]
+                    // },
+                    // onQssButtonMouseLeave: {
+                    //     funcName: "console.log",
+                    //     args: ["Item Leave: ", "{arguments}.0.target.offsetLeft"]
+                    // },
                     onQssSettingAltered: {
                         funcName: "console.log",
-                        args: ["Setting altered:", "{arguments}.0"]
+                        args: ["Setting altered QSS:", "{arguments}.0.path", "{arguments}.0.value"]
                     }
                 }
             }
@@ -367,6 +367,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssTooltipDialog",
             options: {
                 listeners: {
+                    // TODO list events for a method
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": {
                         func: "{that}.showIfPossible",
                         args: [

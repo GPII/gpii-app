@@ -101,9 +101,6 @@ gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
         return;
     }
 
-    // XXX dev
-    console.log("Setting updated: ", setting);
-
     gpiiConnector.send({
         path: ["settingControls", setting.path, "value"],
         type: "ADD",
@@ -138,6 +135,8 @@ gpii.app.gpiiConnector.parseMessage = function (gpiiConnector, message) {
          */
         var settingPath = path[path.length - 2],
             settingValue = payload.value;
+
+        console.log("SETTING UPDATE: ", settingPath, settingValue);
 
         gpiiConnector.events.onSettingUpdated.fire({
             path: settingPath,

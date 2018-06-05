@@ -53,7 +53,7 @@
             value: {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model.item", "{change}.value"],
-                excludeSource: "init"
+                excludeSource: ["init", "gpii.psp.repeater.itemUpdate"]
             }
         },
 
