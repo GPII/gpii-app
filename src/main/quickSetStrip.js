@@ -49,7 +49,8 @@ fluid.defaults("gpii.app.qss", {
     events: {
         onQssOpen: null,
         onQssWidgetToggled: null,
-        onQssSettingAltered: null
+        onQssSettingAltered: null,
+        onSettingUpdated: null
     },
 
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget", "gpii.app.qss"],
@@ -70,7 +71,10 @@ fluid.defaults("gpii.app.qss", {
                         args: [
                             "{that}.events.onSettingUpdated.fire",
                             6000,
-                            "Oh Hello setting update"
+                            {
+                                "path": "http://registry\\.gpii\\.net/common/fontSize",
+                                "value": 9
+                            }
                         ]
                     },
                     onSettingUpdated: {
@@ -277,6 +281,8 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationP
  * @param {Number} elementMetrics.height - The height of the element
  * @param {Number} elementMetrics.offsetRight - The offset of the element from the
  * right of its window's.
+ * @param {Object} activationParams - Defines the way this show was triggered
+ * @param {Object} activationParams.shortcut - Defines the way the show was triggered
  */
 gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
     // Find the offset for the window to be centered over the element
@@ -311,7 +317,8 @@ fluid.defaults("gpii.app.qssWrapper", {
     },
 
     events: {
-        onQssSettingAltered: null
+        onQssSettingAltered: null,
+        onSettingUpdated: null
     },
 
     components : {
@@ -325,7 +332,8 @@ fluid.defaults("gpii.app.qssWrapper", {
                 },
                 events: {
                     onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled",
-                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered"
+                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered",
+                    onSettingUpdated: "{qssWrapper}.events.onSettingUpdated"
                 },
                 listeners: {
                     "{channelListener}.events.onQssButtonActivated": {

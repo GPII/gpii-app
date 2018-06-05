@@ -198,6 +198,19 @@
             }
         },
 
+        modelListeners: {
+            "items.*": {
+                funcName: "gpii.psp.repeater.notifyElementChange",
+                args: [
+                    "{that}",
+                    // take only the index
+                    "{change}.path.1",
+                    "{change}.value"
+                ],
+                excludeSource: "init"
+            }
+        },
+
         dynamicContainerMarkup: {
             container:            "<div class=\"%containerClass\"></div>",
             // TODO rename to containerClassTpl
@@ -231,6 +244,22 @@
             }
         }
     });
+
+    /**
+     * Notify the corresponding dynamic component about its setting change.
+     * The dynamic component is computed using the changed setting's index.
+     *
+     * @param {Component} that - The `gpii.psp.repeater` component.
+     * @param {String} index - The item's path, which represents the index of the changed element
+     * @param {Object} newValue - The new state of the item
+     */
+    gpii.psp.repeater.notifyElementChange = function (that, index, newValue) {
+        var dynamicCmpBaseName = "element";
+        // dynamic components except the first one are suffixed with "-<source_index>"
+        var dynamicCmpName = dynamicCmpBaseName + (index !== "0" ? "-" + index : "");
+
+        that[dynamicCmpName].handler.applier.change("item", newValue, null, "itemUpdate");
+    };
 
     /**
      * Constructs the markup for the indexed container - sets proper index.

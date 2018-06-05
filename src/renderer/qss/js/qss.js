@@ -402,6 +402,17 @@
             onQssWidgetToggled: null
         },
 
+        listeners: {
+            "onQssOpen": {
+                funcName: "gpii.qss.onQssOpen",
+                args: [
+                    "{quickSetStripList}",
+                    "{that}.model.settings",
+                    "{arguments}.0" // params
+                ]
+            }
+        },
+
         components: {
             quickSetStripList: {
                 type: "gpii.qss.list",
@@ -439,8 +450,13 @@
                     // XXX dev
                     listeners: {
                         onSettingUpdated: {
-                            funcName: "console.log",
-                            args: ["Settings updated: ", "{arguments}.0"]
+                            // Update item by path
+                            // TODO
+                            funcName: "gpii.qss.updateSetting",
+                            args: [
+                                "{qss}",
+                                "{arguments}.0"
+                            ]
                         }
                     }
                 }
@@ -461,19 +477,25 @@
                     }
                 }
             }
-        },
-
-        listeners: {
-            "onQssOpen": {
-                funcName: "gpii.qss.onQssOpen",
-                args: [
-                    "{quickSetStripList}",
-                    "{that}.model.settings",
-                    "{arguments}.0" // params
-                ]
-            }
         }
     });
+
+
+    /**
+     * Find a setting in a list of settings and update it. Settings are identified by their
+     * `path` property which is expected to be existent and unique.
+     *
+     * @param {Component} that - The component containing `settings` in its model
+     * @param {Object} settingNewState - The new state of the setting
+     * @param {String} settingNewState.path - The path of the setting. This field is required.
+     */
+    gpii.qss.updateSetting = function (that, settingNewState) {
+        var settingIndex = that.model.settings.findIndex(function (setting) {
+            return setting.path === settingNewState.path;
+        });
+
+        that.applier.change("settings." + settingIndex, settingNewState, null, "settingUpdate");
+    };
 
     gpii.qss.onTabPressed = function (that, KeyboardEvent) {
         if (KeyboardEvent.shiftKey) {
