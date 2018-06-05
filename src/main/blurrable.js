@@ -1,7 +1,8 @@
 /**
  * Manage blurring of Electron windows
  *
- * 
+ * Defines mechanism to blur browser windows only when not interacted
+ * with a window in a specific group of linked windows.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -18,9 +19,10 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
 
+/**
+ * Blurrable mixin
+ */
 fluid.defaults("gpii.app.blurrable", {
-    gradeNames: ["fluid.component"],
-
     // the list of windows that should not cause blur of the
     // current one; The current window should also be supplied
     linkedWindowsGrades: [],
@@ -29,14 +31,18 @@ fluid.defaults("gpii.app.blurrable", {
         onBlur: null
     },
 
+    modelListeners: {
+        isShown: {
+            func: "{that}.initComplexBlurListener",
+            args: "{arguments}.0"
+        }
+    },
+
     listeners: {
+        // XXX dev
         onBlur: {
             funcName: "console.log",
             args: ["Lost: ", "{arguments}.0"]
-        },
-        "onCreate.initBlurListener": {
-            funcName: "gpii.app.blurrable.initBlurListener",
-            args: ["{that}", "{that}.options.linkedWindowsGrades"]
         }
     },
 
@@ -45,7 +51,8 @@ fluid.defaults("gpii.app.blurrable", {
             funcName: "gpii.app.blurrable.initComplexBlurListener",
             args: [
                 "{that}",
-                "{that}.options.linkedWindowsGrades"
+                "{that}.options.linkedWindowsGrades",
+                "{arguments}.0" // isDialogShown
             ]
         }
     }
@@ -68,9 +75,9 @@ gpii.app.blurrable.isWindowRelated = function (linkedGrades, window) {
  * @param relatedGrades
  * @returns {undefined}
  */
-gpii.app.blurrable.initBlurListener = function (that, relatedGrades) {
-    if (relatedGrades && relatedGrades.length > 0) {
-        that.initComplexBlurListener();
+gpii.app.blurrable.initComplexBlurListener = function (that, relatedGrades, isDialogShown) {
+    if (isDialogShown && relatedGrades && relatedGrades.length > 0) {
+        gpii.app.blurrable.attachComplexBlurListener(that, that.dialog || that.pspWindow, relatedGrades);
     }
 };
 
@@ -80,20 +87,17 @@ gpii.app.blurrable.initBlurListener = function (that, relatedGrades) {
  * @param that
  * @param relatedGrades
  */
-gpii.app.blurrable.initComplexBlurListener = function (that, relatedGrades) {
+gpii.app.blurrable.attachComplexBlurListener = function (that, window, relatedGrades) {
     // Initialize the listener
-    var linkedWindows = BrowserWindow.getAllWindows()
-        .filter(gpii.app.blurrable.isWindowRelated.bind(null, relatedGrades));
+    window.once("blur", function () {
+        // the newly focused electron window
+        var focusedWindow = BrowserWindow.getFocusedWindow();
 
-    fluid.each(linkedWindows, function (window) {
-        window.on("blur", function () {
-            // the newly focused electron window
-            var focusedWindow = BrowserWindow.getFocusedWindow();
-
-            if (!focusedWindow || !gpii.app.blurrable.isWindowRelated(relatedGrades, focusedWindow)) {
-                // XXX dev fired arg
-                that.events.onBlur.fire(that.options.gradeNames.slice(-1));
-            }
-        });
+        if (focusedWindow || gpii.app.blurrable.isWindowRelated(relatedGrades, focusedWindow)) {
+            gpii.app.blurrable.attachComplexBlurListener(that, focusedWindow, relatedGrades);
+        } else {
+            // XXX dev fired arg
+            that.events.onBlur.fire(that.options.gradeNames.slice(-1));
+        }
     });
 };
