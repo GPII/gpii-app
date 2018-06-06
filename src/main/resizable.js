@@ -118,7 +118,8 @@ gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
  * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
  */
 gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) {
-    var dialog = that.dialog || that.pspWindow
+    // XXX support both `gpii.app.psp` and `gpii.app.dialog` types
+    var dialog = that.dialog || that.pspWindow;
 
     // In older versions of Electron (e.g. 1.4.1) whenever the DPI was changed, one
     // `display-metrics-changed` event was fired. In newer versions (e.g. 1.8.1) the
@@ -145,7 +146,7 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
 
         // reset state
         that.displayMetricsChanged.timer = null;
-        if (that.displayMetricsChanged.wasShown) {
+        if (that.options.offScreenHide || that.displayMetricsChanged.wasShown) {
             // low level show
             if (that.displayMetricsChanged.wasFocused) {
                 dialog.show();

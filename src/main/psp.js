@@ -178,6 +178,7 @@ fluid.defaults("gpii.app.psp", {
     // In case we want to have some heightOffset from the screen edge.
     // This is useful when we have QSS which should be below the PSP.
     heightOffset: null,
+    offScreenHide: true,
 
     linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.psp"],
 
