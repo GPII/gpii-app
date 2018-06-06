@@ -198,18 +198,7 @@
             }
         },
 
-        modelListeners: {
-            "items.*": {
-                funcName: "gpii.psp.repeater.notifyElementChange",
-                args: [
-                    "{that}",
-                    // take only the index
-                    "{change}.path.1",
-                    "{change}.value"
-                ],
-                excludeSource: "init"
-            }
-        },
+
 
         dynamicContainerMarkup: {
             container:            "<div class=\"%containerClass\"></div>",
@@ -226,6 +215,21 @@
                     index: "{sourcePath}",
                     item:  "{source}",
                     handlerType: "@expand:{repeater}.getHandlerType({that}.options.item)",
+
+                    modelListeners: {
+                        // rerender element on item change
+                        "{repeater}.model.items.*": {
+                            funcName: "gpii.psp.repeater.notifyElementChange",
+                            args: [
+                                "{that}.handler",
+                                "{that}.options.index",
+                                // take only the index
+                                "{change}.path.1",
+                                "{change}.value"
+                            ],
+                            excludeSource: "init"
+                        }
+                    },
 
                     markup: {
                         container: {
@@ -253,15 +257,13 @@
      * @param {String} index - The item's path, which represents the index of the changed element
      * @param {Object} newValue - The new state of the item
      */
-    gpii.psp.repeater.notifyElementChange = function (that, index, newValue) {
-        var dynamicCmpBaseName = "element";
-        // dynamic components except the first one are suffixed with "-<source_index>"
-        var dynamicCmpName = dynamicCmpBaseName + (index !== "0" ? "-" + index : "");
+    gpii.psp.repeater.notifyElementChange = function (elHandler, elIndex , itemIndex, newValue) {
+        itemIndex = fluid.parseInteger(itemIndex);
 
-        // XXX DEV
-        console.log(dynamicCmpName);
+        // does the current handler, handles the changed item?
+        if (elIndex !== itemIndex) { return; }
 
-        that[dynamicCmpName].handler.applier.change("item", newValue, null, "gpii.psp.repeater.itemUpdate");
+        elHandler.applier.change("item", newValue, null, "gpii.psp.repeater.itemUpdate");
     };
 
     /**
