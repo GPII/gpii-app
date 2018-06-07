@@ -38,8 +38,8 @@ fluid.defaults("gpii.app.resizable", {
         }
     },
     members: {
-        width: null, // the actual width of the content
-        height: null, // the actual height of the content
+        width:  "{that}.options.config.attrs.width", // the actual width of the content
+        height: "{that}.options.config.attrs.height", // the actual height of the content
         // helper variables needed for display metrics changes
         displayMetricsChanged: {
             timer: null,
@@ -169,7 +169,7 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
 
     // to ensure the DPI change has taken place, wait for a while after its last event
     clearTimeout(that.displayMetricsChanged.timer);
-    that.displayMetricsChanged.timer = setTimeout(scaleDialog, 400);
+    that.displayMetricsChanged.timer = setTimeout(scaleDialog, 500);
 };
 
 /**

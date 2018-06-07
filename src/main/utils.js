@@ -36,6 +36,27 @@ gpii.app.isWin10OS = function () {
 
 fluid.registerNamespace("gpii.browserWindow");
 
+
+gpii.browserWindow.computeWindowSize = function (width, height, offsetX, offsetY) {
+    // ensure proper values are given
+    offsetX = Math.max(0, (offsetX || 0));
+    offsetY = Math.max(0, (offsetY || 0));
+
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    // Restrict the size of the window according to its position
+    // we want our windows to be fully visible
+    var maxWidth = screenSize.width - offsetX;
+    var maxHeight = screenSize.height - offsetY;
+
+    var optimalWidth  = Math.min(width, maxWidth);
+    var optimalHeight = Math.min(height, maxHeight);
+
+    return {
+        width:  Math.ceil(optimalWidth),
+        height: Math.ceil(optimalHeight)
+    };
+};
+
 /**
  * Compute the position of the given window from the bottom right corner.
  * It ensures that the window is not positioned outside of the screen.
@@ -47,17 +68,13 @@ fluid.registerNamespace("gpii.browserWindow");
  * @return {{x: Number, y: Number}} The desired window position
  */
 gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, offsetY) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    // ensure proper values are given
+    offsetX = Math.max(0, (offsetX || 0));
+    offsetY = Math.max(0, (offsetY || 0));
 
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
     var desiredX,
         desiredY;
-
-    offsetX = offsetX || 0;
-    offsetY = offsetY || 0;
-
-    // restrict offset to be positive
-    offsetX = Math.max(0, offsetX);
-    offsetY = Math.max(0, offsetY);
 
     // position relatively to the bottom right corner
     // note that as offset is positive we're restricting window
@@ -76,24 +93,6 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
 };
 
 
-
-// /**
-//  * Get the position relative from the lower right corner of the screen for the given BrowserWindow.
-//  *
-//  * @param {Electron.BrowserWindow} dialogWindow
-//  * @returns {{offsetX: Number, offsetY: Number}} The window offset from the bottom right corner of the screen
-//  */
-// gpii.browserWindow.getWindowOffset = function (dialogWindow) {
-//     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-//         dialogSize = dialogWindow.getSize(),
-//         dialogPosition = dialogWindow.getPosition();
-
-//     return {
-//         offsetX: screenSize.width - (dialogPosition[0] + dialogSize[0]),
-//         offsetY: screenSize.height - (dialogPosition[1] + dialogSize[1])
-//     };
-// };
-
 /**
  * Gets the desired bounds (i.e. the coordinates and the width and
  * height, the latter two being restricted by the corresponding
@@ -109,13 +108,17 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
  * @return {{x: Number, y: Number, width: Number, height: Number}}
  */
 gpii.browserWindow.getDesiredWindowBounds = function (width, height, offsetY, offsetX) {
+    // restrict offset to be positive
     var position = gpii.browserWindow.computeWindowPosition(width, height, offsetX, offsetY);
+    var size = gpii.browserWindow.computeWindowSize(width, height, offsetX, offsetY);
+
+    console.log("Desired Bounds: ", arguments, size, position);
 
     return {
-        x: position.x,
-        y: position.y,
-        width: Math.ceil(width),
-        height: Math.ceil(height)
+        x:      position.x,
+        y:      position.y,
+        width:  size.width,
+        height: size.height
     };
 };
 
@@ -131,6 +134,41 @@ gpii.browserWindow.positionWindow = function (dialogWindow, offsetX, offsetY) {
 
     dialogWindow.setPosition(position.x, position.y);
 };
+
+gpii.browserWindow.resizeWindow = function (dialogWindow, width, height) {
+    var size = gpii.browserWindow.computeWindowSize(width, height, 0, 0);
+
+    dialogWindow.setSize(size.width, size.height);
+};
+
+
+/**
+ * Moves the window back to the visible screen. This function in conjunction with `gpii.browserWindow.moveOffScreen`
+ * help avoid the flickering issue when the content of the PSP window changes.
+ *
+ * @param {Object} window - An Electron `BrowserWindow`.
+ * @param {Object} offset - The exact position the window to be moved to relative
+ */
+gpii.browserWindow.moveToScreen = function (window, offset) {
+    // TODO fit window in screen
+    gpii.browserWindow.positionWindow(window, offset.x || 0, offset.y || 0);
+};
+
+/**
+ * Moves the BrowserWindow to a non-visible part of the screen. This function in conjunction
+ * with `gpii.browserWindow.moveToScreen` help avoid the flickering issue when the content
+ * of the PSP window changes.
+ * @param {Object} window - An Electron `BrowserWindow`.
+ */
+gpii.browserWindow.moveOffScreen = function (window) {
+    // Move the BrowserWindow so far away that even if there is an additional screen attached,
+    // it will not be visible. It appears that the min value for the `BrowserWindow`
+    // position can be -Math.pow(2, 31). Any smaller values lead to an exception.
+    var coordinate = -Math.pow(2, 20);
+    window.setPosition(coordinate, coordinate);
+};
+
+
 
 /**
  * A function which capitalizes its input text. It does nothing if the provided argument is `null` or `undefined`.

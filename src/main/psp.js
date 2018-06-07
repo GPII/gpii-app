@@ -42,7 +42,8 @@ fluid.defaults("gpii.app.pspInApp", {
     modelListeners: {
         "{qss}.qss.model.isShown": {
             funcName: "gpii.app.pspInApp.applyOffset",
-            args: ["{that}", "{qss}.qss.options.config.attrs.height", "{change}.value"]
+            args: ["{that}", "{qss}.qss.options.config.attrs.height", "{change}.value"],
+            excludeSource: "init"
         }
     },
 
@@ -125,10 +126,9 @@ gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
         psp.options.heightOffset = null;
     }
 
-    // In case the psp is shown, make sure the offset takes effect
-    if (psp.model.isShown) {
-        gpii.app.psp.moveToScreen(psp.pspWindow, psp.options.heightOffset);
-    }
+    console.log("Apply Offset & resize: ", psp.width, psp.height, psp.options.heightOffset);
+    // in case it was shown, it will be also repositioned
+    psp.resize(psp.width, psp.height);
 };
 
 /**
@@ -243,7 +243,7 @@ fluid.defaults("gpii.app.psp", {
             funcName: "gpii.app.psp.closePSP",
             args: ["{psp}", "{settingsBroker}"]
         },
-        
+
         "onBlur": {
             funcName: "gpii.app.psp.handleBlur",
             args: ["{that}", "{settingsBroker}"]
@@ -288,7 +288,8 @@ fluid.defaults("gpii.app.psp", {
                 "{that}",
                 "{arguments}.0",  // width
                 "{arguments}.1",  // height
-                "{that}.options.config.attrs.height"
+                "{that}.options.config.attrs.height",
+                "{that}.options.heightOffset"
             ]
         },
         showRestartWarning: {
@@ -313,24 +314,6 @@ fluid.defaults("gpii.app.psp", {
     }
 });
 
-/**
- * Moves the PSP to the lower right part of the screen. This function in conjunction with `gpii.app.psp.moveOffScreen`
- * help avoid the flickering issue when the content of the PSP window changes.
- *
- * @param {Object} pspWindow - An Electron `BrowserWindow`.
- */
-gpii.app.psp.moveToScreen = function (pspWindow, heightOffset) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-        windowSize = pspWindow.getSize(),
-        windowX = screenSize.width - windowSize[0],
-        windowY = screenSize.height - windowSize[1];
-
-    if (heightOffset) {
-        windowY -= heightOffset;
-    }
-
-    pspWindow.setPosition(windowX, windowY);
-};
 
 /**
  * Shows the PSP window by moving it to the lower right part of the screen and changes
@@ -338,7 +321,8 @@ gpii.app.psp.moveToScreen = function (pspWindow, heightOffset) {
  * @param {Component} psp - The `gpii.app.psp` instance.
  */
 gpii.app.psp.show = function (psp) {
-    gpii.app.psp.moveToScreen(psp.pspWindow, psp.options.heightOffset);
+    console.log("Show: ", psp.options.heightOffset);
+    gpii.browserWindow.moveToScreen(psp.pspWindow, { y: psp.options.heightOffset });
     psp.pspWindow.focus();
     psp.applier.change("isShown", true);
 };
@@ -417,26 +401,12 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
 
 
 /**
- * Moves the PSP to a non-visible part of the screen. This function in conjunction
- * with `gpii.app.psp.moveToScreen` help avoid the flickering issue when the content
- * of the PSP window changes.
- * @param {Object} pspWindow - An Electron `BrowserWindow`.
- */
-gpii.app.psp.moveOffScreen = function (pspWindow) {
-    // Move the PSP so far away that even if there is an additional screen attached,
-    // it will not be visible. It appears that the min value for the `BrowserWindow`
-    // position can be -Math.pow(2, 31). Any smaller values lead to an exception.
-    var coordinate = -Math.pow(2, 20);
-    pspWindow.setPosition(coordinate, coordinate);
-};
-
-/**
  * Hides the PSP window by moving it off the screen and changes the `isShown` model
  * property accordingly.
  * @param {Component} psp - The `gpii.app.psp` instance.
  */
 gpii.app.psp.hide = function (psp) {
-    gpii.app.psp.moveOffScreen(psp.pspWindow);
+    gpii.browserWindow.moveOffScreen(psp.pspWindow);
     psp.applier.change("isShown", false);
 };
 
@@ -468,12 +438,13 @@ gpii.app.psp.closePSP = function (psp, settingsBroker) {
  * @param {Number} width - The desired width of the BrowserWindow.
  * @param {Number} contentHeight - The new height of the BrowserWindow's content.
  * @param {Number} minHeight - The minimum height which the BrowserWindow must have.
+ * @param {Number} heightOffset - The heightoffset that should be preserved after resizing.
  */
-gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
+gpii.app.psp.resize = function (psp, width, contentHeight, minHeight, heightOffset) {
     var pspWindow = psp.pspWindow,
         wasShown = psp.model.isShown,
         height = Math.max(contentHeight, minHeight || 0),
-        bounds = gpii.browserWindow.getDesiredWindowBounds(width, height, psp.options.heightOffset);
+        bounds = gpii.browserWindow.getDesiredWindowBounds(width, height, heightOffset);
 
     if (wasShown) {
         // The coordinates and the dimensions of the PSP must be set with a single
@@ -502,7 +473,7 @@ gpii.app.psp.makePSPWindow = function (windowOptions, params, gradeNames) {
     pspWindow.params = params || {};
     pspWindow.gradeNames = gradeNames;
 
-    gpii.app.psp.moveOffScreen(pspWindow);
+    gpii.browserWindow.moveOffScreen(pspWindow);
 
     return pspWindow;
 };

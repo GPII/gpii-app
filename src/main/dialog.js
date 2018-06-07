@@ -140,13 +140,9 @@ fluid.defaults("gpii.app.dialog", {
             func: "{that}.positionWindow",
             args: [
                 "{that}.model.offset.x", // offsetX
-                "{that}.model.offset.y", // offsetX
+                "{that}.model.offset.y"  // offsetX
             ]
         },
-        // getDialogOffset: {
-        //     funcName: "gpii.browserWindow.getWindowOffset",
-        //     args: ["{that}.dialog"]
-        // },
         resize: {
             funcName: "gpii.app.dialog.resize",
             args: [
@@ -266,7 +262,7 @@ gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
     // TODO move to the browserWindow utils section
     var bounds = gpii.browserWindow.getDesiredWindowBounds(windowWidth, windowHeight, offset.x, offset.y);
     // XXX DEV
-    console.log(bounds);
+    console.log("DIALOG: ", bounds, that.options.gradeNames.slice(-1));
     that.dialog.setBounds(bounds);
 };
 
