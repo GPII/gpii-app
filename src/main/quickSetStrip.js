@@ -374,6 +374,10 @@ fluid.defaults("gpii.app.qssWrapper", {
                         ]
                     },
 
+                    // TODO we could also have a modelLister and always hide. See widget
+                    "{gpii.app.qss}.events.onDialogHidden": {
+                        func: "{that}.hide"
+                    },
                     "{gpii.app.qss}.channelListener.events.onQssButtonActivated": {
                         func: "{that}.hide"
                     },

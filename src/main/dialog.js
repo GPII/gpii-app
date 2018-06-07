@@ -69,6 +69,11 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
 
+    events: {
+        onDialogShown: null,
+        onDialogHidden: null
+    },
+
     config: {
         showInactive: false,
 
@@ -182,7 +187,7 @@ fluid.defaults("gpii.app.dialog", {
  */
 gpii.app.dialog.positionDialog = function (that, offsetX, offsetY) {
     that.applier.change("offset", { x: offsetX, y: offsetY });
-    
+
     gpii.browserWindow.positionWindow(that.dialog, offsetX, offsetY);
 };
 
@@ -245,8 +250,10 @@ gpii.app.dialog.toggle = function (that, isShown, showInactive) {
     if (isShown) {
         that.repositionWindow();
         showMethod.call(that.dialog);
+        that.events.onDialogShown.fire();
     } else {
         that.dialog.hide();
+        that.events.onDialogHidden.fire();
     }
 };
 
@@ -284,7 +291,7 @@ fluid.defaults("gpii.app.dialogWrapper", {
     },
 
     events: {
-        onDialogCreate: null
+        onDialogCreate: null,
     },
 
     invokers: {
