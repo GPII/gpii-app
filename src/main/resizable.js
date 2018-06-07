@@ -144,6 +144,11 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
 
         that.resize(width, height);
 
+        // in case it is not the PSP
+        if (that.repositionWindow) {
+            that.repositionWindow();
+        }
+
         // reset state
         that.displayMetricsChanged.timer = null;
         if (that.options.offScreenHide || that.displayMetricsChanged.wasShown) {
