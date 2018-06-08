@@ -147,10 +147,10 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
-                events: {
-                    onSettingUpdated: "{gpiiConnector}.events.onSettingUpdated"
-                },
                 listeners: {
+                    "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
+                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
+
                     // directly apply settings
                     onQssSettingAltered: {
                         listener: "{settingsBroker}.applySetting"

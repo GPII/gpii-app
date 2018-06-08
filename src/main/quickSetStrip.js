@@ -70,7 +70,7 @@ fluid.defaults("gpii.app.qss", {
                         funcName: "setTimeout",
                         args: [
                             "{that}.events.onSettingUpdated.fire",
-                            6000,
+                            10000,
                             {
                                 "path": "http://registry\\.gpii\\.net/common/fontSize",
                                 "value": 9

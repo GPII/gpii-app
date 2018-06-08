@@ -61,7 +61,11 @@ fluid.defaults("gpii.app.pspInApp", {
             ]
         },
 
-        "{gpiiConnector}.events.onSettingUpdated": {
+        // link setting update events
+        "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated.fire",
+        "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated.fire",
+
+        onSettingUpdated: {
             listener: "{that}.notifyPSPWindow",
             args: [
                 "onSettingUpdated",
@@ -69,13 +73,6 @@ fluid.defaults("gpii.app.pspInApp", {
             ]
         },
 
-        "{settingsBroker}.events.onSettingApplied": [{
-            listener: "{that}.notifyPSPWindow",
-            args: [
-                "onSettingUpdated",
-                "{arguments}.0" // message
-            ]
-        }],
 
         /*
          * Restart Warning related listeners
@@ -209,6 +206,8 @@ fluid.defaults("gpii.app.psp", {
         pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.config.attrs, {that}.options.params, {that}.options.gradeNames)"
     },
     events: {
+        onSettingUpdated: null,
+
         onSettingAltered: null,
         onActivePreferenceSetAltered: null,
 
