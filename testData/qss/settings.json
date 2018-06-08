@@ -6,7 +6,7 @@
     }, {
         "type": "array",
         "label": "High / Low Contrast",
-        "path": "http://registry.gpii.net/common/highContrastTheme",
+        "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "styles": {
             "Low Contrast 3": {
                 "background-color": "#6bbfeb",
@@ -109,7 +109,7 @@
     }, {
         "type": "array",
         "label": "Language",
-        "path": "http://registry.gpii.net/common/language",
+        "path": "http://registry\\.gpii\\.net/common/language",
         "value": "English",
         "enum": [
             "English",
