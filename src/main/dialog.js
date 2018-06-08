@@ -227,7 +227,6 @@ gpii.app.dialog.makeDialog = function (windowOptions, url, params, gradeNames) {
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095
     dialog.params = params || {};
-    dialog.gradeNames = gradeNames;
 
     return dialog;
 };

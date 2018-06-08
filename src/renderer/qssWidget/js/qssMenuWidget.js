@@ -32,7 +32,8 @@
         modelListeners: {
             setting: {
                 func: "{channelNotifier}.events.onQssSettingAltered.fire",
-                args: ["{change}.value"]
+                args: ["{change}.value"],
+                includeSource: "settingAlter"
             }
         },
         selectors: {

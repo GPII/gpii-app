@@ -216,8 +216,7 @@ fluid.defaults("gpii.app.psp", {
 
         onClosed: null,
 
-        onContentHeightChanged: null,
-        onPSPWindowFocusLost: null
+        onContentHeightChanged: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -228,9 +227,9 @@ fluid.defaults("gpii.app.psp", {
             listener: "gpii.app.psp.registerAccentColorListener",
             args: ["{that}"]
         },
-        "onCreate.initBlurListener": {
-            listener: "gpii.app.psp.initBlurListener",
-            args: ["{that}"]
+        "onCreate.initBlurrable": {
+            func: "{that}.initBlurrable",
+            args: ["{that}.pspWindow"]
         },
 
         "onDestroy.cleanupElectron": {
@@ -241,11 +240,6 @@ fluid.defaults("gpii.app.psp", {
         "onClosed.closePsp": {
             funcName: "gpii.app.psp.closePSP",
             args: ["{psp}", "{settingsBroker}"]
-        },
-
-        "onBlur": {
-            funcName: "gpii.app.psp.handleBlur",
-            args: ["{that}", "{settingsBroker}"]
         }
     },
 
@@ -309,6 +303,10 @@ fluid.defaults("gpii.app.psp", {
                 "onThemeChanged",
                 "{that}.model.theme"
             ]
+        },
+        handleBlur: {
+            funcName: "gpii.app.psp.handleBlur",
+            args: ["{that}", "{settingsBroker}"]
         }
     }
 });
@@ -335,17 +333,6 @@ gpii.app.psp.handleBlur = function (psp, settingsBroker) {
     if (isShown && closePSPOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
         psp.events.onClosed.fire();
     }
-};
-
-/**
- * A function which should be called to init the blur listener for the PSP.
- * @param psp {Component} The `gpii.app.psp` instance.
- */
-gpii.app.psp.initBlurListener = function (psp) {
-    var pspWindow = psp.pspWindow;
-
-    // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-blur
-    pspWindow.on("blur", psp.events.onPSPWindowFocusLost.fire);
 };
 
 /**
@@ -470,7 +457,6 @@ gpii.app.psp.makePSPWindow = function (windowOptions, params, gradeNames) {
     var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
     pspWindow.loadURL(url);
     pspWindow.params = params || {};
-    pspWindow.gradeNames = gradeNames;
 
     gpii.browserWindow.moveOffScreen(pspWindow);
 
