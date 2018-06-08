@@ -120,8 +120,9 @@ fluid.defaults("gpii.app.qss", {
         }
     },
     listeners: {
-        onBlur: {
-            func: "{that}.hide"
+        "onCreate.initBlurrable": {
+            func: "{that}.initBlurrable",
+            args: ["{that}.dialog"]
         }
     },
     invokers: {
@@ -170,7 +171,7 @@ fluid.defaults("gpii.app.qssWidget", {
         fileSuffixPath: "qssWidget/index.html"
     },
 
-    linkedWindowsGrades: ["gpii.app.qssWidget"],
+    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssWidget"],
 
     events: {
         onQssWidgetToggled: null,
@@ -217,8 +218,9 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     },
     listeners: {
-        onBlur: {
-            func: "{that}.hide"
+        "onCreate.initBlurrable": {
+            func: "{that}.initBlurrable",
+            args: ["{that}.dialog"]
         }
     },
     modelListeners: {
@@ -226,7 +228,14 @@ fluid.defaults("gpii.app.qssWidget", {
             func: "{that}.events.onQssWidgetToggled",
             args: [
                 "{that}.model.setting",
-                "{change}.value"        // state
+                "{change}.value" // isShown
+            ]
+        },
+        "setting": {
+            func: "{that}.events.onQssWidgetToggled",
+            args: [
+                "{change}.value", // setting
+                "{that}.model.isShown"
             ]
         }
     },

@@ -210,7 +210,9 @@ fluid.defaults("gpii.app", {
         onPSPReady: null,
 
         onKeyedIn: null,
-        onKeyedOut: null
+        onKeyedOut: null,
+
+        onBlur: null
     },
     listeners: {
         "onCreate.appReady": {

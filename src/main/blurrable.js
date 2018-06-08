@@ -1,8 +1,7 @@
 /**
- * Manage blurring of Electron windows
+ * A simple WebSocket wrapper
  *
- * Defines mechanism to blur browser windows only when not interacted
- * with a window in a specific group of linked windows.
+ * An Infusion component which manages a WebSocket connection.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -18,86 +17,63 @@ var fluid = require("infusion"),
     BrowserWindow = require("electron").BrowserWindow,
     gpii = fluid.registerNamespace("gpii");
 
-
-/**
- * Blurrable mixin
- */
 fluid.defaults("gpii.app.blurrable", {
-    // the list of windows that should not cause blur of the
-    // current one; The current window should also be supplied
+    gradeNames: ["fluid.component"],
+
     linkedWindowsGrades: [],
 
     events: {
-        onBlur: null
-    },
-
-    modelListeners: {
-        isShown: {
-            func: "{that}.initComplexBlurListener",
-            args: "{arguments}.0"
-        }
+        onBlur: "{app}.events.onBlur"
     },
 
     listeners: {
-        // XXX dev
         onBlur: {
-            funcName: "console.log",
-            args: ["Lost: ", "{arguments}.0"]
+            funcName: "gpii.app.blurrable.onBlur",
+            args: ["{that}", "{that}.options.linkedWindowsGrades"]
         }
     },
 
     invokers: {
-        initComplexBlurListener: {
-            funcName: "gpii.app.blurrable.initComplexBlurListener",
+        initBlurrable: {
+            funcName: "gpii.app.blurrable.initBlurrable",
             args: [
                 "{that}",
-                "{that}.options.linkedWindowsGrades",
-                "{arguments}.0" // isDialogShown
+                "{arguments}.0" // targetWindow
             ]
+        },
+        handleBlur: {
+            funcName: "gpii.app.blurrable.handleBlur",
+            args: ["{that}"]
         }
     }
 });
 
+gpii.app.blurrable.initBlurrable = function (that, targetWindow) {
+    if (targetWindow) {
+        // Attach the grade names as window parameters
+        targetWindow.gradeNames = that.options.gradeNames;
+        // Initialize the listener
+        targetWindow.on("blur", that.events.onBlur.fire);
+    }
 
-gpii.app.blurrable.isWindowRelated = function (linkedGrades, window) {
-    return linkedGrades && linkedGrades.some(function (linkedWindowGrade) {
-        if (window && window.gradeNames) {
-            return window.gradeNames.indexOf(linkedWindowGrade) >= 0;
-        }
-    });
+
 };
 
+gpii.app.blurrable.onBlur = function (that, linkedWindowsGrades) {
+    var focusedWindow = BrowserWindow.getFocusedWindow(),
+        allowBlur = !linkedWindowsGrades.some(function (linkedWindowGrade) {
+            if (focusedWindow && focusedWindow.gradeNames) {
+                return focusedWindow.gradeNames.indexOf(linkedWindowGrade) >= 0;
+            }
+        });
 
-/**
- * Set blur listeners if blur targets exist.
- *
- * @param that
- * @param relatedGrades
- * @returns {undefined}
- */
-gpii.app.blurrable.initComplexBlurListener = function (that, relatedGrades, isDialogShown) {
-    if (isDialogShown && relatedGrades && relatedGrades.length > 0) {
-        gpii.app.blurrable.attachComplexBlurListener(that, that.dialog || that.pspWindow, relatedGrades);
+    if (allowBlur) {
+        that.handleBlur();
     }
 };
 
-/**
- * If the focused window is not any of the related notify.
- *
- * @param that
- * @param relatedGrades
- */
-gpii.app.blurrable.attachComplexBlurListener = function (that, window, relatedGrades) {
-    // Initialize the listener
-    window.once("blur", function () {
-        // the newly focused electron window
-        var focusedWindow = BrowserWindow.getFocusedWindow();
-
-        if (focusedWindow || gpii.app.blurrable.isWindowRelated(relatedGrades, focusedWindow)) {
-            gpii.app.blurrable.attachComplexBlurListener(that, focusedWindow, relatedGrades);
-        } else {
-            // XXX dev fired arg
-            that.events.onBlur.fire(that.options.gradeNames.slice(-1));
-        }
-    });
+gpii.app.blurrable.handleBlur = function (that) {
+    if (that.hide) {
+        that.hide();
+    }
 };

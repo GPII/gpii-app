@@ -45,7 +45,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     },
 
     // close whenever focus is lost
-    linkedWindowsGrades: null,
+    linkedWindowsGrades: [],
 
     invokers: {
         showIfPossible: {
@@ -70,6 +70,13 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
         _hide: {
             changePath: "isShown",
             value: false
+        }
+    },
+
+    listeners: {
+        "onCreate.initBlurrable": {
+            func: "{that}.initBlurrable",
+            args: ["{that}.dialog"]
         }
     },
 
@@ -121,6 +128,8 @@ gpii.app.qssTooltipDialog._show = function (that, setting, elementMetrics) {
     // and keep the last shown setting
     that.applier.change("setting", null, "DELETE"); // ensure previous state is not merged
     that.applier.change("setting", setting);
+
+    that.dialog.setAlwaysOnTop(true);
 
     // Trigger the showing mechanism
     that.applier.change("isShown", true);
