@@ -67,7 +67,7 @@
                 args: [
                     "{stepper}",
                     "{that}.dom.incButton",
-                    "{that}.model.setting" // only restrictions will be used
+                    "{that}.model.setting.schema" // only restrictions will be used
                 ]
             },
             activateDecBtn: {
@@ -75,7 +75,7 @@
                 args: [
                     "{stepper}",
                     "{that}.dom.decButton",
-                    "{that}.model.setting"
+                    "{that}.model.setting.schema"
                 ]
             }
         },
@@ -118,18 +118,13 @@
             messages: {
                 titlebarAppName: "Change Text Size"
             },
-            setting: {
-                value:       5,
-                divisibleBy: 3,
-                min:         5,
-                max:         15
-            }, // the currently handled setting
+            setting: {},
 
             value: "{that}.model.setting.value",
             stepperParams: {
-                divisibleBy: "{that}.model.setting.divisibleBy",
-                min:         "{that}.model.setting.min",
-                max:         "{that}.model.setting.max"
+                divisibleBy: "{that}.model.setting.schema.divisibleBy",
+                min:         "{that}.model.setting.schema.min",
+                max:         "{that}.model.setting.schema.max"
             }
         },
 
@@ -219,6 +214,8 @@
 
 
     gpii.qssWidget.stepper.processParams = function (focusManager, activationParams) {
+        activationParams = activationParams || {};
+
         switch (activationParams.key) {
         case "Spacebar":
         case "Enter":

@@ -141,11 +141,11 @@
     };
 
     gpii.psp.qssWidget.getWidgetType = function (setting) {
-        return setting.type === "number" ? "gpii.qssWidget.stepper" : "gpii.qssWidget.menu";
+        return setting.schema.type === "number" ? "gpii.qssWidget.stepper" : "gpii.qssWidget.menu";
     };
 
     gpii.psp.qssWidget.updateContainerVisibility = function (stepperElement, menuElement, setting) {
-        if (setting.type === "number") {
+        if (setting.schema.type === "number") {
             stepperElement.show();
             menuElement.hide();
         } else {

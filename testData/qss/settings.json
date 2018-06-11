@@ -1,12 +1,28 @@
 [
     {
-        "type": "more",
-        "label": "More ...",
-        "path": "More..."
+
+        "path": "More...",
+        "schema": {
+            "type": "more",
+            "title": "More ..."
+        }
     }, {
-        "type": "array",
-        "label": "High / Low Contrast",
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
+        "schema": {
+            "type": "string",
+            "title": "High / Low Contrast",
+            "enum": [
+                "Low Contrast 3",
+                "Low Contrast 2",
+                "Brown on Light Green",
+                "Black on Yellow",
+                "Yellow on Black",
+                "White on Black",
+                "Black on White",
+                "Regular Contrast"
+            ]
+        },
+        "value": "Regular Contrast",
         "styles": {
             "Low Contrast 3": {
                 "background-color": "#6bbfeb",
@@ -49,16 +65,6 @@
                 "border-color": "#656565"
             }
         },
-        "enum": [
-            "Low Contrast 3",
-            "Low Contrast 2",
-            "Brown on Light Green",
-            "Black on Yellow",
-            "Yellow on Black",
-            "White on Black",
-            "Black on White",
-            "Regular Contrast"
-        ],
         "tooltip": {
             "header": "To choose different High and Low Contrast Options",
             "body": "Use Mouse or Up/Down arrow keys",
@@ -66,18 +72,22 @@
         }
     }, {
         "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrast/enabled",
-        "label": "High Contrast",
-        "type": "boolean",
+        "schema": {
+            "title": "High Contrast",
+            "type": "boolean"
+        },
+        "value": false,
         "tooltip": {
             "header": "Whether to enable/disable High Contrast",
             "body": "Use the mouse or press Enter",
             "footer": "Work with Windows Media Player and Youtube.com on Chrome"
-        },
-        "value": false
+        }
     }, {   
-        "type": "boolean",
-        "label": "Captions",
         "path": "http://registry\\.gpii\\.net/common/captions/enabled",
+        "schema": {
+            "type": "boolean",
+            "title": "Captions"
+        },
         "value": false,
         "tooltip": {
             "header": "To turn on/off Captions or Subtitles",
@@ -85,38 +95,44 @@
             "footer": "Work with Windows Media Player and Youtube.com on Chrome"
         }
     }, {
-        "type": "number",
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
-        "label": "DPI Scale",
-        "tooltip": { "header": "DPI scale factor on default monitor" },
+        "schema": {
+            "type": "number",
+            "title": "DPI Scale",
+            "min": 1,
+            "max": 2,
+            "divisibleBy": 0.25
+        },
         "value": 1,
-        "min": 1,
-        "max": 2,
-        "divisibleBy": 0.25
+        "tooltip": { "header": "DPI scale factor on default monitor" }
     }, {
-        "type": "number",
-        "label": "Text Size",
         "path": "http://registry\\.gpii\\.net/common/fontSize",
+        "schema": {
+            "type": "number",
+            "title": "Text Size",
+            "min": 10,
+            "max": 13,
+            "divisibleBy": 0.5
+        },
         "value": 12,
-        "min": 10,
-        "max": 13,
-        "divisibleBy": 0.5,
         "tooltip": {
             "header": "To Change Text Size",
             "body": "Use Mouse or Up/Down arrow key. You can also try Ctrl - and Ctrl + at any time",
             "footer": "Work with Windows, Chrome, Firefox, Edge and some other apps"
         }
     }, {
-        "type": "array",
-        "label": "Language",
         "path": "http://registry\\.gpii\\.net/common/language",
+        "schema": {
+            "type": "string",
+            "title": "Language",
+            "enum": [
+                "English",
+                "Deutsch",
+                "Español",
+                "Български"
+            ]
+        },
         "value": "English",
-        "enum": [
-            "English",
-            "Deutsch",
-            "Español",
-            "Български"
-        ],
         "tooltip": {
             "header": "To Change Language",
             "body": "Use Mouse or Up/Down arrow keys",
@@ -124,27 +140,33 @@
         }
     }, {
         "path": "http://registry\\.gpii\\.net/common/magnifierPosition",
+        "schema": {
+            "title":"Magnifier Position",
+            "type": "string",
+            "enum":[
+                "FullScreen",
+                "Lens",
+                "LeftHalf",
+                "RightHalf",
+                "TopHalf",
+                "BottomHalf",
+                "Custom"
+            ]
+        },
         "value":"Lens",
-        "label":"Magnifier Position",
-         "tooltip": { "header":"Position of the magnified area"},
-        "type": "array",
-        "enum":[
-            "FullScreen",
-            "Lens",
-            "LeftHalf",
-            "RightHalf",
-            "TopHalf",
-            "BottomHalf",
-            "Custom"
-        ]
+        "tooltip": { "header":"Position of the magnified area"}
     },  {
-        "type": "keyIn",
-        "label": "Key In",
-        "path": "Key In"
+        "path": "Key In",
+        "schema": {
+            "type": "keyIn",
+            "title": "Key In"
+        }
     }, {
-        "type": "close",
-        "label": "Close",
         "path": "Close",
+        "schema": {
+            "type": "close",
+            "title": "Close"
+        },
         "tooltip": {
             "header": "To Close this Quick Set Strip"
         }

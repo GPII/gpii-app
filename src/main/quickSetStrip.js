@@ -62,21 +62,9 @@ fluid.defaults("gpii.app.qss", {
                 events: {
                     onQssOpen: "{qss}.events.onQssOpen",
                     onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
-                    onSettingUpdated: null
+                    onSettingUpdated: "{qss}.events.onSettingUpdated"
                 },
                 listeners: {
-                    // XXX dev
-                    onCreate: {
-                        funcName: "setTimeout",
-                        args: [
-                            "{that}.events.onSettingUpdated.fire",
-                            10000,
-                            {
-                                "path": "http://registry\\.gpii\\.net/common/fontSize",
-                                "value": 9
-                            }
-                        ]
-                    },
                     onSettingUpdated: {
                         "funcName": "console.log",
                         args: ["Sending Updated QSS: ", "{arguments}.0"]
@@ -178,6 +166,7 @@ fluid.defaults("gpii.app.qssWidget", {
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssWidget"],
 
     events: {
+        onSettingUpdated: null,
         onQssWidgetToggled: null,
         onQssSettingAltered: null
     },
@@ -187,7 +176,7 @@ fluid.defaults("gpii.app.qssWidget", {
             type: "gpii.app.channelNotifier",
             options: {
                 events: {
-                    onSettingUpdated: null
+                    onSettingUpdated: "{qssWidget}.events.onSettingUpdated"
                 }
             }
         },
@@ -271,7 +260,7 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationP
         return;
     }
 
-    if (setting.type === "array" || setting.type === "number") {
+    if (setting.schema.type === "string" || setting.schema.type === "number") {
         that.show(setting, elementMetrics, activationParams);
     } else {
         that.hide();
@@ -360,7 +349,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssWidget",
             options: {
                 events: {
-                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered"
+                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered",
+                    onSettingUpdated: "{qssWrapper}.events.onSettingUpdated"
                 },
                 modelListeners: {
                     // Ensure the widget window is closed with the QSS

@@ -58,7 +58,7 @@
         },
 
         selectors: {
-            label: ".flc-qss-btnLabel",
+            title: ".flc-qss-btnLabel",
             caption: ".flc-qss-btnCaption"
         },
 
@@ -88,10 +88,10 @@
                 method: "attr",
                 args: ["{that}.options.attrs"]
             },
-            "onCreate.renderLabel": {
-                this: "{that}.dom.label",
+            "onCreate.renderTitle": {
+                this: "{that}.dom.title",
                 method: "text",
-                args: ["{that}.model.item.label"]
+                args: ["{that}.model.item.schema.title"]
             },
 
             "{focusManager}.events.onElementFocused": {
@@ -218,9 +218,9 @@
         model: {
             // used by baseStepper
             stepperParams: {
-                divisibleBy: "{that}.model.item.divisibleBy",
-                min:         "{that}.model.item.min",
-                max:         "{that}.model.item.max"
+                divisibleBy: "{that}.model.item.schema.divisibleBy",
+                min:         "{that}.model.item.schema.min",
+                max:         "{that}.model.item.schema.max"
             }
         },
 
@@ -371,12 +371,12 @@
     });
 
     gpii.qss.list.getHandlerType = function (item) {
-        switch (item.type) {
+        switch (item.schema.type) {
         case "boolean":
             return "gpii.qss.toggleButtonPresenter";
         case "number":
             return "gpii.qss.stepperButtonPresenter";
-        case "array":
+        case "string":
             return "gpii.qss.menuButtonPresenter";
         case "close":
             return "gpii.qss.closeButtonPresenter";
