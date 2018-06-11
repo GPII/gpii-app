@@ -43,7 +43,6 @@ fluid.defaults("gpii.app.resizable", {
         // helper variables needed for display metrics changes
         displayMetricsChanged: {
             timer: null,
-            wasShown: null,
             wasFocused: null
         }
     },
@@ -149,9 +148,9 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
             that.repositionWindow();
         }
 
-        // reset state
+        // Correct the state of windows
         that.displayMetricsChanged.timer = null;
-        if (that.options.offScreenHide || that.displayMetricsChanged.wasShown) {
+        if (that.options.offScreenHide || that.model.isShown) {
             // low level show
             if (that.displayMetricsChanged.wasFocused) {
                 dialog.show();
@@ -165,8 +164,6 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
     // in case this is the first call notification of the display-metrics-changed event
     // hide the dialog, and keep its state
     if (!that.displayMetricsChanged.timer) {
-        that.displayMetricsChanged.wasShown = that.model.isShown;
-
         that.displayMetricsChanged.wasFocused = dialog.isFocused();
         // low level hide
         dialog.hide();
