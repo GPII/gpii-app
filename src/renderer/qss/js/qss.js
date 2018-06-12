@@ -59,6 +59,7 @@
 
         selectors: {
             title: ".flc-qss-btnLabel",
+            image: ".flc-qss-btnImage",
             caption: ".flc-qss-btnCaption"
         },
 
@@ -97,6 +98,11 @@
                 this: "{that}.dom.title",
                 method: "text",
                 args: ["{that}.model.item.schema.title"]
+            },
+            "onCreate.renderImage": {
+                this: "{that}.dom.image",
+                method: "attr",
+                args: ["src", "{that}.model.item.schema.image"]
             },
 
             "{focusManager}.events.onElementFocused": {
@@ -356,6 +362,7 @@
             container:
                 "<div class=\"%containerClass fl-focusable\" tabindex=\"0\">" +
                     "<span class=\"flc-qss-btnLabel fl-qss-btnLabel\"></span>" +
+                    "<img class=\"flc-qss-btnImage fl-qss-btnImage\">" +
                     "<div class=\"flc-qss-btnCaption fl-qss-btnCaption\"></div>" +
                 "</div>",
             containerClassPrefix: "fl-qss-button"

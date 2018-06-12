@@ -77,3 +77,14 @@ body {
     left: 0;
     right: 0;
 }
+
+.fl-qss-button .fl-qss-btnImage {
+    width: 80%;
+    height: 80%;
+    margin-left: 10%;
+}
+
+.fl-qss-button .fl-qss-btnImage:not([src]),
+.fl-qss-button .fl-qss-btnImage[src=""] {
+    display: none;
+}

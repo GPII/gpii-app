@@ -309,8 +309,11 @@ fluid.defaults("gpii.app.qssWrapper", {
     settingsPath: "%gpii-app/testData/qss/settings.json",
     loadedSettings: {
         expander: {
-            funcName: "fluid.require",
-            args: "@expand:fluid.module.resolvePath({that}.options.settingsPath)"
+            funcName: "gpii.app.qssWrapper.loadSettings",
+            args: [
+                "{assetsManager}",
+                "{that}.options.settingsPath"
+            ]
         }
     },
 
@@ -400,3 +403,17 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     }
 });
+
+gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
+    var resolvedPath = fluid.module.resolvePath(settingsPath),
+        loadedSettings = fluid.require(resolvedPath);
+
+    fluid.each(loadedSettings, function (loadedSetting) {
+        var imageAsset = loadedSetting.schema.image;
+        if (imageAsset) {
+            loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);
+        }
+    });
+
+    return loadedSettings;
+};
