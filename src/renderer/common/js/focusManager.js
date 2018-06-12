@@ -156,7 +156,7 @@
      * @return {Object} Information about the focusable elements.
      */
     gpii.qss.focusManager.getFocusInfo = function (container, styles) {
-        var focusableElements = container.find("." + styles.focusable),
+        var focusableElements = container.find("." + styles.focusable + ":visible"),
             focusedElement = container.find("." + styles.focused)[0],
             focusIndex = -1;
 
@@ -192,7 +192,7 @@
     };
 
     /**
-     * Focuses a focusable element with a given index in the container and optionally applies
+     * Focuses a focusable and visible element with a given index in the container and optionally applies
      * the keyboard navigation highlight (the "fl-highlighted" class).
      * @param {Component} that The `gpii.qss.focusManager` instance.
      * @param {jQuery} container The jQuery element representing the container in which this
@@ -203,7 +203,7 @@
      */
     gpii.qss.focusManager.focus = function (that, container, index, applyHighlight) {
         var selector = fluid.stringTemplate(".%focusable:eq(%index)", {
-            focusable: that.options.styles.focusable,
+            focusable: that.options.styles.focusable + ":visible",
             index: index
         });
 
@@ -236,7 +236,7 @@
     };
 
     /**
-     * Focuses the next available focusable element. If the last focusable element has
+     * Focuses the next available visible focusable element. If the last focusable element has
      * been reached, the first element will be focused, then the second and so on. Note
      * that the keyboard navigation highlight will be applied in this case.
      * @param {Component} that The `gpii.qss.focusManager` instance.

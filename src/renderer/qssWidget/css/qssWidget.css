@@ -117,6 +117,10 @@ body {
  * Menu Widget
  */
 
+.fl-qssMenuWidget  {
+    display: flex;
+    flex-direction: column;
+}
 
 .fl-qssMenuWidget .fl-qssWidget-tip {
     margin-bottom: 30px;
@@ -124,6 +128,10 @@ body {
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls.disabled {
     pointer-events: none;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls {
+    overflow: auto;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
