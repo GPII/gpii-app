@@ -12,12 +12,12 @@ body {
 }
 
 .fl-qssWidget {
-    border: 2px solid #2a4986;
+    border: 4px solid #2a4986;
     border-radius: 10px;
     box-sizing: border-box;
 
     background-color: #ffffff;
-    height: 100%;
+    height: calc(100% - 45px);
 
     padding: 0 8px 8px 8px;
 
@@ -31,6 +31,22 @@ body {
 
 .fl-qssWidget .fl-highlighted {
     border: 2px solid #ff0000 !important;
+}
+
+.fl-qssWidget-footer {
+    position: relative;
+    top: -4px;
+    height: 45px;
+    width: 84px;
+
+    margin: 0 auto;
+    box-sizing: border-box;
+
+    border: 4px solid #2a4986;
+    border-top: none;
+    border-bottom: none;
+
+    background-color: #ffffff;
 }
 
 /*

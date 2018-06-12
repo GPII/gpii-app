@@ -35,7 +35,7 @@ fluid.defaults("gpii.app.qss", {
 
     config: {
         attrs: {
-            width: 1085,
+            width: 1073,
             height: 95,
             alwaysOnTop: true,
             transparent: false
@@ -157,8 +157,7 @@ fluid.defaults("gpii.app.qssWidget", {
         attrs: {
             width: 300,
             height: 400,
-            alwaysOnTop: true,
-            transparent: false
+            alwaysOnTop: true
         },
         fileSuffixPath: "qssWidget/index.html"
     },
@@ -292,6 +291,7 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
 
     activationParams = activationParams || {};
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
+    that.dialog.setAlwaysOnTop(true);
 
     that.applier.change("setting", setting);
     that.applier.change("isShown", true);
