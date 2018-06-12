@@ -36,31 +36,21 @@
 
         invokers: {
             increment: {
-                changePath: "value",
-                value: {
-                    expander: {
-                        funcName: "gpii.qssWidget.stepper.restrictedStep",
-                        args: [
-                            "{that}.model.value",
-                            "{that}.model.stepperParams"
-                        ]
-                    }
-                },
-                source: "settingAlter"
+                funcName: "gpii.qssWidget.stepper.makeRestrictedStep",
+                args: [
+                    "{that}",
+                    "{that}.model.value",
+                    "{that}.model.stepperParams"
+                ]
             },
             decrement: {
-                changePath: "value",
-                value: {
-                    expander: {
-                        funcName: "gpii.qssWidget.stepper.restrictedStep",
-                        args: [
-                            "{that}.model.value",
-                            "{that}.model.stepperParams",
-                            true
-                        ]
-                    }
-                },
-                source: "settingAlter"
+                funcName: "gpii.qssWidget.stepper.makeRestrictedStep",
+                args: [
+                    "{that}",
+                    "{that}.model.value",
+                    "{that}.model.stepperParams",
+                    true
+                ]
             }
         }
     });
@@ -77,21 +67,22 @@
      * @param {Boolean} shouldSubtract - Whether subtraction to be done
      * @returns {Number} The summed value.
      */
-    gpii.qssWidget.stepper.restrictedStep = function (value, options, shouldSubtract) {
-        var step = options.divisibleBy;
-        value += (shouldSubtract ? -step : step);
+    gpii.qssWidget.stepper.makeRestrictedStep = function (that, value, options, shouldSubtract) {
+        var step = (shouldSubtract ? -options.divisibleBy : options.divisibleBy);
 
+        value += step;
         // Handle not given min and max
-        value = Math.min(value, options.max || value);
-        value = Math.max(value, options.min || value);
+        var restrcitedValue = Math.min(value, options.max || value);
+        restrcitedValue     = Math.max(restrcitedValue, options.min || restrcitedValue);
 
-        return value;
+        that.applier.change("value", restrcitedValue, null, "settingAlter");
+
+        // Whether a bound was hit
+        return value !== restrcitedValue;
     };
 
 
     gpii.qssWidget.stepper.triggerCssAnimation = function (element, animationClass, animationClasses) {
-        console.log("Animation: ", animationClass);
-
         element.removeClass(animationClasses.join(" "));
         // Avoid browser optimization
         // inspired by https://stackoverflow.com/a/30072037/2276288
@@ -103,22 +94,13 @@
     /**
      * TODO
      */
-    gpii.qssWidget.stepper.animateButton = function (button, value, restrictions) {
-        var triggerClass;
-
+    gpii.qssWidget.stepper.animateButton = function (button, isError) {
         var animationClasses = {
             error: "fl-qssStepperWidgetBtn-stepperErrorActivation",
             warning: "fl-qssStepperWidgetBtn-stepperActivation"
         };
 
-        var isError = value === restrictions.max ||
-                      value === restrictions.min;
-
-        if (isError) {
-            triggerClass = animationClasses.error;
-        } else {
-            triggerClass = animationClasses.warning;
-        }
+        var triggerClass = isError ? animationClasses.error : animationClasses.warning;
 
         gpii.qssWidget.stepper.triggerCssAnimation(button, triggerClass, fluid.values(animationClasses));
     };
