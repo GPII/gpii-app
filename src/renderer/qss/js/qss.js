@@ -53,12 +53,12 @@
             value: {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model.item", "{change}.value"],
-                excludeSource: "init"
+                excludeSource: ["init", "gpii.psp.repeater.itemUpdate"]
             }
         },
 
         selectors: {
-            label: ".flc-qss-btnLabel",
+            title: ".flc-qss-btnLabel",
             caption: ".flc-qss-btnCaption"
         },
 
@@ -88,10 +88,10 @@
                 method: "attr",
                 args: ["{that}.options.attrs"]
             },
-            "onCreate.renderLabel": {
-                this: "{that}.dom.label",
+            "onCreate.renderTitle": {
+                this: "{that}.dom.title",
                 method: "text",
-                args: ["{that}.model.item.label"]
+                args: ["{that}.model.item.schema.title"]
             },
 
             "{focusManager}.events.onElementFocused": {
@@ -218,9 +218,9 @@
         model: {
             // used by baseStepper
             stepperParams: {
-                divisibleBy: "{that}.model.item.divisibleBy",
-                min:         "{that}.model.item.min",
-                max:         "{that}.model.item.max"
+                divisibleBy: "{that}.model.item.schema.divisibleBy",
+                min:         "{that}.model.item.schema.min",
+                max:         "{that}.model.item.schema.max"
             }
         },
 
@@ -371,12 +371,12 @@
     });
 
     gpii.qss.list.getHandlerType = function (item) {
-        switch (item.type) {
+        switch (item.schema.type) {
         case "boolean":
             return "gpii.qss.toggleButtonPresenter";
         case "number":
             return "gpii.qss.stepperButtonPresenter";
-        case "array":
+        case "string":
             return "gpii.qss.menuButtonPresenter";
         case "close":
             return "gpii.qss.closeButtonPresenter";
@@ -400,6 +400,17 @@
             onQssOpen: null,
             onQssClosed: null,
             onQssWidgetToggled: null
+        },
+
+        listeners: {
+            "onQssOpen": {
+                funcName: "gpii.qss.onQssOpen",
+                args: [
+                    "{quickSetStripList}",
+                    "{that}.model.settings",
+                    "{arguments}.0" // params
+                ]
+            }
         },
 
         components: {
@@ -439,8 +450,13 @@
                     // XXX dev
                     listeners: {
                         onSettingUpdated: {
-                            funcName: "console.log",
-                            args: ["Settings updated: ", "{arguments}.0"]
+                            // Update item by path
+                            // TODO
+                            funcName: "gpii.qss.updateSetting",
+                            args: [
+                                "{qss}",
+                                "{arguments}.0"
+                            ]
                         }
                     }
                 }
@@ -461,19 +477,25 @@
                     }
                 }
             }
-        },
-
-        listeners: {
-            "onQssOpen": {
-                funcName: "gpii.qss.onQssOpen",
-                args: [
-                    "{quickSetStripList}",
-                    "{that}.model.settings",
-                    "{arguments}.0" // params
-                ]
-            }
         }
     });
+
+
+    /**
+     * Find a setting in a list of settings and update it. Settings are identified by their
+     * `path` property which is expected to be existent and unique.
+     *
+     * @param {Component} that - The component containing `settings` in its model
+     * @param {Object} settingNewState - The new state of the setting
+     * @param {String} settingNewState.path - The path of the setting. This field is required.
+     */
+    gpii.qss.updateSetting = function (that, settingNewState) {
+        var settingIndex = that.model.settings.findIndex(function (setting) {
+            return setting.path === settingNewState.path;
+        });
+
+        that.applier.change("settings." + settingIndex, settingNewState, null, "settingUpdate");
+    };
 
     gpii.qss.onTabPressed = function (that, KeyboardEvent) {
         if (KeyboardEvent.shiftKey) {

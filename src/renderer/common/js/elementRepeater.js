@@ -198,6 +198,8 @@
             }
         },
 
+
+
         dynamicContainerMarkup: {
             container:            "<div class=\"%containerClass\"></div>",
             // TODO rename to containerClassTpl
@@ -213,6 +215,21 @@
                     index: "{sourcePath}",
                     item:  "{source}",
                     handlerType: "@expand:{repeater}.getHandlerType({that}.options.item)",
+
+                    modelListeners: {
+                        // rerender element on item change
+                        "{repeater}.model.items.*": {
+                            funcName: "gpii.psp.repeater.notifyElementChange",
+                            args: [
+                                "{that}.handler",
+                                "{that}.options.index",
+                                // take only the index
+                                "{change}.path.1",
+                                "{change}.value"
+                            ],
+                            excludeSource: "init"
+                        }
+                    },
 
                     markup: {
                         container: {
@@ -231,6 +248,23 @@
             }
         }
     });
+
+    /**
+     * Notify the corresponding dynamic component about its setting change.
+     * The dynamic component is computed using the changed setting's index.
+     *
+     * @param {Component} that - The `gpii.psp.repeater` component.
+     * @param {String} index - The item's path, which represents the index of the changed element
+     * @param {Object} newValue - The new state of the item
+     */
+    gpii.psp.repeater.notifyElementChange = function (elHandler, elIndex , itemIndex, newValue) {
+        itemIndex = fluid.parseInteger(itemIndex);
+
+        // does the current handler, handles the changed item?
+        if (elIndex !== itemIndex) { return; }
+
+        elHandler.applier.change("item", newValue, null, "gpii.psp.repeater.itemUpdate");
+    };
 
     /**
      * Constructs the markup for the indexed container - sets proper index.

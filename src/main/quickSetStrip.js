@@ -49,7 +49,8 @@ fluid.defaults("gpii.app.qss", {
     events: {
         onQssOpen: null,
         onQssWidgetToggled: null,
-        onQssSettingAltered: null
+        onQssSettingAltered: null,
+        onSettingUpdated: null
     },
 
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget", "gpii.app.qss"],
@@ -61,21 +62,12 @@ fluid.defaults("gpii.app.qss", {
                 events: {
                     onQssOpen: "{qss}.events.onQssOpen",
                     onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
-                    onSettingUpdated: null
+                    onSettingUpdated: "{qss}.events.onSettingUpdated"
                 },
                 listeners: {
-                    // XXX dev
-                    onCreate: {
-                        funcName: "setTimeout",
-                        args: [
-                            "{that}.events.onSettingUpdated.fire",
-                            6000,
-                            "Oh Hello setting update"
-                        ]
-                    },
                     onSettingUpdated: {
                         "funcName": "console.log",
-                        args: ["Sending setting: ", "{arguments}.0"]
+                        args: ["Sending Updated QSS: ", "{arguments}.0"]
                     }
                 }
             }
@@ -103,17 +95,17 @@ fluid.defaults("gpii.app.qss", {
                         funcName: "console.log",
                         args: ["Item clicked: ", "{arguments}.0"]
                     },
-                    onQssButtonMouseEnter: {
-                        funcName: "console.log",
-                        args: ["Item Enter: ", "{arguments}.0.target.offsetLeft"]
-                    },
-                    onQssButtonMouseLeave: {
-                        funcName: "console.log",
-                        args: ["Item Leave: ", "{arguments}.0.target.offsetLeft"]
-                    },
+                    // onQssButtonMouseEnter: {
+                    //     funcName: "console.log",
+                    //     args: ["Item Enter: ", "{arguments}.0.target.offsetLeft"]
+                    // },
+                    // onQssButtonMouseLeave: {
+                    //     funcName: "console.log",
+                    //     args: ["Item Leave: ", "{arguments}.0.target.offsetLeft"]
+                    // },
                     onQssSettingAltered: {
                         funcName: "console.log",
-                        args: ["Setting altered:", "{arguments}.0"]
+                        args: ["Setting altered QSS:", "{arguments}.0.path", "{arguments}.0.value"]
                     }
                 }
             }
@@ -174,6 +166,7 @@ fluid.defaults("gpii.app.qssWidget", {
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssWidget"],
 
     events: {
+        onSettingUpdated: null,
         onQssWidgetToggled: null,
         onQssSettingAltered: null
     },
@@ -183,7 +176,7 @@ fluid.defaults("gpii.app.qssWidget", {
             type: "gpii.app.channelNotifier",
             options: {
                 events: {
-                    onSettingUpdated: null
+                    onSettingUpdated: "{qssWidget}.events.onSettingUpdated"
                 }
             }
         },
@@ -267,7 +260,7 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationP
         return;
     }
 
-    if (setting.type === "array" || setting.type === "number") {
+    if (setting.schema.type === "string" || setting.schema.type === "number") {
         that.show(setting, elementMetrics, activationParams);
     } else {
         that.hide();
@@ -286,6 +279,8 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationP
  * @param {Number} elementMetrics.height - The height of the element
  * @param {Number} elementMetrics.offsetRight - The offset of the element from the
  * right of its window's.
+ * @param {Object} activationParams - Defines the way this show was triggered
+ * @param {Object} activationParams.shortcut - Defines the way the show was triggered
  */
 gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
     // Find the offset for the window to be centered over the element
@@ -320,7 +315,8 @@ fluid.defaults("gpii.app.qssWrapper", {
     },
 
     events: {
-        onQssSettingAltered: null
+        onQssSettingAltered: null,
+        onSettingUpdated: null
     },
 
     components : {
@@ -334,7 +330,8 @@ fluid.defaults("gpii.app.qssWrapper", {
                 },
                 events: {
                     onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled",
-                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered"
+                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered",
+                    onSettingUpdated: "{qssWrapper}.events.onSettingUpdated"
                 },
                 listeners: {
                     "{channelListener}.events.onQssButtonActivated": {
@@ -352,7 +349,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssWidget",
             options: {
                 events: {
-                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered"
+                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered",
+                    onSettingUpdated: "{qssWrapper}.events.onSettingUpdated"
                 },
                 modelListeners: {
                     // Ensure the widget window is closed with the QSS
@@ -368,6 +366,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssTooltipDialog",
             options: {
                 listeners: {
+                    // TODO list events for a method
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": {
                         func: "{that}.showIfPossible",
                         args: [

@@ -50,7 +50,7 @@
                 options: {
                     model: {
                         messages: {
-                            title: "{menu}.model.setting.label"
+                            title: "{menu}.model.setting.schema.title"
                         }
                     },
                     events: {
@@ -70,7 +70,7 @@
                 options: {
                     model: {
                         disabled: "{menu}.model.disabled",
-                        items: "{menu}.model.setting.enum",
+                        items: "{menu}.model.setting.schema.enum",
                         value: "{menu}.model.setting.value",
                         styles: "{menu}.model.setting.styles"
                     },
