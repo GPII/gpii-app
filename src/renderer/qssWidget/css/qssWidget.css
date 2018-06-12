@@ -147,11 +147,13 @@ body {
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls {
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
     position: relative;
+    width: 75%;
     margin: 0 5px 5px 5px;
     padding: 10px 5px;
     border: 2px solid #0f4797;
@@ -164,15 +166,18 @@ body {
     cursor: pointer;
 }
 
-.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:before {
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:after {
     position: absolute;
     top: 50%;
-    left: 5px;
+    left: calc(100% + 10px);
+    width: 30px;
+    height: 30px;
     transform: translateY(-50%);
 
-    font-size: 24px;
-    font-weight: bold;
-    content: "\2714";
+    content: "";
+    background-size: 30px 30px;
+    background-image: url("../../../assets/check-circle.svg");
+    background-repeat: no-repeat;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:focus {
