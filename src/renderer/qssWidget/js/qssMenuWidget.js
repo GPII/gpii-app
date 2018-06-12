@@ -48,11 +48,6 @@
                 type: "gpii.psp.titlebar",
                 container: ".flc-titlebar",
                 options: {
-                    model: {
-                        messages: {
-                            title: "{menu}.model.setting.schema.title"
-                        }
-                    },
                     events: {
                         onClose: "{channelNotifier}.events.onQssWidgetClosed"
                     }

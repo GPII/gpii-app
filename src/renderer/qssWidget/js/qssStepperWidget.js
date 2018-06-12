@@ -36,7 +36,7 @@
      * TODO
      */
     fluid.defaults("gpii.qssWidget.stepper.contentHandler", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["gpii.qssWidget.baseStepper", "fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         model: {
             messages: {
@@ -48,7 +48,14 @@
 
                 footerTip: "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
             },
-            setting: {}
+            setting: {},
+
+            value: "{that}.model.setting.value",
+            stepperParams: {
+                divisibleBy: "{that}.model.setting.schema.divisibleBy",
+                min:         "{that}.model.setting.schema.min",
+                max:         "{that}.model.setting.schema.max"
+            }
         },
 
         selectors: {
@@ -65,7 +72,7 @@
             activateIncBtn: {
                 funcName: "gpii.qssWidget.stepper.activateIncButton",
                 args: [
-                    "{stepper}",
+                    "{that}",
                     "{that}.dom.incButton",
                     "{that}.model.setting.schema" // only restrictions will be used
                 ]
@@ -73,7 +80,7 @@
             activateDecBtn: {
                 funcName: "gpii.qssWidget.stepper.activateDecButton",
                 args: [
-                    "{stepper}",
+                    "{that}",
                     "{that}.dom.decButton",
                     "{that}.model.setting.schema"
                 ]
@@ -108,24 +115,26 @@
         }
     });
 
+
+    gpii.qssWidget.stepper.activateIncButton = function (qssStepper, button) {
+        var changeError = qssStepper.increment();
+        gpii.qssWidget.stepper.animateButton(button, changeError);
+    };
+
+    gpii.qssWidget.stepper.activateDecButton = function (qssStepper, button) {
+        var changeError = qssStepper.decrement();
+        gpii.qssWidget.stepper.animateButton(button, changeError);
+    };
+
     /**
      * Represents the QSS stepper widget.
      */
     fluid.defaults("gpii.qssWidget.stepper", {
-        gradeNames: ["gpii.qssWidget.baseStepper", "fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent"],
 
         model: {
-            messages: {
-                titlebarAppName: "Change Text Size"
-            },
-            setting: {},
-
-            value: "{that}.model.setting.value",
-            stepperParams: {
-                divisibleBy: "{that}.model.setting.schema.divisibleBy",
-                min:         "{that}.model.setting.schema.min",
-                max:         "{that}.model.setting.schema.max"
-            }
+            messages: {},
+            setting: {}
         },
 
         events: {
@@ -134,7 +143,7 @@
 
         modelListeners: {
             // TODO use local event?
-            "value": [{
+            "setting.value": [{
                 func: "{channelNotifier}.events.onQssSettingAltered.fire",
                 args: ["{that}.model.setting"],
                 includeSource: "settingAlter"
@@ -149,11 +158,6 @@
                 type: "gpii.psp.titlebar",
                 container: ".flc-titlebar",
                 options: {
-                    model: {
-                        messages: {
-                            title: "{stepper}.model.messages.titlebarAppName"
-                        }
-                    },
                     events: {
                         onClose: "{channelNotifier}.events.onQssWidgetClosed"
                     }
@@ -201,16 +205,6 @@
             }
         }
     });
-
-    gpii.qssWidget.stepper.activateIncButton = function (qssStepper, button, restrictions) {
-        qssStepper.increment();
-        gpii.qssWidget.stepper.animateButton(button, qssStepper.model.value, restrictions);
-    };
-
-    gpii.qssWidget.stepper.activateDecButton = function (qssStepper, button, restrictions) {
-        qssStepper.decrement();
-        gpii.qssWidget.stepper.animateButton(button, qssStepper.model.value, restrictions);
-    };
 
 
     gpii.qssWidget.stepper.processParams = function (focusManager, activationParams) {

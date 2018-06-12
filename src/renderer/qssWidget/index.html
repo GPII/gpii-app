@@ -1,7 +1,6 @@
 <html>
     <head>
         <title>Quick Set Strip</title>
-        <link rel="stylesheet" href="../common/css/dialog.css">
         <link rel="stylesheet" href="../common/css/titlebar.css">
         <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="css/qssWidget.css">
@@ -30,45 +29,39 @@
         <script type="text/javascript" src="../common/js/messageBundles.js"></script>
     </head>
     <body>
-        <div class="flc-qssWidget fl-qssWidget fl-dialog">
-            <div class="fl-dialog-contentWrapper">
-                <div class="flc-titlebar fl-titlebar">
-                    <span class="flc-title fl-appName"></span>
-                    <button class="flc-closeBtn fl-closeBtn btn btn-regular fl-focusable">&#x2715;</button>
+        <div class="flc-qssWidget fl-qssWidget">
+            <div class="flc-titlebar fl-titlebar">
+                <button class="flc-closeBtn fl-closeBtn btn btn-regular fl-focusable">&#x2715;</button>
+            </div>
+
+            <!-- the Stepper Widget -->
+            <div class="flc-qssStepperWidget fl-scrollable fl-qssStepperWidget">
+                <div class="fl-qssWidget-tip">
+                    <div class="flc-tipTitle fl-tipTitle"></div>
+                    <div class="flc-tipSubtitle fl-tipSubtitle"></div>
                 </div>
 
-                <!-- the Stepper Widget -->
-                <div class="flc-qssStepperWidget fl-dialog-content fl-scrollable fl-qssStepperWidget">
-                    <div class="fl-qssWidget-tip">
-                        <div class="flc-tipTitle fl-tipTitle"></div>
-                        <div class="flc-tipSubtitle fl-tipSubtitle"></div>
-                    </div>
-
-                    <div class="fl-qssStepperWidget-controls">
-                        <button class="flc-qssStepperWidget-incBtn fl-qssStepperWidget-btn btn fl-btn" tabindex="-1">
-                            <span class="fl-plus"></span>
-                            <span class="flc-btnLabel fl-btnLabel"></span>
-                            (<span class="fl-arrowUp">&#8593;</span>)
-                        </button>
-                        <button class="flc-qssStepperWidget-decBtn fl-qssStepperWidget-btn btn fl-btn" tabindex="-1">
-                            <span class="fl-minus"></span>
-                            <span class="flc-btnLabel fl-btnLabel"></span>
-                            (<span class="fl-arrowDown">&#8595;</span>)
-                        </button>
-                    </div>
-
-                    <div class="flc-qssStepperWidget-footerTip fl-qssWidget-footerTip"></div>
+                <div class="fl-qssStepperWidget-controls">
+                    <button class="flc-qssStepperWidget-incBtn fl-qssStepperWidget-btn btn fl-btn fl-focusable">
+                        <span class="fl-plus"></span>
+                        <span class="flc-btnLabel fl-btnLabel"></span>
+                    </button>
+                    <button class="flc-qssStepperWidget-decBtn fl-qssStepperWidget-btn btn fl-btn fl-focusable">
+                        <span class="fl-minus"></span>
+                        <span class="flc-btnLabel fl-btnLabel"></span>
+                    </button>
                 </div>
 
-                <!-- the Menu Widget -->
-                <div class="flc-qssMenuWidget fl-dialog-content fl-scrollable fl-qssMenuWidget">
-                    <div class="fl-qssWidget-tip">
-                        <div class="flc-tipTitle fl-tipTitle"></div>
-                        <div class="flc-tipSubtitle fl-tipSubtitle"></div>
-                    </div>
-                    <div role="radiogroup" class="flc-qssMenuWidget-controls fl-qssMenuWidget-controls"></div>
+                <div class="flc-qssStepperWidget-footerTip fl-qssWidget-footerTip"></div>
+            </div>
+
+            <!-- the Menu Widget -->
+            <div class="flc-qssMenuWidget fl-dialog-content fl-scrollable fl-qssMenuWidget">
+                <div class="fl-qssWidget-tip">
+                    <div class="flc-tipTitle fl-tipTitle"></div>
+                    <div class="flc-tipSubtitle fl-tipSubtitle"></div>
                 </div>
-                <div class="fl-dialog-footer"></div>
+                <div role="radiogroup" class="flc-qssMenuWidget-controls fl-qssMenuWidget-controls"></div>
             </div>
         </div>
     </body>
