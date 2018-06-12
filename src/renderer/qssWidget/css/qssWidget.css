@@ -1,5 +1,28 @@
+body {
+    background-color: transparent;
+
+    /* override properties */
+    margin: 0;
+    /* uncomment when proper way for content scrolling is found */
+    /* overflow: hidden; */
+}
+
 .fl-qssWidget {
     font-family: Arial;
+}
+
+.fl-qssWidget {
+    border: 2px solid #2a4986;
+    border-radius: 10px;
+    box-sizing: border-box;
+
+    background-color: #ffffff;
+    height: 100%;
+
+    padding: 0 8px 8px 8px;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .fl-qssWidget .fl-focused {
@@ -10,11 +33,18 @@
     border: 2px solid #ff0000 !important;
 }
 
-.fl-dialog-content.fl-qssStepperWidget,
-.fl-dialog-content.fl-qssMenuWidget {
-    padding: 2px;
+/*
+ * Stepper Widget
+ */
+
+.fl-qssWidget .fl-qssStepperWidget,
+.fl-qssWidget .fl-qssMenuWidget {
+    margin: 0 5px 0 10px;
+
+    flex: 1;
 }
 
+/* TODO more specific classes - stepper */
 .fl-qssWidget .fl-qssWidget-tip .fl-tipTitle {
     font-size: 15px;
     font-weight: bold;
@@ -46,7 +76,7 @@
     margin: 5px;
     padding-top: 0;
 
-    background-color: #0f4797;
+    background-color: #3a679e;
 
     font-size: 1.5em;
     border-radius: 5px;
@@ -82,6 +112,11 @@
 .fl-qssStepperWidget-footer {
     margin-bottom: 15px;
 }
+
+/*
+ * Menu Widget
+ */
+
 
 .fl-qssMenuWidget .fl-qssWidget-tip {
     margin-bottom: 30px;

@@ -133,9 +133,7 @@
         gradeNames: ["fluid.viewComponent"],
 
         model: {
-            messages: {
-                titlebarAppName: "Change Text Size"
-            },
+            messages: {},
             setting: {}
         },
 
@@ -160,11 +158,6 @@
                 type: "gpii.psp.titlebar",
                 container: ".flc-titlebar",
                 options: {
-                    model: {
-                        messages: {
-                            title: "{stepper}.model.messages.titlebarAppName"
-                        }
-                    },
                     events: {
                         onClose: "{channelNotifier}.events.onQssWidgetClosed"
                     }
