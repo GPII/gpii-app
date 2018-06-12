@@ -63,7 +63,8 @@
         },
 
         styles: {
-            activated: "fl-activated"
+            activated: "fl-activated",
+            settingButton: "fl-qss-settingButton"
         },
 
         attrs: {
@@ -87,6 +88,10 @@
                 "this": "{that}.container",
                 method: "attr",
                 args: ["{that}.options.attrs"]
+            },
+            "onCreate.styleButton": {
+                funcName: "gpii.qss.buttonPresenter.styleButton",
+                args: ["{that}", "{that}.container"]
             },
             "onCreate.renderTitle": {
                 this: "{that}.dom.title",
@@ -171,6 +176,13 @@
         }
     });
 
+    gpii.qss.buttonPresenter.styleButton = function (that, container) {
+        var path = that.model.item.path;
+        if (path.startsWith("http://registry") || path === "more") {
+            container.addClass(that.options.styles.settingButton);
+        }
+    };
+
     gpii.qss.buttonPresenter.onQssWidgetToggled = function (that, container, setting, isShown) {
         var activatedClass = that.options.styles.activated;
         container.toggleClass(activatedClass, isShown && that.model.item.path === setting.path);
@@ -206,7 +218,7 @@
     gpii.qss.getElementMetrics = function (target) {
         return {
             offsetRight: $(window).width() - target.offset().left,
-            height:      target.outerHeight(),
+            height:      target.outerHeight(true),
             width:       target.outerWidth()
         };
     };

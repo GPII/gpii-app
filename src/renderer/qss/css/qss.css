@@ -4,31 +4,37 @@ body {
 }
 
 .fl-qss {
-    display: flex;
-    background-color: white;
-    position: absolute;
-    bottom: 0;
-    right: 0;
+    height: 100%;
+    background-color: #ebebeb;
 }
 
 .fl-qss-button {
     position: relative;
-    height: 80px;
-    width:  80px;
+    height: 85px;
+    width:  85px;
+    margin: 5px 0 5px 5px;
     padding: 1px 6px;
+
+    float: left;
 
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-
-    box-sizing: border-box;
-    border: 3px solid #83cbef;
-    background-color: white;
     text-align: center;
 
-    font: 13px Arial;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 4px solid transparent;
+    background-color: #4f8bc3;
+    color: #ffffff;
+
+    font: bold 12px Arial;
     cursor: pointer;
+    user-select: none;
+}
+
+.fl-qss-button.fl-qss-settingButton {
+    background-color: #3b66b2;
 }
 
 .fl-qss-button:hover {
@@ -40,7 +46,7 @@ body {
 }
 
 .fl-qss-button.fl-highlighted {
-    border: 3px solid #ff0000;
+    border: 4px solid #ff0000;
     outline: none;
 }
 
@@ -53,8 +59,11 @@ body {
     color: white;
 }
 
-.fl-qss-button.fl-activated {
-    background: linear-gradient(#83cbef, #ffffff);
+.fl-qss-button.fl-qss-settingButton.fl-activated {
+    border: 3px solid #3b66b2;
+
+    background: #ffffff;
+    color: #3b66b2;
     font-weight: bold;
 }
 

@@ -1,7 +1,7 @@
 [
     {
 
-        "path": "More...",
+        "path": "more",
         "schema": {
             "type": "more",
             "title": "More ..."
@@ -10,7 +10,7 @@
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
             "type": "string",
-            "title": "High / Low Contrast",
+            "title": "Hi / Lo Contrast",
             "enum": [
                 "Low Contrast 3",
                 "Low Contrast 2",
@@ -155,14 +155,26 @@
         },
         "value":"Lens",
         "tooltip": { "header":"Position of the magnified area"}
-    },  {
-        "path": "Key In",
+    }, {
+        "path": "save",
         "schema": {
-            "type": "keyIn",
-            "title": "Key In"
+            "type": "save",
+            "title": "Save"
         }
     }, {
-        "path": "Close",
+        "path": "undo",
+        "schema": {
+            "type": "undo",
+            "title": "Undo"
+        }
+    }, {
+        "path": "keyIn",
+        "schema": {
+            "type": "keyIn",
+            "title": "Key in"
+        }
+    }, {
+        "path": "close",
         "schema": {
             "type": "close",
             "title": "Close"
