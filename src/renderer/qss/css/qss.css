@@ -37,6 +37,17 @@ body {
     background-color: #3b66b2;
 }
 
+.fl-qss-button.fl-qss-settingButton .fl-qss-btnChangeIndicator {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+
+    background-color: #98d5ec;
+}
+
 .fl-qss-button:hover {
     filter: brightness(95%);
 }

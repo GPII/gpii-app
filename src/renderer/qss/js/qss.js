@@ -50,17 +50,21 @@
         },
 
         modelListeners: {
-            value: {
+            value: [{
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model.item", "{change}.value"],
                 excludeSource: ["init", "gpii.psp.repeater.itemUpdate"]
-            }
+            }, {
+                funcName: "gpii.qss.buttonPresenter.updateChangeIndicator",
+                args: ["{that}.dom.changeIndicator", "{that}.model.item", "{change}.value"]
+            }]
         },
 
         selectors: {
             title: ".flc-qss-btnLabel",
             image: ".flc-qss-btnImage",
-            caption: ".flc-qss-btnCaption"
+            caption: ".flc-qss-btnCaption",
+            changeIndicator: ".flc-qss-btnChangeIndicator"
         },
 
         styles: {
@@ -182,9 +186,20 @@
         }
     });
 
+    gpii.qss.buttonPresenter.updateChangeIndicator = function (indicatorElem, setting, value) {
+        // The dot should be shown if the setting has a default value, the new value of the
+        // setting is different from that value and the new value is one of the predefined
+        // values (in case of a menu widget).
+        var shoudShow =
+            fluid.isValue(setting.schema.defaultValue) &&
+            !fluid.model.diff(value, setting.schema.defaultValue) &&
+            (!fluid.isValue(setting.schema.enum) || setting.schema.enum.indexOf(value) >= 0);
+        indicatorElem.toggle(shoudShow);
+    };
+
     gpii.qss.buttonPresenter.styleButton = function (that, container) {
         var path = that.model.item.path;
-        if (path.startsWith("http://registry") || path === "more") {
+        if (path.startsWith("http://registry\\.gpii\\.net")) {
             container.addClass(that.options.styles.settingButton);
         }
     };
@@ -361,6 +376,7 @@
         dynamicContainerMarkup: {
             container:
                 "<div class=\"%containerClass fl-focusable\" tabindex=\"0\">" +
+                    "<div class=\"flc-qss-btnChangeIndicator fl-qss-btnChangeIndicator\"></div>" +
                     "<span class=\"flc-qss-btnLabel fl-qss-btnLabel\"></span>" +
                     "<img class=\"flc-qss-btnImage fl-qss-btnImage\">" +
                     "<div class=\"flc-qss-btnCaption fl-qss-btnCaption\"></div>" +

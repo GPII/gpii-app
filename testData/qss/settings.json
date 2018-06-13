@@ -20,7 +20,8 @@
                 "White on Black",
                 "Black on White",
                 "Regular Contrast"
-            ]
+            ],
+            "defaultValue": "Regular Contrast"
         },
         "value": "Regular Contrast",
         "styles": {
@@ -74,7 +75,8 @@
         "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrast/enabled",
         "schema": {
             "title": "High Contrast",
-            "type": "boolean"
+            "type": "boolean",
+            "defaultValue": false
         },
         "value": false,
         "tooltip": {
@@ -86,7 +88,8 @@
         "path": "http://registry\\.gpii\\.net/common/captions/enabled",
         "schema": {
             "type": "boolean",
-            "title": "Captions"
+            "title": "Captions",
+            "defaultValue": false
         },
         "value": false,
         "tooltip": {
@@ -101,9 +104,10 @@
             "title": "DPI Scale",
             "min": 1,
             "max": 2,
-            "divisibleBy": 0.25
+            "divisibleBy": 0.25,
+            "defaultValue": 1
         },
-        "value": 1,
+        "value": 1.25,
         "tooltip": { "header": "DPI scale factor on default monitor" }
     }, {
         "path": "http://registry\\.gpii\\.net/common/fontSize",
@@ -112,7 +116,8 @@
             "title": "Text Size",
             "min": 10,
             "max": 13,
-            "divisibleBy": 0.5
+            "divisibleBy": 0.5,
+            "defaultValue": 11
         },
         "value": 12,
         "tooltip": {
@@ -130,7 +135,8 @@
                 "Deutsch",
                 "Español",
                 "Български"
-            ]
+            ],
+            "defaultValue": "English"
         },
         "value": "English",
         "tooltip": {
@@ -151,7 +157,8 @@
                 "TopHalf",
                 "BottomHalf",
                 "Custom"
-            ]
+            ],
+            "defaultValue": "Lens"
         },
         "value":"Lens",
         "tooltip": { "header":"Position of the magnified area"}
