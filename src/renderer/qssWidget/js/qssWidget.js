@@ -48,7 +48,8 @@
 
         events: {
             onWidgetBlur: null,
-            onSettingUpdated: null
+            onSettingUpdated: null,
+            onQssWidgetSettingAltered: null
         },
 
         components: {
@@ -111,7 +112,7 @@
                     events: {
                         // Add events the main process to be notified for
                         onQssWidgetClosed: null,
-                        onQssSettingAltered: null,
+                        onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetBlur: "{qssWidget}.events.onWidgetBlur"
                     }
                 }

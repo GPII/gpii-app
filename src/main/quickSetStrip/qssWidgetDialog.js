@@ -44,7 +44,7 @@ fluid.defaults("gpii.app.qssWidget", {
     events: {
         onSettingUpdated: null,
         onQssWidgetToggled: null,
-        onQssSettingAltered: null
+        onQssWidgetSettingAltered: null
     },
 
     components: {
@@ -61,7 +61,7 @@ fluid.defaults("gpii.app.qssWidget", {
             options: {
                 events: {
                     onQssWidgetClosed: null,
-                    onQssSettingAltered: "{qssWidget}.events.onQssSettingAltered",
+                    onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
                     onQssWidgetBlur: null
                 },
                 listeners: {
@@ -70,7 +70,7 @@ fluid.defaults("gpii.app.qssWidget", {
                     }, {
                         func: "{gpii.app.qss}.focus"
                     }],
-                    onQssSettingAltered: { // XXX dev
+                    onQssWidgetSettingAltered: { // XXX dev
                         funcName: "console.log",
                         args: ["Settings Altered: ", "{arguments}.0"]
                     },

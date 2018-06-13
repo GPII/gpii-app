@@ -144,7 +144,7 @@
         modelListeners: {
             // TODO use local event?
             "setting.value": [{
-                func: "{channelNotifier}.events.onQssSettingAltered.fire",
+                func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{that}.model.setting"],
                 includeSource: "settingAlter"
             }, { // XXX dev

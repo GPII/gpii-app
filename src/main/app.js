@@ -149,12 +149,7 @@ fluid.defaults("gpii.app", {
             options: {
                 listeners: {
                     "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
-                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
-
-                    // directly apply settings
-                    // onQssSettingAltered: {
-                    //     listener: "{settingsBroker}.applySetting"
-                    // }
+                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated"
                 }
             }
         },

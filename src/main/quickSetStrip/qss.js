@@ -27,7 +27,7 @@ require("./qssWidgetDialog.js");
  * Loads the initial settings from a local configuration file.
  */
 fluid.defaults("gpii.app.qssWrapper", {
-    gradeNames: "fluid.component",
+    gradeNames: "fluid.modelComponent",
 
     settingsPath: "%gpii-app/testData/qss/settings.json",
     loadedSettings: {
@@ -40,24 +40,33 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     },
 
+    model: {
+        settings: "{that}.options.loadedSettings"
+    },
+
+    // modelListeners: {
+    //     "settings.*": {
+    //         func: "{settingsBroker}.applySetting",
+    //         args: ["{change}.value"],
+    //         includeSource: ["qss", "qssWidget"]
+    //     }
+    // },
+
     events: {
-        onQssSettingAltered: null,
         onSettingUpdated: null
     },
 
-    components : {
+    components: {
         qss: {
             type: "gpii.app.qss",
             options: {
                 config: {
                     params: {
-                        settings: "{qssWrapper}.options.loadedSettings"
+                        settings: "{qssWrapper}.model.settings"
                     }
                 },
                 events: {
-                    onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled",
-                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered",
-                    onSettingUpdated: "{qssWrapper}.events.onSettingUpdated"
+                    onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
                 },
                 listeners: {
                     "{channelListener}.events.onQssButtonActivated": {
@@ -67,6 +76,20 @@ fluid.defaults("gpii.app.qssWrapper", {
                             "{arguments}.1", // elementMetrics
                             "{arguments}.2"  // activationParams
                         ]
+                    },
+                    onQssSettingAltered: {
+                        func: "{qssWrapper}.alterSetting",
+                        args: [
+                            "{arguments}.0", // updatedSetting
+                            "qss"
+                        ]
+                    }
+                },
+                modelListeners: {
+                    "{qssWrapper}.model.settings.*": {
+                        func: "{that}.events.onSettingUpdated.fire",
+                        args: ["{change}.value"],
+                        excludeSource: ["init", "qss"]
                     }
                 }
             }
@@ -74,9 +97,14 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssWidget: {
             type: "gpii.app.qssWidget",
             options: {
-                events: {
-                    onQssSettingAltered: "{qssWrapper}.events.onQssSettingAltered",
-                    onSettingUpdated: "{qssWrapper}.events.onSettingUpdated"
+                listeners: {
+                    onQssWidgetSettingAltered: {
+                        func: "{qssWrapper}.alterSetting",
+                        args: [
+                            "{arguments}.0", // updatedSetting
+                            "qssWidget"
+                        ]
+                    }
                 },
                 modelListeners: {
                     // Ensure the widget window is closed with the QSS
@@ -84,6 +112,11 @@ fluid.defaults("gpii.app.qssWrapper", {
                         // it won't hurt if this is called
                         // even on QSS show
                         func: "{that}.hide"
+                    },
+                    "{qssWrapper}.model.settings.*": {
+                        func: "{that}.events.onSettingUpdated.fire",
+                        args: ["{change}.value"],
+                        excludeSource: ["init", "qssWrapper"]
                     }
                 }
             }
@@ -124,6 +157,16 @@ fluid.defaults("gpii.app.qssWrapper", {
                 }
             }
         }
+    },
+
+    invokers: {
+        alterSetting: {
+            funcName: "gpii.app.qssWrapper.alterSetting",
+            args: [
+                "{that}",
+                "{arguments}.0" // updatedSetting
+            ]
+        }
     }
 });
 
@@ -139,4 +182,14 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
     });
 
     return loadedSettings;
+};
+
+gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
+    var settingIndex = that.model.settings.findIndex(function (setting) {
+        return setting.path === updatedSetting.path;
+    });
+
+    if (settingIndex > -1) {
+        that.applier.change("settings." + settingIndex, updatedSetting, null, source);
+    }
 };

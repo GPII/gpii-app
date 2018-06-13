@@ -31,7 +31,7 @@
         },
         modelListeners: {
             setting: {
-                func: "{channelNotifier}.events.onQssSettingAltered.fire",
+                func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{change}.value"],
                 includeSource: "settingAlter"
             }

@@ -190,11 +190,11 @@
         // The dot should be shown if the setting has a default value, the new value of the
         // setting is different from that value and the new value is one of the predefined
         // values (in case of a menu widget).
-        var shoudShow =
+        var shouldShow =
             fluid.isValue(setting.schema.defaultValue) &&
             !fluid.model.diff(value, setting.schema.defaultValue) &&
-            (!fluid.isValue(setting.schema.enum) || setting.schema.enum.indexOf(value) >= 0);
-        indicatorElem.toggle(shoudShow);
+            (setting.schema.type !== "string" || setting.schema.enum.indexOf(value) >= 0);
+        indicatorElem.toggle(shouldShow);
     };
 
     gpii.qss.buttonPresenter.styleButton = function (that, container) {
