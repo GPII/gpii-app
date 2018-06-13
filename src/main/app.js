@@ -25,7 +25,7 @@ require("./dialogManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
-require("./quickSetStrip.js");
+require("./quickSetStrip/qss.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
