@@ -118,12 +118,12 @@
 
     gpii.qssWidget.stepper.activateIncButton = function (qssStepper, button) {
         var changeError = qssStepper.increment();
-        gpii.qssWidget.stepper.animateButton(button, changeError);
+        qssStepper.animateButton(button, changeError);
     };
 
     gpii.qssWidget.stepper.activateDecButton = function (qssStepper, button) {
         var changeError = qssStepper.decrement();
-        gpii.qssWidget.stepper.animateButton(button, changeError);
+        qssStepper.animateButton(button, changeError);
     };
 
     /**

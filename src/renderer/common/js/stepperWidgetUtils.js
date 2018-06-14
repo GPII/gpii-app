@@ -34,6 +34,26 @@
             }
         },
 
+
+        buttonSelector: ".fl-qssStepperWidget-btn",
+        styles: {
+            errorAnimation: "fl-qssStepperWidgetBtn-stepperErrorActivation",
+            warningAnimation: "fl-qssStepperWidgetBtn-stepperActivation"
+        },
+
+        listeners: {
+            "onCreate.attachAnimationClearer": {
+                funcName: "gpii.qssWidget.stepper.addElementAnimationClearer",
+                args: [
+                    "{that}.options.buttonSelector",
+                    [
+                        "{that}.options.styles.errorAnimation",
+                        "{that}.options.styles.warningAnimation"
+                    ]
+                ]
+            }
+        },
+
         invokers: {
             increment: {
                 funcName: "gpii.qssWidget.stepper.makeRestrictedStep",
@@ -50,6 +70,14 @@
                     "{that}.model.value",
                     "{that}.model.stepperParams",
                     true
+                ]
+            },
+            animateButton: {
+                funcName: "gpii.qssWidget.stepper.animateButton",
+                args: [
+                    "{that}.options.styles",
+                    "{arguments}.0",
+                    "{arguments}.1"
                 ]
             }
         }
@@ -83,6 +111,7 @@
 
 
     gpii.qssWidget.stepper.triggerCssAnimation = function (element, animationClass, animationClasses) {
+        // ensure animations are cleared (button may be activated before animation's end)
         element.removeClass(animationClasses.join(" "));
         // Avoid browser optimization
         // inspired by https://stackoverflow.com/a/30072037/2276288
@@ -91,18 +120,23 @@
         element.addClass(animationClass);
     };
 
+    gpii.qssWidget.stepper.addElementAnimationClearer = function (animatedElementsSelector, animationClasses) {
+        $(animatedElementsSelector).on("animationend webkitAnimationEnd", function (e) {
+            $(e.target).removeClass(animationClasses.join(" "));
+        });
+    };
+
+
     /**
      * TODO
      */
-    gpii.qssWidget.stepper.animateButton = function (button, isError) {
-        var animationClasses = {
-            error: "fl-qssStepperWidgetBtn-stepperErrorActivation",
-            warning: "fl-qssStepperWidgetBtn-stepperActivation"
-        };
+    gpii.qssWidget.stepper.animateButton = function (styles, button, isError) {
+        var triggerClass = isError ? styles.errorAnimation : styles.warningAnimation;
 
-        var triggerClass = isError ? animationClasses.error : animationClasses.warning;
-
-        gpii.qssWidget.stepper.triggerCssAnimation(button, triggerClass, fluid.values(animationClasses));
+        gpii.qssWidget.stepper.triggerCssAnimation(
+            button,
+            triggerClass,
+            [ styles.errorAnimation, styles.warningAnimation ]);
     };
 
 
