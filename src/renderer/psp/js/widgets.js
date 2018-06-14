@@ -318,7 +318,7 @@
         },
         invokers: {
             onClick: {
-                funcName: "fluid.notImplemented"
+                funcName: "fluid.identity"
             }
         }
     });

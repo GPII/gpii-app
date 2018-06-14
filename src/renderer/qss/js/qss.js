@@ -245,41 +245,6 @@
     };
 
 
-    fluid.defaults("gpii.qss.stepperButtonPresenter", {
-        gradeNames: ["gpii.qssWidget.baseStepper", "gpii.qss.buttonPresenter"],
-
-        model: {
-            // used by baseStepper
-            stepperParams: {
-                divisibleBy: "{that}.model.item.schema.divisibleBy",
-                min:         "{that}.model.item.schema.min",
-                max:         "{that}.model.item.schema.max"
-            }
-        },
-
-
-        listeners: {
-            onArrowUpPressed: [{
-                func: "{that}.increment"
-            }, {
-                func: "{that}.animateButton"
-            }],
-            onArrowDownPressed: [{
-                func: "{that}.decrement"
-            }, {
-                func: "{that}.animateButton"
-            }]
-        },
-
-        invokers: {
-            animateButton: {
-                funcName: "gpii.qssWidget.stepper.animateButton",
-                args: ["{that}.container", "{that}.model.value", "{that}.model.stepperParams"]
-            }
-        }
-    });
-
-
     fluid.defaults("gpii.qss.toggleButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         model: {
@@ -355,7 +320,7 @@
         }
     });
 
-    fluid.defaults("gpii.qss.menuButtonPresenter", {
+    fluid.defaults("gpii.qss.widgetButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         listeners: {
             onArrowUpPressed: {
@@ -417,9 +382,8 @@
         case "boolean":
             return "gpii.qss.toggleButtonPresenter";
         case "number":
-            return "gpii.qss.stepperButtonPresenter";
         case "string":
-            return "gpii.qss.menuButtonPresenter";
+            return "gpii.qss.widgetButtonPresenter";
         case "close":
             return "gpii.qss.closeButtonPresenter";
         case "keyIn":

@@ -25,6 +25,13 @@ body {
 
 .fl-titlebar .fl-closeBtn {
     border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.fl-titlebar .fl-closeBtn:focus,
+.fl-titlebar .fl-closeBtn:active {
+    color: #000000;
+    outline: none;
 }
 
 .fl-qssWidget .fl-focused {
@@ -87,21 +94,34 @@ body {
     padding: 30px 0 30px 0;
 }
 
-.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn,
-.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn:focus {
-    width: 60%;
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
+    display: flex;
+    align-items: center;
 
+    box-sizing: border-box;
+    width: 60%;
     margin: 5px;
     padding-top: 0;
 
-    background-color: #3a679e;
-
-    font-size: 1.5em;
+    border: 2px solid transparent;
     border-radius: 5px;
+
+    background-color: #3a679e;
+    font-size: 1.5em;
+
+    user-select: none;
+    cursor: pointer;
 }
 
-.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn > * {
-    vertical-align: middle;
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn:focus,
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn:active {
+    border: 2px solid transparent;
+    outline: none;
+}
+
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn .fl-btnLabel {
+    display: block;
+    margin: 0 auto;
 }
 
 /* update existing class */
@@ -192,6 +212,7 @@ body {
     text-align: center;
     color: #0f4797;
 
+    user-select: none;
     cursor: pointer;
 }
 

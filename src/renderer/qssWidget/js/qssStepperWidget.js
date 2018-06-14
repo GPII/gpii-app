@@ -20,18 +20,6 @@
     var gpii = fluid.registerNamespace("gpii");
 
 
-    fluid.defaults("gpii.qssWidget.stepperKeyListeners", {
-        gradeNames: ["gpii.qss.elementRepeater.keyListener", "fluid.component"],
-
-        // set listeners on the window object
-        target: { expander: { funcName: "jQuery", args: [window] } },
-
-        events: {
-            onArrowDownPressed: null,
-            onArrowUpPressed: null
-        }
-    });
-
     /**
      * TODO
      */
@@ -89,26 +77,26 @@
 
         components: {
             incButton: {
-                type: "gpii.psp.widgets.button",
+                type: "gpii.qssWidget.button",
                 container: "{that}.dom.incButton",
                 options: {
                     model: {
                         label: "{contentHandler}.model.messages.incrementButton"
                     },
                     invokers: {
-                        onClick: "{contentHandler}.activateIncBtn"
+                        activate: "{contentHandler}.activateIncBtn"
                     }
                 }
             },
             decButton: {
-                type: "gpii.psp.widgets.button",
+                type: "gpii.qssWidget.button",
                 container: "{that}.dom.decButton",
                 options: {
                     model: {
                         label: "{contentHandler}.model.messages.decrementButton"
                     },
                     invokers: {
-                        onClick: "{contentHandler}.activateDecBtn"
+                        activate: "{contentHandler}.activateDecBtn"
                     }
                 }
             }
@@ -163,10 +151,6 @@
                     }
                 }
             },
-            focusManager: {
-                type: "gpii.qss.focusManager",
-                container: "{stepper}.container"
-            },
             contentHandler: {
                 type: "gpii.qssWidget.stepper.contentHandler",
                 container: ".flc-qssStepperWidget",
@@ -175,48 +159,7 @@
                         setting: "{stepper}.model.setting"
                     }
                 }
-            },
-            // register window key listeners
-            windowKeyListener: {
-                type: "fluid.component",
-                options: {
-                    gradeNames: "gpii.qss.elementRepeater.keyListener",
-
-                    // set listeners on the window object
-                    target: { expander: { funcName: "jQuery", args: [window] } },
-
-                    events: {
-                        onArrowDownPressed: null,
-                        onArrowUpPressed: null
-                    },
-
-                    listeners: {
-                        onArrowUpPressed: "{contentHandler}.activateIncBtn",
-                        onArrowDownPressed: "{contentHandler}.activateDecBtn"
-                    }
-                }
-            }
-        },
-
-        listeners: {
-            "onCreate.processParams": {
-                funcName: "gpii.qssWidget.stepper.processParams",
-                args: ["{focusManager}", "{stepper}.options.activationParams"]
             }
         }
     });
-
-
-    gpii.qssWidget.stepper.processParams = function (focusManager, activationParams) {
-        activationParams = activationParams || {};
-
-        switch (activationParams.key) {
-        case "Spacebar":
-        case "Enter":
-            focusManager.focus(0, true); // focus the close button with a navigation highlight
-            break;
-        default:
-            focusManager.focus(0, false); // clear the focus rectangle and move it to the close button
-        }
-    };
 })(fluid);

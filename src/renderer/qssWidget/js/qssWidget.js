@@ -61,8 +61,18 @@
                     model: {
                         setting: "{qssWidget}.model.setting"
                     },
-                    activationParams: "{arguments}.1"
+                    activationParams: "{arguments}.1",
+                    listeners: {
+                        "onCreate.processParams": {
+                            funcName: "gpii.qssWidget.processParams",
+                            args: ["{focusManager}", "{that}.options.activationParams"]
+                        }
+                    }
                 }
+            },
+            focusManager: {
+                type: "gpii.qss.verticalFocusManager",
+                container: "{qssWidget}.container"
             },
             windowKeyListener: {
                 type: "fluid.component",
@@ -152,6 +162,25 @@
         } else {
             stepperElement.hide();
             menuElement.show();
+        }
+    };
+
+    gpii.qssWidget.processParams = function (focusManager, activationParams) {
+        activationParams = activationParams || {};
+
+        switch (activationParams.key) {
+        case "ArrowUp":
+            focusManager.focusLastElement(true);
+            break;
+        case "ArrowDown":
+            focusManager.focus(1, true); // focus the first element after the close button
+            break;
+        case "Spacebar":
+        case "Enter":
+            focusManager.focusFirstElement(true); // focus the close button with a navigation highlight
+            break;
+        default:
+            focusManager.focusFirstElement(false); // mouse/touch interaction - focus the close button without highlight
         }
     };
 })(fluid);

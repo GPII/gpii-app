@@ -102,6 +102,20 @@
                     "{arguments}.1" // applyHighlight
                 ]
             },
+            focusFirstElement: {
+                funcName: "gpii.qss.focusManager.focusFirstElement",
+                args: [
+                    "{that}",
+                    "{arguments}.0" // applyHighlight
+                ]
+            },
+            focusLastElement: {
+                funcName: "gpii.qss.focusManager.focusLastElement",
+                args: [
+                    "{that}",
+                    "{arguments}.0" // applyHighlight
+                ]
+            },
             focusNext: {
                 funcName: "gpii.qss.focusManager.focusNext",
                 args: ["{that}", "{that}.container"]
@@ -236,6 +250,38 @@
     };
 
     /**
+     * Focuses the first focusable element and optionally applies the keyboard navigation
+     * highlight (the "fl-highlighted" class).
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {Boolean} applyHighlight Whether the keyboard navigation highlight should be
+     * applied to the element which is to be focused.
+     */
+    gpii.qss.focusManager.focusFirstElement = function (that, applyHighlight) {
+        var focusInfo = that.getFocusInfo(),
+            focusableElements = focusInfo.focusableElements;
+        if (focusableElements.length > 0) {
+            var element = $(focusableElements[0]);
+            that.focusElement(element, applyHighlight);
+        }
+    };
+
+    /**
+     * Focuses the last focusable element and optionally applies the keyboard navigation
+     * highlight (the "fl-highlighted" class).
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {Boolean} applyHighlight Whether the keyboard navigation highlight should be
+     * applied to the element which is to be focused.
+     */
+    gpii.qss.focusManager.focusLastElement = function (that, applyHighlight) {
+        var focusInfo = that.getFocusInfo(),
+            focusableElements = focusInfo.focusableElements;
+        if (focusableElements.length > 0) {
+            var element = $(focusableElements[focusableElements.length - 1]);
+            that.focusElement(element, applyHighlight);
+        }
+    };
+
+    /**
      * Focuses the next available visible focusable element. If the last focusable element has
      * been reached, the first element will be focused, then the second and so on. Note
      * that the keyboard navigation highlight will be applied in this case.
@@ -282,6 +328,8 @@
      * key is pressed in conjunction with the Shift key, the previous focusable element will
      * receive the focus.
      * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {KeyboardEvent} KeyboardEvent The event which triggered the invocation of this
+     * function.
      */
     gpii.qss.focusManager.onTabPressed = function (that, KeyboardEvent) {
         if (KeyboardEvent.shiftKey) {

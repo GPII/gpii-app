@@ -53,10 +53,6 @@
                     }
                 }
             },
-            focusManager: {
-                type: "gpii.qss.verticalFocusManager",
-                container: "{menu}.container"
-            },
             repeater: {
                 // TODO Perhaps add "createOnEvent" so that the component can be recreated
                 // whenever the setting changes (e.g. if the change is made via the PSP)
@@ -97,10 +93,6 @@
                             this: "{that}.container",
                             method: "removeClass",
                             args: ["{that}.options.styles.disabled"]
-                        },
-                        "onCreate.processParams": {
-                            funcName: "gpii.qssWidget.menu.processParams",
-                            args: ["{that}", "{focusManager}", "{menu}.options.activationParams"]
                         }
                     }
                 }
@@ -113,25 +105,6 @@
             }
         }
     });
-
-    gpii.qssWidget.menu.processParams = function (that, focusManager, activationParams) {
-        var items = that.model.items;
-
-        switch (activationParams.key) {
-        case "ArrowUp":
-            that.events.onItemFocus.fire(items.length - 1);
-            break;
-        case "ArrowDown":
-            that.events.onItemFocus.fire(0);
-            break;
-        case "Spacebar":
-        case "Enter":
-            focusManager.focus(0, true); // focus the close button with a navigation highlight
-            break;
-        default:
-            focusManager.focus(0, false); // clear the focus rectangle and move it to the close button
-        }
-    };
 
     gpii.qssWidget.menu.updateValue = function (that, menu, container, value) {
         if (!that.model.disabled && that.model.value !== value) {
@@ -152,7 +125,7 @@
     };
 
     fluid.defaults("gpii.qssWidget.menu.presenter", {
-        gradeNames: ["fluid.viewComponent", "gpii.qss.elementRepeater.keyListener"],
+        gradeNames: ["fluid.viewComponent", "gpii.qssWidget.button"],
         model: {
             item: null
         },
@@ -175,15 +148,9 @@
             }]
         },
         events: {
-            onItemFocus: "{repeater}.events.onItemFocus",
-            onSpacebarPressed: null,
-            onEnterPressed: null
+            onItemFocus: "{repeater}.events.onItemFocus"
         },
         listeners: {
-            "onCreate.addClickHandler": {
-                funcName: "gpii.qssWidget.menu.presenter.addClickHandler",
-                args: ["{that}", "{focusManager}", "{that}.container"]
-            },
             "onCreate.applyStyles": {
                 funcName: "gpii.qssWidget.menu.presenter.applyStyles",
                 args: ["{that}", "{that}.container", "{repeater}.model.styles"]
@@ -196,9 +163,7 @@
                     "{that}.container",
                     "{arguments}.0" // index
                 ]
-            },
-            onSpacebarPressed: "{that}.activate()",
-            onEnterPressed: "{that}.activate()"
+            }
         },
         invokers: {
             activate: {
@@ -207,13 +172,6 @@
             }
         }
     });
-
-    gpii.qssWidget.menu.presenter.addClickHandler = function (that, focusManager, container) {
-        container.on("click", function () {
-            focusManager.focusElement(container, false);
-            that.activate();
-        });
-    };
 
     gpii.qssWidget.menu.presenter.focusItem = function (that, focusManager, container, index) {
         if (that.model.index === index) {
