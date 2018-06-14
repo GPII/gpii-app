@@ -89,7 +89,7 @@
         "schema": {
             "type": "boolean",
             "title": "Captions",
-            "defaultValue": false
+            "defaultValue": true
         },
         "value": false,
         "tooltip": {

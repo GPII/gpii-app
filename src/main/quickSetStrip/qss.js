@@ -116,7 +116,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                     "{qssWrapper}.model.settings.*": {
                         func: "{that}.events.onSettingUpdated.fire",
                         args: ["{change}.value"],
-                        excludeSource: ["init", "qssWrapper"]
+                        excludeSource: ["init", "qssWidget"]
                     }
                 }
             }
@@ -164,7 +164,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             funcName: "gpii.app.qssWrapper.alterSetting",
             args: [
                 "{that}",
-                "{arguments}.0" // updatedSetting
+                "{arguments}.0", // updatedSetting
+                "{arguments}.1" // source
             ]
         }
     }

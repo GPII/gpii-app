@@ -333,6 +333,13 @@
         that.applier.change("value", !that.model.value);
     };
 
+    fluid.defaults("gpii.qss.keyInButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        attrs: {
+            "aria-label": "Morphic settings panel"
+        }
+    });
+
     fluid.defaults("gpii.qss.closeButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         listeners: {
@@ -415,6 +422,8 @@
             return "gpii.qss.menuButtonPresenter";
         case "close":
             return "gpii.qss.closeButtonPresenter";
+        case "keyIn":
+            return "gpii.qss.keyInButtonPresenter";
 
         default:
             return "gpii.qss.buttonPresenter";

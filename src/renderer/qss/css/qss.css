@@ -28,7 +28,7 @@ body {
     background-color: #4f8bc3;
     color: #ffffff;
 
-    font: bold 12px Arial;
+    font: bold 14px Arial;
     cursor: pointer;
     user-select: none;
 }
@@ -63,11 +63,6 @@ body {
 
 .fl-qss-button:disabled {
     background-color: #ddd;
-}
-
-.fl-qss-button[aria-checked=true] {
-    background-color: #83CBEF;
-    color: white;
 }
 
 .fl-qss-button.fl-qss-settingButton.fl-activated {
