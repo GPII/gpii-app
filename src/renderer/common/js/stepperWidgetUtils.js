@@ -43,7 +43,7 @@
 
         listeners: {
             "onCreate.attachAnimationClearer": {
-                funcName: "gpii.qssWidget.stepper.addElementAnimationClearer",
+                funcName: "gpii.qssWidget.stepper.clearElementsAnimation",
                 args: [
                     "{that}.options.buttonSelector",
                     [
@@ -120,10 +120,8 @@
         element.addClass(animationClass);
     };
 
-    gpii.qssWidget.stepper.addElementAnimationClearer = function (animatedElementsSelector, animationClasses) {
-        $(animatedElementsSelector).on("animationend webkitAnimationEnd", function (e) {
-            $(e.target).removeClass(animationClasses.join(" "));
-        });
+    gpii.qssWidget.stepper.clearElementsAnimation = function (animatedElementsSelector, animationClasses) {
+        $(animatedElementsSelector).removeClass(animationClasses.join(" "));
     };
 
 
