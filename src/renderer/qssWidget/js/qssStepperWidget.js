@@ -24,7 +24,7 @@
      * TODO
      */
     fluid.defaults("gpii.qssWidget.stepper.contentHandler", {
-        gradeNames: ["gpii.qssWidget.baseStepper", "fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         model: {
             messages: {
@@ -38,15 +38,16 @@
             },
             setting: {},
 
-            value: "{that}.model.setting.value",
-            stepperParams: {
-                divisibleBy: "{that}.model.setting.schema.divisibleBy",
-                min:         "{that}.model.setting.schema.min",
-                max:         "{that}.model.setting.schema.max"
-            }
+            value: "{that}.model.setting.value"
+        },
+
+        styles: {
+            errorAnimation: "fl-qssStepperWidgetBtn-stepperErrorActivation",
+            warningAnimation: "fl-qssStepperWidgetBtn-stepperActivation"
         },
 
         selectors: {
+            stepperButton: ".flc-qssStepperWidget-btn",
             incButton: ".flc-qssStepperWidget-incBtn",
             decButton: ".flc-qssStepperWidget-decBtn",
 
@@ -54,6 +55,16 @@
             tipSubtitle: ".flc-tipSubtitle",
 
             footerTip: ".flc-qssStepperWidget-footerTip"
+        },
+
+        listeners: {
+            "onCreate.attachAnimationClearer": {
+                funcName: "gpii.qssWidget.stepper.clearElementsAnimation",
+                args: [
+                    "{that}.dom.stepperButton",
+                    "{that}.options.styles"
+                ]
+            }
         },
 
         invokers: {
@@ -71,6 +82,31 @@
                     "{that}",
                     "{that}.dom.decButton",
                     "{that}.model.setting.schema"
+                ]
+            },
+            increment: {
+                funcName: "gpii.qssWidget.stepper.makeRestrictedStep",
+                args: [
+                    "{that}",
+                    "{that}.model.value",
+                    "{that}.model.setting.schema"
+                ]
+            },
+            decrement: {
+                funcName: "gpii.qssWidget.stepper.makeRestrictedStep",
+                args: [
+                    "{that}",
+                    "{that}.model.value",
+                    "{that}.model.setting.schema",
+                    true
+                ]
+            },
+            animateButton: {
+                funcName: "gpii.qssWidget.stepper.animateButton",
+                args: [
+                    "{that}.options.styles",
+                    "{arguments}.0",
+                    "{arguments}.1"
                 ]
             }
         },
@@ -104,14 +140,68 @@
     });
 
 
-    gpii.qssWidget.stepper.activateIncButton = function (qssStepper, button) {
-        var changeError = qssStepper.increment();
-        qssStepper.animateButton(button, changeError);
+    gpii.qssWidget.stepper.activateIncButton = function (that, button) {
+        var changeError = that.increment();
+        that.animateButton(button, changeError);
     };
 
-    gpii.qssWidget.stepper.activateDecButton = function (qssStepper, button) {
-        var changeError = qssStepper.decrement();
-        qssStepper.animateButton(button, changeError);
+    gpii.qssWidget.stepper.activateDecButton = function (that, button) {
+        var changeError = that.decrement();
+        that.animateButton(button, changeError);
+    };
+
+    /**
+     * Either add or subtract two values.
+     *
+     * @param {Number} value - The initial value
+     * @param {Object} schema TODO
+     * @param {Number} schema.min TODO
+     * @param {Number} schema.max TODO
+     * @param {Number} schema.divisibleBy - The that is to be done
+     * @param {Boolean} shouldSubtract - Whether subtraction to be done
+     * @returns {Number} The summed value.
+     */
+    gpii.qssWidget.stepper.makeRestrictedStep = function (that, value, schema, shouldSubtract) {
+        var step = (shouldSubtract ? -schema.divisibleBy : schema.divisibleBy);
+
+        value += step;
+        // Handle not given min and max
+        var restrcitedValue = Math.min(value, schema.max || value);
+        restrcitedValue     = Math.max(restrcitedValue, schema.min || restrcitedValue);
+
+        that.applier.change("value", restrcitedValue, null, "settingAlter");
+
+        // Whether a bound was hit
+        return value !== restrcitedValue;
+    };
+
+
+    gpii.qssWidget.stepper.triggerCssAnimation = function (element, animationClass, animationClasses) {
+        // ensure animations are cleared (button may be activated before animation's end)
+        element.removeClass(animationClasses.join(" "));
+        // Avoid browser optimization
+        // inspired by https://stackoverflow.com/a/30072037/2276288
+        element[0].offsetWidth;
+
+        element.addClass(animationClass);
+    };
+
+    gpii.qssWidget.stepper.clearElementsAnimation = function (animatedElements, styles) {
+        var animationClasses = fluid.values(styles);
+        animatedElements.removeClass(animationClasses.join(" "));
+    };
+
+
+    /**
+     * TODO
+     */
+    gpii.qssWidget.stepper.animateButton = function (styles, button, isError) {
+        var triggerClass = isError ? styles.errorAnimation : styles.warningAnimation;
+
+        gpii.qssWidget.stepper.triggerCssAnimation(
+            button,
+            triggerClass,
+            [ styles.errorAnimation, styles.warningAnimation ]);
     };
 
     /**
