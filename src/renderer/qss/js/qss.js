@@ -239,7 +239,7 @@
     gpii.qss.getElementMetrics = function (target) {
         return {
             offsetRight: $(window).width() - target.offset().left,
-            height:      target.outerHeight(),
+            height:      target.outerHeight() - 2, // TODO: Think of a better formula.
             width:       target.outerWidth()
         };
     };
