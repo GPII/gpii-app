@@ -3,6 +3,9 @@ body {
 }
 
 .fl-qssTooltip {
+    /* DPI related problem with missing border */
+    margin-right: 1px;
+
     flex-direction: column;
 
     position: absolute;
