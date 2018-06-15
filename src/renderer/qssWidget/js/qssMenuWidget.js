@@ -23,11 +23,7 @@
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
         model: {
             disabled: false,
-            setting: {},
-            messages: {
-                tipTitle: "To Choose Setting Options",
-                tipSubtitle: "Use mouse or Up/Down arrow keys, then press Enter to select."
-            }
+            setting: {}
         },
         modelListeners: {
             setting: {
@@ -37,22 +33,11 @@
             }
         },
         selectors: {
-            menuControls: ".flc-qssMenuWidget-controls",
-            tipTitle: ".flc-tipTitle",
-            tipSubtitle: ".flc-tipSubtitle"
+            menuControls: ".flc-qssMenuWidget-controls"
         },
         activationParams: {},
         closeDelay: 1200,
         components: {
-            titlebar: {
-                type: "gpii.psp.titlebar",
-                container: ".flc-titlebar",
-                options: {
-                    events: {
-                        onClose: "{channelNotifier}.events.onQssWidgetClosed"
-                    }
-                }
-            },
             repeater: {
                 // TODO Perhaps add "createOnEvent" so that the component can be recreated
                 // whenever the setting changes (e.g. if the change is made via the PSP)

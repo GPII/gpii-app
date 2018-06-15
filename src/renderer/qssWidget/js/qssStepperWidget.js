@@ -21,18 +21,15 @@
 
 
     /**
-     * TODO
+     * Represents the QSS stepper widget.
      */
-    fluid.defaults("gpii.qssWidget.stepper.contentHandler", {
+    fluid.defaults("gpii.qssWidget.stepper", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         model: {
             messages: {
                 incrementButton: "Larger",
                 decrementButton: "Smaller",
-
-                tipTitle: "To change Text Size",
-                tipSubtitle: "Use mouse or Up/Down arrow keys",
 
                 footerTip: "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
             },
@@ -55,6 +52,15 @@
             tipSubtitle: ".flc-tipSubtitle",
 
             footerTip: ".flc-qssStepperWidget-footerTip"
+        },
+
+        modelListeners: {
+            // TODO use local event?
+            "setting.value": {
+                func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
+                args: ["{that}.model.setting"],
+                includeSource: "settingAlter"
+            }
         },
 
         listeners: {
@@ -117,10 +123,10 @@
                 container: "{that}.dom.incButton",
                 options: {
                     model: {
-                        label: "{contentHandler}.model.messages.incrementButton"
+                        label: "{stepper}.model.messages.incrementButton"
                     },
                     invokers: {
-                        activate: "{contentHandler}.activateIncBtn"
+                        activate: "{stepper}.activateIncBtn"
                     }
                 }
             },
@@ -129,10 +135,10 @@
                 container: "{that}.dom.decButton",
                 options: {
                     model: {
-                        label: "{contentHandler}.model.messages.decrementButton"
+                        label: "{stepper}.model.messages.decrementButton"
                     },
                     invokers: {
-                        activate: "{contentHandler}.activateDecBtn"
+                        activate: "{stepper}.activateDecBtn"
                     }
                 }
             }
@@ -203,53 +209,4 @@
             triggerClass,
             [ styles.errorAnimation, styles.warningAnimation ]);
     };
-
-    /**
-     * Represents the QSS stepper widget.
-     */
-    fluid.defaults("gpii.qssWidget.stepper", {
-        gradeNames: ["fluid.viewComponent"],
-
-        model: {
-            messages: {},
-            setting: {}
-        },
-
-        events: {
-            onSettingAltered: null
-        },
-
-        modelListeners: {
-            // TODO use local event?
-            "setting.value": [{
-                func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
-                args: ["{that}.model.setting"],
-                includeSource: "settingAlter"
-            }, { // XXX dev
-                funcName: "console.log",
-                args: ["{change}.value"]
-            }]
-        },
-
-        components: {
-            titlebar: {
-                type: "gpii.psp.titlebar",
-                container: ".flc-titlebar",
-                options: {
-                    events: {
-                        onClose: "{channelNotifier}.events.onQssWidgetClosed"
-                    }
-                }
-            },
-            contentHandler: {
-                type: "gpii.qssWidget.stepper.contentHandler",
-                container: ".flc-qssStepperWidget",
-                options: {
-                    model: {
-                        setting: "{stepper}.model.setting"
-                    }
-                }
-            }
-        }
-    });
 })(fluid);

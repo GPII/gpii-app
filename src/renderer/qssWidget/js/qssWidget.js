@@ -53,13 +53,43 @@
         },
 
         components: {
+            titlebar: {
+                type: "gpii.psp.titlebar",
+                container: ".flc-titlebar",
+                options: {
+                    events: {
+                        onClose: "{channelNotifier}.events.onQssWidgetClosed"
+                    }
+                }
+            },
             widget: {
                 type: "@expand:gpii.psp.qssWidget.getWidgetType({arguments}.0)",
                 createOnEvent: "onSettingUpdated",
                 container: "{qssWidget}.container",
                 options: {
                     model: {
-                        setting: "{qssWidget}.model.setting"
+                        setting: "{qssWidget}.model.setting",
+                        messages: {
+                            tipTitle: "To Choose %settingTitle",
+                            tipSubtitle: "Use mouse or Up/Down arrow keys, then press Enter to select."
+                        }
+                    },
+                    modelRelay: {
+                        "tipTitle": {
+                            target: "messages.tipTitle",
+                            singleTransform: {
+                                type: "fluid.transforms.free",
+                                func: "fluid.stringTemplate",
+                                args: [
+                                    "{that}.model.messages.tipTitle",
+                                    {settingTitle: "{that}.model.setting.schema.title"}
+                                ]
+                            }
+                        }
+                    },
+                    selectors: {
+                        tipTitle: ".flc-tipTitle",
+                        tipSubtitle: ".flc-tipSubtitle"
                     },
                     activationParams: "{arguments}.1",
                     listeners: {
