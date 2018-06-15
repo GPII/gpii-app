@@ -44,16 +44,34 @@ fluid.defaults("gpii.app.qssWrapper", {
         settings: "{that}.options.loadedSettings"
     },
 
-    // modelListeners: {
-    //     "settings.*": {
-    //         func: "{settingsBroker}.applySetting",
-    //         args: ["{change}.value"],
-    //         includeSource: ["qss", "qssWidget"]
-    //     }
-    // },
+    modelListeners: {
+        "settings.*": {
+            func: "{settingsBroker}.applySetting",
+            args: ["{change}.value"],
+            includeSource: ["qss", "qssWidget"]
+        }
+    },
 
     events: {
-        onSettingUpdated: null
+        onSettingUpdated: null,
+        onPreferencesUpdated: null
+    },
+
+    listeners: {
+        onSettingUpdated: {
+            funcName: "gpii.app.qssWrapper.updateSetting",
+            args: [
+                "{that}",
+                "{arguments}.0" // setting
+            ]
+        },
+        onPreferencesUpdated: {
+            funcName: "gpii.app.qssWrapper.onPreferencesUpdated",
+            args: [
+                "{that}",
+                "{arguments}.0" // preferences
+            ]
+        }
     },
 
     components: {
@@ -114,8 +132,8 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{that}.hide"
                     },
                     "{qssWrapper}.model.settings.*": {
-                        func: "{that}.events.onSettingUpdated.fire",
-                        args: ["{change}.value"],
+                        funcName: "gpii.app.qssWidget.onSettingUpdated",
+                        args: ["{qssWidget}", "{change}.value"],
                         excludeSource: ["init", "qssWidget"]
                     }
                 }
@@ -170,6 +188,53 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     }
 });
+
+gpii.app.qssWrapper.updateSetting = function (that, updatedSetting) {
+    fluid.each(that.model.settings, function (setting, index) {
+        if (setting.path === updatedSetting.path && !fluid.model.diff(setting.value, updatedSetting.value)) {
+            that.applier.change("settings." + index, updatedSetting);
+        }
+    });
+};
+
+gpii.app.qssWrapper.getItemSettings = function (item) {
+    var settings = [];
+
+    fluid.each(item.settings, function (setting) {
+        settings.push(setting);
+        if (setting.settings) {
+            var subsettings = gpii.app.qssWrapper.getItemSettings(setting);
+            settings = settings.concat(subsettings);
+        }
+    });
+
+    return settings;
+};
+
+gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
+    var settings = [];
+
+    fluid.each(settingGroups, function (settingGroup) {
+        var settingGroupSettings = gpii.app.qssWrapper.getItemSettings(settingGroup);
+        settings = settings.concat(settingGroupSettings);
+    });
+
+    return settings;
+};
+
+gpii.app.qssWrapper.onPreferencesUpdated = function (that, preferences) {
+    var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences.settingGroups);
+    fluid.each(settings, function (setting) {
+        that.events.onSettingUpdated.fire(setting);
+    });
+};
+
+gpii.app.qssWidget.onSettingUpdated = function (qssWidget, updatedSetting) {
+    // Update the widget only if the changed setting is the one which the widget is displaying
+    if (qssWidget.model.setting.path === updatedSetting.path) {
+        qssWidget.events.onSettingUpdated.fire(updatedSetting);
+    }
+};
 
 gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
     var resolvedPath = fluid.module.resolvePath(settingsPath),

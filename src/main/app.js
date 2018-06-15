@@ -63,6 +63,7 @@ fluid.defaults("gpii.app", {
         preferences: {
             sets: [],
             activeSet: null,
+            settingGroups: [],
             closePSPOnBlur: null
         },
         theme: "{that}.options.defaultTheme"
@@ -152,7 +153,8 @@ fluid.defaults("gpii.app", {
             options: {
                 listeners: {
                     "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
-                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated"
+                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
+                    "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated"
                 }
             }
         },
