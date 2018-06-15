@@ -81,15 +81,47 @@
                         }
                     }
                 }
+            },
+            closeTimer: {
+                type: "gpii.app.timer",
+                options: {
+                    listeners: {
+                        "onTimerFinished.closeWidget": {
+                            this: "{channelNotifier}.events.onQssWidgetClosed",
+                            method: "fire"
+                        }
+                    }
+                }
+            }
+        },
+        listeners: {
+            "onCreate.visibilityChange": {
+                funcName: "gpii.qssWidget.menu.addVisibilityChangeListener",
+                args: ["{closeTimer}"]
+            },
+            "onDestroy.visibilitychange": {
+                funcName: "gpii.qssWidget.menu.removeVisibilityChangeListener"
             }
         },
         invokers: {
             close: {
-                funcName: "gpii.qssWidget.menu.close",
-                args: ["{that}", "{channelNotifier}"]
+                func: "{closeTimer}.start",
+                args: ["{that}.options.closeDelay"]
             }
         }
     });
+
+    gpii.qssWidget.menu.addVisibilityChangeListener = function (closeTimer) {
+        $(document).on("visibilitychange.qssMenuWidget", function () {
+            if (document.visibilityState === "hidden") {
+                closeTimer.clear();
+            }
+        });
+    };
+
+    gpii.qssWidget.menu.removeVisibilityChangeListener = function () {
+        $(document).off("visibilitychange.qssMenuWidget");
+    };
 
     gpii.qssWidget.menu.updateValue = function (that, menu, container, value) {
         if (!that.model.disabled && that.model.value !== value) {
@@ -101,12 +133,6 @@
 
             menu.close();
         }
-    };
-
-    gpii.qssWidget.menu.close = function (that, channelNotifier) {
-        setTimeout(function () {
-            channelNotifier.events.onQssWidgetClosed.fire();
-        }, that.options.closeDelay);
     };
 
     fluid.defaults("gpii.qssWidget.menu.presenter", {

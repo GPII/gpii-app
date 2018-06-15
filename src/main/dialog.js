@@ -21,9 +21,6 @@ var BrowserWindow = require("electron").BrowserWindow;
 var gpii  = fluid.registerNamespace("gpii");
 
 require("./resizable.js");
-require("./utils.js");
-require("../common/channelUtils.js");
-
 
 fluid.registerNamespace("gpii.app.dialog");
 

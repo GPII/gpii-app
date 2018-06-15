@@ -29,7 +29,10 @@ require("./quickSetStrip/qss.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
+require("./utils.js");
 require("../common/messageBundles.js");
+require("../common/utils.js");
+require("../common/channelUtils.js");
 
 /**
  * Promise that resolves when the electron application is ready.
