@@ -230,6 +230,10 @@ body {
     background-repeat: no-repeat;
 }
 
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=false]:after {
+    display: none;
+}
+
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:focus {
     outline: none;
 }
