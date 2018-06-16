@@ -228,7 +228,9 @@
         },
         modelListeners: {
             preferences: [{
-                func: "{that}.events.onPreferencesUpdated.fire"
+                func: "{that}.events.onPreferencesUpdated.fire",
+                // as the `gpii.psp.elementRepeater` binding sends data back to here
+                excludeSource: ["gpii.psp.repeater.element"]
             }, {
                 funcName: "gpii.psp.mainWindow.playSoundNotification",
                 args: ["{that}", "{change}.value", "{change}.oldValue"]

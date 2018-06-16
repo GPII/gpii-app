@@ -34,7 +34,7 @@ fluid.defaults("gpii.app.tray", {
             }
         }
     },
-    shortcut: "Super+CmdOrCtrl+Alt+U",
+    shortcuts: null,
     icons: {
         keyedIn: "%gpii-app/src/icons/gpii-color.ico",
         keyedOut: "%gpii-app/src/icons/gpii.ico"
@@ -51,8 +51,7 @@ fluid.defaults("gpii.app.tray", {
     },
     events: {
         onActivePreferenceSetAltered: null, // passed from parent
-        onTrayIconClicked: null,
-        onShortcutUsed: null
+        onTrayIconClicked: null
     },
     model: {
         keyedInUserToken: null,
@@ -137,8 +136,11 @@ gpii.app.makeTray = function (options, events) {
         events.onTrayIconClicked.fire();
     });
 
-    globalShortcut.register(options.shortcut, function () {
-        events.onShortcutUsed.fire(options.shortcut);
+    // XXX deregister shortcuts?
+    fluid.each(options.shortcuts, function (shortcut) {
+        globalShortcut.register(shortcut.command, function () {
+            events[shortcut.event].fire();
+        });
     });
 
     return tray;

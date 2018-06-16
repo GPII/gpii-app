@@ -275,7 +275,8 @@
         model: {
             messages: {
                 caption: null
-            }
+            },
+            caption: null
         },
         attrs: {
             role: "switch"
