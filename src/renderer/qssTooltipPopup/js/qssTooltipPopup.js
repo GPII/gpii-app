@@ -31,6 +31,8 @@
             }
         },
 
+        enableRichText: true,
+
         selectors: {
             header: ".flc-tooltipHeader",
             body:   ".flc-tooltipBody",

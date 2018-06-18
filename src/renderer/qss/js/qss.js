@@ -45,7 +45,9 @@
         ],
 
         model: {
-            item: {},
+            item: {
+                value: null
+            },
             value: "{that}.model.item.value"
         },
 
@@ -199,7 +201,7 @@
 
     gpii.qss.buttonPresenter.styleButton = function (that, container) {
         var path = that.model.item.path;
-        if (path.startsWith("http://registry\\.gpii\\.net")) {
+        if (path.startsWith("http://registry\\.gpii\\.net") || path === "more") {
             container.addClass(that.options.styles.settingButton);
         }
     };

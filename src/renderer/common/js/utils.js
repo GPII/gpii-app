@@ -79,6 +79,7 @@
      * by the same name as the selector's.
      */
     fluid.defaults("gpii.psp.selectorsTextRenderer", {
+        enableRichText: false,
         modelListeners: {
             // Any change means that the whole view should be re-rendered
             "messages": {
@@ -86,7 +87,8 @@
                 args: [
                     "{that}",
                     "{that}.options.selectors",
-                    "{that}.model.messages"
+                    "{that}.model.messages",
+                    "{that}.options.enableRichText"
                 ]
             }
         }
@@ -105,15 +107,22 @@
      * @param {Object} selectors - The viewComponent's selectors
      * @param {Object} messages - The translated text
      */
-    gpii.psp.selectorsTextRenderer.renderText = function (that, selectors, messages) {
+    gpii.psp.selectorsTextRenderer.renderText = function (that, selectors, messages, enableRichText) {
         if (!messages) {
             return;
         }
 
         fluid.each(selectors, function (value, key) {
-            var element = that.dom.locate(key);
-            if (element && fluid.isValue(messages[key])) {
-                element.text(messages[key]);
+            var element = that.dom.locate(key),
+                message = messages[key];
+            if (element && fluid.isValue(message)) {
+                if (enableRichText) {
+                    // Use parseHTML to prevent scripts from executing.
+                    var parsedMessage = jQuery.parseHTML(message);
+                    element.html(parsedMessage);
+                } else {
+                    element.text(message);
+                }
             }
         });
     };
