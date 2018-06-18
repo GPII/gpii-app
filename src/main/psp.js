@@ -319,9 +319,9 @@ fluid.defaults("gpii.app.psp", {
  */
 gpii.app.psp.show = function (psp) {
     console.log("Show: ", psp.options.heightOffset);
-    // gpii.browserWindow.moveToScreen(psp.pspWindow, { y: psp.options.heightOffset });
-    // psp.pspWindow.focus();
-    // psp.applier.change("isShown", true);
+    gpii.browserWindow.moveToScreen(psp.pspWindow, { y: psp.options.heightOffset });
+    psp.pspWindow.focus();
+    psp.applier.change("isShown", true);
 };
 
 /**
