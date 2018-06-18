@@ -60,6 +60,8 @@ Invoke-Command $npm "install electron-packager -g" $projectDir
 
 # Npm install the application, this needs to be done for packaging.
 Invoke-Command $npm "install" $projectDir
+# Currently required to generate the "mega" messages bundle
+Invoke-Command $npm "run build --prefix" $projectDir
 
 # Copy all the relevant content of projectDir into preStaging
 # TODO: Make all these robocopies a bit more sexy
@@ -67,8 +69,10 @@ Invoke-Command "robocopy" "..\node_modules $(Join-Path $preStagingDir "node_modu
 Invoke-Command "robocopy" "..\configs $(Join-Path $preStagingDir "configs") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "..\src $(Join-Path $preStagingDir "src") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "..\testData $(Join-Path $preStagingDir "testData") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "..\build $(Join-Path $preStagingDir "build") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir LICENSE.txt" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir main.js" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "$projectDir $preStagingDir index.js" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir package.json" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir package-lock.json" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir README.md" $provisioningDir -errorLevel 3

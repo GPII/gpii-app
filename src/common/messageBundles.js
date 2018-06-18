@@ -172,7 +172,11 @@ gpii.app.messageBundles.getMessageDistributorGrade = function (messageBundles, d
  * @return {Object} The parsed message bundles for the different locales.
  */
 gpii.app.messageBundles.loadMessageBundles = function (messageBundlesPath) {
-    var resolvedPath = require("path").resolve(messageBundlesPath);
+    if (fluid.require) {
+        return fluid.require("%gpii-app/" + messageBundlesPath);
+    }
+    // Required by renderer process
+    var resolvedPath = require("path").join(__dirname, "../../..", messageBundlesPath);
     return require(resolvedPath);
 };
 
