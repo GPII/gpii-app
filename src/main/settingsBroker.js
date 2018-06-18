@@ -57,16 +57,17 @@ fluid.defaults("gpii.app.settingsBroker", {
             ]
         },
         applySetting: {
-            func: "{that}.events.onSettingApplied.fire",
-            args: ["{arguments}.0"] // setting
+            funcName: "gpii.app.settingsBroker.applySetting",
+            args: [
+                "{that}",
+                "{arguments}.0" // setting
+            ]
         },
         undoSetting: {
-            this: "{that}.events.onSettingApplied",
-            method: "fire",
+            funcName: "gpii.app.settingsBroker.undoSetting",
             args: [
-                "{arguments}.0", // setting
-                null,
-                "settingsBroker.undo"
+                "{that}",
+                "{arguments}.0" // setting
             ]
         },
         applyPendingChanges: {
@@ -90,11 +91,11 @@ fluid.defaults("gpii.app.settingsBroker", {
                 "{arguments}.0" // liveness
             ]
         },
-        removePendingChanges: {
-            funcName: "gpii.app.settingsBroker.removePendingChanges",
+        removePendingChange: {
+            funcName: "gpii.app.settingsBroker.removePendingChange",
             args: [
                 "{that}",
-                "{arguments}.0" // pendingChanges
+                "{arguments}.0" // pendingChange
             ]
         },
         reset: {
@@ -107,6 +108,20 @@ fluid.defaults("gpii.app.settingsBroker", {
         onRestartRequired: null
     }
 });
+
+gpii.app.settingsBroker.applySetting = function (settingsBroker, setting) {
+    settingsBroker.events.onSettingApplied.fire(setting);
+    settingsBroker.removePendingChange(setting);
+};
+
+gpii.app.settingsBroker.undoSetting = function (settingsBroker, setting) {
+    setting = fluid.extend(true, setting, {
+        value: setting.oldValue
+    });
+
+    settingsBroker.events.onSettingApplied.fire(setting, null, "settingsBroker.undo");
+    settingsBroker.removePendingChange(setting);
+};
 
 /**
  * Queues a setting to be applied in the future. If the setting does not
@@ -183,8 +198,6 @@ gpii.app.settingsBroker.applyPendingChanges = function (settingsBroker, descript
     fluid.each(changesToApply, function (pendingChange) {
         settingsBroker.applySetting(pendingChange);
     });
-
-    settingsBroker.removePendingChanges(changesToApply);
 };
 
  /**
@@ -210,13 +223,8 @@ gpii.app.settingsBroker.undoPendingChanges = function (settingsBroker, descripto
     changesToUndo = gpii.app.settingsBroker.filterPendingChanges(changesToUndo, liveness);
 
     fluid.each(changesToUndo, function (pendingChange) {
-        pendingChange = fluid.extend(true, pendingChange, {
-            value: pendingChange.oldValue
-        });
         settingsBroker.undoSetting(pendingChange);
     });
-
-    settingsBroker.removePendingChanges(changesToUndo);
 };
 
 /**
@@ -235,17 +243,15 @@ gpii.app.settingsBroker.hasPendingChange = function (pendingChanges, liveness) {
 };
 
 /**
- * Removes the specified pending changes from the queue.
+ * Removes the specified pending change from the queue.
  * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
- * @param {Object[]} changesToRemove - The pending changes to be removed.
+ * @param {Object[]} changeToRemove - The pending change to be removed.
  */
-gpii.app.settingsBroker.removePendingChanges = function (settingsBroker, changesToRemove) {
+gpii.app.settingsBroker.removePendingChange = function (settingsBroker, changeToRemove) {
     var pendingChanges = settingsBroker.model.pendingChanges;
 
     pendingChanges = pendingChanges.filter(function (pendingChange) {
-        return !fluid.find_if(changesToRemove, function (changeToRemove) {
-            return pendingChange.path === changeToRemove.path;
-        }, false);
+        return pendingChange.path !== changeToRemove.path;
     });
 
     settingsBroker.applier.change("pendingChanges", pendingChanges);
