@@ -39,7 +39,7 @@ if (appIsRunning) {
 
 // this module is loaded relatively slow
 require("gpii-universal");
-require("./index");
+require("./index.js");
 
 // Close the PSP if there is another instance of it already running.
 var gpiiIsRunning = !gpii.singleInstance.registerInstance();
