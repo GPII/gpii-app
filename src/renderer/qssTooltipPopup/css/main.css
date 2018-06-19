@@ -30,6 +30,10 @@ body {
     margin: 2px 0 2px 0;
 }
 
+.fl-qssTooltip-content ul {
+    text-align: left;
+}
+
 .fl-qssTooltip-content .flc-tooltipHeader {
     font-weight: bold;
 }

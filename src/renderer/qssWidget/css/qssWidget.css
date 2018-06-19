@@ -99,7 +99,8 @@ body {
     align-items: center;
 
     box-sizing: border-box;
-    width: 60%;
+    width: 70%;
+    min-height: 42px;
     margin: 5px;
     padding-top: 0;
 
@@ -107,7 +108,7 @@ body {
     border-radius: 5px;
 
     background-color: #3a679e;
-    font-size: 1.5em;
+    font-size: 1.25em;
 
     user-select: none;
     cursor: pointer;
@@ -135,6 +136,7 @@ body {
 .fl-qssStepperWidget-controls .fl-icon.fl-increment-icon {
     width: 30px;
     height: 30px;
+    margin-left: 5px;
 
     -webkit-mask-image: url(../../../assets/plus-circle.svg);
     mask-image: url(../../../assets/plus-circle.svg);
@@ -142,7 +144,7 @@ body {
 }
 
 .fl-qssStepperWidget-controls .fl-icon.fl-decrement-icon {
-    margin-left: 3px; /* align with the increment icon */
+    margin-left: 8px; /* align with the increment icon */
     -webkit-mask-image: url(../../../assets/minus-circle.svg);
     mask-image: url(../../../assets/minus-circle.svg);
 }

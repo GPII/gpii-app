@@ -71,7 +71,7 @@
         },
         "tooltip": {
             "header": "Change the contrast between the text and background color, so text is easier to read.",
-            "body": "Contrast changes will affect Windows, Edge, and some other applications."
+            "body": "Contrast changes work in Windows, Edge, and some other applications."
         }
     }, {
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
@@ -123,7 +123,8 @@
         },
         "value": 11,
         "tooltip": {
-            "header": "Change the text size in Windows, Edge, Chrome, Firefox, MIcrosoft Office, and many other applications."
+            "header": "Change text size.",
+            "body": "Works in Windows, Edge, Chrome, Firefox, MIcrosoft Office, and many other applications."
         }
     }, {
         "path": "http://registry\\.gpii\\.net/common/language",
@@ -140,7 +141,8 @@
         },
         "value": "English",
         "tooltip": {
-            "header": "Change language in Windows, Edge, and many other applications."
+            "header": "Change language.",
+            "body": "Works in Windows, Edge, and many other applications."
         }
     }, {
         "path": "save",
@@ -149,7 +151,7 @@
             "title": "Save"
         },
         "tooltip": {
-            "header": "Save your preferences so you can access them from other Morphic-enabled computers"
+            "header": "Save your preferences so you can access them from other Morphic-enabled computers."
         }
     }, {
         "path": "undo",
@@ -158,7 +160,7 @@
             "title": "Undo"
         },
         "tooltip": {
-            "header": "Reverse the last change you made in  the Morphic Bar."
+            "header": "Undo the last change you made in  the Morphic Bar."
         }
     }, {
         "path": "keyIn",
@@ -167,7 +169,8 @@
             "image": "gpii-icon-balloon.png"
         },
         "tooltip": {
-            "header": "Open the Morphic Panel  where you can use your Morphic account to adjust your personal settings on this computer."
+            "header": "Open the Morphic Panel.",
+            "body": "Where you can use your Morphic account to adjust your personal settings on this computer."
         }
     }, {
         "path": "close",
@@ -176,7 +179,8 @@
             "title": "Close"
         },
         "tooltip": {
-            "header": "Close the Morphic Panel.  You can re-open it from the system tray or from the Morphic desktop icon"
+            "header": "Close the Morphic Panel.",
+            "body": "You can re-open it from the system tray or from the Morphic desktop icon."
         }
     }
 ]

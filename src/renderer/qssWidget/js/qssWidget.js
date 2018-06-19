@@ -70,7 +70,7 @@
                     model: {
                         setting: "{qssWidget}.model.setting",
                         messages: {
-                            tipTitle: "To Choose %settingTitle",
+                            tipTitle: "To Change %settingTitle",
                             tipSubtitle: "Use mouse or Up/Down arrow keys, then press Enter to select."
                         }
                     },
