@@ -116,17 +116,16 @@
                     },
                     events: {
                         onArrowLeftPressed: null,
-                        onArrowRightPressed: null
+                        onArrowRightPressed: null,
+                        onEscapePressed: null
                     },
                     listeners: {
-                        onArrowLeftPressed: {
-                            funcName: "gpii.psp.qssWidget.blur",
-                            args: [
-                                "{qssWidget}",
-                                "{arguments}.0" // KeyboardEvent
-                            ]
-                        },
-                        onArrowRightPressed: {
+                        onArrowLeftPressed: "{that}.blur({arguments}.0)",
+                        onArrowRightPressed: "{that}.blur({arguments}.0)",
+                        onEscapePressed: "{that}.blur({arguments}.0)"
+                    },
+                    invokers: {
+                        blur: {
                             funcName: "gpii.psp.qssWidget.blur",
                             args: [
                                 "{qssWidget}",
