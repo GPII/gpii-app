@@ -141,6 +141,27 @@
                         activate: "{stepper}.activateDecBtn"
                     }
                 }
+            },
+            // similar to qssWidget component
+            windowKeyListener: {
+                type: "fluid.component",
+                options: {
+                    gradeNames: "gpii.qss.elementRepeater.keyListener",
+                    target: {
+                        expander: {
+                            funcName: "jQuery",
+                            args: [window]
+                        }
+                    },
+                    events: {
+                        onSubtractPressed:   null,
+                        onAddPressed:        null
+                    },
+                    listeners: {
+                        onAddPressed:      "{stepper}.activateIncBtn",
+                        onSubtractPressed: "{stepper}.activateDecBtn"
+                    }
+                }
             }
         }
     });

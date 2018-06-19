@@ -118,6 +118,10 @@
         // The full list of key names can be view here: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
         if (KeyboardEvent.key === " ") {
             keyName = "Spacebar";
+        } else if (KeyboardEvent.key === "+") {
+            keyName = "Add";
+        } else if (KeyboardEvent.key === "-") {
+            keyName = "Subtract";
         } else { // e.g. ArrowDown, Enter
             keyName = KeyboardEvent.key;
         }
