@@ -116,8 +116,8 @@
         "schema": {
             "type": "number",
             "title": "Text Size",
-            "min": 10,
-            "max": 13,
+            "min": 0,
+            "max": null,
             "divisibleBy": 0.5,
             "defaultValue": 11
         },
