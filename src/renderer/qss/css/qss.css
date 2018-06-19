@@ -85,9 +85,10 @@ body {
 }
 
 .fl-qss-button .fl-qss-btnImage {
-    width: 80%;
-    height: 80%;
-    margin-left: 10%;
+    display: block;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
 }
 
 .fl-qss-button .fl-qss-btnImage:not([src]),

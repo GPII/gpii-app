@@ -31,7 +31,7 @@
                 incrementButton: "Larger",
                 decrementButton: "Smaller",
 
-                footerTip: "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
+                footerTip: "{that}.model.setting.widget.footerTip"
             },
             setting: {},
 
@@ -172,8 +172,15 @@
 
         value += step;
         // Handle not given min and max
-        var restrcitedValue = Math.min(value, schema.max || value);
-        restrcitedValue     = Math.max(restrcitedValue, schema.min || restrcitedValue);
+        var restrcitedValue = value;
+
+        if (fluid.isValue(schema.max)) {
+            restrcitedValue = Math.min(restrcitedValue, schema.max);
+        }
+
+        if (fluid.isValue(schema.min)) {
+            restrcitedValue = Math.max(restrcitedValue, schema.min);
+        }
 
         that.applier.change("value", restrcitedValue, null, "settingAlter");
 
