@@ -31,7 +31,7 @@
                 incrementButton: "Larger",
                 decrementButton: "Smaller",
 
-                footerTip: "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
+                footerTip: "{that}.model.setting.widget.footerTip"
             },
             setting: {},
 

@@ -110,6 +110,9 @@
         "value": 1.25,
         "tooltip": {
             "header": "Change the screen size to make everything larger/smaller."
+        },
+        "widget": {
+            "footerTip": ""
         }
     }, {
         "path": "http://registry\\.gpii\\.net/common/fontSize",
@@ -125,6 +128,9 @@
         "tooltip": {
             "header": "Change text size.",
             "body": "Works in Windows, Edge, Chrome, Firefox, MIcrosoft Office, and many other applications."
+        },
+        "widget": {
+            "footerTip": "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
         }
     }, {
         "path": "http://registry\\.gpii\\.net/common/language",
