@@ -65,7 +65,7 @@ fluid.defaults("gpii.app.common.simpleChannelListener", {
 /**
  * Registers simple IPC socket listeners for all given events. In case anything is written to
  * the channel, the corresponding event is triggered.
- *
+ * @param {Component} that - The `gpii.app.common.simpleChannelListener` instance.
  * @param {Object} events - The events to be used including the system ones.
  */
 gpii.app.common.simpleChannelListener.registerIPCListeners = function (that, events) {
@@ -77,8 +77,8 @@ gpii.app.common.simpleChannelListener.registerIPCListeners = function (that, eve
 
 /**
  * Deregisters all socket listeners for the specified events.
- *
- * @param events {Object} The events to be used.
+ * @param {Component} that - The `gpii.app.common.simpleChannelListener` instance.
+ * @param {Object} events - The events to be used.
  */
 gpii.app.common.simpleChannelListener.deregisterIPCListeners = function (that, events) {
     fluid.keys(events).forEach(that.registerIPCListener);
@@ -86,10 +86,11 @@ gpii.app.common.simpleChannelListener.deregisterIPCListeners = function (that, e
 
 
 /**
- * Registers a single IPC socket channel.
- *
- * @param channelName {String} The name of the channel to be listened to.
- * @param event {Object} The event to be fired when the channel is notified.
+ * Registers a single IPC socket channel for a given target (either `ipcMain` or
+ * `ipcRenderer`).
+ * @param {Object} ipcTarget - The target for which a channel is to be registered.
+ * @param {String} channelName - The name of the channel to be listened to.
+ * @param {Object} event - The event to be fired when the channel is notified.
  */
 gpii.app.common.simpleChannelListener.registerIPCListener = function (ipcTarget, channelName, event) {
     ipcTarget.on(channelName, function (/* event, args... */) {
@@ -99,9 +100,10 @@ gpii.app.common.simpleChannelListener.registerIPCListener = function (ipcTarget,
 
 
 /**
- * Deregisters a socket listener.
- *
- * @param channelName {String} The channel to be disconnected from.
+ * Deregisters a socket listener from a given target  (either `ipcMain` or
+ * `ipcRenderer`).
+ * @param {Object} ipcTarget - The target for which the channel should be removed.
+ * @param {String} channelName - The channel to be disconnected from.
  */
 gpii.app.common.simpleChannelListener.deregisterIPCListener = function (ipcTarget, channelName) {
     ipcTarget.removeAllListeners(channelName);

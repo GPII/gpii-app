@@ -37,7 +37,7 @@ fluid.registerNamespace("gpii.app.dialog");
  * and handles Electron objects cleanup upon destruction.
  *
  * TODO positioning
- *  Positioning of the window is relative to the bottom right corner of the screen (contrary to the 
+ *  Positioning of the window is relative to the bottom right corner of the screen (contrary to the
  *  behaviour of the Electron positioning approach) as most windows are positioned in that exact region.
  *
  * Requires:
@@ -104,8 +104,7 @@ fluid.defaults("gpii.app.dialog", {
                 args: [
                     "{that}.options.config.attrs",
                     "{that}.options.config.url",
-                    "{that}.options.config.params",
-                    "{that}.options.gradeNames"
+                    "{that}.options.config.params"
                 ]
             }
         }
@@ -216,7 +215,7 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
  * the newly created BrowserWindow
  * @return {BrowserWindow} The Electron `BrowserWindow` component
  */
-gpii.app.dialog.makeDialog = function (windowOptions, url, params, gradeNames) {
+gpii.app.dialog.makeDialog = function (windowOptions, url, params) {
     var dialog = new BrowserWindow(windowOptions);
 
     dialog.loadURL(url);
@@ -234,7 +233,7 @@ gpii.app.dialog.makeDialog = function (windowOptions, url, params, gradeNames) {
  * In case it is shown, resets the position and shows the current dialog (`BrowserWindow`).
  * The reset is needed in order to handle cases such as resolution or
  * DPI settings changes.
- * @param {Component} dialog - The diolog component to be shown
+ * @param {Component} that - The diolog component to be shown
  * @param {Boolean} isShown - Whether the window has to be shown
  * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
@@ -287,7 +286,7 @@ fluid.defaults("gpii.app.dialogWrapper", {
     },
 
     events: {
-        onDialogCreate: null,
+        onDialogCreate: null
     },
 
     invokers: {

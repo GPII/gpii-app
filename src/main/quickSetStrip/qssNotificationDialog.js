@@ -84,10 +84,11 @@ fluid.defaults("gpii.app.qssNotification", {
 });
 
 /**
- * Show the QSS notification window and sends an IPC message with
+ * Shows the QSS notification window and sends an IPC message with
  * details about what should be displayed in the notification.
- *
  * @param {Component} that - The `gpii.app.qssNotification` instance.
+ * @param {Object} notificationParams - The parameters for the notification
+ * which is to be shown.
  */
 gpii.app.qssNotification.show = function (that, notificationParams) {
     that.channelNotifier.events.onQssNotificationShown.fire(notificationParams);

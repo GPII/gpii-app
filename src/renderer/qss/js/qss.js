@@ -204,7 +204,7 @@
         var shouldShow =
             fluid.isValue(setting.schema.defaultValue) &&
             !fluid.model.diff(value, setting.schema.defaultValue) &&
-            (setting.schema.type !== "string" || setting.schema.enum.indexOf(value) >= 0);
+            (setting.schema.type !== "string" || setting.schema["enum"].indexOf(value) >= 0);
         indicatorElem.toggle(shouldShow);
     };
 

@@ -131,7 +131,11 @@ fluid.defaults("gpii.app.qss", {
 });
 
 /**
- * Show the window in case QSS is not disabled.
+ * In case it is not disabled, the QSS will be shown.
+ * @param {Component} that - The `gpii.app.qss` instance.
+ * @param {Object} params - The parameters which should be passed to the renderer
+ * part of the QSS. These may, for example, inform the renderer if the QSS was
+ * opened via an ArrowLeft/ArrowRight key or using the global shortcut.
  */
 gpii.app.qss.show = function (that, params) {
     if (!that.options.disabled) {

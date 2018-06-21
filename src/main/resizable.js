@@ -130,7 +130,7 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
     // `display-metrics-changed` event is fired in which case the changedMetrics argument
     // will not include the `scaleFactor` string. For more information please take a look
     // at https://issues.gpii.net/browse/GPII-2890.
-    // 
+    //
     // Electron BrowserWindows are not resized automatically on Display Metrics Changes, so
     // manual resizing is necessary.
     // On the other resizing an Electron BrowserWindow the passed width and height values are altered

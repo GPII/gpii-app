@@ -16,8 +16,6 @@
 
 var fluid = require("infusion");
 
-var gpii = fluid.registerNamespace("gpii");
-
 require("../dialog.js");
 
 fluid.defaults("gpii.app.qssMorePanel", {

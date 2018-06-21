@@ -96,9 +96,9 @@
 
 
     /**
-     * Sets text to dom elements using jQuery.
-     * Text is added to an element ONLY if there exist
-     * a message with the same name as the element's selector property.
+     * Sets (rich) text to dom elements using jQuery.
+     * Text is added to an element ONLY if a message with the same name as the element's
+     * selector property exists.
      * Example:
      *  selector - { signInHeader: ".flc-signInHeader" }
      *  uses a message of the type - { messages: { signInHeader: "Header text" } }
@@ -106,6 +106,9 @@
      * @param {Component} that - The `gpii.psp.signIn` instance.
      * @param {Object} selectors - The viewComponent's selectors
      * @param {Object} messages - The translated text
+     * @param {Boolean} enableRichText - Whether the messages can include rich text (e.g.
+     * formatting markup). If `true`, measures will be taken to prevent possible scripts
+     * in the message from executing.
      */
     gpii.psp.selectorsTextRenderer.renderText = function (that, selectors, messages, enableRichText) {
         if (!messages) {

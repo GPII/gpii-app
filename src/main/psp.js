@@ -325,7 +325,11 @@ gpii.app.psp.show = function (psp) {
 };
 
 /**
- * Handle PSPWindow's blur event, which is fired when the window loses focus
+ * Handle PSPWindow's blur event which is fired when the window loses focus. The PSP
+ * will be closed only if this is the user's preference and there is no pending change
+ * for a setting whose liveness is "manualRestart".
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
  */
 gpii.app.psp.handleBlur = function (psp, settingsBroker) {
     var isShown = psp.model.isShown,
@@ -451,7 +455,7 @@ gpii.app.psp.resize = function (psp, width, contentHeight, minHeight, heightOffs
  * the newly created `BrowserWindow`.
  * @return {Object} The created Electron `BrowserWindow`
  */
-gpii.app.psp.makePSPWindow = function (windowOptions, params, gradeNames) {
+gpii.app.psp.makePSPWindow = function (windowOptions, params) {
     var pspWindow = new BrowserWindow(windowOptions);
 
     var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
