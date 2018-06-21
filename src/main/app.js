@@ -165,6 +165,11 @@ fluid.defaults("gpii.app", {
                 model: {
                     preferences: "{app}.model.preferences",
                     theme: "{app}.model.theme"
+                },
+                listeners: {
+                    "{qss}.events.onQssPspOpen": {
+                        func: "{that}.show"
+                    }
                 }
             }
         },

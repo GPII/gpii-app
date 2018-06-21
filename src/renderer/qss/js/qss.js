@@ -327,8 +327,24 @@
         gradeNames: ["gpii.qss.buttonPresenter"],
         attrs: {
             "aria-label": "Morphic settings panel"
+        },
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.keyInButtonPresenter.activate",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
+            }
         }
     });
+
+    gpii.qss.keyInButtonPresenter.activate = function (that, container, qssList, activationParams) {
+        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+        qssList.events.onPSPOpen.fire(that.model.messages.notification);
+    };
 
     fluid.defaults("gpii.qss.closeButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
@@ -419,7 +435,8 @@
             onButtonMouseLeave: null,
 
             onSettingAltered: null,
-            onNotificationRequired: null
+            onNotificationRequired: null,
+            onPSPOpen: null
         },
 
         invokers: {
@@ -536,7 +553,8 @@
                         onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave",
 
                         onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered",
-                        onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired"
+                        onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired",
+                        onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
                     }
                 }
             }

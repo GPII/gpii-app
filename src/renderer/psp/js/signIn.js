@@ -104,6 +104,13 @@
                     "{that}.dom.emailTextInput",
                     "{that}.dom.passwordInput"
                 ]
+            },
+            "onCreate.addFocusListener": {
+                funcName: "gpii.psp.signIn.addFocusListener",
+                args: ["{that}.dom.emailTextInput"]
+            },
+            "onDestroy.removeFocusListener": {
+                funcName: "gpii.psp.signIn.removeFocusListener"
             }
         },
 
@@ -135,6 +142,18 @@
             }
         }
     });
+
+    gpii.psp.signIn.addFocusListener = function (emailInput) {
+        jQuery(window).on("focus.signIn", function () {
+            if (emailInput.is(":visible")) {
+                emailInput.focus();
+            }
+        });
+    };
+
+    gpii.psp.signIn.removeFocusListener = function () {
+        jQuery(window).off("focus.signIn");
+    };
 
 
     /**

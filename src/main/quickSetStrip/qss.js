@@ -55,7 +55,8 @@ fluid.defaults("gpii.app.qssWrapper", {
 
     events: {
         onSettingUpdated: null,
-        onPreferencesUpdated: null
+        onPreferencesUpdated: null,
+        onQssPspOpen: null
     },
 
     listeners: {
@@ -110,6 +111,9 @@ fluid.defaults("gpii.app.qssWrapper", {
                         args: [
                             "{arguments}.0"  // notificationParams
                         ]
+                    },
+                    "{channelListener}.events.onQssPspOpen": {
+                        func: "{qssWrapper}.events.onQssPspOpen.fire"
                     }
                 },
                 modelListeners: {
