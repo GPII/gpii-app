@@ -259,7 +259,7 @@
      *
      * @param {jQuery} target - The DOM element which
      * positioning metrics are needed.
-     * @returns {{width: Number, height: Number, offsetRight}}
+     * @returns {{width: Number, height: Number, offsetRight: Number}}
      */
     gpii.qss.getElementMetrics = function (target) {
         return {
