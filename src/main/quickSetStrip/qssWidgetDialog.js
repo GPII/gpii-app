@@ -39,7 +39,7 @@ fluid.defaults("gpii.app.qssWidget", {
         fileSuffixPath: "qssWidget/index.html"
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssWidget"],
+    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssNotification", "gpii.app.qssWidget"],
 
     events: {
         onSettingUpdated: null,

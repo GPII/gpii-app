@@ -92,6 +92,20 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     };
 };
 
+gpii.browserWindow.computeCentralWindowPosition = function (width, height) {
+    var screenSize = require("electron").screen.getPrimaryDisplay().workAreaSize,
+        desiredX = Math.ceil((screenSize.width - width) / 2),
+        desiredY = Math.ceil((screenSize.height - height) / 2);
+
+    desiredX = Math.max(desiredX, 0);
+    desiredY = Math.max(desiredY, 0);
+
+    return {
+        x: desiredX,
+        y: desiredY
+    };
+};
+
 
 /**
  * Gets the desired bounds (i.e. the coordinates and the width and
@@ -114,6 +128,17 @@ gpii.browserWindow.getDesiredWindowBounds = function (width, height, offsetY, of
 
     console.log("Desired Bounds: ", arguments, size, position);
 
+    return {
+        x:      position.x,
+        y:      position.y,
+        width:  size.width,
+        height: size.height
+    };
+};
+
+gpii.browserWindow.getCenterWindowBounds = function (width, height) {
+    var position = gpii.browserWindow.computeCentralWindowPosition(width, height),
+        size = gpii.browserWindow.computeWindowSize(width, height);
     return {
         x:      position.x,
         y:      position.y,

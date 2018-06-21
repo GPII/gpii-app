@@ -48,7 +48,12 @@
             item: {
                 value: null
             },
-            value: "{that}.model.item.value"
+            value: "{that}.model.item.value",
+            messages: {
+                notification: {
+                    description: "Most applications will need to be re-started in order for the %settingTitle setting to work in that application."
+                }
+            }
         },
 
         modelListeners: {
@@ -59,6 +64,10 @@
             }, {
                 funcName: "gpii.qss.buttonPresenter.updateChangeIndicator",
                 args: ["{that}.dom.changeIndicator", "{that}.model.item", "{change}.value"]
+            }, {
+                funcName: "gpii.qss.buttonPresenter.showNotification",
+                args: ["{that}", "{list}"],
+                excludeSource: "init"
             }]
         },
 
@@ -230,6 +239,20 @@
             focusManager.focusElement(container, true);
         }
     };
+
+    gpii.qss.buttonPresenter.showNotification = function (that, qssList) {
+        if (that.model.item.restartWarning) {
+            var messages = that.model.messages,
+                description = fluid.stringTemplate(messages.notification.description, {
+                    settingTitle: that.model.item.schema.title
+                }),
+                notificationParams = fluid.extend({}, messages.notification, {
+                    description: description
+                });
+            qssList.events.onNotificationRequired.fire(notificationParams);
+        }
+    };
+
     /**
      * Return the metrics of a clicked element. These can be used
      * for positioning. Note that the position is relative to the right.
@@ -340,6 +363,33 @@
         }
     });
 
+    fluid.defaults("gpii.qss.saveButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        model: {
+            messages: {
+                notification: {
+                    description: "Current Settings Saved"
+                }
+            }
+        },
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.saveButtonPresenter.activate",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
+            }
+        }
+    });
+
+    gpii.qss.saveButtonPresenter.activate = function (that, container, qssList, activationParams) {
+        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+        qssList.events.onNotificationRequired.fire(that.model.messages.notification);
+    };
+
     /**
      * Represents the list of qss settings. It renders the settings and listens
      * for events on them.
@@ -368,7 +418,8 @@
             onButtonMouseEnter: null,
             onButtonMouseLeave: null,
 
-            onSettingAltered: null
+            onSettingAltered: null,
+            onNotificationRequired: null
         },
 
         invokers: {
@@ -390,7 +441,8 @@
             return "gpii.qss.closeButtonPresenter";
         case "keyIn":
             return "gpii.qss.keyInButtonPresenter";
-
+        case "save":
+            return "gpii.qss.saveButtonPresenter";
         default:
             return "gpii.qss.buttonPresenter";
         };
@@ -483,7 +535,8 @@
                         onQssButtonMouseEnter: "{quickSetStripList}.events.onButtonMouseEnter",
                         onQssButtonMouseLeave: "{quickSetStripList}.events.onButtonMouseLeave",
 
-                        onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered"
+                        onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered",
+                        onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired"
                     }
                 }
             }

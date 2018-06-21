@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>QSS Notification</title>
+        <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
+        <link rel="stylesheet" href="../psp/css/button.css">
+        <link rel="stylesheet" href="../common/css/dialog.css">
+        <link rel="stylesheet" href="../common/css/titlebar.css">
+        <link rel="stylesheet" href="../common/css/heightObservable.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+
+        <script type="text/javascript" src="js/qssNotification.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+
+        <script type="text/javascript" src="../common/js/heightObservable.js"></script>
+
+        <script type="text/javascript" src="../psp/js/widgets.js"></script>
+        <script type="text/javascript" src="../common/js/titlebar.js"></script>
+        <script type="text/javascript" src="../../common/utils.js"></script>
+        <script type="text/javascript" src="../../common/channelUtils.js"></script>
+
+        <script type="text/javascript" src="../common/js/utils.js"></script>
+        <script type="text/javascript" src="../common/js/channelUtils.js"></script>
+
+        <script type="text/javascript" src="../../common/messageBundles.js"></script>
+        <script type="text/javascript" src="../common/js/messageBundles.js"></script>
+    </head>
+    <body>
+        <div class="flc-qssNotification fl-dialog fl-dialog-fullScreen">
+            <div class="fl-dialog-contentWrapper">
+                <div class="flc-titlebar fl-titlebar">
+                    <span class="flc-title fl-appName"></span>
+                    <button class="flc-closeBtn fl-closeBtn btn btn-regular">&#x2715;</button>
+                </div>
+                <div class="flc-dialog-content fl-dialog-content fl-scrollable">
+                    <div class="flc-dialog-contentText" fl-dialog-contentText">
+                        <div class="flc-qssNotification-description fl-subtitle"></div>
+                        <div class="fl-dialog-controls">
+                            <button class="flc-qssNotification-dismissButton btn fl-btn">
+                                <span class="flc-btnLabel"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="fl-dialog-footer"></div>
+            </div>
+        </div>
+    </body>
+</html>

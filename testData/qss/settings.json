@@ -149,7 +149,8 @@
         "tooltip": {
             "header": "Change language.",
             "body": "Works in Windows, Edge, and many other applications."
-        }
+        },
+        "restartWarning": true
     }, {
         "path": "save",
         "schema": {

@@ -21,6 +21,7 @@ var gpii = fluid.registerNamespace("gpii");
 require("./qssDialog.js");
 require("./qssTooltipDialog.js");
 require("./qssWidgetDialog.js");
+require("./qssNotificationDialog.js");
 
 
 /**
@@ -87,19 +88,27 @@ fluid.defaults("gpii.app.qssWrapper", {
                     onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
                 },
                 listeners: {
-                    "{channelListener}.events.onQssButtonActivated": {
+                    "{channelListener}.events.onQssButtonActivated": [{
                         func: "{qssWidget}.toggle",
                         args: [
                             "{arguments}.0", // setting
                             "{arguments}.1", // elementMetrics
                             "{arguments}.2"  // activationParams
                         ]
-                    },
+                    }, {
+                        func: "{qssNotification}.hide"
+                    }],
                     onQssSettingAltered: {
                         func: "{qssWrapper}.alterSetting",
                         args: [
                             "{arguments}.0", // updatedSetting
                             "qss"
+                        ]
+                    },
+                    "{channelListener}.events.onQssNotificationRequired": {
+                        func: "{qssNotification}.show",
+                        args: [
+                            "{arguments}.0"  // notificationParams
                         ]
                     }
                 },
@@ -174,6 +183,9 @@ fluid.defaults("gpii.app.qssWrapper", {
                     }
                 }
             }
+        },
+        qssNotification: {
+            type: "gpii.app.qssNotification"
         }
     },
 
