@@ -52,7 +52,7 @@ fluid.defaults("gpii.app.qss", {
         onSettingUpdated: null
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qss"],
+    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
 
     components: {
         channelNotifier: {
@@ -84,6 +84,7 @@ fluid.defaults("gpii.app.qss", {
 
                     onQssSettingAltered: "{qss}.events.onQssSettingAltered",
                     onQssNotificationRequired: null,
+                    onQssMorePanelRequired: null,
                     onQssPspOpen: null
                 },
 

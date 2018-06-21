@@ -177,7 +177,7 @@ fluid.defaults("gpii.app.psp", {
     heightOffset: null,
     offScreenHide: true,
 
-    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.qssNotification", "gpii.app.psp"],
+    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.psp"],
 
     sounds: {
         keyedIn: "keyedIn.mp3",

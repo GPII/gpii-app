@@ -441,3 +441,33 @@ gpii.app.dialog.delayedShow.hide = function (that) {
 
     that._hide();
 };
+
+fluid.defaults("gpii.app.centeredDialog", {
+    gradeNames: ["gpii.app.dialog"],
+
+    invokers: {
+        positionWindow: {
+            funcName: "gpii.app.centeredDialog.positionWindow",
+            args: ["{that}.dialog"]
+        },
+        resize: {
+            funcName: "gpii.app.centeredDialog.resize",
+            args: [
+                "{that}",
+                "{arguments}.0", // windowWidth
+                "{arguments}.1"  // windowHeight
+            ]
+        }
+    }
+});
+
+gpii.app.centeredDialog.positionWindow = function (dialog) {
+    var dialogSize = dialog.getSize(),
+        position = gpii.browserWindow.computeCentralWindowPosition(dialogSize[0], dialogSize[1]);
+    dialog.setPosition(position.x, position.y);
+};
+
+gpii.app.centeredDialog.resize = function (that, windowWidth, windowHeight) {
+    var bounds = gpii.browserWindow.getCenterWindowBounds(windowWidth, windowHeight);
+    that.dialog.setBounds(bounds);
+};

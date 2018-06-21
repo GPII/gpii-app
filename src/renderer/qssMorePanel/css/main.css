@@ -1,0 +1,14 @@
+body {
+    user-select: none;
+}
+
+.fl-dialog .fl-dialog-content {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.fl-dialog .fl-dialog-content .fl-qssMorePanel-logo {
+    display: block;
+    margin: 0 auto;
+}

@@ -93,7 +93,7 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
 };
 
 gpii.browserWindow.computeCentralWindowPosition = function (width, height) {
-    var screenSize = require("electron").screen.getPrimaryDisplay().workAreaSize,
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
         desiredX = Math.ceil((screenSize.width - width) / 2),
         desiredY = Math.ceil((screenSize.height - height) / 2);
 

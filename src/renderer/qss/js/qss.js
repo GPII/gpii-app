@@ -406,6 +406,26 @@
         qssList.events.onNotificationRequired.fire(that.model.messages.notification);
     };
 
+    fluid.defaults("gpii.qss.moreButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.moreButtonPresenter.activate",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
+            }
+        }
+    });
+
+    gpii.qss.moreButtonPresenter.activate = function (that, container, qssList, activationParams) {
+        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+        qssList.events.onMorePanelRequired.fire();
+    };
+
     /**
      * Represents the list of qss settings. It renders the settings and listens
      * for events on them.
@@ -436,6 +456,7 @@
 
             onSettingAltered: null,
             onNotificationRequired: null,
+            onMorePanelRequired: null,
             onPSPOpen: null
         },
 
@@ -460,6 +481,8 @@
             return "gpii.qss.keyInButtonPresenter";
         case "save":
             return "gpii.qss.saveButtonPresenter";
+        case "more":
+            return "gpii.qss.moreButtonPresenter";
         default:
             return "gpii.qss.buttonPresenter";
         };
@@ -554,6 +577,7 @@
 
                         onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered",
                         onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired",
+                        onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
                         onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
                     }
                 }

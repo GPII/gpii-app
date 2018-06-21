@@ -22,6 +22,7 @@ require("./qssDialog.js");
 require("./qssTooltipDialog.js");
 require("./qssWidgetDialog.js");
 require("./qssNotificationDialog.js");
+require("./qssMorePanel.js");
 
 
 /**
@@ -98,6 +99,8 @@ fluid.defaults("gpii.app.qssWrapper", {
                         ]
                     }, {
                         func: "{qssNotification}.hide"
+                    }, {
+                        func: "{qssMorePanel}.hide"
                     }],
                     onQssSettingAltered: {
                         func: "{qssWrapper}.alterSetting",
@@ -111,6 +114,9 @@ fluid.defaults("gpii.app.qssWrapper", {
                         args: [
                             "{arguments}.0"  // notificationParams
                         ]
+                    },
+                    "{channelListener}.events.onQssMorePanelRequired": {
+                        func: "{qssMorePanel}.show"
                     },
                     "{channelListener}.events.onQssPspOpen": {
                         func: "{qssWrapper}.events.onQssPspOpen.fire"
@@ -190,6 +196,9 @@ fluid.defaults("gpii.app.qssWrapper", {
         },
         qssNotification: {
             type: "gpii.app.qssNotification"
+        },
+        qssMorePanel: {
+            type: "gpii.app.qssMorePanel"
         }
     },
 
