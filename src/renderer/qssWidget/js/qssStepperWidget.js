@@ -26,12 +26,25 @@
     fluid.defaults("gpii.qssWidget.stepper", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
+        members: {
+            boundReachedHits: 0
+        },
+
+        specialErrorBoundHitTries: 2,
+
         model: {
             messages: {
                 incrementButton: "Larger",
                 decrementButton: "Smaller",
 
-                footerTip: "{that}.model.setting.widget.footerTip"
+                footerTip: "{that}.model.setting.widget.footerTip",
+
+                upperBoundError: {
+                    description: "Highest value reached."
+                },
+                lowerBoundError: {
+                    description: "Lowest value reached."
+                }
             },
             setting: {},
 
@@ -63,7 +76,27 @@
             }
         },
 
+        events: {
+            onLowerBoundReached: null,
+            onUpperBoundReached: null
+        },
+
         listeners: {
+            onLowerBoundReached: {
+                funcName: "gpii.qssWidget.stepper.handleBoundReached",
+                args: [
+                    "{that}",
+                    "{that}.model.messages.lowerBoundError"
+                ]
+            },
+            onUpperBoundReached: {
+                funcName: "gpii.qssWidget.stepper.handleBoundReached",
+                args: [
+                    "{that}",
+                    "{that}.model.messages.upperBoundError"
+                ]
+            },
+
             "onCreate.attachAnimationClearer": {
                 funcName: "gpii.qssWidget.stepper.clearElementsAnimation",
                 args: [
@@ -167,14 +200,41 @@
     });
 
 
+    gpii.qssWidget.stepper.handleBoundReached = function (that, errorMessage) {
+        // require notification
+        if (that.boundReachedHits >= that.options.specialErrorBoundHitTries) {
+            // play error sound
+            gpii.psp.playSound(that.options.sounds.boundReached);
+
+            // request notification pop-up
+            that.events.onNotificationRequired.fire(errorMessage);
+        }
+    };
+
     gpii.qssWidget.stepper.activateIncButton = function (that, button) {
-        var changeError = that.increment();
-        that.animateButton(button, changeError);
+        var boundReached = that.increment();
+        that.animateButton(button, boundReached);
+        if (boundReached) {
+            // register bound hit
+            that.boundReachedHits += 1;
+
+            that.events.onUpperBoundReached.fire();
+        } else {
+            that.boundReachedHits = 0;
+        }
     };
 
     gpii.qssWidget.stepper.activateDecButton = function (that, button) {
-        var changeError = that.decrement();
-        that.animateButton(button, changeError);
+        var boundReached = that.decrement();
+        that.animateButton(button, boundReached);
+        if (boundReached) {
+            // register bound hit
+            that.boundReachedHits += 1;
+
+            that.events.onLowerBoundReached.fire();
+        } else {
+            that.boundReachedHits = 0;
+        }
     };
 
     /**

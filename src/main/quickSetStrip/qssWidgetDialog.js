@@ -31,6 +31,16 @@ fluid.defaults("gpii.app.qssWidget", {
     },
 
     config: {
+        params: {
+            sounds: {
+                boundReached: {
+                    expander: {
+                        funcName: "{assetsManager}.resolveAssetPath",
+                        args: ["{that}.options.sounds.boundReachedErrorSound"]
+                    }
+                }
+            }
+        },
         attrs: {
             width: 300,
             height: 400,
@@ -41,10 +51,15 @@ fluid.defaults("gpii.app.qssWidget", {
 
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssNotification", "gpii.app.qssWidget"],
 
+    sounds: {
+        boundReachedErrorSound: "boundReachedError.mp3"
+    },
+
     events: {
         onSettingUpdated: null,
         onQssWidgetToggled: null,
-        onQssWidgetSettingAltered: null
+        onQssWidgetSettingAltered: null,
+        onQssWidgetNotificationRequired: null
     },
 
     components: {
@@ -61,6 +76,7 @@ fluid.defaults("gpii.app.qssWidget", {
             options: {
                 events: {
                     onQssWidgetClosed: null,
+                    onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
                     onQssWidgetBlur: null
                 },
