@@ -26,7 +26,7 @@
      * It supplies interface (through invokers) for communication in direction to
      * and events for data coming from the Main process.
      */
-    fluid.defaults("gpii.errorDialog.channel", {
+    fluid.defaults("gpii.psp.errorDialog.channel", {
         gradeNames: ["fluid.component"],
 
         events: {
@@ -35,14 +35,14 @@
 
         listeners: {
             "onCreate.registerChannel": {
-                funcName: "gpii.errorDialog.channel.register",
+                funcName: "gpii.psp.errorDialog.channel.register",
                 args: "{that}.events"
             }
         },
 
         invokers: {
             notify: {
-                funcName: "gpii.errorDialog.channel.notifyChannel"
+                funcName: "gpii.psp.errorDialog.channel.notifyChannel"
             }
         }
     });
@@ -50,24 +50,36 @@
 
     /**
      * Sends a message to the main process.
-     * @param {...Any} The channel to be notified and the parameters to be passed
+     * @param {...Any} The - channel to be notified and the parameters to be passed
      * with the message.
      */
-    gpii.errorDialog.channel.notifyChannel = function () {
+    gpii.psp.errorDialog.channel.notifyChannel = function () {
         ipcRenderer.send.apply(null, arguments);
     };
 
     /**
      * Registers for events from the Main process.
-     * @param events {Object} Events map.
+     * @param {Object} events - Events map.
      */
-    gpii.errorDialog.channel.register = function (events) {
+    gpii.psp.errorDialog.channel.register = function (events) {
         ipcRenderer.on("onErrorUpdate", function (event, config) {
             events.onConfigReceived.fire(config);
         });
     };
 
-    fluid.defaults("gpii.errorDialog.button", {
+
+    /**
+     * Defines a generic button that is represented
+     * by its label once clicked. This is useful in case
+     * multiple dynamic buttons are created and its actions
+     * are handled from some distant logic.
+     *
+     * This is still an idea, as errors are not yet received from
+     * the API as of GPII-1313. It would probably be better to use
+     * a different identifier from `label` in case its uniqueness is not
+     * guaranteed.
+     */
+    fluid.defaults("gpii.psp.errorDialog.button", {
         gradeNames: "gpii.psp.widgets.button",
         model: {
             label: null
@@ -80,6 +92,7 @@
                 args: "{that}.model.label"
             }
         },
+        // Hide buttons that are not used
         modelListeners: {
             label: {
                 this: "{that}.container",
@@ -99,10 +112,13 @@
      * message. That is why this component has the `gpii.psp.heightObservable`
      * grade specified.
      */
-    fluid.defaults("gpii.errorDialog", {
+    fluid.defaults("gpii.psp.errorDialog", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
 
         model: {
+            messages: {
+                titlebarAppName: null
+            },
             title:   null,
             subhead: null,
             details: null,
@@ -119,16 +135,17 @@
         errorCodeFormat: "Message %errCode",
 
         selectors: {
-            btn1:   ".flc-btn-1",
-            btn2:   ".flc-btn-2",
-            btn3:   ".flc-btn-3",
+            btn1:     ".flc-btn-1",
+            btn2:     ".flc-btn-2",
+            btn3:     ".flc-btn-3",
 
             titlebar: ".flc-titlebar",
 
-            title:   ".flc-title",
-            subhead: ".flc-subhead",
-            details: ".flc-details",
-            errCode: ".flc-errCode"
+            title:    ".flc-contentTitle",
+            subhead:  ".flc-contentSubhead",
+            details:  ".flc-contentDetails",
+
+            errCode:  ".flc-errCode"
         },
 
         events: {
@@ -185,7 +202,7 @@
 
         components: {
             channel: {
-                type: "gpii.errorDialog.channel",
+                type: "gpii.psp.errorDialog.channel",
                 options: {
                     listeners: {
                         onConfigReceived: {
@@ -200,8 +217,10 @@
                 type: "gpii.psp.titlebar",
                 container: "{that}.dom.titlebar",
                 options: {
-                    labels: {
-                        appName: "GPII Error"
+                    model: {
+                        messages: {
+                            title: "{errorDialog}.model.messages.titlebarAppName"
+                        }
                     },
                     listeners: {
                         "onClose": "{errorDialog}.events.onButtonClicked"
@@ -213,7 +232,7 @@
              * Dialog Controls
              */
             btnRight: {
-                type: "gpii.errorDialog.button",
+                type: "gpii.psp.errorDialog.button",
                 container: "{that}.dom.btn1",
                 options: {
                     model: {
@@ -222,7 +241,7 @@
                 }
             },
             btnMid: {
-                type: "gpii.errorDialog.button",
+                type: "gpii.psp.errorDialog.button",
                 container: "{that}.dom.btn2",
                 options: {
                     model: {
@@ -231,7 +250,7 @@
                 }
             },
             btnLeft: {
-                type: "gpii.errorDialog.button",
+                type: "gpii.psp.errorDialog.button",
                 container: "{that}.dom.btn3",
                 options: {
                     model: {

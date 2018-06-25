@@ -36,6 +36,14 @@ npm run dev
 Ensure that your virtual box is up and running, then open a terminal (in the VM), go to the folder with gpii-app and run the test script:
 
 ```
-cd c:\vagrant
+cd v:\
 npm test
+```
+
+This will also instrument the code and generate a coverage report in the `reports` subdirectory.  If you want to run
+the tests without collecting code coverage data, you can use commands like the following instead:
+
+```
+cd v:\
+npm run test:noCoverage
 ```

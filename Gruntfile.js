@@ -15,6 +15,13 @@ module.exports = function (grunt) {
                 srderr: true,
                 failOnError: true
             }
+        },
+        compileMessages: {
+            defaults: {
+                messageCompilerPath: "./messageBundlesCompiler.js",
+                messagesDirs: ["./messageBundles"],
+                resultFilePath: "./build/gpii-app-messageBundles.json"
+            }
         }
     });
 
@@ -24,4 +31,13 @@ module.exports = function (grunt) {
 
     grunt.registerTask("default", ["lint"]);
     grunt.registerTask("lint", "Run eslint and jsonlint", ["eslint", "jsonlint"]);
+
+
+    grunt.registerMultiTask("compileMessages", function () {
+        var compileMessageBundles = require(this.data.messageCompilerPath).compileMessageBundles;
+
+        var compiledMessageBundles = compileMessageBundles(this.data.messagesDirs, "en", {"json": JSON});
+
+        grunt.file.write(this.data.resultFilePath, JSON.stringify(compiledMessageBundles, null, 4));
+    });
 };

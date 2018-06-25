@@ -19,6 +19,7 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var ipcMain = require("electron").ipcMain;
 
+require("./dialog.js");
 require("./utils.js");
 
 /**
@@ -26,7 +27,7 @@ require("./utils.js");
  * electron `BrowserWindow` error dialog.
  */
 fluid.defaults("gpii.app.errorDialog.channel", {
-    gradeNames: ["fluid.component"],
+    gradeNames: ["gpii.app.i18n.channel"],
 
     events: {
         onErrorDialogCreated: null,
@@ -58,7 +59,7 @@ fluid.defaults("gpii.app.errorDialog.channel", {
 
 /**
  * Register for events from the managed Electron `BrowserWindow` (the renderer process).
- * @param that {Component} The `gpii.app.errorDialog.channel` instance.
+ * @param {Component} that - The `gpii.app.errorDialog.channel` instance.
  */
 gpii.app.errorDialog.channel.register = function (that) {
     ipcMain.on("onErrorDialogCreated", function () {
@@ -95,7 +96,7 @@ fluid.defaults("gpii.app.errorDialog", {
     config: {
         attrs: {
             width: 400,
-            height: 100, // This is to be changed with respect to the content needs
+            height: 250, // This is to be changed with respect to the content needs
 
             title:   null,
             subhead: null,
@@ -132,6 +133,7 @@ fluid.defaults("gpii.app.errorDialog", {
         }
     },
 
+
     invokers: {
         show: {
             funcName: "gpii.app.errorDialog.show",
@@ -151,19 +153,19 @@ fluid.defaults("gpii.app.errorDialog", {
  * Update the current state of the error dialog, and show it.
  * Update is required as we're using a single Electron `BrowserWindow`
  *
- * @param that {Component} The `gpii.app.errorDialog` component
- * @param errorConfig         {Object} Options for error dialog
- * @param errorConfig.title   {String} The error title
- * @param errorConfig.subhead {String} The error subheader
- * @param errorConfig.details {String} The details for the error
- * @param errorConfig.errCode {String} The error code
+ * @param {Component} that - The `gpii.app.errorDialog` component
+ * @param {Object} errorConfig - Options for error dialog
+ * @param {String} errorConfig.title - The error title
+ * @param {String} errorConfig.subhead - The error subheader
+ * @param {String} errorConfig.details - The details for the error
+ * @param {String} errorConfig.errCode - The error code
  */
 gpii.app.errorDialog.show = function (that, errorConfig) {
     that.dialogChannel.update(errorConfig);
     that.applier.change("isShown", true);
 };
 
-/**
+/*
  * A wrapper for the creation of error dialogs. See the documentation of the
  * `gpii.app.dialogWrapper` grade for more information.
  */

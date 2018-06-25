@@ -24,13 +24,18 @@
         selectors: {
             helpBtn: ".flc-helpBtn"
         },
+        model: {
+            messages: {
+                help: null
+            }
+        },
         components: {
             helpBtn: {
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.helpBtn",
                 options: {
                     model: {
-                        label: "{footer}.options.labels.help"
+                        label: "{footer}.model.messages.help"
                     },
                     invokers: {
                         "onClick": "gpii.psp.openUrl({footer}.options.urls.help)"
@@ -40,16 +45,13 @@
         },
         urls: {
             help: "http://pmt.gpii.org/help"
-        },
-        labels: {
-            help: "Help"
         }
     });
 
     /**
      * Opens the passed url externally using the default browser for the
      * OS (or set by the user).
-     * @param url {String} The url to open externally.
+     * @param {String} url - The url to open externally.
      */
     gpii.psp.openUrl = function (url) {
         shell.openExternal(url);

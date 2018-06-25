@@ -24,6 +24,7 @@
         <script type="text/javascript" src="js/widgets.js"></script>
         <script type="text/javascript" src="../common/js/titlebar.js"></script>
         <script type="text/javascript" src="../common/js/heightObservable.js"></script>
+        <script type="text/javascript" src="../common/js/messageBundles.js"></script>
         <script type="text/javascript" src="js/exemplars.js"></script>
         <script type="text/javascript" src="js/settingsPanel.js"></script>
         <script type="text/javascript" src="js/splash.js"></script>
@@ -34,6 +35,8 @@
         <script type="text/javascript" src="js/mainWindow.js"></script>
         <script type="text/javascript" src="js/psp.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="../../common/messageBundles.js"></script>
+
     </head>
     <body id="flc-body">
         <style id="flc-theme" type="text/css">
@@ -41,18 +44,18 @@
                 --main-color: #0078d7;
             }
         </style>
-        <div class="flc-splash">
+        <div class="flc-splash fl-splash">
             <div class="logo">
-                <div class="flc-splashMsg">Not keyed in</div>
+                <div class="flc-heading fl-heading"></div>
                 <img src="../../icons/gpii-icon-balloon.png">
-                <h3>GPII - Personal Settings Panel</h3>
+                <h3 class="flc-fullAppName"></h3>
             </div>
         </div>
 
         <div class="fl-contentWrapper">
             <div id="flc-titlebar" class="fl-titlebar">
                 <img src="../../icons/gpii-icon-balloon.png">
-                <span class="flc-appName fl-appName"></span>
+                <span class="flc-title fl-appName"></span>
                 <button class="flc-closeBtn fl-closeBtn btn btn-regular">&#x2715;</button>
                 <div class="clear-both"></div>
             </div>

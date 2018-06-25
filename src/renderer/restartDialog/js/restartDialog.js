@@ -69,7 +69,7 @@
 
     /**
      * Sends a message to the main process.
-     * @param {...Any} The channel to be notified and the parameters to be passed
+     * @param {...Any} The - channel to be notified and the parameters to be passed
      * with the message.
      */
     gpii.restartDialog.channel.notifyChannel = function () {
@@ -78,8 +78,8 @@
 
     /**
      * Registers for events from the Main process.
-     * @param events {Object} Events map
-     * @param events.onPendingChangesReceived {Object} Event related to pending
+     * @param {Object} events - Events map
+     * @param {Object} events.onPendingChangesReceived - Event related to pending
      * changes received from the Main process
      */
     gpii.restartDialog.channel.register = function (events) {
@@ -95,6 +95,10 @@
      */
     fluid.defaults("gpii.restartDialog.restartWarning", {
         gradeNames: ["gpii.psp.baseRestartWarning"],
+        model: {
+            restartTitle: null,
+            restartQuestion: null
+        },
 
         selectors: {
             title: ".flc-title",
@@ -107,32 +111,22 @@
             solutionName: "<li>%solutionName</li>"
         },
 
-        listeners: {
-            "onCreate.setText": {
-                this: "{that}.dom.title",
-                method: "text",
-                args: "{that}.options.labels.restartTitle"
-            },
-            "onCreate.setQuestion": {
-                this: "{that}.dom.restartQuestion",
-                method: "text",
-                args: "{that}.options.labels.restartQuestion"
-            }
-        },
 
         modelListeners: {
+            "messages.restartTitle": {
+                this: "{that}.dom.title",
+                method: "text",
+                args: "{change}.value"
+            },
+            "messages.restartQuestion": {
+                this: "{that}.dom.restartQuestion",
+                method: "text",
+                args: "{change}.value"
+            },
             solutionNames: {
                 funcName: "gpii.restartDialog.restartWarning.modifySolutionNamesList",
                 args: ["{that}", "{that}.dom.solutionNames"]
             }
-        },
-
-        labels: {
-            restartTitle: "Changes require restart",
-            // Simple override of `gpii.psp.restartWarning`'s labels
-            osRestartText: "Windows needs to restart to apply your changes.",
-            restartText: "In order to be applied, some of the changes you made require the following applications to restart:",
-            restartQuestion: "What would you like to do?"
         }
     });
 
@@ -141,8 +135,8 @@
      * corresponding DOM elements (list items) for each solution name and appends them
      * to their container. If the whole OS needs to be restarted, the function does not
      * have a visual effect.
-     * @param that {Component} The `gpii.restartDialog.restartWarning` instance.
-     * @param listElement {jQuery} A jQuery object representing the list into which the
+     * @param {Component} that - The `gpii.restartDialog.restartWarning` instance.
+     * @param {jQuery} listElement - A jQuery object representing the list into which the
      * solution name elements must be added.
      */
     gpii.restartDialog.restartWarning.modifySolutionNamesList = function (that, listElement) {
@@ -151,7 +145,7 @@
             listItemElement;
 
         listElement.empty();
-        if (solutionNames[0] === that.options.labels.os) {
+        if (solutionNames[0] === that.model.messages.osName) {
             listElement.hide();
             return;
         }
@@ -168,7 +162,7 @@
      * interactions for the require restart functionality.
      */
     fluid.defaults("gpii.restartDialog", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
+        gradeNames: ["gpii.psp.messageBundles", "gpii.psp.heightObservable", "fluid.viewComponent"],
 
         selectors: {
             titlebar: ".flc-titlebar"
@@ -225,4 +219,3 @@
         }
     });
 })(fluid);
-

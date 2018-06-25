@@ -39,6 +39,10 @@
             preferences: {
                 sets: [],
                 activeSet: null
+            },
+            messages: {
+                autosaveText: null,
+                keyOut: null
             }
         },
         events: {
@@ -54,7 +58,12 @@
             },{
                 funcName: "gpii.psp.updateActiveSetElement",
                 args: ["{that}.dom.activePreferenceSet", "{that}.model.preferences"]
-            }]
+            }],
+            "messages.autosaveText": {
+                this: "{that}.dom.autosaveText",
+                method: "text",
+                args: ["{change}.value"]
+            }
         },
         components: {
             preferenceSetPicker: {
@@ -93,7 +102,7 @@
                 container: "{that}.dom.keyOutBtn",
                 options: {
                     model: {
-                        label: "{header}.options.labels.keyOut"
+                        label: "{header}.model.messages.keyOut"
                     },
                     invokers: {
                         "onClick": "{header}.events.onKeyOut.fire"
@@ -105,16 +114,7 @@
             onPreferencesUpdated: {
                 funcName: "gpii.psp.updateHeader",
                 args: ["{that}.model.preferences.sets", "{that}.dom.preferenceSetPicker", "{that}.dom.activePreferenceSet"]
-            },
-            "onCreate.setAutosaveText": {
-                this: "{that}.dom.autosaveText",
-                method: "text",
-                args: ["{that}.options.labels.autosaveText"]
             }
-        },
-        labels: {
-            autosaveText: "Auto-save is on",
-            keyOut: "Key Out"
         }
     });
 
@@ -122,9 +122,9 @@
      * Updates the passed DOM element to contain the name of the active preference
      * set. If there is no currently active preference set (e.g. if there is no
      * keyed-in user), nothing should be displayed.
-     * @param activeSetElement {jQuery} A jQuery object representing the DOM element
+     * @param {jQuery} activeSetElement - A jQuery object representing the DOM element
      * whose text is to be updated.
-     * @param preferences {Object} An object containing all preference set, as well
+     * @param {Object} preferences - An object containing all preference set, as well
      * as information about the currently active preference set.
      */
     gpii.psp.updateActiveSetElement = function (activeSetElement, preferences) {
@@ -143,7 +143,7 @@
 
     /**
      * A function which checks if an array object holds more than one element.
-     * @param arr {Array} The array to be checked.
+     * @param {Array} arr - The array to be checked.
      * @return {Boolean} Whether the array has more than one element.
      */
     gpii.psp.hasMultipleItems = function (arr) {
@@ -155,7 +155,7 @@
      * is more than one available preference set, the type should be a dropdown.
      * Otherwise, the component should not initialize and ignore all its config
      * properties (and hence must have an emptySubcomponent type).
-     * @param preferenceSets {Array} An array of the current preference sets.
+     * @param {Array} preferenceSets - An array of the current preference sets.
      * @return {String} The type of the preferenceSetPicker subcomponent.
      */
     gpii.psp.getPreferenceSetPickerType = function (preferenceSets) {
@@ -165,11 +165,11 @@
     /**
      * Updates the DOM elements corresponding to the header component whenever new
      * preferences are received.
-     * @param preferenceSets {Array} An array containing the new preferece sets.
-     * @param preferenceSetPickerElem {jQuery} A jQuery object corresponding to the
+     * @param {Array} preferenceSets - An array containing the new preferece sets.
+     * @param {jQuery} preferenceSetPickerElem - A jQuery object corresponding to the
      * preference set dropdown (in case there are multiple preference sets, it should
      * be shown, otherwise it should be hidden).
-     * @param activePreferenceSetElem {jQuery} A jQuery object corresponding to the
+     * @param {jQuery} activePreferenceSetElem - A jQuery object corresponding to the
      * preference set label (in case there is a single preference set it should be
      * show, otherwise it should be hidden).
      */
@@ -187,7 +187,7 @@
      * A listener which is invoked whenever the preference set picker component is
      * destroyed. This function simply removes all options for the dropdown (actually
      * represented as a <select> element) from the DOM.
-     * @param container {jQuery} A jQuery object representing the parent container
+     * @param {jQuery} container - A jQuery object representing the parent container
      * of the preference set picker.
      */
     gpii.psp.onPreferenceSetPickerDestroy = function (container) {
