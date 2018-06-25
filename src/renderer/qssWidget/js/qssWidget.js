@@ -21,10 +21,16 @@
     fluid.defaults("gpii.psp.translatedQssWidget", {
         gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent"],
 
+        // may be given from the main process
+        params: {
+            sounds: null
+        },
+
         components: {
             qssWidget: {
                 type: "gpii.psp.qssWidget",
-                container: "{translatedQssWidget}.container"
+                container: "{translatedQssWidget}.container",
+                options: "{translatedQssWidget}.options.params"
             }
         }
     });
@@ -49,8 +55,11 @@
         events: {
             onWidgetBlur: null,
             onSettingUpdated: null,
-            onQssWidgetSettingAltered: null
+            onQssWidgetSettingAltered: null,
+            onQssWidgetNotificationRequired: null
         },
+
+        sounds: {},
 
         components: {
             titlebar: {
@@ -67,6 +76,10 @@
                 createOnEvent: "onSettingUpdated",
                 container: "{qssWidget}.container",
                 options: {
+                    sounds: "{qssWidget}.options.sounds",
+                    events: {
+                        onNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired"
+                    },
                     model: {
                         setting: "{qssWidget}.model.setting",
                         messages: {
@@ -150,9 +163,10 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
-                        onQssWidgetClosed: null,
-                        onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
-                        onQssWidgetBlur: "{qssWidget}.events.onWidgetBlur"
+                        onQssWidgetClosed:               null,
+                        onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
+                        onQssWidgetBlur:                 "{qssWidget}.events.onWidgetBlur",
+                        onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired"
                     }
                 }
             }

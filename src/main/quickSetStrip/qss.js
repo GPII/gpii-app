@@ -111,9 +111,10 @@ fluid.defaults("gpii.app.qssWrapper", {
                     },
                     "{channelListener}.events.onQssNotificationRequired": {
                         func: "{qssNotification}.show",
-                        args: [
-                            "{arguments}.0"  // notificationParams
-                        ]
+                        args: [{
+                            description: "{arguments}.0.description",
+                            focusOnClose: "{that}.dialog"
+                        }] // notificationParams 
                     },
                     "{channelListener}.events.onQssMorePanelRequired": {
                         func: "{qssMorePanel}.show"
@@ -141,6 +142,13 @@ fluid.defaults("gpii.app.qssWrapper", {
                             "{arguments}.0", // updatedSetting
                             "qssWidget"
                         ]
+                    },
+                    onQssWidgetNotificationRequired: {
+                        func: "{qssNotification}.show",
+                        args: [{
+                            description: "{arguments}.0.description",
+                            focusOnClose: "{that}.dialog"
+                        }] // notificationParams 
                     }
                 },
                 modelListeners: {

@@ -55,11 +55,10 @@ fluid.defaults("gpii.app.qssNotification", {
                     onQssNotificationHeightChanged: "{qssNotification}.events.onContentHeightChanged"
                 },
                 listeners: {
-                    onQssNotificationClosed: [{
-                        func: "{qssNotification}.hide"
-                    }, {
-                        func: "{gpii.app.qss}.focus"
-                    }]
+                    onQssNotificationClosed: {
+                        funcName: "gpii.app.qssNotification.close",
+                        args: ["{qssNotification}"]
+                    }
                 }
             }
         }
@@ -83,6 +82,16 @@ fluid.defaults("gpii.app.qssNotification", {
     }
 });
 
+
+gpii.app.qssNotification.close = function (qssNotification) {
+    qssNotification.hide();
+
+    var windowToFocus = qssNotification.focusOnClose;
+    if (windowToFocus) {
+        windowToFocus.focus();
+    }
+};
+
 /**
  * Shows the QSS notification window and sends an IPC message with
  * details about what should be displayed in the notification.
@@ -93,4 +102,5 @@ fluid.defaults("gpii.app.qssNotification", {
 gpii.app.qssNotification.show = function (that, notificationParams) {
     that.channelNotifier.events.onQssNotificationShown.fire(notificationParams);
     that.applier.change("isShown", true);
+    that.focusOnClose = notificationParams.focusOnClose;
 };
