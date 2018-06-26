@@ -19,6 +19,7 @@ var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
 require("./assetsManager.js");
+require("./propertyHistoryManager.js");
 require("./ws.js");
 require("./factsManager.js");
 require("./dialogManager.js");
@@ -154,9 +155,21 @@ fluid.defaults("gpii.app", {
                     "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
                     "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated",
+
+                    "onUndoRequired.activateUndo": {
+                        func: "{propertyHistoryManager}.undo",
+                        args: "gpii.app.qssWrapper"
+                    },
                     "onCreate.regsiterUndo": {
-                        funcName: "{undoManager}.registerUndoObserver",
+                        funcName: "{propertyHistoryManager}.registerPropertyObserver",
                         args: [ "{that}", "settings.*" ]
+                    }
+                },
+                modelListeners: {
+                    "settings.*": {
+                        func: "{settingsBroker}.applySetting",
+                        args: ["{change}.value"],
+                        includeSource: ["qss", "qssWidget", "gpii.app.propertyHistoryManager.undo"]
                     }
                 }
             }
@@ -176,8 +189,8 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-        undoManager: {
-            type: "gpii.app.undoManager"
+        propertyHistoryManager: {
+            type: "gpii.app.propertyHistoryManager"
         },
         tray: {
             type: "gpii.app.tray",
@@ -215,7 +228,7 @@ fluid.defaults("gpii.app", {
                     // filter shortcut
                     onQssUndoShortcut: {
                         // get current active window
-                        funcName: "{undoManager}.undo",
+                        funcName: "{propertyHistoryManager}.undo",
                         args: "gpii.app.qssWrapper"
                     },
                     onPspOpenShortcut: [{
@@ -530,145 +543,4 @@ fluid.defaults("gpii.appWrapper", {
         }
     }
 });
-
-
-
-
-
-var gpii = fluid.registerNamespace("gpii");
-
-fluid.defaults("gpii.app.undoManager", {
-    gradeNames: "fluid.modelComponent",
-
-    members: {
-        queues: {
-            // <gradeName>: [<stack>]
-        }
-    },
-
-    listeners: {
-        // Clear up attached listeners
-        // onDestroy: null
-    },
-
-    invokers: {
-        undo: {
-            funcName: "gpii.app.undoManager.undo",
-            args: [
-                "{that}",
-                "{arguments}.0" // component
-            ]
-        },
-        /// cmp, prop
-        registerUndoObserver: {
-            funcName: "gpii.app.undoManager.registerUndoObserver",
-            args: [
-                "{that}",
-                "{arguments}.0", // component
-                "{arguments}.1" // prop
-            ]
-        }
-    }
-});
-
-gpii.app.undoManager.undo = function (that, cmpGrade) {
-    console.log("Undoo: ", cmpGrade);
-
-    if (!that.queues[cmpGrade]) {
-        return;
-    }
-
-    var component = that.queues[cmpGrade].ref;
-    var stack = that.queues[cmpGrade].undoStack;
-
-    if (stack.length === 0) {
-        return;
-    }
-
-    var prevState = stack.pop();
-    var path = prevState.path.join(".");
-
-    // clear the setting before going further
-    // component.applier.change(path, null, "DELETE", "gpii.app.undoManager.undo");
-    // XXX can we just avoid notifications from the change applier?
-    component.model[path] = null;
-    component.applier.change(path, prevState.oldValue, null, "gpii.app.undoManager.undo");
-};
-
-gpii.app.undoManager.registerUndoObserver = function (that, component, prop) {
-    var cmpGrade = component.options.gradeNames.slice(-1);
-
-    function registerChange(value, oldValue, pathSegs) {
-        console.log("Change appeared!", oldValue, pathSegs);
-        // TODO check whether the last state differs with the new one
-        that.queues[cmpGrade].undoStack.push({
-            oldValue: oldValue,
-            path:     pathSegs
-        });
-    }
-
-    console.log("Register Undo Observer: ", component);
-
-    // create our stack
-    that.queues[cmpGrade] = {
-        ref: component,
-        undoStack: []
-    };
-
-    // listen to changes of the property
-    component.applier.modelChanged.addListener({
-        path: prop,
-        excludeSource: "gpii.app.undoManager.undo"
-    }, registerChange);
-};
-
-// XXX move to tests
-// fluid.defaults("gpii.tests.undoable", {
-//     gradeNames: ["fluid.modelComponent"],
-
-//     model: {
-//         list: [{a:1}, {a:2}]
-//     }
-// });
-
-// fluid.defaults("gpii.tests.undoManager", {
-//     gradeNames: ["fluid.component"],
-
-
-//     components: {
-//         manager: {
-//             type: "gpii.app.undoManager"
-//         },
-//         undoable: {
-//             type: "gpii.tests.undoable",
-
-//             options: {
-//                 listeners: {
-//                     onCreate: {
-//                         func: "{manager}.registerUndoObserver",
-//                         args: [ "{that}", "list.*"]
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// });
-
-// var tstCmp = gpii.tests.undoManager();
-
-// tstCmp.undoable.applier.change("list.1", { a:0, b: 3 });
-
-// var hasQueueCreated = fluid.keys(tstCmp.manager.queues).length === 1;
-
-// var hasUndowQueueFilled = tstCmp.manager.queues["gpii.tests.undoable"].undoStack.length === 1;
-// var registeredItemValueMatched = tstCmp.manager.queues["gpii.tests.undoable"].undoStack[0].oldValue.b === 3;
-// var registeredItemPathMatched  = tstCmp.manager.queues["gpii.tests.undoable"].undoStack[0].path === "1";
-
-
-// tstCmp.manager.undo(tstCmp.undoable.options.gradeNames.slice(-1));
-
-// var hasOldStateReturned = tstCmp.undoable.model.list[1].a === 2 &&
-//                             !tstCmp.undoable.model.list[1].b;
-
-// var hasQueueClearedUp = tstCmp.manager.queues["gpii.tests.undoable"].undoStack.length === 0;
 

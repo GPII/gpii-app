@@ -85,6 +85,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssSettingAltered: "{qss}.events.onQssSettingAltered",
                     onQssNotificationRequired: null,
                     onQssMorePanelRequired: null,
+                    onQssUndoRequired: null,
                     onQssPspOpen: null
                 },
 
