@@ -1,7 +1,7 @@
 /**
- * The PSP Main component
+ * Property history manager
  *
- * A component that represents the whole PSP. It wraps all of the PSP's functionality and also provides information on whether there's someone keyIn or not.
+ * A component that keeps history in separate queues for different components' properties. It can be used for going to previous version.
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -18,19 +18,32 @@ var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
 
+/**
+ * A component that keeps history for changes over a component's property (model element).
+ * Once a component registers with this manager, the manager would start adding changes made
+ * to a dedicated queue for the component.
+ */
 fluid.defaults("gpii.app.propertyHistoryManager", {
     gradeNames: "fluid.modelComponent",
 
     members: {
         queues: {
-            // <gradeName>: [ { ref: <Component>, undoStack: [] } ]
+            /*
+               <gradeName>: {
+                 historyStack: [],
+                 listener: <Function>
+               }
+             */
         }
     },
 
+    maxHistoryEntries: 100,
+
     listeners: {
-        // TODO
-        // Clear up attached listeners
-        // onDestroy: null
+        onDestroy: {
+            funcName: "gpii.app.propertyHistoryManager.deregisterListeners",
+            args: ["{that}"]
+        }
     },
 
     invokers: {
@@ -41,66 +54,153 @@ fluid.defaults("gpii.app.propertyHistoryManager", {
                 "{arguments}.0" // component
             ]
         },
-        /// cmp, prop
         registerPropertyObserver: {
             funcName: "gpii.app.propertyHistoryManager.registerPropertyObserver",
             args: [
                 "{that}",
                 "{arguments}.0", // component
-                "{arguments}.1" // prop
+                "{arguments}.1"  // changePath
+            ]
+        },
+        deregisterObserver: {
+            funcName: "gpii.app.propertyHistoryManager.deregisterListener",
+            args: [
+                "{that}",
+                "{arguments}.0" // grade
+            ]
+        },
+        registerChange: {
+            funcName: "gpii.app.propertyHistoryManager.registerChange",
+            args: [
+                "{that}",
+                "{arguments}.0", // grade
+                "{arguments}.1", // value
+                "{arguments}.2", // oldValue
+                "{arguments}.3"  // pathSegs
             ]
         }
     }
 });
 
-gpii.app.propertyHistoryManager.undo = function (that, cmpGrade) {
-    console.log("Undoo: ", cmpGrade);
 
-    if (!that.queues[cmpGrade]) {
-        return;
+/**
+ * De-register change listener for a single component.
+ *
+ * @param {Component} that - The `gpii.app.propertyHistoryManager` instance
+ * @param {String} grade - The grade name of the component that will have its listener removed
+ */
+gpii.app.propertyHistoryManager.deregisterListener = function (that, grade) {
+    var cmp = fluid.queryIoCSelector(fluid.rootComponent, grade)[0],
+        listener = that.queues[grade].listener;
+
+    if (cmp) {
+        cmp.modelChanged.removeListener(listener);
     }
-
-    var component = that.queues[cmpGrade].ref;
-    var stack = that.queues[cmpGrade].undoStack;
-
-    if (stack.length === 0) {
-        return;
-    }
-
-    var prevState = stack.pop();
-    var path = prevState.path.join(".");
-
-    // clear the setting before going further
-    // component.applier.change(path, null, "DELETE", "gpii.app.propertyHistoryManager.undo");
-    // XXX can we just avoid notifications from the change applier?
-    component.model[path] = null;
-    component.applier.change(path, prevState.oldValue, null, "gpii.app.propertyHistoryManager.undo");
 };
 
-gpii.app.propertyHistoryManager.registerPropertyObserver = function (that, component, prop) {
-    var cmpGrade = component.options.gradeNames.slice(-1);
+/**
+ * De-register all listeners.
+ *
+ * @param {Component} that - The `gpii.app.propertyHistoryManager`
+ */
+gpii.app.propertyHistoryManager.deregisterListeners = function (that) {
+    fluid.keys(that.queues, function (grade) {
+        that.deregisterObserver(grade);
+    });
+};
 
-    function registerChange(value, oldValue, pathSegs) {
-        // TODO check whether the last state differs with the new one
-        that.queues[cmpGrade].undoStack.push({
-            oldValue: oldValue,
-            path:     pathSegs
-        });
+/**
+ * Restore the previous state of a component's property. Changes that are made to the component's model
+ * are with source "gpii.app.propertyHistoryManager.undo" which could be used for exclusion.
+ *
+ * @param {Comopnent} that - The `gpii.app.propertyHistoryManager`
+ * @param {String} cmpGrade - The grade name of the component which property is to
+ * be reverted
+ */
+gpii.app.propertyHistoryManager.undo = function (that, cmpGrade) {
+    var historyStack = that.queues[cmpGrade] && that.queues[cmpGrade].historyStack;
+
+    // Is it even registered
+    if (historyStack.length === 0) {
+        return;
     }
 
-    console.log("Register Undo Observer: ", component);
+    // now search for component
+    var component = fluid.queryIoCSelector(fluid.rootComponent, cmpGrade)[0];
 
-    // create our stack
+    // does the component still exists
+    if (!component) {
+        // no need of that queue anymore
+        delete that.queues[cmpGrade];
+        return;
+    }
+
+    var prevState = historyStack.pop();
+    var propertyPath = prevState.path.join(".");
+
+    // clear the setting before going further
+    // direct access will avoid triggering notifications from the change applier
+    component.model[propertyPath] = null;
+    component.applier.change(propertyPath, prevState.oldValue, null, "gpii.app.propertyHistoryManager.undo");
+};
+
+
+/**
+ * Register single change of grade's model property.
+ *
+ * @param {Component} that - The gpii.app.propertyHistoryManager component
+ * @param {String} grade - The interested component's grade name
+ * @param {Object} value - The new state of the component's property
+ * @param {Object} oldValue - The old state of the property
+ * @param {String[]} pathSegs - The path to the element's change (changePath)
+ */
+gpii.app.propertyHistoryManager.registerChange = function (that, grade, value, oldValue, pathSegs) {
+    var historyStack = that.queues[grade] && that.queues[grade].historyStack;
+
+    // component not yet registered?
+    if (!historyStack) {
+        return;
+    }
+
+    // simply add the new state even if it hasn't changed
+    historyStack.push({
+        oldValue: oldValue,
+        path:     pathSegs
+    });
+
+    if (that.options.maxHistoryEntries <= historyStack.length) {
+        historyStack.shift();
+    }
+};
+
+/**
+ * Registers a component's model property observer. It will build up history of the properties changes that
+ * could be afterwards reverted using the `undo` method.
+ * Observation of property is done through the `changeApplier` API which means any property changePath may be
+ * provided to the function to be used.
+ *
+ * @param {Comopnent} that - The `gpii.app.propertyHistoryManager`
+ * @param {Comopnent} component - The component which is to be observed
+ * @param {String} changePath - The changeApplier's changePath expression, e.g. "settings.*" or "setting"
+ */
+gpii.app.propertyHistoryManager.registerPropertyObserver = function (that, component, changePath) {
+    var gradeNames = component.options.gradeNames;
+    var cmpGrade = gradeNames[gradeNames.length - 1];
+
+    var listener = that.registerChange.bind(null, cmpGrade);
+
+    // create our fresh component's history stack
     that.queues[cmpGrade] = {
-        ref: component,
-        undoStack: []
+        historyStack: [],
+        // needed for de-registering
+        listener: listener
     };
 
     // listen to changes of the property
     component.applier.modelChanged.addListener({
-        path: prop,
+        path: changePath,
         excludeSource: "gpii.app.propertyHistoryManager.undo"
-    }, registerChange);
+    }, listener);
 };
 
 // XXX move to tests
@@ -141,9 +241,9 @@ gpii.app.propertyHistoryManager.registerPropertyObserver = function (that, compo
 
 // var hasQueueCreated = fluid.keys(tstCmp.manager.queues).length === 1;
 
-// var hasUndowQueueFilled = tstCmp.manager.queues["gpii.tests.undoable"].undoStack.length === 1;
-// var registeredItemValueMatched = tstCmp.manager.queues["gpii.tests.undoable"].undoStack[0].oldValue.b === 3;
-// var registeredItemPathMatched  = tstCmp.manager.queues["gpii.tests.undoable"].undoStack[0].path === "1";
+// var hasUndowQueueFilled = tstCmp.manager.queues["gpii.tests.undoable"].historyStack.length === 1;
+// var registeredItemValueMatched = tstCmp.manager.queues["gpii.tests.undoable"].historyStack[0].oldValue.b === 3;
+// var registeredItemPathMatched  = tstCmp.manager.queues["gpii.tests.undoable"].historyStack[0].path === "1";
 
 
 // tstCmp.manager.undo(tstCmp.undoable.options.gradeNames.slice(-1));
@@ -151,5 +251,5 @@ gpii.app.propertyHistoryManager.registerPropertyObserver = function (that, compo
 // var hasOldStateReturned = tstCmp.undoable.model.list[1].a === 2 &&
 //                             !tstCmp.undoable.model.list[1].b;
 
-// var hasQueueClearedUp = tstCmp.manager.queues["gpii.tests.undoable"].undoStack.length === 0;
+// var hasQueueClearedUp = tstCmp.manager.queues["gpii.tests.undoable"].historyStack.length === 0;
 

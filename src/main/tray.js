@@ -102,33 +102,33 @@ fluid.defaults("gpii.app.tray", {
 });
 
 /**
-  * Sets the icon for the Electron Tray which represents the GPII application.
-  * @param {Object} tray - An instance of an Electron Tray.
-  * @param {String} icon - The simple path to the icon file.
-  */
+ * Sets the icon for the Electron Tray which represents the GPII application.
+ * @param {Object} tray - An instance of an Electron Tray.
+ * @param {String} icon - The simple path to the icon file.
+ */
 gpii.app.tray.setTrayIcon = function (tray, icon) {
     var iconPath = fluid.module.resolvePath(icon);
     tray.setImage(iconPath);
 };
 
 /**
-  * Sets the tooltip for the Electron Tray icon. If a falsy value is provided,
-  * the current tooltip will be removed.
-  * @param {Tray} tray - An instance of an Electron Tray.
-  * @param {String} tooltip - The tooltip to be set.
-  */
+ * Sets the tooltip for the Electron Tray icon. If a falsy value is provided,
+ * the current tooltip will be removed.
+ * @param {Tray} tray - An instance of an Electron Tray.
+ * @param {String} tooltip - The tooltip to be set.
+ */
 gpii.app.tray.setTrayTooltip = function (tray, tooltip) {
     tooltip = tooltip || "";
     tray.setToolTip(tooltip);
 };
 
 /**
-  * Creates the Electron Tray
-  * @param {Object} options A configuration object for the tray that will be created.
-  * @param {Object} events An object containing the different events which should be
-  * fired when the tray is clicked or when the PSP is opened using the global shortcut.
-  * @return {Tray} - The tray object.
-  */
+ * Creates the Electron Tray
+ * @param {Object} options A configuration object for the tray that will be created.
+ * @param {Object} events An object containing the different events which should be
+ * fired when the tray is clicked or when the PSP is opened using the global shortcut.
+ * @return {Tray} - The tray object.
+ */
 gpii.app.makeTray = function (options, events) {
     var tray = new Tray(fluid.module.resolvePath(options.icons.keyedOut));
 
@@ -139,7 +139,9 @@ gpii.app.makeTray = function (options, events) {
     // XXX deregister shortcuts?
     fluid.each(options.shortcuts, function (shortcut) {
         globalShortcut.register(shortcut.command, function () {
-            events[shortcut.event].fire();
+            if (!shortcut.condition || shortcut.condition()) {
+                events[shortcut.event].fire();
+            }
         });
     });
 

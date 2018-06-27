@@ -205,7 +205,6 @@ fluid.defaults("gpii.app", {
                     onPspOpenShortcut: null,
                     onQssUndoShortcut: null
                 },
-                // TODO Document
                 shortcuts: {
                     open: {
                         command: "Super+CmdOrCtrl+Alt+U",
@@ -213,7 +212,10 @@ fluid.defaults("gpii.app", {
                     },
                     undo: {
                         command: "CmdOrCtrl+Z",
-                        event: "onQssUndoShortcut"
+                        event: "onQssUndoShortcut",
+                        condition: function () {
+                            return gpii.browserWindow.isWindowFocused("gpii.app.qss");
+                        }
                     }
                 },
                 listeners: {
