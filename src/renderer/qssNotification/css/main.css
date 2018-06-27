@@ -2,6 +2,6 @@
     text-align: center;
 }
 
-.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-subtitle {
-    line-height: normal;
+.fl-dialog .fl-dialog-content .fl-dialog-contentText {
+    position: relative;
 }

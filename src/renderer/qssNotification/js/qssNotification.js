@@ -115,8 +115,6 @@
     });
 
     gpii.psp.qssNotification.calculateHeight = function (container, dialogContent, heightListenerContainer) {
-        console.log (container.outerHeight(true),  dialogContent.height(), heightListenerContainer.height());
-        // ensure only round numbers are used as it may cause resizing loop
-        return Math.floor(container.outerHeight(true)) - Math.ceil(dialogContent.height()) + heightListenerContainer.height();
+        return Math.ceil(container.outerHeight(true) - dialogContent.height() + heightListenerContainer.height());
     };
 })(fluid);
