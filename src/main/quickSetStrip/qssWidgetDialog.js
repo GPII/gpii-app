@@ -189,7 +189,7 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     that.applier.change("setting", setting);
     that.applier.change("isShown", true);
     // reposition window properly
-    that.positionWindow(offsetX, elementMetrics.height);
+    that.setPosition(offsetX, elementMetrics.height);
 };
 
 

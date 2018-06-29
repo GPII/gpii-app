@@ -25,7 +25,7 @@ var gpii  = fluid.registerNamespace("gpii");
  * representation (i.e. its corresponding `BrowserWindow`) whenever the
  * DPI or the content itself changes.
  *
- * The implementors must provide a concrete implementation of the `resize`
+ * The implementors must provide a concrete implementation of the `setBounds`
  * invoker. The initial dimensions of the `BrowserWindow` must be specified
  * in the `config.attrs` property.
  */
@@ -38,6 +38,7 @@ fluid.defaults("gpii.app.resizable", {
         }
     },
     members: {
+        // TODO move to dialog
         width:  "{that}.options.config.attrs.width", // the actual width of the content
         height: "{that}.options.config.attrs.height", // the actual height of the content
         // helper variables needed for display metrics changes
@@ -76,11 +77,13 @@ fluid.defaults("gpii.app.resizable", {
         }
     },
     invokers: {
-        resize: {
+        setBounds: {
             funcName: "fluid.notImplemented",
             args: [
                 "{arguments}.0", // width
-                "{arguments}.1"  // height
+                "{arguments}.1",  // height
+                "{arguments}.2", // offsetX
+                "{arguments}.3"  // offsetY
             ]
         }
     }
@@ -106,7 +109,7 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
 gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
     that.width = width;
     that.height = height;
-    that.resize(width, height);
+    that.setBounds(width, height);
 };
 
 /**
@@ -141,11 +144,12 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
             width = that.width || attrs.width,
             height = that.height || attrs.height;
 
-        that.resize(width, height);
 
-        // in case it is not the PSP
-        if (that.repositionWindow) {
-            that.repositionWindow();
+        // XXX Some dark magic here...
+        if (!that.options.offScreenHide || that.model.isShown) {
+            that.setBounds(width, height);
+        } else {
+            that.setSize(width, height);
         }
 
         // Correct the state of windows

@@ -137,10 +137,6 @@ fluid.defaults("gpii.app.errorDialog", {
                 "{that}",
                 "{that}.options.config.attrs"
             ]
-        },
-        hide: {
-            changePath: "isShown",
-            value: false
         }
     }
 });

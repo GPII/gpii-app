@@ -123,9 +123,9 @@ gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
         psp.options.heightOffset = null;
     }
 
-    console.log("Apply Offset & resize: ", psp.width, psp.height, psp.options.heightOffset);
+    console.log("Apply Offset & setBounds: ", psp.width, psp.height, psp.options.heightOffset);
     // in case it was shown, it will be also repositioned
-    psp.resize(psp.width, psp.height);
+    psp.setBounds(psp.width, psp.height);
 };
 
 /**
@@ -275,8 +275,18 @@ fluid.defaults("gpii.app.psp", {
                 "{arguments}.1"  // message
             ]
         },
-        resize: {
-            funcName: "gpii.app.psp.resize",
+        setSize: {
+            funcName: "gpii.app.psp.setSize",
+            args: [
+                "{that}",
+                "{arguments}.0",  // width
+                "{arguments}.1",  // height
+                "{that}.options.config.attrs.height",
+                "{that}.options.heightOffset"
+            ]
+        },
+        setBounds: {
+            funcName: "gpii.app.psp.setBounds",
             args: [
                 "{that}",
                 "{arguments}.0",  // width
@@ -420,25 +430,39 @@ gpii.app.psp.closePSP = function (psp, settingsBroker) {
     });
 };
 
+gpii.app.psp.setSize = function (psp, width, height, minHeight, heightOffset) {
+    var pspWindow = psp.pspWindow;
+
+    height = Math.max(height, minHeight || 0);
+
+    var size = gpii.browserWindow.computeWindowSize(width, height, 0, heightOffset);
+
+    pspWindow.setSize(size.width, size.height);
+};
+
+
+
 /**
  * Resizes the PSP window and positions it appropriately based on the new height
  * of its content. Makes sure that the window is no higher than the available
  * height of the work area in the primary display.
  * @param {Object} psp - A `gpii.app.psp` instance.
  * @param {Number} width - The desired width of the BrowserWindow.
- * @param {Number} contentHeight - The new height of the BrowserWindow's content.
+ * @param {Number} height - The new height of the BrowserWindow's content.
  * @param {Number} minHeight - The minimum height which the BrowserWindow must have.
  * @param {Number} heightOffset - The heightoffset that should be preserved after resizing.
  */
-gpii.app.psp.resize = function (psp, width, contentHeight, minHeight, heightOffset) {
+gpii.app.psp.setBounds = function (psp, width, height, minHeight, heightOffset) {
     var pspWindow = psp.pspWindow,
-        wasShown = psp.model.isShown,
-        height = Math.max(contentHeight, minHeight || 0),
-        bounds = gpii.browserWindow.getDesiredWindowBounds(width, height, heightOffset);
+        wasShown = psp.model.isShown;
+
+    height = Math.max(height, minHeight || 0);
+
+    var bounds = gpii.browserWindow.computeWindowBounds(width, height, 0, heightOffset);
 
     if (wasShown) {
         // The coordinates and the dimensions of the PSP must be set with a single
-        // call to setBounds instead of by invoking setSize and setPosition in a
+        // call to setBounds instead of by invoking setBounds and setPosition in a
         // row. Due to https://github.com/electron/electron/issues/10862.
         pspWindow.setBounds(bounds);
     } else {

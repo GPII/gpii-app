@@ -117,12 +117,11 @@ gpii.browserWindow.computeCentralWindowPosition = function (width, height) {
  * in  the lower right corner of the primary display.
  * @param width {Number} The width of the `BrowserWindow`.
  * @param height {Number} The height of the `BrowserWindow`.
- *
- * @param {Number} offsetY - The y bottom offset.
  * @param {Number} offsetX - The x right offset.
+ * @param {Number} offsetY - The y bottom offset.
  * @return {{x: Number, y: Number, width: Number, height: Number}}
  */
-gpii.browserWindow.getDesiredWindowBounds = function (width, height, offsetY, offsetX) {
+gpii.browserWindow.computeWindowBounds = function (width, height, offsetX, offsetY) {
     // restrict offset to be positive
     var position = gpii.browserWindow.computeWindowPosition(width, height, offsetX, offsetY);
     var size = gpii.browserWindow.computeWindowSize(width, height, offsetX, offsetY);
@@ -154,18 +153,24 @@ gpii.browserWindow.getCenterWindowBounds = function (width, height) {
  *
  * @param {BrowserWindow} dialogWindow - The window which is to be positioned.
  */
-gpii.browserWindow.positionWindow = function (dialogWindow, offsetX, offsetY) {
+gpii.browserWindow.setPosition = function (dialogWindow, offsetX, offsetY) {
     var size = dialogWindow.getSize(),
         position = gpii.browserWindow.computeWindowPosition(size[0], size[1], offsetX, offsetY);
 
     dialogWindow.setPosition(position.x, position.y);
 };
 
-gpii.browserWindow.resizeWindow = function (dialogWindow, width, height) {
-    var size = gpii.browserWindow.computeWindowSize(width, height, 0, 0);
+// gpii.browserWindow.setSize = function (dialogWindow, width, height) {
+//     var size = gpii.browserWindow.computeWindowSize(width, height, 0, 0);
 
-    dialogWindow.setSize(size.width, size.height);
-};
+//     dialogWindow.setSize(size.width, size.height);
+// };
+
+// gpii.browserWindow.setBounds = function (dialogWindow, width, height, offsetX, offsetY) {
+//     var size = gpii.browserWindow.computeWindowBounds(width, height, offsetX, offsetY);
+
+//     dialogWindow.setBounds(size.width, size.height);
+// };
 
 
 /**
@@ -177,7 +182,7 @@ gpii.browserWindow.resizeWindow = function (dialogWindow, width, height) {
  */
 gpii.browserWindow.moveToScreen = function (window, offset) {
     // TODO fit window in screen
-    gpii.browserWindow.positionWindow(window, offset.x || 0, offset.y || 0);
+    gpii.browserWindow.setPosition(window, offset.x || 0, offset.y || 0);
 };
 
 /**

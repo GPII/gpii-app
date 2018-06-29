@@ -118,9 +118,12 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     listeners: {
-        "onCreate.positionWindow": {
-            func: "{that}.repositionWindow",
-            args: []
+        "onCreate.setPosition": {
+            func: "{that}.setPosition",
+            args: [
+                "{that}.model.offset.x",
+                "{that}.model.offset.y"
+            ]
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -128,30 +131,37 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
-        // TODO rename to positionDialog
-        positionWindow: {
-            funcName: "gpii.app.dialog.positionDialog",
+        setPosition: {
+            funcName: "gpii.app.dialog.setPosition",
             args: [
                 "{that}",
                 "{arguments}.0", // offsetX
                 "{arguments}.1"  // offsetY
             ]
         },
-        repositionWindow: {
-            func: "{that}.positionWindow",
+        setBounds: {
+            funcName: "gpii.app.dialog.setBounds",
             args: [
-                "{that}.model.offset.x", // offsetX
-                "{that}.model.offset.y"  // offsetX
+                "{that}",
+                "{arguments}.0", // windowWidth
+                "{arguments}.1", // windowHeight
+                "{arguments}.2", // offsetX
+                "{arguments}.3"  // offsetY
             ]
         },
-        resize: {
-            funcName: "gpii.app.dialog.resize",
+        setSize: {
+            funcName: "gpii.app.dialog.setSize",
             args: [
                 "{that}",
                 "{arguments}.0", // windowWidth
                 "{arguments}.1"  // windowHeight
             ]
         },
+        /*
+         _show: {}
+            that.dialog.show();
+            that.events.onDialogShown.fire();
+         */
         show: {
             changePath: "isShown",
             value: true
@@ -171,21 +181,6 @@ fluid.defaults("gpii.app.dialog", {
     }
 });
 
-
-/**
- * TODO
- * In case offset is not given, the current offset will be used
- *
- * @param that
- * @param [offsetX]
- * @param [offsetY]
- * @returns {undefined}
- */
-gpii.app.dialog.positionDialog = function (that, offsetX, offsetY) {
-    that.applier.change("offset", { x: offsetX, y: offsetY });
-
-    gpii.browserWindow.positionWindow(that.dialog, offsetX, offsetY);
-};
 
 /**
  * Builds a file URL inside the application **Working Directory**.
@@ -243,7 +238,7 @@ gpii.app.dialog.toggle = function (that, isShown, showInactive) {
         that.dialog.show;
 
     if (isShown) {
-        that.repositionWindow();
+        that.setPosition(that.model.offset.x, that.model.offset.y);
         showMethod.call(that.dialog);
         that.events.onDialogShown.fire();
     } else {
@@ -253,19 +248,61 @@ gpii.app.dialog.toggle = function (that, isShown, showInactive) {
 };
 
 /**
- * Resizes the current window and repositions it to match the new size.
+ * Both resizes the current window and repositions it.
  * @param {Component} that - The `gpii.app.dialog` instance
  * @param {Number} windowWidth - The new width for the window
  * @param {Number} windowHeight - The new height for the window
+ * @param {Number} offsetX - The new width for the window
+ * @param {Number} offsetY - The new height for the window
  */
-gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
-    var offset = that.model.offset;
+gpii.app.dialog.setBounds = function (that, windowWidth, windowHeight, offsetX, offsetY) {
+    // XXX Unites both setPosition and setSize but cannot use them separately
+    // As default use currently set values
+    offsetX      = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
+    offsetY      = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
+    windowWidth  = fluid.isValue(windowWidth) ? windowWidth : that.width;
+    windowHeight = fluid.isValue(windowHeight) ? windowHeight : that.height;
 
-    // TODO move to the browserWindow utils section
-    var bounds = gpii.browserWindow.getDesiredWindowBounds(windowWidth, windowHeight, offset.x, offset.y);
-    // XXX DEV
-    console.log("DIALOG: ", bounds, that.options.gradeNames.slice(-1));
+    var bounds = gpii.browserWindow.computeWindowBounds(windowWidth, windowHeight, offsetX, offsetY);
+
+    that.width  = windowWidth;
+    that.height = windowHeight;
+    that.applier.change("offset", { x: offsetX, y: offsetY });
+
     that.dialog.setBounds(bounds);
+};
+
+
+gpii.app.dialog.setSize = function (that, windowWidth, windowHeight) {
+    // ensure the whole window is visible
+    var offset = that.model.offset;
+    var bounds = gpii.browserWindow.computeWindowSize(windowWidth, windowHeight, offset.x, offset.y);
+
+    that.width  = windowWidth  || that.width;
+    that.height = windowHeight || that.height;
+
+    that.dialog.setSize(bounds);
+};
+
+/**
+ * TODO
+ * In case offset is not given, the current offset will be used
+ *
+ * @param that
+ * @param [offsetX]
+ * @param [offsetY]
+ * @returns {undefined}
+ */
+gpii.app.dialog.setPosition = function (that, offsetX, offsetY) {
+    offsetX = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
+    offsetY = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
+
+    that.applier.change("offset", {
+        x: offsetX,
+        y: offsetY
+    });
+
+    gpii.browserWindow.setPosition(that.dialog, offsetX, offsetY);
 };
 
 /**
@@ -405,6 +442,8 @@ fluid.defaults("gpii.app.dialog.delayedShow", {
     invokers: {
         // _show: null, // expected from implementor
         // _hide: null,
+        // delayedShow: ... (this will be simply called in show / hide)
+        // delayedHide: ...
         show: {
             funcName: "gpii.app.dialog.delayedShow.show",
             args: [
@@ -445,12 +484,12 @@ fluid.defaults("gpii.app.centeredDialog", {
     gradeNames: ["gpii.app.dialog"],
 
     invokers: {
-        positionWindow: {
-            funcName: "gpii.app.centeredDialog.positionWindow",
+        setPosition: {
+            funcName: "gpii.app.centeredDialog.setPosition",
             args: ["{that}.dialog"]
         },
-        resize: {
-            funcName: "gpii.app.centeredDialog.resize",
+        setBounds: {
+            funcName: "gpii.app.centeredDialog.setBounds",
             args: [
                 "{that}",
                 "{arguments}.0", // windowWidth
@@ -460,13 +499,15 @@ fluid.defaults("gpii.app.centeredDialog", {
     }
 });
 
-gpii.app.centeredDialog.positionWindow = function (dialog) {
+gpii.app.centeredDialog.setPosition = function (dialog) {
     var dialogSize = dialog.getSize(),
         position = gpii.browserWindow.computeCentralWindowPosition(dialogSize[0], dialogSize[1]);
     dialog.setPosition(position.x, position.y);
 };
 
-gpii.app.centeredDialog.resize = function (that, windowWidth, windowHeight) {
-    var bounds = gpii.browserWindow.getCenterWindowBounds(windowWidth, windowHeight);
+gpii.app.centeredDialog.setBounds = function (that, windowWidth, windowHeight/*, offsetX, offsetY*/) {
+    var position = gpii.browserWindow.computeCentralWindowPosition(windowWidth, windowHeight),
+        bounds = gpii.browserWindow.computeWindowBounds(windowWidth, windowHeight, position.x, position.y);
+
     that.dialog.setBounds(bounds);
 };

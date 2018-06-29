@@ -157,5 +157,5 @@ gpii.app.qssTooltipDialog._show = function (that, setting, elementMetrics) {
     // Trigger the showing mechanism
     that.applier.change("isShown", true);
     // reposition window properly
-    that.positionWindow(offset.offsetX, offset.offsetY);
+    that.setPosition(offset.offsetX, offset.offsetY);
 };

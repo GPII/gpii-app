@@ -150,6 +150,7 @@ fluid.defaults("gpii.app.qss", {
 gpii.app.qss.show = function (that, params) {
     if (!that.options.disabled) {
         // Show the QSS or focus it if it is already shown.
+        // TODO move to _show ?
         if (that.model.isShown) {
             that.focus();
         } else {
