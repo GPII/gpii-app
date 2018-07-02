@@ -509,6 +509,7 @@
                 funcName: "gpii.qss.onQssOpen",
                 args: [
                     "{quickSetStripList}",
+                    "{focusManager}",
                     "{that}.model.settings",
                     "{arguments}.0" // params
                 ]
@@ -527,18 +528,7 @@
             },
             focusManager: {
                 type: "gpii.qss.horizontalFocusManager",
-                container: "{qss}.container",
-                options: {
-                    invokers: {
-                        onTabPressed: {
-                            funcName: "gpii.qss.onTabPressed",
-                            args: [
-                                "{that}",
-                                "{arguments}.0" // KeyboardEvent
-                            ]
-                        }
-                    }
-                }
+                container: "{qss}.container"
             },
             channelListener: {
                 type: "gpii.psp.channelListener",
@@ -602,21 +592,13 @@
         that.applier.change("settings." + settingIndex, settingNewState, null, "settingUpdate");
     };
 
-    gpii.qss.onTabPressed = function (that, KeyboardEvent) {
-        if (KeyboardEvent.shiftKey) {
-            that.focusNext();
-        } else {
-            that.focusPrevious();
-        }
-    };
-
     gpii.qss.getSettingIndex = function (settings, setting) {
         return settings.findIndex(function (currentSetting) {
             return currentSetting.path === setting.path;
         });
     };
 
-    gpii.qss.onQssOpen = function (qssList, settings, params) {
+    gpii.qss.onQssOpen = function (qssList, focusManager, settings, params) {
         // Focus the first element (in the presentation order) if the QSS is
         // opened using the global shortcut.
         if (params.shortcut) {
@@ -637,6 +619,8 @@
             }
 
             qssList.events.onButtonFocusRequired.fire(settingIndex);
+        } else {
+            focusManager.removeHighlight(true);
         }
     };
 })(fluid);

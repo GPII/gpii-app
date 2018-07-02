@@ -102,20 +102,6 @@
                     "{arguments}.1" // applyHighlight
                 ]
             },
-            focusFirstElement: {
-                funcName: "gpii.qss.focusManager.focusFirstElement",
-                args: [
-                    "{that}",
-                    "{arguments}.0" // applyHighlight
-                ]
-            },
-            focusLastElement: {
-                funcName: "gpii.qss.focusManager.focusLastElement",
-                args: [
-                    "{that}",
-                    "{arguments}.0" // applyHighlight
-                ]
-            },
             focusNext: {
                 funcName: "gpii.qss.focusManager.focusNext",
                 args: ["{that}", "{that}.container"]
@@ -247,38 +233,6 @@
             .focus();
 
         that.events.onElementFocused.fire(element);
-    };
-
-    /**
-     * Focuses the first focusable element and optionally applies the keyboard navigation
-     * highlight (the "fl-highlighted" class).
-     * @param {Component} that The `gpii.qss.focusManager` instance.
-     * @param {Boolean} applyHighlight Whether the keyboard navigation highlight should be
-     * applied to the element which is to be focused.
-     */
-    gpii.qss.focusManager.focusFirstElement = function (that, applyHighlight) {
-        var focusInfo = that.getFocusInfo(),
-            focusableElements = focusInfo.focusableElements;
-        if (focusableElements.length > 0) {
-            var element = $(focusableElements[0]);
-            that.focusElement(element, applyHighlight);
-        }
-    };
-
-    /**
-     * Focuses the last focusable element and optionally applies the keyboard navigation
-     * highlight (the "fl-highlighted" class).
-     * @param {Component} that The `gpii.qss.focusManager` instance.
-     * @param {Boolean} applyHighlight Whether the keyboard navigation highlight should be
-     * applied to the element which is to be focused.
-     */
-    gpii.qss.focusManager.focusLastElement = function (that, applyHighlight) {
-        var focusInfo = that.getFocusInfo(),
-            focusableElements = focusInfo.focusableElements;
-        if (focusableElements.length > 0) {
-            var element = $(focusableElements[focusableElements.length - 1]);
-            that.focusElement(element, applyHighlight);
-        }
     };
 
     /**

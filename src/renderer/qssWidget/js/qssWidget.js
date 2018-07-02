@@ -210,20 +210,9 @@
 
     gpii.qssWidget.processParams = function (focusManager, activationParams) {
         activationParams = activationParams || {};
-
-        switch (activationParams.key) {
-        case "ArrowUp":
-            focusManager.focusLastElement(true);
-            break;
-        case "ArrowDown":
-            focusManager.focus(1, true); // focus the first element after the close button
-            break;
-        case "Spacebar":
-        case "Enter":
-            focusManager.focusFirstElement(true); // focus the close button with a navigation highlight
-            break;
-        default:
-            focusManager.focusFirstElement(false); // mouse/touch interaction - focus the close button without highlight
+        // If the widget is show via the keyboard, focus the first element after the close button.
+        if (activationParams.key) {
+            focusManager.focus(1, true);
         }
     };
 })(fluid);
