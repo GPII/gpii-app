@@ -116,6 +116,13 @@
                     "{that}",
                     "{arguments}.0" // KeyboardEvent
                 ]
+            },
+            isHighlighted: {
+                funcName: "gpii.qss.focusManager.isHighlighted",
+                args: [
+                    "{that}",
+                    "{arguments}.0" // element
+                ]
             }
         }
     });
@@ -291,6 +298,20 @@
         } else {
             that.focusNext();
         }
+    };
+
+    /**
+     * Returns whether the given element has a keyboard navigation highlight.
+     * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {jQuery} element A jQuery object representing the element to be checked.
+     * @return `true` if the element has a keyboard navigation highlight and `false`
+     * otherwise.
+     */
+    gpii.qss.focusManager.isHighlighted = function (that, element) {
+        var styles = that.options.styles;
+        return element.hasClass(styles.focusable) &&
+                element.hasClass(styles.focused) &&
+                element.hasClass(styles.highlighted);
     };
 
     /**

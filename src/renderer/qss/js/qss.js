@@ -172,19 +172,28 @@
                 func: "{that}.activate"
             }],
             "onSpacebarPressed.activate": {
-                func: "{that}.activate",
+                func: "{that}.onActivationKeyPressed",
                 args: [
                     {key: "Spacebar"}
                 ]
             },
             "onEnterPressed.activate": {
-                func: "{that}.activate",
+                func: "{that}.onActivationKeyPressed",
                 args: [
                     {key: "Enter"}
                 ]
             }
         },
         invokers: {
+            onActivationKeyPressed: {
+                funcName: "gpii.qss.buttonPresenter.onActivationKeyPressed",
+                args: [
+                    "{that}",
+                    "{focusManager}",
+                    "{that}.container",
+                    "{arguments}.0" // activationParams
+                ]
+            },
             activate: {
                 funcName: "gpii.qss.buttonPresenter.activate",
                 args: [
@@ -196,6 +205,12 @@
             }
         }
     });
+
+    gpii.qss.buttonPresenter.onActivationKeyPressed = function (that, focusManager, container, activationParams) {
+        if (focusManager.isHighlighted(container)) {
+            that.activate(activationParams);
+        }
+    };
 
     gpii.qss.buttonPresenter.updateChangeIndicator = function (indicatorElem, setting, value) {
         // The dot should be shown if the setting has a default value, the new value of the
@@ -303,14 +318,28 @@
             }
         },
         listeners: {
-            onClicked: "{that}.toggle()",
-            onEnterPressed: "{that}.toggle()",
-            onSpacebarPressed: "{that}.toggle()"
+            "onArrowUpPressed.activate": {
+                func: "{that}.onActivationKeyPressed",
+                args: [
+                    {key: "ArrowUp"}
+                ]
+            },
+            "onArrowDownPressed.activate": {
+                func: "{that}.onActivationKeyPressed",
+                args: [
+                    {key: "ArrowDown"}
+                ]
+            }
         },
         invokers: {
-            toggle: {
-                funcName: "gpii.qss.toggleButtonPresenter.toggle",
-                args: ["{that}"]
+            activate: {
+                funcName: "gpii.qss.toggleButtonPresenter.activate",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
             }
         }
     });
@@ -319,7 +348,8 @@
         return value ? messages.caption : "";
     };
 
-    gpii.qss.toggleButtonPresenter.toggle = function (that) {
+    gpii.qss.toggleButtonPresenter.activate = function (that, container, qssList, activationParams) {
+        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
         that.applier.change("value", !that.model.value);
     };
 
@@ -348,30 +378,35 @@
 
     fluid.defaults("gpii.qss.closeButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
-        listeners: {
-            onClicked: "{that}.closeQss()",
-            onEnterPressed: "{that}.closeQss()",
-            onSpacebarPressed: "{that}.closeQss()"
-        },
         invokers: {
-            closeQss: {
-                this: "{qss}.events.onQssClosed",
-                method: "fire"
+            activate: {
+                funcName: "gpii.qss.closeButtonPresenter.activate",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
             }
         }
     });
 
+    gpii.qss.closeButtonPresenter.activate = function (that, container, qssList, activationParams) {
+        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+        qssList.events.onQssClosed.fire();
+    };
+
     fluid.defaults("gpii.qss.widgetButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         listeners: {
-            onArrowUpPressed: {
-                funcName: "{that}.activate",
+            "onArrowUpPressed.activate": {
+                func: "{that}.onActivationKeyPressed",
                 args: [
                     {key: "ArrowUp"}
                 ]
             },
-            onArrowDownPressed: {
-                funcName: "{that}.activate",
+            "onArrowDownPressed.activate": {
+                func: "{that}.onActivationKeyPressed",
                 args: [
                     {key: "ArrowDown"}
                 ]
@@ -523,6 +558,9 @@
                 options: {
                     model: {
                         items: "{quickSetStrip}.model.settings"
+                    },
+                    events: {
+                        onQssClosed: "{gpii.qss}.events.onQssClosed"
                     }
                 }
             },
