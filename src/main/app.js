@@ -151,6 +151,9 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
+                model: {
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                },
                 listeners: {
                     "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",

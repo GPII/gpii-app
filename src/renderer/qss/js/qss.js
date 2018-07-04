@@ -56,6 +56,20 @@
             }
         },
 
+        modelRelay: {
+            title: {
+                target: "title",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.qss.buttonPresenter.getTitle",
+                    args: [
+                        "{gpii.qss}.model.keyedInUserToken",
+                        "{that}.model.item.schema.title"
+                    ]
+                }
+            }
+        },
+
         modelListeners: {
             value: [{
                 funcName: "{that}.events.onSettingAltered.fire",
@@ -68,7 +82,12 @@
                 funcName: "gpii.qss.buttonPresenter.showNotification",
                 args: ["{that}", "{list}"],
                 excludeSource: "init"
-            }]
+            }],
+            title: {
+                this: "{that}.dom.title",
+                method: "text",
+                args: ["{change}.value"]
+            }
         },
 
         selectors: {
@@ -110,11 +129,6 @@
             "onCreate.styleButton": {
                 funcName: "gpii.qss.buttonPresenter.styleButton",
                 args: ["{that}", "{that}.container"]
-            },
-            "onCreate.renderTitle": {
-                this: "{that}.dom.title",
-                method: "text",
-                args: ["{that}.model.item.schema.title"]
             },
             "onCreate.renderImage": {
                 funcName: "gpii.qss.buttonPresenter.renderImage",
@@ -212,6 +226,10 @@
             }
         }
     });
+
+    gpii.qss.buttonPresenter.getTitle = function (keyedInUserToken, title) {
+        return (keyedInUserToken ? title.keyedIn : title.keyedOut) || title;
+    };
 
     gpii.qss.buttonPresenter.renderImage = function (that, imageElem) {
         var image = that.model.item.schema.image;
@@ -577,6 +595,7 @@
         gradeNames: ["fluid.viewComponent"],
 
         model: {
+            keyedInUserToken: null,
             settings: []
         },
 
@@ -622,7 +641,8 @@
                         // Add events from the main process to be listened for
                         onQssOpen: "{qss}.events.onQssOpen",
                         onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
-                        onSettingUpdated: null
+                        onSettingUpdated: null,
+                        onKeyedInUserTokenChanged: null
                     },
                     // XXX dev
                     listeners: {
@@ -634,6 +654,9 @@
                                 "{qss}",
                                 "{arguments}.0"
                             ]
+                        },
+                        onKeyedInUserTokenChanged: {
+                            func: "{gpii.qss}.updateKeyedInUserToken"
                         }
                     }
                 }
@@ -657,6 +680,13 @@
                         onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
                     }
                 }
+            }
+        },
+
+        invokers: {
+            updateKeyedInUserToken: {
+                changePath: "keyedInUserToken",
+                value: "{arguments}.0"
             }
         }
     });

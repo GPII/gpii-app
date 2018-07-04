@@ -61,12 +61,21 @@ fluid.defaults("gpii.app.qss", {
                 events: {
                     onQssOpen: "{qss}.events.onQssOpen",
                     onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
-                    onSettingUpdated: "{qss}.events.onSettingUpdated"
+                    onSettingUpdated: "{qss}.events.onSettingUpdated",
+                    onKeyedInUserTokenChanged: null
                 },
                 listeners: {
                     onSettingUpdated: {
                         "funcName": "console.log",
                         args: ["Sending Updated QSS: ", "{arguments}.0"]
+                    }
+                },
+                modelListeners: {
+                    "{qss}.model.keyedInUserToken": {
+                        this: "{that}.events.onKeyedInUserTokenChanged",
+                        method: "fire",
+                        args: ["{change}.value"],
+                        excludeSource: "init"
                     }
                 }
             }

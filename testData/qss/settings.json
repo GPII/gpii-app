@@ -180,7 +180,10 @@
         "path": "keyIn",
         "schema": {
             "type": "keyIn",
-            "title": "Settings Panel"
+            "title": {
+                "keyedIn": "Settings Panel",
+                "keyedOut": "Key In"
+            }
         },
         "tooltip": {
             "header": "Open the Morphic Panel.",

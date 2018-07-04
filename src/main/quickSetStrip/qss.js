@@ -43,6 +43,7 @@ fluid.defaults("gpii.app.qssWrapper", {
     },
 
     model: {
+        keyedInUserToken: null,
         settings: "{that}.options.loadedSettings"
     },
 
@@ -78,6 +79,9 @@ fluid.defaults("gpii.app.qssWrapper", {
                     params: {
                         settings: "{qssWrapper}.model.settings"
                     }
+                },
+                model: {
+                    keyedInUserToken: "{qssWrapper}.model.keyedInUserToken"
                 },
                 events: {
                     onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
