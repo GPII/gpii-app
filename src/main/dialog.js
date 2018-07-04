@@ -72,7 +72,19 @@ fluid.defaults("gpii.app.dialog", {
     },
 
     config: {
+        // dialog behaviour settings
         showInactive: false,
+        // Whether to position the dialog after creation. This is used instead of x and y as raw
+        // options as they depend on the offset and latter is not yet defined at the time of the
+        // dialog creation
+        positionOnInit: true,
+
+        restrictions: {
+            minHeight: null
+        },
+
+        // params for the BrowserWindow instance
+        params: null,
 
         // dialog creation options
         attrs: {        // raw attributes used in `BrowserWindow` generation
@@ -102,6 +114,7 @@ fluid.defaults("gpii.app.dialog", {
             expander: {
                 funcName: "gpii.app.dialog.makeDialog",
                 args: [
+                    "{that}",
                     "{that}.options.config.attrs",
                     "{that}.options.config.url",
                     "{that}.options.config.params"
@@ -114,16 +127,14 @@ fluid.defaults("gpii.app.dialog", {
         isShown: {
             funcName: "gpii.app.dialog.toggle",
             args: ["{that}", "{change}.value", "{that}.options.config.showInactive"],
-            namespace: "impl"
+            namespace: "impl",
+            excludeSource: "init"
         }
     },
     listeners: {
-        "onCreate.setPosition": {
-            func: "{that}.setPosition",
-            args: [
-                "{that}.model.offset.x",
-                "{that}.model.offset.y"
-            ]
+        "onCreate.postInit": {
+            funcName: "gpii.app.dialog.onDialogCreated",
+            args: ["{that}"]
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -135,33 +146,43 @@ fluid.defaults("gpii.app.dialog", {
             funcName: "gpii.app.dialog.setPosition",
             args: [
                 "{that}",
+                "{that}.options.config.restrictions",
                 "{arguments}.0", // offsetX
                 "{arguments}.1"  // offsetY
+                // TODO add hidden args
             ]
         },
         setBounds: {
             funcName: "gpii.app.dialog.setBounds",
             args: [
                 "{that}",
-                "{arguments}.0", // windowWidth
-                "{arguments}.1", // windowHeight
+                "{that}.options.config.restrictions",
+                "{arguments}.0", // width
+                "{arguments}.1", // height
                 "{arguments}.2", // offsetX
                 "{arguments}.3"  // offsetY
             ]
         },
-        setSize: {
-            funcName: "gpii.app.dialog.setSize",
+        setRestrictedSize: {
+            funcName: "gpii.app.dialog.setRestrictedSize",
             args: [
                 "{that}",
-                "{arguments}.0", // windowWidth
-                "{arguments}.1"  // windowHeight
+                "{that}.options.config.restrictions",
+                "{arguments}.0", // width
+                "{arguments}.1"  // height
             ]
         },
-        /*
-         _show: {}
-            that.dialog.show();
-            that.events.onDialogShown.fire();
-         */
+        _show: {
+            funcName: "gpii.app.dialog._show",
+            args: [
+                "{that}",
+                "{arguments}.0" // showInactive
+            ]
+        },
+        _hide: {
+            this: "{that}.dialog",
+            method: "hide"
+        },
         show: {
             changePath: "isShown",
             value: true
@@ -204,13 +225,14 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
 /**
  * Creates a dialog. This is done up front to avoid the delay from creating a new
  * dialog every time a new message should be displayed.
+ * @param {Component} that - The raw Electron `BrowserWindow` settings
  * @param {Object} windowOptions - The raw Electron `BrowserWindow` settings
  * @param {String} url - The URL to be loaded in the `BrowserWindow`
  * @param {Object} params -  Options that are to be supplied to the render process of
  * the newly created BrowserWindow
  * @return {BrowserWindow} The Electron `BrowserWindow` component
  */
-gpii.app.dialog.makeDialog = function (windowOptions, url, params) {
+gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
     var dialog = new BrowserWindow(windowOptions);
 
     dialog.loadURL(url);
@@ -219,7 +241,35 @@ gpii.app.dialog.makeDialog = function (windowOptions, url, params) {
     // proposed in: https://github.com/electron/electron/issues/1095
     dialog.params = params || {};
 
+    // ensure the window is hidden properly
+    if (that.options.offScreenHide && !windowOptions.show) {
+        gpii.browserWindow.moveOffScreen(dialog);
+        dialog.show();
+    }
+
     return dialog;
+};
+
+gpii.app.dialog.onDialogCreated = function (that) {
+    if (that.options.config.positionOnInit) {
+        that.setPosition();
+    }
+};
+
+
+/**
+ * TODO
+ *
+ * @param that
+ * @param showInactive
+ * @returns {undefined}
+ */
+gpii.app.dialog._show = function (that, showInactive) {
+    var showMethod = showInactive ?
+        that.dialog.showInactive :
+        that.dialog.show;
+
+    showMethod.call(that.dialog);
 };
 
 /**
@@ -233,16 +283,14 @@ gpii.app.dialog.makeDialog = function (windowOptions, url, params) {
  * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
 gpii.app.dialog.toggle = function (that, isShown, showInactive) {
-    var showMethod = showInactive ?
-        that.dialog.showInactive :
-        that.dialog.show;
-
+    console.log("TOGGLE: ",
+    that.options.gradeNames.slice(-1));
     if (isShown) {
         that.setPosition(that.model.offset.x, that.model.offset.y);
-        showMethod.call(that.dialog);
+        that._show(showInactive);
         that.events.onDialogShown.fire();
     } else {
-        that.dialog.hide();
+        that._hide();
         that.events.onDialogHidden.fire();
     }
 };
@@ -250,50 +298,75 @@ gpii.app.dialog.toggle = function (that, isShown, showInactive) {
 /**
  * Both resizes the current window and repositions it.
  * @param {Component} that - The `gpii.app.dialog` instance
- * @param {Number} windowWidth - The new width for the window
- * @param {Number} windowHeight - The new height for the window
+ * @param {Object} restrictions - Restrictions for resizing and positioning the window
+ * @param {Number} width - The new width for the window
+ * @param {Number} height - The new height for the window
  * @param {Number} offsetX - The new width for the window
  * @param {Number} offsetY - The new height for the window
  */
-gpii.app.dialog.setBounds = function (that, windowWidth, windowHeight, offsetX, offsetY) {
-    // XXX Unites both setPosition and setSize but cannot use them separately
+gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX, offsetY) {
+    // XXX Unites both setPosition and setRestrictedSize but cannot use them separately
     // As default use currently set values
-    offsetX      = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
-    offsetY      = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
-    windowWidth  = fluid.isValue(windowWidth) ? windowWidth : that.width;
-    windowHeight = fluid.isValue(windowHeight) ? windowHeight : that.height;
+    offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
+    offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
+    width    = fluid.isValue(width)   ? width : that.width;
+    height   = fluid.isValue(height)  ? height : that.height;
 
-    var bounds = gpii.browserWindow.computeWindowBounds(windowWidth, windowHeight, offsetX, offsetY);
+    // apply restrictions
+    if (restrictions.minHeight) {
+        height = Math.max(height, restrictions.minHeight);
+    }
 
-    that.width  = windowWidth;
-    that.height = windowHeight;
+    var bounds = gpii.browserWindow.computeWindowBounds(width, height, offsetX, offsetY);
+
+    that.width  = width;
+    that.height = height;
     that.applier.change("offset", { x: offsetX, y: offsetY });
 
     that.dialog.setBounds(bounds);
 };
 
 
-gpii.app.dialog.setSize = function (that, windowWidth, windowHeight) {
+
+/**
+ * Resizes the Electron BrowserWindow. Ensures that the window will be resized to fit the available screen
+ * area.
+ *
+ * @param {Component} that - The `gpii.app.dialog` instance
+ * @param {Number} width - The desired width for the window
+ * @param {Number} height - The desired height for the window
+ */
+gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height) {
     // ensure the whole window is visible
     var offset = that.model.offset;
-    var bounds = gpii.browserWindow.computeWindowSize(windowWidth, windowHeight, offset.x, offset.y);
 
-    that.width  = windowWidth  || that.width;
-    that.height = windowHeight || that.height;
+    // apply restrictions
+    if (restrictions.minHeight) {
+        height = Math.max(height, restrictions.minHeight);
+    }
 
-    that.dialog.setSize(bounds);
+    var size = gpii.browserWindow.computeWindowSize(width, height, offset.x, offset.y);
+
+    that.width  = width  || that.width;
+    that.height = height || that.height;
+
+    // XXX DEV
+    console.log("FINALLE");
+
+    that.dialog.setSize(size.width, size.height);
 };
 
 /**
  * TODO
+ * Position the BrowserWindow. The position is restricted to be inside the screen and
+ * is relative to the bottom right corner.
  * In case offset is not given, the current offset will be used
  *
- * @param that
- * @param [offsetX]
- * @param [offsetY]
- * @returns {undefined}
+ * @param {Component} that
+ * @param {} [offsetX]
+ * @param {} [offsetY]
  */
-gpii.app.dialog.setPosition = function (that, offsetX, offsetY) {
+gpii.app.dialog.setPosition = function (that, restrictions, offsetX, offsetY) {
     offsetX = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
     offsetY = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
 
@@ -492,8 +565,8 @@ fluid.defaults("gpii.app.centeredDialog", {
             funcName: "gpii.app.centeredDialog.setBounds",
             args: [
                 "{that}",
-                "{arguments}.0", // windowWidth
-                "{arguments}.1"  // windowHeight
+                "{arguments}.0", // width
+                "{arguments}.1"  // height
             ]
         }
     }
@@ -505,9 +578,9 @@ gpii.app.centeredDialog.setPosition = function (dialog) {
     dialog.setPosition(position.x, position.y);
 };
 
-gpii.app.centeredDialog.setBounds = function (that, windowWidth, windowHeight/*, offsetX, offsetY*/) {
-    var position = gpii.browserWindow.computeCentralWindowPosition(windowWidth, windowHeight),
-        bounds = gpii.browserWindow.computeWindowBounds(windowWidth, windowHeight, position.x, position.y);
+gpii.app.centeredDialog.setBounds = function (that, width, height/*, offsetX, offsetY*/) {
+    var position = gpii.browserWindow.computeCentralWindowPosition(width, height),
+        bounds = gpii.browserWindow.computeWindowBounds(width, height, position.x, position.y);
 
     that.dialog.setBounds(bounds);
 };

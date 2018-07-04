@@ -109,7 +109,16 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
 gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
     that.width = width;
     that.height = height;
-    that.setBounds(width, height);
+    // XXX DEV
+    console.log("Heigh Changed", that.options.gradeNames.slice(-1)[0], width, height);
+    if (that.isShown) {
+        // move in position as well
+        that.setBounds(width, height);
+    } else {
+        // XXX DEV
+        console.log("Here");
+        that.setRestrictedSize(width, height);
+    }
 };
 
 /**
@@ -121,7 +130,7 @@ gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
  */
 gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) {
     // XXX support both `gpii.app.psp` and `gpii.app.dialog` types
-    var dialog = that.dialog || that.pspWindow;
+    var dialog = that.dialog;
 
     // In older versions of Electron (e.g. 1.4.1) whenever the DPI was changed, one
     // `display-metrics-changed` event was fired. In newer versions (e.g. 1.8.1) the
@@ -149,7 +158,7 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
         if (!that.options.offScreenHide || that.model.isShown) {
             that.setBounds(width, height);
         } else {
-            that.setSize(width, height);
+            that.setRestrictedSize(width, height);
         }
 
         // Correct the state of windows
@@ -175,7 +184,7 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
 
     // to ensure the DPI change has taken place, wait for a while after its last event
     clearTimeout(that.displayMetricsChanged.timer);
-    that.displayMetricsChanged.timer = setTimeout(scaleDialog, 500);
+    that.displayMetricsChanged.timer = setTimeout(scaleDialog, 700);
 };
 
 /**

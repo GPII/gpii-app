@@ -160,18 +160,6 @@ gpii.browserWindow.setPosition = function (dialogWindow, offsetX, offsetY) {
     dialogWindow.setPosition(position.x, position.y);
 };
 
-// gpii.browserWindow.setSize = function (dialogWindow, width, height) {
-//     var size = gpii.browserWindow.computeWindowSize(width, height, 0, 0);
-
-//     dialogWindow.setSize(size.width, size.height);
-// };
-
-// gpii.browserWindow.setBounds = function (dialogWindow, width, height, offsetX, offsetY) {
-//     var size = gpii.browserWindow.computeWindowBounds(width, height, offsetX, offsetY);
-
-//     dialogWindow.setBounds(size.width, size.height);
-// };
-
 
 /**
  * Moves the window back to the visible screen. This function in conjunction with `gpii.browserWindow.moveOffScreen`

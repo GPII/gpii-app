@@ -18,8 +18,7 @@
 var fluid    = require("infusion");
 var electron = require("electron");
 
-var BrowserWindow     = electron.BrowserWindow,
-    ipcMain           = electron.ipcMain,
+var ipcMain           = electron.ipcMain,
     systemPreferences = electron.systemPreferences;
 var gpii              = fluid.registerNamespace("gpii");
 
@@ -116,16 +115,20 @@ fluid.defaults("gpii.app.pspInApp", {
  * @param {Boolean} isQssShown - Whether the QSS is shown
  */
 gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
+    // TODO refactor
     if (isQssShown) {
-        psp.options.heightOffset = qssHeight;
+        psp.model.offset.y = qssHeight;
     } else {
         // reset the heightOffset
-        psp.options.heightOffset = null;
+        psp.model.offset.y = null;
     }
 
-    console.log("Apply Offset & setBounds: ", psp.width, psp.height, psp.options.heightOffset);
     // in case it was shown, it will be also repositioned
-    psp.setBounds(psp.width, psp.height);
+    if (psp.isShown) {
+        psp.setBounds(psp.width, psp.height);
+    } else {
+        psp.setRestrictedSize(psp.width, psp.height);
+    }
 };
 
 /**
@@ -147,11 +150,10 @@ gpii.app.pspInApp.togglePspRestartWarning = function (psp, pendingChanges) {
  * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.psp", {
-    gradeNames: ["fluid.modelComponent", "gpii.app.blurrable", "gpii.app.resizable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
 
     model:  {
         keyedInUserToken: null,
-        isShown: false,
         theme: null,
         preferences: {}
     },
@@ -160,21 +162,38 @@ fluid.defaults("gpii.app.psp", {
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
      */
     config: {
+        positionOnInit: false,
+
+        restrictions: {
+            minHeight: 600
+        },
         attrs: {
             width: 450,
-            height: 600,
-            show: true,
-            frame: false,
-            fullscreenable: false,
-            resizable: false,
-            skipTaskbar: true,
-            backgroundColor: "transparent"
+            height: 600
+        },
+
+        fileSuffixPath: "psp/index.html",
+
+        params: {
+            theme: "{that}.model.theme",
+            sounds: {
+                keyedIn: {
+                    expander: {
+                        funcName: "{assetsManager}.resolveAssetPath",
+                        args: ["{that}.options.sounds.keyedIn"]
+                    }
+                },
+                activeSetChanged: {
+                    expander: {
+                        funcName: "{assetsManager}.resolveAssetPath",
+                        args: ["{that}.options.sounds.activeSetChanged"]
+                    }
+                }
+            }
         }
     },
 
-    // In case we want to have some heightOffset from the screen edge.
-    // This is useful when we have QSS which should be below the PSP.
-    heightOffset: null,
+    // TODO
     offScreenHide: true,
 
     linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.psp"],
@@ -184,27 +203,6 @@ fluid.defaults("gpii.app.psp", {
         activeSetChanged: "activeSetChanged.mp3"
     },
 
-    params: {
-        theme: "{that}.model.theme",
-        sounds: {
-            keyedIn: {
-                expander: {
-                    funcName: "{assetsManager}.resolveAssetPath",
-                    args: ["{that}.options.sounds.keyedIn"]
-                }
-            },
-            activeSetChanged: {
-                expander: {
-                    funcName: "{assetsManager}.resolveAssetPath",
-                    args: ["{that}.options.sounds.activeSetChanged"]
-                }
-            }
-        }
-    },
-
-    members: {
-        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.config.attrs, {that}.options.params, {that}.options.gradeNames)"
-    },
     events: {
         onSettingUpdated: null,
 
@@ -229,11 +227,11 @@ fluid.defaults("gpii.app.psp", {
         },
         "onCreate.initBlurrable": {
             func: "{that}.initBlurrable",
-            args: ["{that}.pspWindow"]
+            args: ["{that}.dialog"]
         },
 
         "onDestroy.cleanupElectron": {
-            "this": "{that}.pspWindow",
+            "this": "{that}.dialog",
             method: "destroy"
         },
 
@@ -247,7 +245,7 @@ fluid.defaults("gpii.app.psp", {
         "{app}.model.locale": {
             funcName: "gpii.app.notifyWindow",
             args: [
-                "{that}.pspWindow",
+                "{that}.dialog",
                 "onLocaleChanged",
                 "{app}.model.locale"
             ]
@@ -259,40 +257,24 @@ fluid.defaults("gpii.app.psp", {
     },
 
     invokers: {
-        show: {
-            funcName: "gpii.app.psp.show",
+        _show: {
+            funcName: "gpii.app.psp._show",
+            args: [
+                "{that}",
+                "{arguments}.0" // showInactive
+            ]
+        },
+        _hide: {
+            funcName: "gpii.app.psp._hide",
             args: ["{that}"]
         },
-        hide: {
-            funcName: "gpii.app.psp.hide",
-            args: ["{that}"]
-        },
+        // TODO use channel
         notifyPSPWindow: {
             funcName: "gpii.app.notifyWindow",
             args: [
-                "{that}.pspWindow",
+                "{that}.dialog",
                 "{arguments}.0", // messageChannel
                 "{arguments}.1"  // message
-            ]
-        },
-        setSize: {
-            funcName: "gpii.app.psp.setSize",
-            args: [
-                "{that}",
-                "{arguments}.0",  // width
-                "{arguments}.1",  // height
-                "{that}.options.config.attrs.height",
-                "{that}.options.heightOffset"
-            ]
-        },
-        setBounds: {
-            funcName: "gpii.app.psp.setBounds",
-            args: [
-                "{that}",
-                "{arguments}.0",  // width
-                "{arguments}.1",  // height
-                "{that}.options.config.attrs.height",
-                "{that}.options.heightOffset"
             ]
         },
         showRestartWarning: {
@@ -309,7 +291,7 @@ fluid.defaults("gpii.app.psp", {
         onThemeChanged: {
             funcName: "gpii.app.notifyWindow",
             args: [
-                "{that}.pspWindow",
+                "{that}.dialog",
                 "onThemeChanged",
                 "{that}.model.theme"
             ]
@@ -327,11 +309,21 @@ fluid.defaults("gpii.app.psp", {
  * the `isShown` model property accordingly.
  * @param {Component} psp - The `gpii.app.psp` instance.
  */
-gpii.app.psp.show = function (psp) {
-    console.log("Show: ", psp.options.heightOffset);
-    gpii.browserWindow.moveToScreen(psp.pspWindow, { y: psp.options.heightOffset });
-    psp.pspWindow.focus();
-    psp.applier.change("isShown", true);
+gpii.app.psp._show = function (that, showInactive) {
+    gpii.browserWindow.moveToScreen(that.dialog, { y: that.model.offset.y });
+    if (!showInactive) {
+        that.dialog.focus();
+    }
+};
+
+/**
+ * Hides the PSP window by moving it off the screen and changes the `isShown` model
+ * property accordingly.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ */
+gpii.app.psp._hide = function (that) {
+    gpii.browserWindow.moveOffScreen(that.dialog);
+    that.dialog.blur();
 };
 
 /**
@@ -399,17 +391,6 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     });
 };
 
-
-/**
- * Hides the PSP window by moving it off the screen and changes the `isShown` model
- * property accordingly.
- * @param {Component} psp - The `gpii.app.psp` instance.
- */
-gpii.app.psp.hide = function (psp) {
-    gpii.browserWindow.moveOffScreen(psp.pspWindow);
-    psp.applier.change("isShown", false);
-};
-
 /**
  * Invoked whenever the user presses the close button in the upper right corner of
  * the PSP `BrowserWindow`, clicks outside of it or confirms the application of
@@ -430,66 +411,6 @@ gpii.app.psp.closePSP = function (psp, settingsBroker) {
     });
 };
 
-gpii.app.psp.setSize = function (psp, width, height, minHeight, heightOffset) {
-    var pspWindow = psp.pspWindow;
-
-    height = Math.max(height, minHeight || 0);
-
-    var size = gpii.browserWindow.computeWindowSize(width, height, 0, heightOffset);
-
-    pspWindow.setSize(size.width, size.height);
-};
-
-
-
-/**
- * Resizes the PSP window and positions it appropriately based on the new height
- * of its content. Makes sure that the window is no higher than the available
- * height of the work area in the primary display.
- * @param {Object} psp - A `gpii.app.psp` instance.
- * @param {Number} width - The desired width of the BrowserWindow.
- * @param {Number} height - The new height of the BrowserWindow's content.
- * @param {Number} minHeight - The minimum height which the BrowserWindow must have.
- * @param {Number} heightOffset - The heightoffset that should be preserved after resizing.
- */
-gpii.app.psp.setBounds = function (psp, width, height, minHeight, heightOffset) {
-    var pspWindow = psp.pspWindow,
-        wasShown = psp.model.isShown;
-
-    height = Math.max(height, minHeight || 0);
-
-    var bounds = gpii.browserWindow.computeWindowBounds(width, height, 0, heightOffset);
-
-    if (wasShown) {
-        // The coordinates and the dimensions of the PSP must be set with a single
-        // call to setBounds instead of by invoking setBounds and setPosition in a
-        // row. Due to https://github.com/electron/electron/issues/10862.
-        pspWindow.setBounds(bounds);
-    } else {
-        // Setting only the size here because setting the bounds will actually
-        // move the PSP `BrowserWindow` to the screen (i.e. make it visible).
-        pspWindow.setSize(bounds.width, bounds.height);
-    }
-};
-
-/**
- * Creates an Electron `BrowserWindow` that is to be used as the PSP window.
- * @param {Object} windowOptions - The raw `BrowserWindow` settings.
- * @param {Object} params - options that are to be supplied to the render process of
- * the newly created `BrowserWindow`.
- * @return {Object} The created Electron `BrowserWindow`
- */
-gpii.app.psp.makePSPWindow = function (windowOptions, params) {
-    var pspWindow = new BrowserWindow(windowOptions);
-
-    var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
-    pspWindow.loadURL(url);
-    pspWindow.params = params || {};
-
-    gpii.browserWindow.moveOffScreen(pspWindow);
-
-    return pspWindow;
-};
 
 /**
  * This function takes care of notifying the PSP window whenever the
@@ -506,7 +427,7 @@ gpii.app.psp.registerAccentColorListener = function (psp) {
         // event has been fired. That is why the PSP window should be notified every
         // time it is focused (only the first time is insufficient because showing
         // the window (even off screen) automatically focuses it).
-        psp.pspWindow.on("focus", function () {
+        psp.dialog.on("focus", function () {
             psp.notifyPSPWindow("onAccentColorChanged", systemPreferences.getAccentColor());
         });
 
