@@ -129,6 +129,10 @@
         index:       null,
         handlerType: null,
 
+        model: {
+            item: "{that}.options.item"
+        },
+
         markup: {
             container: null,
             element:   null
@@ -156,7 +160,7 @@
                 container: "{arguments}.0",
                 options: {
                     model: {
-                        item: "{element}.options.item",
+                        item: "{element}.model.item",
                         index: "{element}.options.index"
                     }
                 }
@@ -217,9 +221,25 @@
                     handlerType: "@expand:{repeater}.getHandlerType({that}.options.item)",
 
                     modelListeners: {
-                        // rerender element on item change
-                        "{repeater}.model.items.*": {
+                        /*
+                         * Simulate bi-directional binding for items as using `dynamicComponent` corrupts this binding
+                         */
+
+                        // notify for changes in the handler
+                        // down to top binding
+                        item: {
                             funcName: "gpii.psp.repeater.notifyElementChange",
+                            args: [
+                                "{repeater}",
+                                "{that}.options.index",
+                                "{change}.value"
+                            ],
+                            excludeSource: "init"
+                        },
+                        // rerender element on item change
+                        // top-down binding
+                        "{repeater}.model.items.*": {
+                            funcName: "gpii.psp.repeater.notifyListChange",
                             args: [
                                 "{that}.handler",
                                 "{that}.options.index",
@@ -227,7 +247,7 @@
                                 "{change}.path.1",
                                 "{change}.value"
                             ],
-                            excludeSource: "init"
+                            excludeSource: ["init", "gpii.psp.repeater.element"]
                         }
                     },
 
@@ -250,6 +270,18 @@
     });
 
     /**
+     * Notify the `gpii.psp.repeater` component for changes that are present in its element handlers.
+     *
+     * @param {Component} repeater - The `gpii.psp.repeater` component
+     * @param {String} elIndex - The index of the handler which matches the index of the item that
+     * the handler processes
+     * @param {Object} newValue - The new state of the item
+     */
+    gpii.psp.repeater.notifyElementChange = function (repeater, elIndex, newValue) {
+        repeater.applier.change("items." + elIndex, newValue, null, "gpii.psp.repeater.element");
+    };
+
+    /**
      * Notify the corresponding dynamic component about its setting change.
      * The dynamic component is computed using the changed setting's index.
      *
@@ -257,7 +289,7 @@
      * @param {String} index - The item's path, which represents the index of the changed element
      * @param {Object} newValue - The new state of the item
      */
-    gpii.psp.repeater.notifyElementChange = function (elHandler, elIndex , itemIndex, newValue) {
+    gpii.psp.repeater.notifyListChange = function (elHandler, elIndex , itemIndex, newValue) {
         itemIndex = fluid.parseInteger(itemIndex);
 
         // does the current handler, handles the changed item?

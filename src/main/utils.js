@@ -14,9 +14,10 @@
  */
 "use strict";
 
-var os       = require("os");
-var fluid    = require("infusion");
-var electron = require("electron");
+var os            = require("os");
+var fluid         = require("infusion");
+var electron      = require("electron"),
+    BrowserWindow = electron.BrowserWindow;
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -193,7 +194,14 @@ gpii.browserWindow.moveOffScreen = function (window) {
     window.setPosition(coordinate, coordinate);
 };
 
+gpii.browserWindow.isWindowFocused = function (grade) {
+    var focusedWindow = BrowserWindow.getFocusedWindow();
 
+    if (focusedWindow && focusedWindow.gradeNames) {
+        return focusedWindow.gradeNames.slice(-1)[0] === grade;
+    }
+    return false;
+};
 
 /**
  * A function which capitalizes its input text. It does nothing if the provided argument is `null` or `undefined`.

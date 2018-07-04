@@ -46,17 +46,10 @@ fluid.defaults("gpii.app.qssWrapper", {
         settings: "{that}.options.loadedSettings"
     },
 
-    modelListeners: {
-        "settings.*": {
-            func: "{settingsBroker}.applySetting",
-            args: ["{change}.value"],
-            includeSource: ["qss", "qssWidget"]
-        }
-    },
-
     events: {
         onSettingUpdated: null,
         onPreferencesUpdated: null,
+        onUndoRequired: null,
         onQssPspOpen: null
     },
 
@@ -114,14 +107,13 @@ fluid.defaults("gpii.app.qssWrapper", {
                         args: [{
                             description: "{arguments}.0.description",
                             focusOnClose: "{that}.dialog"
-                        }] // notificationParams 
+                        }] // notificationParams
                     },
                     "{channelListener}.events.onQssMorePanelRequired": {
                         func: "{qssMorePanel}.show"
                     },
-                    "{channelListener}.events.onQssPspOpen": {
-                        func: "{qssWrapper}.events.onQssPspOpen.fire"
-                    }
+                    "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
+                    "{channelListener}.events.onQssPspOpen":      "{qssWrapper}.events.onQssPspOpen.fire"
                 },
                 modelListeners: {
                     "{qssWrapper}.model.settings.*": {

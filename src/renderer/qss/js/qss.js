@@ -305,7 +305,8 @@
         model: {
             messages: {
                 caption: null
-            }
+            },
+            caption: null
         },
         attrs: {
             role: "switch"
@@ -471,6 +472,27 @@
         qssList.events.onMorePanelRequired.fire();
     };
 
+    fluid.defaults("gpii.qss.undoButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.undoButtonPresenter.activate",
+                args: [
+                    "{that}",
+                    "{that}.container",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
+            }
+        }
+    });
+
+    gpii.qss.undoButtonPresenter.activate = function (that, container, qssList, activationParams) {
+        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+        qssList.events.onUndoRequired.fire();
+    };
+
+
     /**
      * Represents the list of qss settings. It renders the settings and listens
      * for events on them.
@@ -502,6 +524,7 @@
             onSettingAltered: null,
             onNotificationRequired: null,
             onMorePanelRequired: null,
+            onUndoRequired: null,
             onPSPOpen: null
         },
 
@@ -526,6 +549,8 @@
             return "gpii.qss.keyInButtonPresenter";
         case "save":
             return "gpii.qss.saveButtonPresenter";
+        case "undo":
+            return "gpii.qss.undoButtonPresenter";
         case "more":
             return "gpii.qss.moreButtonPresenter";
         default:
@@ -616,6 +641,7 @@
                         onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered",
                         onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired",
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
+                        onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
                     }
                 }

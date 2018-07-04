@@ -19,6 +19,7 @@ var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
 require("./assetsManager.js");
+require("./propertyHistoryManager.js");
 require("./ws.js");
 require("./factsManager.js");
 require("./dialogManager.js");
@@ -49,7 +50,6 @@ gpii.app.electronAppListener = function () {
 require("electron").app.on("ready", gpii.app.electronAppListener);
 // Override default behaviour - don't exit process once all windows are closed
 require("electron").app.on("window-all-closed", fluid.identity);
-
 
 /**
  * A component to manage the app. When  the PSP application is fully functional,
@@ -154,7 +154,23 @@ fluid.defaults("gpii.app", {
                 listeners: {
                     "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
-                    "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated"
+                    "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated",
+
+                    "onUndoRequired.activateUndo": {
+                        func: "{propertyHistoryManager}.undo",
+                        args: "gpii.app.qssWrapper"
+                    },
+                    "onCreate.regsiterUndo": {
+                        funcName: "{propertyHistoryManager}.registerPropertyObserver",
+                        args: [ "{that}", "settings.*" ]
+                    }
+                },
+                modelListeners: {
+                    "settings.*": {
+                        func: "{settingsBroker}.applySetting",
+                        args: ["{change}.value"],
+                        includeSource: ["qss", "qssWidget", "gpii.app.propertyHistoryManager.undo"]
+                    }
                 }
             }
         },
@@ -173,6 +189,9 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        propertyHistoryManager: {
+            type: "gpii.app.propertyHistoryManager"
+        },
         tray: {
             type: "gpii.app.tray",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -181,7 +200,23 @@ fluid.defaults("gpii.app", {
                     keyedInUserToken: "{gpii.app}.model.keyedInUserToken"
                 },
                 events: {
-                    onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
+                    onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered",
+
+                    onPspOpenShortcut: null,
+                    onQssUndoShortcut: null
+                },
+                shortcuts: {
+                    open: {
+                        command: "Super+CmdOrCtrl+Alt+U",
+                        event: "onPspOpenShortcut"
+                    },
+                    undo: {
+                        command: "CmdOrCtrl+Z",
+                        event: "onQssUndoShortcut",
+                        condition: function () {
+                            return gpii.browserWindow.isWindowFocused("gpii.app.qss");
+                        }
+                    }
                 },
                 listeners: {
                     onTrayIconClicked: [{
@@ -192,7 +227,13 @@ fluid.defaults("gpii.app", {
                     }, {
                         func: "{psp}.show"
                     }],
-                    onShortcutUsed: [{
+                    // filter shortcut
+                    onQssUndoShortcut: {
+                        // get current active window
+                        funcName: "{propertyHistoryManager}.undo",
+                        args: "gpii.app.qssWrapper"
+                    },
+                    onPspOpenShortcut: [{
                         func: "{psp}.show"
                     }, {
                         func: "{qssWrapper}.qss.show",
@@ -504,3 +545,4 @@ fluid.defaults("gpii.appWrapper", {
         }
     }
 });
+
