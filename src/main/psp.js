@@ -310,7 +310,8 @@ fluid.defaults("gpii.app.psp", {
  * @param {Component} psp - The `gpii.app.psp` instance.
  */
 gpii.app.psp._show = function (that, showInactive) {
-    gpii.browserWindow.moveToScreen(that.dialog, { y: that.model.offset.y });
+    // Move to screen
+    that.setPosition();
     if (!showInactive) {
         that.dialog.focus();
     }

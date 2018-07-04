@@ -147,32 +147,8 @@ gpii.browserWindow.getCenterWindowBounds = function (width, height) {
     };
 };
 
-/**
- * Positions an Electron `BrowserWindow` in the lower right corner of
- * the primary display.
- *
- * @param {BrowserWindow} dialogWindow - The window which is to be positioned.
- */
-gpii.browserWindow.setPosition = function (dialogWindow, offsetX, offsetY) {
-    var size = dialogWindow.getSize(),
-        position = gpii.browserWindow.computeWindowPosition(size[0], size[1], offsetX, offsetY);
 
-    dialogWindow.setPosition(position.x, position.y);
-};
-
-
-/**
- * Moves the window back to the visible screen. This function in conjunction with `gpii.browserWindow.moveOffScreen`
- * help avoid the flickering issue when the content of the PSP window changes.
- *
- * @param {Object} window - An Electron `BrowserWindow`.
- * @param {Object} offset - The exact position the window to be moved to relative
- */
-gpii.browserWindow.moveToScreen = function (window, offset) {
-    // TODO fit window in screen
-    gpii.browserWindow.setPosition(window, offset.x || 0, offset.y || 0);
-};
-
+/// XXX move inside new component
 /**
  * Moves the BrowserWindow to a non-visible part of the screen. This function in conjunction
  * with `gpii.browserWindow.moveToScreen` help avoid the flickering issue when the content

@@ -110,6 +110,10 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     members: {
+        // XXX move to the model probably
+        width:  "{that}.options.config.attrs.width", // the actual width of the content
+        height: "{that}.options.config.attrs.height", // the actual height of the content
+
         dialog: {
             expander: {
                 funcName: "gpii.app.dialog.makeDialog",
@@ -369,7 +373,9 @@ gpii.app.dialog.setPosition = function (that, restrictions, offsetX, offsetY) {
         y: offsetY
     });
 
-    gpii.browserWindow.setPosition(that.dialog, offsetX, offsetY);
+    var position = gpii.browserWindow.computeWindowPosition(that.width, that.height, offsetX, offsetY);
+
+    that.dialog.setPosition(position.x, position.y);
 };
 
 /**

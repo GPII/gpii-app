@@ -38,9 +38,6 @@ fluid.defaults("gpii.app.resizable", {
         }
     },
     members: {
-        // TODO move to dialog
-        width:  "{that}.options.config.attrs.width", // the actual width of the content
-        height: "{that}.options.config.attrs.height", // the actual height of the content
         // helper variables needed for display metrics changes
         displayMetricsChanged: {
             timer: null,
@@ -109,14 +106,10 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
 gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
     that.width = width;
     that.height = height;
-    // XXX DEV
-    console.log("Heigh Changed", that.options.gradeNames.slice(-1)[0], width, height);
     if (that.isShown) {
         // move in position as well
         that.setBounds(width, height);
     } else {
-        // XXX DEV
-        console.log("Here");
         that.setRestrictedSize(width, height);
     }
 };
