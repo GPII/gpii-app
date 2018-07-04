@@ -13,7 +13,7 @@ body {
     height: 84px;
     width:  84px;
     margin: 5px 0 5px 5px;
-    padding: 1px 6px;
+    padding: 0;
 
     float: left;
 
@@ -86,12 +86,22 @@ body {
 
 .fl-qss-button .fl-qss-btnImage {
     display: block;
-    width: 60px;
-    height: 60px;
-    margin: 0 auto;
+    width: 64px;
+    height: 32px;
+    margin: 2px auto;
+
+    background-color: #ffffff;
+
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+
+    -webkit-mask-position: 50% 50%;
+    mask-position: 50% 50%;
+
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
 }
 
-.fl-qss-button .fl-qss-btnImage:not([src]),
-.fl-qss-button .fl-qss-btnImage[src=""] {
-    display: none;
+.fl-qss-button.fl-qss-settingButton.fl-activated .fl-qss-btnImage {
+    background-color: #3b66b2;
 }

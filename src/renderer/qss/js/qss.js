@@ -117,9 +117,8 @@
                 args: ["{that}.model.item.schema.title"]
             },
             "onCreate.renderImage": {
-                this: "{that}.dom.image",
-                method: "attr",
-                args: ["src", "{that}.model.item.schema.image"]
+                funcName: "gpii.qss.buttonPresenter.renderImage",
+                args: ["{that}", "{that}.dom.image"]
             },
 
             "{focusManager}.events.onElementFocused": {
@@ -214,6 +213,19 @@
         }
     });
 
+    gpii.qss.buttonPresenter.renderImage = function (that, imageElem) {
+        var image = that.model.item.schema.image;
+        if (image) {
+            var maskImageValue = fluid.stringTemplate("url(%image)", {
+                image: image
+            });
+
+            imageElem.css("mask-image", maskImageValue);
+        } else {
+            imageElem.hide();
+        }
+    };
+
     gpii.qss.buttonPresenter.onActivationKeyPressed = function (that, focusManager, container, activationParams) {
         if (focusManager.isHighlighted(container)) {
             that.activate(activationParams);
@@ -233,7 +245,7 @@
 
     gpii.qss.buttonPresenter.styleButton = function (that, container) {
         var path = that.model.item.path;
-        if (path.startsWith("http://registry\\.gpii\\.net") || path === "more") {
+        if (path.startsWith("http://registry\\.gpii\\.net")) {
             container.addClass(that.options.styles.settingButton);
         }
     };
@@ -504,8 +516,8 @@
             container:
                 "<div class=\"%containerClass fl-focusable\" tabindex=\"0\">" +
                     "<div class=\"flc-qss-btnChangeIndicator fl-qss-btnChangeIndicator\"></div>" +
+                    "<div class=\"flc-qss-btnImage fl-qss-btnImage\"></div>" +
                     "<span class=\"flc-qss-btnLabel fl-qss-btnLabel\"></span>" +
-                    "<img class=\"flc-qss-btnImage fl-qss-btnImage\">" +
                     "<div class=\"flc-qss-btnCaption fl-qss-btnCaption\"></div>" +
                 "</div>",
             containerClassPrefix: "fl-qss-button"

@@ -1,46 +1,111 @@
 [
     {
-
-        "path": "more",
+        "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {
-            "type": "more",
-            "title": "More"
+            "type": "string",
+            "title": "Language",
+            "enum": [
+                "English",
+                "Deutsch",
+                "Español",
+                "Български"
+            ],
+            "image": "language.svg",
+            "defaultValue": "English"
         },
+        "value": "English",
         "tooltip": {
-            "header": "More options for changing the settings on this computer."
-        }
+            "header": "Change language.",
+            "body": "Works in Windows, Edge, and many other applications."
+        },
+        "restartWarning": true
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/fontSize",
+        "schema": {
+            "type": "number",
+            "title": "App / Text Zoom",
+            "min": 0,
+            "max": null,
+            "divisibleBy": 0.5,
+            "defaultValue": 11
+        },
+        "value": 11,
+        "tooltip": {
+            "header": "Change text size.",
+            "body": "Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications."
+        },
+        "widget": {
+            "footerTip": "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
+        },
+        "restartWarning": false
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/DPIScale",
+        "schema": {
+            "type": "number",
+            "title": "Screen Zoom",
+            "min": 1,
+            "max": 2,
+            "divisibleBy": 0.25,
+            "defaultValue": 1
+        },
+        "value": 1.25,
+        "tooltip": {
+            "header": "Change the screen size to make everything larger/smaller."
+        },
+        "widget": {
+            "footerTip": ""
+        },
+        "restartWarning": false
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
+        "schema": {
+            "type": "boolean",
+            "title": "Youtube Captions",
+            "defaultValue": false
+        },
+        "value": false,
+        "tooltip": {
+            "header": "Turn captions on/off in",
+            "body": "<ul><li> Youtube videos played in Chrome</li><li>Windows Media Player </li></ul>"
+        },
+        "restartWarning": false
     }, {
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
             "type": "string",
-            "title": "Hi / Lo Contrast",
+            "title": "High / Low Contrast",
             "enum": [
-                "Black on brown",
-                "Grey on white",
-                "Grey on black",
-                "Black on yellow",
-                "Yellow on black",
-                "White on black",
+                "Regular contrast",
                 "Black on white",
-                "Regular contrast"
+                "White on black",
+                "Yellow on black",
+                "Black on yellow",
+                "Grey on black",
+                "Grey on white",
+                "Black on brown"
             ],
             "defaultValue": "Regular contrast"
         },
         "value": "Regular contrast",
         "styles": {
-            "Black on brown": {
-                "background-color": "#bb9966",
+            "Regular contrast": {
+                "background": "#ffffff",
+                "color": "#0073bd",
+                "border-color": "#0073bd"
+            },
+            "Black on white": {
+                "background-color": "#ffffff",
                 "color": "#000000",
+                "border-color": "#656565"
+            },
+            "White on black": {
+                "background-color": "#222222",
+                "color": "#ffffff",
                 "border-color": "transparent"
             },
-            "Grey on white": {
-                "background-color": "#ffffff",
-                "color": "#6c6c6c",
-                "border-color": "#6c6c6c"
-            },
-            "Grey on black": {
+            "Yellow on black": {
                 "background-color": "#222222",
-                "color": "#888888",
+                "color": "#ffff00",
                 "border-color": "transparent"
             },
             "Black on yellow": {
@@ -48,25 +113,20 @@
                 "color": "#000000",
                 "border": "2px dashed #6c6c6c"
             },
-            "Yellow on black": {
+            "Grey on black": {
                 "background-color": "#222222",
-                "color": "#ffff00",
+                "color": "#888888",
                 "border-color": "transparent"
             },
-            "White on black": {
-                "background-color": "#222222",
-                "color": "#ffffff",
-                "border-color": "transparent"
-            },
-            "Black on white": {
+            "Grey on white": {
                 "background-color": "#ffffff",
-                "color": "#000000",
-                "border-color": "#656565"
+                "color": "#6c6c6c",
+                "border-color": "#6c6c6c"
             },
-            "Regular contrast": {
-                "background": "#ffffff",
-                "color": "#0073bd",
-                "border-color": "#0073bd"
+            "Black on brown": {
+                "background-color": "#bb9966",
+                "color": "#000000",
+                "border-color": "transparent"
             }
         },
         "tooltip": {
@@ -87,75 +147,16 @@
             "header": "Turn Chrome’s ability to read text on/off."
         },
         "restartWarning": false
-    }, {   
-        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
-        "schema": {
-            "type": "boolean",
-            "title": "Captions",
-            "defaultValue": false
-        },
-        "value": false,
-        "tooltip": {
-            "header": "Turn captions on/off in",
-            "body": "<ul><li> Youtube videos played in Chrome</li><li>Windows Media Player </li></ul>"
-        },
-        "restartWarning": false
     }, {
-        "path": "http://registry\\.gpii\\.net/common/DPIScale",
+
+        "path": "more",
         "schema": {
-            "type": "number",
-            "title": "Screen Size",
-            "min": 1,
-            "max": 2,
-            "divisibleBy": 0.25,
-            "defaultValue": 1
+            "type": "more",
+            "title": "More..."
         },
-        "value": 1.25,
         "tooltip": {
-            "header": "Change the screen size to make everything larger/smaller."
-        },
-        "widget": {
-            "footerTip": ""
-        },
-        "restartWarning": false
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/fontSize",
-        "schema": {
-            "type": "number",
-            "title": "Text Size",
-            "min": 0,
-            "max": null,
-            "divisibleBy": 0.5,
-            "defaultValue": 11
-        },
-        "value": 11,
-        "tooltip": {
-            "header": "Change text size.",
-            "body": "Works in Windows, Edge, Chrome, Firefox, MIcrosoft Office, and many other applications."
-        },
-        "widget": {
-            "footerTip": "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
-        },
-        "restartWarning": false
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/language",
-        "schema": {
-            "type": "string",
-            "title": "Language",
-            "enum": [
-                "English",
-                "Deutsch",
-                "Español",
-                "Български"
-            ],
-            "defaultValue": "English"
-        },
-        "value": "English",
-        "tooltip": {
-            "header": "Change language.",
-            "body": "Works in Windows, Edge, and many other applications."
-        },
-        "restartWarning": true
+            "header": "More options for changing the settings on this computer."
+        }
     }, {
         "path": "save",
         "schema": {
@@ -169,7 +170,8 @@
         "path": "undo",
         "schema": {
             "type": "undo",
-            "title": "Undo"
+            "title": "Undo",
+            "image": "undo.svg"
         },
         "tooltip": {
             "header": "Undo the last change you made in  the Morphic Bar."
@@ -178,7 +180,7 @@
         "path": "keyIn",
         "schema": {
             "type": "keyIn",
-            "image": "gpii-icon-balloon.png"
+            "title": "Settings Panel"
         },
         "tooltip": {
             "header": "Open the Morphic Panel.",
@@ -188,7 +190,8 @@
         "path": "close",
         "schema": {
             "type": "close",
-            "title": "Close"
+            "title": "Close",
+            "image": "close.svg"
         },
         "tooltip": {
             "header": "Close the Morphic Panel.",
