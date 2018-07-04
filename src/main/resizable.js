@@ -104,13 +104,12 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
  * @param {Number} height The updated height of the componet's content.
  */
 gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
-    that.width = width;
-    that.height = height;
-    if (that.isShown) {
-        // move in position as well
-        that.setBounds(width, height);
-    } else {
+    if (!that.model.isShown && that.options.config.offScreenHide) {
+        // we don't want to move it to screen (visible area)
         that.setRestrictedSize(width, height);
+    } else {
+        // reposition as well
+        that.setBounds(width, height);
     }
 };
 
@@ -122,9 +121,6 @@ gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
  * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
  */
 gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) {
-    // XXX support both `gpii.app.psp` and `gpii.app.dialog` types
-    var dialog = that.dialog;
-
     // In older versions of Electron (e.g. 1.4.1) whenever the DPI was changed, one
     // `display-metrics-changed` event was fired. In newer versions (e.g. 1.8.1) the
     // `display-metrics-changed` event is fired multiple times. The change of the DPI
@@ -142,13 +138,12 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
     // according to the scale factor of the environment (DPI setting for Windows). In other words
     // calling the resize method with the same size will update the window with respect to the scaling.
     function scaleDialog() {
-        var attrs = that.options.config.attrs,
-            width = that.width || attrs.width,
-            height = that.height || attrs.height;
+        var width = that.width,
+            height = that.height;
 
 
         // XXX Some dark magic here...
-        if (!that.options.offScreenHide || that.model.isShown) {
+        if (that.model.isShown || !that.options.config.offScreenHide) {
             that.setBounds(width, height);
         } else {
             that.setRestrictedSize(width, height);
@@ -156,13 +151,13 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
 
         // Correct the state of windows
         that.displayMetricsChanged.timer = null;
-        if (that.options.offScreenHide || that.model.isShown) {
+        if (that.options.config.offScreenHide || that.model.isShown) {
             // low level show
             if (that.displayMetricsChanged.wasFocused) {
-                dialog.show();
+                that.dialog.show();
             } else {
                 // without a focus; We want to restore the previously focused window
-                dialog.showInactive();
+                that.dialog.showInactive();
             }
         }
     }
@@ -170,9 +165,9 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
     // in case this is the first call notification of the display-metrics-changed event
     // hide the dialog, and keep its state
     if (!that.displayMetricsChanged.timer) {
-        that.displayMetricsChanged.wasFocused = dialog.isFocused();
+        that.displayMetricsChanged.wasFocused = that.dialog.isFocused();
         // low level hide
-        dialog.hide();
+        that.dialog.hide();
     }
 
     // to ensure the DPI change has taken place, wait for a while after its last event

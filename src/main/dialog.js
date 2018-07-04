@@ -246,8 +246,8 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
     dialog.params = params || {};
 
     // ensure the window is hidden properly
-    if (that.options.offScreenHide && !windowOptions.show) {
-        gpii.browserWindow.moveOffScreen(dialog);
+    if (that.options.config.offScreenHide && !windowOptions.show) {
+        gpii.app.dialog.offScreenHidable.moveOffScreen(dialog);
         dialog.show();
     }
 
@@ -515,8 +515,6 @@ fluid.defaults("gpii.app.dialog.delayedShow", {
     invokers: {
         // _show: null, // expected from implementor
         // _hide: null,
-        // delayedShow: ... (this will be simply called in show / hide)
-        // delayedHide: ...
         delayedShow: {
             funcName: "gpii.app.dialog.delayedShow.delayedShow",
             args: [
@@ -584,3 +582,54 @@ gpii.app.centeredDialog.setBounds = function (that, width, height/*, offsetX, of
 
     that.dialog.setBounds(bounds);
 };
+
+
+// Mixin
+fluid.defaults("gpii.app.dialog.offScreenHidable", {
+    config: {
+        positionOnInit: false,
+        offScreenHide: true
+    },
+
+    invokers: {
+        _show: {
+            funcName: "gpii.app.dialog.offScreenHidable.moveOnScreen",
+            args: [
+                "{that}",
+                "{arguments}.0" // showInactive
+            ]
+        },
+        _hide: {
+            funcName: "gpii.app.dialog.offScreenHidable.moveOffScreen",
+            args: ["{that}.dialog"]
+        }
+    }
+});
+
+/**
+ * Shows the PSP window by moving it to the lower right part of the screen and changes
+ * the `isShown` model property accordingly.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ */
+gpii.app.dialog.offScreenHidable.moveOnScreen = function (that, showInactive) {
+    // Move to screen
+    that.setPosition();
+    if (!showInactive) {
+        that.dialog.focus();
+    }
+};
+
+/**
+ * Moves the BrowserWindow to a non-visible part of the screen. This function in conjunction
+ * with `gpii.browserWindow.moveToScreen` help avoid the flickering issue when the content
+ * of the PSP window changes.
+ * @param {Object} window - An Electron `BrowserWindow`.
+ */
+gpii.app.dialog.offScreenHidable.moveOffScreen = function (dialog) {
+    // Move the BrowserWindow so far away that even if there is an additional screen attached,
+    // it will not be visible. It appears that the min value for the `BrowserWindow`
+    // position can be -Math.pow(2, 31). Any smaller values lead to an exception.
+    var coordinate = -Math.pow(2, 20);
+    dialog.setPosition(coordinate, coordinate);
+};
+

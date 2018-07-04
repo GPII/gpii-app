@@ -120,12 +120,12 @@ gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
         psp.model.offset.y = qssHeight;
     } else {
         // reset the heightOffset
-        psp.model.offset.y = null;
+        psp.model.offset.y = 0;
     }
 
     // in case it was shown, it will be also repositioned
-    if (psp.isShown) {
-        psp.setBounds(psp.width, psp.height);
+    if (psp.model.isShown) {
+        psp.setBounds(psp.width, psp.height, null, psp.model.offset.y);
     } else {
         psp.setRestrictedSize(psp.width, psp.height);
     }
@@ -145,12 +145,13 @@ gpii.app.pspInApp.togglePspRestartWarning = function (psp, pendingChanges) {
     }
 };
 
+
 /**
  * Handles logic for the PSP window.
  * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.psp", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
     model:  {
         keyedInUserToken: null,
@@ -162,8 +163,6 @@ fluid.defaults("gpii.app.psp", {
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
      */
     config: {
-        positionOnInit: false,
-
         restrictions: {
             minHeight: 600
         },
@@ -192,9 +191,6 @@ fluid.defaults("gpii.app.psp", {
             }
         }
     },
-
-    // TODO
-    offScreenHide: true,
 
     linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.psp"],
 
@@ -257,17 +253,6 @@ fluid.defaults("gpii.app.psp", {
     },
 
     invokers: {
-        _show: {
-            funcName: "gpii.app.psp._show",
-            args: [
-                "{that}",
-                "{arguments}.0" // showInactive
-            ]
-        },
-        _hide: {
-            funcName: "gpii.app.psp._hide",
-            args: ["{that}"]
-        },
         // TODO use channel
         notifyPSPWindow: {
             funcName: "gpii.app.notifyWindow",
@@ -303,29 +288,6 @@ fluid.defaults("gpii.app.psp", {
     }
 });
 
-
-/**
- * Shows the PSP window by moving it to the lower right part of the screen and changes
- * the `isShown` model property accordingly.
- * @param {Component} psp - The `gpii.app.psp` instance.
- */
-gpii.app.psp._show = function (that, showInactive) {
-    // Move to screen
-    that.setPosition();
-    if (!showInactive) {
-        that.dialog.focus();
-    }
-};
-
-/**
- * Hides the PSP window by moving it off the screen and changes the `isShown` model
- * property accordingly.
- * @param {Component} psp - The `gpii.app.psp` instance.
- */
-gpii.app.psp._hide = function (that) {
-    gpii.browserWindow.moveOffScreen(that.dialog);
-    that.dialog.blur();
-};
 
 /**
  * Handle PSPWindow's blur event which is fired when the window loses focus. The PSP

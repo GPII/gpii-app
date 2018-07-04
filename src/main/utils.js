@@ -148,30 +148,6 @@ gpii.browserWindow.getCenterWindowBounds = function (width, height) {
 };
 
 
-/// XXX move inside new component
-/**
- * Moves the BrowserWindow to a non-visible part of the screen. This function in conjunction
- * with `gpii.browserWindow.moveToScreen` help avoid the flickering issue when the content
- * of the PSP window changes.
- * @param {Object} window - An Electron `BrowserWindow`.
- */
-gpii.browserWindow.moveOffScreen = function (window) {
-    // Move the BrowserWindow so far away that even if there is an additional screen attached,
-    // it will not be visible. It appears that the min value for the `BrowserWindow`
-    // position can be -Math.pow(2, 31). Any smaller values lead to an exception.
-    var coordinate = -Math.pow(2, 20);
-    window.setPosition(coordinate, coordinate);
-};
-
-gpii.browserWindow.isWindowFocused = function (grade) {
-    var focusedWindow = BrowserWindow.getFocusedWindow();
-
-    if (focusedWindow && focusedWindow.gradeNames) {
-        return focusedWindow.gradeNames.slice(-1)[0] === grade;
-    }
-    return false;
-};
-
 /**
  * A function which capitalizes its input text. It does nothing if the provided argument is `null` or `undefined`.
  *
