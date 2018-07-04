@@ -87,6 +87,8 @@
             role: "button"
         },
 
+        applyKeyboardHighlight: false,
+
         // pass hover item as it is in order to use its position
         // TODO probably use something like https://stackoverflow.com/questions/3234977/using-jquery-how-to-get-click-coordinates-on-the-target-element
         events: {
@@ -135,7 +137,8 @@
                     "{that}",
                     "{focusManager}",
                     "{that}.container",
-                    "{arguments}.0" // index
+                    "{arguments}.0", // index
+                    "{arguments}.1" // applyHighlight
                 ]
             },
             onQssWidgetToggled: {
@@ -165,12 +168,9 @@
 
             // Element interaction events
 
-            onClicked: [{
-                func: "{focusManager}.focusElement",
-                args: ["{that}.container", false]
-            }, {
+            "onClicked.activate": {
                 func: "{that}.activate"
-            }],
+            },
             "onSpacebarPressed.activate": {
                 func: "{that}.onActivationKeyPressed",
                 args: [
@@ -194,12 +194,20 @@
                     "{arguments}.0" // activationParams
                 ]
             },
+            onButtonActivated: {
+                funcName: "gpii.qss.buttonPresenter.onButtonActivated",
+                args: [
+                    "{that}",
+                    "{focusManager}",
+                    "{that}.container",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
+            },
             activate: {
                 funcName: "gpii.qss.buttonPresenter.activate",
                 args: [
                     "{that}",
-                    "{that}.container",
-                    "{list}",
                     "{arguments}.0" // activationParams
                 ]
             }
@@ -235,10 +243,17 @@
         container.toggleClass(activatedClass, isShown && that.model.item.path === setting.path);
     };
 
-    gpii.qss.buttonPresenter.activate = function (that, container, qssList, activationParams) {
+    gpii.qss.buttonPresenter.onButtonActivated = function (that, focusManager, container, qssList, activationParams) {
         var metrics = gpii.qss.getElementMetrics(container),
-            setting = that.model.item;
-        qssList.events.onButtonActivated.fire(setting, metrics, activationParams);
+            isKeyPressed = fluid.get(activationParams, "key"),
+            applyKeyboardHighlight = that.options.applyKeyboardHighlight;
+
+        qssList.events.onButtonActivated.fire(that.model.item, metrics, activationParams);
+        focusManager.focusElement(container, isKeyPressed && applyKeyboardHighlight);
+    };
+
+    gpii.qss.buttonPresenter.activate = function (that, activationParams) {
+        that.onButtonActivated(activationParams);
     };
 
     gpii.qss.buttonPresenter.notifyButtonFocused = function (that, container, focusedElement) {
@@ -249,9 +264,9 @@
         }
     };
 
-    gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index) {
+    gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index, applyHighlight) {
         if (that.model.index === index) {
-            focusManager.focusElement(container, true);
+            focusManager.focusElement(container, applyHighlight);
         }
     };
 
@@ -295,6 +310,7 @@
         attrs: {
             role: "switch"
         },
+        applyKeyboardHighlight: true,
         modelRelay: {
             "caption": {
                 target: "caption",
@@ -336,8 +352,6 @@
                 funcName: "gpii.qss.toggleButtonPresenter.activate",
                 args: [
                     "{that}",
-                    "{that}.container",
-                    "{list}",
                     "{arguments}.0" // activationParams
                 ]
             }
@@ -348,8 +362,8 @@
         return value ? messages.caption : "";
     };
 
-    gpii.qss.toggleButtonPresenter.activate = function (that, container, qssList, activationParams) {
-        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+    gpii.qss.toggleButtonPresenter.activate = function (that, activationParams) {
+        that.onButtonActivated(activationParams);
         that.applier.change("value", !that.model.value);
     };
 
@@ -363,7 +377,6 @@
                 funcName: "gpii.qss.keyInButtonPresenter.activate",
                 args: [
                     "{that}",
-                    "{that}.container",
                     "{list}",
                     "{arguments}.0" // activationParams
                 ]
@@ -371,8 +384,8 @@
         }
     });
 
-    gpii.qss.keyInButtonPresenter.activate = function (that, container, qssList, activationParams) {
-        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+    gpii.qss.keyInButtonPresenter.activate = function (that, qssList, activationParams) {
+        that.onButtonActivated(activationParams);
         qssList.events.onPSPOpen.fire(that.model.messages.notification);
     };
 
@@ -383,7 +396,6 @@
                 funcName: "gpii.qss.closeButtonPresenter.activate",
                 args: [
                     "{that}",
-                    "{that}.container",
                     "{list}",
                     "{arguments}.0" // activationParams
                 ]
@@ -391,8 +403,8 @@
         }
     });
 
-    gpii.qss.closeButtonPresenter.activate = function (that, container, qssList, activationParams) {
-        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+    gpii.qss.closeButtonPresenter.activate = function (that, qssList, activationParams) {
+        that.onButtonActivated(activationParams);
         qssList.events.onQssClosed.fire();
     };
 
@@ -428,7 +440,6 @@
                 funcName: "gpii.qss.saveButtonPresenter.activate",
                 args: [
                     "{that}",
-                    "{that}.container",
                     "{list}",
                     "{arguments}.0" // activationParams
                 ]
@@ -436,8 +447,8 @@
         }
     });
 
-    gpii.qss.saveButtonPresenter.activate = function (that, container, qssList, activationParams) {
-        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+    gpii.qss.saveButtonPresenter.activate = function (that, qssList, activationParams) {
+        that.onButtonActivated(activationParams);
         qssList.events.onNotificationRequired.fire(that.model.messages.notification);
     };
 
@@ -448,7 +459,6 @@
                 funcName: "gpii.qss.moreButtonPresenter.activate",
                 args: [
                     "{that}",
-                    "{that}.container",
                     "{list}",
                     "{arguments}.0" // activationParams
                 ]
@@ -456,8 +466,8 @@
         }
     });
 
-    gpii.qss.moreButtonPresenter.activate = function (that, container, qssList, activationParams) {
-        gpii.qss.buttonPresenter.activate(that, container, qssList, activationParams);
+    gpii.qss.moreButtonPresenter.activate = function (that, qssList, activationParams) {
+        that.onButtonActivated(activationParams);
         qssList.events.onMorePanelRequired.fire();
     };
 
@@ -648,15 +658,18 @@
         // Focus a button corresponding to a given setting or the previous or
         // following button depending on the activation parameters.
         if (params.setting) {
-            var settingIndex = gpii.qss.getSettingIndex(settings, params.setting);
+            var settingIndex = gpii.qss.getSettingIndex(settings, params.setting),
+                applyHighlight = false;
 
             if (params.key === "ArrowLeft") {
                 settingIndex = gpii.psp.modulo(settingIndex - 1, settings.length);
+                applyHighlight = true;
             } else if (params.key === "ArrowRight") {
                 settingIndex = gpii.psp.modulo(settingIndex + 1, settings.length);
+                applyHighlight = true;
             }
 
-            qssList.events.onButtonFocusRequired.fire(settingIndex);
+            qssList.events.onButtonFocusRequired.fire(settingIndex, applyHighlight);
         } else {
             focusManager.removeHighlight(true);
         }
