@@ -109,7 +109,7 @@
      * Note: currently only single update of available setting is supported
      */
     fluid.defaults("gpii.psp.mainWindow", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
+        gradeNames: ["fluid.viewComponent"],
         model: {
             messages: {
                 titlebarAppName: null
@@ -142,8 +142,7 @@
             content: "#flc-content",
             footer: "#flc-footer",
             settingsList: "#flc-settingsList",
-            restartWarning: "#flc-restartWarning",
-            heightListenerContainer: "#flc-settingsList"
+            restartWarning: "#flc-restartWarning"
         },
         themeClasses: {
             dark: "theme-alt"
@@ -201,9 +200,6 @@
                 createOnEvent: "{mainWindow}.events.onPreferencesUpdated",
                 options: {
                     listeners: {
-                        onHeightChanged: {
-                            funcName: "{mainWindow}.updateHeight"
-                        },
                         "{mainWindow}.events.onRestartRequired": {
                             funcName: "{that}.updatePendingChanges"
                         }
@@ -217,7 +213,13 @@
                         onRestartRequired: "{mainWindow}.events.onRestartRequired",
 
                         onRestartNow: "{mainWindow}.events.onRestartNow",
-                        onUndoChanges: "{mainWindow}.events.onUndoChanges"
+                        onUndoChanges: "{mainWindow}.events.onUndoChanges",
+                        onHeightChanged: "{mainWindow}.events.onHeightChanged"
+                    },
+                    invokers: {
+                        calculateHeight: {
+                            func: "{mainWindow}.calculateHeight"
+                        }
                     }
                 }
             },
