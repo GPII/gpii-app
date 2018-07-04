@@ -283,10 +283,7 @@ gpii.app.dialog._show = function (that, showInactive) {
  * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
 gpii.app.dialog.toggle = function (that, isShown, showInactive) {
-    console.log("TOGGLE: ",
-    that.options.gradeNames.slice(-1));
     if (isShown) {
-        that.setPosition(that.model.offset.x, that.model.offset.y);
         that._show(showInactive);
         that.events.onDialogShown.fire();
     } else {
@@ -349,9 +346,6 @@ gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height)
 
     that.width  = width  || that.width;
     that.height = height || that.height;
-
-    // XXX DEV
-    console.log("FINALLE");
 
     that.dialog.setSize(size.width, size.height);
 };
@@ -507,7 +501,7 @@ fluid.defaults("gpii.app.dialog.delayedShow", {
 
     listeners: {
         onTimerFinished: {
-            func: "{that}._show"
+            func: "{that}.show"
             // arguments are passed with the event
         }
     },
@@ -517,22 +511,22 @@ fluid.defaults("gpii.app.dialog.delayedShow", {
         // _hide: null,
         // delayedShow: ... (this will be simply called in show / hide)
         // delayedHide: ...
-        show: {
-            funcName: "gpii.app.dialog.delayedShow.show",
+        delayedShow: {
+            funcName: "gpii.app.dialog.delayedShow.delayedShow",
             args: [
                 "{that}",
                 "{that}.options.showDelay",
                 "{arguments}" // showArgs
             ]
         },
-        hide: {
-            funcName: "gpii.app.dialog.delayedShow.hide",
+        delayedHide: {
+            funcName: "gpii.app.dialog.delayedShow.delayedHide",
             args: ["{that}"]
         }
     }
 });
 
-gpii.app.dialog.delayedShow.show = function (that, delay, showArgs) {
+gpii.app.dialog.delayedShow.delayedShow = function (that, delay, showArgs) {
     // process raw arguments
     showArgs = fluid.values(showArgs);
 
@@ -546,11 +540,11 @@ gpii.app.dialog.delayedShow.show = function (that, delay, showArgs) {
     }
 };
 
-gpii.app.dialog.delayedShow.hide = function (that) {
+gpii.app.dialog.delayedShow.delayedHide = function (that) {
     // clear any existing timer
     that.clear();
 
-    that._hide();
+    that.hide();
 };
 
 fluid.defaults("gpii.app.centeredDialog", {

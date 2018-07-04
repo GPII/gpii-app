@@ -72,20 +72,14 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                 "{arguments}.1"
             ]
         },
-        _show: {
+        show: {
             // TODO split to some generic parts
-            funcName: "gpii.app.qssTooltipDialog._show",
+            funcName: "gpii.app.qssTooltipDialog.show",
             args: [
                 "{that}",
                 "{arguments}.0",
                 "{arguments}.1"
             ]
-        },
-        // same as `gpii.app.dialog.hide`
-        // needed as `gpii.app.dialog.delayedShow` overrides `show` and `hide` methods
-        _hide: {
-            changePath: "isShown",
-            value: false
         }
     },
 
@@ -139,12 +133,12 @@ function getTooltipPosition(dialog, elementMetrics) {
 
 gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, elementMetrics) {
     if (setting && fluid.isValue(setting.tooltip)) {
-        that.show(setting, elementMetrics);
+        that.delayedShow(setting, elementMetrics);
     }
 };
 
 // TODO reuse widget show
-gpii.app.qssTooltipDialog._show = function (that, setting, elementMetrics) {
+gpii.app.qssTooltipDialog.show = function (that, setting, elementMetrics) {
     var offset = getTooltipPosition(that.dialog, elementMetrics);
 
     // trigger update in the tooltip BrowserWindow
