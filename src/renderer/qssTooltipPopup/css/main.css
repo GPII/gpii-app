@@ -25,17 +25,13 @@ body {
     justify-content: space-around;
 }
 
-.fl-qssTooltip-content div {
+.fl-qssTooltip-content > * {
     text-align: center;
     margin: 2px 0 2px 0;
 }
 
 .fl-qssTooltip-content ul {
     text-align: left;
-}
-
-.fl-qssTooltip-content .flc-tooltipHeader {
-    font-weight: bold;
 }
 
 .fl-footer-arrow {

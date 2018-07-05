@@ -28,7 +28,23 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.delayedShow"],
 
     model: {
-        setting: null
+        keyedInUserToken: null,
+        setting: null,
+        tooltip: null
+    },
+
+    modelRelay: {
+        tooltip: {
+            target: "tooltip",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.qssTooltipDialog.getTooltip",
+                args: [
+                    "{that}.model.keyedInUserToken",
+                    "{that}.model.setting"
+                ]
+            }
+        }
     },
 
     showDelay: 500,
@@ -87,12 +103,13 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                 events: {
                     // update message in the tooltip
                     // expect this message to be translated
-                    onSettingUpdated: null
+                    onTooltipUpdated: null
                 },
                 modelListeners: {
-                    "{qssTooltipDialog}.model.setting": {
-                        func: "{that}.events.onSettingUpdated.fire",
-                        args: ["{change}.value.tooltip"]
+                    "{qssTooltipDialog}.model.tooltip": {
+                        func: "{that}.events.onTooltipUpdated.fire",
+                        args: ["{change}.value"],
+                        excludeSource: "init"
                     }
                 }
             }
@@ -100,6 +117,12 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     }
 });
 
+gpii.app.qssTooltipDialog.getTooltip = function (keyedInUserToken, setting) {
+    if (setting) {
+        var tooltip = setting.tooltip;
+        return (keyedInUserToken ? tooltip.keyedIn : tooltip.keyedOut) || tooltip;
+    }
+};
 
 /**
  * Retrieve element position.

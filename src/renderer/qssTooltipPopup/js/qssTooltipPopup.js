@@ -25,31 +25,20 @@
 
         model: {
             messages: {
-                header: "Some header",
-                body: "some body",
-                footer: "some description"
+                tooltip: null
             }
         },
 
         enableRichText: true,
 
         selectors: {
-            header: ".flc-tooltipHeader",
-            body:   ".flc-tooltipBody",
-            footer: ".flc-tooltipFooter"
+            tooltip: ".flc-qssTooltip-content"
         },
 
         invokers: {
-            update: {
-                funcName: "fluid.fireChanges",
-                args: [
-                    "{that}.applier",
-                    [
-                        // simple way to avoid get rid of previous state leftovers
-                        {path: "messages", value: { header: "", body: "", footer: "" }},
-                        {path: "messages", value: "{arguments}.0"}
-                    ]
-                ]
+            updateTooltip: {
+                changePath: "messages.tooltip",
+                value: "{arguments}.0"
             }
         },
 
@@ -58,14 +47,14 @@
                 type: "gpii.psp.channelListener",
                 options: {
                     listeners: {
-                        onSettingUpdated: {
-                            func: "{qssTooltipPopup}.update",
+                        onTooltipUpdated: {
+                            func: "{qssTooltipPopup}.updateTooltip",
                             args: ["{arguments}.0"]
                         }
                     },
                     events: {
                         // Add events from the main process to be listened for
-                        onSettingUpdated: null
+                        onTooltipUpdated: null
                     }
                 }
             }

@@ -165,6 +165,9 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssTooltip: {
             type: "gpii.app.qssTooltipDialog",
             options: {
+                model: {
+                    keyedInUserToken: "{qssWrapper}.model.keyedInUserToken"
+                },
                 listeners: {
                     // TODO list events for a method
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": {

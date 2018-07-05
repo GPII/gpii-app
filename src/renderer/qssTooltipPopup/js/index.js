@@ -19,6 +19,6 @@
     var gpii = fluid.registerNamespace("gpii");
 
     jQuery(function () {
-        gpii.qss.qssTooltipPopup(".fl-qssTooltip-content");
+        gpii.qss.qssTooltipPopup(".flc-qssTooltip");
     });
 })(fluid);
