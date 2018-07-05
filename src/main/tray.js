@@ -17,8 +17,7 @@
 var fluid    = require("infusion");
 var electron = require("electron");
 
-var Tray           = electron.Tray,
-    globalShortcut = electron.globalShortcut;
+var Tray           = electron.Tray;
 var gpii           = fluid.registerNamespace("gpii");
 
 /**
@@ -34,7 +33,6 @@ fluid.defaults("gpii.app.tray", {
             }
         }
     },
-    shortcuts: null,
     icons: {
         keyedIn: "%gpii-app/src/icons/gpii-color.ico",
         keyedOut: "%gpii-app/src/icons/gpii.ico"
@@ -125,8 +123,7 @@ gpii.app.tray.setTrayTooltip = function (tray, tooltip) {
 /**
  * Creates the Electron Tray
  * @param {Object} options A configuration object for the tray that will be created.
- * @param {Object} events An object containing the different events which should be
- * fired when the tray is clicked or when the PSP is opened using the global shortcut.
+ * @param {Object} events Object containing component's events.
  * @return {Tray} - The tray object.
  */
 gpii.app.makeTray = function (options, events) {
@@ -134,15 +131,6 @@ gpii.app.makeTray = function (options, events) {
 
     tray.on("click", function () {
         events.onTrayIconClicked.fire();
-    });
-
-    // XXX deregister shortcuts?
-    fluid.each(options.shortcuts, function (shortcut) {
-        globalShortcut.register(shortcut.command, function () {
-            if (!shortcut.condition || shortcut.condition()) {
-                events[shortcut.event].fire();
-            }
-        });
     });
 
     return tray;

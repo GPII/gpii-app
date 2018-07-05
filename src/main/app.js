@@ -19,6 +19,7 @@ var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
 require("./assetsManager.js");
+require("./shortcutsManager.js");
 require("./propertyHistoryManager.js");
 require("./ws.js");
 require("./factsManager.js");
@@ -166,7 +167,16 @@ fluid.defaults("gpii.app", {
                     "onCreate.regsiterUndo": {
                         funcName: "{propertyHistoryManager}.registerPropertyObserver",
                         args: [ "{that}", "settings.*" ]
-                    }
+                    },
+
+                    // "{propertyHistoryManager}.events.onUndoStackEmptied": {
+                    //     func: "{that}.events.onUndoIndicatorChangeRequired.fire",
+                    //     args: [false]
+                    // },
+                    // "{propertyHistoryManager}.events.onUndoEntryAvailable": {
+                    //     func: "{that}.events.onUndoIndicatorChangeRequired.fire",
+                    //     args: [true]
+                    // }
                 },
                 modelListeners: {
                     "settings.*": [{
@@ -214,6 +224,33 @@ fluid.defaults("gpii.app", {
         propertyHistoryManager: {
             type: "gpii.app.propertyHistoryManager"
         },
+        shortcutsManager: {
+            type: "gpii.app.shortcutsManager",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                events: {
+                    onPspOpenShortcut: null,
+                    onQssUndoShortcut: null
+                },
+                listeners: {
+                    "onCreate.registerDefaultGlobalShortcut": {
+                        func: "{that}.registerGlobalShortcut",
+                        args: [
+                            "Super+CmdOrCtrl+Alt+U",
+                            "onPspOpenShortcut"
+                        ]
+                    },
+                    "onCreate.registerDefaultLocalShortcut": {
+                        func: "{that}.registerLocalShortcut",
+                        args: [
+                            "CmdOrCtrl+Z",
+                            "onQssUndoShortcut",
+                            ["gpii.app.qss", "gpii.app.qssWidget"]
+                        ]
+                    }
+                }
+            }
+        },
         tray: {
             type: "gpii.app.tray",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -222,23 +259,7 @@ fluid.defaults("gpii.app", {
                     keyedInUserToken: "{gpii.app}.model.keyedInUserToken"
                 },
                 events: {
-                    onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered",
-
-                    onPspOpenShortcut: null,
-                    onQssUndoShortcut: null
-                },
-                shortcuts: {
-                    open: {
-                        command: "Super+CmdOrCtrl+Alt+U",
-                        event: "onPspOpenShortcut"
-                    },
-                    undo: {
-                        command: "CmdOrCtrl+Z",
-                        event: "onQssUndoShortcut",
-                        condition: function () {
-                            return gpii.browserWindow.isWindowFocused("gpii.app.qss");
-                        }
-                    }
+                    onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
                 },
                 listeners: {
                     onTrayIconClicked: [{
@@ -250,12 +271,12 @@ fluid.defaults("gpii.app", {
                         func: "{psp}.show"
                     }],
                     // filter shortcut
-                    onQssUndoShortcut: {
+                    "{shortcutsManager}.events.onQssUndoShortcut": {
                         // get current active window
                         funcName: "{propertyHistoryManager}.undo",
                         args: "gpii.app.qssWrapper"
                     },
-                    onPspOpenShortcut: [{
+                    "{shortcutsManager}.events.onPspOpenShortcut": [{
                         func: "{psp}.show"
                     }, {
                         func: "{qssWrapper}.qss.show",
