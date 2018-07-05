@@ -23,8 +23,7 @@
             "title": "App / Text Zoom",
             "min": 0,
             "max": null,
-            "divisibleBy": 0.5,
-            "defaultValue": 11
+            "divisibleBy": 0.5
         },
         "value": 11,
         "tooltip": "<div><strong>Change text size.</strong></div><div>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</div>",
@@ -40,7 +39,7 @@
             "min": 1,
             "max": 2,
             "divisibleBy": 0.25,
-            "defaultValue": 1
+            "defaultValue": 1.25
         },
         "value": 1.25,
         "tooltip": "<div><strong>Change the screen size to make everything larger/smaller.</strong></div>",

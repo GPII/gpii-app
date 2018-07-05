@@ -76,9 +76,6 @@
                 args: ["{that}.model.item", "{change}.value"],
                 excludeSource: ["init", "gpii.psp.repeater.itemUpdate"]
             }, {
-                funcName: "gpii.qss.buttonPresenter.updateChangeIndicator",
-                args: ["{that}.dom.changeIndicator", "{that}.model.item", "{change}.value"]
-            }, {
                 funcName: "gpii.qss.buttonPresenter.showNotification",
                 args: ["{that}", "{list}"],
                 excludeSource: "init"
@@ -98,8 +95,7 @@
         },
 
         styles: {
-            activated: "fl-activated",
-            settingButton: "fl-qss-settingButton"
+            activated: "fl-activated"
         },
 
         attrs: {
@@ -125,10 +121,6 @@
                 "this": "{that}.container",
                 method: "attr",
                 args: ["{that}.options.attrs"]
-            },
-            "onCreate.styleButton": {
-                funcName: "gpii.qss.buttonPresenter.styleButton",
-                args: ["{that}", "{that}.container"]
             },
             "onCreate.renderImage": {
                 funcName: "gpii.qss.buttonPresenter.renderImage",
@@ -250,24 +242,6 @@
         }
     };
 
-    gpii.qss.buttonPresenter.updateChangeIndicator = function (indicatorElem, setting, value) {
-        // The dot should be shown if the setting has a default value, the new value of the
-        // setting is different from that value and the new value is one of the predefined
-        // values (in case of a menu widget).
-        var shouldShow =
-            fluid.isValue(setting.schema.defaultValue) &&
-            !fluid.model.diff(value, setting.schema.defaultValue) &&
-            (setting.schema.type !== "string" || setting.schema["enum"].indexOf(value) >= 0);
-        indicatorElem.toggle(shouldShow);
-    };
-
-    gpii.qss.buttonPresenter.styleButton = function (that, container) {
-        var path = that.model.item.path;
-        if (path.startsWith("http://registry\\.gpii\\.net")) {
-            container.addClass(that.options.styles.settingButton);
-        }
-    };
-
     gpii.qss.buttonPresenter.onQssWidgetToggled = function (that, container, setting, isShown) {
         var activatedClass = that.options.styles.activated;
         container.toggleClass(activatedClass, isShown && that.model.item.path === setting.path);
@@ -324,14 +298,56 @@
     gpii.qss.getElementMetrics = function (target) {
         return {
             offsetRight: $(window).width() - target.offset().left,
-            height:      target.outerHeight() - 2, // TODO: Think of a better formula.
+            height:      target.outerHeight() - 3, // TODO: Think of a better formula.
             width:       target.outerWidth()
         };
     };
 
+    fluid.defaults("gpii.qss.settingButtonPresenter", {
+        gradeNames: "fluid.viewComponent",
+
+        model: {
+            item: {
+                value: null
+            },
+            value: "{that}.model.item.value"
+        },
+
+        selectors: {
+            changeIndicator: ".flc-qss-btnChangeIndicator"
+        },
+
+        styles: {
+            settingButton: "fl-qss-settingButton"
+        },
+
+        modelListeners: {
+            value: {
+                funcName: "gpii.qss.settingButtonPresenter.updateChangeIndicator",
+                args: ["{that}.dom.changeIndicator", "{that}.model.item", "{change}.value"],
+                namespace: "changeIndicator"
+            }
+        },
+
+        listeners: {
+            "onCreate.styleButton": {
+                this: "{that}.container",
+                method: "addClass",
+                args: ["{that}.options.styles.settingButton"]
+            }
+        }
+    });
+
+    gpii.qss.settingButtonPresenter.updateChangeIndicator = function (indicatorElem, setting, value) {
+        // The dot should be shown if the setting has a default value and the new value of the
+        // setting is different from that value.
+        var defaultValue = setting.schema.defaultValue,
+            shouldShow = fluid.isValue(defaultValue) && !fluid.model.diff(value, defaultValue);
+        indicatorElem.toggle(shouldShow);
+    };
 
     fluid.defaults("gpii.qss.toggleButtonPresenter", {
-        gradeNames: ["gpii.qss.buttonPresenter"],
+        gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.settingButtonPresenter"],
         model: {
             messages: {
                 caption: null
@@ -440,7 +456,7 @@
     };
 
     fluid.defaults("gpii.qss.widgetButtonPresenter", {
-        gradeNames: ["gpii.qss.buttonPresenter"],
+        gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.settingButtonPresenter"],
         listeners: {
             "onArrowUpPressed.activate": {
                 func: "{that}.onActivationKeyPressed",
