@@ -17,7 +17,7 @@
 "use strict";
 (function (fluid) {
     fluid.defaults("gpii.psp.translatedQssMorePanel", {
-        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent"],
+        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
 
         components: {
             qssMorePanel: {
@@ -32,17 +32,23 @@
 
         model: {
             messages: {
-                title: "More"
+                title: "More",
+                details: "Watch this space for more Morphic buttons,  as well as additional features to help you tune the computer to your specific needs and preferences.",
+                link: "For more information on Morphic go to <a target=\"_blank\" href=\"http://morphic.global\">http://morphic.global</a>."
             }
         },
 
         selectors: {
-            titlebar: ".flc-titlebar"
+            titlebar: ".flc-titlebar",
+            details: ".flc-qssMorePanel-details",
+            link: ".flc-qssMorePanel-link"
         },
 
         events: {
             onQssMorePanelClosed: null
         },
+
+        enableRichText: true,
 
         components: {
             channelNotifier: {

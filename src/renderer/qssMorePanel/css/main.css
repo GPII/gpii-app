@@ -4,11 +4,12 @@ body {
 
 .fl-dialog .fl-dialog-content {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
     text-align: center;
 }
 
-.fl-dialog .fl-dialog-content .fl-qssMorePanel-logo {
-    display: block;
-    margin: 0 auto;
+.fl-dialog .fl-dialog-content .fl-subtitle + .fl-subtitle {
+    margin-top: 20px;
 }
