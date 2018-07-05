@@ -343,12 +343,15 @@ gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX
  * area.
  *
  * @param {Component} that - The `gpii.app.dialog` instance
- * @param {Number} width - The desired width for the window
- * @param {Number} height - The desired height for the window
+ * @param {Number} [width] - The desired width for the window
+ * @param {Number} [height] - The desired height for the window
  */
 gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height) {
     // ensure the whole window is visible
     var offset = that.model.offset;
+
+    width  = width  || that.width;
+    height = height || that.height;
 
     // apply restrictions
     if (restrictions.minHeight) {
@@ -357,8 +360,8 @@ gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height)
 
     var size = gpii.browserWindow.computeWindowSize(width, height, offset.x, offset.y);
 
-    that.width  = width  || that.width;
-    that.height = height || that.height;
+    that.width  = width;
+    that.height = height;
 
     that.dialog.setSize(size.width, size.height);
 };
@@ -561,6 +564,11 @@ fluid.defaults("gpii.app.centeredDialog", {
 });
 
 gpii.app.centeredDialog.setBounds = function (that, width, height) {
+    width  = width || that.width;
+    height = height || that.height;
+    that.width = width;
+    that.heigh = height;
+
     var position = gpii.browserWindow.computeCentralWindowPosition(width, height),
         bounds = gpii.browserWindow.computeWindowBounds(width, height, position.x, position.y);
 
@@ -586,6 +594,17 @@ fluid.defaults("gpii.app.dialog.offScreenHidable", {
         _hide: {
             funcName: "gpii.app.dialog.offScreenHidable.moveOffScreen",
             args: ["{that}.dialog"]
+        },
+        setBounds: {
+            funcName: "gpii.app.dialog.offScreenHidable.setBounds",
+            args: [
+                "{that}",
+                "{that}.options.config.restrictions",
+                "{arguments}.0", // width
+                "{arguments}.1", // height
+                "{arguments}.2", // offsetX
+                "{arguments}.3"  // offsetY
+            ]
         }
     }
 });
@@ -624,3 +643,17 @@ gpii.app.dialog.offScreenHidable.moveOffScreen = function (dialog) {
     });
 };
 
+gpii.app.dialog.offScreenHidable.setBounds = function (that, restrictions, width, height, offsetX, offsetY) {
+    if (that.model.isShown) {
+        // simply redirect to work as a normal dialog bounds change
+        gpii.app.dialog.setBounds(that, restrictions, width, height, offsetX, offsetY);
+    } else {
+        // we don't want to move it to screen (visible area)
+        that.setRestrictedSize(width, height);
+
+        // only save the new position without applying it
+        offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
+        offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
+        that.applier.change("offset", { x: offsetX, y: offsetY });
+    }
+};

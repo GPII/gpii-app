@@ -45,8 +45,12 @@ fluid.defaults("gpii.app.resizable", {
         }
     },
     events: {
-        onContentHeightChanged: null,
-        onDisplayMetricsChanged: null
+        onDisplayMetricsChanged: null,
+        /*
+         * Should be called whenever a change in the size of the component's
+         * content is detected from within the content itself.
+         */
+        onContentHeightChanged: null
     },
     listeners: {
         "onCreate.addDisplayMetricsListener": {
@@ -54,18 +58,16 @@ fluid.defaults("gpii.app.resizable", {
             args: ["{that}"]
         },
         "onContentHeightChanged": {
-            funcName: "gpii.app.resizable.onContentSizeChanged",
+            func: "{that}.setBounds",
             args: [
-                "{that}",
-                "{that}.options.config.attrs.width",
+                "{that}.width",
                 "{arguments}.0" // height
             ]
         },
         "onDisplayMetricsChanged.handleDisplayMetricsChange": {
             func: "gpii.app.resizable.handleDisplayMetricsChange",
             args: [
-                "{that}",
-                "{arguments}.2" // changedMetrics
+                "{that}"
             ]
         },
         "onDestroy.removeDisplayMetricsListener": {
@@ -97,30 +99,11 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
 };
 
 /**
- * Should be called whenever a change in the size of the component's
- * content is detected from within the content itself.
- * @param {Component} that The `gpii.app.resizable` component.
- * @param {Number} width The updated width of the componet's content.
- * @param {Number} height The updated height of the componet's content.
- */
-gpii.app.resizable.onContentSizeChanged = function (that, width, height) {
-    if (!that.model.isShown && that.options.config.offScreenHide) {
-        // we don't want to move it to screen (visible area)
-        that.setRestrictedSize(width, height);
-    } else {
-        // reposition as well
-        that.setBounds(width, height);
-    }
-};
-
-/**
  * Handle electron's display-metrics-changed event by resizing the component if
  * necessary.
  * @param {Component} that The `gpii.app.resizable` component.
- * @param {Array} changedMetrics An array of strings that describe the changes.
- * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
  */
-gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) {
+gpii.app.resizable.handleDisplayMetricsChange = function (that) {
     // In older versions of Electron (e.g. 1.4.1) whenever the DPI was changed, one
     // `display-metrics-changed` event was fired. In newer versions (e.g. 1.8.1) the
     // `display-metrics-changed` event is fired multiple times. The change of the DPI
@@ -138,16 +121,8 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
     // according to the scale factor of the environment (DPI setting for Windows). In other words
     // calling the resize method with the same size will update the window with respect to the scaling.
     function scaleDialog() {
-        var width = that.width,
-            height = that.height;
-
-
-        // XXX Some dark magic here...
-        if (that.model.isShown || !that.options.config.offScreenHide) {
-            that.setBounds(width, height);
-        } else {
-            that.setRestrictedSize(width, height);
-        }
+        // reset it's position and size in order for the scale factor to be applied
+        that.setBounds();
 
         // Correct the state of windows
         that.displayMetricsChanged.timer = null;
@@ -172,7 +147,7 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
 
     // to ensure the DPI change has taken place, wait for a while after its last event
     clearTimeout(that.displayMetricsChanged.timer);
-    that.displayMetricsChanged.timer = setTimeout(scaleDialog, 700);
+    that.displayMetricsChanged.timer = setTimeout(scaleDialog, 1000);
 };
 
 /**
