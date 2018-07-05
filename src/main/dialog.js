@@ -146,14 +146,23 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
+        /// XXX The `setBounds` function is used instead of
+        /// `setPosition` alone because of a
+        // related Electron issue https://github.com/electron/electron/issues/9477
+        //
+        // Changing the position of a BrowserWindow when the scale factor is different than
+        // the default one ( that is 100% ) changes the window's size (either width of height).
+        // To ensure its size is correct simply reset the size of the window with its stored one.
+        // Once the issues is addressed this can be changed back to simple `setPosition` functionality
         setPosition: {
-            funcName: "gpii.app.dialog.setPosition",
+            funcName: "gpii.app.dialog.setBounds",
             args: [
                 "{that}",
                 "{that}.options.config.restrictions",
+                "{that}.width",
+                "{that}.height",
                 "{arguments}.0", // offsetX
                 "{arguments}.1"  // offsetY
-                // TODO add hidden args
             ]
         },
         setBounds: {
@@ -354,29 +363,6 @@ gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height)
     that.dialog.setSize(size.width, size.height);
 };
 
-/**
- * TODO
- * Position the BrowserWindow. The position is restricted to be inside the screen and
- * is relative to the bottom right corner.
- * In case offset is not given, the current offset will be used
- *
- * @param {Component} that
- * @param {} [offsetX]
- * @param {} [offsetY]
- */
-gpii.app.dialog.setPosition = function (that, restrictions, offsetX, offsetY) {
-    offsetX = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
-    offsetY = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
-
-    that.applier.change("offset", {
-        x: offsetX,
-        y: offsetY
-    });
-
-    var position = gpii.browserWindow.computeWindowPosition(that.width, that.height, offsetX, offsetY);
-
-    that.dialog.setPosition(position.x, position.y);
-};
 
 /**
  * A wrapper for the creation of dialogs with the same type. This component makes
@@ -556,8 +542,12 @@ fluid.defaults("gpii.app.centeredDialog", {
 
     invokers: {
         setPosition: {
-            funcName: "gpii.app.centeredDialog.setPosition",
-            args: ["{that}.dialog"]
+            funcName: "gpii.app.centeredDialog.setBounds",
+            args: [
+                "{that}",
+                "{that}.width",
+                "{that}.height"
+            ]
         },
         setBounds: {
             funcName: "gpii.app.centeredDialog.setBounds",
@@ -570,13 +560,7 @@ fluid.defaults("gpii.app.centeredDialog", {
     }
 });
 
-gpii.app.centeredDialog.setPosition = function (dialog) {
-    var dialogSize = dialog.getSize(),
-        position = gpii.browserWindow.computeCentralWindowPosition(dialogSize[0], dialogSize[1]);
-    dialog.setPosition(position.x, position.y);
-};
-
-gpii.app.centeredDialog.setBounds = function (that, width, height/*, offsetX, offsetY*/) {
+gpii.app.centeredDialog.setBounds = function (that, width, height) {
     var position = gpii.browserWindow.computeCentralWindowPosition(width, height),
         bounds = gpii.browserWindow.computeWindowBounds(width, height, position.x, position.y);
 
@@ -630,6 +614,13 @@ gpii.app.dialog.offScreenHidable.moveOffScreen = function (dialog) {
     // it will not be visible. It appears that the min value for the `BrowserWindow`
     // position can be -Math.pow(2, 31). Any smaller values lead to an exception.
     var coordinate = -Math.pow(2, 20);
-    dialog.setPosition(coordinate, coordinate);
+    var size = dialog.getSize();
+    // XXX using `setBounds` because of a related Electron issue https://github.com/electron/electron/issues/9477
+    dialog.setBounds({
+        width:  size[0],
+        height: size[1],
+        x:      coordinate,
+        y:      coordinate
+    });
 };
 

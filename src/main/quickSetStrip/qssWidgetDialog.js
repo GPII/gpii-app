@@ -159,6 +159,20 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationP
     }
 };
 
+function getWidgetPosition(dialog, elementMetrics) {
+    // Find the offset for the window to be centered over the element
+    var windowWidth = dialog.getSize()[0];
+    // change offset to element's center
+    var offsetX = elementMetrics.offsetRight - (elementMetrics.width / 2);
+    // set offset to window center
+    offsetX -= windowWidth / 2;
+
+    return {
+        x: offsetX,
+        y: elementMetrics.height
+    };
+}
+
 /**
  * Show the widget window and position it relatively to the
  * specified element. The window is positioned centered over
@@ -175,12 +189,7 @@ gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationP
  * @param {Object} activationParams.shortcut - Defines the way the show was triggered
  */
 gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
-    // Find the offset for the window to be centered over the element
-    var windowWidth = that.dialog.getSize()[0];
-    // change offset to element's center
-    var offsetX = elementMetrics.offsetRight - (elementMetrics.width / 2);
-    // set offset to window center
-    offsetX -= windowWidth / 2;
+    var position = getWidgetPosition(that.dialog, elementMetrics);
 
     activationParams = activationParams || {};
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
@@ -189,7 +198,7 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     that.applier.change("setting", setting);
     that.applier.change("isShown", true);
     // reposition window properly
-    that.setPosition(offsetX, elementMetrics.height);
+    that.setPosition(position.x, position.y);
 };
 
 
