@@ -42,6 +42,20 @@ body {
     border: 2px solid #ff0000 !important;
 }
 
+.fl-qssWidget .fl-qssWidget-learnMore {
+    display: block;
+    margin: 10px auto;
+    color: #000000;
+}
+
+.fl-qssWidget .fl-qssWidget-learnMore:before {
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: -35%;
+
+    content: url("../../psp/icons/info.svg");
+}
+
 .fl-qssWidget-footer {
     position: relative;
     top: -4px;
@@ -65,8 +79,6 @@ body {
 .fl-qssWidget .fl-qssStepperWidget,
 .fl-qssWidget .fl-qssMenuWidget {
     margin: 0 5px 0 10px;
-
-    flex: 1;
 }
 
 /* TODO more specific classes - stepper */

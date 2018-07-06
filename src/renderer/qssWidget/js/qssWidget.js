@@ -19,7 +19,7 @@
     var gpii = fluid.registerNamespace("gpii");
 
     fluid.defaults("gpii.psp.translatedQssWidget", {
-        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent"],
+        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
 
         // may be given from the main process
         params: {
@@ -41,15 +41,19 @@
      * for loading them.
      */
     fluid.defaults("gpii.psp.qssWidget", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         model: {
-            setting: {}
+            setting: {},
+            messages: {
+                learnMore: "Learn more..."
+            }
         },
 
         selectors: {
             stepper: ".flc-qssStepperWidget",
-            menu: ".flc-qssMenuWidget"
+            menu: ".flc-qssMenuWidget",
+            learnMore: ".flc-qssWidget-learnMore"
         },
 
         events: {
@@ -184,6 +188,14 @@
                     "{arguments}.0" // setting
                 ]
             }]
+        },
+
+        modelListeners: {
+            "setting.learnMoreLink": {
+                this: "{that}.dom.learnMore",
+                method: "attr",
+                args: ["href", "{change}.value"]
+            }
         }
     });
 

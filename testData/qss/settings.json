@@ -15,7 +15,8 @@
         },
         "value": "English",
         "tooltip": "<div><strong>Change language.</strong></div><div>Works in Windows, Edge, and many other applications.</div>",
-        "restartWarning": true
+        "restartWarning": true,
+        "learnMoreLink": "https://www.gpii.net"
     }, {
         "path": "http://registry\\.gpii\\.net/common/fontSize",
         "schema": {
@@ -30,7 +31,8 @@
         "widget": {
             "footerTip": "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
         },
-        "restartWarning": false
+        "restartWarning": false,
+        "learnMoreLink": "https://www.gpii.net"
     }, {
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
         "schema": {
@@ -46,7 +48,8 @@
         "widget": {
             "footerTip": ""
         },
-        "restartWarning": false
+        "restartWarning": false,
+        "learnMoreLink": "https://www.gpii.net"
     }, {
         "path": "http://registry\\.gpii\\.net/common/captions/enabled",
         "schema": {
@@ -118,7 +121,8 @@
             }
         },
         "tooltip": "<div><strong>Change the contrast between the text and background color, so text is easier to read.</strong></div><div>Contrast changes work in Windows, Edge, and some other applications.</div>",
-        "restartWarning": false
+        "restartWarning": false,
+        "learnMoreLink": "https://www.gpii.net"
     }, {
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
         "schema": {
