@@ -107,14 +107,6 @@ fluid.defaults("gpii.app.qss", {
                         funcName: "console.log",
                         args: ["Item clicked: ", "{arguments}.0"]
                     },
-                    // onQssButtonMouseEnter: {
-                    //     funcName: "console.log",
-                    //     args: ["Item Enter: ", "{arguments}.0.target.offsetLeft"]
-                    // },
-                    // onQssButtonMouseLeave: {
-                    //     funcName: "console.log",
-                    //     args: ["Item Leave: ", "{arguments}.0.target.offsetLeft"]
-                    // },
                     onQssSettingAltered: {
                         funcName: "console.log",
                         args: ["Setting altered QSS:", "{arguments}.0.path", "{arguments}.0.value"]

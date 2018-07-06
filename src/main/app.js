@@ -185,6 +185,12 @@ fluid.defaults("gpii.app", {
                     preferences: "{app}.model.preferences",
                     theme: "{app}.model.theme"
                 },
+                modelListeners: {
+                    "{qssWrapper}.qss.model.isShown": {
+                        funcName: "gpii.app.pspInApp.onQssToggled",
+                        args: ["{that}", "{change}.value"]
+                    }
+                },
                 listeners: {
                     "{qss}.events.onQssPspOpen": {
                         func: "{that}.show"
@@ -328,7 +334,11 @@ fluid.defaults("gpii.app", {
     defaultTheme: "white"
 });
 
-
+gpii.app.pspInApp.onQssToggled = function (psp, isQssShown) {
+    if (!isQssShown) {
+        psp.hide();
+    }
+};
 
 /**
  * A component for handling errors during app runtime. It triggers showing of an "Error Dialog"
