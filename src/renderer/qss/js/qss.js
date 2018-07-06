@@ -621,6 +621,8 @@
             onQssWidgetToggled: null
         },
 
+        defaultFocusButtonType: "keyIn",
+
         listeners: {
             "onQssOpen": {
                 funcName: "gpii.qss.onQssOpen",
@@ -628,6 +630,7 @@
                     "{quickSetStripList}",
                     "{focusManager}",
                     "{that}.model.settings",
+                    "{that}.options.defaultFocusButtonType",
                     "{arguments}.0" // params
                 ]
             }
@@ -730,18 +733,19 @@
         });
     };
 
-    gpii.qss.onQssOpen = function (qssList, focusManager, settings, params) {
-        // Focus the first element (in the presentation order) if the QSS is
-        // opened using the global shortcut.
+    gpii.qss.onQssOpen = function (qssList, focusManager, settings, defaultFocusButtonType, params) {
+        // Focus the first button of the specified `defaultFocusButtonType` if
+        // the QSS is opened using the global shortcut.
         if (params.shortcut) {
-            var keyOutBtnIndex = settings.length - 1;
-            qssList.events.onButtonFocusRequired.fire(keyOutBtnIndex);
-            return;
-        }
-
-        // Focus a button corresponding to a given setting or the previous or
-        // following button depending on the activation parameters.
-        if (params.setting) {
+            fluid.each(settings, function (setting, settingIndex) {
+                if (setting.schema.type === defaultFocusButtonType) {
+                    qssList.events.onButtonFocusRequired.fire(settingIndex);
+                    return true;
+                }
+            });
+        } else if (params.setting) {
+            // Focus a button corresponding to a given setting or the previous or
+            // following button depending on the activation parameters.
             var settingIndex = gpii.qss.getSettingIndex(settings, params.setting),
                 applyHighlight = false;
 
