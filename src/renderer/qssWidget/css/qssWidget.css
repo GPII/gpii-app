@@ -42,13 +42,21 @@ body {
     border: 2px solid #ff0000 !important;
 }
 
-.fl-qssWidget .fl-qssWidget-learnMore {
-    display: block;
+.fl-qssWidget .fl-qssWidget-learnMoreLink {
     margin: 10px auto;
+    border: 2px solid transparent;
+
     color: #000000;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
-.fl-qssWidget .fl-qssWidget-learnMore:before {
+.fl-qssWidget .fl-qssWidget-learnMoreLink:focus,
+.fl-qssWidget .fl-qssWidget-learnMoreLink:active {
+    outline: none;
+}
+
+.fl-qssWidget .fl-qssWidget-learnMoreLink:before {
     display: inline-block;
     margin-right: 5px;
     vertical-align: -35%;

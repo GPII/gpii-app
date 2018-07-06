@@ -41,19 +41,16 @@
      * for loading them.
      */
     fluid.defaults("gpii.psp.qssWidget", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent"],
 
         model: {
-            setting: {},
-            messages: {
-                learnMore: "Learn more..."
-            }
+            setting: {}
         },
 
         selectors: {
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
-            learnMore: ".flc-qssWidget-learnMore"
+            learnMoreLink: ".flc-qssWidget-learnMoreLink"
         },
 
         events: {
@@ -152,6 +149,15 @@
                     }
                 }
             },
+            learnMoreLink: {
+                type: "gpii.psp.qssWidget.learnMoreLink",
+                container: "{that}.dom.learnMoreLink",
+                options: {
+                    model: {
+                        setting: "{qssWidget}.model.setting"
+                    }
+                }
+            },
             // TODO send data from the main process
             channelListener: {
                 type: "gpii.psp.channelListener",
@@ -188,14 +194,6 @@
                     "{arguments}.0" // setting
                 ]
             }]
-        },
-
-        modelListeners: {
-            "setting.learnMoreLink": {
-                this: "{that}.dom.learnMore",
-                method: "attr",
-                args: ["href", "{change}.value"]
-            }
         }
     });
 
@@ -222,9 +220,59 @@
 
     gpii.qssWidget.processParams = function (focusManager, activationParams) {
         activationParams = activationParams || {};
-        // If the widget is show via the keyboard, focus the first element after the close button.
         if (activationParams.key) {
+            // If the widget is show via the keyboard, focus the first element after the close button.
             focusManager.focus(1, true);
+        } else {
+            // Otherwise there will be no focused element and any remaining highlight will be removed.
+            focusManager.removeHighlight(true);
+        }
+    };
+
+    fluid.defaults("gpii.psp.qssWidget.learnMoreLink", {
+        gradeNames: [
+            "fluid.viewComponent",
+            "gpii.qss.elementRepeater.keyListener",
+            "gpii.qss.elementRepeater.clickable"
+        ],
+
+        model: {
+            setting: null,
+            messages: {
+                learnMore: "Learn more..."
+            }
+        },
+
+        modelListeners: {
+            "messages.learnMore": {
+                this: "{that}.container",
+                method: "text",
+                args: ["{change}.value"]
+            }
+        },
+
+        events: {
+            onSpacebarPressed: null,
+            onEnterPressed: null
+        },
+
+        listeners: {
+            onClicked: "{that}.activate",
+            onSpacebarPressed: "{that}.activate",
+            onEnterPressed: "{that}.activate"
+        },
+
+        invokers: {
+            activate: {
+                funcName: "gpii.psp.qssWidget.learnMoreLink.activate",
+                args: ["{that}.model.setting"]
+            }
+        }
+    });
+
+    gpii.psp.qssWidget.learnMoreLink.activate = function (setting) {
+        if (setting && setting.learnMoreLink) {
+            gpii.psp.openUrlExternally(setting.learnMoreLink);
         }
     };
 })(fluid);
