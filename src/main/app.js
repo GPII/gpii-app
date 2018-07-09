@@ -193,7 +193,8 @@ fluid.defaults("gpii.app", {
                 },
                 listeners: {
                     "{qss}.events.onQssPspOpen": {
-                        func: "{that}.show"
+                        func: "{that}.show",
+                        args: [true]
                     }
                 }
             }

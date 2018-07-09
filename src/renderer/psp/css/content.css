@@ -23,6 +23,10 @@
     width: 100%;
 }
 
+.fl-settingsList .fl-emptyPrefSetHint {
+    margin: 20px 10px 0;
+}
+
 .fl-settingsList *[class^="flc-settingGroup"] {
     padding: 0 4px;
 }

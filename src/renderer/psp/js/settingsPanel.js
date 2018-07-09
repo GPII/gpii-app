@@ -385,10 +385,19 @@
      * Expects: list of settings
      */
     fluid.defaults("gpii.psp.settingsPanel", {
-        gradeNames: "gpii.psp.heightObservable",
+        gradeNames: ["gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
         model: {
             pendingChanges: [],
             settingGroups: []
+        },
+        selectors: {
+            emptyPrefSetHint: "#flc-emptyPrefSetHint"
+        },
+        modelListeners: {
+            settingGroups: {
+                funcName: "gpii.psp.settingsPanel.onSettingGroupsChanged",
+                args: ["{change}.value", "{that}.dom.emptyPrefSetHint"]
+            }
         },
         components: {
             settingsExemplars: {
@@ -459,6 +468,13 @@
             }
         }
     });
+
+    gpii.psp.settingsPanel.onSettingGroupsChanged = function (settingGroups, emptyPrefSetHintElem) {
+        var hasSettings = !!fluid.find_if(settingGroups, function (settingGroup) {
+            return settingGroup.settings.length > 0;
+        });
+        emptyPrefSetHintElem.toggle(!hasSettings);
+    };
 
     /**
      * Returns list of exemplars.

@@ -433,7 +433,7 @@
 
     gpii.qss.keyInButtonPresenter.activate = function (that, qssList, activationParams) {
         that.onButtonActivated(activationParams);
-        qssList.events.onPSPOpen.fire(that.model.messages.notification);
+        qssList.events.onPSPOpen.fire();
     };
 
     fluid.defaults("gpii.qss.closeButtonPresenter", {

@@ -27,6 +27,8 @@
     "gpii_psp_header_autosaveText": "Auto-save is on",
     "gpii_psp_header_keyOut":"Key Out",
 
+    "gpii_psp_settingsPanel_emptyPrefSetHint": "When the features you select have settings, their controls will appear here.",
+
     "gpii_psp_settingPresenter_osRestart": "To change this setting,\nWindows requires a restart.",
     "gpii_psp_settingPresenter_osRestartRequired": "You changed this setting, which\nrequires Windows to restart.",
 

@@ -159,6 +159,17 @@ fluid.defaults("gpii.app.psp", {
         preferences: {}
     },
 
+    modelRelay: {
+        hasSettings: {
+            target: "hasSettings",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.psp.getHasSettings",
+                args: ["{that}.model.preferences"]
+            }
+        }
+    },
+
     /*
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
      */
@@ -234,6 +245,11 @@ fluid.defaults("gpii.app.psp", {
         "onClosed.closePsp": {
             funcName: "gpii.app.psp.closePSP",
             args: ["{psp}", "{settingsBroker}"]
+        },
+
+        "{gpiiConnector}.events.onPreferencesUpdated": {
+            funcName: "gpii.app.psp.onPreferencesUpdated",
+            args: ["{that}", "{that}.model.hasSettings"]
         }
     },
 
@@ -273,6 +289,13 @@ fluid.defaults("gpii.app.psp", {
             func: "{psp}.notifyPSPWindow",
             args: ["onRestartRequired", []]
         },
+        show: {
+            funcName: "gpii.app.psp.show",
+            args: [
+                "{that}",
+                "{arguments}.0" // forceShow
+            ]
+        },
         onThemeChanged: {
             funcName: "gpii.app.notifyWindow",
             args: [
@@ -288,6 +311,47 @@ fluid.defaults("gpii.app.psp", {
     }
 });
 
+/**
+ * Computes whether at least one setting group in the specified preferences has at least
+ * 1 top level setting.
+ * @param {Object} preferences - The current preferences object for the PSP (containing
+ * the available preference sets, the currently active one and the setting groups)
+ * @return {Boolean} `true` if at least one setting group has at least one setting and
+ * `false` otherwise.
+ */
+gpii.app.psp.getHasSettings = function (preferences) {
+    // Whether at least one setting group has at least 1 top level setting.
+    var settingGroups = fluid.get(preferences, "settingGroups");
+    return !!fluid.find_if(settingGroups, function (settingGroup) {
+        return settingGroup.settings.length > 0;
+    });
+};
+
+/**
+ * Shows the PSP in the following cases:
+ * 1. If the `forceShow` argument is true (regardless of whether there is a keyed in user
+ * or not).
+ * 2. If there is no keyed in user.
+ * 3. If there is a keyed in user who has at least one setting specified.
+ * @param {Component} that - The `gpii.app.psp` instance.
+ * @param {Boolean} forceShow - Whether to show the PSP unconditionally.
+ */
+gpii.app.psp.show = function (that, forceShow) {
+    if (forceShow || !that.model.keyedInUserToken || that.model.hasSettings) {
+        that.applier.change("isShown", true);
+    }
+};
+
+/**
+ * Invoked whenever the `preferences` object in the PSP's model changes. Responsible for
+ * hiding the PSP if there are no settings for the currently keyed in user.
+ * @param {Component} that - The `gpii.app.psp` instance.
+ */
+gpii.app.psp.onPreferencesUpdated = function (that) {
+    if (that.model.keyedInUserToken && !that.model.hasSettings) {
+        that.hide();
+    }
+};
 
 /**
  * Handle PSPWindow's blur event which is fired when the window loses focus. The PSP

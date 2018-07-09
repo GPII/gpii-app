@@ -27,6 +27,8 @@
     "gpii_psp_header_autosaveText": "Автоматично запазване е включено",
     "gpii_psp_header_keyOut":"Отпиши се",
 
+    "gpii_psp_settingsPanel_emptyPrefSetHint": "Когато имате настройки, техните контроли ще се появят тук.",
+
     "gpii_psp_settingPresenter_osRestart": "За да промените тази настройка,\nWindows трябва да се рестартира.",
     "gpii_psp_settingPresenter_osRestartRequired": "Променихте тази настройка, което\nизисква Windows да се рестартира.",
 
