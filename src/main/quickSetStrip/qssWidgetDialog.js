@@ -30,6 +30,12 @@ fluid.defaults("gpii.app.qssWidget", {
         setting: {}
     },
 
+    // Temporary. Should be removed when the widget becomes truly resizable.
+    heightMap: {
+        "http://registry\\.gpii\\.net/common/language": 550,
+        "http://registry\\.gpii\\.net/common/highContrastTheme": 600
+    },
+
     config: {
         params: {
             sounds: {
@@ -129,6 +135,7 @@ fluid.defaults("gpii.app.qssWidget", {
             funcName: "gpii.app.qssWidget.show",
             args: [
                 "{that}",
+                "{that}.options.heightMap",
                 "{arguments}.0", // setting
                 "{arguments}.1",  // elementMetrics
                 "{arguments}.2"// activationParams
@@ -188,7 +195,7 @@ function getWidgetPosition(dialog, elementMetrics) {
  * @param {Object} activationParams - Defines the way this show was triggered
  * @param {Object} activationParams.shortcut - Defines the way the show was triggered
  */
-gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
+gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, activationParams) {
     var position = getWidgetPosition(that.dialog, elementMetrics);
 
     activationParams = activationParams || {};
@@ -197,7 +204,9 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
 
     that.applier.change("setting", setting);
     that.applier.change("isShown", true);
+
     // reposition window properly
+    that.height = heightMap[setting.path] || that.options.config.attrs.height;
     that.setPosition(position.x, position.y);
 };
 
