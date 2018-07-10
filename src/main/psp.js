@@ -306,7 +306,11 @@ fluid.defaults("gpii.app.psp", {
         },
         handleBlur: {
             funcName: "gpii.app.psp.handleBlur",
-            args: ["{that}", "{settingsBroker}"]
+            args: [
+                "{that}",
+                "{settingsBroker}",
+                "{arguments}.0" // ignoreClosePreference
+            ]
         }
     }
 });
@@ -360,9 +364,9 @@ gpii.app.psp.onPreferencesUpdated = function (that) {
  * @param {Component} psp - The `gpii.app.psp` instance.
  * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
  */
-gpii.app.psp.handleBlur = function (psp, settingsBroker) {
+gpii.app.psp.handleBlur = function (psp, settingsBroker, ignoreClosePreference) {
     var isShown = psp.model.isShown,
-        closePSPOnBlur = psp.model.preferences.closePSPOnBlur;
+        closePSPOnBlur = psp.model.preferences.closePSPOnBlur || ignoreClosePreference;
     if (isShown && closePSPOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
         psp.events.onClosed.fire();
     }

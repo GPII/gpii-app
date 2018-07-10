@@ -195,6 +195,10 @@ fluid.defaults("gpii.app", {
                     "{qss}.events.onQssPspOpen": {
                         func: "{that}.show",
                         args: [true]
+                    },
+                    "{qss}.events.onQssPspClose": {
+                        func: "{that}.handleBlur",
+                        args: [true]
                     }
                 }
             }

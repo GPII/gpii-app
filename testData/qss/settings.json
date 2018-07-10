@@ -158,9 +158,9 @@
         },
         "tooltip": "<div><strong>Undo the last change you made in  the Morphic Bar.</strong></div>"
     }, {
-        "path": "keyIn",
+        "path": "psp",
         "schema": {
-            "type": "keyIn",
+            "type": "psp",
             "title": {
                 "keyedIn": "Settings Panel",
                 "keyedOut": "Key In"

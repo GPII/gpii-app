@@ -252,8 +252,8 @@
             isKeyPressed = fluid.get(activationParams, "key"),
             applyKeyboardHighlight = that.options.applyKeyboardHighlight;
 
-        qssList.events.onButtonActivated.fire(that.model.item, metrics, activationParams);
         focusManager.focusElement(container, isKeyPressed && applyKeyboardHighlight);
+        qssList.events.onButtonActivated.fire(that.model.item, metrics, activationParams);
     };
 
     gpii.qss.buttonPresenter.activate = function (that, activationParams) {
@@ -591,7 +591,7 @@
             return "gpii.qss.widgetButtonPresenter";
         case "close":
             return "gpii.qss.closeButtonPresenter";
-        case "keyIn":
+        case "psp":
             return "gpii.qss.keyInButtonPresenter";
         case "save":
             return "gpii.qss.saveButtonPresenter";
@@ -621,7 +621,7 @@
             onQssWidgetToggled: null
         },
 
-        defaultFocusButtonType: "keyIn",
+        defaultFocusButtonType: "psp",
 
         listeners: {
             "onQssOpen": {

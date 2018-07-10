@@ -51,7 +51,8 @@ fluid.defaults("gpii.app.qssWrapper", {
         onSettingUpdated: null,
         onPreferencesUpdated: null,
         onUndoRequired: null,
-        onQssPspOpen: null
+        onQssPspOpen: null,
+        onQssPspClose: null
     },
 
     listeners: {
@@ -80,13 +81,29 @@ fluid.defaults("gpii.app.qssWrapper", {
                         settings: "{qssWrapper}.model.settings"
                     }
                 },
+                pspButtonPath: "psp",
                 model: {
                     keyedInUserToken: "{qssWrapper}.model.keyedInUserToken"
                 },
                 events: {
-                    onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
+                    onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled",
+                    onQssPspClose: "{qssWrapper}.events.onQssPspClose"
                 },
                 listeners: {
+                    "{channelListener}.events.onQssButtonFocused": [{
+                        func: "{qssTooltip}.showIfPossible",
+                        args: [
+                            "{arguments}.0", // setting
+                            "{arguments}.1"  // elementMetrics
+                        ]
+                    }, {
+                        funcName: "gpii.app.qss.hideQssMenus",
+                        args: [
+                            "{that}",
+                            "{qssWidget}",
+                            "{arguments}.0" // setting
+                        ]
+                    }],
                     "{channelListener}.events.onQssButtonActivated": [{
                         func: "{qssWidget}.toggle",
                         args: [
@@ -144,7 +161,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         args: [{
                             description: "{arguments}.0.description",
                             focusOnClose: "{that}.dialog"
-                        }] // notificationParams 
+                        }]
                     }
                 },
                 modelListeners: {
@@ -171,13 +188,6 @@ fluid.defaults("gpii.app.qssWrapper", {
                 listeners: {
                     // TODO list events for a method
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": {
-                        func: "{that}.showIfPossible",
-                        args: [
-                            "{arguments}.0", // setting
-                            "{arguments}.1"  // metrics
-                        ]
-                    },
-                    "{gpii.app.qss}.channelListener.events.onQssButtonFocused": {
                         func: "{that}.showIfPossible",
                         args: [
                             "{arguments}.0", // setting
@@ -220,6 +230,23 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     }
 });
+
+/**
+ * Whenever a button in the QSS is focused hides the QSS widget and the PSP in case
+ * the setting for the newly focused button is different from the QSS widget's setting
+ * (or the setting for the PSP button respectively).
+ */
+gpii.app.qss.hideQssMenus = function (that, qssWidget, setting) {
+    var qssWidgetSetting = qssWidget.model.setting || {};
+
+    if (setting.path !== qssWidgetSetting.path) {
+        qssWidget.hide();
+    }
+
+    if (setting.path !== that.options.pspButtonPath) {
+        that.events.onQssPspClose.fire();
+    }
+};
 
 gpii.app.qssWrapper.updateSetting = function (that, updatedSetting) {
     fluid.each(that.model.settings, function (setting, index) {
