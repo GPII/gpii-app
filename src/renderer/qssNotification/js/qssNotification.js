@@ -101,8 +101,12 @@
 
         listeners: {
             onQssNotificationShown: {
-                changePath: "messages",
-                value: "{arguments}.0"
+                funcName: "gpii.app.applier.replace",
+                args: [
+                    "{that}.applier",
+                    "messages",
+                    "{arguments}.0"
+                ]
             }
         },
 

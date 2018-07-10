@@ -31,7 +31,6 @@
         "widget": {
             "footerTip": "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
         },
-        "restartWarning": false,
         "learnMoreLink": "https://www.gpii.net"
     }, {
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
@@ -48,7 +47,6 @@
         "widget": {
             "footerTip": ""
         },
-        "restartWarning": false,
         "learnMoreLink": "https://www.gpii.net"
     }, {
         "path": "http://registry\\.gpii\\.net/common/captions/enabled",
@@ -58,8 +56,7 @@
             "defaultValue": false
         },
         "value": false,
-        "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div>",
-        "restartWarning": false
+        "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div>"
     }, {
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
@@ -121,7 +118,6 @@
             }
         },
         "tooltip": "<div><strong>Change the contrast between the text and background color, so text is easier to read.</strong></div><div>Contrast changes work in Windows, Edge, and some other applications.</div>",
-        "restartWarning": false,
         "learnMoreLink": "https://www.gpii.net"
     }, {
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
@@ -132,8 +128,7 @@
             "defaultValue": false
         },
         "value": false,
-        "tooltip": "<div><strong>Turn Chrome’s ability to read text on/off.</strong></div>",
-        "restartWarning": false
+        "tooltip": "<div><strong>Turn Chrome’s ability to read text on/off.</strong></div>"
     }, {
 
         "path": "more",

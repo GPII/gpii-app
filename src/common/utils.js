@@ -82,3 +82,26 @@ gpii.app.timer.clear = function (that) {
         that.timer = null;
     }
 };
+
+fluid.registerNamespace("gpii.app.applier");
+
+gpii.app.applier.replace = function (applier, path, value, source) {
+    var transaction = applier.initiate();
+
+    // Remove the previous value at the given path
+    applier.fireChangeRequest({
+        path: path,
+        type: "DELETE",
+        source: source
+    });
+
+    // Add the new value for the corresponding path
+    applier.fireChangeRequest({
+        path: path,
+        value: value,
+        type: "ADD",
+        source: source
+    });
+
+    transaction.commit();
+};

@@ -143,8 +143,7 @@ gpii.app.qssTooltipDialog.show = function (that, setting, elementMetrics) {
 
     // trigger update in the tooltip BrowserWindow
     // and keep the last shown setting
-    that.applier.change("setting", null, "DELETE"); // ensure previous state is not merged
-    that.applier.change("setting", setting);
+    gpii.app.applier.replace(that.applier, "setting", setting);
 
     that.dialog.setAlwaysOnTop(true);
 

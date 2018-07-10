@@ -184,8 +184,12 @@
 
         listeners: {
             onSettingUpdated: [{
-                changePath: "setting",
-                value: "{arguments}.0"
+                funcName: "gpii.app.applier.replace",
+                args: [
+                    "{that}.applier",
+                    "setting",
+                    "{arguments}.0"
+                ]
             }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: [

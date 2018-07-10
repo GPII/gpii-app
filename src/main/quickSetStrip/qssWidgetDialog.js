@@ -202,7 +202,7 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
     that.dialog.setAlwaysOnTop(true);
 
-    that.applier.change("setting", setting);
+    gpii.app.applier.replace(that.applier, "setting", setting);
     that.applier.change("isShown", true);
 
     // reposition window properly

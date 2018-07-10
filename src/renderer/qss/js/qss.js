@@ -663,11 +663,8 @@
                         onSettingUpdated: null,
                         onKeyedInUserTokenChanged: null
                     },
-                    // XXX dev
                     listeners: {
                         onSettingUpdated: {
-                            // Update item by path
-                            // TODO
                             funcName: "gpii.qss.updateSetting",
                             args: [
                                 "{qss}",
@@ -724,7 +721,7 @@
             return setting.path === settingNewState.path;
         });
 
-        that.applier.change("settings." + settingIndex, settingNewState, null, "settingUpdate");
+        gpii.app.applier.replace(that.applier, "settings." + settingIndex, settingNewState, "settingUpdate");
     };
 
     gpii.qss.getSettingIndex = function (settings, setting) {
