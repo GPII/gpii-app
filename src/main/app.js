@@ -169,11 +169,19 @@ fluid.defaults("gpii.app", {
                     }
                 },
                 modelListeners: {
-                    "settings.*": {
+                    "settings.*": [{
+                        // A funny way to decorate the new value with the old value
+                        funcName: "fluid.extend",
+                        args: [
+                            true,
+                            "{change}.value",
+                            { oldValue: "{change}.oldValue.value" }
+                        ]
+                    }, {
                         func: "{settingsBroker}.applySetting",
                         args: ["{change}.value"],
                         includeSource: ["qss", "qssWidget", "gpii.app.propertyHistoryManager.undo"]
-                    }
+                    }]
                 }
             }
         },
