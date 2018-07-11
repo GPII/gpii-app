@@ -11,7 +11,7 @@
     "dependencies": {
         "electron": "1.8.4",
         "electron-edge-js": "8.3.2",
-        "gpii-windows": "0.3.0-dev.20180507T122135Z.92c7c83",
+        "gpii-windows": "0.3.0-dev.20180625T170252Z.a60081a",
         "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
         "node-jqunit": "1.1.8",
         "request": "2.85.0",
