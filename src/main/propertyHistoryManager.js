@@ -37,6 +37,11 @@ fluid.defaults("gpii.app.propertyHistoryManager", {
         }
     },
 
+    events: {
+        onUndoStackEmptied: null,
+        onUndoEntryAvailable: null
+    },
+
     maxHistoryEntries: 100,
 
     listeners: {
@@ -142,6 +147,10 @@ gpii.app.propertyHistoryManager.undo = function (that, cmpGrade) {
     // direct access will avoid triggering notifications from the change applier
     component.model[propertyPath] = null;
     component.applier.change(propertyPath, prevState.oldValue, null, "gpii.app.propertyHistoryManager.undo");
+
+    if (historyStack.length === 0) {
+        that.events.onUndoStackEmptied.fire(cmpGrade);
+    }
 };
 
 
@@ -162,11 +171,16 @@ gpii.app.propertyHistoryManager.registerChange = function (that, grade, value, o
         return;
     }
 
+
     // simply add the new state even if it hasn't changed
     historyStack.push({
         oldValue: oldValue,
         path:     pathSegs
     });
+
+    if (historyStack.length === 1) {
+        that.events.onUndoEntryAvailable.fire(grade);
+    }
 
     if (that.options.maxHistoryEntries <= historyStack.length) {
         historyStack.shift();

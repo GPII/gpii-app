@@ -52,7 +52,9 @@ fluid.defaults("gpii.app.qssWrapper", {
         onPreferencesUpdated: null,
         onUndoRequired: null,
         onQssPspOpen: null,
-        onQssPspClose: null
+        onQssPspClose: null,
+
+        onUndoIndicatorChangeRequired: null
     },
 
     listeners: {
@@ -86,8 +88,10 @@ fluid.defaults("gpii.app.qssWrapper", {
                     keyedInUserToken: "{qssWrapper}.model.keyedInUserToken"
                 },
                 events: {
-                    onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled",
-                    onQssPspClose: "{qssWrapper}.events.onQssPspClose"
+                    onQssPspClose: "{qssWrapper}.events.onQssPspClose",
+                    onUndoIndicatorChangeRequired: "{qssWrapper}.events.onUndoIndicatorChangeRequired",
+
+                    onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
                 },
                 listeners: {
                     "{channelListener}.events.onQssButtonFocused": [{

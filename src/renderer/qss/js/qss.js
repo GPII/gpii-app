@@ -303,18 +303,33 @@
         };
     };
 
+
+    fluid.defaults("gpii.qss.changeIndicator", {
+        gradeNames: ["fluid.viewComponent"],
+
+        selectors: {
+            changeIndicator: ".flc-qss-btnChangeIndicator"
+        },
+
+        invokers: {
+            toggleIndicator: {
+                this: "{that}.dom.changeIndicator",
+                method: "toggle",
+                args: [
+                    "{arguments}.0" // shouldShow
+                ]
+            }
+        }
+    });
+
     fluid.defaults("gpii.qss.settingButtonPresenter", {
-        gradeNames: "fluid.viewComponent",
+        gradeNames: ["fluid.viewComponent", "gpii.qss.changeIndicator"],
 
         model: {
             item: {
                 value: null
             },
             value: "{that}.model.item.value"
-        },
-
-        selectors: {
-            changeIndicator: ".flc-qss-btnChangeIndicator"
         },
 
         styles: {
@@ -324,7 +339,7 @@
         modelListeners: {
             value: {
                 funcName: "gpii.qss.settingButtonPresenter.updateChangeIndicator",
-                args: ["{that}.dom.changeIndicator", "{that}.model.item", "{change}.value"],
+                args: ["{that}", "{that}.model.item", "{change}.value"],
                 namespace: "changeIndicator"
             }
         },
@@ -338,12 +353,12 @@
         }
     });
 
-    gpii.qss.settingButtonPresenter.updateChangeIndicator = function (indicatorElem, setting, value) {
+    gpii.qss.settingButtonPresenter.updateChangeIndicator = function (that, setting, value) {
         // The dot should be shown if the setting has a default value and the new value of the
         // setting is different from that value.
         var defaultValue = setting.schema.defaultValue,
             shouldShow = fluid.isValue(defaultValue) && !fluid.model.diff(value, defaultValue);
-        indicatorElem.toggle(shouldShow);
+        that.toggleIndicator(shouldShow);
     };
 
     fluid.defaults("gpii.qss.toggleButtonPresenter", {
@@ -519,8 +534,15 @@
     };
 
     fluid.defaults("gpii.qss.undoButtonPresenter", {
-        gradeNames: ["gpii.qss.buttonPresenter"],
+        gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.changeIndicator"],
         applyKeyboardHighlight: true,
+        listeners: {
+            "{list}.events.onUndoIndicatorChangeRequired": {
+                func: "{that}.toggleIndicator",
+                args: "{arguments}.0" // shouldShow
+            }
+        },
+
         invokers: {
             activate: {
                 funcName: "gpii.qss.undoButtonPresenter.activate",
@@ -645,7 +667,8 @@
                         items: "{quickSetStrip}.model.settings"
                     },
                     events: {
-                        onQssClosed: "{gpii.qss}.events.onQssClosed"
+                        onQssClosed: "{gpii.qss}.events.onQssClosed",
+                        onUndoIndicatorChangeRequired: null
                     }
                 }
             },
@@ -661,7 +684,9 @@
                         onQssOpen: "{qss}.events.onQssOpen",
                         onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
                         onSettingUpdated: null,
-                        onKeyedInUserTokenChanged: null
+                        onKeyedInUserTokenChanged: null,
+
+                        onUndoIndicatorChangeRequired: "{quickSetStripList}.events.onUndoIndicatorChangeRequired"
                     },
                     listeners: {
                         onSettingUpdated: {

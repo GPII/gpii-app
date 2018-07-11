@@ -169,14 +169,14 @@ fluid.defaults("gpii.app", {
                         args: [ "{that}", "settings.*" ]
                     },
 
-                    // "{propertyHistoryManager}.events.onUndoStackEmptied": {
-                    //     func: "{that}.events.onUndoIndicatorChangeRequired.fire",
-                    //     args: [false]
-                    // },
-                    // "{propertyHistoryManager}.events.onUndoEntryAvailable": {
-                    //     func: "{that}.events.onUndoIndicatorChangeRequired.fire",
-                    //     args: [true]
-                    // }
+                    "{propertyHistoryManager}.events.onUndoStackEmptied": {
+                        func: "{that}.events.onUndoIndicatorChangeRequired.fire",
+                        args: [false]
+                    },
+                    "{propertyHistoryManager}.events.onUndoEntryAvailable": {
+                        func: "{that}.events.onUndoIndicatorChangeRequired.fire",
+                        args: [true]
+                    }
                 },
                 modelListeners: {
                     "settings.*": [{
@@ -236,7 +236,7 @@ fluid.defaults("gpii.app", {
                     "onCreate.registerDefaultGlobalShortcut": {
                         func: "{that}.registerGlobalShortcut",
                         args: [
-                            "Super+CmdOrCtrl+Alt+U",
+                            "Super+CmdOrCtrl+Alt+M",
                             "onPspOpenShortcut"
                         ]
                     },

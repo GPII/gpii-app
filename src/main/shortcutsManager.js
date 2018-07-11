@@ -28,15 +28,15 @@ fluid.defaults("gpii.app.shortcutsManager", {
 
     events: {},
 
-    //  TODO
     members: {
+        // Record of all registered shortcuts
+        // May be used for de-registration or re-registration of shortcuts
         shortcuts: {
             /*
              <name>: {
-                command: "",
-                event: <event_to_be_triggered>,
-                condition: <predicate_function>,
-                targetWindows: [<window>]
+                command: <keys_combination>,
+                event: <event_by_name_to_be_triggered>,
+                targetWindows: [<window_grade1>, <window_grade2>]
              }
              */
         }
@@ -70,6 +70,9 @@ fluid.defaults("gpii.app.shortcutsManager", {
 });
 
 
+/**
+ * Ensure global shortcuts are cleared after app destruction.
+ */
 gpii.app.shortcutsManager.clearShortcuts = function () {
     globalShortcut.unregisterAll();
 };
@@ -87,9 +90,6 @@ gpii.app.shortcutsManager.registerGlobalShortcut = function (that, command, even
         fluid.fail("Global shortcut already exists:", command);
         return;
     }
-
-    // XXX DEV
-    console.log("----- Registered: ", command, eventName);
 
     globalShortcut.register(command, shortcutEvent.fire);
 

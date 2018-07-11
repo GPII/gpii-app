@@ -33,11 +33,7 @@ body {
     user-select: none;
 }
 
-.fl-qss-button.fl-qss-settingButton {
-    background-color: #3b66b2;
-}
-
-.fl-qss-button.fl-qss-settingButton .fl-qss-btnChangeIndicator {
+.fl-qss-button .fl-qss-btnChangeIndicator {
     position: absolute;
     top: 3px;
     right: 2px;
@@ -45,12 +41,23 @@ body {
     height: 8px;
     border-radius: 50%;
 
+    background-color: #ffffff;
+}
+
+/* Initially all indicators are hidden */
+.fl-qss-button .fl-qss-btnChangeIndicator {
+    display: none;
+}
+
+.fl-qss-button.fl-qss-settingButton {
+    background-color: #3b66b2;
+}
+
+.fl-qss-button.fl-qss-settingButton .fl-qss-btnChangeIndicator {
     background-color: #98d5ec;
 }
 
-.fl-qss-button:not(.fl-qss-settingButton) .fl-qss-btnChangeIndicator {
-    display: none;
-}
+
 
 .fl-qss-button:hover {
     filter: brightness(95%);
