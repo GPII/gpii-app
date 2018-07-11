@@ -296,7 +296,7 @@ fluid.defaults("gpii.app", {
         }],
         "{lifecycleManager}.events.onSessionStop": [{
             listener: "gpii.app.handleSessionStop",
-            args: ["{that}", "{arguments}.1.options.userToken"]
+            args: ["{that}", "{arguments}.1.model.gpiiKey"]
         }, {
             listener: "{that}.events.onKeyedOut.fire",
             namespace: "notifyUserKeyedOut"

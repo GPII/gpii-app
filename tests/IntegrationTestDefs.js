@@ -41,7 +41,7 @@ gpii.tests.app.psp.testPSPWindowIsHidden = function (psp) {
 
 gpii.tests.app.psp.testInitialPSPWindow = function (psp) {
     jqUnit.assertNotUndefined("The PSP was instantiated", psp);
-    jqUnit.assertNotUndefined("The PSP Electron window was instantiated", psp.pspWindow);
+    jqUnit.assertNotUndefined("The PSP Electron window was instantiated", psp.dialog);
     gpii.tests.app.psp.testPSPWindowIsHidden(psp);
 };
 
@@ -105,8 +105,8 @@ gpii.tests.app.testDefs = {
         args: "snapset_1a"
     }, {
         changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        // XXX {{1}} as `keyedInUserToken` and `preferences` are updated in different time (toke is first),
-        // if we have listener for `menuTemplate` update, the `preferenceSetsMenuItems` update won't be present
+        // XXX {{1}} as `keyedInUserToken` and `preferences` are updated at different times (token is first),
+        // if we have a listener for `menuTemplate` update, the `preferenceSetsMenuItems` update won't be present
         // at the time of the event firing
         path: "preferenceSetsMenuItems",
         args: ["{that}.app.tray.menu.model.menuTemplate"],
