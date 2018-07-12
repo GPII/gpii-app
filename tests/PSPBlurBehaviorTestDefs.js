@@ -65,9 +65,13 @@ gpii.tests.pspBlur.checkPSPVisibility = function (psp, isShown) {
     );
 };
 
+gpii.tests.pspBlur.blur = function (psp) {
+    psp.dialog.blur();
+};
+
 gpii.tests.pspBlur.testDefs = {
     name: "PSP Blur behavior integration tests",
-    // expect: 22,
+    expect: 11,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -84,9 +88,11 @@ gpii.tests.pspBlur.testDefs = {
             func: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", true]
         }, {
-            func: "{that}.app.psp.events.onPSPWindowFocusLost.fire"
+            funcName: "gpii.tests.pspBlur.blur",
+            args: ["{that}.app.psp"]
         }, {
-            func: "gpii.tests.pspBlur.checkPSPVisibility",
+            event: "{that}.app.psp.events.onBlur",
+            listener: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", false]
         }
     ], [ // Test that PSP will close when clicking outside if there is a keyed in user with closePSPOnBlur = true preference.
@@ -99,9 +105,11 @@ gpii.tests.pspBlur.testDefs = {
             func: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", true]
         }, {
-            func: "{that}.app.psp.events.onPSPWindowFocusLost.fire"
+            funcName: "gpii.tests.pspBlur.blur",
+            args: ["{that}.app.psp"]
         }, {
-            func: "gpii.tests.pspBlur.checkPSPVisibility",
+            event: "{that}.app.psp.events.onBlur",
+            listener: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", false]
         }
     ], [ // Test that PSP will not close if there is a pending manual setting change regardless of the closePSPOnBlur preference.
@@ -114,7 +122,8 @@ gpii.tests.pspBlur.testDefs = {
             func: "{that}.app.settingsBroker.enqueue",
             args: [manualSettingChange]
         }, {
-            func: "{that}.app.psp.events.onPSPWindowFocusLost.fire"
+            funcName: "gpii.tests.pspBlur.blur",
+            args: ["{that}.app.psp"]
         }, {
             func: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", true]
@@ -126,9 +135,11 @@ gpii.tests.pspBlur.testDefs = {
             func: "{that}.app.settingsBroker.enqueue",
             args: [osSettingChange]
         }, {
-            func: "{that}.app.psp.events.onPSPWindowFocusLost.fire"
+            funcName: "gpii.tests.pspBlur.blur",
+            args: ["{that}.app.psp"]
         }, {
-            func: "gpii.tests.pspBlur.checkPSPVisibility",
+            event: "{that}.app.psp.events.onBlur",
+            listener: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", false]
         }, {
             func: "{that}.app.settingsBroker.undoPendingChanges"
@@ -143,7 +154,8 @@ gpii.tests.pspBlur.testDefs = {
             func: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", true]
         }, {
-            func: "{that}.app.psp.events.onPSPWindowFocusLost.fire"
+            funcName: "gpii.tests.pspBlur.blur",
+            args: ["{that}.app.psp"]
         }, {
             func: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", true]
@@ -153,7 +165,8 @@ gpii.tests.pspBlur.testDefs = {
             func: "{that}.app.settingsBroker.enqueue",
             args: [manualSettingChange]
         }, {
-            func: "{that}.app.psp.events.onPSPWindowFocusLost.fire"
+            funcName: "gpii.tests.pspBlur.blur",
+            args: ["{that}.app.psp"]
         }, {
             func: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", true]
@@ -165,7 +178,8 @@ gpii.tests.pspBlur.testDefs = {
             func: "{that}.app.settingsBroker.enqueue",
             args: [osSettingChange]
         }, {
-            func: "{that}.app.psp.events.onPSPWindowFocusLost.fire"
+            funcName: "gpii.tests.pspBlur.blur",
+            args: ["{that}.app.psp"]
         }, {
             func: "gpii.tests.pspBlur.checkPSPVisibility",
             args: ["{that}.app.psp", true]

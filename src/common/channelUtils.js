@@ -81,7 +81,7 @@ gpii.app.common.simpleChannelListener.registerIPCListeners = function (that, eve
  * @param {Object} events - The events to be used.
  */
 gpii.app.common.simpleChannelListener.deregisterIPCListeners = function (that, events) {
-    fluid.keys(events).forEach(that.registerIPCListener);
+    fluid.keys(events).forEach(that.deregisterIPCListener);
 };
 
 
