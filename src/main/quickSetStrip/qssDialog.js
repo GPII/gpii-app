@@ -51,7 +51,7 @@ fluid.defaults("gpii.app.qss", {
         onQssSettingAltered: null,
         onSettingUpdated: null,
 
-        onUndoIndicatorChangeRequired: null
+        onUndoIndicatorChanged: null
     },
 
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
@@ -64,7 +64,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssOpen: "{qss}.events.onQssOpen",
                     onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
                     onSettingUpdated: "{qss}.events.onSettingUpdated",
-                    onUndoIndicatorChangeRequired: "{qss}.events.onUndoIndicatorChangeRequired",
+                    onUndoIndicatorChanged: "{qss}.events.onUndoIndicatorChanged",
                     onKeyedInUserTokenChanged: null
                 },
                 listeners: {

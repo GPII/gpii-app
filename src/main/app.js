@@ -20,7 +20,6 @@ var request = require("request");
 
 require("./assetsManager.js");
 require("./shortcutsManager.js");
-require("./propertyHistoryManager.js");
 require("./ws.js");
 require("./factsManager.js");
 require("./dialogManager.js");
@@ -158,25 +157,8 @@ fluid.defaults("gpii.app", {
                 listeners: {
                     "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
-                    "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated",
+                    "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated"
 
-                    "onUndoRequired.activateUndo": {
-                        func: "{propertyHistoryManager}.undo",
-                        args: "gpii.app.qssWrapper"
-                    },
-                    "onCreate.regsiterUndo": {
-                        funcName: "{propertyHistoryManager}.registerPropertyObserver",
-                        args: [ "{that}", "settings.*" ]
-                    },
-
-                    "{propertyHistoryManager}.events.onUndoStackEmptied": {
-                        func: "{that}.events.onUndoIndicatorChangeRequired.fire",
-                        args: [false]
-                    },
-                    "{propertyHistoryManager}.events.onUndoEntryAvailable": {
-                        func: "{that}.events.onUndoIndicatorChangeRequired.fire",
-                        args: [true]
-                    }
                 },
                 modelListeners: {
                     "settings.*": [{
@@ -190,7 +172,7 @@ fluid.defaults("gpii.app", {
                     }, {
                         func: "{settingsBroker}.applySetting",
                         args: ["{change}.value"],
-                        includeSource: ["qss", "qssWidget", "gpii.app.propertyHistoryManager.undo"]
+                        includeSource: ["qss", "qssWidget", "gpii.app.undoStack.undo"]
                     }]
                 }
             }
@@ -220,9 +202,6 @@ fluid.defaults("gpii.app", {
                     }
                 }
             }
-        },
-        propertyHistoryManager: {
-            type: "gpii.app.propertyHistoryManager"
         },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
@@ -273,8 +252,7 @@ fluid.defaults("gpii.app", {
                     // filter shortcut
                     "{shortcutsManager}.events.onQssUndoShortcut": {
                         // get current active window
-                        funcName: "{propertyHistoryManager}.undo",
-                        args: "gpii.app.qssWrapper"
+                        funcName: "{qss}.undoStack.undo"
                     },
                     "{shortcutsManager}.events.onPspOpenShortcut": [{
                         func: "{psp}.show"

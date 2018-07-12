@@ -537,7 +537,7 @@
         gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.changeIndicator"],
         applyKeyboardHighlight: true,
         listeners: {
-            "{list}.events.onUndoIndicatorChangeRequired": {
+            "{list}.events.onUndoIndicatorChanged": {
                 func: "{that}.toggleIndicator",
                 args: "{arguments}.0" // shouldShow
             }
@@ -668,7 +668,7 @@
                     },
                     events: {
                         onQssClosed: "{gpii.qss}.events.onQssClosed",
-                        onUndoIndicatorChangeRequired: null
+                        onUndoIndicatorChanged: null
                     }
                 }
             },
@@ -686,7 +686,7 @@
                         onSettingUpdated: null,
                         onKeyedInUserTokenChanged: null,
 
-                        onUndoIndicatorChangeRequired: "{quickSetStripList}.events.onUndoIndicatorChangeRequired"
+                        onUndoIndicatorChanged: "{quickSetStripList}.events.onUndoIndicatorChanged"
                     },
                     listeners: {
                         onSettingUpdated: {

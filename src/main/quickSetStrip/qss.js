@@ -23,6 +23,7 @@ require("./qssTooltipDialog.js");
 require("./qssWidgetDialog.js");
 require("./qssNotificationDialog.js");
 require("./qssMorePanel.js");
+require("../undoStack.js");
 
 
 /**
@@ -54,7 +55,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         onQssPspOpen: null,
         onQssPspClose: null,
 
-        onUndoIndicatorChangeRequired: null
+        onUndoIndicatorChanged: null
     },
 
     listeners: {
@@ -71,10 +72,42 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{that}",
                 "{arguments}.0" // preferences
             ]
+        },
+        "onUndoRequired.activateUndo": {
+            func: "{undoStack}.undo"
         }
     },
 
     components: {
+        undoStack: {
+            type: "gpii.app.undoStack",
+            options: {
+                // paths of settings that are not undoable
+                unwatchedSettings: ["http://registry\\.gpii\\.net/common/fontSize"],
+
+                listeners: {
+                    "onChangeUndone.applyChange": {
+                        funcName: "gpii.app.qssWrapper.revertChange",
+                        args: [
+                            "{qssWrapper}",
+                            "{arguments}.0" // change
+                        ]
+                    }
+                },
+                modelListeners: {
+                    "{qssWrapper}.model.settings.*": {
+                        funcName: "gpii.app.qssWrapper.registerUndoableChange",
+                        args: ["{that}", "{change}"],
+                        excludeSource: ["gpii.app.undoStack.undo", "init"]
+                    },
+
+                    "undoStack": {
+                        func: "{qssWrapper}.updateUndoIndicator",
+                        args: ["{change}"]
+                    }
+                }
+            }
+        },
         qss: {
             type: "gpii.app.qss",
             options: {
@@ -89,7 +122,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                 },
                 events: {
                     onQssPspClose: "{qssWrapper}.events.onQssPspClose",
-                    onUndoIndicatorChangeRequired: "{qssWrapper}.events.onUndoIndicatorChangeRequired",
+                    onUndoIndicatorChanged: "{qssWrapper}.events.onUndoIndicatorChanged",
 
                     onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
                 },
@@ -231,6 +264,13 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{arguments}.0", // updatedSetting
                 "{arguments}.1" // source
             ]
+        },
+        updateUndoIndicator: {
+            funcName: "gpii.app.qssWrapper.updateUndoIndicator",
+            args: [
+                "{that}",
+                "{arguments}.0" // undoStackChange
+            ]
         }
     }
 });
@@ -250,6 +290,25 @@ gpii.app.qss.hideQssMenus = function (that, qssWidget, setting) {
     if (setting.path !== that.options.pspButtonPath) {
         that.events.onQssPspClose.fire();
     }
+};
+
+gpii.app.qssWrapper.registerUndoableChange = function (that, change) {
+    var isUndoable = !fluid.find_if(
+        that.options.unwatchedSettings,
+        function (settingPath) { return change.value.path === settingPath; });
+
+    if (isUndoable) {
+        that.registerChange(change);
+    }
+};
+
+gpii.app.qssWrapper.revertChange = function (qssWrapper, change) {
+    qssWrapper.applier.change(
+        change.path.join("."),
+        change.oldValue,
+        null,
+        "gpii.app.undoStack.undo"
+    );
 };
 
 gpii.app.qssWrapper.updateSetting = function (that, updatedSetting) {
@@ -323,5 +382,27 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
 
     if (settingIndex > -1) {
         that.applier.change("settings." + settingIndex, updatedSetting, null, source);
+    }
+};
+
+
+/**
+ * Notify undo indicator change. The indicator should be shown only when there is at least
+ * one undo entry. Notification is sent only on the first undo entry or on when the stack
+ * is emptied.
+ *
+ * @param {Component} that
+ * @param {Object} undoStackChange
+ * @param {Object[]} undoStackChange.value - The list of changes
+ * @param {Object[]} undoStackChange.oldValue - The list of changes before
+ */
+gpii.app.qssWrapper.updateUndoIndicator = function (that, undoStackChange) {
+    // Whether its the first change or the
+    if (undoStackChange.value.length === 0) {
+        // disable indicator
+        that.events.onUndoIndicatorChanged.fire(false);
+    } else if (undoStackChange.value.length === 1 && undoStackChange.oldValue.length === 0) {
+        // enable indicator only on first available undo entry
+        that.events.onUndoIndicatorChanged.fire(true);
     }
 };

@@ -42,12 +42,15 @@ body {
     border-radius: 50%;
 
     background-color: #ffffff;
-}
 
-/* Initially all indicators are hidden */
-.fl-qss-button .fl-qss-btnChangeIndicator {
+
+    /*
+     * Initially all indicators are hidden and their state is
+     * controlled using jQuery
+     */
     display: none;
 }
+
 
 .fl-qss-button.fl-qss-settingButton {
     background-color: #3b66b2;
@@ -56,8 +59,6 @@ body {
 .fl-qss-button.fl-qss-settingButton .fl-qss-btnChangeIndicator {
     background-color: #98d5ec;
 }
-
-
 
 .fl-qss-button:hover {
     filter: brightness(95%);
