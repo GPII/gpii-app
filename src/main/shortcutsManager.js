@@ -28,20 +28,6 @@ fluid.defaults("gpii.app.shortcutsManager", {
 
     events: {},
 
-    members: {
-        // Record of all registered shortcuts
-        // May be used for de-registration or re-registration of shortcuts
-        shortcuts: {
-            /*
-             <name>: {
-                command: <keys_combination>,
-                event: <event_by_name_to_be_triggered>,
-                targetWindows: [<window_grade1>, <window_grade2>]
-             }
-             */
-        }
-    },
-
     listeners: {
         "onDestroy.clearShortcuts": {
             funcName: "gpii.app.shortcutsManager.clearShortcuts"
@@ -87,16 +73,11 @@ gpii.app.shortcutsManager.registerGlobalShortcut = function (that, command, even
 
     if (globalShortcut.isRegistered(command)) {
         // Check whether a shortcut is registered.
-        fluid.fail("Global shortcut already exists:", command);
+        fluid.fail("ShortcutsManager: Global shortcut already exists - ", command);
         return;
     }
 
     globalShortcut.register(command, shortcutEvent.fire);
-
-    // Keep record of set shortcuts
-    that.shortcuts[shortcutEvent] = {
-        command: command
-    };
 };
 
 gpii.app.shortcutsManager.registerLocalShortcut = function (that, command, eventName, targetWindows) {
@@ -108,7 +89,7 @@ gpii.app.shortcutsManager.registerLocalShortcut = function (that, command, event
         return;
     }
     if (!windows) {
-        fluid.fail("ShortcutsManager: Missing shortcut event - ", eventName);
+        fluid.fail("ShortcutsManager: Local shortcuts require windows to be attached to - ", eventName);
         return;
     }
 
@@ -123,10 +104,4 @@ gpii.app.shortcutsManager.registerLocalShortcut = function (that, command, event
         }
         localshortcut.register(winCmp.dialog, command, shortcutEvent.fire);
     });
-
-    // Keep record of set shortcuts
-    that.shortcuts[shortcutEvent] = {
-        command: command,
-        targetWindows: targetWindows
-    };
 };

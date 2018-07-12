@@ -1,7 +1,7 @@
 /**
- * Property history manager
+ * Undo stack component
  *
- * A component that keeps history in separate queues for different components' properties. It can be used for going to previous version.
+ * A component that represents a simple undo stack.
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -25,11 +25,27 @@ fluid.defaults("gpii.app.undoStack", {
     gradeNames: "fluid.modelComponent",
 
     model: {
-        undoStack: []
+        undoStack: [],
+        hasChanges: false
     },
 
     events: {
         onChangeUndone: null
+    },
+
+    modelRelay: {
+        hasChanges: {
+            target: "hasChanges",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.undoStack.hasChanges",
+                args: ["{that}.model.undoStack"]
+            },
+            forward: {
+                // on the initial step the `undoStack` is still `undefined`
+                excludeSource: "init"
+            }
+        }
     },
 
     // restrict the number of undo steps
@@ -66,7 +82,7 @@ gpii.app.undoStack.undo = function (that) {
 
     // Is it even registered
     if (undoStack.length === 0) {
-        fluid.log("UndoManager: undoStack is empty.");
+        fluid.log("UndoStack: undoStack is empty.");
         return;
     }
 
@@ -96,4 +112,8 @@ gpii.app.undoStack.registerChange = function (that, change) {
     }
 
     that.applier.change("undoStack", undoStack);
+};
+
+gpii.app.undoStack.hasChanges = function (undoStack) {
+    return undoStack.length !== 0;
 };
