@@ -52,15 +52,3 @@ try {
 
 $npm = "npm" -f $env:SystemDrive
 Invoke-Command $npm "install" $mainDir
-
-try {
-    $tests = Join-Path $originalBuildScriptPath "Tests.ps1"
-    $fullPath = Join-Path $originalBuildScriptPath "../node_modules/gpii-windows/provisioning/"
-    $args = "-originalBuildScriptPath $fullPath"
-    Write-OutPut "Running windows script: $tests"
-    iwr "$windowsBootstrapURL/Tests.ps1" -UseBasicParsing -OutFile $tests
-    Invoke-Expression "$tests $args"
-} catch {
-    Write-OutPut "Tests.ps1 FAILED"
-    exit 1
-}
