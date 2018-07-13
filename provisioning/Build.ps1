@@ -24,13 +24,13 @@ Write-OutPut "mainDir set to: $($mainDir)"
 
 # TODO: We should add this to a function or reduce to oneline.
 $bootstrapModule = Join-Path $originalBuildScriptPath "Provisioning.psm1"
-iwr https://raw.githubusercontent.com/javihernandez/windows/GPII-2884/provisioning/Provisioning.psm1 -UseBasicParsing -OutFile $bootstrapModule
+iwr https://raw.githubusercontent.com/GPII/windows/master/provisioning/Provisioning.psm1 -UseBasicParsing -OutFile $bootstrapModule
 Import-Module $bootstrapModule -Verbose -Force
 
 # # Run all the windows provisioning scripts
 # ############
 # TODO: Create function for downloading scripts and executing them.
-$windowsBootstrapURL = "https://raw.githubusercontent.com/javihernandez/windows/GPII-2884/provisioning"
+$windowsBootstrapURL = "https://raw.githubusercontent.com/GPII/windows/master/provisioning"
 try {
     $choco = Join-Path $originalBuildScriptPath "Chocolatey.ps1"
     Write-OutPut "Running windows script: $choco"
