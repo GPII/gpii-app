@@ -46,9 +46,20 @@
                 options: {
                     model: {
                         disabled: "{menu}.model.disabled",
-                        items: "{menu}.model.setting.schema.enum",
                         value: "{menu}.model.setting.value",
                         styles: "{menu}.model.setting.styles"
+                    },
+                    modelRelay: {
+                        items: {
+                            target: "items",
+                            singleTransform: {
+                                type: "fluid.transforms.free",
+                                func: "gpii.qssWidget.menu.getRepeaterItems",
+                                args: [
+                                    "{menu}.model.setting"
+                                ]
+                            }
+                        }
                     },
                     dynamicContainerMarkup: {
                         container: "<div role=\"radio\" class=\"%containerClass fl-qssWidgetMenu-item fl-focusable\" tabindex=\"0\"></div>",
@@ -135,6 +146,19 @@
         }
     };
 
+    gpii.qssWidget.menu.getRepeaterItems = function (setting) {
+        var schema = setting.schema || {},
+            values = schema["enum"],
+            keys = schema.keys || values;
+
+        return fluid.transform(keys, function (key, index) {
+            return {
+                key: key,
+                value: values[index]
+            };
+        });
+    };
+
     fluid.defaults("gpii.qssWidget.menu.presenter", {
         gradeNames: ["fluid.viewComponent", "gpii.qssWidget.button"],
         model: {
@@ -147,7 +171,7 @@
             item: {
                 this: "{that}.container",
                 method: "text",
-                args: ["{change}.value"]
+                args: ["{that}.model.item.value"]
             },
             "{repeater}.model.value": [{
                 funcName: "gpii.qssWidget.menu.presenter.toggleCheckmark",
@@ -179,7 +203,7 @@
         invokers: {
             activate: {
                 func: "{repeater}.updateValue",
-                args: ["{that}.model.item"]
+                args: ["{that}.model.item.key"]
             }
         }
     });
@@ -190,16 +214,16 @@
         }
     };
 
-    gpii.qssWidget.menu.presenter.toggleCheckmark = function (value, item, container) {
-        container.attr("aria-checked", item === value);
+    gpii.qssWidget.menu.presenter.toggleCheckmark = function (key, item, container) {
+        container.attr("aria-checked", item.key === key);
     };
 
-    gpii.qssWidget.menu.presenter.animateActivation = function (value, item, container, styles) {
-        container.toggleClass(styles.active, item === value);
+    gpii.qssWidget.menu.presenter.animateActivation = function (key, item, container, styles) {
+        container.toggleClass(styles.active, item.key === key);
     };
 
     gpii.qssWidget.menu.presenter.applyStyles = function (that, container, styles) {
-        var elementStyles = fluid.get(styles, that.model.item);
+        var elementStyles = fluid.get(styles, that.model.item.key);
         if (elementStyles) {
             container.css(elementStyles);
         }

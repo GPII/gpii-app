@@ -89,14 +89,14 @@ gpii.app.applier.replace = function (applier, path, value, source) {
     var transaction = applier.initiate();
 
     // Remove the previous value at the given path
-    applier.fireChangeRequest({
+    transaction.fireChangeRequest({
         path: path,
         type: "DELETE",
         source: source
     });
 
     // Add the new value for the corresponding path
-    applier.fireChangeRequest({
+    transaction.fireChangeRequest({
         path: path,
         value: value,
         type: "ADD",

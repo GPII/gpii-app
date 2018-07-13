@@ -4,16 +4,28 @@
         "schema": {
             "type": "string",
             "title": "Language",
+            "keys": [
+                "hy",
+                "zh-Hans",
+                "zh-Hant",
+                "en",
+                "ko",
+                "ru",
+                "es"
+            ],
             "enum": [
+                "Հայերէն · Armenian",
+                "汉语 · Chinese (Simplified)",
+                "漢語 · Chinese (Traditional)",
                 "English",
-                "Deutsch",
-                "Español",
-                "Български"
+                "한국어 · Korean",
+                "Ру́сский · Russian",
+                "Español · Spanish"
             ],
             "image": "language.svg",
-            "defaultValue": "English"
+            "defaultValue": "en"
         },
-        "value": "English",
+        "value": "en",
         "tooltip": "<div><strong>Change language.</strong></div><div>Works in Windows, Edge, and many other applications.</div>",
         "restartWarning": true,
         "learnMoreLink": "https://www.gpii.net"
@@ -62,6 +74,16 @@
         "schema": {
             "type": "string",
             "title": "High / Low Contrast",
+            "keys": [
+                "regular-contrast",
+                "black-white",
+                "white-black",
+                "yellow-black",
+                "black-yellow",
+                "grey-black",
+                "grey-white",
+                "black-brown"
+            ],
             "enum": [
                 "Regular contrast",
                 "Black on white",
@@ -72,46 +94,46 @@
                 "Grey on white",
                 "Black on brown"
             ],
-            "defaultValue": "Regular contrast"
+            "defaultValue": "regular-contrast"
         },
-        "value": "Regular contrast",
+        "value": "regular-contrast",
         "styles": {
-            "Regular contrast": {
+            "regular-contrast": {
                 "background": "#ffffff",
                 "color": "#0073bd",
                 "border-color": "#0073bd"
             },
-            "Black on white": {
+            "black-white": {
                 "background-color": "#ffffff",
                 "color": "#000000",
                 "border-color": "#656565"
             },
-            "White on black": {
+            "white-black": {
                 "background-color": "#222222",
                 "color": "#ffffff",
                 "border-color": "transparent"
             },
-            "Yellow on black": {
+            "yellow-black": {
                 "background-color": "#222222",
                 "color": "#ffff00",
                 "border-color": "transparent"
             },
-            "Black on yellow": {
+            "black-yellow": {
                 "background-color": "#ffff00",
                 "color": "#000000",
                 "border": "2px dashed #6c6c6c"
             },
-            "Grey on black": {
+            "grey-black": {
                 "background-color": "#222222",
                 "color": "#888888",
                 "border-color": "transparent"
             },
-            "Grey on white": {
+            "grey-white": {
                 "background-color": "#ffffff",
                 "color": "#6c6c6c",
                 "border-color": "#6c6c6c"
             },
-            "Black on brown": {
+            "black-brown": {
                 "background-color": "#bb9966",
                 "color": "#000000",
                 "border-color": "transparent"

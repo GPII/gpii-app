@@ -251,7 +251,10 @@ gpii.app.qss.hideQssMenus = function (that, qssWidget, setting) {
 gpii.app.qssWrapper.updateSetting = function (that, updatedSetting) {
     fluid.each(that.model.settings, function (setting, index) {
         if (setting.path === updatedSetting.path && !fluid.model.diff(setting.value, updatedSetting.value)) {
-            that.applier.change("settings." + index, updatedSetting);
+            var valuePath = fluid.stringTemplate("settings.%index.value", {
+                index: index
+            });
+            that.applier.change(valuePath, updatedSetting.value);
         }
     });
 };

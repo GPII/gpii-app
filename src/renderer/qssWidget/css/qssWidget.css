@@ -224,11 +224,12 @@ body {
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
     position: relative;
-    width: 75%;
+    width: 80%;
     margin: 0 5px 5px 5px;
     padding: 10px 5px;
     border: 2px solid #0f4797;
     border-radius: 5px;
+    line-height: 18px;
 
     background-color: #ffffff;
     text-align: center;
@@ -250,6 +251,8 @@ body {
     background-size: 30px 30px;
     background-image: url("../../../assets/check-circle.svg");
     background-repeat: no-repeat;
+
+    cursor: default;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=false]:after {
