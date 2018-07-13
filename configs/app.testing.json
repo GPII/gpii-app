@@ -10,7 +10,6 @@
         }
     },
     "mergeConfigs": [
-        "%gpii-app/configs/app.base.json",
-        "%gpii-universal/gpii/configs/gpii.config.all.development.dr.production.json5"
+        "%gpii-app/configs/app.base.json"
      ]
 }

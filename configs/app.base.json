@@ -3,10 +3,6 @@
     "options": {
         "gradeNames": ["fluid.component"],
         "distributeOptions": {
-            "distributeMenuDisplay": {
-                "record": "gpii.app.menuInAppDev",
-                "target": "{that menu}.options.gradeNames"
-            },
             "distributeTaskTray": {
                 "record": "gpii.appWrapper",
                 "target": "{that gpii.flowManager.untrusted}.options.gradeNames"
@@ -24,5 +20,8 @@
                 "target": "{that surveyConnector}.options.gradeNames"
             }
         }
-    }
+    },
+    "mergeConfigs": [
+        "%gpii-universal/gpii/configs/gpii.config.untrusted.development.all.local.json5"
+    ]
 }
