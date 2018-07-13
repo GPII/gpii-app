@@ -21,8 +21,28 @@
 
     fluid.defaults("gpii.psp.splash", {
         gradeNames: "fluid.viewComponent",
+        model: {
+            messages: {
+                heading: null,
+                fullAppName: null
+            }
+        },
+        modelListeners: {
+            "messages.heading": {
+                this: "{that}.dom.heading",
+                method: "text",
+                args: ["{change}.value"]
+            },
+            "messages.fullAppName": {
+                this: "{that}.dom.fullAppName",
+                method: "text",
+                args: ["{change}.value"]
+            }
+        },
         selectors: {
-            splash: ".flc-splash"
+            splash: ".flc-splash",
+            heading: ".flc-heading",
+            fullAppName: ".flc-fullAppName"
         },
         invokers: {
             show: {

@@ -1,0 +1,121 @@
+/*
+ * This configuration follows the "Master Dialog Design Template"
+ */
+body {
+    background-color: transparent;
+}
+
+/*
+ * Used when the dialog is automatically resizable,
+ * i.e. when using the `heightChangeListener`.
+ */
+.fl-dialog-resizable {
+    position: absolute;
+    top:  0;
+    left: 0;
+}
+
+.fl-dialog .fl-dialog-contentWrapper {
+    padding: 8px 8px 0 8px;
+    background-color: #83CBEF;
+}
+
+.fl-dialog .fl-dialog-content {
+    padding: 12px;
+
+    background-color: #ffffff;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-contentIcon {
+    float: left;
+    width: 48px;
+    height: 48px;
+    margin-right: 10px;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-contentText {
+    overflow: hidden;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-title {
+    margin-bottom: 10px;
+    color: #034EA2;
+    font-size: 1.5em;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-details {
+    padding-bottom: 10px;
+    line-height: 1.33;
+    white-space: pre-wrap;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-controls {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+
+    clear: both;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-controls button {
+    position: relative;
+    min-width: 80px;
+    min-height: 40px;
+
+    margin: 12px 0 0 0; /* override winstrap's button margins */
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-controls button span {
+    white-space: pre-wrap;
+}
+
+.fl-dialog .fl-dialog-footer {
+    padding: 5px;
+}
+
+.fl-dialog .fl-dialog-footer .fl-gpiiIcon {
+    float: right;
+}
+
+.fl-dialog .fl-dialog-footer .fl-gpiiIcon img {
+    height: 16px;
+    margin-top: -3px; /* vertial align text and image properly */
+}
+
+.fl-dialog .fl-speech-triangle {
+    position: relative;
+    height: 20px;
+    width: 100%;
+}
+
+.fl-dialog .fl-speech-triangle:after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 15%;
+    width: 0; 
+    height: 0; 
+
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 20px solid #83CBEF;
+}
+
+/*
+ * Used to expand the dialog to the size of its container (the size of the BrowserWindow).
+ * There may be a problem with adding the speech triangle, as it will take up additional space.
+ */
+.fl-dialog.fl-dialog-fullScreen  .fl-dialog-contentWrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.fl-dialog.fl-dialog-fullScreen .fl-dialog-content {
+    flex: 1; /* take up as much space as possible */
+}
+
+.clear-both {
+    clear: both;
+}

@@ -1,121 +1,13 @@
-:root {
-    --main-color: #0078d7;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-
-    background-color: transparent;
-}
-
-.fl-popup {
-    position: absolute;
-    bottom: 22px;
-    right: 10px;
-
-    background-color: #83CBEF;
-}
-
-.fl-popup::after {
-    content: '';
-
-    position: absolute;
-    bottom: 0;
-    right: 50px;
-
-    border: 22px solid transparent;
-    border-top-color: #83CBEF;
-    border-bottom: 0;
-    margin-bottom: -22px;
-}
-
-.fl-popup .fl-popup-contentWrapper {
-    border-top-color: #83CBEF;
-}
-
-.fl-popup .fl-popup-header {
-    padding: 8px;
-    background-color: white;
-}
-
-.fl-popup .fl-popup-header .fl-popup-closeBtn {
-    float: right;
-
-    min-width: 0;
-    padding: 0;
-    margin: 0;
-
-    background: transparent;
-    border: none;
-}
-
-.fl-popup .fl-popup-content {
+.fl-dialog .fl-dialog-content {
     width: 465px;
     min-height: 120px;
-    margin: 8px 8px 0 8px;
-    padding: 10px;
-
-    background-color: white;
 }
 
-.fl-popup .fl-popup-contentImage {
-    float: left;
-    width: 48px;
-    height: 48px;
-    margin-right: 10px;
+.fl-dialog .fl-dialog-content ul li {
+    margin: 0;
 }
 
-.fl-popup .fl-popup-contentText {
-    overflow: hidden;
-}
-
-.fl-popup .fl-popup-contentText h3 {
-    padding: 8px 0 5px 0;
-    font-size: 19px;
-    font-weight: bold;
-    color: #0f4797;
-}
-
-.fl-popup .fl-popup-contentText p {
-    margin: 10px 0;
-    padding: 0;
-}
-
-.flc-popup-bodyText {
-    white-space: pre-wrap;
-}
-
-.fl-popup .fl-popup-contentText p:last-of-type {
-    margin-bottom: 0;
-}
-
-.fl-popup .fl-popup-controls {
-    clear: both;
-
-    display: flex;
-    justify-content: space-between;
-}
-
-.fl-popup .fl-popup-controls button {
+.fl-dialog .fl-dialog-content .fl-dialog-controls button {
     width: 140px;
-    height: 50px;
-}
-
-.fl-popup .fl-popup-controls button span {
-    white-space: pre-wrap;
-}
-
-.fl-popup .fl-popup-controls button:last-child {
-    margin-right: 0;
-}
-
-.fl-popup .fl-popup-footer {
-    margin: 3px 8px 0 8px;
-    text-align: right;
-}
-
-.fl-popup .fl-popup-footer .fl-gpiiIcon {
-    float: right;
-    margin: 4px 0 0 3px;
+    min-height: 50px;
 }

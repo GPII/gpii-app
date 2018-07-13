@@ -55,15 +55,14 @@ fluid.defaults("gpii.app.gpiiConnector", {
 });
 
 /**
- * Sends a setting update request to GPII over the socket if necessary.
- * A request will not be sent if the current and the previous values
- * of the setting coincide.
- * @param gpiiConnector {Component} The `gpii.app.gpiiConnector` instance
- * @param setting {Object} The setting to be changed
- * @param setting.path {String} The id of the setting
- * @param setting.value {String} The new value of the setting
- * @param setting.oldValue {String} Optional - the previous value of
- * the setting
+ * Sends a setting update request to GPII over the socket if necessary.  A request will not be sent if the current and
+ * the previous values of the setting coincide.
+ *
+ * @param {Component} gpiiConnector - The `gpii.app.gpiiConnector` instance
+ * @param {Object} setting - The setting to be changed
+ * @param {String} setting.path - The id of the setting
+ * @param {String} setting.value - The new value of the setting
+ * @param {String} setting.oldValue - Optional - the previous value of the setting
  */
 gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
     if (fluid.isValue(setting.oldValue) && fluid.model.diff(setting.oldValue, setting.value)) {
@@ -79,8 +78,8 @@ gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
 
 /**
  * Responsible for parsing messages from the GPII socket connection.
- * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` instance
- * @param message {Object} The received message
+ * @param {Object} gpiiConnector - The `gpii.app.gpiiConnector` instance
+ * @param {Object} message - The received message
  */
 gpii.app.gpiiConnector.parseMessage = function (gpiiConnector, message) {
     var payload = message.payload || {},
@@ -115,8 +114,8 @@ gpii.app.gpiiConnector.parseMessage = function (gpiiConnector, message) {
 /**
  * Send active set change request to GPII.
  *
- * @param gpiiConnector {Object} The `gpii.app.gpiiConnector` instance
- * @param newPrefSet {String} The id of the new preference set
+ * @param {Object} gpiiConnector - The `gpii.app.gpiiConnector` instance
+ * @param {String} newPrefSet - The id of the new preference set
  */
 gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefSet) {
     gpiiConnector.send({
@@ -128,9 +127,9 @@ gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefSet
 
 /**
  * Creates a setting view model to be used in the settings window.
- * @param key {String} The name of the setting. Must be unique as
+ * @param {String} key - The name of the setting. Must be unique as
  * subsequent requests to the GPII API will use this key as identifier.
- * @param settingDescriptor {Object} A descriptor for the given setting
+ * @param {Object} settingDescriptor - A descriptor for the given setting
  * containing its title, description and constraints regarding its value.
  * @return {Object} The view model for the setting.
  */
@@ -152,7 +151,7 @@ gpii.app.createSettingModel = function (key, settingDescriptor) {
  * Extracts data for the user's preference sets (including the active preference
  * set and the applicable settings) from the message received when the user keys in
  * or out.
- * @param message {Object} The message sent when the user keys is or out (a JSON
+ * @param {Object} message - The message sent when the user keys is or out (a JSON
  * object).
  * @return {Object} An object containing all preference sets, the active preference
  * set and the corresponding settings.
@@ -188,7 +187,7 @@ gpii.app.extractPreferencesData = function (message) {
 /**
  * Extracts the user-friendly snapset name form the message received when the user
  * keys in or out.
- * @param message {Object} The message sent when the user keys is or out (a JSON
+ * @param {Object} message - The message sent when the user keys is or out (a JSON
  * object).
  * @return {String} The user-friendly snapset name.
  */
@@ -213,7 +212,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector", {
 });
 
 
-/**
+/*
  * A decorator for the extracted preferences that applies values that are to be used
  * for development.
  */

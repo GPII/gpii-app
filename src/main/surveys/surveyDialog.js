@@ -16,26 +16,10 @@
 
 var fluid = require("infusion"),
     electron = require("electron"),
-    URL = require("url"),
     ipcMain = electron.ipcMain,
     gpii = fluid.registerNamespace("gpii");
 
 require("../dialog.js");
-
-// XXX: Needed to circumvent the certificate error for the "umd.edu" domain. This code
-// snippet can be removed when Electron 1.4.12 or above is used. For more information
-// please see https://issues.gpii.net/browse/GPII-2818.
-require("electron").app.on("certificate-error", function (event, webContents, urlString, error, certificate, callback) {
-    var url = URL.parse(urlString),
-        hostname = url.hostname || "";
-    // Adding an exception only for the "umd.edu" domain and its subdomains.
-    if (hostname === "umd.edu" || hostname.endsWith(".umd.edu")) {
-        event.preventDefault();
-        callback(true);
-    } else {
-        callback(false);
-    }
-});
 
 /**
  * A component which extends the base `gpii.app.dialog` by registering additional
@@ -134,7 +118,7 @@ fluid.defaults("gpii.app.surveyDialog", {
  * hidden or interacted with in any other way. Note that the `closed` event fires
  * both when it is closed programatically or via the close button in the upper
  * right corner.
- * @param that {Component} The `gpii.app.surveyDialog` instance.
+ * @param {Component} that - The `gpii.app.surveyDialog` instance.
  */
 gpii.app.surveyDialog.initClosedListener = function (that) {
     that.dialog.on("closed", function () {
@@ -144,7 +128,7 @@ gpii.app.surveyDialog.initClosedListener = function (that) {
 
 /**
  * Initializes the IPC listeners needed for the communication with the `BrowserWindow`.
- * @param that {Component} The `gpii.app.surveyDialog` instance.
+ * @param {Component} that - The `gpii.app.surveyDialog` instance.
  */
 gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
     // We need to ensure that the `BrowserWindow` has been completely created before
@@ -166,8 +150,8 @@ gpii.app.surveyDialog.initSurveyWindowIPC = function (that) {
 
 /**
  * Notifies the survey pop-up that `surveyUrl` should be loaded in the webview.
- * @param that {Component} The `gpii.app.surveyDialog` instance.
- * @param config {Object} An object containing the configuration options for the
+ * @param {Component} that - The `gpii.app.surveyDialog` instance.
+ * @param {Object} config - An object containing the configuration options for the
  * survey to be shown.
  */
 gpii.app.surveyDialog.openSurvey = function (that, config) {
@@ -185,25 +169,15 @@ gpii.app.surveyDialog.removeSurveyWindowIPC = function () {
 };
 
 /**
- * A wrapper for the actual survey dialog. This component makes the instantiation
- * of the actual dialog more elegant - the survey dialog is automatically created
- * by the framework when the `onDialogCreate` event is fired. Also, Infusion takes
- * care of destroying any other instances of the survey dialog that may be present
- * before actually creating a new one.
- *
- * Being a wrapper for the survey dialog component, this component has the same
- * interface - it contains the `show`, `hide` and `close` invokers. The former is
- * responsible for firing the event for creating the wrapped component, whereas the
- * latter two simply delegate to the corresponding wrapped component's method (if
- * the component exists).
+ * A wrapper for the creation of survey dialogs. See the documentation of the
+ * `gpii.app.dialogWrapper` grade for more information.
  */
 fluid.defaults("gpii.app.survey", {
-    gradeNames: "fluid.component",
+    gradeNames: "gpii.app.dialogWrapper",
 
     components: {
-        surveyDialog: {
+        dialog: {
             type: "gpii.app.surveyDialog",
-            createOnEvent: "onDialogCreate",
             options: {
                 config: {
                     surveyUrl: "{arguments}.0",
@@ -214,10 +188,6 @@ fluid.defaults("gpii.app.survey", {
         }
     },
 
-    events: {
-        onDialogCreate: null
-    },
-
     invokers: {
         show: {
             funcName: "gpii.app.survey.show",
@@ -225,14 +195,6 @@ fluid.defaults("gpii.app.survey", {
                 "{that}",
                 "{arguments}.0" // options
             ]
-        },
-        hide: {
-            funcName: "gpii.app.survey.hide",
-            args: ["{that}"]
-        },
-        close: {
-            funcName: "gpii.app.survey.close",
-            args: ["{that}"]
         }
     }
 });
@@ -240,30 +202,10 @@ fluid.defaults("gpii.app.survey", {
 /**
  * Responsible for firing the `onDialogCreate` event which in turn creates the
  * wrapped `surveyDialog` component.
- * @param that {Component} The `gpii.app.survey` instance.
- * @param options {Object} An object containing the various properties for the
+ * @param {Component} that - The `gpii.app.survey` instance.
+ * @param {Object} options - An object containing the various properties for the
  * `surveyDialog` which is to be created.
  */
 gpii.app.survey.show = function (that, options) {
     that.events.onDialogCreate.fire(options.url, options.closeOnSubmit, options.window);
-};
-
-/**
- * Responsible for hiding the `surveyDialog` component if it exists.
- * @param that {Component} The `gpii.app.survey` instance.
- */
-gpii.app.survey.hide = function (that) {
-    if (that.surveyDialog) {
-        that.surveyDialog.applier.change("isShown", false);
-    }
-};
-
-/**
- * Responsible for closing the `surveyDialog` component if it exists.
- * @param that {Component} The `gpii.app.survey` instance.
- */
-gpii.app.survey.close = function (that) {
-    if (that.surveyDialog) {
-        that.surveyDialog.close();
-    }
 };

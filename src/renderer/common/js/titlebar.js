@@ -17,21 +17,34 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 "use strict";
 (function (fluid) {
     /**
-     * A component representing the titlebar of the PSP. Contains the application
-     * icon, the application title, as well as a button for closing the PSP window.
+     * A component representing the titlebar of a window. Contains the application
+     * icon, the application title (given by implementor), as well as
+     * a button for closing the window.
      */
     fluid.defaults("gpii.psp.titlebar", {
         gradeNames: ["fluid.viewComponent"],
         selectors: {
-            appName: ".flc-appName",
+            title: ".flc-title",
             closeBtn: ".flc-closeBtn"
         },
         events: {
-            onPSPClose: null
+            onClose: null
         },
-        labels: {
-            appName: "GPII Settings"
+
+        model: {
+            messages: {
+                title: null
+            }
         },
+
+        modelListeners: {
+            "messages.title": {
+                this: "{that}.dom.title",
+                method: "text",
+                args: ["{change}.value"]
+            }
+        },
+
         components: {
             closeBtn: {
                 type: "gpii.psp.widgets.button",
@@ -41,16 +54,9 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
                         "aria-label": "Close"
                     },
                     invokers: {
-                        "onClick": "{titlebar}.events.onPSPClose.fire"
+                        "onClick": "{titlebar}.events.onClose.fire"
                     }
                 }
-            }
-        },
-        listeners: {
-            "onCreate.setAppName": {
-                this: "{that}.dom.appName",
-                method: "text",
-                args: ["{that}.options.labels.appName"]
             }
         }
     });

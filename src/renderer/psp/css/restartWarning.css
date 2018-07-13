@@ -29,7 +29,7 @@
 
 .fl-restartWarning button {
     width: 140px;
-    height: 50px;
+    min-height: 50px;
 }
 
 .fl-restartWarning button span {

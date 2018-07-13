@@ -125,7 +125,7 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
 /**
  * Should be called whenever the user keys in in order to obtain the survey
  * triggers. For this implementation a static payload will always be served.
- * @param that {Component} The `gpii.app.staticSurveyConnector` instance.
+ * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
  */
 gpii.app.staticSurveyConnector.requestTriggers = function (that) {
     that.events.onTriggerDataReceived.fire(that.options.config.triggerFixture);
@@ -135,10 +135,10 @@ gpii.app.staticSurveyConnector.requestTriggers = function (that) {
  * Should be called when a trigger's conditions are met. As a result, a static
  * payload (with keyedInUserToken and machineId added as query paramenters) for
  * the survey to be displayed will be sent via the `onSurveyRequired` event.
- * @param that {Component} The `gpii.app.staticSurveyConnector` instance.
+ * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
  */
 gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that) {
-    var fixture = that.options.config.surveyFixture;
+    var fixture = fluid.copy(that.options.config.surveyFixture);
     fixture.url = fluid.stringTemplate(fixture.url, that.model);
     that.events.onSurveyRequired.fire(fixture);
 };

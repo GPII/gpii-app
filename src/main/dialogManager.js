@@ -17,7 +17,97 @@
 var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
+require("./waitDialog.js");
 require("./surveys/surveyDialog.js");
+require("./errorDialog.js");
+require("./utils.js");
+
+
+/**
+ * A component for showing dialogs sequentially. Only a single dialog is allowed to be
+ * shown at a given time. The display of another dialog is postponed (queued up) until
+ * the previous one in the sequence is closed.
+ *
+ * The first element of the queue represents the options of the currently shown error
+ * dialog. When it is closed, the element is removed from the queue and the next
+ * options element in the queue is used for showing the following error dialog.
+ */
+fluid.defaults("gpii.app.dialogManager.queue", {
+    gradeNames: ["fluid.modelComponent"],
+
+    members: {
+        queue: []
+    },
+
+    components: {
+        dialog: null
+    },
+
+    invokers: {
+        enqueue: {
+            funcName: "gpii.app.dialogManager.queue.enqueue",
+            args: ["{that}", "{arguments}.0"]
+        },
+        processNext: {
+            funcName: "gpii.app.dialogManager.queue.processNext",
+            args: ["{that}"]
+        },
+        showDialog: {
+            funcName: "gpii.app.dialogManager.queue.showDialog",
+            args: ["{that}", "{that}.dialog"]
+        },
+        clear: {
+            funcName: "gpii.app.dialogManager.queue.clear",
+            args: ["{that}"]
+        }
+    }
+});
+
+/**
+ * Clears the dialog queue.
+ * @param {Component} that - The `gpii.app.dialogManager.queue` instance.
+ */
+gpii.app.dialogManager.queue.clear = function (that) {
+    that.queue = [];
+};
+
+/*
+ * Removes the first element in the queue (which represents the options
+ * of the error dialog that has just been closed) and shows the next
+ * dialog if there are any items in the queue.
+ * @param {Component} that - The `gpii.app.dialogManager.queue` object
+ */
+gpii.app.dialogManager.queue.processNext = function (that) {
+    that.queue.shift();
+    that.showDialog();
+};
+
+/**
+ * Shows a dialog given its configuration options from the queue.
+ * @param {Component} that - The `gpii.app.dialogManager.queue` instance.
+ * @param {Component} dialog - The dialog to be shown.
+ */
+gpii.app.dialogManager.queue.showDialog = function (that, dialog) {
+    if (that.queue.length > 0) {
+        var options = that.queue[0];
+        dialog.show(options);
+    }
+};
+
+/**
+ * Queues a dialog to be shown in the future. If this is the only dialog in the
+ * queue, it will be shown immediately. Otherwise, it will be shown once the
+ * previous dialog is closed.
+ * @param {Component} that - The `gpii.app.dialogManager.queue` instance.
+ * @param {Object} options - The configuration options of the dialog to be queued.
+ */
+gpii.app.dialogManager.queue.enqueue = function (that, options) {
+    that.queue.push(options);
+
+    if (that.queue.length === 1) {
+        that.showDialog();
+    }
+};
 
 /**
  * A component which provides means for showing, hiding and closing of dialogs
@@ -29,16 +119,30 @@ require("./surveys/surveyDialog.js");
  * creates it via an event).
  * In order to show/hide/close a dialog, the IoCSS selector of the particular
  * component needs to be provided as an argument of the corresponding function.
+ * All dialogs which have a `type` equal to the value of `sequentialDialogsGrade` (currently
+ * defaulted to `gpii.app.error`) will enter a visibility queue and each of these will
+ * only be shown once the previous such has been hidden/destroyed (see GPII-2871).
  */
-// XXX: Currently only the survey dialog is managed by the dialogManager. As a
-// refactoring step, in the future the rest of the dialogs will be controlled by
-// this manager, as well. See https://issues.gpii.net/browse/GPII-2817 for more
-// information.
 fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
+
     model: {
         keyedInUserToken: null
     },
+
+    sequentialDialogsGrade: "gpii.app.error",
+
+    distributeOptions: {
+        target: "{that errorDialog}.options.modelListeners",
+        record: {
+            isShown: {
+                funcName: "gpii.app.dialogManager.errorDialogToggled",
+                args: ["{dialogManager}.errorQueue", "{change}.value"],
+                excludeSource: "init"
+            }
+        }
+    },
+
     modelListeners: {
         keyedInUserToken: {
             funcName: "gpii.app.dialogManager.closeDialogsOnKeyOut",
@@ -48,8 +152,32 @@ fluid.defaults("gpii.app.dialogManager", {
     },
 
     components: {
+        waitDialog: {
+            type: "gpii.app.waitDialog"
+        },
         survey: {
             type: "gpii.app.survey"
+        },
+        error: {
+            type: "gpii.app.error"
+        },
+        restartDialog: {
+            type: "gpii.app.dialog.restartDialog"
+        },
+
+        errorQueue: {
+            type: "gpii.app.dialogManager.queue",
+            options: {
+                listeners: {
+                    "{app}.events.onKeyedOut": {
+                        func: "{that}.clear"
+                    }
+                },
+
+                components: {
+                    dialog: "{error}"
+                }
+            }
         }
     },
 
@@ -59,6 +187,15 @@ fluid.defaults("gpii.app.dialogManager", {
             args: [
                 "{that}",
                 "{arguments}.0" // selector
+            ]
+        },
+        toggle: {
+            funcName: "gpii.app.dialogManager.toggle",
+            args: [
+                "{that}",
+                "{arguments}.0", // selector
+                "{arguments}.1", // display
+                "{arguments}.2"  // options
             ]
         },
         show: {
@@ -87,10 +224,22 @@ fluid.defaults("gpii.app.dialogManager", {
 });
 
 /**
+ * Invoked whenever an error dialog has changed its visibility (i.e. it has
+ * either be shown or hidden).
+ * @param {Component} errorQueue - The `gpii.app.dialogManager.queue` instance.
+ * @param {Boolean} isShown - Whether the error dialog is shown or not.
+ */
+gpii.app.dialogManager.errorDialogToggled = function (errorQueue, isShown) {
+    if (!isShown) {
+        errorQueue.processNext();
+    }
+};
+
+/**
  * Retrieves a dialog component that is a subcomponent of the `dialogManager`
  * given its IoCSS selector.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param selector {String} The IoCSS selector of the component to be fetched.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be fetched.
  * @return {Component} The dialog component corresponding to the given selector
  * or `undefined` if no such is found.
  */
@@ -102,23 +251,47 @@ gpii.app.dialogManager.get = function (dialogManager, selector) {
 };
 
 /**
- * Shows a dialog component given its IoCSS selector.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param selector {String} The IoCSS selector of the component to be shown.
- * @param options {Object} An object containing configuration options for
+ * Depending on the value of the `display` argument, either shows or hides a
+ * component given its IoCSS selector.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be shown.
+ * @param {Boolean} display - If `true`, the corresponding dialog will be shown.
+ * Otherwise, it will be hidden.
+ * @param {Object} [options] - An object containing configuration options for
+ * the dialog in case it needs to be shown.
+ */
+gpii.app.dialogManager.toggle = function (dialogManager, selector, display, options) {
+    if (display) {
+        dialogManager.show(selector, options);
+    } else {
+        dialogManager.hide(selector);
+    }
+};
+
+/**
+ * Shows a dialog component given its IoCSS selector. The dialog may not be shown
+ * direclty but instead added to a queue.
+ *
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be shown.
+ * @param {Object} [options] - An object containing configuration options for
  * the dialog which is to be shown.
  */
 gpii.app.dialogManager.show = function (dialogManager, selector, options) {
     var dialog = dialogManager.get(selector);
     if (dialog) {
-        dialog.show(options);
+        if (dialog.typeName === dialogManager.options.sequentialDialogsGrade) {
+            dialogManager.errorQueue.enqueue(options);
+        } else {
+            dialog.show(options);
+        }
     }
 };
 
 /**
  * Hides a dialog component given its IoCSS selector.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param selector {String} The IoCSS selector of the component to be hidden.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be hidden.
  */
 gpii.app.dialogManager.hide = function (dialogManager, selector) {
     var dialog = dialogManager.get(selector);
@@ -129,8 +302,8 @@ gpii.app.dialogManager.hide = function (dialogManager, selector) {
 
 /**
  * Closes a dialog component given its IoCSS selector.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param selector {String} The IoCSS selector of the component to be closed.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} selector - The IoCSS selector of the component to be closed.
  */
 gpii.app.dialogManager.close = function (dialogManager, selector) {
     var dialog = dialogManager.get(selector);
@@ -142,8 +315,8 @@ gpii.app.dialogManager.close = function (dialogManager, selector) {
 /**
  * A function responsible for closing all dialogs which need to be closed
  * whenever the user keyes out of the PSP.
- * @param dialogManager {Component} The `gpii.app.dialogManager` instance.
- * @param keyedInUserToken {String} The token of the currently keyed in user.
+ * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
+ * @param {String} keyedInUserToken - The token of the currently keyed in user.
  */
 gpii.app.dialogManager.closeDialogsOnKeyOut = function (dialogManager, keyedInUserToken) {
     if (!fluid.isValue(keyedInUserToken)) {

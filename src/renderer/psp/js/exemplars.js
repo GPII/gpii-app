@@ -191,10 +191,11 @@
 
 
     /**
-     * Returns `gpii.psp.exemplar` object for given schema (PSP channel type) type
-     * @param widgetExemplars {Object} The `gpii.psp.widgetExemplar` object
-     * @param schemaType {String}
-     * @return {Object} The matching `gpii.psp.exemplar` object
+     * Returns `gpii.psp.exemplar` object for given schema (PSP channel type) type.
+     *
+     * @param {Object} widgetExemplars - The `gpii.psp.widgetExemplar` object.
+     * @param {String} schemaType - The type of schema.
+     * @return {Object} - The matching `gpii.psp.exemplar` object.
      */
     gpii.psp.widgetExemplars.getExemplarBySchemaType = function (widgetExemplars, schemaType) {
         return fluid.values(widgetExemplars)

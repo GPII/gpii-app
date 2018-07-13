@@ -34,35 +34,43 @@ gpii.app.isWin10OS = function () {
 };
 
 /**
-* Gets the desired position (in the lower right corner of the primary
-* display) of an `Electron` `BrowserWindow` given its dimensions.
-* @param width {Number} The current width of the window
-* @param height {Number} The current height of the window
-* @return {{x: Number, y: Number}}
+ * Gets the desired bounds (i.e. the coordinates and the width and height, the latter two being restricted by the
+ * corresponding dimensions of the primary display) of an Electron `BrowserWindow` given its width and height. If used
+ * in the `window.setBounds` function of the `BrowserWindow`, the window will be positioned in  the lower right corner
+ * of the primary display.
+ *
+ * @param {Number} width - The width of the `BrowserWindow`.
+ * @param {Number} height - The height of the `BrowserWindow`.
+ * @return {{x: Number, y: Number, width: Number, height: Number}} - The bounds represented as an object.
 */
-gpii.app.getDesiredWindowPosition = function (width, height) {
+gpii.app.getDesiredWindowBounds = function (width, height) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    width = Math.ceil(Math.min(width, screenSize.width));
+    height = Math.ceil(Math.min(height, screenSize.height));
     return {
-        x: screenSize.width - width,
-        y: screenSize.height - height
+        x: Math.ceil(screenSize.width - width),
+        y: Math.ceil(screenSize.height - height),
+        width: width,
+        height: height
     };
 };
 
 /**
- * Sets the position of the Electorn `BrowserWindow` element.
- * @param dialogWindow {BrowserWindow} The window which is to be positioned
- * @param position {Object} The position where the window to be placed
- * @param position.x {Number}
- * @param position.y {Number}
+ * Positions an Electron `BrowserWindow` in the lower right corner of
+ * the primary display.
+ *
+ * @param {BrowserWindow} dialogWindow - The window which is to be positioned.
  */
-gpii.app.setWindowPosition = function (dialogWindow, position) {
-    dialogWindow.setPosition(position.x, position.y);
+gpii.app.positionWindow = function (dialogWindow) {
+    var size = dialogWindow.getSize(),
+        bounds = gpii.app.getDesiredWindowBounds(size[0], size[1]);
+    dialogWindow.setPosition(bounds.x, bounds.y);
 };
 
 /**
- * A function which capitalizes its input text. It does nothing
- * if the provided argument is `null` or `undefined`.
- * @param text {String} The input text.
+ * A function which capitalizes its input text. It does nothing if the provided argument is `null` or `undefined`.
+ *
+ * @param {String} text - The input text.
  * @return {String} the capitalized version of the input text.
  */
 gpii.app.capitalize = function (text) {
@@ -74,9 +82,9 @@ gpii.app.capitalize = function (text) {
 /**
  * Sends a message to the given Electron `BrowserWindow`
  *
- * @param window {Object} An Electron `BrowserWindow` object
- * @param messageChannel {String} The channel to which the message to be sent
- * @param message {String}
+ * @param {Object} browserWindow - An Electron `BrowserWindow` object
+ * @param {String} messageChannel - The channel to which the message to be sent
+ * @param {String} message - The message to be sent.
  */
 gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
     if (browserWindow) {
@@ -91,7 +99,7 @@ gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
 fluid.defaults("gpii.app.timer", {
     gradeNames: ["fluid.modelComponent"],
 
-    model: {
+    members: {
         timer: null
     },
 
@@ -105,46 +113,69 @@ fluid.defaults("gpii.app.timer", {
 
     invokers: {
         start: {
-            changePath: "timer",
+            funcName: "gpii.app.timer.start",
             args: [
-                "@expand:setTimeout({that}.events.onTimerFinished.fire, {arguments}.0)"
+                "{that}",
+                "{arguments}.0" // timeoutDuration
             ]
         },
         clear: {
-            funcName: "clearTimeout",
-            args: "{that}.model.timer"
+            funcName: "gpii.app.timer.clear",
+            args: ["{that}"]
         }
     }
 });
 
-
-/*
- * A simple wrapper for the native interval. Responsible for clearing the interval
- * upon component destruction.
+/**
+ * Starts a timer. In `timeoutDuration` milliseconds, the `onTimerFinished` event will be fired. Any previously
+ * registered timers will be cleared upon the invokation of this function.
+ *
+ * @param {Component} that -The `gpii.app.timer` instance.
+ * @param {Number} timeoutDuration -The timeout duration in milliseconds.
  */
-fluid.defaults("gpii.app.interval", {
-    gradeNames: ["fluid.modelComponent"],
+gpii.app.timer.start = function (that, timeoutDuration) {
+    that.clear();
+    that.timer = setTimeout(that.events.onTimerFinished.fire, timeoutDuration);
+};
 
-    model: {
-        interval: null
-    },
-
-    listeners: {
-        "onDestroy.clearInterval": "{that}.clear"
-    },
-
-    events: {
-        onIntervalTick: null
-    },
-
-    invokers: {
-        start: {
-            changePath: "interval",
-            value: "@expand:setInterval({that}.events.onIntervalTick.fire, {arguments}.0)"
-        },
-        clear: {
-            funcName: "clearInterval",
-            args: "{that}.model.interval"
-        }
+/**
+ * Clears the timer.
+ *
+ * @param {Component} that -The `gpii.app.timer` instance.
+ */
+gpii.app.timer.clear = function (that) {
+    if (that.timer) {
+        clearTimeout(that.timer);
+        that.timer = null;
     }
-});
+};
+
+/**
+ * Set proper context for arrays.
+ * This is needed in order for arrays to pass the more strict
+ * check of: `instanceof array`. In general such checks are to be avoided
+ * in favor of the `fluid.isArray` function, but is useful when dealing with
+ * third party dependencies.
+ * Related to: https://github.com/electron/electron/issues/12698
+ *
+ * @param {Object|Array} object - The object/array that needs to have its contexts fixed.
+ * @returns {Object} The fixed object
+ */
+gpii.app.recontextualise = function (object) {
+    if (!fluid.isPlainObject(object)) {
+        return;
+    }
+    if (fluid.isArrayable(object)) {
+        object = [].slice.call(object);
+    }
+
+    fluid.each(object, function (value, key) {
+        if (fluid.isArrayable(object[key])) {
+            // console.log(value);
+            object[key] = [].slice.call(object[key]);
+        }
+        gpii.app.recontextualise(object[key]);
+    });
+
+    return object;
+};
