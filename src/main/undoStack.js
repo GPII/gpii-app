@@ -108,12 +108,12 @@ gpii.app.undoStack.registerChange = function (that, change) {
 
     if (that.options.maxUndoEntries <= undoStack.length) {
         // get rid of the oldest change
-        undoStack.shift(change);
+        undoStack.shift();
     }
 
     that.applier.change("undoStack", undoStack);
 };
 
 gpii.app.undoStack.hasChanges = function (undoStack) {
-    return undoStack.length !== 0;
+    return undoStack.length > 0;
 };

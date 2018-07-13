@@ -215,7 +215,7 @@ fluid.defaults("gpii.app", {
                     "onCreate.registerDefaultGlobalShortcut": {
                         func: "{that}.registerGlobalShortcut",
                         args: [
-                            "Super+CmdOrCtrl+Alt+M",
+                            "Shift+CmdOrCtrl+Alt+Super+M",
                             "onPspOpenShortcut"
                         ]
                     },
@@ -226,7 +226,19 @@ fluid.defaults("gpii.app", {
                             "onQssUndoShortcut",
                             ["gpii.app.qss", "gpii.app.qssWidget"]
                         ]
-                    }
+                    },
+
+                    "onQssUndoShortcut": {
+                        funcName: "{qss}.undoStack.undo"
+                    },
+                    "onPspOpenShortcut": [{
+                        func: "{psp}.show"
+                    }, {
+                        func: "{qssWrapper}.qss.show",
+                        args: [
+                            {shortcut: true}
+                        ]
+                    }]
                 }
             }
         },
@@ -248,19 +260,6 @@ fluid.defaults("gpii.app", {
                         ]
                     }, {
                         func: "{psp}.show"
-                    }],
-                    // filter shortcut
-                    "{shortcutsManager}.events.onQssUndoShortcut": {
-                        // get current active window
-                        funcName: "{qss}.undoStack.undo"
-                    },
-                    "{shortcutsManager}.events.onPspOpenShortcut": [{
-                        func: "{psp}.show"
-                    }, {
-                        func: "{qssWrapper}.qss.show",
-                        args: [
-                            {shortcut: true}
-                        ]
                     }]
                 }
             }
