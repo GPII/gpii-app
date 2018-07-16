@@ -57,7 +57,8 @@
             onWidgetBlur: null,
             onSettingUpdated: null,
             onQssWidgetSettingAltered: null,
-            onQssWidgetNotificationRequired: null
+            onQssWidgetNotificationRequired: null,
+            onQssWidgetCreated: null
         },
 
         sounds: {},
@@ -79,7 +80,8 @@
                 options: {
                     sounds: "{qssWidget}.options.sounds",
                     events: {
-                        onNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired"
+                        onNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
+                        onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
                     },
                     model: {
                         setting: "{qssWidget}.model.setting",
@@ -110,6 +112,10 @@
                         "onCreate.processParams": {
                             funcName: "gpii.qssWidget.processParams",
                             args: ["{focusManager}", "{that}.options.activationParams"]
+                        },
+                        "onCreate.notifyCreated": {
+                            func: "{that}.events.onQssWidgetCreated.fire",
+                            args: [null]
                         }
                     }
                 }
@@ -176,7 +182,8 @@
                         onQssWidgetClosed:               null,
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetBlur:                 "{qssWidget}.events.onWidgetBlur",
-                        onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired"
+                        onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
+                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated"
                     }
                 }
             }
