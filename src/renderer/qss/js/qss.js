@@ -51,7 +51,7 @@
             value: "{that}.model.item.value",
             messages: {
                 notification: {
-                    description: "Most applications will need to be re-started in order for the %settingTitle setting to work in that application."
+                    description: "To see the %settingTitle change, you may need to restart some applications."
                 }
             }
         },
