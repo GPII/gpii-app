@@ -118,28 +118,27 @@ gpii.app.qssTooltipDialog.getTooltip = function (keyedInUserToken, setting) {
     }
 };
 
-/**
- * Retrieve element position.
- */
-function getTooltipPosition(dialog, elementMetrics) {
-    // change offset to element's element right corner
-    var offsetX = elementMetrics.offsetRight - elementMetrics.width;
-
-    return {
-        offsetX: offsetX,
-        offsetY: elementMetrics.height
-    };
-}
-
-gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, elementMetrics) {
+gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOffset) {
     if (setting && fluid.isValue(setting.tooltip)) {
-        that.delayedShow(setting, elementMetrics);
+        that.delayedShow(setting, btnCenterOffset);
     }
 };
 
+
+/**
+ * Retrieve element position.
+ */
+function getTooltipPosition(dialog, btnCenterOffset) {
+    var arrowSize = 44; // px
+    return {
+        offsetX: btnCenterOffset.x - arrowSize,
+        offsetY: btnCenterOffset.y
+    };
+}
+
 // TODO reuse widget show
-gpii.app.qssTooltipDialog.show = function (that, setting, elementMetrics) {
-    var offset = getTooltipPosition(that.dialog, elementMetrics);
+gpii.app.qssTooltipDialog.show = function (that, setting, btnCenterOffset) {
+    var offset = getTooltipPosition(that, btnCenterOffset);
 
     // trigger update in the tooltip BrowserWindow
     // and keep the last shown setting

@@ -131,7 +131,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssTooltip}.showIfPossible",
                         args: [
                             "{arguments}.0", // setting
-                            "{arguments}.1"  // elementMetrics
+                            "gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
                         ]
                     }, {
                         funcName: "gpii.app.qss.hideQssMenus",
@@ -145,7 +145,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssWidget}.toggle",
                         args: [
                             "{arguments}.0", // setting
-                            "{arguments}.1", // elementMetrics
+                            "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)",  // btnCenterOffset
                             "{arguments}.2"  // activationParams
                         ]
                     }, {
@@ -228,7 +228,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{that}.showIfPossible",
                         args: [
                             "{arguments}.0", // setting
-                            "{arguments}.1"  // metrics
+                            "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
                         ]
                     },
 
@@ -385,4 +385,16 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
     if (settingIndex > -1) {
         that.applier.change("settings." + settingIndex, updatedSetting, null, source);
     }
+};
+
+
+/**
+ * Compute the center of the button.
+ */
+gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
+    return {
+        // center of the button
+        x: qss.width - buttonElemMetrics.offsetLeft - (buttonElemMetrics.width / 2),
+        y: buttonElemMetrics.height
+    };
 };

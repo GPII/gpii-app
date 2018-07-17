@@ -153,30 +153,23 @@ fluid.defaults("gpii.app.qssWidget", {
     }
 });
 
-gpii.app.qssWidget.toggle = function (that, setting, elementMetrics, activationParams) {
+gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activationParams) {
     if (that.model.isShown && that.model.setting.path === setting.path) {
         that.hide();
         return;
     }
 
     if (setting.schema.type === "string" || setting.schema.type === "number") {
-        that.show(setting, elementMetrics, activationParams);
+        that.show(setting, btnCenterOffset, activationParams);
     } else {
         that.hide();
     }
 };
 
-function getWidgetPosition(dialog, elementMetrics) {
-    // Find the offset for the window to be centered over the element
-    var windowWidth = dialog.getSize()[0];
-    // change offset to element's center
-    var offsetX = elementMetrics.offsetRight - (elementMetrics.width / 2);
-    // set offset to window center
-    offsetX -= windowWidth / 2;
-
+function getWidgetPosition(widget, btnCenterOffset) {
     return {
-        x: offsetX,
-        y: elementMetrics.height
+        x: btnCenterOffset.x - widget.width / 2,
+        y: btnCenterOffset.y
     };
 }
 
@@ -187,16 +180,14 @@ function getWidgetPosition(dialog, elementMetrics) {
  *
  * @param {Component} that - The `gpii.app.qssWidget` instance
  * @param {Object} setting - The qssSetting object
- * @param {Object} elementMetrics - The metrics of the relative element
- * @param {Number} elementMetrics.width - The width of the element
- * @param {Number} elementMetrics.height - The height of the element
- * @param {Number} elementMetrics.offsetRight - The offset of the element from the
- * right of its window's.
+ * @param {Object} btnCenterOffset - The metrics of the relative element
+ * @param {Number} btnCenterOffset.offsetX - The offset of the element from the
+ * @param {Number} btnCenterOffset.offsetY - The offset of the element from the
  * @param {Object} activationParams - Defines the way this show was triggered
  * @param {Object} activationParams.shortcut - Defines the way the show was triggered
  */
-gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, activationParams) {
-    var position = getWidgetPosition(that.dialog, elementMetrics);
+gpii.app.qssWidget.show = function (that, heightMap, setting, btnCenterOffset, activationParams) {
+    var position = getWidgetPosition(that, btnCenterOffset);
 
     activationParams = activationParams || {};
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
@@ -206,8 +197,9 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
     that.applier.change("isShown", true);
 
     // reposition window properly
-    that.height = heightMap[setting.path] || that.options.config.attrs.height;
-    that.setPosition(position.x, position.y);
+    // For now use hardcoded menus height; reset original height of the widget
+    var height = heightMap[setting.path] || that.options.config.attrs.height;
+    that.setBounds(null, height, position.x, position.y);
 };
 
 

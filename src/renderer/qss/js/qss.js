@@ -297,9 +297,9 @@
      */
     gpii.qss.getElementMetrics = function (target) {
         return {
-            offsetRight: $(window).width() - target.offset().left,
-            height:      target.outerHeight() - 3, // TODO: Think of a better formula.
-            width:       target.outerWidth()
+            offsetLeft: target.offset().left,
+            height:     target.outerHeight() - 3, // TODO: Think of a better formula.
+            width:      target.outerWidth()
         };
     };
 
@@ -571,14 +571,13 @@
         dynamicContainerMarkup: {
             container:
                 "<div class=\"%containerClass fl-focusable\" tabindex=\"0\">" +
-                    "<div class=\"flc-qss-btnChangeIndicator fl-qss-btnChangeIndicator\"></div>" +
-                    "<div class=\"flc-qss-btnImage fl-qss-btnImage\"></div>" +
-                    "<span class=\"flc-qss-btnLabel fl-qss-btnLabel\"></span>" +
-                    "<div class=\"flc-qss-btnCaption fl-qss-btnCaption\"></div>" +
                 "</div>",
             containerClassPrefix: "fl-qss-button"
         },
-        markup: null,
+        markup: "<div class=\"flc-qss-btnChangeIndicator fl-qss-btnChangeIndicator\"></div>" +
+                "<div class=\"flc-qss-btnImage fl-qss-btnImage\"></div>" +
+                "<span class=\"flc-qss-btnLabel fl-qss-btnLabel\"></span>" +
+                "<div class=\"flc-qss-btnCaption fl-qss-btnCaption\"></div>",
 
         events: {
             onButtonFocusRequired: null,
