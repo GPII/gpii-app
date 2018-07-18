@@ -147,7 +147,7 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-        qss: {
+        qssWrapper: {
             type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
@@ -192,11 +192,11 @@ fluid.defaults("gpii.app", {
                     }
                 },
                 listeners: {
-                    "{qss}.events.onQssPspOpen": {
+                    "{qssWrapper}.events.onQssPspOpen": {
                         func: "{that}.show",
                         args: [true]
                     },
-                    "{qss}.events.onQssPspClose": {
+                    "{qssWrapper}.events.onQssPspClose": {
                         func: "{that}.handleBlur",
                         args: [true]
                     }
@@ -229,7 +229,7 @@ fluid.defaults("gpii.app", {
                     },
 
                     "onQssUndoShortcut": {
-                        funcName: "{qss}.undoStack.undo"
+                        funcName: "{qssWrapper}.undoStack.undo"
                     },
                     "onPspOpenShortcut": [{
                         func: "{psp}.show"
