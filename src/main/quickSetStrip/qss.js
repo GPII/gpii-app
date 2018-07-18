@@ -131,7 +131,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssTooltip}.showIfPossible",
                         args: [
                             "{arguments}.0", // setting
-                            "gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
+                            "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
                         ]
                     }, {
                         funcName: "gpii.app.qss.hideQssMenus",
