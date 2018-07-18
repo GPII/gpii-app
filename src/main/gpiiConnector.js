@@ -263,7 +263,6 @@ fluid.defaults("gpii.app.dev.gpiiConnector", {
                 expander: {
                     funcName: "gpii.app.dev.gpiiConnector.groupSettings",
                     args: [
-                        "{app}",
                         groupingTemplate,
                         "{arguments}.0" // message
                     ]
@@ -502,13 +501,12 @@ gpii.app.dev.gpiiConnector.createDefaultGroup = function (channelSettingControls
  * @param {Object} message - The received message.
  * @return {Object} The PSP channel message adapted to the expected format.
  */
-gpii.app.dev.gpiiConnector.groupSettings = function (app, groupingTemplate, message) {
+gpii.app.dev.gpiiConnector.groupSettings = function (groupingTemplate, message) {
     var payload = message.payload || {},
         operation = payload.type,
         path = payload.path,
         value = payload.value || {},
         channelSettingControls = value.settingControls;
-
 
     if (operation === "ADD" && path.length === 0 && channelSettingControls) {
         // First, add the groups which can be constructed from the grouping template
@@ -523,11 +521,6 @@ gpii.app.dev.gpiiConnector.groupSettings = function (app, groupingTemplate, mess
 
         // Remove the `settingControls` element as it is no longer needed.
         delete value.settingControls;
-    }
-
-    if (app.model.keyedInUserToken === "snapset_1c") {
-        console.log("DEV gpiiConnector: empty the pref set (settings are still applied).");
-        value.settingGroups = [];
     }
 
     return message;
