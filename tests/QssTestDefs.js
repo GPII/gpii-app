@@ -25,6 +25,9 @@ var clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
     unhoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"mouseleave\")",
     focusCloseBtn = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-child\").trigger(event)";
 
+var clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
+    closeQssNotification = "jQuery(\".flc-closeBtn\").click()";
+
 require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.qss.testDefs");
@@ -70,7 +73,7 @@ gpii.tests.qss.linger = function () {
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    // expect: 1,
+    expect: 13,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -157,6 +160,34 @@ gpii.tests.qss.testDefs = {
         args: [
             "The QSS tooltip is shown when a button is focused using the keyboard",
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
+        ]
+    }, { // When the "Save" button is clicked...
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickSaveBtn
+        ]
+    }, { // ... the QSS notification dialog will show up.
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS notification is shown when the Save button is clicked",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
+        ]
+    }, { // When the "Close" button in the QSS notification is clicked...
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qssNotification.dialog",
+            closeQssNotification
+        ]
+    }, { // ... the QSS notification dialog will be hidden.
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS notification is hidden when its closed button is presseds",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
     }]
 };
