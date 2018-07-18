@@ -112,8 +112,10 @@
                         "onCreate.processParams": {
                             funcName: "gpii.qssWidget.processParams",
                             args: ["{focusManager}", "{that}.options.activationParams"]
-                        },
-                        "onCreate.notifyCreated": {
+                        }
+                    },
+                    invokers: {
+                        notifyCreated: {
                             func: "{that}.events.onQssWidgetCreated.fire",
                             args: [null]
                         }

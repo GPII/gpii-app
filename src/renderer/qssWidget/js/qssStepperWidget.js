@@ -103,6 +103,10 @@
                     "{that}.dom.stepperButton",
                     "{that}.options.styles"
                 ]
+            },
+
+            "onCreate.notifyCreated": {
+                func: "{that}.notifyCreated"
             }
         },
 
