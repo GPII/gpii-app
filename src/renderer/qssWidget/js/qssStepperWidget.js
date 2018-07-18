@@ -106,7 +106,8 @@
             },
 
             "onCreate.notifyCreated": {
-                func: "{that}.notifyCreated"
+                func: "{that}.notifyCreated",
+                priority: "last"
             }
         },
 

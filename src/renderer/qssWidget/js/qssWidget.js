@@ -192,21 +192,23 @@
         },
 
         listeners: {
-            onSettingUpdated: [{
+            onSettingUpdated: {
                 funcName: "gpii.app.applier.replace",
                 args: [
                     "{that}.applier",
                     "setting",
                     "{arguments}.0"
                 ]
-            }, {
+            },
+            onQssWidgetCreated: {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: [
                     "{that}.dom.stepper",
                     "{that}.dom.menu",
-                    "{arguments}.0" // setting
-                ]
-            }]
+                    "{that}.model.setting"
+                ],
+                priority: "last"
+            }
         }
     });
 

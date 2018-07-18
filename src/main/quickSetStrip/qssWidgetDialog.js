@@ -193,19 +193,20 @@ function getWidgetPosition(widget, btnCenterOffset) {
  */
 gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, activationParams) {
     activationParams = activationParams || {};
-    that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
-    that.dialog.setAlwaysOnTop(true);
-
-    gpii.app.applier.replace(that.applier, "setting", setting);
 
     // reposition window properly
     that.height = heightMap[setting.path] || that.options.config.attrs.height;
     that.model.offset = getWidgetPosition(that.dialog, elementMetrics);
+    that.dialog.setAlwaysOnTop(true);
+
+    gpii.app.applier.replace(that.applier, "setting", setting);
+    that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 };
 
 gpii.app.qssWidget.onQssWidgetCreated = function (qssWidget) {
-    qssWidget.applier.change("isShown", true);
-    qssWidget._show();
+    setTimeout(function () {
+        qssWidget.applier.change("isShown", true);
+    }, 100);
 };
 
 

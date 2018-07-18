@@ -126,8 +126,6 @@ gpii.browserWindow.computeWindowBounds = function (width, height, offsetX, offse
     var position = gpii.browserWindow.computeWindowPosition(width, height, offsetX, offsetY);
     var size = gpii.browserWindow.computeWindowSize(width, height, offsetX, offsetY);
 
-    console.log("Desired Bounds: ", arguments, size, position);
-
     return {
         x:      position.x,
         y:      position.y,
