@@ -23,10 +23,12 @@ var fluid = require("infusion"),
 var clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
     hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"mouseenter\")",
     unhoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"mouseleave\")",
-    focusCloseBtn = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-child\").trigger(event)";
-
-var clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
-    closeQssNotification = "jQuery(\".flc-closeBtn\").click()";
+    focusCloseBtn = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-child\").trigger(event)",
+    clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
+    closeQssWidget = "jQuery(\".flc-closeBtn\").click()",
+    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
+    closeQssNotification = "jQuery(\".flc-closeBtn\").click()",
+    clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()";
 
 require("../src/main/app.js");
 
@@ -73,7 +75,7 @@ gpii.tests.qss.linger = function () {
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 13,
+    expect: 17,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -186,8 +188,74 @@ gpii.tests.qss.testDefs = {
         path: "isShown",
         listener: "jqUnit.assertFalse",
         args: [
-            "The QSS notification is hidden when its closed button is presseds",
+            "The QSS notification is hidden when its closed button is pressed",
             "{that}.app.qssWrapper.qssNotification.model.isShown"
+        ]
+    }, { // If the language button in the QSS is clicked...
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickLanguageBtn
+        ]
+    }, { // ... the QSS widget menu will be shown.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS widget is shown when the language button is pressed",
+            "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }, { // If the button is focused using keyboard interaction...
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            closeQssWidget
+        ]
+    }, { // ... the QSS widget menu will be hidden.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS widget is hidden when its closed button is pressed",
+            "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }, { // If the language button in the QSS is clicked once...
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickLanguageBtn
+        ]
+    }, {
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, { // ... and is then clicked again...
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickLanguageBtn
+        ]
+    }, { // ... the QSS widget menu will be hidden again.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS widget is hidden when its closed button is pressed",
+            "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }, { // If the Key in button in the QSS is clicked...
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickPspBtn
+        ]
+    }, { // ... the PSP will be shown.
+        changeEvent: "{that}.app.psp.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The PSP is shown when the Key in button is pressed",
+            "{that}.app.psp.model.isShown"
         ]
     }]
 };

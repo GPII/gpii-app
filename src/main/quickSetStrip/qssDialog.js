@@ -29,9 +29,6 @@ require("../../common/channelUtils.js");
 fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
 
-    // whether showing of the QSS is allowed
-    disabled: false,
-
     config: {
         attrs: {
             width: 984,
@@ -136,22 +133,19 @@ fluid.defaults("gpii.app.qss", {
 });
 
 /**
- * In case it is not disabled, the QSS will be shown.
+ * Shows the QSS or focuses it in case it is already shown.
  * @param {Component} that - The `gpii.app.qss` instance.
  * @param {Object} params - The parameters which should be passed to the renderer
  * part of the QSS. These may, for example, inform the renderer if the QSS was
  * opened via an ArrowLeft/ArrowRight key or using the global shortcut.
  */
 gpii.app.qss.show = function (that, params) {
-    if (!that.options.disabled) {
-        // Show the QSS or focus it if it is already shown.
-        // TODO move to _show ?
-        if (that.model.isShown) {
-            that.focus();
-        } else {
-            that.applier.change("isShown", true);
-        }
-
-        that.events.onQssOpen.fire(params);
+    // TODO move to _show ?
+    if (that.model.isShown) {
+        that.focus();
+    } else {
+        that.applier.change("isShown", true);
     }
+
+    that.events.onQssOpen.fire(params);
 };
