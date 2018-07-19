@@ -93,3 +93,6 @@ Invoke-Environment "C:\Program Files (x86)\Microsoft Visual C++ Build Tools\vcbu
 $setupDir = Join-Path $installerDir "setup"
 $msbuild = Get-MSBuild "4.0"
 Invoke-Command $msbuild "setup.msbuild" $setupDir
+
+# Copy the installer into the c:/vagrant folder
+Invoke-Command "robocopy" "$(Join-Path $installerDir "output") $(Join-Path $projectDir "installer") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
