@@ -19,7 +19,7 @@
                 "record": {
                     "hostname": "localhost",
                     "port": 8081,
-                    "path": "/pcpChannel"
+                    "path": "/pspChannel"
                 },
                 "target": "{that gpiiConnector}.options.config"
             },
