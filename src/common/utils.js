@@ -29,6 +29,7 @@ fluid.defaults("gpii.app.timer", {
     },
 
     listeners: {
+        "onTimerFinished.clearState": "{that}.clear", // used for isActive
         "onDestroy.clearTimer": "{that}.clear"
     },
 
@@ -48,6 +49,10 @@ fluid.defaults("gpii.app.timer", {
         clear: {
             funcName: "gpii.app.timer.clear",
             args: ["{that}"]
+        },
+        isActive: {
+            funcName: "fluid.isValue",
+            args: "{that}.timer"
         }
     }
 });

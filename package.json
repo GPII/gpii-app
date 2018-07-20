@@ -12,7 +12,7 @@
         "electron": "1.8.4",
         "electron-edge-js": "8.3.2",
         "electron-localshortcut": "3.1.0",
-        "gpii-windows": "0.3.0-dev.20180711T203830Z.25e4e07",
+        "gpii-windows": "0.3.0-dev.20180713T125916Z.3aecce7",
         "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
         "node-jqunit": "1.1.8",
         "request": "2.85.0",
@@ -33,8 +33,8 @@
         "shelljs": "0.3.0"
     },
     "scripts": {
-        "start": "npm run build && electron .",
-        "dev": "npm run build && electron . ./configs app.dev",
+        "start": "electron .",
+        "dev": "electron . ./configs app.dev",
         "build": "grunt compileMessages",
         "pretest": "npm run pretest:clean && npm run build && npm run pretest:instrument",
         "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports build && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
