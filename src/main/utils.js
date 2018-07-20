@@ -17,6 +17,7 @@
 var os       = require("os");
 var fluid    = require("infusion");
 var electron = require("electron");
+var ipcMain  = electron.ipcMain;
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -92,6 +93,16 @@ gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
     }
 };
 
+/**
+ * Checks if a hash is not empty, i.e. if it contains at least one key.
+ * Note that the values are not examined.
+ * @param {Object} hash - An arbitrary object.
+ * @return {Boolean} `true` is the hash has at least one key and `false` otherwise.
+ */
+gpii.app.isHashNotEmpty = function (hash) {
+    return hash && fluid.keys(hash).length > 0;
+};
+
 /*
  * A simple wrapper for the native timeout. Responsible for clearing the interval
  * upon component destruction.
@@ -151,6 +162,72 @@ gpii.app.timer.clear = function (that) {
 };
 
 /**
+ * Generic channel component for communication with BroserWindows
+ * It simply registers listeners for the passed events.
+ */
+fluid.defaults("gpii.app.dialog.simpleEventChannel", {
+    gradeNames: "fluid.component",
+
+    events: {}, // to be passed by implementor
+
+    listeners: {
+        "onCreate.registerIpcListeners": {
+            funcName: "gpii.app.dialog.simpleEventChannel.registerIPCListeners",
+            args: "{that}.events"
+        },
+        "onDestroy.deregisterIpcListeners": {
+            funcName: "gpii.app.dialog.simpleEventChannel.deregisterIPCListeners",
+            args: "{that}.events"
+        }
+    }
+});
+
+
+/**
+ * Registers simple IPC socket listeners for all given events. In case anything is written to
+ * the channel, the corresponding event is triggered.
+ *
+ * @param {Object} events - The events to be used.
+ */
+gpii.app.dialog.simpleEventChannel.registerIPCListeners = function (events) {
+    fluid.each(events, function (event, eventName) {
+        gpii.app.dialog.simpleEventChannel.registerIPCListener(eventName, event);
+    });
+};
+
+/**
+ * Deregisters all socket listeners for the specified events.
+ *
+ * @param {Object} events - The events to be used.
+ */
+gpii.app.dialog.simpleEventChannel.deregisterIPCListeners = function (events) {
+    fluid.keys(events).forEach(gpii.app.dialog.simpleEventChannel.registerIPCListener);
+};
+
+
+/**
+ * Registers a single IPC socket channel.
+ *
+ * @param {String} channelName - The name of the channel to be listened to.
+ * @param {Object} event - The event to be fired when the channel is notified.
+ */
+gpii.app.dialog.simpleEventChannel.registerIPCListener = function (channelName, event) {
+    ipcMain.on(channelName, function (/* event, args... */) {
+        event.fire.apply(event, [].slice.call(arguments, 1));
+    });
+};
+
+
+/**
+ * Deregisters a socket listener.
+ *
+ * @param {String} channelName - The channel to be disconnected from.
+ */
+gpii.app.dialog.simpleEventChannel.deregisterIPCListener = function (channelName) {
+    ipcMain.removeAllListeners(channelName);
+};
+
+/**
  * Set proper context for arrays.
  * This is needed in order for arrays to pass the more strict
  * check of: `instanceof array`. In general such checks are to be avoided
@@ -159,7 +236,7 @@ gpii.app.timer.clear = function (that) {
  * Related to: https://github.com/electron/electron/issues/12698
  *
  * @param {Object|Array} object - The object/array that needs to have its contexts fixed.
- * @returns {Object} The fixed object
+ * @return {Object} The fixed object
  */
 gpii.app.recontextualise = function (object) {
     if (!fluid.isPlainObject(object)) {
@@ -171,7 +248,6 @@ gpii.app.recontextualise = function (object) {
 
     fluid.each(object, function (value, key) {
         if (fluid.isArrayable(object[key])) {
-            // console.log(value);
             object[key] = [].slice.call(object[key]);
         }
         gpii.app.recontextualise(object[key]);

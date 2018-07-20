@@ -20,6 +20,7 @@ var fluid = require("infusion"),
 require("./waitDialog.js");
 require("./surveys/surveyDialog.js");
 require("./errorDialog.js");
+require("./aboutDialog.js");
 require("./utils.js");
 
 
@@ -155,14 +156,14 @@ fluid.defaults("gpii.app.dialogManager", {
         waitDialog: {
             type: "gpii.app.waitDialog"
         },
+        aboutDialog: {
+            type: "gpii.app.aboutDialog"
+        },
         survey: {
             type: "gpii.app.survey"
         },
         error: {
             type: "gpii.app.error"
-        },
-        restartDialog: {
-            type: "gpii.app.dialog.restartDialog"
         },
 
         errorQueue: {

@@ -83,7 +83,8 @@ fluid.defaults("gpii.app.dialog", {
                 funcName: "gpii.app.dialog.makeDialog",
                 args: [
                     "{that}.options.config.attrs",
-                    "{that}.options.config.url"
+                    "{that}.options.config.url",
+                    "{that}.options.config.params"
                 ]
             }
         }
@@ -209,12 +210,19 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
  * dialog every time a new message should be displayed.
  * @param {Object} windowOptions - The raw Electron `BrowserWindow` settings
  * @param {String} url - The URL to be loaded in the `BrowserWindow`
+ * @param {Object} params -  Options that are to be supplied to the render process of
+ * the newly created BrowserWindow
  * @return {BrowserWindow} The Electron `BrowserWindow` component
  */
-gpii.app.dialog.makeDialog = function (windowOptions, url) {
+gpii.app.dialog.makeDialog = function (windowOptions, url, params) {
     var dialog = new BrowserWindow(windowOptions);
 
     dialog.loadURL(url);
+
+    // Approach for sharing initial options for the renderer process
+    // proposed in: https://github.com/electron/electron/issues/1095
+    dialog.params = params || {};
+
     return dialog;
 };
 

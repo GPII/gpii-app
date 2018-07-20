@@ -1,7 +1,7 @@
 /**
- * Initializes the restart dialog
+ * Channel utilities
  *
- * Creates the restart dialog once the document has been loaded.
+ * Defines utilities for communication with the main process.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -16,9 +16,19 @@
 
 "use strict";
 (function (fluid) {
+    var ipcRenderer = require("electron").ipcRenderer;
+
     var gpii = fluid.registerNamespace("gpii");
 
-    $(function () {
-        gpii.restartDialog(".fl-dialog");
-    });
+    fluid.registerNamespace("gpii.psp.channel");
+
+
+    /**
+     * Sends a message to the main process.
+     * @param {...Any} The channel to be notified and the parameters to be passed
+     * with the message.
+     */
+    gpii.psp.channel.notifyChannel = function () {
+        ipcRenderer.send.apply(null, arguments);
+    };
 })(fluid);

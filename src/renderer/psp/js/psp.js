@@ -21,6 +21,10 @@
 
     fluid.defaults("gpii.psp", {
         gradeNames: ["fluid.component", "gpii.psp.messageBundles"],
+        model: {
+            theme: null,
+            sounds: {}
+        },
         components: {
             channel: {
                 type: "gpii.psp.clientChannel",
@@ -30,6 +34,9 @@
                             funcName: "{mainWindow}.updatePreferences"
                         },
                         onAccentColorChanged: {
+                            funcName: "{mainWindow}.updateAccentColor"
+                        },
+                        onThemeChanged: {
                             funcName: "{mainWindow}.updateTheme"
                         },
                         onSettingUpdated: {
@@ -46,6 +53,10 @@
                 type: "gpii.psp.mainWindow",
                 container: "#flc-body",
                 options: {
+                    model: {
+                        theme: "{psp}.model.theme",
+                        sounds: "{psp}.model.sounds"
+                    },
                     listeners: {
                         onPSPClose: "{channel}.close",
                         onKeyOut: "{channel}.keyOut",
@@ -54,8 +65,9 @@
                         onHeightChanged: "{channel}.changeContentHeight",
 
                         onRestartNow:   "{channel}.restartNow",
-                        onRestartLater: "{channel}.restartLater",
-                        onUndoChanges:  "{channel}.undoChanges"
+                        onUndoChanges:  "{channel}.undoChanges",
+
+                        onSignInRequested: "{channel}.requestSignIn"
                     }
                 }
             }

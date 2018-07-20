@@ -45,80 +45,60 @@ var prefSet1 = {
 
 
 jqUnit.test("Tray.getTrayTooltip", function () {
-    var tooltips = {
-        pendingChanges: "There are pending changes",
-        defaultTooltip: "(No one keyed in)"
+    var messages = {
+        defaultTooltip: "GPII: Ready",
+        prefSetTooltip: "GPII: %prefSet"
     };
 
-    jqUnit.expect(3);
+    jqUnit.expect(2);
 
     jqUnit.assertEquals("The tooltip is default when user is not keyedIn",
-        tooltips.defaultTooltip,
-        gpii.app.getTrayTooltip(emptyPrefSets, [], tooltips)
+        messages.defaultTooltip,
+        gpii.app.getTrayTooltip(emptyPrefSets, messages)
     );
 
-    jqUnit.assertEquals("The tooltip is active pref set name when user is keyed in and there is no pending setting change",
-        prefSet2.name,
-        gpii.app.getTrayTooltip(keyedInPrefSets, [], tooltips)
-    );
-
-    var pendingChanges = [{
-        path: "magnification",
-        value: "2",
-        oldValue: "1.5"
-    }];
-    jqUnit.assertEquals("The tooltip indicates there are pending changes when such are indeed present",
-        tooltips.pendingChanges,
-        gpii.app.getTrayTooltip(keyedInPrefSets, pendingChanges, tooltips)
+    jqUnit.assertEquals("The tooltip is the active pref set name when user is keyed in",
+        fluid.stringTemplate(messages.prefSetTooltip, {prefSet: prefSet2.name}),
+        gpii.app.getTrayTooltip(keyedInPrefSets, messages)
     );
 });
 
 jqUnit.test("Tray.getTrayIcon", function () {
     var icons = {
-        pendingChanges: "pendingChangesIcon",
         keyedIn: "keyedInIcon",
         keyedOut: "keyedOutIcon"
     };
 
-    jqUnit.expect(3);
+    jqUnit.expect(2);
 
     jqUnit.assertEquals("Tray icon is keyedOut icon when there is no keyed in user",
         icons.keyedOut,
-        gpii.app.getTrayIcon(null, [], icons)
+        gpii.app.getTrayIcon(null, icons)
     );
 
     var keyedInUserToken = "alice";
-    jqUnit.assertEquals("Tray icon is keyedIn icon when user is keyed in and there is no pending setting change",
+    jqUnit.assertEquals("Tray icon is keyedIn icon when user is keyed in",
         icons.keyedIn,
-        gpii.app.getTrayIcon(keyedInUserToken, [], icons)
-    );
-
-    var pendingChanges = [{
-        path: "magnification",
-        value: "2",
-        oldValue: "1.5"
-    }];
-    jqUnit.assertEquals("Tray icon is pendingChanges icon when there are pending changes present",
-        icons.pendingChanges,
-        gpii.app.getTrayIcon(keyedInUserToken, pendingChanges, icons)
+        gpii.app.getTrayIcon(keyedInUserToken, icons)
     );
 });
 
-jqUnit.test("Menu.getShowPSP", function () {
-    jqUnit.expect(6);
+jqUnit.test("Menu.getSimpleMenuItem", function () {
+    jqUnit.expect(4);
 
-    var showPSPEvent = "onPSP",
-        showPSPLabel = "Open PSP",
-        showPSPObj = gpii.app.menu.getShowPSP(null, showPSPLabel);
+    var event = "onPSP",
+        label = "Open PSP",
+        menuItem = gpii.app.menu.getSimpleMenuItem(label, event);
 
-    jqUnit.assertTrue("Show PSP object exists when there is no user", showPSPObj);
-    jqUnit.assertEquals("Show PSP is bound to onClick when there is no user", showPSPEvent, showPSPObj.click);
-    jqUnit.assertEquals("Label is set in the show PSP object when there is no user", showPSPLabel, showPSPObj.label);
 
-    showPSPObj = gpii.app.menu.getShowPSP("alice", showPSPLabel);
-    jqUnit.assertTrue("Show PSP object exists when there is user", showPSPObj);
-    jqUnit.assertEquals("Show PSP is bound to onClick when there is user", showPSPEvent, showPSPObj.click);
-    jqUnit.assertEquals("Label is set in the show PSP object when there is user", showPSPLabel, showPSPObj.label);
+    jqUnit.assertEquals("Simple menu item object have proper handler", event, menuItem.click);
+    jqUnit.assertEquals("Simple menu item object have proper label", label, menuItem.label);
+    jqUnit.assertDeepEq("Simple menu item object have proper params", {}, menuItem.args);
+
+    var args = { token: "some" };
+    var menuItemWithArgs = gpii.app.menu.getSimpleMenuItem(label, event, args);
+
+    jqUnit.assertDeepEq("Simple menu item object have proper params", args, menuItemWithArgs.args);
 });
 
 gpii.tests.app.testPrefSetMenuItem = function (item, label, checked) {

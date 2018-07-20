@@ -11,7 +11,7 @@
     "dependencies": {
         "electron": "1.8.4",
         "electron-edge-js": "8.3.2",
-        "gpii-windows": "0.3.0-dev.20180315T174453Z.02de41c",
+        "gpii-windows": "0.3.0-dev.20180507T122135Z.92c7c83",
         "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
         "node-jqunit": "1.1.8",
         "request": "2.85.0",
@@ -32,8 +32,8 @@
         "shelljs": "0.3.0"
     },
     "scripts": {
-        "start": "npm run build && electron main.js",
-        "dev": "npm run build && electron main.js ./configs app.dev",
+        "start": "npm run build && electron .",
+        "dev": "npm run build && electron . ./configs app.dev",
         "build": "grunt compileMessages",
         "pretest": "npm run pretest:clean && npm run build && npm run pretest:instrument",
         "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports build && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",

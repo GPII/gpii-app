@@ -18,13 +18,13 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
+require("./assetsManager.js");
 require("./ws.js");
 require("./factsManager.js");
 require("./dialogManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
-require("./restartDialog.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
@@ -58,8 +58,10 @@ fluid.defaults("gpii.app", {
         snapsetName: null,
         preferences: {
             sets: [],
-            activeSet: null
-        }
+            activeSet: null,
+            closePSPOnBlur: null
+        },
+        theme: "{that}.options.defaultTheme"
     },
     // prerequisites
     members: {
@@ -78,6 +80,9 @@ fluid.defaults("gpii.app", {
         },
         installID: {
             type: "gpii.installID"
+        },
+        assetsManager: {
+            type: "gpii.app.assetsManager"
         },
         factsManager: {
             type: "gpii.app.factsManager"
@@ -139,15 +144,20 @@ fluid.defaults("gpii.app", {
         },
         psp: {
             type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    preferences: "{app}.model.preferences",
+                    theme: "{app}.model.theme"
+                }
+            }
         },
         tray: {
             type: "gpii.app.tray",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
-                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken",
-                    pendingChanges: "{settingsBroker}.model.pendingChanges"
+                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken"
                 },
                 events: {
                     onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
@@ -229,7 +239,8 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.exit",
             args: "{that}"
         }
-    }
+    },
+    defaultTheme: "white"
 });
 
 
@@ -357,43 +368,6 @@ gpii.app.errorHandler.registerErrorListener = function (errorHandler) {
         fluid.log("Uncaught Exception", err);
         errorHandler.handleUncaughtException(err);
     }, "gpii.app.errorHandler", "last");
-};
-
-
-/**
- * Either hides or shows the warning in the PSP.
- *
- * @param {Component} psp - The `gpii.app.psp` component
- * @param {Object[]} pendingChanges - A list of the current state of pending changes
- */
-gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
-    if (pendingChanges.length === 0) {
-        psp.hideRestartWarning();
-    } else {
-        psp.showRestartWarning(pendingChanges);
-    }
-};
-
-/**
- * Hides the restart dialog if the PSP is being shown.
- * @param {Component} dialogManager - The `gpii.app.dialogManager` instance
- * @param {Boolean} isPspShown - Whether the psp window is being shown
- */
-gpii.app.hideRestartDialogIfNeeded = function (dialogManager, isPspShown) {
-    if (isPspShown) {
-        dialogManager.hide("restartDialog");
-    }
-};
-
-/**
- * Shows the restart dialog if there is at least one pending change.
- * @param {Component} dialogManager - The `gpii.app.dialogManager` instance
- * @param {Object[]} pendingChanges - A list containing the current pending changes
- */
-gpii.app.showRestartDialogIfNeeded = function (dialogManager, pendingChanges) {
-    if (pendingChanges.length > 0) {
-        dialogManager.show("restartDialog", pendingChanges);
-    }
 };
 
 gpii.app.fireAppReady = function (fireFn) {

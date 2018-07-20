@@ -36,12 +36,6 @@ fluid.defaults("gpii.app.pspInApp", {
     model: {
         keyedInUserToken: "{app}.model.keyedInUserToken"
     },
-    modelListeners: {
-        isShown: {
-            funcName: "gpii.app.hideRestartDialogIfNeeded",
-            args: ["{dialogManager}", "{change}.value"]
-        }
-    },
     listeners: {
         "onActivePreferenceSetAltered.notifyChannel": {
             listener: "{gpiiConnector}.updateActivePrefSet",
@@ -76,44 +70,23 @@ fluid.defaults("gpii.app.pspInApp", {
          * Restart Warning related listeners
          */
 
-        onClosed: {
-            funcName: "gpii.app.showRestartDialogIfNeeded",
-            args: ["{dialogManager}", "{settingsBroker}.model.pendingChanges"]
-        },
-
         onSettingAltered: {
             listener: "{settingsBroker}.enqueue"
         },
 
         onRestartNow: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
-            func: "{that}.hide"
-        }, {
             listener: "{settingsBroker}.applyPendingChanges"
+        }, {
+            func: "{that}.events.onClosed.fire"
         }],
 
-        onUndoChanges: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
+        onUndoChanges: {
             listener: "{settingsBroker}.undoPendingChanges"
-        }],
+        },
 
-        onRestartLater: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
-            func: "{that}.hide"
-        }],
-
-        onActivePreferenceSetAltered: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
-            listener: "{settingsBroker}.clearPendingChanges"
-        }],
+        onActivePreferenceSetAltered: {
+            listener: "{settingsBroker}.reset"
+        },
 
         "{settingsBroker}.events.onRestartRequired": {
             funcName: "gpii.app.togglePspRestartWarning",
@@ -125,6 +98,19 @@ fluid.defaults("gpii.app.pspInApp", {
     }
 });
 
+/**
+ * Either hides or shows the warning in the PSP.
+ *
+ * @param {Component} psp - The `gpii.app.psp` component
+ * @param {Object[]} pendingChanges - A list of the current state of pending changes
+ */
+gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
+    if (pendingChanges.length === 0) {
+        psp.hideRestartWarning();
+    } else {
+        psp.showRestartWarning(pendingChanges);
+    }
+};
 
 /**
  * Handles logic for the PSP window.
@@ -135,7 +121,9 @@ fluid.defaults("gpii.app.psp", {
 
     model:  {
         keyedInUserToken: null,
-        isShown: false
+        isShown: false,
+        theme: null,
+        preferences: {}
     },
 
     /*
@@ -153,8 +141,31 @@ fluid.defaults("gpii.app.psp", {
         backgroundColor: "transparent"
     },
 
+    sounds: {
+        keyedIn: "keyedIn.mp3",
+        activeSetChanged: "activeSetChanged.mp3"
+    },
+
+    params: {
+        theme: "{that}.model.theme",
+        sounds: {
+            keyedIn: {
+                expander: {
+                    funcName: "{assetsManager}.resolveAssetPath",
+                    args: ["{that}.options.sounds.keyedIn"]
+                }
+            },
+            activeSetChanged: {
+                expander: {
+                    funcName: "{assetsManager}.resolveAssetPath",
+                    args: ["{that}.options.sounds.activeSetChanged"]
+                }
+            }
+        }
+    },
+
     members: {
-        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs)"
+        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs, {that}.options.params)"
     },
     events: {
         onSettingAltered: null,
@@ -164,7 +175,6 @@ fluid.defaults("gpii.app.psp", {
         onUndoChanges: null,
 
         onClosed: null,
-        onRestartLater: null,
 
         onDisplayMetricsChanged: null,
         onPSPWindowFocusLost: null
@@ -189,15 +199,8 @@ fluid.defaults("gpii.app.psp", {
         },
 
         "onClosed.closePsp": {
-            func: "{psp}.hide"
-        },
-
-        "onRestartLater.closePsp": {
-            func: "{psp}.hide"
-        },
-
-        "onRestartNow.closePsp": {
-            func: "{psp}.hide"
+            funcName: "gpii.app.psp.closePSP",
+            args: ["{psp}", "{settingsBroker}"]
         },
 
         "onDisplayMetricsChanged": {
@@ -212,7 +215,7 @@ fluid.defaults("gpii.app.psp", {
 
         "onPSPWindowFocusLost": {
             funcName: "gpii.app.psp.handlePSPWindowFocusLost",
-            args: "{that}"
+            args: ["{that}", "{settingsBroker}"]
         }
     },
 
@@ -224,6 +227,10 @@ fluid.defaults("gpii.app.psp", {
                 "onLocaleChanged",
                 "{app}.model.locale"
             ]
+        },
+        "{app}.model.theme": {
+            func: "{that}.onThemeChanged",
+            excludeSource: "init"
         }
     },
 
@@ -264,19 +271,17 @@ fluid.defaults("gpii.app.psp", {
         hideRestartWarning: {
             func: "{psp}.notifyPSPWindow",
             args: ["onRestartRequired", []]
+        },
+        onThemeChanged: {
+            funcName: "gpii.app.notifyWindow",
+            args: [
+                "{that}.pspWindow",
+                "onThemeChanged",
+                "{that}.model.theme"
+            ]
         }
     }
 });
-
-/**
- * Shows the PSP window in the lower part of the primary display and focuses it. Actually, the PSP window is always
- * shown but it may be positioned off the screen.  This is a workaround for the flickering issue observed when the
- * content displayed in the PSP window changes. (Electron does not rerender web pages when the `BrowserWindow` is
- * hidden).
- *
- * @param {Component} psp - The `gpii.app.psp` instance.
- * @param {Object} pspWindow - An Electron `BrowserWindow`.
- */
 
 /**
  * Moves the PSP to the lower right part of the screen. This function in conjunction with `gpii.app.psp.moveOffScreen`
@@ -329,11 +334,20 @@ gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changed
     }
 };
 
-/*
- * Handle PSPWindow's blur event, which is fired when the window loses focus
+/**
+ * Handle PSPWindow's blur event, which is fired when the window loses focus. The PSP
+ * will be closed if there are no applications which require a restart in order for their
+ * settings to be applied and also if it is a user's preference for the PSP to close when
+ * clicking outside (this should be specified in the PSP channel message). In case there
+ * is no keyed-in user, the default behavior is for the PSP to close when a blur event
+ * occurs.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
  */
-gpii.app.psp.handlePSPWindowFocusLost = function (psp) {
-    if (psp.model.isShown) {
+gpii.app.psp.handlePSPWindowFocusLost = function (psp, settingsBroker) {
+    var isShown = psp.model.isShown,
+        closePSPOnBlur = psp.model.preferences.closePSPOnBlur;
+    if (isShown && closePSPOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
         psp.events.onClosed.fire();
     }
 };
@@ -384,17 +398,22 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     /*
      * "Restart Required" functionality events
      */
-
-    ipcMain.on("onRestartNow", function () {
-        psp.events.onRestartNow.fire();
+    ipcMain.on("onRestartNow", function (event, pendingChanges) {
+        psp.events.onRestartNow.fire({
+            pendingChanges: pendingChanges
+        });
     });
 
-    ipcMain.on("onRestartLater", function () {
-        psp.events.onRestartLater.fire();
+    ipcMain.on("onUndoChanges", function (event, pendingChanges) {
+        psp.events.onUndoChanges.fire({
+            pendingChanges: pendingChanges
+        });
     });
 
-    ipcMain.on("onUndoChanges", function () {
-        psp.events.onUndoChanges.fire();
+    ipcMain.on("onSignInRequested", function (event, email, password) {
+        // XXX currently sign in functionality is missing
+        fluid.fail("Sign in is not possible with email - ", email,
+            " and password: ", password);
     });
 };
 
@@ -421,6 +440,26 @@ gpii.app.psp.moveOffScreen = function (pspWindow) {
 gpii.app.psp.hide = function (psp) {
     gpii.app.psp.moveOffScreen(psp.pspWindow);
     psp.applier.change("isShown", false);
+};
+
+/**
+ * Invoked whenever the user presses the close button in the upper right corner of
+ * the PSP `BrowserWindow`, clicks outside of it or confirms the application of
+ * given settings. The function takes care of hiding the PSP, applying pending
+ * changes which require application restarts and undoing setting changes that
+ * necessitate the OS to be restarted.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param  {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
+ */
+gpii.app.psp.closePSP = function (psp, settingsBroker) {
+    psp.hide();
+
+    settingsBroker.applyPendingChanges({
+        liveness: "manualRestart"
+    });
+    settingsBroker.undoPendingChanges({
+        liveness: "OSRestart"
+    });
 };
 
 /**
@@ -451,16 +490,18 @@ gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
 };
 
 /**
- * Creates an Electron `BrowserWindow` that is to be used as the PSP window
- *
- * @param {Object} windowOptions - Raw options to be passed to the `BrowserWindow`
+ * Creates an Electron `BrowserWindow` that is to be used as the PSP window.
+ * @param {Object} windowOptions - The raw `BrowserWindow` settings.
+ * @param {Object} params - options that are to be supplied to the render process of
+ * the newly created `BrowserWindow`.
  * @return {Object} The created Electron `BrowserWindow`
  */
-gpii.app.psp.makePSPWindow = function (windowOptions) {
+gpii.app.psp.makePSPWindow = function (windowOptions, params) {
     var pspWindow = new BrowserWindow(windowOptions);
 
     var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
     pspWindow.loadURL(url);
+    pspWindow.params = params || {};
 
     gpii.app.psp.moveOffScreen(pspWindow);
 

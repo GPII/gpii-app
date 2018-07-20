@@ -18,18 +18,31 @@ var fluid = require("infusion"),
 
 fluid.setLogging(true);
 
+
+// The PSP will have a single instance. If an attempt to start a second instance is made,
+// the second one will be closed and the callback provided to `app.makeSingleInstance`
+// in the first instance will be triggered enabling it to show the PSP `BrowserWindow`.
+var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirectory*/) {
+    var psp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.psp")[0];
+    if (psp && !psp.model.isShown) {
+        psp.show();
+    }
+});
+
+if (appIsRunning) {
+    app.quit();
+    return;
+}
+
+// this module is loaded relatively slow
 require("gpii-universal");
 require("./index");
 
-// Check that we are not running another instance of GPII-App.
-var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirectory*/) {
-    // TODO: Properly log or handle it.
-    console.log("Attempt to start a second instance of GPII-App failed.");
-});
-// Check if any instance of GPII is running.
+// Close the PSP if there is another instance of it already running.
 var gpiiIsRunning = !gpii.singleInstance.registerInstance();
-if (appIsRunning || gpiiIsRunning) {
+if (gpiiIsRunning) {
     app.quit();
+    return;
 }
 
 require("gpii-windows/index.js");

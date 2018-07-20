@@ -43,6 +43,11 @@ body {
     font-size: 1.5em;
 }
 
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-title + .fl-subtitle {
+    margin: -12px 0 10px 0;
+    font-size: 0.9em;
+}
+
 .fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-details {
     padding-bottom: 10px;
     line-height: 1.33;
@@ -118,4 +123,13 @@ body {
 
 .clear-both {
     clear: both;
+}
+
+.fl-dialog .fl-dialog-content ul li {
+    margin: 0;
+}
+
+/* Useful for dialog content without a height listener */
+.fl-scrollable {
+    overflow: auto;
 }
