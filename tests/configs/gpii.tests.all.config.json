@@ -11,7 +11,7 @@
                 "record": {
                     "hostname": "localhost",
                     "port": 8081,
-                    "path": "/pcpChannel"
+                    "path": "/pspChannel"
                 },
                 "target": "{that gpiiConnector}.options.config"
             },
@@ -25,6 +25,6 @@
         }
     },
     "mergeConfigs": [
-        "%gpii-universal/gpii/configs/gpii.config.development.all.local.json"
+        "%gpii-universal/gpii/configs/gpii.config.untrusted.development.all.local.json5"
      ]
 }
