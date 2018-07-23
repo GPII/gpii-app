@@ -53,6 +53,9 @@ try {
 $npm = "npm" -f $env:SystemDrive
 Invoke-Command $npm "install" $mainDir
 
+# Currently required to generate the "mega" messages bundle (similar to Installer.ps1)
+Invoke-Command $npm "run build --prefix" $mainDir
+
 try {
     $tests = Join-Path $originalBuildScriptPath "Tests.ps1"
     $fullPath = Join-Path $originalBuildScriptPath "../node_modules/gpii-windows/provisioning/"

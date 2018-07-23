@@ -41,6 +41,6 @@
         "pretest:instrument": "node tests/lib/instrumentSource.js",
         "test": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron ./instrumented/tests.js",
         "posttest": "node node_modules/nyc/bin/nyc.js report --temp-directory coverage",
-        "test:noCoverage": "npm run build && powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron tests.js"
+        "test:noCoverage": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron tests.js"
     }
 }
