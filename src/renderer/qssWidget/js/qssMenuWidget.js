@@ -89,6 +89,9 @@
                             this: "{that}.container",
                             method: "removeClass",
                             args: ["{that}.options.styles.disabled"]
+                        },
+                        "onRepeaterCreated.notifyQssWidgetCreated": {
+                            func: "{menu}.notifyCreated"
                         }
                     }
                 }

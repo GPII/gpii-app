@@ -106,10 +106,6 @@ fluid.defaults("gpii.app.qss", {
                         func: "{qss}.hide"
                     },
                     // XXX DEV
-                    onQssButtonActivated: {
-                        funcName: "console.log",
-                        args: ["Item clicked: ", "{arguments}.0"]
-                    },
                     onQssSettingAltered: {
                         funcName: "console.log",
                         args: ["Setting altered QSS:", "{arguments}.0.path", "{arguments}.0.value"]

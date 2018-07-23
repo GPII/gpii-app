@@ -595,6 +595,17 @@ fluid.defaults("gpii.app.dialog.offScreenHidable", {
             funcName: "gpii.app.dialog.offScreenHidable.moveOffScreen",
             args: ["{that}.dialog"]
         },
+        setPosition: {
+            funcName: "gpii.app.dialog.offScreenHidable.setBounds",
+            args: [
+                "{that}",
+                "{that}.options.config.restrictions",
+                "{that}.width",
+                "{that}.height",
+                "{arguments}.0", // offsetX
+                "{arguments}.1"  // offsetY
+            ]
+        },
         setBounds: {
             funcName: "gpii.app.dialog.offScreenHidable.setBounds",
             args: [

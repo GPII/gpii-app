@@ -57,7 +57,8 @@
             onWidgetBlur: null,
             onSettingUpdated: null,
             onQssWidgetSettingAltered: null,
-            onQssWidgetNotificationRequired: null
+            onQssWidgetNotificationRequired: null,
+            onQssWidgetCreated: null
         },
 
         sounds: {},
@@ -79,7 +80,8 @@
                 options: {
                     sounds: "{qssWidget}.options.sounds",
                     events: {
-                        onNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired"
+                        onNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
+                        onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
                     },
                     model: {
                         setting: "{qssWidget}.model.setting",
@@ -110,6 +112,12 @@
                         "onCreate.processParams": {
                             funcName: "gpii.qssWidget.processParams",
                             args: ["{focusManager}", "{that}.options.activationParams"]
+                        }
+                    },
+                    invokers: {
+                        notifyCreated: {
+                            func: "{that}.events.onQssWidgetCreated.fire",
+                            args: [null]
                         }
                     }
                 }
@@ -176,28 +184,31 @@
                         onQssWidgetClosed:               null,
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetBlur:                 "{qssWidget}.events.onWidgetBlur",
-                        onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired"
+                        onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
+                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated"
                     }
                 }
             }
         },
 
         listeners: {
-            onSettingUpdated: [{
+            onSettingUpdated: {
                 funcName: "gpii.app.applier.replace",
                 args: [
                     "{that}.applier",
                     "setting",
                     "{arguments}.0"
                 ]
-            }, {
+            },
+            onQssWidgetCreated: {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: [
                     "{that}.dom.stepper",
                     "{that}.dom.menu",
-                    "{arguments}.0" // setting
-                ]
-            }]
+                    "{that}.model.setting"
+                ],
+                priority: "last"
+            }
         }
     });
 
