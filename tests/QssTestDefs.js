@@ -34,8 +34,8 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
     clickCaptionsBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(4)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
+    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(3)\").click()",
     clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()";
-//
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
@@ -59,6 +59,14 @@ gpii.tests.qss.awaitQssInitialization = function (qss) {
 
 gpii.tests.qss.executeCommand = function (dialog, command) {
     return dialog.webContents.executeJavaScript(command, true);
+};
+
+gpii.tests.qss.simulateShortcut = function (dialog, shortcut) {
+    dialog.webContents.sendInputEvent({
+        type: "keyDown",
+        keyCode: shortcut.key,
+        modifiers: shortcut.modifiers
+    })
 };
 
 gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
@@ -86,34 +94,9 @@ gpii.tests.qss.linger = function () {
     return promise;
 };
 
-gpii.tests.qss.testDefs = {
-    name: "QSS Widget integration tests",
-    expect: 23,
-    config: {
-        configName: "gpii.tests.dev.config",
-        configPath: "tests/configs"
-    },
-    distributeOptions: {
-        // Supply the list of QSS settings
-        // For now we're using the same settings list
-        record: "%gpii-app/testData/qss/settings.json",
-        target: "{that gpii.app.qssWrapper}.options.settingsPath"
-        // TODO test to add {app}, ... and all related modules to options
-        // possible generation of distribute options from down to up
-    },
 
-    mergePolicy: {
-        qss: "noexpand"
-    },
-    qss: "{that}.app.qssWrapper.qss",
 
-    gradeNames: ["gpii.test.common.testCaseHolder"],
-    sequence: [{ // Wait for the QSS to initialize.
-        task: "gpii.tests.qss.awaitQssInitialization",
-        args: ["{that}.app.qssWrapper.qss"],
-        resolve: "jqUnit.assert",
-        resolveArgs: ["QSS has initialized successfully"]
-    },
+var crossTestSequence = [
     /*
      * CROSS
      * Tests QSS and PSP visibility
@@ -358,8 +341,8 @@ gpii.tests.qss.testDefs = {
             "{arguments}.0"
         ]
     },
-// TODO this could be used instead (of the previous)
-//{ // ! should send info to broker
+    // TODO this could be used instead (of the previous)
+    //{ // ! should send info to broker
     //     changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
     //     path: "settings.*",
     //     listener: "jqUnit.assertEquals",
@@ -374,17 +357,11 @@ gpii.tests.qss.testDefs = {
         path: "isShown",
         listener: "fluid.identity"
     },
-    // Stepper
-    /// { // Activation of stepper button should
-    /// }, { // ... show the stepper widget
-    /// }, { // ... and activation of increment/decrement button should
-    /// }, { // ... notify the core
-    /// },
     // Toggle
     { // Activation of toggle button should
         func: "gpii.tests.qss.executeCommand",
         args: [
-            "{{that}.options.qss}.dialog",
+            "{that}.app.qssWrapper.qss.dialog",
             clickCaptionsBtn
         ]
     }, { // ... notify the core
@@ -422,7 +399,7 @@ gpii.tests.qss.testDefs = {
     }, { // ... changing setting from QSS
         func: "gpii.tests.qss.executeCommand",
         args: [
-            "{{that}.options.qss}.dialog",
+            "{that}.app.qssWrapper.qss.dialog",
             clickReadAloudBtn
         ]
     }, { // ... should notify the PSP
@@ -436,5 +413,247 @@ gpii.tests.qss.testDefs = {
     }, { // Test menu after key out
         func: "{that}.app.keyOut"
     }
+];
+
+var simpleSettingChangeSeqEl = { // Changeing single setting
+    task: "gpii.tests.qss.executeCommand",
+    args: [
+        "{that}.app.qssWrapper.qss.dialog",
+        clickCaptionsBtn
+    ],
+    resolve: "fluid.identity"
+};
+var clickUndoButtonSeqEl = { // ... and clicking undo button
+    funcName: "gpii.tests.qss.executeCommand",
+    args: [
+        "{that}.app.qssWrapper.qss.dialog",
+        clickUndoBtn
     ]
+};
+
+var undoCrossTestSequence = [
+    { // When the tray icon is clicked...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, 
+    simpleSettingChangeSeqEl,
+    clickUndoButtonSeqEl, // ... and clicking undo button
+    { // ... should revert setting's value
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "QSS undo button should undo setting change",
+            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: false },
+            "{arguments}.0"
+        ]
+    },
+    //
+    // Shortcut test
+    //
+    simpleSettingChangeSeqEl, // Changing a setting
+    simpleSettingChangeSeqEl, // Making second setting change
+    { // ... and using undo shortcut in QSS
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            {
+                key: "Z",
+                modifiers: ["Ctrl"]
+            }
+        ] // simulate Ctrl+Z
+    }, { // ... should restore last setting's state
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "QSS undo shortcut should undo setting change",
+            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: true },
+            "{arguments}.0"
+        ]
+    }, { // ... and using shortcut in the widget
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            {
+                key: "Z",
+                modifiers: ["Ctrl"]
+            }
+        ] // simulate Ctrl+Z
+    }, { // ... should trigger undo as well
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "QSS widget undo shortcut should undo setting change",
+            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: false },
+            "{arguments}.0"
+        ]
+    },
+    ////
+    //// Indicator test
+    ////
+    simpleSettingChangeSeqEl, // Changing a setting
+    { // ... should enable undo indicator
+        event: "{that}.app.qssWrapper.events.onUndoIndicatorChanged",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "QSS change should enable undo indicator",
+            "{arguments}.0"
+        ]
+    },
+    clickUndoButtonSeqEl, // ... and unding it
+    { // ... should disable it
+        event: "{that}.app.qssWrapper.events.onUndoIndicatorChanged",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "QSS undo should disable undo indicator",
+            "{arguments}.0"
+        ]
+    }, { // close and ensure setting changes have been applied
+        task: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
+// More isolated tests for the undo functionality
+var undoTestSequence = [
+    { // make a change to a setting
+        func: "{that}.app.qssWrapper.applier.change",
+        args: ["settings.2", {value: 1.5}]
+    }, { // ... there should be a setting registered
+        changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
+        path: "hasChanges",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "QSS setting change should indicate available change",
+            "{that}.app.qssWrapper.undoStack.model.hasChanges"
+        ]
+    }, { // Undoing the change
+        func: "{that}.app.qssWrapper.undoStack.undo"
+    }, { // ... should restore setting's state
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "QSS single setting change should be undone properly",
+            {
+                path: "http://registry\\.gpii\\.net/common/DPIScale",
+                value: 1.25
+            },
+            "{arguments}.0"
+        ]
+    }, { // ... should restore `hasChanges` flag state
+        funcName: "jqUnit.assertFalse",
+        args: [
+            "QSS setting change indicator should restore state when stack is emptied",
+            "{that}.app.qssWrapper.undoStack.model.hasChanges"
+        ]
+    },
+    //
+    // Multiple setting changes
+    //
+    { // make a change to a setting
+        func: "{that}.app.qssWrapper.applier.change",
+        args: ["settings.2", {value: 1.5}]
+    }, { // make a change to a setting
+        func: "{that}.app.qssWrapper.applier.change",
+        args: ["settings.3", {value: true}]
+    }, { // ... `hasChanges` should have its state kept
+        funcName: "jqUnit.assertTrue",
+        args: [
+            "QSS setting change indicator should restore state when stack is emptied",
+            "{that}.app.qssWrapper.undoStack.model.hasChanges"
+        ]
+    }, { // ... reverting last change
+        func: "{that}.app.qssWrapper.undoStack.undo"
+    }, { // ... should restore second setting's state
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "QSS last setting change should be undone",
+            {
+                path: "http://registry\\.gpii\\.net/common/captions/enabled",
+                value: false
+            },
+            "{arguments}.0"
+        ]
+    }, { // ... reverting all of the changes
+        func: "{that}.app.qssWrapper.undoStack.undo"
+    }, { // ... should restore first setting's state
+        event: "{that}.app.qssWrapper.undoStack.events.onChangeUndone", // use whole path for the event attachment
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "QSS last setting change should be undone",
+            {
+                path: "http://registry\\.gpii\\.net/common/DPIScale",
+                value: 1.25
+            },
+            "{arguments}.0.oldValue"
+        ]
+    }, { // ... and `hasChanges` should have its state restored
+        funcName: "jqUnit.assertFalse",
+        args: [
+            "QSS setting change indicator should restore state when stack is emptied",
+            "{that}.app.qssWrapper.undoStack.model.hasChanges"
+        ]
+    },
+    //
+    // Empty stack
+    //
+    { // Undoing empty stack should not cause an error
+        func: "{that}.app.qssWrapper.undoStack.undo"
+    },
+    //
+    // Unwatched setting changes
+    //
+    { // make a change to an undoable setting shouldn't have effect
+        func: "{that}.app.qssWrapper.alterSetting",
+        args: [{path: "http://registry\\.gpii\\.net/common/fontSize", value: 1.5}]
+    }, { // ... and making a watched change
+        func: "{that}.app.qssWrapper.applier.change",
+        args: ["settings.2", {value: 1.5}]
+    }, { // ... should change `hasChanges` flag state
+        changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
+        path: "hasChanges",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "QSS setting change indicator should restore state when stack is emptied",
+            "{that}.app.qssWrapper.undoStack.model.hasChanges"
+        ]
+    }
+];
+
+
+
+gpii.tests.qss.testDefs = {
+    name: "QSS Widget integration tests",
+    expect: 36,
+    config: {
+        configName: "gpii.tests.dev.config",
+        configPath: "tests/configs"
+    },
+    distributeOptions: {
+        // Supply the list of QSS settings
+        // For now we're using the same settings list
+        record: "%gpii-app/tests/fixtures/qssSettings.json",
+        target: "{that gpii.app.qssWrapper}.options.settingsPath"
+    },
+
+    gradeNames: ["gpii.test.common.testCaseHolder"],
+    sequence: [].concat(
+        [{ // Wait for the QSS to initialize.
+            task: "gpii.tests.qss.awaitQssInitialization",
+            args: ["{that}.app.qssWrapper.qss"],
+            resolve: "jqUnit.assert",
+            resolveArgs: ["QSS has initialized successfully"]
+        }],
+        undoCrossTestSequence,
+        undoTestSequence,
+        crossTestSequence
+    )
 };
