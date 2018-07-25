@@ -70,6 +70,26 @@
                         onSignInRequested: "{channel}.requestSignIn"
                     }
                 }
+            },
+
+            // Listen for window key events...
+            windowKeyListener: {
+                type: "fluid.component",
+                options: {
+                    gradeNames: "gpii.qss.elementRepeater.keyListener",
+                    target: {
+                        expander: {
+                            funcName: "jQuery",
+                            args: [window]
+                        }
+                    },
+                    events: {
+                        onEscapePressed: null
+                    },
+                    listeners: {
+                        onEscapePressed: "{channel}.close"
+                    }
+                }
             }
         }
     });

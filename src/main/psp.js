@@ -246,6 +246,9 @@ fluid.defaults("gpii.app.psp", {
             funcName: "gpii.app.psp.closePSP",
             args: ["{psp}", "{settingsBroker}"]
         },
+        "onClosed.giveToQss": {
+            func: "{qssWrapper}.qss.focus"
+        },
 
         "{gpiiConnector}.events.onPreferencesUpdated": {
             funcName: "gpii.app.psp.onPreferencesUpdated",
