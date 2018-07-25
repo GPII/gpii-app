@@ -5,25 +5,25 @@
             "type": "string",
             "title": "Language",
             "keys": [
+                "en",
                 "hy",
                 "zh-Hans",
                 "zh-Hant",
-                "en",
                 "ko",
                 "ru",
                 "es"
             ],
             "enum": [
+                "English",
                 "Հայերէն · Armenian",
                 "汉语 · Chinese (Simplified)",
                 "漢語 · Chinese (Traditional)",
-                "English",
                 "한국어 · Korean",
                 "Ру́сский · Russian",
                 "Español · Spanish"
             ],
             "image": "language.svg",
-            "defaultValue": "en"
+            "default": "en"
         },
         "value": "en",
         "tooltip": "<div><strong>Change language.</strong></div><div>Works in Windows, Edge, and many other applications.</div>",
@@ -52,7 +52,7 @@
             "min": 1,
             "max": 2,
             "divisibleBy": 0.25,
-            "defaultValue": 1.25
+            "default": 1.25
         },
         "value": 1.25,
         "tooltip": "<div><strong>Change the screen size to make everything larger/smaller.</strong></div>",
@@ -65,7 +65,7 @@
         "schema": {
             "type": "boolean",
             "title": "Youtube Captions",
-            "defaultValue": false
+            "default": false
         },
         "value": false,
         "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div>"
@@ -94,7 +94,7 @@
                 "Grey on white",
                 "Black on brown"
             ],
-            "defaultValue": "regular-contrast"
+            "default": "regular-contrast"
         },
         "value": "regular-contrast",
         "styles": {
@@ -147,7 +147,7 @@
             "title": "Read Aloud",
             "description": "Whether to enable/disable self voicing",
             "type": "boolean",
-            "defaultValue": false
+            "default": false
         },
         "value": false,
         "tooltip": "<div><strong>Turn Chrome’s ability to read text on/off.</strong></div>"

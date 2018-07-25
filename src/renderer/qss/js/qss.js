@@ -350,7 +350,7 @@
     gpii.qss.settingButtonPresenter.updateChangeIndicator = function (that, setting, value) {
         // The dot should be shown if the setting has a default value and the new value of the
         // setting is different from that value.
-        var defaultValue = setting.schema.defaultValue,
+        var defaultValue = setting.schema["default"],
             shouldShow = fluid.isValue(defaultValue) && !fluid.model.diff(value, defaultValue);
         that.toggleIndicator(shouldShow);
     };

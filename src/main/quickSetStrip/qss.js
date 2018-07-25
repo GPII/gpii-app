@@ -111,6 +111,9 @@ fluid.defaults("gpii.app.qssWrapper", {
                         args: ["{that}", "{change}.path", "{change}.oldValue"],
                         excludeSource: ["gpii.app.undoStack.undo", "init"]
                     },
+                    "{qssWrapper}.model.keyedInUserToken": {
+                        func: "{that}.clear"
+                    },
 
                     "hasChanges": {
                         func: "{qssWrapper}.updateUndoIndicator",
@@ -289,6 +292,7 @@ fluid.defaults("gpii.app.qssWrapper", {
 gpii.app.qssWrapper.saveSettings = function (that, flowManager, qssNotification, qss, description) {
     // Request that the settings are saved only if there is a keyed in user
     if (that.model.keyedInUserToken) {
+        // Instead of sending a request via the pspChannel, the flowManager is used directly.
         var pspChannel = flowManager.pspChannel,
             saveButtonClickCount = pspChannel.model.saveButtonClickCount || 0;
         pspChannel.applier.change("saveButtonClickCount", saveButtonClickCount + 1, null, "PSP");

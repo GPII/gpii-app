@@ -66,6 +66,10 @@ fluid.defaults("gpii.app.undoStack", {
                 "{arguments}.0", // oldValue
                 "{arguments}.1"  // pathSegs
             ]
+        },
+        clear: {
+            changePath: "undoStack",
+            value: []
         }
     }
 });
