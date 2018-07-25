@@ -30,7 +30,7 @@
     });
 
     fluid.defaults("gpii.psp.qssNotification", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable", "gpii.psp.linksInterceptor"],
 
         model: {
             messages: {
@@ -38,6 +38,8 @@
                 dismissButtonLabel: "OK"
             }
         },
+
+        enableRichText: true,
 
         selectors: {
             titlebar: ".flc-titlebar",

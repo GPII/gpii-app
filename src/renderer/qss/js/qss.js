@@ -50,9 +50,7 @@
             },
             value: "{that}.model.item.value",
             messages: {
-                notification: {
-                    description: "To see the %settingTitle change, you may need to restart some applications."
-                }
+                notification: "To see the %settingTitle change, you may need to restart some applications."
             }
         },
 
@@ -276,14 +274,10 @@
 
     gpii.qss.buttonPresenter.showNotification = function (that, qssList) {
         if (that.model.item.restartWarning) {
-            var messages = that.model.messages,
-                description = fluid.stringTemplate(messages.notification.description, {
-                    settingTitle: that.model.item.schema.title
-                }),
-                notificationParams = fluid.extend({}, messages.notification, {
-                    description: description
-                });
-            qssList.events.onNotificationRequired.fire(notificationParams);
+            var notification = fluid.stringTemplate(that.model.messages.notification, {
+                settingTitle: that.model.item.schema.title
+            });
+            qssList.events.onNotificationRequired.fire(notification);
         }
     };
 
@@ -493,7 +487,8 @@
         model: {
             messages: {
                 notification: {
-                    description: "Current Settings Saved"
+                    keyedOut: "To save your settings you need to setup a Morphic Account.  Go to <a href=\"http://Morphic.global/account\">http://Morphic.global/account</a>",
+                    keyedIn: "Your settings were saved to the Morphic Cloud."
                 }
             }
         },
@@ -503,15 +498,19 @@
                 args: [
                     "{that}",
                     "{list}",
+                    "{gpii.qss}.model.keyedInUserToken",
                     "{arguments}.0" // activationParams
                 ]
             }
         }
     });
 
-    gpii.qss.saveButtonPresenter.activate = function (that, qssList, activationParams) {
+    gpii.qss.saveButtonPresenter.activate = function (that, qssList, keyedInUserToken, activationParams) {
         that.onButtonActivated(activationParams);
-        qssList.events.onNotificationRequired.fire(that.model.messages.notification);
+
+        var messages = that.model.messages.notification,
+            notification = keyedInUserToken ? messages.keyedIn : messages.keyedOut;
+        qssList.events.onSaveRequired.fire(notification);
     };
 
     fluid.defaults("gpii.qss.moreButtonPresenter", {
@@ -592,6 +591,7 @@
             onNotificationRequired: null,
             onMorePanelRequired: null,
             onUndoRequired: null,
+            onSaveRequired: null,
             onPSPOpen: null
         },
 
@@ -717,6 +717,7 @@
                         onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired",
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
+                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
                         onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
                     }
                 }
