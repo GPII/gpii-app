@@ -378,7 +378,7 @@ var crossTestSequence = [
      */
     { // Test menu after key in
         func: "{that}.app.keyIn",
-        args: "snapset_3" // Read To Me
+        args: "snapset_2a" // Read To Me
     }, {
         event: "{that}.app.events.onKeyedIn",
         listener: "fluid.identity"
@@ -407,7 +407,7 @@ var crossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "QSS setting change should take place in PSP as well",
-            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: false },
+            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
     }, { // Test menu after key out
