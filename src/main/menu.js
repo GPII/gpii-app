@@ -212,7 +212,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
                 token: "snapset_1b"
             }
         }, {
-            label: "Larger 175% (no settings but still applied)",
+            label: "Larger 175%",
             click: "onKeyIn",
             args: {
                 token: "snapset_1c"
