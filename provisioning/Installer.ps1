@@ -57,6 +57,9 @@ $appDir = Join-Path $stagingWindowsDir "app"
 # Install electron-packager globally.
 # TODO: Define electron-packager invocation in npm scripts.
 Invoke-Command $npm "install electron-packager -g" $projectDir
+# Useful when we are going to bump the version - maybe should go into Npm.ps1
+Invoke-Command $npm "install fluid-publish -g" $projectDir
+
 
 # Npm install the application, this needs to be done for packaging.
 Invoke-Command $npm "install" $projectDir
