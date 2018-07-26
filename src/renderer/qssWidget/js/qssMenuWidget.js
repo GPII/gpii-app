@@ -80,7 +80,8 @@
                                 "{that}",
                                 "{menu}",
                                 "{that}.container",
-                                "{arguments}.0" // value
+                                "{arguments}.0", // value
+                                "{arguments}.1" // keyboardEvent
                             ]
                         }
                     },
@@ -101,8 +102,8 @@
                 options: {
                     listeners: {
                         "onTimerFinished.closeWidget": {
-                            this: "{channelNotifier}.events.onQssWidgetClosed",
-                            method: "fire"
+                            func: "{qssWidget}.close",
+                            args: ["{menu}.keyboardEvent"]
                         }
                     }
                 }
@@ -119,11 +120,20 @@
         },
         invokers: {
             close: {
-                func: "{closeTimer}.start",
-                args: ["{that}.options.closeDelay"]
+                funcName: "gpii.qssWidget.menu.close",
+                args: [
+                    "{that}",
+                    "{closeTimer}",
+                    "{arguments}.0" // keyboardEvent
+                ]
             }
         }
     });
+
+    gpii.qssWidget.menu.close = function (that, closeTimer, keyboardEvent) {
+        that.keyboardEvent = keyboardEvent;
+        closeTimer.start(that.options.closeDelay);
+    };
 
     gpii.qssWidget.menu.addVisibilityChangeListener = function (closeTimer) {
         $(document).on("visibilitychange.qssMenuWidget", function () {
@@ -137,7 +147,7 @@
         $(document).off("visibilitychange.qssMenuWidget");
     };
 
-    gpii.qssWidget.menu.updateValue = function (that, menu, container, value) {
+    gpii.qssWidget.menu.updateValue = function (that, menu, container, value, keyboardEvent) {
         if (!that.model.disabled && that.model.value !== value) {
             that.applier.change("value", value, null, "settingAlter");
 
@@ -145,7 +155,7 @@
             that.applier.change("disabled", true);
             container.addClass(that.options.styles.disabled);
 
-            menu.close();
+            menu.close(keyboardEvent);
         }
     };
 
@@ -206,7 +216,10 @@
         invokers: {
             activate: {
                 func: "{repeater}.updateValue",
-                args: ["{that}.model.item.key"]
+                args: [
+                    "{that}.model.item.key",
+                    "{arguments}.0" // keyboardEvent
+                ]
             }
         }
     });

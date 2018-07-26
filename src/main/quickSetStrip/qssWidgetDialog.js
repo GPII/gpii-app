@@ -84,7 +84,6 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetClosed: null,
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
-                    onQssWidgetBlur: null,
                     onQssWidgetCreated: null
                 },
                 listeners: {
@@ -100,14 +99,6 @@ fluid.defaults("gpii.app.qssWidget", {
                         funcName: "console.log",
                         args: ["Settings Altered: ", "{arguments}.0"]
                     },
-                    onQssWidgetBlur: [{
-                        func: "{qssWidget}.hide"
-                    }, {
-                        func: "{gpii.app.qss}.show",
-                        args: [
-                            "{arguments}.0" // params
-                        ]
-                    }],
                     onQssWidgetCreated: {
                         funcName: "gpii.app.qssWidget.onQssWidgetCreated",
                         args: ["{qssWidget}"]
@@ -201,7 +192,6 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
 
     gpii.app.applier.replace(that.applier, "setting", setting);
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
-
 
     // reposition window properly
     that.model.offset = getWidgetPosition(that, elementMetrics);

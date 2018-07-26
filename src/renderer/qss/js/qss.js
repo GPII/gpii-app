@@ -20,7 +20,7 @@
 
 
     fluid.defaults("gpii.qss.qssKeyListener", {
-        gradeNames: "gpii.qss.elementRepeater.keyListener",
+        gradeNames: "gpii.app.keyListener",
 
         events: {
             onArrowDownPressed: null,
@@ -39,8 +39,8 @@
     fluid.defaults("gpii.qss.buttonPresenter", {
         gradeNames: [
             "gpii.qss.qssKeyListener",
-            "gpii.qss.elementRepeater.hoverable",
-            "gpii.qss.elementRepeater.clickable",
+            "gpii.app.hoverable",
+            "gpii.app.clickable",
             "fluid.viewComponent"
         ],
 

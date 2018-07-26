@@ -303,7 +303,7 @@
                 method: "attr",
                 args: ["{that}.options.attrs"]
             },
-            "onCreate.bindClickEvt": {
+            "onCreate.addClickHandler": {
                 "this": "{that}.container",
                 method: "click",
                 args: ["{that}.onClick"]
