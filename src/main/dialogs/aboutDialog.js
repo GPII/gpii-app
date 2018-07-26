@@ -16,7 +16,7 @@
 
 var fluid = require("infusion");
 
-var app = require("electron").app;
+fluid.require("electron", require, "gpii.app.electron");
 
 require("./basic/dialog.js");
 
@@ -34,7 +34,7 @@ fluid.defaults("gpii.app.aboutDialog", {
     config: {
         params: {
             userListeners: ["USB", "NFC", "Fingerprint", "Webcam & Voice"],
-            version: { expander: { func: app.getVersion } }
+            version: { expander: { func: "gpii.app.electron.app.getVersion" } }
         },
         fileSuffixPath: "aboutDialog/index.html"
     },

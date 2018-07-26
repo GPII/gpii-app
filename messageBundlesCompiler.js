@@ -156,7 +156,8 @@ gpii.app.messageBundlesCompiler.collectFilesByType = function (dir, fileTypes) {
 };
 
 /**
- * Loads synchronously all message bundles from the passed directories.
+ * Loads synchronously all message bundles from the passed directories. Note that directories'
+ * paths may include gpii module references.
  * @param {String[]} bundlesDirs - The list of directrories' names containing message bundles.
  * @param {FileParsers} parsers - Available parsers for the bundle files. Bundles for the
  * provided file types will be used for collected.
@@ -165,9 +166,11 @@ gpii.app.messageBundlesCompiler.collectFilesByType = function (dir, fileTypes) {
 gpii.app.messageBundlesCompiler.loadMessageBundles = function (bundlesDirs, parsers) {
     var fileTypes = fluid.keys(parsers);
 
-    var bundleFiles = bundlesDirs.reduce(function (files, bundlesDir) {
-        return files.concat(gpii.app.messageBundlesCompiler.collectFilesByType(bundlesDir, fileTypes));
-    }, []);
+    var bundleFiles = bundlesDirs
+        .map(fluid.module.resolvePath)
+        .reduce(function (files, bundlesDir) {
+            return files.concat(gpii.app.messageBundlesCompiler.collectFilesByType(bundlesDir, fileTypes));
+        }, []);
 
     return bundleFiles.map(function (filePath) {
         var fileType = path.extname(filePath).slice(1),
