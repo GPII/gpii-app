@@ -224,7 +224,7 @@
     gpii.qss.buttonPresenter.renderImage = function (that, imageElem) {
         var image = that.model.item.schema.image;
         if (image) {
-            var maskImageValue = fluid.stringTemplate("url(%image)", {
+            var maskImageValue = fluid.stringTemplate("url(\"%image\")", {
                 image: image
             });
 
