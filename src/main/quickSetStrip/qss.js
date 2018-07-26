@@ -52,6 +52,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         onSettingUpdated: null,
         onPreferencesUpdated: null,
         onUndoRequired: null,
+        onSaveRequired: null,
         onQssPspOpen: null,
         onQssPspClose: null,
 
@@ -75,6 +76,16 @@ fluid.defaults("gpii.app.qssWrapper", {
         },
         "onUndoRequired.activateUndo": {
             func: "{undoStack}.undo"
+        },
+        onSaveRequired: {
+            funcName: "gpii.app.qssWrapper.saveSettings",
+            args: [
+                "{that}",
+                "{flowManager}",
+                "{qssNotification}",
+                "{gpii.app.qss}",
+                "{arguments}.0"
+            ]
         }
     },
 
@@ -99,6 +110,9 @@ fluid.defaults("gpii.app.qssWrapper", {
                         funcName: "gpii.app.qssWrapper.registerUndoableChange",
                         args: ["{that}", "{change}.path", "{change}.oldValue"],
                         excludeSource: ["gpii.app.undoStack.undo", "init"]
+                    },
+                    "{qssWrapper}.model.keyedInUserToken": {
+                        func: "{that}.clear"
                     },
 
                     "hasChanges": {
@@ -163,7 +177,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                     "{channelListener}.events.onQssNotificationRequired": {
                         func: "{qssNotification}.show",
                         args: [{
-                            description: "{arguments}.0.description",
+                            description: "{arguments}.0",
                             focusOnClose: "{that}.dialog"
                         }] // notificationParams
                     },
@@ -171,6 +185,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssMorePanel}.show"
                     },
                     "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
+                    "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
                     "{channelListener}.events.onQssPspOpen":      "{qssWrapper}.events.onQssPspOpen.fire"
                 },
                 modelListeners: {
@@ -196,7 +211,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                     onQssWidgetNotificationRequired: {
                         func: "{qssNotification}.show",
                         args: [{
-                            description: "{arguments}.0.description",
+                            description: "{arguments}.0",
                             focusOnClose: "{that}.dialog"
                         }]
                     }
@@ -273,6 +288,21 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     }
 });
+
+gpii.app.qssWrapper.saveSettings = function (that, flowManager, qssNotification, qss, description) {
+    // Request that the settings are saved only if there is a keyed in user
+    if (that.model.keyedInUserToken) {
+        // Instead of sending a request via the pspChannel, the flowManager is used directly.
+        var pspChannel = flowManager.pspChannel,
+            saveButtonClickCount = pspChannel.model.saveButtonClickCount || 0;
+        pspChannel.applier.change("saveButtonClickCount", saveButtonClickCount + 1, null, "PSP");
+    }
+
+    qssNotification.show({
+        description: description,
+        focusOnClose: qss.dialog
+    });
+};
 
 /**
  * Whenever a button in the QSS is focused hides the QSS widget and the PSP in case

@@ -162,6 +162,16 @@
                     model: {
                         item: "{element}.model.item",
                         index: "{element}.options.index"
+                    },
+                    events: {
+                        onHandlerCreated: "{repeater}.events.onHandlerCreated"
+                    },
+                    listeners: {
+                        "onCreate.notifyHandlerCreated": {
+                            func: "{that}.events.onHandlerCreated.fire",
+                            args: ["{that}.model.item"],
+                            priority: "last"
+                        }
                     }
                 }
             }
@@ -186,9 +196,19 @@
     fluid.defaults("gpii.psp.repeater", {
         gradeNames: "fluid.viewComponent",
 
+        members: {
+            handlersCount: 0
+        },
+
         model: {
             items: []
         },
+
+        events: {
+            onRepeaterCreated: null,
+            onHandlerCreated: null
+        },
+
         handlerType: null,
 
         invokers: {
@@ -202,7 +222,12 @@
             }
         },
 
-
+        listeners: {
+            onHandlerCreated: {
+                funcName: "gpii.psp.repeater.onHandlerCreated",
+                args: ["{that}"]
+            }
+        },
 
         dynamicContainerMarkup: {
             container:            "<div class=\"%containerClass\"></div>",
@@ -268,6 +293,13 @@
             }
         }
     });
+
+    gpii.psp.repeater.onHandlerCreated = function (that) {
+        that.handlersCount++;
+        if (that.handlersCount >= that.model.items.length) {
+            that.events.onRepeaterCreated.fire();
+        }
+    };
 
     /**
      * Notify the `gpii.psp.repeater` component for changes that are present in its element handlers.
