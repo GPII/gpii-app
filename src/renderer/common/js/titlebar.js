@@ -47,16 +47,54 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         components: {
             closeBtn: {
-                type: "gpii.psp.widgets.button",
-                container: "{that}.dom.closeBtn",
-                options: {
-                    attrs: {
-                        "aria-label": "Close"
-                    },
-                    invokers: {
-                        "onClick": "{titlebar}.events.onClose.fire"
-                    }
-                }
+                type: "gpii.psp.titlebar.closeBtn",
+                container: "{that}.dom.closeBtn"
+            }
+        }
+    });
+
+    fluid.defaults("gpii.psp.titlebar.closeBtn", {
+        gradeNames: [
+            "fluid.viewComponent",
+            "gpii.qss.elementRepeater.keyListener",
+            "gpii.qss.elementRepeater.clickable"
+        ],
+
+        attrs: {
+            "aria-label": "Close"
+        },
+
+        events: {
+            onSpacebarPressed: null,
+            onEnterPressed: null
+        },
+
+        listeners: {
+            "onClicked.activate": {
+                func: "{that}.activate",
+                args: [
+                    {key: null}
+                ]
+            },
+            "onSpacebarPressed.activate": {
+                func: "{that}.activate",
+                args: [
+                    {key: "Spacebar"}
+                ]
+            },
+            "onEnterPressed.activate": {
+                func: "{that}.activate",
+                args: [
+                    {key: "Enter"}
+                ]
+            }
+        },
+
+        invokers: {
+            activate: {
+                this: "{titlebar}.events.onClose",
+                method: "fire",
+                args: "{arguments}.0"
             }
         }
     });

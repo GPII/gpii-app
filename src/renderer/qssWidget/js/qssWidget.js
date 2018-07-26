@@ -69,7 +69,16 @@
                 container: ".flc-titlebar",
                 options: {
                     events: {
-                        onClose: "{channelNotifier}.events.onQssWidgetClosed"
+                        onClose: null
+                    },
+                    listeners: {
+                        onClose: {
+                            funcName: "gpii.psp.qssWidget.blur",
+                            args: [
+                                "{qssWidget}",
+                                "{arguments}.0" // KeyboardEvent
+                            ]
+                        }
                     }
                 }
             },

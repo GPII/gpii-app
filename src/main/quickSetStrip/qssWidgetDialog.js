@@ -91,7 +91,10 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetClosed: [{
                         func: "{qssWidget}.hide"
                     }, {
-                        func: "{gpii.app.qss}.focus"
+                        func: "{gpii.app.qss}.show",
+                        args: [
+                            "{arguments}.0" // params
+                        ]
                     }],
                     onQssWidgetSettingAltered: { // XXX dev
                         funcName: "console.log",

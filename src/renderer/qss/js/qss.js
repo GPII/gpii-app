@@ -768,18 +768,15 @@
         } else if (params.setting) {
             // Focus a button corresponding to a given setting or the previous or
             // following button depending on the activation parameters.
-            var settingIndex = gpii.qss.getSettingIndex(settings, params.setting),
-                applyHighlight = false;
+            var settingIndex = gpii.qss.getSettingIndex(settings, params.setting);
 
             if (params.key === "ArrowLeft") {
                 settingIndex = gpii.psp.modulo(settingIndex - 1, settings.length);
-                applyHighlight = true;
             } else if (params.key === "ArrowRight") {
                 settingIndex = gpii.psp.modulo(settingIndex + 1, settings.length);
-                applyHighlight = true;
             }
 
-            qssList.events.onButtonFocusRequired.fire(settingIndex, applyHighlight);
+            qssList.events.onButtonFocusRequired.fire(settingIndex, !!params.key);
         } else {
             focusManager.removeHighlight(true);
         }
