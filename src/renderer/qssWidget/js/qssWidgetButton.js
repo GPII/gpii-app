@@ -19,26 +19,11 @@
     var gpii = fluid.registerNamespace("gpii");
 
     fluid.defaults("gpii.qssWidget.button", {
-        gradeNames: ["gpii.psp.widgets.button", "gpii.qss.elementRepeater.keyListener"],
-        events: {
-            onSpacebarPressed: null,
-            onEnterPressed: null
-        },
+        gradeNames: ["gpii.psp.widgets.button", "gpii.app.activatable"],
         listeners: {
-            // The click event will be attached manually.
-            "onCreate.bindClickEvt": {
-                funcName: "fluid.identity"
-            },
             "onCreate.addClickHandler": {
                 funcName: "gpii.qssWidget.button.addClickHandler",
                 args: ["{that}", "{focusManager}", "{that}.container"]
-            },
-            onSpacebarPressed: "{that}.activate()",
-            onEnterPressed: "{that}.activate()"
-        },
-        invokers: {
-            activate: {
-                funcName: "fluid.notImplemented"
             }
         }
     });

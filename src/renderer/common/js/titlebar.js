@@ -47,14 +47,18 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 
         components: {
             closeBtn: {
-                type: "gpii.psp.widgets.button",
+                type: "gpii.app.activatable",
                 container: "{that}.dom.closeBtn",
                 options: {
                     attrs: {
                         "aria-label": "Close"
                     },
                     invokers: {
-                        "onClick": "{titlebar}.events.onClose.fire"
+                        activate: {
+                            this: "{titlebar}.events.onClose",
+                            method: "fire",
+                            args: "{arguments}.0"
+                        }
                     }
                 }
             }

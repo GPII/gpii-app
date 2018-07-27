@@ -19,7 +19,7 @@
     var gpii = fluid.registerNamespace("gpii");
 
 
-    fluid.defaults("gpii.qss.elementRepeater.clickable", {
+    fluid.defaults("gpii.app.clickable", {
         events: {
             onClicked: null
         },
@@ -37,7 +37,7 @@
      * TODO
      * add timeout?
      */
-    fluid.defaults("gpii.qss.elementRepeater.hoverable", {
+    fluid.defaults("gpii.app.hoverable", {
         events: {
             onMouseEnter: null,
             onMouseLeave: null
@@ -70,7 +70,7 @@
      * N.B.! The <KeyName> for the space bar is "Spacebar", which differs from the name
      * in the specification which is simply " "
      */
-    fluid.defaults("gpii.qss.elementRepeater.keyListener", {
+    fluid.defaults("gpii.app.keyListener", {
 
         events: {}, // given by implementor
 
@@ -78,30 +78,30 @@
 
         listeners: {
             "onCreate.addKeyPressHandler": {
-                funcName: "gpii.qss.elementRepeater.keyListener.registerListener",
+                funcName: "gpii.app.keyListener.registerListener",
                 args: ["{that}"]
             },
             "onDestroy.clearListeners": {
-                funcName: "gpii.qss.elementRepeater.keyListener.deregisterListener",
+                funcName: "gpii.app.keyListener.deregisterListener",
                 args: ["{that}"]
             }
         },
 
         invokers: {
             registerKeyPress: {
-                funcName: "gpii.qss.elementRepeater.keyListener.registerKeyPress",
+                funcName: "gpii.app.keyListener.registerKeyPress",
                 args: ["{that}.events", "{arguments}.0"]
             }
         }
     });
 
-    gpii.qss.elementRepeater.keyListener.registerListener = function (that) {
+    gpii.app.keyListener.registerListener = function (that) {
         var target = that.options.target || that.container;
 
         target.on("keyup", that.registerKeyPress);
     };
 
-    gpii.qss.elementRepeater.keyListener.deregisterListener = function (that) {
+    gpii.app.keyListener.deregisterListener = function (that) {
         var target = that.options.target || that.container;
 
         target.off("keyup", that.registerKeyPress);
@@ -110,7 +110,7 @@
     /**
      * TODO
      */
-    gpii.qss.elementRepeater.keyListener.registerKeyPress = function (events, KeyboardEvent) {
+    gpii.app.keyListener.registerKeyPress = function (events, KeyboardEvent) {
         // Make use of a relatively new feature https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
         var keyName;
 
@@ -133,4 +133,59 @@
             events[eventName].fire(KeyboardEvent);
         }
     };
+
+    /**
+     * Represents a visual component which can be activated by clicking its
+     * container or by pressing Enter or Spacebar. The implementors have to
+     * provide the behavior for the `activate` invoker.
+     */
+    fluid.defaults("gpii.app.activatable", {
+        gradeNames: [
+            "gpii.app.keyListener",
+            "gpii.app.clickable",
+            "fluid.viewComponent"
+        ],
+
+        events: {
+            onSpacebarPressed: null,
+            onEnterPressed: null
+        },
+
+        attrs: {
+            // User provided attrs such as aria-*
+        },
+
+        listeners: {
+            "onCreate.addAttrs": {
+                "this": "{that}.container",
+                method: "attr",
+                args: ["{that}.options.attrs"]
+            },
+
+            "onClicked.activate": {
+                func: "{that}.activate",
+                args: [
+                    {key: null}
+                ]
+            },
+            "onSpacebarPressed.activate": {
+                func: "{that}.activate",
+                args: [
+                    {key: "Spacebar"}
+                ]
+            },
+            "onEnterPressed.activate": {
+                func: "{that}.activate",
+                args: [
+                    {key: "Enter"}
+                ]
+            }
+        },
+
+        invokers: {
+            activate: {
+                func: "fluid.notImplemented"
+            }
+        }
+    });
 })(fluid);

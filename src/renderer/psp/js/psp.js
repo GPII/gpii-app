@@ -76,7 +76,7 @@
             windowKeyListener: {
                 type: "fluid.component",
                 options: {
-                    gradeNames: "gpii.qss.elementRepeater.keyListener",
+                    gradeNames: "gpii.app.keyListener",
                     target: {
                         expander: {
                             funcName: "jQuery",

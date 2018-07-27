@@ -54,7 +54,7 @@
         },
 
         events: {
-            onWidgetBlur: null,
+            onWidgetClosed: null,
             onSettingUpdated: null,
             onQssWidgetSettingAltered: null,
             onQssWidgetNotificationRequired: null,
@@ -69,7 +69,16 @@
                 container: ".flc-titlebar",
                 options: {
                     events: {
-                        onClose: "{channelNotifier}.events.onQssWidgetClosed"
+                        onClose: null
+                    },
+                    listeners: {
+                        onClose: {
+                            funcName: "gpii.psp.qssWidget.close",
+                            args: [
+                                "{qssWidget}",
+                                "{arguments}.0" // KeyboardEvent
+                            ]
+                        }
                     }
                 }
             },
@@ -129,7 +138,7 @@
             windowKeyListener: {
                 type: "fluid.component",
                 options: {
-                    gradeNames: "gpii.qss.elementRepeater.keyListener",
+                    gradeNames: "gpii.app.keyListener",
                     target: {
                         expander: {
                             funcName: "jQuery",
@@ -142,18 +151,9 @@
                         onEscapePressed: null
                     },
                     listeners: {
-                        onArrowLeftPressed: "{that}.blur({arguments}.0)",
-                        onArrowRightPressed: "{that}.blur({arguments}.0)",
-                        onEscapePressed: "{that}.blur({arguments}.0)"
-                    },
-                    invokers: {
-                        blur: {
-                            funcName: "gpii.psp.qssWidget.blur",
-                            args: [
-                                "{qssWidget}",
-                                "{arguments}.0" // KeyboardEvent
-                            ]
-                        }
+                        onArrowLeftPressed: "{qssWidget}.close({arguments}.0)",
+                        onArrowRightPressed: "{qssWidget}.close({arguments}.0)",
+                        onEscapePressed: "{qssWidget}.close({arguments}.0)"
                     }
                 }
             },
@@ -181,9 +181,8 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
-                        onQssWidgetClosed:               null,
+                        onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
-                        onQssWidgetBlur:                 "{qssWidget}.events.onWidgetBlur",
                         onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                         onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated"
                     }
@@ -209,12 +208,23 @@
                 ],
                 priority: "last"
             }
+        },
+        invokers: {
+            close: {
+                funcName: "gpii.psp.qssWidget.close",
+                args: [
+                    "{that}",
+                    "{arguments}.0" // KeyboardEvent
+                ]
+            }
         }
     });
 
-    gpii.psp.qssWidget.blur = function (qssWidget, KeyboardEvent) {
-        qssWidget.events.onWidgetBlur.fire({
-            setting: qssWidget.model.setting,
+    gpii.psp.qssWidget.close = function (that, KeyboardEvent) {
+        KeyboardEvent = KeyboardEvent || {};
+
+        that.events.onWidgetClosed.fire({
+            setting: that.model.setting,
             key: KeyboardEvent.key
         });
     };
@@ -245,11 +255,7 @@
     };
 
     fluid.defaults("gpii.psp.qssWidget.learnMoreLink", {
-        gradeNames: [
-            "fluid.viewComponent",
-            "gpii.qss.elementRepeater.keyListener",
-            "gpii.qss.elementRepeater.clickable"
-        ],
+        gradeNames: ["gpii.app.activatable"],
 
         model: {
             setting: null,
@@ -264,17 +270,6 @@
                 method: "text",
                 args: ["{change}.value"]
             }
-        },
-
-        events: {
-            onSpacebarPressed: null,
-            onEnterPressed: null
-        },
-
-        listeners: {
-            onClicked: "{that}.activate",
-            onSpacebarPressed: "{that}.activate",
-            onEnterPressed: "{that}.activate"
         },
 
         invokers: {
