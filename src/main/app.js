@@ -231,14 +231,12 @@ fluid.defaults("gpii.app", {
                     "onQssUndoShortcut": {
                         funcName: "{qssWrapper}.undoStack.undo"
                     },
-                    "onPspOpenShortcut": [{
-                        func: "{psp}.show"
-                    }, {
+                    "onPspOpenShortcut": {
                         func: "{qssWrapper}.qss.show",
                         args: [
                             {shortcut: true}
                         ]
-                    }]
+                    }
                 }
             }
         },
@@ -253,14 +251,12 @@ fluid.defaults("gpii.app", {
                     onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
                 },
                 listeners: {
-                    onTrayIconClicked: [{
+                    onTrayIconClicked: {
                         func: "{qssWrapper}.qss.show",
                         args: [
                             {shortcut: false}
                         ]
-                    }, {
-                        func: "{psp}.show"
-                    }]
+                    }
                 }
             }
         }

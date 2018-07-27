@@ -25,9 +25,9 @@ app.disableHardwareAcceleration();
 // the second one will be closed and the callback provided to `app.makeSingleInstance`
 // in the first instance will be triggered enabling it to show the PSP `BrowserWindow`.
 var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirectory*/) {
-    var psp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.psp")[0];
-    if (psp && !psp.model.isShown) {
-        psp.show();
+    var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
+    if (qssWrapper) {
+        qssWrapper.qss.show();
     }
 });
 

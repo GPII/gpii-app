@@ -179,13 +179,13 @@
         "schema": {
             "type": "psp",
             "title": {
-                "keyedIn": "Settings Panel",
-                "keyedOut": "Key In"
+                "keyedIn": "My Settings Panel",
+                "keyedOut": "Sign In"
             }
         },
         "tooltip": {
-            "keyedIn": "<div><strong>Open the Morphic Panel so you can quickly see and adjust a variety of settings.</strong></div>",
-            "keyedOut": "<div><strong>Open the Morphic Panel.</strong></div><div>Where you can use your Morphic account to adjust your personal settings on this computer.</div>"
+            "keyedIn": "<div><strong>Open the Mophic Panel</strong></div><div>Where you can use your Morphic account to adjust your personal settings on this computer.</div>",
+            "keyedOut": "<div><strong>Open the Mophic Panel</strong></div><div>Where you can sign in to apply your personal settings</div>"
         }
     }, {
         "path": "close",
@@ -194,6 +194,6 @@
             "title": "Close",
             "image": "close.svg"
         },
-        "tooltip": "<div><strong>Close the Morphic Panel.</strong></div><div>You can re-open it from the system tray or from the Morphic desktop icon.</div>"
+        "tooltip": "<div><strong>Close the Morphic Panel</strong></div><div>You can reopen it using the Morphic \"Gear Cloud\" Icon</div>"
     }
 ]
