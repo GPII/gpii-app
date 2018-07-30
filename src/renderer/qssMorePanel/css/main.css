@@ -1,0 +1,15 @@
+body {
+    user-select: none;
+}
+
+.fl-dialog .fl-dialog-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.fl-dialog .fl-dialog-content .fl-subtitle + .fl-subtitle {
+    margin-top: 20px;
+}

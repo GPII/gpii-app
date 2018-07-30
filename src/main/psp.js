@@ -18,12 +18,13 @@
 var fluid    = require("infusion");
 var electron = require("electron");
 
-var BrowserWindow     = electron.BrowserWindow,
-    ipcMain           = electron.ipcMain,
+var ipcMain           = electron.ipcMain,
     systemPreferences = electron.systemPreferences;
 var gpii              = fluid.registerNamespace("gpii");
 
+require("./resizable.js");
 require("./utils.js");
+require("./blurrable.js");
 
 
 /**
@@ -36,12 +37,15 @@ fluid.defaults("gpii.app.pspInApp", {
     model: {
         keyedInUserToken: "{app}.model.keyedInUserToken"
     },
+
     modelListeners: {
-        isShown: {
-            funcName: "gpii.app.hideRestartDialogIfNeeded",
-            args: ["{dialogManager}", "{change}.value"]
+        "{qssWrapper}.qss.model.isShown": {
+            funcName: "gpii.app.pspInApp.applyOffset",
+            args: ["{that}", "{qssWrapper}.qss.options.config.attrs.height", "{change}.value"],
+            excludeSource: "init"
         }
     },
+
     listeners: {
         "onActivePreferenceSetAltered.notifyChannel": {
             listener: "{gpiiConnector}.updateActivePrefSet",
@@ -56,7 +60,11 @@ fluid.defaults("gpii.app.pspInApp", {
             ]
         },
 
-        "{gpiiConnector}.events.onSettingUpdated": {
+        // link setting update events
+        "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated.fire",
+        "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated.fire",
+
+        onSettingUpdated: {
             listener: "{that}.notifyPSPWindow",
             args: [
                 "onSettingUpdated",
@@ -64,59 +72,31 @@ fluid.defaults("gpii.app.pspInApp", {
             ]
         },
 
-        "{settingsBroker}.events.onSettingApplied": [{
-            listener: "{that}.notifyPSPWindow",
-            args: [
-                "onSettingUpdated",
-                "{arguments}.0" // message
-            ]
-        }],
 
         /*
          * Restart Warning related listeners
          */
-
-        onClosed: {
-            funcName: "gpii.app.showRestartDialogIfNeeded",
-            args: ["{dialogManager}", "{settingsBroker}.model.pendingChanges"]
-        },
 
         onSettingAltered: {
             listener: "{settingsBroker}.enqueue"
         },
 
         onRestartNow: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
-            func: "{that}.hide"
-        }, {
             listener: "{settingsBroker}.applyPendingChanges"
+        }, {
+            func: "{that}.events.onClosed.fire"
         }],
 
-        onUndoChanges: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
+        onUndoChanges: {
             listener: "{settingsBroker}.undoPendingChanges"
-        }],
+        },
 
-        onRestartLater: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
-            func: "{that}.hide"
-        }],
-
-        onActivePreferenceSetAltered: [{
-            func: "{dialogManager}.hide",
-            args: ["restartDialog"]
-        }, {
-            listener: "{settingsBroker}.clearPendingChanges"
-        }],
+        onActivePreferenceSetAltered: {
+            listener: "{settingsBroker}.reset"
+        },
 
         "{settingsBroker}.events.onRestartRequired": {
-            funcName: "gpii.app.togglePspRestartWarning",
+            funcName: "gpii.app.pspInApp.togglePspRestartWarning",
             args: [
                 "{that}",
                 "{arguments}.0" // pendingChanges
@@ -127,36 +107,112 @@ fluid.defaults("gpii.app.pspInApp", {
 
 
 /**
+ * Apply offset for the PSP window. Currently only the QSS requires
+ * offsetting the PSP.
+ *
+ * @param {Component} psp - The `gpii.app.psp` instance
+ * @param {Number} qssHeight - The height of the QSS
+ * @param {Boolean} isQssShown - Whether the QSS is shown
+ */
+gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
+    // TODO refactor
+    if (isQssShown) {
+        psp.model.offset.y = qssHeight;
+    } else {
+        // reset the heightOffset
+        psp.model.offset.y = 0;
+    }
+
+    // in case it was shown, it will be also repositioned
+    if (psp.model.isShown) {
+        psp.setBounds(psp.width, psp.height, null, psp.model.offset.y);
+    } else {
+        psp.setRestrictedSize(psp.width, psp.height);
+    }
+};
+
+/**
+ * Either hides or shows the warning in the PSP.
+ *
+ * @param {Component} psp - The `gpii.app.psp` component
+ * @param {Object[]} pendingChanges - A list of the current state of pending changes
+ */
+gpii.app.pspInApp.togglePspRestartWarning = function (psp, pendingChanges) {
+    if (pendingChanges.length === 0) {
+        psp.hideRestartWarning();
+    } else {
+        psp.showRestartWarning(pendingChanges);
+    }
+};
+
+
+/**
  * Handles logic for the PSP window.
  * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.psp", {
-    gradeNames: "fluid.modelComponent",
+    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
     model:  {
         keyedInUserToken: null,
-        isShown: false
+        theme: null,
+        preferences: {}
+    },
+
+    modelRelay: {
+        hasSettings: {
+            target: "hasSettings",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.psp.getHasSettings",
+                args: ["{that}.model.preferences"]
+            }
+        }
     },
 
     /*
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
      */
-    attrs: {
-        width: 450,
-        height: 600,
-        show: true,
-        frame: false,
-        fullscreenable: false,
-        resizable: false,
-        alwaysOnTop: true,
-        skipTaskbar: true,
-        backgroundColor: "transparent"
+    config: {
+        restrictions: {
+            minHeight: 600
+        },
+        attrs: {
+            width: 450,
+            height: 600
+        },
+
+        fileSuffixPath: "psp/index.html",
+
+        params: {
+            theme: "{that}.model.theme",
+            sounds: {
+                keyedIn: {
+                    expander: {
+                        funcName: "{assetsManager}.resolveAssetPath",
+                        args: ["{that}.options.sounds.keyedIn"]
+                    }
+                },
+                activeSetChanged: {
+                    expander: {
+                        funcName: "{assetsManager}.resolveAssetPath",
+                        args: ["{that}.options.sounds.activeSetChanged"]
+                    }
+                }
+            }
+        }
     },
 
-    members: {
-        pspWindow: "@expand:gpii.app.psp.makePSPWindow({that}.options.attrs)"
+    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.psp"],
+
+    sounds: {
+        keyedIn: "keyedIn.mp3",
+        activeSetChanged: "activeSetChanged.mp3"
     },
+
     events: {
+        onSettingUpdated: null,
+
         onSettingAltered: null,
         onActivePreferenceSetAltered: null,
 
@@ -164,10 +220,8 @@ fluid.defaults("gpii.app.psp", {
         onUndoChanges: null,
 
         onClosed: null,
-        onRestartLater: null,
 
-        onDisplayMetricsChanged: null,
-        onPSPWindowFocusLost: null
+        onContentHeightChanged: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -178,41 +232,27 @@ fluid.defaults("gpii.app.psp", {
             listener: "gpii.app.psp.registerAccentColorListener",
             args: ["{that}"]
         },
-        "onCreate.initPSPWindowListeners": {
-            listener: "gpii.app.psp.initPSPWindowListeners",
-            args: ["{that}"]
+        "onCreate.initBlurrable": {
+            func: "{that}.initBlurrable",
+            args: ["{that}.dialog"]
         },
 
         "onDestroy.cleanupElectron": {
-            "this": "{that}.pspWindow",
+            "this": "{that}.dialog",
             method: "destroy"
         },
 
         "onClosed.closePsp": {
-            func: "{psp}.hide"
+            funcName: "gpii.app.psp.closePSP",
+            args: ["{psp}", "{settingsBroker}"]
+        },
+        "onClosed.giveToQss": {
+            func: "{qssWrapper}.qss.focus"
         },
 
-        "onRestartLater.closePsp": {
-            func: "{psp}.hide"
-        },
-
-        "onRestartNow.closePsp": {
-            func: "{psp}.hide"
-        },
-
-        "onDisplayMetricsChanged": {
-            funcName: "gpii.app.psp.handleDisplayMetricsChange",
-            args: [
-                "{that}",
-                "{arguments}.0", // event
-                "{arguments}.1", // display
-                "{arguments}.2"  // changedMetrics
-            ]
-        },
-
-        "onPSPWindowFocusLost": {
-            funcName: "gpii.app.psp.handlePSPWindowFocusLost",
-            args: "{that}"
+        "{gpiiConnector}.events.onPreferencesUpdated": {
+            funcName: "gpii.app.psp.onPreferencesUpdated",
+            args: ["{that}", "{that}.model.hasSettings"]
         }
     },
 
@@ -220,38 +260,25 @@ fluid.defaults("gpii.app.psp", {
         "{app}.model.locale": {
             funcName: "gpii.app.notifyWindow",
             args: [
-                "{that}.pspWindow",
+                "{that}.dialog",
                 "onLocaleChanged",
                 "{app}.model.locale"
             ]
+        },
+        "{app}.model.theme": {
+            func: "{that}.onThemeChanged",
+            excludeSource: "init"
         }
     },
 
     invokers: {
-        show: {
-            funcName: "gpii.app.psp.show",
-            args: ["{that}"]
-        },
-        hide: {
-            funcName: "gpii.app.psp.hide",
-            args: ["{that}"]
-        },
+        // TODO use channel
         notifyPSPWindow: {
             funcName: "gpii.app.notifyWindow",
             args: [
-                "{that}.pspWindow",
+                "{that}.dialog",
                 "{arguments}.0", // messageChannel
                 "{arguments}.1"  // message
-            ]
-        },
-        resize: {
-            funcName: "gpii.app.psp.resize",
-            args: [
-                "{that}",
-                "{that}.options.attrs.width",
-                "{arguments}.0", // contentHeight
-                "{that}.options.attrs.height",
-                "{arguments}.1"  // forceResize
             ]
         },
         showRestartWarning: {
@@ -264,93 +291,88 @@ fluid.defaults("gpii.app.psp", {
         hideRestartWarning: {
             func: "{psp}.notifyPSPWindow",
             args: ["onRestartRequired", []]
+        },
+        show: {
+            funcName: "gpii.app.psp.show",
+            args: [
+                "{that}",
+                "{arguments}.0" // forceShow
+            ]
+        },
+        onThemeChanged: {
+            funcName: "gpii.app.notifyWindow",
+            args: [
+                "{that}.dialog",
+                "onThemeChanged",
+                "{that}.model.theme"
+            ]
+        },
+        handleBlur: {
+            funcName: "gpii.app.psp.handleBlur",
+            args: [
+                "{that}",
+                "{settingsBroker}",
+                "{arguments}.0" // ignoreClosePreference
+            ]
         }
     }
 });
 
 /**
- * Shows the PSP window in the lower part of the primary display and focuses it. Actually, the PSP window is always
- * shown but it may be positioned off the screen.  This is a workaround for the flickering issue observed when the
- * content displayed in the PSP window changes. (Electron does not rerender web pages when the `BrowserWindow` is
- * hidden).
- *
- * @param {Component} psp - The `gpii.app.psp` instance.
- * @param {Object} pspWindow - An Electron `BrowserWindow`.
+ * Computes whether at least one setting group in the specified preferences has at least
+ * 1 top level setting.
+ * @param {Object} preferences - The current preferences object for the PSP (containing
+ * the available preference sets, the currently active one and the setting groups)
+ * @return {Boolean} `true` if at least one setting group has at least one setting and
+ * `false` otherwise.
  */
-
-/**
- * Moves the PSP to the lower right part of the screen. This function in conjunction with `gpii.app.psp.moveOffScreen`
- * help avoid the flickering issue when the content of the PSP window changes.
- *
- * @param {Object} pspWindow - An Electron `BrowserWindow`.
- */
-gpii.app.psp.moveToScreen = function (pspWindow) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-        windowSize = pspWindow.getSize(),
-        windowX = screenSize.width - windowSize[0],
-        windowY = screenSize.height - windowSize[1];
-    pspWindow.setPosition(windowX, windowY);
+gpii.app.psp.getHasSettings = function (preferences) {
+    // Whether at least one setting group has at least 1 top level setting.
+    var settingGroups = fluid.get(preferences, "settingGroups");
+    return !!fluid.find_if(settingGroups, function (settingGroup) {
+        return settingGroup.settings.length > 0;
+    });
 };
 
 /**
- * Shows the PSP window by moving it to the lower right part of the screen and changes
- * the `isShown` model property accordingly.
- * @param {Component} psp - The `gpii.app.psp` instance.
+ * Shows the PSP in the following cases:
+ * 1. If the `forceShow` argument is true (regardless of whether there is a keyed in user
+ * or not).
+ * 2. If there is no keyed in user.
+ * 3. If there is a keyed in user who has at least one setting specified.
+ * @param {Component} that - The `gpii.app.psp` instance.
+ * @param {Boolean} forceShow - Whether to show the PSP unconditionally.
  */
-gpii.app.psp.show = function (psp) {
-    gpii.app.psp.moveToScreen(psp.pspWindow);
-    psp.pspWindow.focus();
-    psp.applier.change("isShown", true);
-};
-
-/**
- * Handle electron's display-metrics-changed event, by resizing the PSP when necessary.
- * @param {Component} psp - The `gpii.app.psp` instance.
- * @param {event} event - An Electron `event`.
- * @param {Object} display - The Electron `Display` object.
- * @param {Array} changedMetrics - An array of strings that describe the changes. Possible
- * changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
- */
-gpii.app.psp.handleDisplayMetricsChange = function (psp, event, display, changedMetrics) {
-    // In older versions of Electron (e.g. 1.4.1) whenever the DPI was changed, one
-    // `display-metrics-changed` event was fired. In newer versions (e.g. 1.8.1) the
-    // `display-metrics-changed` event is fired multiple times. The change of the DPI
-    // appears to be applied at different times on different machines. On some as soon
-    // as the first `display-metrics-changed` event is fired, the DPI changes are
-    // applied. On others, this is not the case until the event is fired again. That is
-    // why the resizing should happen only the second (or third) time the
-    // `display-metrics-changed` event is fired in which case the changedMetrics argument
-    // will not include the `scaleFactor` string. For more information please take a look
-    // at https://issues.gpii.net/browse/GPII-2890.
-    if (!changedMetrics.includes("scaleFactor")) {
-        // Use the initial size of the PSP when the DPI is changed. The PSP will resize
-        // one more time when the heightChangeListener kicks in.
-        psp.resize(psp.options.attrs.height);
+gpii.app.psp.show = function (that, forceShow) {
+    if (forceShow || !that.model.keyedInUserToken || that.model.hasSettings) {
+        that.applier.change("isShown", true);
     }
 };
 
-/*
- * Handle PSPWindow's blur event, which is fired when the window loses focus
+/**
+ * Invoked whenever the `preferences` object in the PSP's model changes. Responsible for
+ * hiding the PSP if there are no settings for the currently keyed in user.
+ * @param {Component} that - The `gpii.app.psp` instance.
  */
-gpii.app.psp.handlePSPWindowFocusLost = function (psp) {
-    if (psp.model.isShown) {
+gpii.app.psp.onPreferencesUpdated = function (that) {
+    if (that.model.keyedInUserToken && !that.model.hasSettings) {
+        that.hide();
+    }
+};
+
+/**
+ * Handle PSPWindow's blur event which is fired when the window loses focus. The PSP
+ * will be closed only if this is the user's preference and there is no pending change
+ * for a setting whose liveness is "manualRestart".
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
+ */
+gpii.app.psp.handleBlur = function (psp, settingsBroker, ignoreClosePreference) {
+    var isShown = psp.model.isShown,
+        closePSPOnBlur = psp.model.preferences.closePSPOnBlur || ignoreClosePreference;
+    if (isShown && closePSPOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
         psp.events.onClosed.fire();
     }
-};
-
-/**
- * A function which should be called to init various listeners related to
- * the PSP window.
- * @param {Component} psp - The `gpii.app.psp` instance.
- */
-gpii.app.psp.initPSPWindowListeners = function (psp) {
-    var pspWindow = psp.pspWindow;
-
-    // https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-blur
-    pspWindow.on("blur", psp.events.onPSPWindowFocusLost.fire);
-
-    // https://github.com/electron/electron/blob/master/docs/api/screen.md#event-display-metrics-changed
-    electron.screen.on("display-metrics-changed", psp.events.onDisplayMetricsChanged.fire);
 };
 
 /**
@@ -378,94 +400,51 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     });
 
     ipcMain.on("onContentHeightChanged", function (event, contentHeight) {
-        psp.resize(contentHeight);
+        psp.events.onContentHeightChanged.fire(contentHeight);
     });
 
     /*
      * "Restart Required" functionality events
      */
-
-    ipcMain.on("onRestartNow", function () {
-        psp.events.onRestartNow.fire();
+    ipcMain.on("onRestartNow", function (event, pendingChanges) {
+        psp.events.onRestartNow.fire({
+            pendingChanges: pendingChanges
+        });
     });
 
-    ipcMain.on("onRestartLater", function () {
-        psp.events.onRestartLater.fire();
+    ipcMain.on("onUndoChanges", function (event, pendingChanges) {
+        psp.events.onUndoChanges.fire({
+            pendingChanges: pendingChanges
+        });
     });
 
-    ipcMain.on("onUndoChanges", function () {
-        psp.events.onUndoChanges.fire();
+    ipcMain.on("onSignInRequested", function (event, email, password) {
+        // XXX currently sign in functionality is missing
+        fluid.fail("Sign in is not possible with email - ", email,
+            " and password: ", password);
     });
 };
 
-
 /**
- * Moves the PSP to a non-visible part of the screen. This function in conjunction
- * with `gpii.app.psp.moveToScreen` help avoid the flickering issue when the content
- * of the PSP window changes.
- * @param {Object} pspWindow - An Electron `BrowserWindow`.
- */
-gpii.app.psp.moveOffScreen = function (pspWindow) {
-    // Move the PSP so far away that even if there is an additional screen attached,
-    // it will not be visible. It appears that the min value for the `BrowserWindow`
-    // position can be -Math.pow(2, 31). Any smaller values lead to an exception.
-    var coordinate = -Math.pow(2, 20);
-    pspWindow.setPosition(coordinate, coordinate);
-};
-
-/**
- * Hides the PSP window by moving it off the screen and changes the `isShown` model
- * property accordingly.
+ * Invoked whenever the user presses the close button in the upper right corner of
+ * the PSP `BrowserWindow`, clicks outside of it or confirms the application of
+ * given settings. The function takes care of hiding the PSP, applying pending
+ * changes which require application restarts and undoing setting changes that
+ * necessitate the OS to be restarted.
  * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param  {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
  */
-gpii.app.psp.hide = function (psp) {
-    gpii.app.psp.moveOffScreen(psp.pspWindow);
-    psp.applier.change("isShown", false);
+gpii.app.psp.closePSP = function (psp, settingsBroker) {
+    psp.hide();
+
+    settingsBroker.applyPendingChanges({
+        liveness: "manualRestart"
+    });
+    settingsBroker.undoPendingChanges({
+        liveness: "OSRestart"
+    });
 };
 
-/**
- * Resizes the PSP window and positions it appropriately based on the new height
- * of its content. Makes sure that the window is no higher than the available
- * height of the work area in the primary display.
- * @param {Object} psp - A `gpii.app.psp` instance.
- * @param {Number} width - The desired width of the BrowserWindow.
- * @param {Number} contentHeight - The new height of the BrowserWindow's content.
- * @param {Number} minHeight - The minimum height which the BrowserWindow must have.
- */
-gpii.app.psp.resize = function (psp, width, contentHeight, minHeight) {
-    var pspWindow = psp.pspWindow,
-        wasShown = psp.model.isShown,
-        height = Math.max(contentHeight, minHeight),
-        bounds = gpii.app.getDesiredWindowBounds(width, height);
-
-    if (wasShown) {
-        // The coordinates and the dimensions of the PSP must be set with a single
-        // call to setBounds instead of by invoking setSize and setPosition in a
-        // row. Due to https://github.com/electron/electron/issues/10862.
-        pspWindow.setBounds(bounds);
-    } else {
-        // Setting only the size here because setting the bounds will actually
-        // move the PSP `BrowserWindow` to the screen (i.e. make it visible).
-        pspWindow.setSize(bounds.width, bounds.height);
-    }
-};
-
-/**
- * Creates an Electron `BrowserWindow` that is to be used as the PSP window
- *
- * @param {Object} windowOptions - Raw options to be passed to the `BrowserWindow`
- * @return {Object} The created Electron `BrowserWindow`
- */
-gpii.app.psp.makePSPWindow = function (windowOptions) {
-    var pspWindow = new BrowserWindow(windowOptions);
-
-    var url = fluid.stringTemplate("file://%gpii-app/src/renderer/psp/index.html", fluid.module.terms());
-    pspWindow.loadURL(url);
-
-    gpii.app.psp.moveOffScreen(pspWindow);
-
-    return pspWindow;
-};
 
 /**
  * This function takes care of notifying the PSP window whenever the
@@ -482,7 +461,7 @@ gpii.app.psp.registerAccentColorListener = function (psp) {
         // event has been fired. That is why the PSP window should be notified every
         // time it is focused (only the first time is insufficient because showing
         // the window (even off screen) automatically focuses it).
-        psp.pspWindow.on("focus", function () {
+        psp.dialog.on("focus", function () {
             psp.notifyPSPWindow("onAccentColorChanged", systemPreferences.getAccentColor());
         });
 

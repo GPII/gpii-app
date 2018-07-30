@@ -18,17 +18,22 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
+require("./assetsManager.js");
+require("./shortcutsManager.js");
 require("./ws.js");
 require("./factsManager.js");
 require("./dialogManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
-require("./restartDialog.js");
+require("./quickSetStrip/qss.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
+require("./utils.js");
 require("../common/messageBundles.js");
+require("../common/utils.js");
+require("../common/channelUtils.js");
 
 /**
  * Promise that resolves when the electron application is ready.
@@ -46,7 +51,6 @@ require("electron").app.on("ready", gpii.app.electronAppListener);
 // Override default behaviour - don't exit process once all windows are closed
 require("electron").app.on("window-all-closed", fluid.identity);
 
-
 /**
  * A component to manage the app. When  the PSP application is fully functional,
  * the `onPSPReady` event will be fired.
@@ -58,8 +62,11 @@ fluid.defaults("gpii.app", {
         snapsetName: null,
         preferences: {
             sets: [],
-            activeSet: null
-        }
+            activeSet: null,
+            settingGroups: [],
+            closePSPOnBlur: null
+        },
+        theme: "{that}.options.defaultTheme"
     },
     // prerequisites
     members: {
@@ -78,6 +85,9 @@ fluid.defaults("gpii.app", {
         },
         installID: {
             type: "gpii.installID"
+        },
+        assetsManager: {
+            type: "gpii.app.assetsManager"
         },
         factsManager: {
             type: "gpii.app.factsManager"
@@ -137,20 +147,120 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        qssWrapper: {
+            type: "gpii.app.qssWrapper",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                },
+                listeners: {
+                    "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
+                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
+                    "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated"
+
+                },
+                modelListeners: {
+                    "settings.*": [{
+                        // A funny way to decorate the new value with the old value
+                        funcName: "fluid.extend",
+                        args: [
+                            true,
+                            "{change}.value",
+                            { oldValue: "{change}.oldValue.value" }
+                        ]
+                    }, {
+                        func: "{settingsBroker}.applySetting",
+                        args: ["{change}.value"],
+                        includeSource: ["qss", "qssWidget", "gpii.app.undoStack.undo"]
+                    }]
+                }
+            }
+        },
         psp: {
             type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    preferences: "{app}.model.preferences",
+                    theme: "{app}.model.theme"
+                },
+                modelListeners: {
+                    "{qssWrapper}.qss.model.isShown": {
+                        funcName: "gpii.app.pspInApp.onQssToggled",
+                        args: ["{that}", "{change}.value"]
+                    }
+                },
+                listeners: {
+                    "{qssWrapper}.events.onQssPspOpen": {
+                        func: "{that}.show",
+                        args: [true]
+                    },
+                    "{qssWrapper}.events.onQssPspClose": {
+                        func: "{that}.handleBlur",
+                        args: [true]
+                    }
+                }
+            }
+        },
+        shortcutsManager: {
+            type: "gpii.app.shortcutsManager",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                events: {
+                    onPspOpenShortcut: null,
+                    onQssUndoShortcut: null
+                },
+                listeners: {
+                    "onCreate.registerDefaultGlobalShortcut": {
+                        func: "{that}.registerGlobalShortcut",
+                        args: [
+                            "Shift+CmdOrCtrl+Alt+Super+M",
+                            "onPspOpenShortcut"
+                        ]
+                    },
+                    "onCreate.registerDefaultLocalShortcut": {
+                        func: "{that}.registerLocalShortcut",
+                        args: [
+                            "CmdOrCtrl+Z",
+                            "onQssUndoShortcut",
+                            ["gpii.app.qss", "gpii.app.qssWidget"]
+                        ]
+                    },
+
+                    "onQssUndoShortcut": {
+                        funcName: "{qssWrapper}.undoStack.undo"
+                    },
+                    "onPspOpenShortcut": [{
+                        func: "{psp}.show"
+                    }, {
+                        func: "{qssWrapper}.qss.show",
+                        args: [
+                            {shortcut: true}
+                        ]
+                    }]
+                }
+            }
         },
         tray: {
             type: "gpii.app.tray",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
-                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken",
-                    pendingChanges: "{settingsBroker}.model.pendingChanges"
+                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken"
                 },
                 events: {
                     onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
+                },
+                listeners: {
+                    onTrayIconClicked: [{
+                        func: "{qssWrapper}.qss.show",
+                        args: [
+                            {shortcut: false}
+                        ]
+                    }, {
+                        func: "{psp}.show"
+                    }]
                 }
             }
         }
@@ -169,7 +279,9 @@ fluid.defaults("gpii.app", {
         onPSPReady: null,
 
         onKeyedIn: null,
-        onKeyedOut: null
+        onKeyedOut: null,
+
+        onBlur: null
     },
     listeners: {
         "onCreate.appReady": {
@@ -190,7 +302,7 @@ fluid.defaults("gpii.app", {
         }],
         "{lifecycleManager}.events.onSessionStop": [{
             listener: "gpii.app.handleSessionStop",
-            args: ["{that}", "{arguments}.1.options.userToken"]
+            args: ["{that}", "{arguments}.1.model.gpiiKey"]
         }, {
             listener: "{that}.events.onKeyedOut.fire",
             namespace: "notifyUserKeyedOut"
@@ -229,10 +341,15 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.exit",
             args: "{that}"
         }
-    }
+    },
+    defaultTheme: "white"
 });
 
-
+gpii.app.pspInApp.onQssToggled = function (psp, isQssShown) {
+    if (!isQssShown) {
+        psp.hide();
+    }
+};
 
 /**
  * A component for handling errors during app runtime. It triggers showing of an "Error Dialog"
@@ -359,43 +476,6 @@ gpii.app.errorHandler.registerErrorListener = function (errorHandler) {
     }, "gpii.app.errorHandler", "last");
 };
 
-
-/**
- * Either hides or shows the warning in the PSP.
- *
- * @param {Component} psp - The `gpii.app.psp` component
- * @param {Object[]} pendingChanges - A list of the current state of pending changes
- */
-gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
-    if (pendingChanges.length === 0) {
-        psp.hideRestartWarning();
-    } else {
-        psp.showRestartWarning(pendingChanges);
-    }
-};
-
-/**
- * Hides the restart dialog if the PSP is being shown.
- * @param {Component} dialogManager - The `gpii.app.dialogManager` instance
- * @param {Boolean} isPspShown - Whether the psp window is being shown
- */
-gpii.app.hideRestartDialogIfNeeded = function (dialogManager, isPspShown) {
-    if (isPspShown) {
-        dialogManager.hide("restartDialog");
-    }
-};
-
-/**
- * Shows the restart dialog if there is at least one pending change.
- * @param {Component} dialogManager - The `gpii.app.dialogManager` instance
- * @param {Object[]} pendingChanges - A list containing the current pending changes
- */
-gpii.app.showRestartDialogIfNeeded = function (dialogManager, pendingChanges) {
-    if (pendingChanges.length > 0) {
-        dialogManager.show("restartDialog", pendingChanges);
-    }
-};
-
 gpii.app.fireAppReady = function (fireFn) {
     gpii.app.appReady.then(fireFn);
 };
@@ -489,3 +569,4 @@ fluid.defaults("gpii.appWrapper", {
         }
     }
 });
+

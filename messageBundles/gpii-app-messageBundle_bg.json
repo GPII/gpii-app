@@ -1,38 +1,53 @@
 {
+    "gpii_app_menu_about": "Относно...",
     "gpii_app_menu_psp": "Отвори ППН",
     "gpii_app_menu_notKeyedIn": "(Не сте влезли)",
     "gpii_app_menu_keyedIn": "Вписан с %snapsetName",
     "gpii_app_menu_keyOut": "Отписване от GPII",
 
-    "gpii_app_tray_pendingChanges": "Има незапазени промени",
-    "gpii_app_tray_defaultTooltip": "(Не сте влезли)",
-
-    "gpii_psp_splash_heading": "Не сте вписан",
-    "gpii_psp_splash_fullAppName": "GPII - Персонален Панел за Настройки",
+    "gpii_app_tray_defaultTooltip": "GPII: В готовност",
+    "gpii_app_tray_prefSetTooltip": "GPII: %prefSet",
 
     "gpii_psp_mainWindow_titlebarAppName": "GPII Настройки",
+
+    "gpii_psp_signIn_signInHeader": "Никой не е вписан",
+
+    "gpii_psp_signIn_titleIntro": "GPII Авто-персонализиране",
+    "gpii_psp_signIn_subtitleIntro": "Автоматично настройва компютъра ви по начина, по който желаете.",
+
+    "gpii_psp_signIn_title": "Използвайте вашия GPII ключ за да се впишете",
+    "gpii_psp_signIn_subtitle": "Или се впишете с вашия акаунт долу",
+
+    "gpii_psp_signIn_emailTextInputLabel": "Имейл",
+    "gpii_psp_signIn_passwordInputLabel": "Парола",
+    "gpii_psp_signIn_signInButton": "Впиши ме",
+    "gpii_psp_signIn_signUpButton": "Създай акаунт",
+    "gpii_psp_signIn_forgotPasswordButton": "Забравена парола?",
 
     "gpii_psp_header_autosaveText": "Автоматично запазване е включено",
     "gpii_psp_header_keyOut":"Отпиши се",
 
+    "gpii_psp_settingsPanel_emptyPrefSetHint": "Когато имате настройки, техните контроли ще се появят тук.",
+
     "gpii_psp_settingPresenter_osRestart": "За да промените тази настройка,\nWindows трябва да се рестартира.",
     "gpii_psp_settingPresenter_osRestartRequired": "Променихте тази настройка, което\nизисква Windows да се рестартира.",
-    "gpii_psp_settingPresenter_appRestart": "%solutionName - за да промените тази настройка,\nприложението трябва да се рестартира.",
-    "gpii_psp_settingPresenter_appRestartRequired": "%solutionName - променихте тази настройка,\nкоето изисква приложението да се рестартира.",
 
-    "gpii_psp_baseRestartWarning_osRestartText": "Windows изисква да бъде рестартиран, за да се приложат настройките.",
-    "gpii_psp_baseRestartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени: %solutions",
-    "gpii_psp_baseRestartWarning_undo": "Отказ\n(Отменете промените)",
-    "gpii_psp_baseRestartWarning_restartLater": "Затваряне и\n рестартиране по-късно",
-    "gpii_psp_baseRestartWarning_restartNow": "Рестартиране сега",
+    "gpii_psp_restartWarning_osName": "Windows",
+    "gpii_psp_restartWarning_osRestartText": "Windows изисква да бъде рестартиран, за да се приложат настройките.",
+    "gpii_psp_restartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени: %solutions",
+    "gpii_psp_restartWarning_undo": "Отказ (Отменете промените)",
+    "gpii_psp_restartWarning_applyNow": "Приложи промените",
+    "gpii_psp_restartWarning_restartNow": "Рестартиране сега",
 
     "gpii_psp_errorDialog_titlebarAppName": "GPII Грешка",
 
-    "gpii_psp_aboutDialog_titlebarAppName": "Относно GPII Auto-personalization",
+    "gpii_psp_aboutDialog_titlebarAppName": "Относно GPII Авто-персонализиране",
+    "gpii_psp_aboutDialog_title": "GPII Авто-персонализиране",
+    "gpii_psp_aboutDialog_update": "Провери за ъпдейти",
+    "gpii_psp_aboutDialog_userListenersText": "Средства за вписване за тази машина: %listeners",
+    "gpii_psp_aboutDialog_version": "версия %version",
 
-    "gpii_restartDialog_restartWarning_restartText": "За да могат част от вашите настройки да бъдат приложени, следните приложения трябва да бъдат презаредени:",
-    "gpii_restartDialog_restartWarning_restartTitle": "Промените изискват рестартиране.",
-    "gpii_restartDialog_restartWarning_restartQuestion": "Какво бихте желали да направите?",
+    "gpii_psp_footer_help": "Помощ",
 
-    "gpii_psp_footer_help": "Помощ"
+    "gpii_qss_toggleButtonPresenter_caption": "[ВКЛ.]"
 }

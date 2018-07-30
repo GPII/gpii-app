@@ -87,15 +87,10 @@ gpii.tests.settingsBroker.testBrokerBeforeKeyIn = function (settingsBroker) {
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
 };
 
-gpii.tests.settingsBroker.testTrayIcon = function (tray, expectedIcon) {
-    jqUnit.assertEquals("Tray has correct icon", tray.model.icon, expectedIcon);
-};
-
 gpii.tests.settingsBroker.testBrokerAfterKeyIn = function (settingsBroker, tray, expectedUserToken) {
     jqUnit.assertEquals("The keyed in user token matches the token of the user",
         expectedUserToken, settingsBroker.model.keyedInUserToken);
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
-    gpii.tests.settingsBroker.testTrayIcon(tray, tray.options.icons.keyedIn);
 };
 
 gpii.tests.settingsBroker.testLiveSettingEnqueue = function (settingsBroker, expectedChange, actualChange) {
@@ -111,10 +106,9 @@ gpii.tests.settingsBroker.testNonLiveSettingEnqueue = function (settingsBroker, 
         jqUnit.assertDeepEq("The correct setting change has been queued",
             expectedChange, settingsBroker.model.pendingChanges[index]);
     });
-    gpii.tests.settingsBroker.testTrayIcon(tray, tray.options.icons.pendingChanges);
 };
 
-gpii.tests.settingsBroker.testapplyPendingChanges = function (expectedChanges, actualChanges) {
+gpii.tests.settingsBroker.testApplyPendingChanges = function (expectedChanges, actualChanges) {
     jqUnit.assertDeepEq("The flushed pending change is correct",
         expectedChanges, actualChanges);
 };
@@ -134,7 +128,7 @@ gpii.tests.settingsBroker.testBrokerAfterKeyOut = function (settingsBroker) {
 
 gpii.tests.settingsBroker.testDefs = {
     name: "Settings broker integration tests",
-    expect: 23,
+    expect: 22,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -154,7 +148,7 @@ gpii.tests.settingsBroker.testDefs = {
     }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [liveSettingChange]
-    }, {
+    }, { // Live setting changes are applied immediately.
         event: "{that}.app.settingsBroker.events.onSettingApplied",
         listener: "gpii.tests.settingsBroker.testLiveSettingEnqueue",
         args: ["{that}.app.settingsBroker", liveSettingChange, "{arguments}.0"]
@@ -164,33 +158,30 @@ gpii.tests.settingsBroker.testDefs = {
     }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [osSettingChange]
-    }, {
+    }, { // "manualRestart" and "OSRestart" changes are stored in a queue...
         func: "gpii.tests.settingsBroker.testNonLiveSettingEnqueue",
         args: ["{that}.app.settingsBroker", "{that}.app.tray", [manualSettingChange, osSettingChange]]
     }, {
         func: "{that}.app.settingsBroker.applyPendingChanges"
-    }, {
+    }, { // ...and are applied sequentially...
         event: "{that}.app.settingsBroker.events.onSettingApplied",
-        listener: "gpii.tests.settingsBroker.testapplyPendingChanges",
+        listener: "gpii.tests.settingsBroker.testApplyPendingChanges",
         args: [manualSettingChange, "{arguments}.0"]
     }, {
         event: "{that}.app.settingsBroker.events.onSettingApplied",
-        listener: "gpii.tests.settingsBroker.testapplyPendingChanges",
+        listener: "gpii.tests.settingsBroker.testApplyPendingChanges",
         args: [osSettingChange, "{arguments}.0"]
-    }, {
+    }, { // ...until there are no more changes to apply.
         changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
         path: "pendingChanges",
         listener: "gpii.tests.settingsBroker.testNoPendingChanges",
         args: ["{that}.app.settingsBroker"]
     }, {
-        func: "gpii.tests.settingsBroker.testTrayIcon",
-        args: ["{that}.app.tray", "{that}.app.tray.options.icons.keyedIn"]
-    }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [manualSettingChange]
     }, {
         func: "{that}.app.settingsBroker.undoPendingChanges"
-    }, {
+    }, { // Settings changes can be undone - `onSettingApplied` is fired with the initial setting value.
         event: "{that}.app.settingsBroker.events.onSettingApplied",
         listener: "gpii.tests.settingsBroker.testUndoPendingChanges",
         args: [manualSettingChange, "{arguments}.0"]
@@ -200,20 +191,35 @@ gpii.tests.settingsBroker.testDefs = {
         listener: "gpii.tests.settingsBroker.testNoPendingChanges",
         args: ["{that}.app.settingsBroker"]
     }, {
-        func: "gpii.tests.settingsBroker.testTrayIcon",
-        args: ["{that}.app.tray", "{that}.app.tray.options.icons.keyedIn"]
-    }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [osSettingChange]
     }, {
+        func: "{that}.app.settingsBroker.enqueue",
+        args: [manualSettingChange]
+    }, { // When the PSP is closed...
+        func: "{that}.app.psp.events.onClosed.fire"
+    }, { // ..."manualRestart" pending changes are applied...
+        event: "{that}.app.settingsBroker.events.onSettingApplied",
+        listener: "gpii.tests.settingsBroker.testApplyPendingChanges",
+        args: [manualSettingChange, "{arguments}.0"]
+    }, { // ...whereas "OSRestart" pending changes are reverted...
+        event: "{that}.app.settingsBroker.events.onSettingApplied",
+        listener: "gpii.tests.settingsBroker.testUndoPendingChanges",
+        args: [osSettingChange, "{arguments}.0"]
+    }, { // ...and again there will be no changes left in the queue.
+        changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
+        path: "pendingChanges",
+        listener: "gpii.tests.settingsBroker.testNoPendingChanges",
+        args: ["{that}.app.settingsBroker"]
+    }, { // If there is a pending change...
+        func: "{that}.app.settingsBroker.enqueue",
+        args: [osSettingChange]
+    }, { // ...and the user keys out...
         func: "{that}.app.keyOut"
-    }, {
+    }, { // ...the pending changes will be discarded.
         changeEvent: "{that}.app.applier.modelChanged",
         path: "keyedInUserToken",
         listener: "gpii.tests.settingsBroker.testBrokerAfterKeyOut",
         args: ["{that}.app.settingsBroker"]
-    }, {
-        func: "gpii.tests.settingsBroker.testTrayIcon",
-        args: ["{that}.app.tray", "{that}.app.tray.options.icons.keyedOut"]
     }]
 };

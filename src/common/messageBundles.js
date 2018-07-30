@@ -148,9 +148,9 @@ fluid.defaults("gpii.app.messageBundles", {
  * because distributeOptions will be considered only at creation time. This means that the
  * distributor should be created before any other components to which it distributes
  * messages.
- * @param messageBundles {Object} An object containing all i18n messages for all supported
+ * @param {Object} messageBundles - An object containing all i18n messages for all supported
  * locales
- * @param defaultLocale {String} A string representing the default locale.
+ * @param {String} defaultLocale - A string representing the default locale.
  * @return {String} The name of the distributor grade.
  */
 gpii.app.messageBundles.getMessageDistributorGrade = function (messageBundles, defaultLocale) {
@@ -167,12 +167,16 @@ gpii.app.messageBundles.getMessageDistributorGrade = function (messageBundles, d
 
 /**
  * Loads synchronously and parses the messageBundles file.
- * @param messageBundlesPath {String} The path to the messageBundles file relative
+ * @param {String} messageBundlesPath - The path to the messageBundles file relative
  * to the project directory.
  * @return {Object} The parsed message bundles for the different locales.
  */
 gpii.app.messageBundles.loadMessageBundles = function (messageBundlesPath) {
-    var resolvedPath = require("path").resolve(messageBundlesPath);
+    if (fluid.require) {
+        return fluid.require("%gpii-app/" + messageBundlesPath);
+    }
+    // Required by renderer process
+    var resolvedPath = require("path").join(__dirname, "../../..", messageBundlesPath);
     return require(resolvedPath);
 };
 
@@ -180,11 +184,11 @@ gpii.app.messageBundles.loadMessageBundles = function (messageBundlesPath) {
  * Updates the currently used messages depending on the provided locale. In case
  * there are no messages available for this locale, the default locale messages
  * will be used.
- * @param that {Component} The `gpii.app.messageBundles` instance.
- * @param messageBundles {Object} A map containing the messages for all available
+ * @param {Component} that - The `gpii.app.messageBundles` instance.
+ * @param {Object} messageBundles - A map containing the messages for all available
  * locales.
- * @param locale {String} The new locale.
- * @param defaultLocale {String} The default locale.
+ * @param {String} locale - The new locale.
+ * @param {String} defaultLocale - The default locale.
  */
 gpii.app.messageBundles.updateMessages = function (that, messageBundles, locale, defaultLocale) {
     var messages = messageBundles[locale];
@@ -202,7 +206,7 @@ gpii.app.messageBundles.updateMessages = function (that, messageBundles, locale,
  * Given a message key from the `messages` model object, this function returns the
  * portion of the key which pertains to the name of the component. For example, for
  * the "gpii_psp_header_autosaveText" key, this function would return "gpii_psp_header".
- * @param messageKey {String} a key from the `messages` object.
+ * @param {String} messageKey - a key from the `messages` object.
  * @return {String} The grade name to which this key is related to (except that it will
  * contain _ insteаd of . as separators).
  */
@@ -216,7 +220,7 @@ gpii.app.messageBundles.getComponentKey = function (messageKey) {
  * portion of the key which is the simple message key referenced within the corresponding
  * component. For example, for the "gpii_psp_header_autosaveText" key, this function would
  * return "autosaveText".
- * @param messageKey {String} a key from the `messages` object.
+ * @param {String} messageKey - a key from the `messages` object.
  * @return {String} The simple message key referenced within the component.
  */
 gpii.app.messageBundles.getSimpleMessageKey = function (messageKey) {
@@ -227,8 +231,8 @@ gpii.app.messageBundles.getSimpleMessageKey = function (messageKey) {
 /**
  * Given a map which contains all messages for a given locale, this function groups the
  * messages by component grades.
- * @param {Object} messages A map with all the messages for a given locale.
- * @return {GroupedMessages}
+ * @param {Object} messages - A map with all the messages for a given locale.
+ * @return {GroupedMessages} An object representing the messages grouped by component.
  */
 gpii.app.messageBundles.groupMessagesByComponent = function (messages) {
     var groupedMessages = {};
@@ -250,7 +254,7 @@ gpii.app.messageBundles.groupMessagesByComponent = function (messages) {
  * listeners for updating the messages of i18n components in the application. The keys of the
  * returned object are the names of the components to which the model listeners need to be
  * distributed.
- * @param currentMessages {Object} A map of all messages for a given locale.
+ * @param {Object} currentMessages - A map of all messages for a given locale.
  * @return {Object} A map of namespaced distributeOptions blocks.
  */
 gpii.app.messageBundles.getMessageDistributions = function (currentMessages) {
@@ -279,8 +283,8 @@ gpii.app.messageBundles.getMessageDistributions = function (currentMessages) {
  * names for the component and adding their messages to the resulting set of messages. In
  * case there are messages with the same key for different grade names, the rightmost grade
  * name's messages will have priority.
- * @param that {Component} The component whose messages need to be compiled and set.
- * @param messageBundles {Object} A hash containing the messages for the various grade names.
+ * @param {Component} that - The component whose messages need to be compiled and set.
+ * @param {Object} messageBundles - A hash containing the messages for the various grade names.
  */
 gpii.app.messageBundles.setComponentMessages = function (that, messageBundles) {
     var gradeNames = that.options.gradeNames;

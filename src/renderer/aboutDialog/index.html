@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>About GPII Auto-personalization</title>
+        <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
+        <link rel="stylesheet" href="../psp/css/button.css">
+        <link rel="stylesheet" href="../common/css/dialog.css">
+        <link rel="stylesheet" href="../common/css/titlebar.css">
+
+        <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+
+        <script type="text/javascript" src="../psp/js/widgets.js"></script>
+        <script type="text/javascript" src="../common/js/titlebar.js"></script>
+        <script type="text/javascript" src="../common/js/elementInteractionListeners.js"></script>
+        <script type="text/javascript" src="js/aboutDialog.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+
+        <script type="text/javascript" src="../common/js/utils.js"></script>
+        <script type="text/javascript" src="../common/js/channelUtils.js"></script>
+
+        <script type="text/javascript" src="../../common/messageBundles.js"></script>
+        <script type="text/javascript" src="../common/js/messageBundles.js"></script>
+    </head>
+    <body>
+        <div class="fl-dialog fl-dialog-fullScreen">
+            <div class="fl-dialog-contentWrapper">
+                <div class="flc-titlebar fl-titlebar">
+                    <span class="flc-title fl-appName" tabindex="0"></span>
+                    <div class="flc-closeBtn fl-closeBtn btn btn-regular" role="button" tabindex="0">&#x2715;</div>
+                </div>
+
+                <div class="fl-dialog-content fl-scrollable">
+                    <img class="fl-dialog-contentIcon" src="../../icons/gpii-color.ico">
+
+                    <div class="fl-dialog-contentText" tabindex="0">
+                        <div class="flc-contentTitle fl-title"></div>
+                        <div class="fl-subtitle">
+                            <span class="flc-contentVersion"></span>
+                            (<a class="flc-contentCheckUpdates" href="www.gpii.net"></a>)
+                        </div>
+                        <div class="flc-contentLinks">
+                            <ul>
+                                <li><a target="_blank" href="https://www.gpii.net">Go to GPII Auto-personalization home</a></li>
+                                <li><a target="_blank" href="https://www.gpii.net">Submit suggestions</a></li>
+                            </ul>
+                        </div>
+                        <div class="flc-contentUserListeners fl-details"></div>
+                    </div>
+                </div>
+                <div class="fl-dialog-footer"></div>
+            </div>
+        </div>
+    </body>
+</html>
