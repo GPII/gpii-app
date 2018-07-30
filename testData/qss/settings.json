@@ -184,7 +184,6 @@
             }
         },
         "tooltip": {
- 
             "keyedIn": "<div><strong>Open the Mophic Panel</strong></div><div>Where you can quickly adjust often-changed settings of yours.</div>",
             "keyedOut": "<div><strong>Open the Mophic Panel</strong></div><div>Where you can sign in to apply your personal settings.</div>"
         }
@@ -195,6 +194,6 @@
             "title": "Close",
             "image": "close.svg"
         },
-        "tooltip": "<div><strong>Close the Morphic Panel</strong></div><div>You can reopen it using the Morphic \"Gear Cloud\" Icon</div>"
+        "tooltip": "<div><strong>Close the Morphic Panel</strong></div><div>You can reopen it using the Morphic \"Gear Cloud\" Icon <img height=20 src='../../icons/gpii-icon-balloon.png'></img></div>"
     }
 ]
