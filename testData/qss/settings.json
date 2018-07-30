@@ -41,7 +41,7 @@
         "value": 11,
         "tooltip": "<div><strong>Change text size.</strong></div><div>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</div>",
         "widget": {
-            "footerTip": "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
+            "footerTip": "You can also use the CTRL key plus the Scroll (wheel or gesture) at any time."
         },
         "learnMoreLink": "https://www.gpii.net"
     }, {
