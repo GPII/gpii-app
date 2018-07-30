@@ -31,9 +31,13 @@ require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
 require("./utils.js");
+require("./userErrorsHandler.js");
 require("../common/messageBundles.js");
 require("../common/utils.js");
 require("../common/channelUtils.js");
+
+// enhance the normal require to work with .json5 files
+require("json5/lib/register");
 
 /**
  * Promise that resolves when the electron application is ready.
@@ -73,12 +77,17 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
-        errorHandler: {
-            type: "gpii.app.errorHandler",
+        userErrorHandler: {
+            type: "gpii.app.userErrorsHandler",
             options: {
                 listeners: {
-                    "onFatalError.exit": {
-                        func: "{app}.exit"
+                    "{flowManager}.userErrors.events.userError": {
+                        func: "{that}.handleUserError",
+                        args: [
+                            "{arguments}.1", // errorCode
+                            "{arguments}.0", // isError
+                            "{arguments}.2"  // originalError
+                        ]
                     }
                 }
             }
@@ -327,7 +336,7 @@ fluid.defaults("gpii.app", {
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
-            args: ["{arguments}.0"] // token
+            args: ["{flowManager}", "{arguments}.0"] // token
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
@@ -347,131 +356,6 @@ gpii.app.pspInApp.onQssToggled = function (psp, isQssShown) {
     }
 };
 
-/**
- * A component for handling errors during app runtime. It triggers showing of an "Error Dialog"
- * with all the details for the occurred error.
- *
- * This error handling system is more or less in a temporary state until GPII-1313 (a mechanism for notifying the
- * PSP for errors) is finished. Currently we are using error descriptions that are hard-coded in the PSP and
- * a listener for any fluid `UncaughtException`.
- */
-fluid.defaults("gpii.app.errorHandler", {
-    gradeNames: ["fluid.component"],
-
-    errorsDescriptionMap: {
-        "EADDRINUSE": {
-            title:   "Morphic can't start",
-            subhead: "There is another application listening on port the same port",
-            details: "Stop the other running application and try again. If the problem is still present, contact Morphic Technical Support.",
-            fatal: true
-        },
-        "EKEYINFAIL": {
-            title:   "Cannot Key In",
-            subhead: "There might be a problem with the user you are trying to use",
-            details: "You can try keying in again. If the problem is still present, contact Morphic Technical Support.",
-            btnLabel1: "OK",
-            fatal: false
-        },
-        "ENOCONNECTION": {
-            title:   "No Internet connection",
-            subhead: "There seem to be a problem your Internet connectivity",
-            details: "Have you tried turning it off and on again? If the problem is still present, contact Morphic Technical Support.",
-            btnLabel1: "OK",
-            btnLabel2: "Cancel",
-            fatal: false
-        }
-    },
-
-    events: {
-        onFatalError: null
-    },
-
-    listeners: {
-        "onCreate.registerErrorListener": {
-            funcName: "gpii.app.errorHandler.registerErrorListener",
-            args: ["{that}"]
-        },
-        "onDestroy.clearListener": {
-            funcName: "fluid.onUncaughtException.removeListener",
-            args: ["gpii.app.errorHandler"]
-        }
-    },
-
-    // Attach keyIn error listener to the core component
-    distributeOptions: {
-        target: "{flowManager requests stateChangeHandler}.options.listeners.onError",
-        record: "gpii.app.errorHandler.onKeyInError"
-    },
-
-    invokers: {
-        handleUncaughtException: {
-            funcName: "gpii.app.errorHandler.handleUncaughtException",
-            args: [
-                "{that}",
-                "{dialogManager}",
-                "{that}.options.errorsDescriptionMap",
-                "{arguments}.0" // error
-            ]
-        }
-    }
-});
-
-/**
- * A function which is called whenever an error occurs while keying in. Note that a real error would have its `isError`
- * property set to true.
- *
- * @param {Object} error - The error which has occurred.
- */
-gpii.app.errorHandler.onKeyInError = function (error) {
-    if (error.isError) {
-        fluid.onUncaughtException.fire({
-            code: "EKEYINFAIL"
-        });
-    }
-};
-
-/**
- * Handles the process of displaying errors through the usage of the "error dialog".
- * @param {Component} that - An instance of gpii.app.
- * @param {Component} dialogManager - An instance of `gpii.app.dialogManager`.
- * @param {Object} errorsDescription - A map with more detailed description for the errors.
- * @param {Object} error - The error which has occurred.
- */
-gpii.app.errorHandler.handleUncaughtException = function (that, dialogManager, errorsDescription, error) {
-    var errCode = error && error.code,
-        errDetails = errorsDescription[errCode],
-        errorOptions = fluid.extend(true, {}, errDetails, {
-            errCode: errCode
-        });
-
-    if (!fluid.isValue(errDetails)) {
-        return;
-    }
-
-    dialogManager.hide("waitDialog");
-    dialogManager.show("error", errorOptions);
-
-    if (errDetails.fatal) {
-        dialogManager.error.applier.modelChanged.addListener("isShown", function (isShown) {
-            if (!isShown) {
-                that.onFatalError.fire(errDetails);
-            }
-        });
-    }
-};
-
-/**
- * Register a global listener for all fluid exceptions.
- *
- * @param {Component} errorHandler - The `gpii.app.errorHandler` component
- */
-gpii.app.errorHandler.registerErrorListener = function (errorHandler) {
-    fluid.onUncaughtException.addListener(function (err) {
-        fluid.log("Uncaught Exception", err);
-        errorHandler.handleUncaughtException(err);
-    }, "gpii.app.errorHandler", "last");
-};
-
 gpii.app.fireAppReady = function (fireFn) {
     gpii.app.appReady.then(fireFn);
 };
@@ -481,9 +365,25 @@ gpii.app.fireAppReady = function (fireFn) {
   * Currently uses an url to key in although this should be changed to use Electron IPC.
   * @param {String} token - The token to key in with.
   */
-gpii.app.keyIn = function (token) {
-    request("http://localhost:8081/user/" + token + "/login", function (/* error, response */) {
-        // empty
+gpii.app.keyIn = function (flowManager, token) {
+    request("http://localhost:8081/user/" + token + "/login", function (error, response, body) {
+
+        // Try is needed as the response body has two formats:
+        //  - success message - simple string (like message key of the object)
+        //  - object - "{isError: Boolean, message: string}"
+        try {
+            /// XXX temporary way for triggering key in error
+            if (typeof body === "string" && JSON.parse(body).isError) {
+                flowManager.userErrors.events.userError.fire(
+                    true,
+                    "KeyInFail",
+                    response.body.message
+                );
+            }
+        }
+        // SyntaxError
+        // Should be a success
+        catch (e) { return; }
     });
 };
 
