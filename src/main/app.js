@@ -82,6 +82,13 @@ fluid.defaults("gpii.app", {
             }
         }
     },
+    modelListeners: {
+        isKeyedIn: {
+            funcName: "gpii.app.onIsKeyedInChanged",
+            args: ["{that}", "{change}.value"],
+            excludeSource: "init"
+        }
+    },
     defaultUserToken: "noUser",
     // prerequisites
     members: {
@@ -307,21 +314,15 @@ fluid.defaults("gpii.app", {
             "this": "{that}.events.onGPIIReady",
             method: "fire"
         },
-        "{lifecycleManager}.events.onSessionStart": [{
+        "{lifecycleManager}.events.onSessionStart": {
             listener: "{that}.updateKeyedInUserToken",
             args: ["{arguments}.1"], // new token
             namespace: "onLifeCycleManagerUserKeyedIn"
-        }, {
-            listener: "{that}.events.onKeyedIn.fire",
-            namespace: "notifyUserKeyedIn"
-        }],
-        "{lifecycleManager}.events.onSessionStop": [{
+        },
+        "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.model.gpiiKey"]
-        }, {
-            listener: "{that}.events.onKeyedOut.fire",
-            namespace: "notifyUserKeyedOut"
-        }],
+        },
         "onPSPPrerequisitesReady.notifyPSPReady": {
             this: "{that}.events.onPSPReady",
             method: "fire",
@@ -362,6 +363,14 @@ fluid.defaults("gpii.app", {
 
 gpii.app.getIsKeyedIn = function (keyedInUserToken, defaultUserToken) {
     return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken;
+};
+
+gpii.app.onIsKeyedInChanged = function (that, isKeyedIn) {
+    if (isKeyedIn) {
+        that.events.onKeyedIn.fire();
+    } else {
+        that.events.onKeyedOut.fire();
+    }
 };
 
 gpii.app.pspInApp.onQssToggled = function (psp, isQssShown) {
