@@ -188,11 +188,13 @@
                         }
                     },
                     events: {
-                        onSubtractPressed:   null,
-                        onAddPressed:        null
+                        onSubtractPressed: null,
+                        onEqualsPressed:   null,
+                        onAddPressed:      null
                     },
                     listeners: {
                         onAddPressed:      "{stepper}.activateIncBtn",
+                        onEqualsPressed:   "{stepper}.activateIncBtn",
                         onSubtractPressed: "{stepper}.activateDecBtn"
                     }
                 }
@@ -202,11 +204,11 @@
 
 
     gpii.qssWidget.stepper.handleBoundReached = function (that, errorMessage) {
+        // play error sound
+        gpii.psp.playSound(that.options.sounds.boundReached);
+
         // require notification
         if (that.boundReachedHits >= that.options.specialErrorBoundHitTries) {
-            // play error sound
-            gpii.psp.playSound(that.options.sounds.boundReached);
-
             // request notification pop-up
             that.events.onNotificationRequired.fire(errorMessage);
         }

@@ -76,6 +76,15 @@
 
         target: null,
 
+        // Some keys lack descriptive names so we attach such to them
+        // The full list of key names can be view here: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
+        specialKeyEvents: {
+            " ": "Spacebar",
+            "+": "Add",
+            "-": "Subtract",
+            "=": "Equals"
+        },
+
         listeners: {
             "onCreate.addKeyPressHandler": {
                 funcName: "gpii.app.keyListener.registerListener",
@@ -90,7 +99,7 @@
         invokers: {
             registerKeyPress: {
                 funcName: "gpii.app.keyListener.registerKeyPress",
-                args: ["{that}.events", "{arguments}.0"]
+                args: ["{that}", "{arguments}.0"]
             }
         }
     });
@@ -110,27 +119,17 @@
     /**
      * TODO
      */
-    gpii.app.keyListener.registerKeyPress = function (events, KeyboardEvent) {
+    gpii.app.keyListener.registerKeyPress = function (that, KeyboardEvent) {
         // Make use of a relatively new feature https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
-        var keyName;
-
-        // rename Space key in order to achieve proper generic method for key presses
         // The full list of key names can be view here: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
-        if (KeyboardEvent.key === " ") {
-            keyName = "Spacebar";
-        } else if (KeyboardEvent.key === "+") {
-            keyName = "Add";
-        } else if (KeyboardEvent.key === "-") {
-            keyName = "Subtract";
-        } else { // e.g. ArrowDown, Enter
-            keyName = KeyboardEvent.key;
-        }
+        // To ensure a proper name for an event is given, override some keys' event
+        var keyName = that.options.specialKeyEvents[KeyboardEvent.key] || KeyboardEvent.key;
 
         var eventName = "on" + keyName + "Pressed";
 
         // Check whether such key press is observed
-        if (events[eventName]) {
-            events[eventName].fire(KeyboardEvent);
+        if (that.events[eventName]) {
+            that.events[eventName].fire(KeyboardEvent);
         }
     };
 

@@ -184,8 +184,9 @@
             }
         },
         "tooltip": {
-            "keyedIn": "<div><strong>Open the Mophic Panel</strong></div><div>Where you can use your Morphic account to adjust your personal settings on this computer.</div>",
-            "keyedOut": "<div><strong>Open the Mophic Panel</strong></div><div>Where you can sign in to apply your personal settings</div>"
+ 
+            "keyedIn": "<div><strong>Open the Mophic Panel</strong></div><div>Where you can quickly adjust often-changed settings of yours.</div>",
+            "keyedOut": "<div><strong>Open the Mophic Panel</strong></div><div>Where you can sign in to apply your personal settings.</div>"
         }
     }, {
         "path": "close",
