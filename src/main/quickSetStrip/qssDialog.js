@@ -62,7 +62,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
                     onSettingUpdated: "{qss}.events.onSettingUpdated",
                     onUndoIndicatorChanged: "{qss}.events.onUndoIndicatorChanged",
-                    onKeyedInUserTokenChanged: null
+                    onIsKeyedInChanged: null
                 },
                 listeners: {
                     onSettingUpdated: {
@@ -71,8 +71,8 @@ fluid.defaults("gpii.app.qss", {
                     }
                 },
                 modelListeners: {
-                    "{qss}.model.keyedInUserToken": {
-                        this: "{that}.events.onKeyedInUserTokenChanged",
+                    "{qss}.model.isKeyedIn": {
+                        this: "{that}.events.onIsKeyedInChanged",
                         method: "fire",
                         args: ["{change}.value"],
                         excludeSource: "init"

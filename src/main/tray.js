@@ -52,7 +52,7 @@ fluid.defaults("gpii.app.tray", {
         onTrayIconClicked: null
     },
     model: {
-        keyedInUserToken: null,
+        isKeyedIn: false,
         icon: "{that}.options.icons.keyedOut",
         preferences: "{app}.model.preferences",
         tooltip: "",
@@ -67,7 +67,7 @@ fluid.defaults("gpii.app.tray", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.getTrayIcon",
-                args: ["{that}.model.keyedInUserToken", "{that}.options.icons"]
+                args: ["{that}.model.isKeyedIn", "{that}.options.icons"]
             }
         },
         "tooltip": {
@@ -75,7 +75,7 @@ fluid.defaults("gpii.app.tray", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.getTrayTooltip",
-                args: ["{that}.model.preferences", "{that}.model.messages"]
+                args: ["{that}.model.isKeyedIn", "{that}.model.preferences", "{that}.model.messages"]
             }
         }
     },
@@ -139,23 +139,27 @@ gpii.app.makeTray = function (options, events) {
 /**
  * Returns the path to the icon for the Electron Tray based on whether there is a
  * keyed-in user.
- * @param {String} keyedInUserToken - The token if the keyed-in user or `null` if
- * there is no such.
+ * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {Object} icons - An object containing all possible icon paths.
  * @return {String} The path to the icon for the Electron Tray.
  */
-gpii.app.getTrayIcon = function (keyedInUserToken, icons) {
-    return keyedInUserToken ? icons.keyedIn : icons.keyedOut;
+gpii.app.getTrayIcon = function (isKeyedIn, icons) {
+    return isKeyedIn ? icons.keyedIn : icons.keyedOut;
 };
 
 /**
  * Returns the tooltip for the Electron Tray based on the active preference set.
+ * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {Object} preferences - An object describing the preference sets (including the
  * active one) for the currently keyed-in user (if any).
  * @param {Object} messages - An object containing differen messages for the tray tooltip.
  * @return {String} The tooltip label for the Electron Tray.
  */
-gpii.app.getTrayTooltip = function (preferences, messages) {
+gpii.app.getTrayTooltip = function (isKeyedIn, preferences, messages) {
+    if (!isKeyedIn) {
+        return messages.defaultTooltip;
+    }
+
     var activePreferenceSet = fluid.find_if(preferences.sets,
         function (preferenceSet) {
             return preferenceSet.path === preferences.activeSet;

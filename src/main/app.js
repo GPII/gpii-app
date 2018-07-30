@@ -58,6 +58,7 @@ require("electron").app.on("window-all-closed", fluid.identity);
 fluid.defaults("gpii.app", {
     gradeNames: ["fluid.modelComponent", "gpii.app.messageBundles"],
     model: {
+        isKeyedIn: false,
         keyedInUserToken: null,
         snapsetName: null,
         preferences: {
@@ -68,6 +69,20 @@ fluid.defaults("gpii.app", {
         },
         theme: "{that}.options.defaultTheme"
     },
+    modelRelay: {
+        "isKeyedIn": {
+            target: "isKeyedIn",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.getIsKeyedIn",
+                args: [
+                    "{that}.model.keyedInUserToken",
+                    "{that}.options.defaultUserToken"
+                ]
+            }
+        }
+    },
+    defaultUserToken: "noUser",
     // prerequisites
     members: {
         machineId: "@expand:{that}.installID.getMachineID()"
@@ -96,7 +111,7 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.settingsBroker",
             options: {
                 model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                    isKeyedIn: "{app}.model.isKeyedIn"
                 }
             }
         },
@@ -124,7 +139,7 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                    isKeyedIn: "{app}.model.isKeyedIn"
                 },
                 modelListeners: {
                     "{lifecycleManager}.model.logonChange": {
@@ -152,7 +167,7 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                    isKeyedIn: "{app}.model.isKeyedIn"
                 },
                 listeners: {
                     "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
@@ -247,7 +262,7 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
-                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken"
+                    isKeyedIn: "{gpii.app}.model.isKeyedIn"
                 },
                 events: {
                     onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
@@ -344,6 +359,10 @@ fluid.defaults("gpii.app", {
     },
     defaultTheme: "white"
 });
+
+gpii.app.getIsKeyedIn = function (keyedInUserToken, defaultUserToken) {
+    return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken;
+};
 
 gpii.app.pspInApp.onQssToggled = function (psp, isQssShown) {
     if (!isQssShown) {

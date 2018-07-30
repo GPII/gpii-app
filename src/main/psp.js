@@ -35,7 +35,7 @@ require("./blurrable.js");
 fluid.defaults("gpii.app.pspInApp", {
     gradeNames: "gpii.app.psp",
     model: {
-        keyedInUserToken: "{app}.model.keyedInUserToken"
+        isKeyedIn: "{app}.model.isKeyedIn"
     },
 
     modelListeners: {
@@ -154,7 +154,7 @@ fluid.defaults("gpii.app.psp", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
     model:  {
-        keyedInUserToken: null,
+        isKeyedIn: false,
         theme: null,
         preferences: {}
     },
@@ -344,7 +344,7 @@ gpii.app.psp.getHasSettings = function (preferences) {
  * @param {Boolean} forceShow - Whether to show the PSP unconditionally.
  */
 gpii.app.psp.show = function (that, forceShow) {
-    if (forceShow || !that.model.keyedInUserToken || that.model.hasSettings) {
+    if (forceShow || !that.model.isKeyedIn || that.model.hasSettings) {
         that.applier.change("isShown", true);
     }
 };
@@ -355,7 +355,7 @@ gpii.app.psp.show = function (that, forceShow) {
  * @param {Component} that - The `gpii.app.psp` instance.
  */
 gpii.app.psp.onPreferencesUpdated = function (that) {
-    if (that.model.keyedInUserToken && !that.model.hasSettings) {
+    if (that.model.isKeyedIn && !that.model.hasSettings) {
         that.hide();
     }
 };

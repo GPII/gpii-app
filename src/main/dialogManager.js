@@ -128,7 +128,7 @@ fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
-        keyedInUserToken: null
+        isKeyedIn: false
     },
 
     sequentialDialogsGrade: "gpii.app.error",
@@ -145,7 +145,7 @@ fluid.defaults("gpii.app.dialogManager", {
     },
 
     modelListeners: {
-        keyedInUserToken: {
+        isKeyedIn: {
             funcName: "gpii.app.dialogManager.closeDialogsOnKeyOut",
             args: ["{that}", "{change}.value"],
             excludeSource: "init"
@@ -317,10 +317,11 @@ gpii.app.dialogManager.close = function (dialogManager, selector) {
  * A function responsible for closing all dialogs which need to be closed
  * whenever the user keyes out of the PSP.
  * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
- * @param {String} keyedInUserToken - The token of the currently keyed in user.
+ * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed
+ * in user.
  */
-gpii.app.dialogManager.closeDialogsOnKeyOut = function (dialogManager, keyedInUserToken) {
-    if (!fluid.isValue(keyedInUserToken)) {
+gpii.app.dialogManager.closeDialogsOnKeyOut = function (dialogManager, isKeyedIn) {
+    if (!isKeyedIn) {
         dialogManager.close("survey");
     }
 };

@@ -28,7 +28,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.delayedShow"],
 
     model: {
-        keyedInUserToken: null,
+        isKeyedIn: false,
         setting: null,
         tooltip: null
     },
@@ -40,7 +40,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                 type: "fluid.transforms.free",
                 func: "gpii.app.qssTooltipDialog.getTooltip",
                 args: [
-                    "{that}.model.keyedInUserToken",
+                    "{that}.model.isKeyedIn",
                     "{that}.model.setting"
                 ]
             }
@@ -111,10 +111,10 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     }
 });
 
-gpii.app.qssTooltipDialog.getTooltip = function (keyedInUserToken, setting) {
+gpii.app.qssTooltipDialog.getTooltip = function (isKeyedIn, setting) {
     if (setting) {
         var tooltip = setting.tooltip;
-        return (keyedInUserToken ? tooltip.keyedIn : tooltip.keyedOut) || tooltip;
+        return (isKeyedIn ? tooltip.keyedIn : tooltip.keyedOut) || tooltip;
     }
 };
 

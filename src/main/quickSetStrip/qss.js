@@ -44,7 +44,7 @@ fluid.defaults("gpii.app.qssWrapper", {
     },
 
     model: {
-        keyedInUserToken: null,
+        isKeyedIn: false,
         settings: "{that}.options.loadedSettings"
     },
 
@@ -111,7 +111,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         args: ["{that}", "{change}.path", "{change}.oldValue"],
                         excludeSource: ["gpii.app.undoStack.undo", "init"]
                     },
-                    "{qssWrapper}.model.keyedInUserToken": {
+                    "{qssWrapper}.model.isKeyedIn": {
                         func: "{that}.clear"
                     },
 
@@ -132,7 +132,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                 },
                 pspButtonPath: "psp",
                 model: {
-                    keyedInUserToken: "{qssWrapper}.model.keyedInUserToken"
+                    isKeyedIn: "{qssWrapper}.model.isKeyedIn"
                 },
                 events: {
                     onQssPspClose: "{qssWrapper}.events.onQssPspClose",
@@ -235,7 +235,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssTooltipDialog",
             options: {
                 model: {
-                    keyedInUserToken: "{qssWrapper}.model.keyedInUserToken"
+                    isKeyedIn: "{qssWrapper}.model.isKeyedIn"
                 },
                 listeners: {
                     // TODO list events for a method
@@ -291,7 +291,7 @@ fluid.defaults("gpii.app.qssWrapper", {
 
 gpii.app.qssWrapper.saveSettings = function (that, flowManager, qssNotification, qss, description) {
     // Request that the settings are saved only if there is a keyed in user
-    if (that.model.keyedInUserToken) {
+    if (that.model.isKeyedIn) {
         // Instead of sending a request via the pspChannel, the flowManager is used directly.
         var pspChannel = flowManager.pspChannel,
             saveButtonClickCount = pspChannel.model.saveButtonClickCount || 0;

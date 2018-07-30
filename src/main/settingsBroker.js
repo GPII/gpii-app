@@ -33,11 +33,11 @@ var gpii  = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.settingsBroker", {
     gradeNames: ["fluid.modelComponent"],
     model: {
-        keyedInUserToken: null,
+        isKeyedIn: false,
         pendingChanges: []
     },
     modelListeners: {
-        keyedInUserToken: {
+        isKeyedIn: {
             func: "{that}.reset",
             excludeSource: ["init"]
         },

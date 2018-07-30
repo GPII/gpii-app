@@ -27,6 +27,7 @@ var gpii  = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.menuInApp", {
     gradeNames: "gpii.app.menu",
     model: {
+        isKeyedIn: "{app}.model.isKeyedIn",
         keyedInUserToken: "{app}.model.keyedInUserToken",
         snapsetName: "{app}.model.snapsetName",
         preferences: {
@@ -322,7 +323,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyedInSnapset",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.snapsetName", "{that}.model.messages.keyedIn"]
+                args: ["{that}.model.isKeyedIn", "{that}.model.snapsetName", "{that}.model.messages.keyedIn"]
             },
             forward: {
                 excludeSource: "init"
@@ -333,7 +334,12 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyOut",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.messages.keyOut", "{that}.model.messages.notKeyedIn"]
+                args: [
+                    "{that}.model.isKeyedIn",
+                    "{that}.model.keyedInUserToken",
+                    "{that}.model.messages.keyOut",
+                    "{that}.model.messages.notKeyedIn"
+                ]
             },
             forward: {
                 excludeSource: "init"
@@ -366,7 +372,7 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getPreferenceSetsMenuItems",
-                args: ["{that}.model.preferences.sets", "{that}.model.preferences.activeSet"]
+                args: ["{that}.model.isKeyedIn", "{that}.model.preferences.sets", "{that}.model.preferences.activeSet"]
             },
             forward: {
                 excludeSource: "init"
@@ -415,15 +421,15 @@ fluid.defaults("gpii.app.menu", {
 /**
  * Generates an object that represents the menu item for keying in.
  *
- * @param {String} keyedInUserToken - The user token that is currently keyed in.
+ * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {String} snapsetName - The user-friendly name of the keyed in snapset.
  * @param {String} keyedInStrTemp - The string template for the label when a user is keyed in.
  * @return {ElectronMenuItem} - The Electron menu item for keying in.
  */
-gpii.app.menu.getKeyedInSnapset = function (keyedInUserToken, snapsetName, keyedInStrTemp) {
+gpii.app.menu.getKeyedInSnapset = function (isKeyedIn, snapsetName, keyedInStrTemp) {
     var keyedInUser = null;
 
-    if (keyedInUserToken) {
+    if (isKeyedIn) {
         keyedInUser = {
             label: fluid.stringTemplate(keyedInStrTemp, {"snapsetName": snapsetName}),
             enabled: false
@@ -435,16 +441,16 @@ gpii.app.menu.getKeyedInSnapset = function (keyedInUserToken, snapsetName, keyed
 
 /**
  * Generates an object that represents the menu item for keying out.
- *
+ * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {String} keyedInUserToken - The user token that is currently keyed in.
  * @param {String} keyOutStr - The string to be displayed for the key out menu item if there is a keyed in user.
  * @param {String} notKeyedInStr - The string to be displayed when a user is not keyed in.
  * @return {ElectronMenuItem} - The Electron menu item for keying out.
  */
-gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr, notKeyedInStr) {
+gpii.app.menu.getKeyOut = function (isKeyedIn, keyedInUserToken, keyOutStr, notKeyedInStr) {
     var keyOut;
 
-    if (keyedInUserToken) {
+    if (isKeyedIn) {
         keyOut = {
             label: keyOutStr,
             click: "onKeyOut",
@@ -466,12 +472,16 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr, notKeyedInStr) 
 /**
  * Generates an array that represents the menu items related to a user's preference sets. The returned array can be used
  * in the context menu of a {Tray} object.
- *
+ * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {Array} preferenceSets - An array of all preference sets for the user.
  * @param {String} activeSet - The path of the currently active preference set.
  * @return {ElectronMenuItem[]} - An array of Electron menu items.
  */
-gpii.app.menu.getPreferenceSetsMenuItems = function (preferenceSets, activeSet) {
+gpii.app.menu.getPreferenceSetsMenuItems = function (isKeyedIn, preferenceSets, activeSet) {
+    if (!isKeyedIn) {
+        return [];
+    }
+
     var preferenceSetsLabels,
         separator = {type: "separator"};
 

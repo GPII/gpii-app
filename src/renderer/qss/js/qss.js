@@ -61,7 +61,7 @@
                     type: "fluid.transforms.free",
                     func: "gpii.qss.buttonPresenter.getTitle",
                     args: [
-                        "{gpii.qss}.model.keyedInUserToken",
+                        "{gpii.qss}.model.isKeyedIn",
                         "{that}.model.item.schema.title"
                     ]
                 }
@@ -217,8 +217,8 @@
         }
     });
 
-    gpii.qss.buttonPresenter.getTitle = function (keyedInUserToken, title) {
-        return (keyedInUserToken ? title.keyedIn : title.keyedOut) || title;
+    gpii.qss.buttonPresenter.getTitle = function (isKeyedIn, title) {
+        return (isKeyedIn ? title.keyedIn : title.keyedOut) || title;
     };
 
     gpii.qss.buttonPresenter.renderImage = function (that, imageElem) {
@@ -498,18 +498,18 @@
                 args: [
                     "{that}",
                     "{list}",
-                    "{gpii.qss}.model.keyedInUserToken",
+                    "{gpii.qss}.model.isKeyedIn",
                     "{arguments}.0" // activationParams
                 ]
             }
         }
     });
 
-    gpii.qss.saveButtonPresenter.activate = function (that, qssList, keyedInUserToken, activationParams) {
+    gpii.qss.saveButtonPresenter.activate = function (that, qssList, isKeyedIn, activationParams) {
         that.onButtonActivated(activationParams);
 
         var messages = that.model.messages.notification,
-            notification = keyedInUserToken ? messages.keyedIn : messages.keyedOut;
+            notification = isKeyedIn ? messages.keyedIn : messages.keyedOut;
         qssList.events.onSaveRequired.fire(notification);
     };
 
@@ -632,7 +632,7 @@
         gradeNames: ["fluid.viewComponent"],
 
         model: {
-            keyedInUserToken: null,
+            isKeyedIn: false,
             settings: []
         },
 
@@ -683,7 +683,7 @@
                         onQssOpen: "{qss}.events.onQssOpen",
                         onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
                         onSettingUpdated: null,
-                        onKeyedInUserTokenChanged: null,
+                        onIsKeyedInChanged: null,
 
                         onUndoIndicatorChanged: "{quickSetStripList}.events.onUndoIndicatorChanged"
                     },
@@ -695,8 +695,8 @@
                                 "{arguments}.0"
                             ]
                         },
-                        onKeyedInUserTokenChanged: {
-                            func: "{gpii.qss}.updateKeyedInUserToken"
+                        onIsKeyedInChanged: {
+                            func: "{gpii.qss}.updateIsKeyedIn"
                         }
                     }
                 }
@@ -725,8 +725,8 @@
         },
 
         invokers: {
-            updateKeyedInUserToken: {
-                changePath: "keyedInUserToken",
+            updateIsKeyedIn: {
+                changePath: "isKeyedIn",
                 value: "{arguments}.0"
             }
         }
