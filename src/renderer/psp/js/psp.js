@@ -30,6 +30,9 @@
                 type: "gpii.psp.clientChannel",
                 options: {
                     listeners: {
+                        onIsKeyedInUpdated: {
+                            funcName: "{mainWindow}.updateIsKeyedIn"
+                        },
                         onPreferencesUpdated: {
                             funcName: "{mainWindow}.updatePreferences"
                         },

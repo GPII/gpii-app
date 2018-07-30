@@ -43,6 +43,15 @@ fluid.defaults("gpii.app.pspInApp", {
             funcName: "gpii.app.pspInApp.applyOffset",
             args: ["{that}", "{qssWrapper}.qss.options.config.attrs.height", "{change}.value"],
             excludeSource: "init"
+        },
+
+        isKeyedIn: {
+            func: "{that}.notifyPSPWindow",
+            args: [
+                "onIsKeyedInUpdated",
+                "{change}.value"
+            ],
+            excludeSource: "init"
         }
     },
 

@@ -89,11 +89,11 @@
      *
      * @param {jQuery} signInView - The signIn view container
      * @param {jQuery} pspView - The psp view container
-     * @param {Boolean} keyedIn - Whether there is a keyed in user or not.
+     * @param {Boolean} isKeyedIn - Whether there is a keyed in user or not.
      * preference set, the active preference set and the available settings.
      */
-    gpii.psp.toggleView = function (signInView, pspView, keyedIn) {
-        if (keyedIn) {
+    gpii.psp.toggleView = function (signInView, pspView, isKeyedIn) {
+        if (isKeyedIn) {
             signInView.hide();
             pspView.show();
         } else {
@@ -121,16 +121,6 @@
             },
             theme: null,
             sounds: {}
-        },
-        modelRelay: {
-            keyedIn: {
-                target: "keyedIn",
-                singleTransform: {
-                    type: "fluid.transforms.free",
-                    func: "gpii.psp.mainWindow.getKeyedIn",
-                    args: ["{that}.model.preferences"]
-                }
-            }
         },
         selectors: {
             signIn: ".flc-signIn",
@@ -260,8 +250,12 @@
                 args: [
                     "{that}.dom.signIn",
                     "{that}.dom.psp",
-                    "{that}.model.keyedIn"
+                    "{that}.model.isKeyedIn"
                 ]
+            },
+            updateIsKeyedIn: {
+                changePath: "isKeyedIn",
+                value: "{arguments}.0"
             },
             "updatePreferences": {
                 changePath: "preferences",
@@ -294,6 +288,7 @@
         events: {
             onSignInRequested: null,
 
+            onIsKeyedInUpdated: null,
             onPreferencesUpdated: null,
 
             onSettingAltered: null, // the setting was altered by the user
@@ -311,17 +306,7 @@
     });
 
     /**
-     * Returns whether there is a currently keyed in user.
-     * @param {Object} preferences - An object containing all preference set, as well as
-     * information about the currently active preference set.
-     * @return {Boolean} `true` if there is currently a keyed in user and `false` otherwise.
-     */
-    gpii.psp.mainWindow.getKeyedIn = function (preferences) {
-        return preferences && preferences.sets && preferences.sets.length > 0;
-    };
-
-    /**
-     * Plays a sound notification in the following scenarios: when the user keyes in
+     * Plays a sound notification in the following scenarios: when the user keys in
      * or when the user changes the active preference set (either via the dropdown in
      * the PSP or through the context menu).
      * @param {Component} that - The `gpii.psp.mainWindow` instance.
@@ -331,7 +316,7 @@
      */
     gpii.psp.mainWindow.playSoundNotification = function (that, preferences, oldPreferences) {
         // The user is not / is no longer keyed in. No need for notification.
-        if (!that.model.keyedIn) {
+        if (!that.model.isKeyedIn) {
             return;
         }
 

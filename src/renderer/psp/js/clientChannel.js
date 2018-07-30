@@ -43,6 +43,10 @@
      * @param {Component} clientChannel - The `clientChannel` component.
      */
     gpii.psp.clientChannel.initialize = function (clientChannel) {
+        ipcRenderer.on("onIsKeyedInUpdated", function (event, isKeyedIn) {
+            clientChannel.events.onIsKeyedInUpdated.fire(isKeyedIn);
+        });
+
         ipcRenderer.on("onPreferencesUpdated", function (event, preferences) {
             clientChannel.events.onPreferencesUpdated.fire(preferences);
         });
@@ -71,6 +75,7 @@
     fluid.defaults("gpii.psp.clientChannel", {
         gradeNames: ["fluid.component"],
         events: {
+            onIsKeyedInUpdated: null,
             onPreferencesUpdated: null,
             onSettingUpdated: null,
             onAccentColorChanged: null,
