@@ -25,7 +25,12 @@ var gpii = fluid.registerNamespace("gpii");
 
 
 fluid.defaults("gpii.app.qssTooltipDialog", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.delayedShow"],
+    gradeNames: [
+        "gpii.app.dialog",
+        "gpii.app.blurrable",
+        "gpii.app.dialog.delayedShow",
+        "gpii.app.dialog.offScreenHidable"
+    ],
 
     model: {
         keyedInUserToken: null,
@@ -121,6 +126,10 @@ gpii.app.qssTooltipDialog.getTooltip = function (keyedInUserToken, setting) {
 gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOffset) {
     if (setting && fluid.isValue(setting.tooltip)) {
         that.delayedShow(setting, btnCenterOffset);
+
+        // trigger update in the tooltip BrowserWindow
+        // and keep the last shown setting
+        gpii.app.applier.replace(that.applier, "setting", setting);
     }
 };
 
@@ -139,10 +148,6 @@ function getTooltipPosition(dialog, btnCenterOffset) {
 // TODO reuse widget show
 gpii.app.qssTooltipDialog.show = function (that, setting, btnCenterOffset) {
     var offset = getTooltipPosition(that, btnCenterOffset);
-
-    // trigger update in the tooltip BrowserWindow
-    // and keep the last shown setting
-    gpii.app.applier.replace(that.applier, "setting", setting);
 
     that.dialog.setAlwaysOnTop(true);
 
