@@ -57,7 +57,7 @@ gpii.tests.app.testItem = function (item, label) {
 
 gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
     gpii.tests.app.testItem(infoItem, "Keyed in with Larger 125%");
-    gpii.tests.app.testItem(keyoutItem, "Key-out of GPII");
+    gpii.tests.app.testItem(keyoutItem, "Key-out of Morphic");
 };
 
 gpii.tests.app.testMenu = function (menuTemplate) {
@@ -218,7 +218,7 @@ gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {
     gpii.tests.app.testItem(menuTemplate[0], "Open PSP");
     // the default pref set should be set
     gpii.tests.dev.testMultiContextKeyedIn(tray, menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
-    gpii.tests.app.testItem(menuTemplate[13], "Key-out of GPII");
+    gpii.tests.app.testItem(menuTemplate[13], "Key-out of Morphic");
     gpii.tests.app.testItem(menuTemplate[14], "Exit GPII");
 };
 

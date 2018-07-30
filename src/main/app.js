@@ -360,22 +360,22 @@ fluid.defaults("gpii.app.errorHandler", {
 
     errorsDescriptionMap: {
         "EADDRINUSE": {
-            title:   "GPII can't start",
+            title:   "Morphic can't start",
             subhead: "There is another application listening on port the same port",
-            details: "Stop the other running application and try again. If the problem is still present, contact GPII Technical Support.",
+            details: "Stop the other running application and try again. If the problem is still present, contact Morphic Technical Support.",
             fatal: true
         },
         "EKEYINFAIL": {
             title:   "Cannot Key In",
             subhead: "There might be a problem with the user you are trying to use",
-            details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
+            details: "You can try keying in again. If the problem is still present, contact Morphic Technical Support.",
             btnLabel1: "OK",
             fatal: false
         },
         "ENOCONNECTION": {
             title:   "No Internet connection",
             subhead: "There seem to be a problem your Internet connectivity",
-            details: "Have you tried turning it off and on again? If the problem is still present, contact GPII Technical Support.",
+            details: "Have you tried turning it off and on again? If the problem is still present, contact Morphic Technical Support.",
             btnLabel1: "OK",
             btnLabel2: "Cancel",
             fatal: false

@@ -3,19 +3,19 @@
     "gpii_app_menu_psp": "Open PSP",
     "gpii_app_menu_notKeyedIn": "(No one keyed in)",
     "gpii_app_menu_keyedIn": "Keyed in with %snapsetName",
-    "gpii_app_menu_keyOut": "Key-out of GPII",
+    "gpii_app_menu_keyOut": "Key-out of Morphic",
 
-    "gpii_app_tray_defaultTooltip": "GPII: Ready",
-    "gpii_app_tray_prefSetTooltip": "GPII: %prefSet",
+    "gpii_app_tray_defaultTooltip": "Morphic: Ready",
+    "gpii_app_tray_prefSetTooltip": "Morphic: %prefSet",
 
-    "gpii_psp_mainWindow_titlebarAppName": "GPII Settings",
+    "gpii_psp_mainWindow_titlebarAppName": "Morphic Settings",
 
     "gpii_psp_signIn_signInHeader": "Nobody keyed in",
 
-    "gpii_psp_signIn_titleIntro": "GPII Auto-personalization",
+    "gpii_psp_signIn_titleIntro": "Morphic",
     "gpii_psp_signIn_subtitleIntro": "Automatically set up any computer the way you want it.",
 
-    "gpii_psp_signIn_title": "Use your GPII Key to key-in",
+    "gpii_psp_signIn_title": "Use your Morphic Key to key-in",
     "gpii_psp_signIn_subtitle": "Or key-in with your account below",
 
     "gpii_psp_signIn_emailTextInputLabel": "Email",
@@ -34,15 +34,15 @@
 
     "gpii_psp_restartWarning_osName": "Windows",
     "gpii_psp_restartWarning_osRestartText": "Windows needs to restart to apply your changes.",
-    "gpii_psp_restartWarning_restartText": "These applications will restart when this GPII Settings panel closes: %solutions",
+    "gpii_psp_restartWarning_restartText": "These applications will restart when this Morphic Settings panel closes: %solutions",
     "gpii_psp_restartWarning_undo": "Undo Changes",
     "gpii_psp_restartWarning_applyNow": "Apply changes now",
     "gpii_psp_restartWarning_restartNow": "Restart Now",
 
-    "gpii_psp_errorDialog_titlebarAppName": "GPII Error",
+    "gpii_psp_errorDialog_titlebarAppName": "Morphic Error",
 
-    "gpii_psp_aboutDialog_titlebarAppName": "About GPII Auto-personalization",
-    "gpii_psp_aboutDialog_title": "GPII Auto-personalization",
+    "gpii_psp_aboutDialog_titlebarAppName": "About Morphic",
+    "gpii_psp_aboutDialog_title": "Morphic",
     "gpii_psp_aboutDialog_update": "Check for updates",
     "gpii_psp_aboutDialog_userListenersText": "Keys that work on this machine: %listeners",
     "gpii_psp_aboutDialog_version": "version %version",

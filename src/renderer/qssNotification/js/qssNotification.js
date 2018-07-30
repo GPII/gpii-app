@@ -34,7 +34,7 @@
 
         model: {
             messages: {
-                title: "GPII Notification",
+                title: "Morphic Notification",
                 dismissButtonLabel: "OK"
             }
         },

@@ -46,8 +46,8 @@ var prefSet1 = {
 
 jqUnit.test("Tray.getTrayTooltip", function () {
     var messages = {
-        defaultTooltip: "GPII: Ready",
-        prefSetTooltip: "GPII: %prefSet"
+        defaultTooltip: "Morphic: Ready",
+        prefSetTooltip: "Morphic: %prefSet"
     };
 
     jqUnit.expect(2);
@@ -146,7 +146,7 @@ jqUnit.test("Menu.getKeyedInSnapset", function () {
 jqUnit.test("Menu.getKeyOut", function () {
     jqUnit.expect(7);
     var token = "alice";
-    var keyOutStr = "Key-out of GPII";
+    var keyOutStr = "Key-out of Morphic";
     var notKeyedInStr = "(No one keyed in)";
 
     var keyOutObj = gpii.app.menu.getKeyOut(null, keyOutStr, notKeyedInStr);
