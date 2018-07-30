@@ -1,6 +1,6 @@
 {
     "gpii_app_menu_about": "Относно...",
-    "gpii_app_menu_psp": "Отвори ППН",
+    "gpii_app_menu_openQss": "Отвори QSS",
     "gpii_app_menu_notKeyedIn": "(Не сте влезли)",
     "gpii_app_menu_keyedIn": "Вписан с %snapsetName",
     "gpii_app_menu_keyOut": "Отписване от Morphic",

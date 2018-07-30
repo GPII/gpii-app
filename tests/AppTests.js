@@ -86,8 +86,8 @@ jqUnit.test("Tray.getTrayIcon", function () {
 jqUnit.test("Menu.getSimpleMenuItem", function () {
     jqUnit.expect(4);
 
-    var event = "onPSP",
-        label = "Open PSP",
+    var event = "onQSS",
+        label = "Open QSS",
         menuItem = gpii.app.menu.getSimpleMenuItem(label, event);
 
 

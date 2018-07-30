@@ -1,6 +1,6 @@
 {
     "gpii_app_menu_about": "About...",
-    "gpii_app_menu_psp": "Open PSP",
+    "gpii_app_menu_openQss": "Open QSS",
     "gpii_app_menu_notKeyedIn": "(No one keyed in)",
     "gpii_app_menu_keyedIn": "Keyed in with %snapsetName",
     "gpii_app_menu_keyOut": "Key-out of Morphic",
