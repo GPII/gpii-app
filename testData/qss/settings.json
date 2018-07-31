@@ -194,6 +194,6 @@
             "title": "Close",
             "image": "close.svg"
         },
-        "tooltip": "<div><strong>Close the Morphic Panel</strong></div><div>You can reopen it using the Morphic \"Gear Cloud\" Icon <img height=20 src='../../icons/gpii-icon-balloon.png'></img></div>"
+        "tooltip": "<div><strong>Close the Morphic Panel</strong></div><div>You can reopen it using the Morphic Icon <img height=20 src='../../icons/gpii-icon-balloon.png'></img></div>"
     }
 ]
