@@ -96,7 +96,7 @@ gpii.tests.qss.linger = function () {
 
 
 
-var crossTestSequence = [
+var qssCrossTestSequence = [
     /*
      * CROSS
      * Tests QSS and PSP visibility
@@ -110,11 +110,11 @@ var crossTestSequence = [
         ]
     }, { // When the tray icon is clicked...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, { // ... both the PSP and the QSS will be shown.
+    }, { // ... only the QSS will be shown.
         func: "gpii.tests.qss.testPspAndQssVisibility",
         args: [
             "{that}.app",
-            {psp: true, qss: true}
+            {psp: false, qss: true}
         ]
     }, { // Clicking on the close button in the QSS...
         func: "gpii.tests.qss.executeCommand",
@@ -654,6 +654,6 @@ gpii.tests.qss.testDefs = {
         }],
         undoCrossTestSequence,
         undoTestSequence,
-        crossTestSequence
+        qssCrossTestSequence
     )
 };
