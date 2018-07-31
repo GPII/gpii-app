@@ -119,7 +119,7 @@ gpii.app.resizable.scaleDialog = function (that) {
     // Correct the state of windows
     if (that.options.config.offScreenHide || that.model.isShown) {
         // low level show
-        gpii.app.dialog._show(that, that.displayMetricsChanged.wasFocused);
+        gpii.app.dialog._show(that, !that.displayMetricsChanged.wasFocused);
     }
 };
 
