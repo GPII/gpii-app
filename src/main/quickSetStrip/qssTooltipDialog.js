@@ -138,6 +138,7 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
  * Retrieve element position.
  */
 function getTooltipPosition(dialog, btnCenterOffset) {
+    // XXX extract hardcoded value to a better place
     var arrowSize = 44; // px
     return {
         offsetX: btnCenterOffset.x - arrowSize,
@@ -151,8 +152,9 @@ gpii.app.qssTooltipDialog.show = function (that, setting, btnCenterOffset) {
 
     that.dialog.setAlwaysOnTop(true);
 
-    // Trigger the showing mechanism
-    that.applier.change("isShown", true);
     // reposition window properly
     that.setPosition(offset.offsetX, offset.offsetY);
+
+    // Trigger the showing mechanism
+    that.applier.change("isShown", true);
 };
