@@ -1,14 +1,30 @@
 {
-    "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux?keyedInUserToken=%keyedInUserToken&machineId=%machineId",
-    "closeOnSubmit": true,
-    "window": {
-        "width": 800,
-        "height": 600,
-        "resizable": true,
+    "trigger_1": {
+        "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux?keyedInUserToken=%keyedInUserToken&machineId=%machineId",
+        "closeOnSubmit": true,
+        "window": {
+            "width": 800,
+            "height": 600,
+            "resizable": true,
 
-        "title": "GPII Auto-Personalization Survey",
-        "closable": true,
-        "minimizable": false,
-        "maximizable": false
+            "title": "GPII Auto-Personalization Survey",
+            "closable": true,
+            "minimizable": false,
+            "maximizable": false
+        }
+    },
+    "trigger_2": {
+        "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux?keyedInUserToken=%keyedInUserToken&machineId=%machineId",
+        "closeOnSubmit": true,
+        "window": {
+            "width": 300,
+            "height": 300,
+            "resizable": true,
+
+            "title": "GPII Auto-Personalization Second Survey",
+            "closable": true,
+            "minimizable": true,
+            "maximizable": false
+        }
     }
 }
