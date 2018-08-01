@@ -30,6 +30,11 @@ fluid.defaults("gpii.app.qssWidget", {
         setting: {}
     },
 
+    members: {
+        // Used for postponed show of the dialog (e.g. based on an event)
+        shouldShow: false
+    },
+
     // Temporary. Should be removed when the widget becomes truly resizable.
     heightMap: {
         "http://registry\\.gpii\\.net/common/language": 550,
@@ -198,12 +203,17 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
 
     that.height = heightMap[setting.path] || that.options.config.attrs.height;
     that.setRestrictedSize(that.width, that.height);
+
+    that.shouldShow = true;
 };
 
 gpii.app.qssWidget.onQssWidgetCreated = function (qssWidget) {
-    setTimeout(function () {
-        qssWidget.applier.change("isShown", true);
-    }, 100);
+    if (qssWidget.shouldShow) {
+        qssWidget.shouldShow = false;
+        setTimeout(function () {
+            qssWidget.applier.change("isShown", true);
+        }, 100);
+    }
 };
 
 

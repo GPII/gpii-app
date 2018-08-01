@@ -125,6 +125,9 @@ fluid.defaults("gpii.app.qss", {
                 "{that}",
                 "{arguments}.0" // params
             ]
+        },
+        handleBlur: {
+            funcName: "fluid.identity"
         }
     }
 });

@@ -25,7 +25,12 @@ var gpii = fluid.registerNamespace("gpii");
 
 
 fluid.defaults("gpii.app.qssTooltipDialog", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.delayedShow"],
+    gradeNames: [
+        "gpii.app.dialog",
+        "gpii.app.blurrable",
+        "gpii.app.dialog.delayedShow",
+        "gpii.app.dialog.offScreenHidable"
+    ],
 
     model: {
         isKeyedIn: false,
@@ -121,6 +126,10 @@ gpii.app.qssTooltipDialog.getTooltip = function (isKeyedIn, setting) {
 gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOffset) {
     if (setting && fluid.isValue(setting.tooltip)) {
         that.delayedShow(setting, btnCenterOffset);
+
+        // trigger update in the tooltip BrowserWindow
+        // and keep the last shown setting
+        gpii.app.applier.replace(that.applier, "setting", setting);
     }
 };
 
@@ -129,6 +138,7 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
  * Retrieve element position.
  */
 function getTooltipPosition(dialog, btnCenterOffset) {
+    // XXX extract hardcoded value to a better place
     var arrowSize = 44; // px
     return {
         offsetX: btnCenterOffset.x - arrowSize,
@@ -140,14 +150,11 @@ function getTooltipPosition(dialog, btnCenterOffset) {
 gpii.app.qssTooltipDialog.show = function (that, setting, btnCenterOffset) {
     var offset = getTooltipPosition(that, btnCenterOffset);
 
-    // trigger update in the tooltip BrowserWindow
-    // and keep the last shown setting
-    gpii.app.applier.replace(that.applier, "setting", setting);
-
     that.dialog.setAlwaysOnTop(true);
+
+    // reposition window properly
+    that.setPosition(offset.offsetX, offset.offsetY);
 
     // Trigger the showing mechanism
     that.applier.change("isShown", true);
-    // reposition window properly
-    that.setPosition(offset.offsetX, offset.offsetY);
 };

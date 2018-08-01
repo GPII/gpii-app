@@ -77,7 +77,7 @@ Invoke-Command "robocopy" "$projectDir $preStagingDir package.json" $provisionin
 Invoke-Command "robocopy" "$projectDir $preStagingDir package-lock.json" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir README.md" $provisioningDir -errorLevel 3
 
-$packagerMetadata = "--app-copyright=`"Raising the Floor - International Association`" --win32metadata.CompanyName=`"Raising the Floor - International Association`" --win32metadata.FileDescription=`"GPII-App`" --win32metadata.OriginalFilename=`"gpii.exe`" --win32metadata.ProductName=`"GPII-App`" --win32metadata.InternalName=`"GPII-App`""
+$packagerMetadata = "--app-copyright=`"Raising the Floor - International Association`" --win32metadata.CompanyName=`"Raising the Floor - International Association`" --win32metadata.FileDescription=`"Morphic-App`" --win32metadata.OriginalFilename=`"gpii.exe`" --win32metadata.ProductName=`"Morphic-App`" --win32metadata.InternalName=`"Morphic-App`""
 
 $packagerDir = Join-Path $installerDir "packager"
 md $packagerDir

@@ -43,8 +43,8 @@ fluid.defaults("gpii.app.menuInApp", {
         }
     },
     listeners: {
-        "onPSP.performPSPShow": {
-            listener: "{psp}.show"
+        "onQss.performQssShow": {
+            listener: "{qssWrapper}.qss.show"
         },
 
         "onAbout.showAbout": {
@@ -99,7 +99,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
                 args: [
-                    "{that}.model.showPSP",
+                    "{that}.model.showQSS",
                     "{that}.model.keyedInSnapset",
                     "{that}.options.locales",
                     "{that}.options.themes",
@@ -307,14 +307,14 @@ fluid.defaults("gpii.app.menu", {
         keyedInSnapset: null,        // Must be updated when keyedInUserToken changes.
         keyOut: null,                 // May or may not be in the menu, must be updated when keyedInUserToken changes.
         showAbout: null,
-        showPsp: null,
+        showQSS: null,
 
         messages: {
             about:      null,
             keyOut:     null,
             keyedIn:    null,
             notKeyedIn: null,
-            psp:        null
+            openQss:    null
         }
     },
     modelRelay: {
@@ -356,12 +356,12 @@ fluid.defaults("gpii.app.menu", {
                 excludeSource: "init"
             }
         },
-        "showPSP": {
-            target: "showPSP",
+        "showQSS": {
+            target: "showQSS",
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getSimpleMenuItem",
-                args: ["{that}.model.messages.psp", "onPSP"]
+                args: ["{that}.model.messages.openQss", "onQss"]
             },
             forward: {
                 excludeSource: "init"
@@ -384,7 +384,7 @@ fluid.defaults("gpii.app.menu", {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
                 args: [
-                    "{that}.model.showPSP",
+                    "{that}.model.showQSS",
                     "{that}.model.keyedInSnapset",
                     "{that}.model.preferenceSetsMenuItems",
                     "{that}.model.showAbout",
@@ -399,7 +399,7 @@ fluid.defaults("gpii.app.menu", {
         }
     },
     events: {
-        onPSP:                        null,
+        onQss:                        null,
         onAbout:                      null,
         onActivePreferenceSetAltered: null,
         onKeyOut:                     null
