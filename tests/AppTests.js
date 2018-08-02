@@ -54,12 +54,12 @@ jqUnit.test("Tray.getTrayTooltip", function () {
 
     jqUnit.assertEquals("The tooltip is default when user is not keyedIn",
         messages.defaultTooltip,
-        gpii.app.getTrayTooltip(emptyPrefSets, messages)
+        gpii.app.getTrayTooltip(false, emptyPrefSets, messages)
     );
 
     jqUnit.assertEquals("The tooltip is the active pref set name when user is keyed in",
         fluid.stringTemplate(messages.prefSetTooltip, {prefSet: prefSet2.name}),
-        gpii.app.getTrayTooltip(keyedInPrefSets, messages)
+        gpii.app.getTrayTooltip(true, keyedInPrefSets, messages)
     );
 });
 
@@ -113,12 +113,12 @@ gpii.tests.app.testPrefSetMenuItem = function (item, label, checked) {
 };
 
 jqUnit.test("Menu.getPreferenceSetsMenuItems", function () {
-    var emptyPrefSetList = gpii.app.menu.getPreferenceSetsMenuItems([], null);
-    var prefSetList = gpii.app.menu.getPreferenceSetsMenuItems(keyedInPrefSets.sets, prefSet2.path);
+    var notKeyedInItems = gpii.app.menu.getPreferenceSetsMenuItems(false, [], null);
+    var prefSetList = gpii.app.menu.getPreferenceSetsMenuItems(true, keyedInPrefSets.sets, prefSet2.path);
 
     jqUnit.expect(10);
 
-    jqUnit.assertEquals("Pref set menu items list is empty", 0, emptyPrefSetList.length);
+    jqUnit.assertEquals("Pref set menu items list is empty", 0, notKeyedInItems.length);
     // Note: +2 for separators
     jqUnit.assertEquals("Pref set menu items list", 4, prefSetList.length);
 
@@ -129,14 +129,13 @@ jqUnit.test("Menu.getPreferenceSetsMenuItems", function () {
 jqUnit.test("Menu.getKeyedInSnapset", function () {
     jqUnit.expect(4);
 
-    var token = "alice";
     var snapsetName = "Snapset_1";
     var keyedInStrTemp = "Keyed in with %snapsetName";    // string template
 
-    var keyedInObject = gpii.app.menu.getKeyedInSnapset(null, null, keyedInStrTemp);
+    var keyedInObject = gpii.app.menu.getKeyedInSnapset(false, null, keyedInStrTemp);
     jqUnit.assertFalse("Keyed in user object is not created when no token is provided.", keyedInObject);
 
-    keyedInObject = gpii.app.menu.getKeyedInSnapset(token, snapsetName, keyedInStrTemp);
+    keyedInObject = gpii.app.menu.getKeyedInSnapset(true, snapsetName, keyedInStrTemp);
     jqUnit.assertTrue("Keyed in user object is created when there is a token", keyedInObject);
     jqUnit.assertFalse("Keyed in user object is disabled", keyedInObject.enabled);
     jqUnit.assertEquals("Label is set in the keyed in user object",
@@ -149,12 +148,12 @@ jqUnit.test("Menu.getKeyOut", function () {
     var keyOutStr = "Key-out of Morphic";
     var notKeyedInStr = "(No one keyed in)";
 
-    var keyOutObj = gpii.app.menu.getKeyOut(null, keyOutStr, notKeyedInStr);
+    var keyOutObj = gpii.app.menu.getKeyOut(false, null, keyOutStr, notKeyedInStr);
     jqUnit.assertEquals("Label is set in the key out object when there is no user",
         notKeyedInStr, keyOutObj.label);
     jqUnit.assertFalse("Key out object is disabled when no token is provided.", keyOutObj.enabled);
 
-    keyOutObj = gpii.app.menu.getKeyOut(token, keyOutStr, notKeyedInStr);
+    keyOutObj = gpii.app.menu.getKeyOut(true, token, keyOutStr, notKeyedInStr);
     jqUnit.assertTrue("Key out object exists", keyOutObj);
     jqUnit.assertTrue("Key out object is enabled when a token is provided", keyOutObj.enabled);
     jqUnit.assertEquals("Key out is bound to onClick", "onKeyOut", keyOutObj.click);

@@ -83,13 +83,12 @@ gpii.tests.settingsBroker.testNoPendingChanges = function (settingsBroker) {
 gpii.tests.settingsBroker.testBrokerBeforeKeyIn = function (settingsBroker) {
     jqUnit.assertValue("The settings broker exists", settingsBroker);
     jqUnit.assertFalse("There is no keyed in user for the settings broker",
-        settingsBroker.model.keyedInUserToken);
+        settingsBroker.model.isKeyedIn);
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
 };
 
-gpii.tests.settingsBroker.testBrokerAfterKeyIn = function (settingsBroker, tray, expectedUserToken) {
-    jqUnit.assertEquals("The keyed in user token matches the token of the user",
-        expectedUserToken, settingsBroker.model.keyedInUserToken);
+gpii.tests.settingsBroker.testBrokerAfterKeyIn = function (settingsBroker, tray) {
+    jqUnit.assertTrue("There is a keyed in user", settingsBroker.model.isKeyedIn);
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
 };
 
@@ -122,7 +121,7 @@ gpii.tests.settingsBroker.testUndoPendingChanges = function (expectedChange, act
 
 gpii.tests.settingsBroker.testBrokerAfterKeyOut = function (settingsBroker) {
     jqUnit.assertFalse("There is no keyed in user after key out",
-        settingsBroker.model.keyedInUserToken);
+        settingsBroker.model.isKeyedIn);
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
 };
 
@@ -142,9 +141,9 @@ gpii.tests.settingsBroker.testDefs = {
         args: ["snapset_1a"]
     }, {
         changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
-        path: "keyedInUserToken",
+        path: "isKeyedIn",
         listener: "gpii.tests.settingsBroker.testBrokerAfterKeyIn",
-        args: ["{that}.app.settingsBroker", "{that}.app.tray", "snapset_1a"]
+        args: ["{that}.app.settingsBroker", "{that}.app.tray"]
     }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [liveSettingChange]
@@ -218,7 +217,7 @@ gpii.tests.settingsBroker.testDefs = {
         func: "{that}.app.keyOut"
     }, { // ...the pending changes will be discarded.
         changeEvent: "{that}.app.applier.modelChanged",
-        path: "keyedInUserToken",
+        path: "isKeyedIn",
         listener: "gpii.tests.settingsBroker.testBrokerAfterKeyOut",
         args: ["{that}.app.settingsBroker"]
     }]
