@@ -106,9 +106,7 @@ fluid.defaults("gpii.app", {
                     "{flowManager}.userErrors.events.userError": {
                         func: "{that}.handleUserError",
                         args: [
-                            "{arguments}.1", // errorCode
-                            "{arguments}.0", // isError
-                            "{arguments}.2"  // originalError
+                            "{arguments}.0" // error
                         ]
                     }
                 }
@@ -402,11 +400,11 @@ gpii.app.keyIn = function (flowManager, token) {
         try {
             /// XXX temporary way for triggering key in error
             if (typeof body === "string" && JSON.parse(body).isError) {
-                flowManager.userErrors.events.userError.fire(
-                    true,
-                    "KeyInFail",
-                    response.body.message
-                );
+                flowManager.userErrors.events.userError.fire({
+                    isError: true,
+                    messageKey: "KeyInFail",
+                    originalError: response.body.message
+                });
             }
         }
         // SyntaxError

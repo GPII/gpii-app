@@ -82,11 +82,15 @@ gpii.app.userErrorsHandler.getErrorDetails = function (errorMessages, messagePre
  * Displays a user error through the usage of the "gpii.app.errorDialog".
  * @param {Component} that - An instance of gpii.app.
  * @param {Component} dialogManager - An instance of `gpii.app.dialogManager`.
- * @param {String} errorCode - The code of the error that is present
+ * @param {Object} error - The error payload
+ * @param {Boolean} error.isError - Whether it is an error (it should be positive)
+ * @param {Object} error.originalError - The original error object
+ * @param {String} error.messagesKey - The error code of the error. It also represents a key
+ * in the userError messages.
  */
-gpii.app.userErrorsHandler.handleUserError = function (that, dialogManager, errorCode/*, isError, error */) {
-    var errorDialogOptions = that.getErrorDetails(errorCode);
-    errorDialogOptions.errCode = errorCode;
+gpii.app.userErrorsHandler.handleUserError = function (that, dialogManager, error) {
+    var errorDialogOptions = that.getErrorDetails(error.messageKey);
+    errorDialogOptions.errCode = error.messageKey;
 
     dialogManager.hide("waitDialog");
     dialogManager.show("error", errorDialogOptions);
