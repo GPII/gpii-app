@@ -487,7 +487,7 @@
         model: {
             messages: {
                 notification: {
-                    keyedOut: "To save your settings you need to setup a Morphic Account.  Go to <a href=\"http://Morphic.global/account\">http://Morphic.global/account</a>",
+                    keyedOut: "To save your settings you need to setup a Morphic Account.  Go to <a href=\"http://Morphic.world/account\">http://Morphic.world/account</a>",
                     keyedIn: "Your settings were saved to the Morphic Cloud."
                 }
             }
