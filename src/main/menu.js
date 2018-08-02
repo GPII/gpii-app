@@ -9,7 +9,7 @@
  * compliance with this License.
  * The research leading to these results has re eived funding from the European Union's
  * Seventh Framework Programme (FP7/2007-2013) under grant agreement no. 289016.
- * You may obt vcfain a copy of the License at
+ * You may obtain a copy of the License at
  *
  * https://github.com/GPII/universal/blob/master/LICENSE.txt
  */
@@ -27,6 +27,7 @@ var gpii  = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.menuInApp", {
     gradeNames: "gpii.app.menu",
     model: {
+        isKeyedIn: "{app}.model.isKeyedIn",
         keyedInUserToken: "{app}.model.keyedInUserToken",
         snapsetName: "{app}.model.snapsetName",
         preferences: {
@@ -42,8 +43,13 @@ fluid.defaults("gpii.app.menuInApp", {
         }
     },
     listeners: {
-        "onPSP.performPSPShow": {
-            listener: "{psp}.show"
+        "onQss.performQssShow": {
+            listener: "{qssWrapper}.qss.show"
+        },
+
+        "onAbout.showAbout": {
+            listener: "{dialogManager}.show",
+            args: ["aboutDialog"]
         },
 
         // onKeyOut event is fired when a keyed-in user keys out through the task tray.
@@ -92,13 +98,24 @@ fluid.defaults("gpii.app.menuInAppDev", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.options.locales", "{that}.options.snapsets", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut", "{that}.options.exit"]
+                args: [
+                    "{that}.model.showQSS",
+                    "{that}.model.keyedInSnapset",
+                    "{that}.options.locales",
+                    "{that}.options.themes",
+                    "{that}.options.snapsets",
+                    "{that}.model.preferenceSetsMenuItems",
+                    "{that}.model.showAbout",
+                    "@expand:gpii.app.menu.getSeparatorItem()",
+                    "{that}.model.keyOut",
+                    "{that}.options.exit"]
             },
             priority: "last"
         }
     },
     events: {
         onLocale: null,
+        onThemeChanged: null,
         onKeyIn: null,
         onExit: null
     },
@@ -107,6 +124,10 @@ fluid.defaults("gpii.app.menuInAppDev", {
         "onLocale.changeLocale": {
             changePath: "{app}.model.locale",
             value: "{arguments}.0.locale"
+        },
+        "onThemeChanged.changeTheme": {
+            changePath: "{app}.model.theme",
+            value: "{arguments}.0.theme"
         },
         // onKeyIn event is fired when a new user keys in through the task tray.
         // This should result in:
@@ -149,6 +170,23 @@ fluid.defaults("gpii.app.menuInAppDev", {
             click: "onLocale",
             args: {
                 locale: "fr"
+            }
+        }]
+    },
+
+    themes: {
+        label: "Theme...",
+        submenu: [{
+            label: "white",
+            click: "onThemeChanged",
+            args: {
+                theme: "white"
+            }
+        }, {
+            label: "dark",
+            click: "onThemeChanged",
+            args: {
+                theme: "dark"
             }
         }]
     },
@@ -263,16 +301,20 @@ fluid.defaults("gpii.app.menu", {
         //    activeSet: null
         //},
         // locally updated
+        menuTemplate: [],             // This is updated on change of keyedInUserToken.
+
         preferenceSetsMenuItems: [],  // Updated on `preferences` changed.
         keyedInSnapset: null,        // Must be updated when keyedInUserToken changes.
         keyOut: null,                 // May or may not be in the menu, must be updated when keyedInUserToken changes.
-        menuTemplate: [],             // This is updated on change of keyedInUserToken.
+        showAbout: null,
+        showQSS: null,
 
         messages: {
-            psp: null,
-            keyOut: null,
-            keyedIn: null,
-            notKeyedIn: null
+            about:      null,
+            keyOut:     null,
+            keyedIn:    null,
+            notKeyedIn: null,
+            openQss:    null
         }
     },
     modelRelay: {
@@ -281,7 +323,10 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyedInSnapset",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.snapsetName", "{that}.model.messages.keyedIn"]
+                args: ["{that}.model.isKeyedIn", "{that}.model.snapsetName", "{that}.model.messages.keyedIn"]
+            },
+            forward: {
+                excludeSource: "init"
             }
         },
         "keyOut": {
@@ -289,15 +334,37 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyOut",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.messages.keyOut", "{that}.model.messages.notKeyedIn"]
+                args: [
+                    "{that}.model.isKeyedIn",
+                    "{that}.model.keyedInUserToken",
+                    "{that}.model.messages.keyOut",
+                    "{that}.model.messages.notKeyedIn"
+                ]
+            },
+            forward: {
+                excludeSource: "init"
             }
         },
-        "showPSP": {
-            target: "showPSP",
+        "showAbout": {
+            target: "showAbout",
             singleTransform: {
                 type: "fluid.transforms.free",
-                func: "gpii.app.menu.getShowPSP",
-                args: ["{that}.model.keyedInUserToken", "{that}.model.messages.psp"]
+                func: "gpii.app.menu.getSimpleMenuItem",
+                args: ["{that}.model.messages.about", "onAbout"]
+            },
+            forward: {
+                excludeSource: "init"
+            }
+        },
+        "showQSS": {
+            target: "showQSS",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getSimpleMenuItem",
+                args: ["{that}.model.messages.openQss", "onQss"]
+            },
+            forward: {
+                excludeSource: "init"
             }
         },
         "preferenceSetsMenuItems": {
@@ -305,7 +372,10 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getPreferenceSetsMenuItems",
-                args: ["{that}.model.preferences.sets", "{that}.model.preferences.activeSet"]
+                args: ["{that}.model.isKeyedIn", "{that}.model.preferences.sets", "{that}.model.preferences.activeSet"]
+            },
+            forward: {
+                excludeSource: "init"
             }
         },
         "menuTemplate": {
@@ -313,20 +383,31 @@ fluid.defaults("gpii.app.menu", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.generateMenuTemplate",
-                args: ["{that}.model.showPSP", "{that}.model.keyedInSnapset", "{that}.model.preferenceSetsMenuItems", "{that}.model.keyOut"]
+                args: [
+                    "{that}.model.showQSS",
+                    "{that}.model.keyedInSnapset",
+                    "{that}.model.preferenceSetsMenuItems",
+                    "{that}.model.showAbout",
+                    "@expand:gpii.app.menu.getSeparatorItem()",
+                    "{that}.model.keyOut"
+                ]
+            },
+            forward: {
+                excludeSource: "init"
             },
             priority: "last"
         }
     },
     events: {
-        onPSP: null,
+        onQss:                        null,
+        onAbout:                      null,
         onActivePreferenceSetAltered: null,
-        onKeyOut: null
+        onKeyOut:                     null
     }
 });
 
 /**
- *  Object representing options for a `Electron` `ContextMenu` item.
+ * Object representing options for a `Electron` `ContextMenu` item.
  * @typedef {Object} ElectronMenuItem
  * @property {String} label The label that will be visualized in the menu
  * @property {String} enabled Whether the menu item is enabled
@@ -340,15 +421,15 @@ fluid.defaults("gpii.app.menu", {
 /**
  * Generates an object that represents the menu item for keying in.
  *
- * @param {String} keyedInUserToken - The user token that is currently keyed in.
+ * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {String} snapsetName - The user-friendly name of the keyed in snapset.
  * @param {String} keyedInStrTemp - The string template for the label when a user is keyed in.
  * @return {ElectronMenuItem} - The Electron menu item for keying in.
  */
-gpii.app.menu.getKeyedInSnapset = function (keyedInUserToken, snapsetName, keyedInStrTemp) {
+gpii.app.menu.getKeyedInSnapset = function (isKeyedIn, snapsetName, keyedInStrTemp) {
     var keyedInUser = null;
 
-    if (keyedInUserToken) {
+    if (isKeyedIn) {
         keyedInUser = {
             label: fluid.stringTemplate(keyedInStrTemp, {"snapsetName": snapsetName}),
             enabled: false
@@ -360,16 +441,16 @@ gpii.app.menu.getKeyedInSnapset = function (keyedInUserToken, snapsetName, keyed
 
 /**
  * Generates an object that represents the menu item for keying out.
- *
+ * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {String} keyedInUserToken - The user token that is currently keyed in.
  * @param {String} keyOutStr - The string to be displayed for the key out menu item if there is a keyed in user.
  * @param {String} notKeyedInStr - The string to be displayed when a user is not keyed in.
  * @return {ElectronMenuItem} - The Electron menu item for keying out.
  */
-gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr, notKeyedInStr) {
+gpii.app.menu.getKeyOut = function (isKeyedIn, keyedInUserToken, keyOutStr, notKeyedInStr) {
     var keyOut;
 
-    if (keyedInUserToken) {
+    if (isKeyedIn) {
         keyOut = {
             label: keyOutStr,
             click: "onKeyOut",
@@ -391,12 +472,16 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr, notKeyedInStr) 
 /**
  * Generates an array that represents the menu items related to a user's preference sets. The returned array can be used
  * in the context menu of a {Tray} object.
- *
+ * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {Array} preferenceSets - An array of all preference sets for the user.
  * @param {String} activeSet - The path of the currently active preference set.
  * @return {ElectronMenuItem[]} - An array of Electron menu items.
  */
-gpii.app.menu.getPreferenceSetsMenuItems = function (preferenceSets, activeSet) {
+gpii.app.menu.getPreferenceSetsMenuItems = function (isKeyedIn, preferenceSets, activeSet) {
+    if (!isKeyedIn) {
+        return [];
+    }
+
     var preferenceSetsLabels,
         separator = {type: "separator"};
 
@@ -419,20 +504,26 @@ gpii.app.menu.getPreferenceSetsMenuItems = function (preferenceSets, activeSet) 
 };
 
 /**
- * Generates an object that represents the menu items for opening the settings panel.
- *
- * @param {String} keyedInUserToken - The user token that is currently keyed in.
- * @param {String} openSettingsStr - The string to be displayed for the open setting panel menu item.
- * @return {ElectronMenuItem} - An Electron menu item that can be used to open the settings panel.
- */
-gpii.app.menu.getShowPSP = function (keyedInUserToken, openSettingsStr) {
+  * Generates an object that represents a selectable menu item
+  * @param {String} label - The label of the item.
+  * @param {String} event - The event to be triggered on click.
+  * @param {Object} [payload] - The payload that is to be supplied with the on click event.
+  * @return {ElectronMenuItem} A simple selectable Electron menu item.
+  */
+gpii.app.menu.getSimpleMenuItem = function (label, event, payload) {
     return {
-        label: openSettingsStr,
-        click: "onPSP",
-        args: {
-            token: keyedInUserToken
-        }
+        label: label,
+        click: event,
+        args: payload || {}
     };
+};
+
+/**
+ * Generate a simple Electron context menu separator item.
+ * @return {Object} The separator menu item.
+ */
+gpii.app.menu.getSeparatorItem = function () {
+    return {type: "separator"};
 };
 
 /**

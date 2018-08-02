@@ -3,6 +3,7 @@
     position: relative;
     padding: 4px;
     background-color: #d8eef9;
+    min-height: 60px;
 }
 
 .fl-header .flc-prefSetPicker {
@@ -11,6 +12,7 @@
     margin-bottom: 5px;
 }
 
+.fl-header .fl-headerTitle,
 .fl-header .fl-activePreferenceSet {
     float: left;
     margin-bottom: 5px;
@@ -18,6 +20,16 @@
     font-weight: bold;
     color: #184f9c;
     cursor: default;
+}
+
+.fl-header .fl-activePreferenceSetImage {
+    width: 32px;
+    height: 32px;
+}
+
+.fl-header .fl-activePreferenceSetImage:not([src]),
+.fl-header .fl-activePreferenceSetImage[src=""] {
+    display: none;
 }
 
 .fl-header .fl-autosaveHint {
@@ -45,6 +57,7 @@
     background-color: var(--alt-theme-background-color);
 }
 
+.theme-alt .fl-header .fl-headerTitle,
 .theme-alt .fl-header .fl-activePreferenceSet {
-    color: var(--alt-theme-text-color);;
+    color: var(--alt-theme-text-color);
 }

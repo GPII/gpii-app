@@ -16,12 +16,13 @@
 "use strict";
 
 var fluid         = require("infusion");
-var electron      = require("electron");
 var BrowserWindow = require("electron").BrowserWindow;
 
 var gpii  = fluid.registerNamespace("gpii");
 
-require("./utils.js");
+require("./resizable.js");
+
+fluid.registerNamespace("gpii.app.dialog");
 
 
 /**
@@ -34,6 +35,10 @@ require("./utils.js");
  * It also provides show/hide operations of the window through interaction
  * with the `isShown` property of the component
  * and handles Electron objects cleanup upon destruction.
+ *
+ * TODO positioning
+ *  Positioning of the window is relative to the bottom right corner of the screen (contrary to the
+ *  behaviour of the Electron positioning approach) as most windows are positioned in that exact region.
  *
  * Requires:
  * - (optional) `attrs` - used as raw options for `BrowserWindow` generation.
@@ -48,13 +53,40 @@ require("./utils.js");
  *   `fileSuffixPath = "waitDialog/index.html"`
  */
 fluid.defaults("gpii.app.dialog", {
-    gradeNames: ["fluid.modelComponent"],
+    gradeNames: ["fluid.modelComponent", "gpii.app.resizable"],
 
     model: {
-        isShown: false
+        isShown: false,
+        // the positions of the window,
+        // represented as offset from the bottom right corner;
+        // by default the window is positioned in the bottom right corner
+        offset: {
+            x: 0,
+            y: 0
+        }
+    },
+
+    events: {
+        onDialogShown: null,
+        onDialogHidden: null
     },
 
     config: {
+        // dialog behaviour settings
+        showInactive: false,
+        // Whether to position the dialog after creation. This is used instead of x and y as raw
+        // options as they depend on the offset and latter is not yet defined at the time of the
+        // dialog creation
+        positionOnInit: true,
+
+        restrictions: {
+            minHeight: null
+        },
+
+        // params for the BrowserWindow instance
+        params: null,
+
+        // dialog creation options
         attrs: {        // raw attributes used in `BrowserWindow` generation
             width: 800,
             height: 600,
@@ -78,12 +110,18 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     members: {
+        // XXX move to the model probably
+        width:  "{that}.options.config.attrs.width", // the actual width of the content
+        height: "{that}.options.config.attrs.height", // the actual height of the content
+
         dialog: {
             expander: {
                 funcName: "gpii.app.dialog.makeDialog",
                 args: [
+                    "{that}",
                     "{that}.options.config.attrs",
-                    "{that}.options.config.url"
+                    "{that}.options.config.url",
+                    "{that}.options.config.params"
                 ]
             }
         }
@@ -92,30 +130,14 @@ fluid.defaults("gpii.app.dialog", {
     modelListeners: {
         isShown: {
             funcName: "gpii.app.dialog.toggle",
-            args: ["{that}", "{change}.value"],
-            namespace: "impl"
+            args: ["{that}", "{change}.value", "{that}.options.config.showInactive"],
+            namespace: "impl",
+            excludeSource: "init"
         }
     },
-    events: {
-        onDisplayMetricsChanged: null
-    },
     listeners: {
-        "onCreate.positionWindow": {
-            func: "{that}.positionWindow"
-        },
-        "onCreate.addDisplayMetricsListener": {
-            func: "gpii.app.dialog.addDisplayMetricsListener",
-            args: ["{that}"]
-        },
-        "onDisplayMetricsChanged.handleDisplayMetricsChange": {
-            func: "gpii.app.dialog.handleDisplayMetricsChange",
-            args: [
-                "{that}",
-                "{arguments}.2" // changedMetrics
-            ]
-        },
-        "onDestroy.removeDisplayMetricsListener": {
-            func: "gpii.app.dialog.removeDisplayMetricsListener",
+        "onCreate.postInit": {
+            funcName: "gpii.app.dialog.onDialogCreated",
             args: ["{that}"]
         },
         "onDestroy.cleanupElectron": {
@@ -124,17 +146,55 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
-        positionWindow: {
-            funcName: "gpii.app.positionWindow",
-            args: ["{that}.dialog"]
-        },
-        resize: {
-            funcName: "gpii.app.dialog.resize",
+        /// XXX The `setBounds` function is used instead of
+        /// `setPosition` alone because of a
+        // related Electron issue https://github.com/electron/electron/issues/9477
+        //
+        // Changing the position of a BrowserWindow when the scale factor is different than
+        // the default one ( that is 100% ) changes the window's size (either width of height).
+        // To ensure its size is correct simply reset the size of the window with its stored one.
+        // Once the issues is addressed this can be changed back to simple `setPosition` functionality
+        setPosition: {
+            funcName: "gpii.app.dialog.setBounds",
             args: [
                 "{that}",
-                "{arguments}.0", // windowWidth
-                "{arguments}.1"  // windowHeight
+                "{that}.options.config.restrictions",
+                "{that}.width",
+                "{that}.height",
+                "{arguments}.0", // offsetX
+                "{arguments}.1"  // offsetY
             ]
+        },
+        setBounds: {
+            funcName: "gpii.app.dialog.setBounds",
+            args: [
+                "{that}",
+                "{that}.options.config.restrictions",
+                "{arguments}.0", // width
+                "{arguments}.1", // height
+                "{arguments}.2", // offsetX
+                "{arguments}.3"  // offsetY
+            ]
+        },
+        setRestrictedSize: {
+            funcName: "gpii.app.dialog.setRestrictedSize",
+            args: [
+                "{that}",
+                "{that}.options.config.restrictions",
+                "{arguments}.0", // width
+                "{arguments}.1"  // height
+            ]
+        },
+        _show: {
+            funcName: "gpii.app.dialog._show",
+            args: [
+                "{that}",
+                "{arguments}.0" // showInactive
+            ]
+        },
+        _hide: {
+            this: "{that}.dialog",
+            method: "hide"
         },
         show: {
             changePath: "isShown",
@@ -144,6 +204,10 @@ fluid.defaults("gpii.app.dialog", {
             changePath: "isShown",
             value: false
         },
+        focus: {
+            this: "{that}.dialog",
+            method: "focus"
+        },
         close: {
             this: "{that}.dialog",
             method: "close"
@@ -151,39 +215,6 @@ fluid.defaults("gpii.app.dialog", {
     }
 });
 
-/**
- * Registers a listener to be called whenever the `display-metrics-changed`
- * event is emitted by the electron screen.
- * @param {Component} that - The `gpii.app.dialog` component.
- */
-gpii.app.dialog.addDisplayMetricsListener = function (that) {
-    electron.screen.on("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
-};
-
-/**
- * Handle electron's display-metrics-changed event by resizing the dialog if
- * necessary.
- * @param {Component} that - The `gpii.app.dialog` component.
- * @param {Array} changedMetrics - An array of strings that describe the changes.
- * Possible changes are `bounds`, `workArea`, `scaleFactor` and `rotation`
- */
-gpii.app.dialog.handleDisplayMetricsChange = function (that, changedMetrics) {
-    if (!changedMetrics.includes("scaleFactor")) {
-        var attrs = that.options.config.attrs;
-        that.resize(attrs.width, attrs.height);
-    }
-};
-
-/**
- * Removes the listener for the `display-metrics-changed` event. This should
- * be done when the component gets destroyed in order to avoid memory leaks,
- * as some dialogs are created and destroyed dynamically (i.e. before the
- * PSP application terminates).
- * @param {Component} that - The `gpii.app.dialog` component.
- */
-gpii.app.dialog.removeDisplayMetricsListener = function (that) {
-    electron.screen.removeListener("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
-};
 
 /**
  * Builds a file URL inside the application **Working Directory**.
@@ -207,15 +238,51 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
 /**
  * Creates a dialog. This is done up front to avoid the delay from creating a new
  * dialog every time a new message should be displayed.
+ * @param {Component} that - The raw Electron `BrowserWindow` settings
  * @param {Object} windowOptions - The raw Electron `BrowserWindow` settings
  * @param {String} url - The URL to be loaded in the `BrowserWindow`
+ * @param {Object} params -  Options that are to be supplied to the render process of
+ * the newly created BrowserWindow
  * @return {BrowserWindow} The Electron `BrowserWindow` component
  */
-gpii.app.dialog.makeDialog = function (windowOptions, url) {
+gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
     var dialog = new BrowserWindow(windowOptions);
 
     dialog.loadURL(url);
+
+    // Approach for sharing initial options for the renderer process
+    // proposed in: https://github.com/electron/electron/issues/1095
+    dialog.params = params || {};
+
+    // ensure the window is hidden properly
+    if (that.options.config.offScreenHide && !windowOptions.show) {
+        gpii.app.dialog.offScreenHidable.moveOffScreen(dialog);
+        dialog.show();
+    }
+
     return dialog;
+};
+
+gpii.app.dialog.onDialogCreated = function (that) {
+    if (that.options.config.positionOnInit) {
+        that.setPosition();
+    }
+};
+
+
+/**
+ * TODO
+ *
+ * @param that
+ * @param showInactive
+ * @returns {undefined}
+ */
+gpii.app.dialog._show = function (that, showInactive) {
+    var showMethod = showInactive ?
+        that.dialog.showInactive :
+        that.dialog.show;
+
+    showMethod.call(that.dialog);
 };
 
 /**
@@ -224,28 +291,81 @@ gpii.app.dialog.makeDialog = function (windowOptions, url) {
  * In case it is shown, resets the position and shows the current dialog (`BrowserWindow`).
  * The reset is needed in order to handle cases such as resolution or
  * DPI settings changes.
- * @param {Component} dialog - The diolog component to be shown
+ * @param {Component} that - The diolog component to be shown
  * @param {Boolean} isShown - Whether the window has to be shown
+ * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
-gpii.app.dialog.toggle = function (dialog, isShown) {
+gpii.app.dialog.toggle = function (that, isShown, showInactive) {
     if (isShown) {
-        dialog.positionWindow();
-        dialog.dialog.show();
+        that._show(showInactive);
+        that.events.onDialogShown.fire();
     } else {
-        dialog.dialog.hide();
+        that._hide();
+        that.events.onDialogHidden.fire();
     }
 };
 
 /**
- * Resizes the current window and repositions it to match the new size.
+ * Both resizes the current window and repositions it.
  * @param {Component} that - The `gpii.app.dialog` instance
- * @param {Number} windowWidth - The new width for the window
- * @param {Number} windowHeight - The new height for the window
+ * @param {Object} restrictions - Restrictions for resizing and positioning the window
+ * @param {Number} width - The new width for the window
+ * @param {Number} height - The new height for the window
+ * @param {Number} offsetX - The new width for the window
+ * @param {Number} offsetY - The new height for the window
  */
-gpii.app.dialog.resize = function (that, windowWidth, windowHeight) {
-    var bounds = gpii.app.getDesiredWindowBounds(windowWidth, windowHeight);
+gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX, offsetY) {
+    // XXX Unites both setPosition and setRestrictedSize but cannot use them separately
+    // As default use currently set values
+    offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
+    offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
+    width    = fluid.isValue(width)   ? width : that.width;
+    height   = fluid.isValue(height)  ? height : that.height;
+
+    // apply restrictions
+    if (restrictions.minHeight) {
+        height = Math.max(height, restrictions.minHeight);
+    }
+
+    var bounds = gpii.browserWindow.computeWindowBounds(width, height, offsetX, offsetY);
+
+    that.width  = width;
+    that.height = height;
+    that.applier.change("offset", { x: offsetX, y: offsetY });
+
     that.dialog.setBounds(bounds);
 };
+
+
+
+/**
+ * Resizes the Electron BrowserWindow. Ensures that the window will be resized to fit the available screen
+ * area.
+ *
+ * @param {Component} that - The `gpii.app.dialog` instance
+ * @param {Number} [width] - The desired width for the window
+ * @param {Number} [height] - The desired height for the window
+ */
+gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height) {
+    // ensure the whole window is visible
+    var offset = that.model.offset;
+
+    width  = width  || that.width;
+    height = height || that.height;
+
+    // apply restrictions
+    if (restrictions.minHeight) {
+        height = Math.max(height, restrictions.minHeight);
+    }
+
+    var size = gpii.browserWindow.computeWindowSize(width, height, offset.x, offset.y);
+
+    that.width  = width;
+    that.height = height;
+
+    that.dialog.setSize(size.width, size.height);
+};
+
 
 /**
  * A wrapper for the creation of dialogs with the same type. This component makes
@@ -280,6 +400,10 @@ fluid.defaults("gpii.app.dialogWrapper", {
             funcName: "gpii.app.dialogWrapper.hide",
             args: ["{that}"]
         },
+        focus: {
+            funcName: "gpii.app.dialogWrapper.focus",
+            args: ["{that}"]
+        },
         close: {
             funcName: "gpii.app.dialogWrapper.close",
             args: ["{that}"]
@@ -305,6 +429,12 @@ gpii.app.dialogWrapper.show = function (that, options) {
 gpii.app.dialogWrapper.hide = function (that) {
     if (that.dialog) {
         that.dialog.hide();
+    }
+};
+
+gpii.app.dialogWrapper.focus = function (that) {
+    if (that.dialog) {
+        that.dialog.focus();
     }
 };
 
@@ -337,3 +467,204 @@ fluid.defaults("gpii.app.i18n.channel", {
         }
     }
 });
+
+/**
+ * Listens for events from the renderer process (the BrowserWindow).
+ */
+fluid.defaults("gpii.app.channelListener", {
+    gradeNames: ["gpii.app.common.simpleChannelListener"],
+    ipcTarget: require("electron").ipcMain
+});
+
+/**
+ * Notifies the render process for main events.
+ */
+fluid.defaults("gpii.app.channelNotifier", {
+    gradeNames: ["gpii.app.common.simpleChannelNotifier", "gpii.app.i18n.channel"],
+    // TODO improve `i18n.channel` to use event instead of a direct notifying
+    ipcTarget: "{dialog}.dialog.webContents" // get the closest dialog
+});
+
+/**
+ * TODO
+ */
+fluid.defaults("gpii.app.dialog.delayedShow", {
+    gradeNames: ["gpii.app.timer"],
+
+    // the desired delay in milliseconds
+    showDelay: null,
+
+    listeners: {
+        onTimerFinished: {
+            func: "{that}.show"
+            // arguments are passed with the event
+        }
+    },
+
+    invokers: {
+        // _show: null, // expected from implementor
+        // _hide: null,
+        delayedShow: {
+            funcName: "gpii.app.dialog.delayedShow.delayedShow",
+            args: [
+                "{that}",
+                "{that}.options.showDelay",
+                "{arguments}" // showArgs
+            ]
+        },
+        delayedHide: {
+            funcName: "gpii.app.dialog.delayedShow.delayedHide",
+            args: ["{that}"]
+        }
+    }
+});
+
+gpii.app.dialog.delayedShow.delayedShow = function (that, delay, showArgs) {
+    // process raw arguments
+    showArgs = fluid.values(showArgs);
+
+    if (!fluid.isValue(delay)) {
+        // simply trigger a show synchronously
+        that.events.onTimerFinished.fire.apply(that.events.onTimerFinished, showArgs);
+    } else if (Number.isInteger(delay)) {
+        that.start(delay, showArgs);
+    } else {
+        fluid.fail("Dialog's delay must be a number.");
+    }
+};
+
+gpii.app.dialog.delayedShow.delayedHide = function (that) {
+    // clear any existing timer
+    that.clear();
+
+    that.hide();
+};
+
+fluid.defaults("gpii.app.centeredDialog", {
+    gradeNames: ["gpii.app.dialog"],
+
+    invokers: {
+        setPosition: {
+            funcName: "gpii.app.centeredDialog.setBounds",
+            args: [
+                "{that}",
+                "{that}.width",
+                "{that}.height"
+            ]
+        },
+        setBounds: {
+            funcName: "gpii.app.centeredDialog.setBounds",
+            args: [
+                "{that}",
+                "{arguments}.0", // width
+                "{arguments}.1"  // height
+            ]
+        }
+    }
+});
+
+gpii.app.centeredDialog.setBounds = function (that, width, height) {
+    width  = width || that.width;
+    height = height || that.height;
+    that.width = width;
+    that.heigh = height;
+
+    var position = gpii.browserWindow.computeCentralWindowPosition(width, height),
+        bounds = gpii.browserWindow.computeWindowBounds(width, height, position.x, position.y);
+
+    that.dialog.setBounds(bounds);
+};
+
+
+// Mixin
+fluid.defaults("gpii.app.dialog.offScreenHidable", {
+    config: {
+        positionOnInit: false,
+        offScreenHide: true
+    },
+
+    invokers: {
+        _show: {
+            funcName: "gpii.app.dialog.offScreenHidable.moveOnScreen",
+            args: [
+                "{that}",
+                "{arguments}.0" // showInactive
+            ]
+        },
+        _hide: {
+            funcName: "gpii.app.dialog.offScreenHidable.moveOffScreen",
+            args: ["{that}.dialog"]
+        },
+        setPosition: {
+            funcName: "gpii.app.dialog.offScreenHidable.setBounds",
+            args: [
+                "{that}",
+                "{that}.options.config.restrictions",
+                "{that}.width",
+                "{that}.height",
+                "{arguments}.0", // offsetX
+                "{arguments}.1"  // offsetY
+            ]
+        },
+        setBounds: {
+            funcName: "gpii.app.dialog.offScreenHidable.setBounds",
+            args: [
+                "{that}",
+                "{that}.options.config.restrictions",
+                "{arguments}.0", // width
+                "{arguments}.1", // height
+                "{arguments}.2", // offsetX
+                "{arguments}.3"  // offsetY
+            ]
+        }
+    }
+});
+
+/**
+ * Shows the PSP window by moving it to the lower right part of the screen and changes
+ * the `isShown` model property accordingly.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ */
+gpii.app.dialog.offScreenHidable.moveOnScreen = function (that, showInactive) {
+    // Move to screen
+    that.setPosition();
+    if (!showInactive) {
+        that.dialog.focus();
+    }
+};
+
+/**
+ * Moves the BrowserWindow to a non-visible part of the screen. This function in conjunction
+ * with `gpii.browserWindow.moveToScreen` help avoid the flickering issue when the content
+ * of the PSP window changes.
+ * @param {Object} window - An Electron `BrowserWindow`.
+ */
+gpii.app.dialog.offScreenHidable.moveOffScreen = function (dialog) {
+    // Move the BrowserWindow so far away that even if there is an additional screen attached,
+    // it will not be visible. It appears that the min value for the `BrowserWindow`
+    // position can be -Math.pow(2, 31). Any smaller values lead to an exception.
+    var coordinate = -Math.pow(2, 20);
+    var size = dialog.getSize();
+    // XXX using `setBounds` because of a related Electron issue https://github.com/electron/electron/issues/9477
+    dialog.setBounds({
+        width:  size[0],
+        height: size[1],
+        x:      coordinate,
+        y:      coordinate
+    });
+};
+
+gpii.app.dialog.offScreenHidable.setBounds = function (that, restrictions, width, height, offsetX, offsetY) {
+    if (that.model.isShown) {
+        // simply redirect to work as a normal dialog bounds change
+        gpii.app.dialog.setBounds(that, restrictions, width, height, offsetX, offsetY);
+    } else {
+        // we don't want to move it to screen (visible area)
+        that.setRestrictedSize(width, height);
+
+        // only save the new position without applying it
+        offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
+        offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
+        that.applier.change("offset", { x: offsetX, y: offsetY });
+    }
+};

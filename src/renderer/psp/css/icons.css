@@ -1,18 +1,5 @@
 .fl-icon {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-
     background-color: var(--main-theme-text-color);
-
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-
-    -webkit-mask-position: 50% 50%;
-    mask-position: 50% 50%;
-
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
 }
 
 .fl-icon.fl-icon-filled {

@@ -1,0 +1,27 @@
+{
+    "type": "gpii.appWithTaskTrayBase",
+    "options": {
+        "gradeNames": ["fluid.component"],
+        "distributeOptions": {
+            "distributeTaskTray": {
+                "record": "gpii.appWrapper",
+                "target": "{that gpii.flowManager.untrusted}.options.gradeNames"
+            },
+            "distributePcpChannelConnector": {
+                "record": {
+                    "hostname": "localhost",
+                    "port": 8081,
+                    "path": "/pspChannel"
+                },
+                "target": "{that gpiiConnector}.options.config"
+            },
+            "distributeSurveyConnector": {
+                "record": "gpii.app.staticSurveyConnector",
+                "target": "{that surveyConnector}.options.gradeNames"
+            }
+        }
+    },
+    "mergeConfigs": [
+        "%gpii-universal/gpii/configs/gpii.config.untrusted.development.all.local.json5"
+    ]
+}

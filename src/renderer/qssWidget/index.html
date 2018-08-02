@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <title>Quick Set Strip Widget</title>
+        <link rel="stylesheet" href="../common/css/titlebar.css">
+        <link rel="stylesheet" href="../common/css/icons.css">
+        <link rel="stylesheet" href="../psp/css/button.css">
+        <link rel="stylesheet" href="css/qssWidget.css">
+
+        <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+
+        <script type="text/javascript" src="js/qssMenuWidget.js"></script>
+        <script type="text/javascript" src="js/qssStepperWidget.js"></script>
+        <script type="text/javascript" src="js/qssWidget.js"></script>
+        <script type="text/javascript" src="js/qssWidgetButton.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+
+        <script type="text/javascript" src="../common/js/titlebar.js"></script>
+        <script type="text/javascript" src="../common/js/utils.js"></script>
+        <script type="text/javascript" src="../psp/js/widgets.js"></script>
+
+        <script type="text/javascript" src="../../common/utils.js"></script>
+        <script type="text/javascript" src="../../common/channelUtils.js"></script>
+
+        <script type="text/javascript" src="../common/js/elementRepeater.js"></script>
+        <script type="text/javascript" src="../common/js/elementInteractionListeners.js"></script>
+        <script type="text/javascript" src="../common/js/channelUtils.js"></script>
+        <script type="text/javascript" src="../common/js/focusManager.js"></script>
+
+        <script type="text/javascript" src="../../common/messageBundles.js"></script>
+        <script type="text/javascript" src="../common/js/messageBundles.js"></script>
+    </head>
+    <body>
+        <div class="flc-qssWidget fl-qssWidget">
+            <div class="flc-titlebar fl-titlebar">
+                <div class="flc-closeBtn fl-closeBtn btn btn-regular fl-focusable" role="button" tabindex="0">&#x2715;</div>
+            </div>
+
+            <!-- the Stepper Widget -->
+            <div class="flc-qssStepperWidget fl-scrollable fl-qssStepperWidget">
+                <div class="fl-qssWidget-tip">
+                    <div class="flc-tipTitle fl-tipTitle"></div>
+                    <div class="flc-tipSubtitle fl-tipSubtitle"></div>
+                </div>
+
+                <div class="fl-qssStepperWidget-controls">
+                    <div role="button" class="flc-qssStepperWidget-incBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
+                        <div class="fl-icon fl-increment-icon"></div>
+                        <span class="flc-btnLabel fl-btnLabel"></span>
+                    </div>
+                    <div role="button" class="flc-qssStepperWidget-decBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
+                        <div class="fl-icon fl-decrement-icon"></div>
+                        <span class="flc-btnLabel fl-btnLabel"></span>
+                    </div>
+                </div>
+
+                <div class="flc-qssStepperWidget-footerTip fl-qssWidget-footerTip"></div>
+            </div>
+
+            <!-- the Menu Widget -->
+            <div class="flc-qssMenuWidget fl-dialog-content fl-scrollable fl-qssMenuWidget">
+                <div class="fl-qssWidget-tip">
+                    <div class="flc-tipTitle fl-tipTitle"></div>
+                    <div class="flc-tipSubtitle fl-tipSubtitle"></div>
+                </div>
+                <div role="radiogroup" class="flc-qssMenuWidget-controls fl-qssMenuWidget-controls"></div>
+            </div>
+
+            <div class="flc-qssWidget-learnMoreLink fl-qssWidget-learnMoreLink fl-focusable" role="link" tabindex="0"></div>
+        </div>
+        <div class="fl-qssWidget-footer"></div>
+    </body>
+</html>

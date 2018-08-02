@@ -1,0 +1,199 @@
+[
+    {
+        "path": "http://registry\\.gpii\\.net/common/language",
+        "schema": {
+            "type": "string",
+            "title": "Language",
+            "keys": [
+                "en",
+                "hy",
+                "zh-Hans",
+                "zh-Hant",
+                "ko",
+                "ru",
+                "es"
+            ],
+            "enum": [
+                "English",
+                "Հայերէն · Armenian",
+                "汉语 · Chinese (Simplified)",
+                "漢語 · Chinese (Traditional)",
+                "한국어 · Korean",
+                "Ру́сский · Russian",
+                "Español · Spanish"
+            ],
+            "image": "language.svg",
+            "default": "en"
+        },
+        "value": "en",
+        "tooltip": "<div><strong>Change language.</strong></div><div>Works in Windows, Edge, and many other applications.</div>",
+        "restartWarning": true,
+        "learnMoreLink": "https://www.gpii.net"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/fontSize",
+        "schema": {
+            "type": "number",
+            "title": "App / Text Zoom",
+            "min": 0,
+            "max": null,
+            "divisibleBy": 0.5
+        },
+        "value": 11,
+        "tooltip": "<div><strong>Change text size.</strong></div><div>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</div>",
+        "widget": {
+            "footerTip": "You can also use the CTRL key plus the Scroll (wheel or gesture) at any time."
+        },
+        "learnMoreLink": "https://www.gpii.net"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/DPIScale",
+        "schema": {
+            "type": "number",
+            "title": "Screen Zoom",
+            "min": 1,
+            "max": 2,
+            "divisibleBy": 0.25,
+            "default": 1.25
+        },
+        "value": 1.25,
+        "tooltip": "<div><strong>Change the screen size to make everything larger/smaller.</strong></div>",
+        "widget": {
+            "footerTip": ""
+        },
+        "learnMoreLink": "https://www.gpii.net"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
+        "schema": {
+            "type": "boolean",
+            "title": "Youtube Captions",
+            "default": false
+        },
+        "value": false,
+        "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div>"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
+        "schema": {
+            "type": "string",
+            "title": "High / Low Contrast",
+            "keys": [
+                "regular-contrast",
+                "black-white",
+                "white-black",
+                "yellow-black",
+                "black-yellow",
+                "grey-black",
+                "grey-white",
+                "black-brown"
+            ],
+            "enum": [
+                "Regular contrast",
+                "Black on white",
+                "White on black",
+                "Yellow on black",
+                "Black on yellow",
+                "Grey on black",
+                "Grey on white",
+                "Black on brown"
+            ],
+            "default": "regular-contrast"
+        },
+        "value": "regular-contrast",
+        "styles": {
+            "regular-contrast": {
+                "background": "#ffffff",
+                "color": "#0073bd",
+                "border-color": "#0073bd"
+            },
+            "black-white": {
+                "background-color": "#ffffff",
+                "color": "#000000",
+                "border-color": "#656565"
+            },
+            "white-black": {
+                "background-color": "#222222",
+                "color": "#ffffff",
+                "border-color": "transparent"
+            },
+            "yellow-black": {
+                "background-color": "#222222",
+                "color": "#ffff00",
+                "border-color": "transparent"
+            },
+            "black-yellow": {
+                "background-color": "#ffff00",
+                "color": "#000000",
+                "border": "2px dashed #6c6c6c"
+            },
+            "grey-black": {
+                "background-color": "#222222",
+                "color": "#888888",
+                "border-color": "transparent"
+            },
+            "grey-white": {
+                "background-color": "#ffffff",
+                "color": "#6c6c6c",
+                "border-color": "#6c6c6c"
+            },
+            "black-brown": {
+                "background-color": "#bb9966",
+                "color": "#000000",
+                "border-color": "transparent"
+            }
+        },
+        "tooltip": "<div><strong>Change the contrast between the text and background color, so text is easier to read.</strong></div><div>Contrast changes work in Windows, Edge, and some other applications.</div>",
+        "learnMoreLink": "https://www.gpii.net"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+        "schema": {
+            "title": "Read Aloud",
+            "description": "Whether to enable/disable self voicing",
+            "type": "boolean",
+            "default": false
+        },
+        "value": false,
+        "tooltip": "<div><strong>Turn Chrome’s ability to read text on/off.</strong></div>"
+    }, {
+
+        "path": "more",
+        "schema": {
+            "type": "more",
+            "title": "More..."
+        },
+        "tooltip": "<div><strong>More options for changing the settings on this computer.</strong></div>"
+    }, {
+        "path": "save",
+        "schema": {
+            "type": "save",
+            "title": "Save"
+        },
+        "tooltip": "<div><strong>Save your preferences so you can access them from other Morphic-enabled computers.</strong></div>"
+    }, {
+        "path": "undo",
+        "schema": {
+            "type": "undo",
+            "title": "Undo",
+            "image": "undo.svg"
+        },
+        "tooltip": "<div><strong>Undo the last change you made in  the Morphic Bar.</strong></div>"
+    }, {
+        "path": "psp",
+        "schema": {
+            "type": "psp",
+            "title": {
+                "keyedIn": "My Settings Panel",
+                "keyedOut": "Sign In"
+            }
+        },
+        "tooltip": {
+            "keyedIn": "<div><strong>Open the Morphic Panel</strong></div><div>Where you can quickly adjust often-changed settings of yours.</div>",
+            "keyedOut": "<div><strong>Open the Morphic Panel</strong></div><div>Where you can sign in to apply your saved personal settings.</div>"
+        }
+    }, {
+        "path": "close",
+        "schema": {
+            "type": "close",
+            "title": "Close",
+            "image": "close.svg"
+        },
+        "tooltip": "<div><strong>Close the Morphic Panel</strong></div><div>You can reopen it using the Morphic Icon <img height=20 src='../../icons/gpii-icon-balloon.png'></img></div>"
+    }
+]

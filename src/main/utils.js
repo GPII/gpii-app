@@ -14,9 +14,10 @@
  */
 "use strict";
 
-var os       = require("os");
-var fluid    = require("infusion");
-var electron = require("electron");
+var os            = require("os");
+var fluid         = require("infusion");
+var electron      = require("electron"),
+    BrowserWindow = electron.BrowserWindow;
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -33,39 +34,117 @@ gpii.app.isWin10OS = function () {
     return majorVersion === "10";
 };
 
-/**
- * Gets the desired bounds (i.e. the coordinates and the width and height, the latter two being restricted by the
- * corresponding dimensions of the primary display) of an Electron `BrowserWindow` given its width and height. If used
- * in the `window.setBounds` function of the `BrowserWindow`, the window will be positioned in  the lower right corner
- * of the primary display.
- *
- * @param {Number} width - The width of the `BrowserWindow`.
- * @param {Number} height - The height of the `BrowserWindow`.
- * @return {{x: Number, y: Number, width: Number, height: Number}} - The bounds represented as an object.
-*/
-gpii.app.getDesiredWindowBounds = function (width, height) {
+
+fluid.registerNamespace("gpii.browserWindow");
+
+
+gpii.browserWindow.computeWindowSize = function (width, height, offsetX, offsetY) {
+    // ensure proper values are given
+    offsetX = Math.max(0, (offsetX || 0));
+    offsetY = Math.max(0, (offsetY || 0));
+
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
-    width = Math.ceil(Math.min(width, screenSize.width));
-    height = Math.ceil(Math.min(height, screenSize.height));
+    // Restrict the size of the window according to its position
+    // we want our windows to be fully visible
+    var maxWidth = screenSize.width - offsetX;
+    var maxHeight = screenSize.height - offsetY;
+
+    var optimalWidth  = Math.min(width, maxWidth);
+    var optimalHeight = Math.min(height, maxHeight);
+
     return {
-        x: Math.ceil(screenSize.width - width),
-        y: Math.ceil(screenSize.height - height),
-        width: width,
-        height: height
+        width:  Math.ceil(optimalWidth),
+        height: Math.ceil(optimalHeight)
     };
 };
 
 /**
- * Positions an Electron `BrowserWindow` in the lower right corner of
- * the primary display.
+ * Compute the position of the given window from the bottom right corner.
+ * It ensures that the window is not positioned outside of the screen.
  *
- * @param {BrowserWindow} dialogWindow - The window which is to be positioned.
+ * @param {Number} width - The width of the `BrowserWindow`.
+ * @param {Number} height - The height of the `BrowserWindow`.
+ * @param {Number} offsetY - The y bottom offset.
+ * @param {Number} offsetX - The x right offset.
+ * @return {{x: Number, y: Number}} The desired window position
  */
-gpii.app.positionWindow = function (dialogWindow) {
-    var size = dialogWindow.getSize(),
-        bounds = gpii.app.getDesiredWindowBounds(size[0], size[1]);
-    dialogWindow.setPosition(bounds.x, bounds.y);
+gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, offsetY) {
+    // ensure proper values are given
+    offsetX = Math.max(0, (offsetX || 0));
+    offsetY = Math.max(0, (offsetY || 0));
+
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    var desiredX,
+        desiredY;
+
+    // position relatively to the bottom right corner
+    // note that as offset is positive we're restricting window
+    // from being position outside the screen to the right
+    desiredX = Math.ceil(screenSize.width - (width + offsetX));
+    desiredY = Math.ceil(screenSize.height - (height + offsetY));
+
+    // restrict to the window to to exit from the left side
+    desiredX = Math.max(desiredX, 0);
+    desiredY = Math.max(desiredY, 0);
+
+    return {
+        x: desiredX,
+        y: desiredY
+    };
 };
+
+gpii.browserWindow.computeCentralWindowPosition = function (width, height) {
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+        desiredX = Math.ceil((screenSize.width - width) / 2),
+        desiredY = Math.ceil((screenSize.height - height) / 2);
+
+    desiredX = Math.max(desiredX, 0);
+    desiredY = Math.max(desiredY, 0);
+
+    return {
+        x: desiredX,
+        y: desiredY
+    };
+};
+
+
+/**
+ * Gets the desired bounds (i.e. the coordinates and the width and
+ * height, the latter two being restricted by the corresponding
+ * dimensions of the primary display) of an Electron `BrowserWindow`
+ * given its width and height. If used in the `window.setBounds`
+ * function of the `BrowserWindow`, the window will be positioned
+ * in  the lower right corner of the primary display.
+ * @param width {Number} The width of the `BrowserWindow`.
+ * @param height {Number} The height of the `BrowserWindow`.
+ * @param {Number} offsetX - The x right offset.
+ * @param {Number} offsetY - The y bottom offset.
+ * @return {{x: Number, y: Number, width: Number, height: Number}}
+ */
+gpii.browserWindow.computeWindowBounds = function (width, height, offsetX, offsetY) {
+    // restrict offset to be positive
+    var position = gpii.browserWindow.computeWindowPosition(width, height, offsetX, offsetY);
+    var size = gpii.browserWindow.computeWindowSize(width, height, offsetX, offsetY);
+
+    return {
+        x:      position.x,
+        y:      position.y,
+        width:  size.width,
+        height: size.height
+    };
+};
+
+gpii.browserWindow.getCenterWindowBounds = function (width, height) {
+    var position = gpii.browserWindow.computeCentralWindowPosition(width, height),
+        size = gpii.browserWindow.computeWindowSize(width, height);
+    return {
+        x:      position.x,
+        y:      position.y,
+        width:  size.width,
+        height: size.height
+    };
+};
+
 
 /**
  * A function which capitalizes its input text. It does nothing if the provided argument is `null` or `undefined`.
@@ -92,62 +171,14 @@ gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
     }
 };
 
-/*
- * A simple wrapper for the native timeout. Responsible for clearing the interval
- * upon component destruction.
- */
-fluid.defaults("gpii.app.timer", {
-    gradeNames: ["fluid.modelComponent"],
-
-    members: {
-        timer: null
-    },
-
-    listeners: {
-        "onDestroy.clearTimer": "{that}.clear"
-    },
-
-    events: {
-        onTimerFinished: null
-    },
-
-    invokers: {
-        start: {
-            funcName: "gpii.app.timer.start",
-            args: [
-                "{that}",
-                "{arguments}.0" // timeoutDuration
-            ]
-        },
-        clear: {
-            funcName: "gpii.app.timer.clear",
-            args: ["{that}"]
-        }
-    }
-});
-
 /**
- * Starts a timer. In `timeoutDuration` milliseconds, the `onTimerFinished` event will be fired. Any previously
- * registered timers will be cleared upon the invokation of this function.
- *
- * @param {Component} that -The `gpii.app.timer` instance.
- * @param {Number} timeoutDuration -The timeout duration in milliseconds.
+ * Checks if a hash is not empty, i.e. if it contains at least one key.
+ * Note that the values are not examined.
+ * @param {Object} hash - An arbitrary object.
+ * @return {Boolean} `true` is the hash has at least one key and `false` otherwise.
  */
-gpii.app.timer.start = function (that, timeoutDuration) {
-    that.clear();
-    that.timer = setTimeout(that.events.onTimerFinished.fire, timeoutDuration);
-};
-
-/**
- * Clears the timer.
- *
- * @param {Component} that -The `gpii.app.timer` instance.
- */
-gpii.app.timer.clear = function (that) {
-    if (that.timer) {
-        clearTimeout(that.timer);
-        that.timer = null;
-    }
+gpii.app.isHashNotEmpty = function (hash) {
+    return hash && fluid.keys(hash).length > 0;
 };
 
 /**
@@ -159,7 +190,7 @@ gpii.app.timer.clear = function (that) {
  * Related to: https://github.com/electron/electron/issues/12698
  *
  * @param {Object|Array} object - The object/array that needs to have its contexts fixed.
- * @returns {Object} The fixed object
+ * @return {Object} The fixed object
  */
 gpii.app.recontextualise = function (object) {
     if (!fluid.isPlainObject(object)) {
@@ -171,7 +202,6 @@ gpii.app.recontextualise = function (object) {
 
     fluid.each(object, function (value, key) {
         if (fluid.isArrayable(object[key])) {
-            // console.log(value);
             object[key] = [].slice.call(object[key]);
         }
         gpii.app.recontextualise(object[key]);
