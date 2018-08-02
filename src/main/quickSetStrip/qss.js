@@ -64,7 +64,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             funcName: "gpii.app.qssWrapper.updateSetting",
             args: [
                 "{that}",
-                "{arguments}.0" // setting
+                "{arguments}.0", // setting
+                "{arguments}.1"  // notUndoable
             ]
         },
         onPreferencesUpdated: {
@@ -109,7 +110,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                     "{qssWrapper}.model.settings.*": {
                         funcName: "gpii.app.qssWrapper.registerUndoableChange",
                         args: ["{that}", "{change}.path", "{change}.oldValue"],
-                        excludeSource: ["gpii.app.undoStack.undo", "init"]
+                        excludeSource: ["gpii.app.undoStack.notUndoable", "init"]
                     },
                     "{qssWrapper}.model.isKeyedIn": {
                         func: "{that}.clear"
@@ -337,19 +338,26 @@ gpii.app.qssWrapper.revertChange = function (qssWrapper, change) {
         change.changePath,
         change.oldValue,
         null,
-        "gpii.app.undoStack.undo"
+        "gpii.app.undoStack.notUndoable"
     );
 };
 
-gpii.app.qssWrapper.updateSetting = function (that, updatedSetting) {
-    fluid.each(that.model.settings, function (setting, index) {
-        if (setting.path === updatedSetting.path && !fluid.model.diff(setting.value, updatedSetting.value)) {
-            var valuePath = fluid.stringTemplate("settings.%index.value", {
-                index: index
-            });
-            that.applier.change(valuePath, updatedSetting.value);
-        }
-    });
+/**
+ * Update the state of a QSS setting, i.e. only the value of the setting
+ * is updated.
+ *
+ * @param {Component} that - The `gpii.app.qssWrapper` component
+ * @param {Object} updatedSetting - The setting with updated state
+ * @param {Boolean} notUndoable - Whether the setting is undoable or not
+ */
+gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable) {
+    var updateNamespace = notUndoable ? "gpii.app.undoStack.notUndoable" : null;
+
+    // update only the value of the setting
+    that.alterSetting(
+        fluid.filterKeys(updatedSetting, ["path", "value"]),
+        updateNamespace
+    );
 };
 
 gpii.app.qssWrapper.getItemSettings = function (item) {
@@ -377,10 +385,20 @@ gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
     return settings;
 };
 
+
+
+/**
+ * Update QSS settings from the updated preference set.
+ * Note: preference set changes are not undoable.
+ *
+ * @param {Component} that
+ * @param {Obeject[]} preferences
+ */
 gpii.app.qssWrapper.onPreferencesUpdated = function (that, preferences) {
     var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences.settingGroups);
+
     fluid.each(settings, function (setting) {
-        that.events.onSettingUpdated.fire(setting);
+        that.events.onSettingUpdated.fire(setting, true);
     });
 };
 
@@ -405,12 +423,21 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
     return loadedSettings;
 };
 
+/**
+ * Update a QSS setting - all its data.
+ *
+ * @param that
+ * @param updatedSetting
+ * @param source
+ */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
     var settingIndex = that.model.settings.findIndex(function (setting) {
-        return setting.path === updatedSetting.path;
+        return setting.path === updatedSetting.path && !fluid.model.diff(setting.value, updatedSetting.value);
     });
 
-    that.applier.change("settings." + settingIndex, updatedSetting, null, source);
+    if (settingIndex !== -1) {
+        that.applier.change("settings." + settingIndex, updatedSetting, null, source);
+    }
 };
 
 

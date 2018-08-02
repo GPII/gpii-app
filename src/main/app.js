@@ -187,7 +187,6 @@ fluid.defaults("gpii.app", {
                     "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
                     "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated"
-
                 },
                 modelListeners: {
                     "settings.*": [{
@@ -201,7 +200,7 @@ fluid.defaults("gpii.app", {
                     }, {
                         func: "{settingsBroker}.applySetting",
                         args: ["{change}.value"],
-                        includeSource: ["qss", "qssWidget", "gpii.app.undoStack.undo"]
+                        includeSource: ["qss", "qssWidget", "gpii.app.undoStack.notUndoable"]
                     }]
                 }
             }
@@ -403,7 +402,7 @@ gpii.app.keyIn = function (flowManager, token) {
                 flowManager.userErrors.events.userError.fire({
                     isError: true,
                     messageKey: "KeyInFail",
-                    originalError: response.body.message
+                    originalError: JSON.parse(response.body).message
                 });
             }
         }
