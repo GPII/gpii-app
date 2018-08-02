@@ -76,7 +76,7 @@
             }, {
                 funcName: "gpii.qss.buttonPresenter.showNotification",
                 args: ["{that}", "{list}"],
-                excludeSource: "init"
+                excludeSource: ["init", "gpii.psp.repeater.itemUpdate"]
             }],
             title: {
                 this: "{that}.dom.title",
@@ -746,7 +746,7 @@
             return setting.path === settingNewState.path;
         });
 
-        gpii.app.applier.replace(that.applier, "settings." + settingIndex, settingNewState, "settingUpdate");
+        gpii.app.applier.replace(that.applier, "settings." + settingIndex, settingNewState, "channelNotifier.settingUpdate");
     };
 
     gpii.qss.getSettingIndex = function (settings, setting) {

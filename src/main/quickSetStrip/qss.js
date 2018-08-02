@@ -26,6 +26,71 @@ require("./qssMorePanel.js");
 require("../undoStack.js");
 
 
+fluid.defaults("gpii.app.resetableQssWrapper", {
+    gradeNames: ["gpii.app.qssWrapper"],
+
+    members: {
+        lastPrefSetUpdateKey: null
+    },
+
+    listeners: {
+        // override existing listener
+        "onPreferencesUpdated.applyPrefSettings": {
+            func: "gpii.app.resetableQssWrapper.applyDecoratedPreferenceSettings",
+            args: [
+                "{that}",
+                "{that}.options.defaultQssSettings",
+                "{arguments}.0"
+            ]
+        }
+    },
+
+    // The "original" values of the QSS settings
+    defaultQssSettings: [{
+        "path": "http://registry\\.gpii\\.net/common/language",
+        "value": "en"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/DPIScale",
+        "value": 1.25
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
+        "value": false
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
+        "value": "regular-contrast"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+        "value": false
+    }]
+});
+
+gpii.app.resetableQssWrapper.applyDecoratedPreferenceSettings = function (that, defaultQssSettings, preferences) {
+    var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences && preferences.settingGroups);
+    // TODO { path: String, value: Any }
+
+    if (that.lastPrefSetUpdateKey !== preferences.gpiiKey) {
+        console.log("resetableQssWrapper: Apply QSS original settings");
+
+        /// merge new settings with the original qss settings
+        fluid.each(defaultQssSettings, function (defaultSetting) {
+            var prefSetting = fluid.find_if(settings, function (setting) {
+                return setting.path === defaultSetting.path;
+            });
+
+            if (!prefSetting) {
+                settings.push(defaultSetting);
+            }
+        });
+    }
+
+    that.lastPrefSetUpdateKey = preferences.gpiiKey;
+
+    fluid.each(settings, function (setting) {
+        that.events.onSettingUpdated.fire(setting, true);
+    });
+};
+
+
 /**
  * Loads the initial settings from a local configuration file.
  */
@@ -64,11 +129,12 @@ fluid.defaults("gpii.app.qssWrapper", {
             funcName: "gpii.app.qssWrapper.updateSetting",
             args: [
                 "{that}",
-                "{arguments}.0" // setting
+                "{arguments}.0", // setting
+                "{arguments}.1"  // notUndoable
             ]
         },
-        onPreferencesUpdated: {
-            funcName: "gpii.app.qssWrapper.onPreferencesUpdated",
+        "onPreferencesUpdated.applyPrefSettings": {
+            funcName: "gpii.app.qssWrapper.applyPreferenceSettings",
             args: [
                 "{that}",
                 "{arguments}.0" // preferences
@@ -109,7 +175,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                     "{qssWrapper}.model.settings.*": {
                         funcName: "gpii.app.qssWrapper.registerUndoableChange",
                         args: ["{that}", "{change}.path", "{change}.oldValue"],
-                        excludeSource: ["gpii.app.undoStack.undo", "init"]
+                        excludeSource: ["gpii.app.undoStack.notUndoable", "init"]
                     },
                     "{qssWrapper}.model.isKeyedIn": {
                         func: "{that}.clear"
@@ -337,19 +403,26 @@ gpii.app.qssWrapper.revertChange = function (qssWrapper, change) {
         change.changePath,
         change.oldValue,
         null,
-        "gpii.app.undoStack.undo"
+        "gpii.app.undoStack.notUndoable"
     );
 };
 
-gpii.app.qssWrapper.updateSetting = function (that, updatedSetting) {
-    fluid.each(that.model.settings, function (setting, index) {
-        if (setting.path === updatedSetting.path && !fluid.model.diff(setting.value, updatedSetting.value)) {
-            var valuePath = fluid.stringTemplate("settings.%index.value", {
-                index: index
-            });
-            that.applier.change(valuePath, updatedSetting.value);
-        }
-    });
+/**
+ * Update the state of a QSS setting, i.e. only the value of the setting
+ * is updated.
+ *
+ * @param {Component} that - The `gpii.app.qssWrapper` component
+ * @param {Object} updatedSetting - The setting with updated state
+ * @param {Boolean} notUndoable - Whether the setting is undoable or not
+ */
+gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable) {
+    var updateNamespace = notUndoable ? "gpii.app.undoStack.notUndoable" : null;
+
+    // update only the value of the setting
+    that.alterSetting(
+        fluid.filterKeys(updatedSetting, ["path", "value"]),
+        updateNamespace
+    );
 };
 
 gpii.app.qssWrapper.getItemSettings = function (item) {
@@ -377,10 +450,23 @@ gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
     return settings;
 };
 
-gpii.app.qssWrapper.onPreferencesUpdated = function (that, preferences) {
+
+
+/**
+ * Update QSS settings from the updated preference set.
+ * Note: preference set changes are not undoable.
+ *
+ * @param {Component} that
+ * @param {Obeject[]} preferences
+ */
+gpii.app.qssWrapper.applyPreferenceSettings = function (that, preferences) {
     var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences.settingGroups);
+
+    // XXX DEV
+    console.log("-- qssWrapper: Apply");
+
     fluid.each(settings, function (setting) {
-        that.events.onSettingUpdated.fire(setting);
+        that.events.onSettingUpdated.fire(setting, true);
     });
 };
 
@@ -405,12 +491,21 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
     return loadedSettings;
 };
 
+/**
+ * Update a QSS setting - all its data.
+ *
+ * @param that
+ * @param updatedSetting
+ * @param source
+ */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
     var settingIndex = that.model.settings.findIndex(function (setting) {
-        return setting.path === updatedSetting.path;
+        return setting.path === updatedSetting.path && !fluid.model.diff(setting.value, updatedSetting.value);
     });
 
-    that.applier.change("settings." + settingIndex, updatedSetting, null, source);
+    if (settingIndex !== -1) {
+        that.applier.change("settings." + settingIndex, updatedSetting, null, source);
+    }
 };
 
 
