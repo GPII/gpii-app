@@ -129,6 +129,12 @@ fluid.defaults("gpii.app.menuInAppDev", {
             changePath: "{app}.model.theme",
             value: "{arguments}.0.theme"
         },
+        // Key-in using /proximityTriggered endpoint automatically takes care
+        // of the keyout of the preious key.
+        "onKeyIn.performKeyIn": {
+            listener: "{app}.keyIn",
+            args: ["{arguments}.0.token"], // token
+        },
         // onKeyIn event is fired when a new user keys in through the task tray.
         // This should result in:
         // 1. key out the old keyed in user token
@@ -136,14 +142,15 @@ fluid.defaults("gpii.app.menuInAppDev", {
         //   a) trigger GPII {lifecycleManager}.events.onSessionStart
         //   b) fire a model change to set the new model.keyedInUserToken
         //   c) update the menu
-        "onKeyIn.performKeyOut": {
-            listener: "{app}.keyOut"
-        },
-        "onKeyIn.performKeyIn": {
-            listener: "{app}.keyIn",
-            args: ["{arguments}.0.token"], // token
-            priority: "after:performKeyOut"
-        },
+        // "onKeyIn.performKeyOut": {
+        //     listener: "{app}.keyOut",
+        //     args: ["{that}.model.keyedInUserToken", true]
+        // },
+        // "onKeyIn.performKeyIn": {
+        //     listener: "{app}.keyIn",
+        //     args: ["{arguments}.0.token"], // token
+        //     priority: "after:performKeyOut"
+        // },
 
         // onExit
         "onExit.performExit": {
