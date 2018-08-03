@@ -31,15 +31,15 @@
         "restartWarning": true,
         "learnMoreLink": "https://www.gpii.net"
     }, {
-        "path": "http://registry\\.gpii\\.net/common/fontSize",
+        "path": "appTextZoom",
         "schema": {
             "type": "number",
             "title": "App / Text Zoom",
-            "min": 0,
+            "min": null,
             "max": null,
-            "divisibleBy": 0.5
+            "divisibleBy": 1
         },
-        "value": 11,
+        "value": 0,
         "tip": "<div><strong>Zooms one application.</strong></div><div>Works in many applications -- for the window on top.</div>",
         "tooltip": "<div><strong>Change text size.</strong></div><div>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</div>",
         "widget": {

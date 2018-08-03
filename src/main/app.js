@@ -180,10 +180,15 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        appZoom: {
+            type: "gpii.windows.appZoom",
+            createOnEvent: "onPSPPrerequisitesReady"
+        },
         qssWrapper: {
             type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
+                appTextZoomPath: "appTextZoom",
                 model: {
                     isKeyedIn: "{app}.model.isKeyedIn",
                     keyedInUserToken: "{app}.model.keyedInUserToken"
@@ -203,8 +208,13 @@ fluid.defaults("gpii.app", {
                             { oldValue: "{change}.oldValue.value" }
                         ]
                     }, {
-                        func: "{settingsBroker}.applySetting",
-                        args: ["{change}.value"],
+                        funcName: "gpii.app.onQssSettingAltered",
+                        args: [
+                            "{settingsBroker}",
+                            "{appZoom}",
+                            "{change}.value",
+                            "{that}.options.appTextZoomPath"
+                        ],
                         includeSource: ["qss", "qssWidget", "gpii.app.undoStack.notUndoable"]
                     }]
                 }
@@ -367,6 +377,31 @@ fluid.defaults("gpii.app", {
     },
     defaultTheme: "white"
 });
+
+/**
+ * Invoked when a QSS setting has been altered by the user either by changing the
+ * value directly via the QSS (e.g. for toggle buttons), or by adjusting it using
+ * the QSS widget (for "number" and "string" settings).
+ * Note that the "App / Text Zoom" setting is different than the rest of the
+ * settings. It is not applied by sending a command via the pspChannel but instead
+ * the `gpii.windows.appZoom#sendZoom` invoker is called with an "increase" or
+ * "decrease" string as a parameter in order to change the zoom level in the last
+ * active application.
+ * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
+ * @param {Object} setting - The setting which has been altered via the QSS or its
+ * widget.
+ * @param {String} appTextZoomPath - The path of the "App / Text Zoom" setting.
+ */
+gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, appTextZoomPath) {
+    // Special handling of the "App / Text Zoom" setting
+    if (setting.path === appTextZoomPath) {
+        var direction = setting.value > setting.oldValue ? "increase" : "decrease";
+        appZoom.sendZoom(direction);
+        return;
+    }
+
+    settingsBroker.applySetting(setting);
+};
 
 gpii.app.getIsKeyedIn = function (keyedInUserToken, defaultUserToken) {
     return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken;
