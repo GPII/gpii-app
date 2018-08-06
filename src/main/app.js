@@ -392,7 +392,7 @@ gpii.app.fireAppReady = function (fireFn) {
   * @param {String} token - The token to key in with.
   */
 gpii.app.keyIn = function (flowManager, token) {
-    request("http://localhost:8081/user/" + token + "/login", function (error, response, body) {
+    request("http://localhost:8081/user/" + token + "/proximityTriggered", function (error, response, body) {
 
         // Try is needed as the response body has two formats:
         //  - success message - simple string (like message key of the object)
@@ -421,7 +421,7 @@ gpii.app.keyIn = function (flowManager, token) {
   */
 gpii.app.keyOut = function (token) {
     var togo = fluid.promise();
-    request("http://localhost:8081/user/" + token + "/logout", function (error, response, body) {
+    request("http://localhost:8081/user/" + token + "/proximityTriggered", function (error, response, body) {
         //TODO Put in some error logging
         if (error) {
             togo.reject(error);
@@ -491,4 +491,3 @@ fluid.defaults("gpii.appWrapper", {
         }
     }
 });
-

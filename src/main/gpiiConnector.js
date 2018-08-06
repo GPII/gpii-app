@@ -101,7 +101,7 @@ gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
         return;
     }
 
-    console.log("GpiiConnector: Alter setting - ", setting);
+    console.log("gpiiConnector: Alter setting - ", setting);
 
     gpiiConnector.send({
         path: ["settingControls", setting.path, "value"],

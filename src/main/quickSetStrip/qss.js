@@ -128,7 +128,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             funcName: "gpii.app.qssWrapper.updateSetting",
             args: [
                 "{that}",
-                "{arguments}.0" // setting
+                "{arguments}.0", // setting
+                "{arguments}.1"  // notUndoable
             ]
         },
         "onPreferencesUpdated.applyPrefSettings": {
