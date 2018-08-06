@@ -197,11 +197,11 @@ fluid.defaults("gpii.app", {
                             "{change}.value",
                             { oldValue: "{change}.oldValue.value" }
                         ],
-                        includeSource: ["qss", "qssWidget"]
+                        includeSource: ["gpii.app.qssWrapper.alterSetting"]
                     }, {
                         func: "{settingsBroker}.applySetting",
                         args: ["{change}.value"],
-                        includeSource: ["qss", "qssWidget"]
+                        includeSource: ["gpii.app.qssWrapper.alterSetting"]
                     }]
                 }
             }

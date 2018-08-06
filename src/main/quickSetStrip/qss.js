@@ -66,7 +66,6 @@ fluid.defaults("gpii.app.resetableQssWrapper", {
 
 gpii.app.resetableQssWrapper.applyDecoratedPreferenceSettings = function (that, defaultQssSettings, preferences) {
     var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences && preferences.settingGroups);
-    // TODO { path: String, value: Any }
 
     if (that.lastPrefSetUpdateKey !== preferences.gpiiKey) {
         console.log("resetableQssWrapper: Apply QSS original settings");
@@ -86,7 +85,7 @@ gpii.app.resetableQssWrapper.applyDecoratedPreferenceSettings = function (that, 
     that.lastPrefSetUpdateKey = preferences.gpiiKey;
 
     fluid.each(settings, function (setting) {
-        that.events.onSettingUpdated.fire(setting, true);
+        that.updateSetting(setting, true);
     });
 };
 
@@ -129,8 +128,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             funcName: "gpii.app.qssWrapper.updateSetting",
             args: [
                 "{that}",
-                "{arguments}.0", // setting
-                "{arguments}.1"  // notUndoable
+                "{arguments}.0" // setting
             ]
         },
         "onPreferencesUpdated.applyPrefSettings": {
@@ -237,7 +235,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssWrapper}.alterSetting",
                         args: [
                             "{arguments}.0", // updatedSetting
-                            "qss"
+                            "gpii.app.qssWrapper.alterSetting"
                         ]
                     },
                     "{channelListener}.events.onQssNotificationRequired": {
@@ -271,7 +269,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssWrapper}.alterSetting",
                         args: [
                             "{arguments}.0", // updatedSetting
-                            "qssWidget"
+                            "gpii.app.qssWrapper.alterSetting"
                         ]
                     },
                     onQssWidgetNotificationRequired: {
@@ -338,6 +336,14 @@ fluid.defaults("gpii.app.qssWrapper", {
     },
 
     invokers: {
+        updateSetting: {
+            funcName: "gpii.app.qssWrapper.updateSetting",
+            args: [
+                "{that}",
+                "{arguments}.0", // updatedSetting
+                "{arguments}.1"  // notUndoable
+            ]
+        },
         alterSetting: {
             funcName: "gpii.app.qssWrapper.alterSetting",
             args: [
@@ -399,12 +405,13 @@ gpii.app.qssWrapper.registerUndoableChange = function (that, changePath, oldValu
 };
 
 gpii.app.qssWrapper.revertChange = function (qssWrapper, change) {
-    qssWrapper.applier.change(
-        change.changePath,
-        change.oldValue,
-        null,
-        "gpii.app.undoStack.notUndoable"
-    );
+    qssWrapper.alterSetting({
+        path:  change.oldValue.path,
+        value: change.oldValue.value
+    }, [
+        "gpii.app.qssWrapper.alterSetting", // should apply the setting
+        "gpii.app.undoStack.notUndoable"    // but its not undoable
+    ]);
 };
 
 /**
@@ -462,19 +469,9 @@ gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
 gpii.app.qssWrapper.applyPreferenceSettings = function (that, preferences) {
     var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences.settingGroups);
 
-    // XXX DEV
-    console.log("-- qssWrapper: Apply");
-
     fluid.each(settings, function (setting) {
-        that.events.onSettingUpdated.fire(setting, true);
+        that.updateSetting(setting, true);
     });
-};
-
-gpii.app.qssWidget.onSettingUpdated = function (qssWidget, updatedSetting) {
-    // Update the widget only if the changed setting is the one which the widget is displaying
-    if (qssWidget.model.setting.path === updatedSetting.path) {
-        qssWidget.events.onSettingUpdated.fire(updatedSetting);
-    }
 };
 
 gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
@@ -498,13 +495,13 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
  * @param updatedSetting
  * @param source
  */
-gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
+gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, sources) {
     var settingIndex = that.model.settings.findIndex(function (setting) {
         return setting.path === updatedSetting.path && !fluid.model.diff(setting.value, updatedSetting.value);
     });
 
     if (settingIndex !== -1) {
-        that.applier.change("settings." + settingIndex, updatedSetting, null, source);
+        that.applier.change("settings." + settingIndex, updatedSetting, null, sources);
     }
 };
 
@@ -518,4 +515,11 @@ gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
         x: qss.width - buttonElemMetrics.offsetLeft - (buttonElemMetrics.width / 2),
         y: buttonElemMetrics.height
     };
+};
+
+gpii.app.qssWidget.onSettingUpdated = function (qssWidget, updatedSetting) {
+    // Update the widget only if the changed setting is the one which the widget is displaying
+    if (qssWidget.model.setting.path === updatedSetting.path) {
+        qssWidget.events.onSettingUpdated.fire(updatedSetting);
+    }
 };
