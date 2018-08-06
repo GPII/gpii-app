@@ -239,9 +239,7 @@
             .toggleClass(styles.highlighted, applyHighlight)
             .focus();
 
-        if (applyHighlight) {
-            that.events.onElementFocused.fire(element);
-        }
+        that.events.onElementFocused.fire(element);
     };
 
     /**
