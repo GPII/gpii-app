@@ -128,8 +128,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             funcName: "gpii.app.qssWrapper.updateSetting",
             args: [
                 "{that}",
-                "{arguments}.0", // setting
-                "{arguments}.1"  // notUndoable
+                "{arguments}.0" // setting
             ]
         },
         "onPreferencesUpdated.applyPrefSettings": {
@@ -236,7 +235,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssWrapper}.alterSetting",
                         args: [
                             "{arguments}.0", // updatedSetting
-                            "gpii.app.qssWrapper.alterSetting"
+                            "qss"
                         ]
                     },
                     "{channelListener}.events.onQssNotificationRequired": {
@@ -270,7 +269,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         func: "{qssWrapper}.alterSetting",
                         args: [
                             "{arguments}.0", // updatedSetting
-                            "gpii.app.qssWrapper.alterSetting"
+                            "qssWidget"
                         ]
                     },
                     onQssWidgetNotificationRequired: {
