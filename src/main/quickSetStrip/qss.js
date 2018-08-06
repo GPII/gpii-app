@@ -66,9 +66,13 @@ fluid.defaults("gpii.app.resetableQssWrapper", {
 
 gpii.app.resetableQssWrapper.applyDecoratedPreferenceSettings = function (that, defaultQssSettings, preferences) {
     var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences && preferences.settingGroups);
+    var notUndoable = false;
 
     if (that.lastPrefSetUpdateKey !== preferences.gpiiKey) {
+        /// Else comes from addition of new setting
         console.log("resetableQssWrapper: Apply QSS original settings");
+
+        notUndoable = true;
 
         /// merge new settings with the original qss settings
         fluid.each(defaultQssSettings, function (defaultSetting) {
@@ -85,7 +89,7 @@ gpii.app.resetableQssWrapper.applyDecoratedPreferenceSettings = function (that, 
     that.lastPrefSetUpdateKey = preferences.gpiiKey;
 
     fluid.each(settings, function (setting) {
-        that.updateSetting(setting, true);
+        that.updateSetting(setting, notUndoable);
     });
 };
 
@@ -118,16 +122,13 @@ fluid.defaults("gpii.app.qssWrapper", {
         onUndoRequired: null,
         onSaveRequired: null,
         onQssPspOpen: null,
-        onQssPspClose: null,
-
-        onUndoIndicatorChanged: null
+        onQssPspClose: null
     },
 
     listeners: {
         onSettingUpdated: {
-            funcName: "gpii.app.qssWrapper.updateSetting",
+            funcName: "{that}.updateSetting",
             args: [
-                "{that}",
                 "{arguments}.0" // setting
             ]
         },
@@ -153,6 +154,25 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     },
 
+    modelListeners: {
+        // All interested in setting updates
+        "{qssWrapper}.model.settings.*": [
+            { // Undo Stack
+                funcName: "{undoStack}.registerUndoableChange",
+                args: ["{change}.path", "{change}.oldValue"],
+                excludeSource: ["gpii.app.undoStack.undo", "gpii.app.undoStack.notUndoable", "init"]
+            }, { // QSS
+                func: "{qss}.events.onSettingUpdated.fire",
+                args: ["{change}.value"],
+                excludeSource: ["init", "qss"]
+            }, { // QSS Widget
+                funcName: "gpii.app.qssWidget.updateIfMatching",
+                args: ["{qssWidget}", "{change}.value"],
+                excludeSource: ["init", "qssWidget"]
+            }
+        ]
+    },
+
     components: {
         undoStack: {
             type: "gpii.app.undoStack",
@@ -162,7 +182,7 @@ fluid.defaults("gpii.app.qssWrapper", {
 
                 listeners: {
                     "onChangeUndone.applyChange": {
-                        funcName: "gpii.app.qssWrapper.revertChange",
+                        funcName: "gpii.app.undoStack.revertChange",
                         args: [
                             "{qssWrapper}",
                             "{arguments}.0" // change
@@ -170,18 +190,23 @@ fluid.defaults("gpii.app.qssWrapper", {
                     }
                 },
                 modelListeners: {
-                    "{qssWrapper}.model.settings.*": {
-                        funcName: "gpii.app.qssWrapper.registerUndoableChange",
-                        args: ["{that}", "{change}.path", "{change}.oldValue"],
-                        excludeSource: ["gpii.app.undoStack.notUndoable", "init"]
-                    },
                     "{qssWrapper}.model.keyedInUserToken": {
                         func: "{that}.clear"
                     },
 
                     "hasChanges": {
-                        func: "{qssWrapper}.updateUndoIndicator",
+                        func: "{qss}.updateUndoIndicator",
                         args: ["{change}.value"]
+                    }
+                },
+                invokers: {
+                    registerUndoableChange: {
+                        funcName: "gpii.app.qssWrapper.registerUndoableChange",
+                        args: [
+                            "{undoStack}",
+                            "{arguments}.0", // changePath
+                            "{arguments}.1" // oldValue
+                        ]
                     }
                 }
             }
@@ -200,7 +225,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                 },
                 events: {
                     onQssPspClose: "{qssWrapper}.events.onQssPspClose",
-                    onUndoIndicatorChanged: "{qssWrapper}.events.onUndoIndicatorChanged",
+                    onUndoIndicatorChanged: null,
 
                     onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
                 },
@@ -250,14 +275,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                     },
                     "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
                     "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
-                    "{channelListener}.events.onQssPspOpen":      "{qssWrapper}.events.onQssPspOpen.fire"
-                },
-                modelListeners: {
-                    "{qssWrapper}.model.settings.*": {
-                        func: "{that}.events.onSettingUpdated.fire",
-                        args: ["{change}.value"],
-                        excludeSource: ["init", "qss"]
-                    }
+                    "{channelListener}.events.onQssPspOpen":      "{qssWrapper}.events.onQssPspOpen"
                 }
             }
         },
@@ -286,11 +304,6 @@ fluid.defaults("gpii.app.qssWrapper", {
                         // it won't hurt if this is called
                         // even on QSS show
                         func: "{that}.hide"
-                    },
-                    "{qssWrapper}.model.settings.*": {
-                        funcName: "gpii.app.qssWidget.onSettingUpdated",
-                        args: ["{qssWidget}", "{change}.value"],
-                        excludeSource: ["init", "qssWidget"]
                     }
                 }
             }
@@ -351,12 +364,6 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{arguments}.0", // updatedSetting
                 "{arguments}.1" // source
             ]
-        },
-        updateUndoIndicator: {
-            func: "{that}.events.onUndoIndicatorChanged.fire",
-            args: [
-                "{arguments}.0" // state
-            ]
         }
     }
 });
@@ -404,14 +411,11 @@ gpii.app.qssWrapper.registerUndoableChange = function (that, changePath, oldValu
     }
 };
 
-gpii.app.qssWrapper.revertChange = function (qssWrapper, change) {
+gpii.app.undoStack.revertChange = function (qssWrapper, change) {
     qssWrapper.alterSetting({
         path:  change.oldValue.path,
         value: change.oldValue.value
-    }, [
-        "gpii.app.qssWrapper.alterSetting", // should apply the setting
-        "gpii.app.undoStack.notUndoable"    // but its not undoable
-    ]);
+    }, "gpii.app.undoStack.undo");
 };
 
 /**
@@ -495,13 +499,13 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
  * @param updatedSetting
  * @param source
  */
-gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, sources) {
+gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
     var settingIndex = that.model.settings.findIndex(function (setting) {
         return setting.path === updatedSetting.path && !fluid.model.diff(setting.value, updatedSetting.value);
     });
 
     if (settingIndex !== -1) {
-        that.applier.change("settings." + settingIndex, updatedSetting, null, sources);
+        that.applier.change("settings." + settingIndex, updatedSetting, null, source);
     }
 };
 
@@ -517,7 +521,7 @@ gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
     };
 };
 
-gpii.app.qssWidget.onSettingUpdated = function (qssWidget, updatedSetting) {
+gpii.app.qssWidget.updateIfMatching = function (qssWidget, updatedSetting) {
     // Update the widget only if the changed setting is the one which the widget is displaying
     if (qssWidget.model.setting.path === updatedSetting.path) {
         qssWidget.events.onSettingUpdated.fire(updatedSetting);

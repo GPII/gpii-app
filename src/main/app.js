@@ -202,11 +202,11 @@ fluid.defaults("gpii.app", {
                             "{change}.value",
                             { oldValue: "{change}.oldValue.value" }
                         ],
-                        includeSource: ["gpii.app.qssWrapper.alterSetting", "qss", "qssWidget"]
+                        includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
                     }, {
                         func: "{settingsBroker}.applySetting",
                         args: ["{change}.value"],
-                        includeSource: ["gpii.app.qssWrapper.alterSetting", "qss", "qssWidget"]
+                        includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
                     }]
                 }
             }

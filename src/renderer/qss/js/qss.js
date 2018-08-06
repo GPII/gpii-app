@@ -273,6 +273,7 @@
     };
 
     gpii.qss.buttonPresenter.showNotification = function (that, qssList) {
+        console.log("HERE", that)
         if (that.model.item.restartWarning) {
             var notification = fluid.stringTemplate(that.model.messages.notification, {
                 settingTitle: that.model.item.schema.title
@@ -688,13 +689,16 @@
                         onUndoIndicatorChanged: "{quickSetStripList}.events.onUndoIndicatorChanged"
                     },
                     listeners: {
-                        onSettingUpdated: {
+                        onSettingUpdated: [{
                             funcName: "gpii.qss.updateSetting",
                             args: [
                                 "{qss}",
                                 "{arguments}.0"
                             ]
-                        },
+                        }, { // XXX dev
+                            funcName: "console.log",
+                            args: ["Setting Updated:", "{arguments}.0"]
+                        }],
                         onIsKeyedInChanged: {
                             func: "{gpii.qss}.updateIsKeyedIn"
                         }
