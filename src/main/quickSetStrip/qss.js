@@ -176,7 +176,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                         args: ["{that}", "{change}.path", "{change}.oldValue"],
                         excludeSource: ["gpii.app.undoStack.notUndoable", "init"]
                     },
-                    "{qssWrapper}.model.isKeyedIn": {
+                    "{qssWrapper}.model.keyedInUserToken": {
                         func: "{that}.clear"
                     },
 

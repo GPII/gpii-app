@@ -25,7 +25,7 @@ fluid.registerNamespace("gpii.tests.messageBundles.testDefs");
 
 
 var bundle_en = {
-        "gpii_app_menu_psp": "Open PSP",
+        "gpii_app_menu_psp": "Open Morphic",
         "gpii_app_menu_notKeyedIn": "(No one keyed in)"
     }, bundle_en_ca = {
         "gpii_app_menu_psp": "Open the PSP"
@@ -52,7 +52,7 @@ var loadedBundlesFixture = [{
 
 var mergedLoadedFilesFixture = {
     en: {
-        gpii_app_menu_psp: "Open PSP",
+        gpii_app_menu_psp: "Open Morphic",
         gpii_app_menu_notKeyedIn: "(No one keyed in)"
     },
     en_ca: { gpii_app_menu_psp: "Open the PSP" },
@@ -65,7 +65,7 @@ var mergedLoadedFilesFixture = {
 
 var enhancedBundleFixture = {
     en: {
-        gpii_app_menu_psp: "Open PSP",
+        gpii_app_menu_psp: "Open Morphic",
         gpii_app_menu_notKeyedIn: "(No one keyed in)"
     },
     bg: {
@@ -77,7 +77,7 @@ var enhancedBundleFixture = {
         gpii_app_menu_notKeyedIn: "(No one keyed in)"
     },
     it: {
-        gpii_app_menu_psp: "Open PSP",
+        gpii_app_menu_psp: "Open Morphic",
         gpii_app_menu_notKeyedIn: "(No one keyed in)"
     }
 };

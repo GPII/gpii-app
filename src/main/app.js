@@ -91,6 +91,10 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.onIsKeyedInChanged",
             args: ["{that}", "{change}.value"],
             excludeSource: "init"
+        },
+        keyedInUserToken: {
+            func: "console.log",
+            args: ["=======keyedInUserToken", "{change}.value"]
         }
     },
     defaultUserToken: "noUser",
@@ -181,7 +185,8 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
-                    isKeyedIn: "{app}.model.isKeyedIn"
+                    isKeyedIn: "{app}.model.isKeyedIn",
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
                 },
                 listeners: {
                     "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
@@ -423,13 +428,13 @@ gpii.app.keyOut = function (token) {
     var togo = fluid.promise();
     request("http://localhost:8081/user/" + token + "/proximityTriggered", function (error, response, body) {
         //TODO Put in some error logging
-        if (error) {
-            togo.reject(error);
-            fluid.log("Key out response:", response);
-            fluid.log("Key out body:", body);
-        } else {
-            togo.resolve();
-        }
+        // if (error) {
+        //     togo.reject(error);
+        //     fluid.log("Key out response:", response);
+        //     fluid.log("Key out body:", body);
+        // } else {
+        //     togo.resolve();
+        // }
     });
     return togo;
 };

@@ -1,9 +1,8 @@
 {
     "gpii_app_menu_about": "Относно...",
-    "gpii_app_menu_openQss": "Отвори QSS",
-    "gpii_app_menu_notKeyedIn": "(Не сте влезли)",
+    "gpii_app_menu_openQss": "Отвори Morphic",
     "gpii_app_menu_keyedIn": "Вписан с %snapsetName",
-    "gpii_app_menu_keyOut": "Отписване от Morphic",
+    "gpii_app_menu_keyOut": "Ресетни Morphic",
 
     "gpii_app_tray_defaultTooltip": "Morphic: В готовност",
     "gpii_app_tray_prefSetTooltip": "Morphic: %prefSet",

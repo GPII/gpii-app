@@ -87,7 +87,7 @@ jqUnit.test("Menu.getSimpleMenuItem", function () {
     jqUnit.expect(4);
 
     var event = "onQSS",
-        label = "Open QSS",
+        label = "Open Morphic",
         menuItem = gpii.app.menu.getSimpleMenuItem(label, event);
 
 
@@ -145,7 +145,7 @@ jqUnit.test("Menu.getKeyedInSnapset", function () {
 jqUnit.test("Menu.getKeyOut", function () {
     jqUnit.expect(7);
     var token = "alice";
-    var keyOutStr = "Key-out of Morphic";
+    var keyOutStr = "Reset Morphic";
     var notKeyedInStr = "(No one keyed in)";
 
     var keyOutObj = gpii.app.menu.getKeyOut(false, null, keyOutStr, notKeyedInStr);

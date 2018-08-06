@@ -39,5 +39,5 @@ require("./tests/PreferencesParsingTests.js");
 require("./tests/IntegrationTests.js");
 
 // Run the GPII tests
-fluid.require("%gpii-universal/tests/all-tests.js");
-fluid.require("%gpii-windows/tests/UnitTests.js");
+// fluid.require("%gpii-universal/tests/all-tests.js");
+// fluid.require("%gpii-windows/tests/UnitTests.js");

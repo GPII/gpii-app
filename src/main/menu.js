@@ -342,10 +342,8 @@ fluid.defaults("gpii.app.menu", {
                 type: "fluid.transforms.free",
                 func: "gpii.app.menu.getKeyOut",
                 args: [
-                    "{that}.model.isKeyedIn",
                     "{that}.model.keyedInUserToken",
-                    "{that}.model.messages.keyOut",
-                    "{that}.model.messages.notKeyedIn"
+                    "{that}.model.messages.keyOut"
                 ]
             },
             forward: {
@@ -448,32 +446,18 @@ gpii.app.menu.getKeyedInSnapset = function (isKeyedIn, snapsetName, keyedInStrTe
 
 /**
  * Generates an object that represents the menu item for keying out.
- * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {String} keyedInUserToken - The user token that is currently keyed in.
  * @param {String} keyOutStr - The string to be displayed for the key out menu item if there is a keyed in user.
- * @param {String} notKeyedInStr - The string to be displayed when a user is not keyed in.
  * @return {ElectronMenuItem} - The Electron menu item for keying out.
  */
-gpii.app.menu.getKeyOut = function (isKeyedIn, keyedInUserToken, keyOutStr, notKeyedInStr) {
-    var keyOut;
-
-    if (isKeyedIn) {
-        keyOut = {
-            label: keyOutStr,
-            click: "onKeyOut",
-            args: {
-                token: keyedInUserToken
-            },
-            enabled: true
-        };
-    } else {
-        keyOut = {
-            label: notKeyedInStr,
-            enabled: false
-        };
-    }
-
-    return keyOut;
+gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr) {
+    return {
+        label: keyOutStr,
+        click: "onKeyOut",
+        args: {
+            token: keyedInUserToken
+        }
+    };
 };
 
 /**
