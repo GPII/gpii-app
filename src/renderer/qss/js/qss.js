@@ -76,7 +76,7 @@
             }, {
                 funcName: "gpii.qss.buttonPresenter.showNotification",
                 args: ["{that}", "{list}"],
-                excludeSource: ["init", "gpii.psp.repeater.itemUpdate"]
+                excludeSource: "init"
             }],
             title: {
                 this: "{that}.dom.title",
