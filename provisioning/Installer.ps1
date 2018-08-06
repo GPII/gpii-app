@@ -22,6 +22,20 @@ $installerDir = Join-Path $env:SystemDrive "installer" # a.k.a. C:\installer\
 $npm = "npm" -f $env:SystemDrive
 $git = "git" -f $env:SystemDrive
 $node = Get-Command "node.exe" | Select -expandproperty Path
+$chocolatey = "$env:ChocolateyInstall\bin\choco.exe" -f $env:SystemDrive
+
+# Installing required choco packages.
+Invoke-Command $chocolatey "install wixtoolset -y"
+refreshenv
+# The path to WIX can be found in $env:WIX env variable but looks like chocolatey's refreshenv
+# is not able to set such variable in this session. As a workaround, we ask the registry
+# for such environmental variable and set it so we can use it inside this powershell session.
+$wixSetupPath = Join-Path (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment' -Name WIX).WIX "bin"
+Add-Path $wixSetupPath $true
+refreshenv
+
+Invoke-Command $chocolatey "install msbuild.extensionpack -y"
+refreshenv
 
 # If $installerDir exists delete it and clone current branch of installer.
 if (Test-Path -Path $installerDir){
@@ -82,7 +96,7 @@ $packagerMetadata = "--app-copyright=`"Raising the Floor - International Associa
 $packagerDir = Join-Path $installerDir "packager"
 md $packagerDir
 # TODO: Delete --prune when got fixed this issue https://github.com/electron-userland/electron-packager/issues/495
-Invoke-Command $npm "prune --production" $preStagingDir
+# Invoke-Command $npm "prune --production" $preStagingDir
 Invoke-Command "electron-packager.cmd" "$preStagingDir --platform=win32 --arch=ia32 --no-prune --overwrite --out=$packagerDir $packagerMetadata"
 
 # Copying the packaged GPII-App content to staging/.

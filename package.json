@@ -41,6 +41,6 @@
         "pretest:instrument": "node tests/lib/instrumentSource.js",
         "test": "./node_modules/.bin/electron ./instrumented/tests.js",
         "posttest": "node node_modules/nyc/bin/nyc.js report --temp-directory coverage",
-        "test:noCoverage": "./node_modules/.bin/electron tests.js"
+        "test:noCoverage": "npm run build && ./node_modules/.bin/electron tests.js"
     }
 }
