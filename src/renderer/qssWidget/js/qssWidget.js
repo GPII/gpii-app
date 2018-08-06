@@ -95,26 +95,11 @@
                     model: {
                         setting: "{qssWidget}.model.setting",
                         messages: {
-                            tipTitle: "To Change %settingTitle",
-                            tipSubtitle: "Use mouse or Up/Down arrow keys, then press Enter to select."
-                        }
-                    },
-                    modelRelay: {
-                        "tipTitle": {
-                            target: "messages.tipTitle",
-                            singleTransform: {
-                                type: "fluid.transforms.free",
-                                func: "fluid.stringTemplate",
-                                args: [
-                                    "{that}.model.messages.tipTitle",
-                                    {settingTitle: "{that}.model.setting.schema.title"}
-                                ]
-                            }
+                            tip: "{qssWidget}.model.setting.tip"
                         }
                     },
                     selectors: {
-                        tipTitle: ".flc-tipTitle",
-                        tipSubtitle: ".flc-tipSubtitle"
+                        tip: ".flc-qssWidget-tip"
                     },
                     activationParams: "{arguments}.1",
                     listeners: {

@@ -31,6 +31,7 @@
         },
 
         specialErrorBoundHitTries: 2,
+        enableRichText: true,
 
         model: {
             messages: {

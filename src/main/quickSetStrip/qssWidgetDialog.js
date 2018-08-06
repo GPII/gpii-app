@@ -37,8 +37,8 @@ fluid.defaults("gpii.app.qssWidget", {
 
     // Temporary. Should be removed when the widget becomes truly resizable.
     heightMap: {
-        "http://registry\\.gpii\\.net/common/language": 550,
-        "http://registry\\.gpii\\.net/common/highContrastTheme": 600
+        "http://registry\\.gpii\\.net/common/language": 625,
+        "http://registry\\.gpii\\.net/common/highContrastTheme": 625
     },
 
     config: {
@@ -54,7 +54,7 @@ fluid.defaults("gpii.app.qssWidget", {
         },
         attrs: {
             width: 316,
-            height: 400,
+            height: 415,
             alwaysOnTop: true
         },
         fileSuffixPath: "qssWidget/index.html"

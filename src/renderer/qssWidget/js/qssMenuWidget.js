@@ -35,6 +35,7 @@
         selectors: {
             menuControls: ".flc-qssMenuWidget-controls"
         },
+        enableRichText: true,
         activationParams: {},
         closeDelay: 1200,
         components: {
