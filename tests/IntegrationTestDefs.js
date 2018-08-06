@@ -57,12 +57,12 @@ gpii.tests.app.testItem = function (item, label) {
 
 gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
     gpii.tests.app.testItem(infoItem, "Keyed in with Larger 125%");
-    gpii.tests.app.testItem(keyoutItem, "Key-out of Morphic");
+    gpii.tests.app.testItem(keyoutItem, "Reset Morphic");
 };
 
 gpii.tests.app.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 4);
-    gpii.tests.app.testItem(menuTemplate[0], "Open QSS");
+    gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     gpii.tests.app.testItem(menuTemplate[1], "About...");
     gpii.tests.app.testItem(menuTemplate[3], "(No one keyed in)");
 };
@@ -70,7 +70,7 @@ gpii.tests.app.testMenu = function (menuTemplate) {
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 8);
     gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[7]);
-    gpii.tests.app.testItem(menuTemplate[0], "Open QSS");
+    gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
 };
 
 gpii.tests.app.receiveApp = function (testCaseHolder, app) {
@@ -172,7 +172,7 @@ gpii.tests.dev.testKeyInList = function (item) {
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 8);
-    gpii.tests.app.testItem(menuTemplate[0], "Open QSS");
+    gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     gpii.tests.dev.testKeyInList(menuTemplate[3]);
     gpii.tests.app.testItem(menuTemplate[4], "About...");
     gpii.tests.app.testItem(menuTemplate[6], "(No one keyed in)");
@@ -181,7 +181,7 @@ gpii.tests.dev.testMenu = function (menuTemplate) {
 
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 12);
-    gpii.tests.app.testItem(menuTemplate[0], "Open QSS");
+    gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     gpii.tests.dev.testKeyInList(menuTemplate[4]);
     gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[10]);
     gpii.tests.app.testItem(menuTemplate[11], "Exit GPII");
@@ -215,10 +215,10 @@ gpii.tests.dev.testTrayKeyedIn = function (tray, activePrefSet) {
 
 gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 15);
-    gpii.tests.app.testItem(menuTemplate[0], "Open QSS");
+    gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     // the default pref set should be set
     gpii.tests.dev.testMultiContextKeyedIn(tray, menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx);
-    gpii.tests.app.testItem(menuTemplate[13], "Key-out of Morphic");
+    gpii.tests.app.testItem(menuTemplate[13], "Reset Morphic");
     gpii.tests.app.testItem(menuTemplate[14], "Exit GPII");
 };
 
