@@ -6,6 +6,10 @@
             "distributeMenuDisplay": {
                 "record": "gpii.app.menuInAppDev",
                 "target": "{that menu}.options.gradeNames"
+            },
+            "distributeDevPcpChannelConnector": {
+                "record": "gpii.app.dev.gpiiConnector",
+                "target": "{that gpiiConnector}.options.gradeNames"
             }
         }
     },

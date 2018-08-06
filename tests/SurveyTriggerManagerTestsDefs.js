@@ -60,6 +60,24 @@ gpii.tests.surveyTriggerManager.testHandlerRemoved = function (surveyTriggerMana
     jqUnit.assertFalse("There is no registered trigger for the given fixture", triggerHandler);
 };
 
+/**
+ * The tests below seem to complete too fast and the GPII app (including the gpiiConnector and
+ * its socket) is destroyed before the "noUser" preferences are delivered to the GPII app. When
+ * the Core attempts to do so, the websocket on the PSP's end no longer exists and this causes
+ * the socket on the Core's end to hang up and emit an error. This is probably an edge case
+ * which is not handled and will probably be tackled in the future and for now it would be better
+ * to delay the tests a bit.
+ */
+gpii.tests.surveyTriggerManager.initialize = function () {
+    var promise = fluid.promise();
+
+    setTimeout(function () {
+        promise.resolve();
+    }, 2000);
+
+    return promise;
+};
+
 gpii.tests.surveyTriggerManager.testDefs = {
     name: "Trigger Engine integration tests",
     expect: 14,
@@ -69,6 +87,9 @@ gpii.tests.surveyTriggerManager.testDefs = {
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{
+        task: "gpii.tests.surveyTriggerManager.initialize",
+        resolve: "fluid.identity"
+    }, {
         func: "{that}.app.factsManager.applier.change",
         args: ["keyedInTimestamp", Date.now()]
     }, [ // Testing basic trigger workflow

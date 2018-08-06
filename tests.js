@@ -34,9 +34,10 @@ jqUnit.onAllTestsDone.addListener(function () {
 require("./tests/AppTests.js");
 require("./tests/MessageBundlesTests.js");
 require("./tests/MessageBundlesCompilerTests.js");
+require("./tests/PreferencesGroupingTests.js");
 require("./tests/PreferencesParsingTests.js");
 require("./tests/IntegrationTests.js");
 
 // Run the GPII tests
-fluid.require("%gpii-universal/tests/all-tests.js");
-fluid.require("%gpii-windows/tests/UnitTests.js");
+// fluid.require("%gpii-universal/tests/all-tests.js");
+// fluid.require("%gpii-windows/tests/UnitTests.js");

@@ -84,10 +84,10 @@ var DEFAULT_PARSER = {"json": JSON};
 
 /**
  * Generates a list of the least to the most specific locales that can be used.
- * @param locale {String} A locale, e.g. "en_us".
- * @param defaultLocale {String} The locale to be used in case messages from all
+ * @param {String} locale - A locale, e.g. "en_us".
+ * @param {String} defaultLocale - The locale to be used in case messages from all
  * previous locales are missing.
- * @returns {String[]} A list of locales. For example, for the "fr_FR" locale and
+ * @return {String[]} A list of locales. For example, for the "fr_FR" locale and
  * in case the default locale is "en", the function would return ["en", "fr", "fr_FR"].
  */
 gpii.app.messageBundlesCompiler.getLocaleVersions = function (locale, defaultLocale) {
@@ -111,9 +111,9 @@ gpii.app.messageBundlesCompiler.getLocaleVersions = function (locale, defaultLoc
  * and a partial `en_us` bundle, a message will be first looked in the `en` bundles
  * and only then in the `bg`.
  *
- * @param messageBundles {MessageBundles} A raw map of collected bundles.
- * @param defaultLocale {String} The default locale to be used.
- * @returns {MessageBundles} The enhanced message bundles object.
+ * @param {MessageBundles} messageBundles - A raw map of collected bundles.
+ * @param {String} defaultLocale - The default locale to be used.
+ * @return {MessageBundles} The enhanced message bundles object.
  */
 gpii.app.messageBundlesCompiler.includeFallbackOptions = function (messageBundles, defaultLocale) {
     var result = {};
@@ -136,10 +136,10 @@ gpii.app.messageBundlesCompiler.includeFallbackOptions = function (messageBundle
 
 /**
  * Collects all file names of the specified type from the given directory.
- * @param dir {String} The name of the directory from which files are to
+ * @param {String} dir - The name of the directory from which files are to
  * be collected.
- * @param fileTypes {String[]} The file types that is to be searched for.
- * @returns {String[]} The list of relative paths of matching files to the
+ * @param {String[]} fileTypes - The file types that is to be searched for.
+ * @return {String[]} The list of relative paths of matching files to the
  * searched directory.
  */
 gpii.app.messageBundlesCompiler.collectFilesByType = function (dir, fileTypes) {
@@ -157,10 +157,10 @@ gpii.app.messageBundlesCompiler.collectFilesByType = function (dir, fileTypes) {
 
 /**
  * Loads synchronously all message bundles from the passed directories.
- * @param bundlesDirs {String[]} The list of directrories' names containing message bundles.
- * @param parsers {FileParsers} Available parsers for the bundle files. Bundles for the
+ * @param {String[]} bundlesDirs - The list of directrories' names containing message bundles.
+ * @param {FileParsers} parsers - Available parsers for the bundle files. Bundles for the
  * provided file types will be used for collected.
- * @returns {Object[]} A list of all collected messages by filename.
+ * @return {Object[]} A list of all collected messages by filename.
  */
 gpii.app.messageBundlesCompiler.loadMessageBundles = function (bundlesDirs, parsers) {
     var fileTypes = fluid.keys(parsers);
@@ -182,8 +182,8 @@ gpii.app.messageBundlesCompiler.loadMessageBundles = function (bundlesDirs, pars
 /**
  * Returns the locale that is the last part of the filename:
  * <component-name>_<locale>.<file type>
- * @param filename {String} The name of the file.
- * @returns {String} The locale, e.g. "en" or "en_us".
+ * @param {String} filename - The name of the file.
+ * @return {String} The locale, e.g. "en" or "en_us".
  */
 gpii.app.messageBundlesCompiler.extractLocaleFromFilename = function (filename) {
     // strip file extension
@@ -195,8 +195,8 @@ gpii.app.messageBundlesCompiler.extractLocaleFromFilename = function (filename) 
 
 /**
  * Merges all different bundles grouping them by locale.
- * @param loadedBundles {Object[]} A list of all messages by file name.
- * @returns {MessageBundles} Returns the grouped and merged messages. Note that
+ * @param {Object[]} loadedBundles - A list of all messages by file name.
+ * @return {MessageBundles} Returns the grouped and merged messages. Note that
  * there might be missing messages.
  */
 gpii.app.messageBundlesCompiler.mergeMessageBundles = function (loadedBundles) {
@@ -218,10 +218,10 @@ gpii.app.messageBundlesCompiler.mergeMessageBundles = function (loadedBundles) {
  * Creates a message bundles map where the keys are the available locales and the values
  * are also maps whose keys are the message keys and the values are the texts of the
  * messages themselves.
- * @param bundlesDirs {String[]} An array of the directories from which message bundle
+ * @param {String[]} bundlesDirs - An array of the directories from which message bundle
  * files are to be retrieved.
- * @param defaultLocale {String} The default locale to be used.
- * @param parsers {FileParsers} Available parsers for bundle files.
+ * @param {String} defaultLocale - The default locale to be used.
+ * @param {FileParsers} parsers - Available parsers for bundle files.
  * @return {Object} The compiled message bundles map.
  */
 function compileMessageBundles(bundlesDirs, defaultLocale, parsers) {

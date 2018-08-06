@@ -11,7 +11,8 @@
     "dependencies": {
         "electron": "1.8.4",
         "electron-edge-js": "8.3.2",
-        "gpii-windows": "0.3.0-dev.20180315T174453Z.02de41c",
+        "electron-localshortcut": "3.1.0",
+        "gpii-windows": "0.3.0-dev.20180804T130110Z.436dc54.feds-audit",
         "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
         "node-jqunit": "1.1.8",
         "request": "2.85.0",
@@ -32,14 +33,14 @@
         "shelljs": "0.3.0"
     },
     "scripts": {
-        "start": "npm run build && electron main.js",
-        "dev": "npm run build && electron main.js ./configs app.dev",
+        "start": "electron .",
+        "dev": "electron . ./configs app.dev",
         "build": "grunt compileMessages",
         "pretest": "npm run pretest:clean && npm run build && npm run pretest:instrument",
         "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports build && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
         "pretest:instrument": "node tests/lib/instrumentSource.js",
-        "test": "powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron ./instrumented/tests.js",
+        "test": "./node_modules/.bin/electron ./instrumented/tests.js",
         "posttest": "node node_modules/nyc/bin/nyc.js report --temp-directory coverage",
-        "test:noCoverage": "npm run build && powershell ./provisioning/Tests.ps1 -originalBuildScriptPath './node_modules/gpii-windows/provisioning'; ./node_modules/.bin/electron tests.js"
+        "test:noCoverage": "./node_modules/.bin/electron tests.js"
     }
 }

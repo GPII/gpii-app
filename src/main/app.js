@@ -18,17 +18,26 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
+require("./assetsManager.js");
+require("./shortcutsManager.js");
 require("./ws.js");
 require("./factsManager.js");
 require("./dialogManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
 require("./psp.js");
-require("./restartDialog.js");
+require("./quickSetStrip/qss.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
+require("./utils.js");
+require("./userErrorsHandler.js");
 require("../common/messageBundles.js");
+require("../common/utils.js");
+require("../common/channelUtils.js");
+
+// enhance the normal require to work with .json5 files
+require("json5/lib/register");
 
 /**
  * Promise that resolves when the electron application is ready.
@@ -46,7 +55,6 @@ require("electron").app.on("ready", gpii.app.electronAppListener);
 // Override default behaviour - don't exit process once all windows are closed
 require("electron").app.on("window-all-closed", fluid.identity);
 
-
 /**
  * A component to manage the app. When  the PSP application is fully functional,
  * the `onPSPReady` event will be fired.
@@ -54,30 +62,65 @@ require("electron").app.on("window-all-closed", fluid.identity);
 fluid.defaults("gpii.app", {
     gradeNames: ["fluid.modelComponent", "gpii.app.messageBundles"],
     model: {
+        isKeyedIn: false,
         keyedInUserToken: null,
         snapsetName: null,
         preferences: {
             sets: [],
-            activeSet: null
+            activeSet: null,
+            settingGroups: [],
+            closePSPOnBlur: null
+        },
+        theme: "{that}.options.defaultTheme"
+    },
+    modelRelay: {
+        "isKeyedIn": {
+            target: "isKeyedIn",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.getIsKeyedIn",
+                args: [
+                    "{that}.model.keyedInUserToken",
+                    "{that}.options.defaultUserToken"
+                ]
+            }
         }
     },
+    modelListeners: {
+        isKeyedIn: {
+            funcName: "gpii.app.onIsKeyedInChanged",
+            args: ["{that}", "{change}.value"],
+            excludeSource: "init"
+        },
+        keyedInUserToken: {
+            func: "console.log",
+            args: ["=======keyedInUserToken", "{change}.value"]
+        }
+    },
+    defaultUserToken: "noUser",
     // prerequisites
     members: {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
-        errorHandler: {
-            type: "gpii.app.errorHandler",
+        userErrorHandler: {
+            type: "gpii.app.userErrorsHandler",
             options: {
                 listeners: {
-                    "onFatalError.exit": {
-                        func: "{app}.exit"
+                    "{flowManager}.userErrors.events.userError": {
+                        func: "{that}.handleUserError",
+                        args: [
+                            "{arguments}.0" // error
+                        ]
                     }
                 }
             }
         },
         installID: {
             type: "gpii.installID"
+        },
+        assetsManager: {
+            type: "gpii.app.assetsManager"
         },
         factsManager: {
             type: "gpii.app.factsManager"
@@ -86,7 +129,7 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.settingsBroker",
             options: {
                 model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                    isKeyedIn: "{app}.model.isKeyedIn"
                 }
             }
         },
@@ -114,7 +157,7 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                    isKeyedIn: "{app}.model.isKeyedIn"
                 },
                 modelListeners: {
                     "{lifecycleManager}.model.logonChange": {
@@ -137,20 +180,126 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        appZoom: {
+            type: "gpii.windows.appZoom",
+            createOnEvent: "onPSPPrerequisitesReady"
+        },
+        qssWrapper: {
+            type: "gpii.app.qssWrapper",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                appTextZoomPath: "appTextZoom",
+                model: {
+                    isKeyedIn: "{app}.model.isKeyedIn",
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                },
+                listeners: {
+                    "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
+                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
+                    "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated"
+                },
+                modelListeners: {
+                    "settings.*": [{
+                        // A funny way to decorate the new value with the old value
+                        funcName: "fluid.extend",
+                        args: [
+                            true,
+                            "{change}.value",
+                            { oldValue: "{change}.oldValue.value" }
+                        ]
+                    }, {
+                        funcName: "gpii.app.onQssSettingAltered",
+                        args: [
+                            "{settingsBroker}",
+                            "{appZoom}",
+                            "{change}.value",
+                            "{that}.options.appTextZoomPath"
+                        ],
+                        includeSource: ["qss", "qssWidget", "gpii.app.undoStack.notUndoable"]
+                    }]
+                }
+            }
+        },
         psp: {
             type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    preferences: "{app}.model.preferences",
+                    theme: "{app}.model.theme"
+                },
+                modelListeners: {
+                    "{qssWrapper}.qss.model.isShown": {
+                        funcName: "gpii.app.pspInApp.onQssToggled",
+                        args: ["{that}", "{change}.value"]
+                    }
+                },
+                listeners: {
+                    "{qssWrapper}.events.onQssPspOpen": {
+                        func: "{that}.show",
+                        args: [true]
+                    },
+                    "{qssWrapper}.events.onQssPspClose": {
+                        func: "{that}.handleBlur",
+                        args: [true]
+                    }
+                }
+            }
+        },
+        shortcutsManager: {
+            type: "gpii.app.shortcutsManager",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                events: {
+                    onPspOpenShortcut: null,
+                    onQssUndoShortcut: null
+                },
+                listeners: {
+                    "onCreate.registerDefaultGlobalShortcut": {
+                        func: "{that}.registerGlobalShortcut",
+                        args: [
+                            "Shift+CmdOrCtrl+Alt+Super+M",
+                            "onPspOpenShortcut"
+                        ]
+                    },
+                    "onCreate.registerDefaultLocalShortcut": {
+                        func: "{that}.registerLocalShortcut",
+                        args: [
+                            "CmdOrCtrl+Z",
+                            "onQssUndoShortcut",
+                            ["gpii.app.qss", "gpii.app.qssWidget"]
+                        ]
+                    },
+
+                    "onQssUndoShortcut": {
+                        funcName: "{qssWrapper}.undoStack.undo"
+                    },
+                    "onPspOpenShortcut": {
+                        func: "{qssWrapper}.qss.show",
+                        args: [
+                            {shortcut: true}
+                        ]
+                    }
+                }
+            }
         },
         tray: {
             type: "gpii.app.tray",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 model: {
-                    keyedInUserToken: "{gpii.app}.model.keyedInUserToken",
-                    pendingChanges: "{settingsBroker}.model.pendingChanges"
+                    isKeyedIn: "{gpii.app}.model.isKeyedIn"
                 },
                 events: {
                     onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
+                },
+                listeners: {
+                    onTrayIconClicked: {
+                        func: "{qssWrapper}.qss.show",
+                        args: [
+                            {shortcut: false}
+                        ]
+                    }
                 }
             }
         }
@@ -169,7 +318,9 @@ fluid.defaults("gpii.app", {
         onPSPReady: null,
 
         onKeyedIn: null,
-        onKeyedOut: null
+        onKeyedOut: null,
+
+        onBlur: null
     },
     listeners: {
         "onCreate.appReady": {
@@ -180,21 +331,15 @@ fluid.defaults("gpii.app", {
             "this": "{that}.events.onGPIIReady",
             method: "fire"
         },
-        "{lifecycleManager}.events.onSessionStart": [{
+        "{lifecycleManager}.events.onSessionStart": {
             listener: "{that}.updateKeyedInUserToken",
             args: ["{arguments}.1"], // new token
             namespace: "onLifeCycleManagerUserKeyedIn"
-        }, {
-            listener: "{that}.events.onKeyedIn.fire",
-            namespace: "notifyUserKeyedIn"
-        }],
-        "{lifecycleManager}.events.onSessionStop": [{
+        },
+        "{lifecycleManager}.events.onSessionStop": {
             listener: "gpii.app.handleSessionStop",
-            args: ["{that}", "{arguments}.1.options.userToken"]
-        }, {
-            listener: "{that}.events.onKeyedOut.fire",
-            namespace: "notifyUserKeyedOut"
-        }],
+            args: ["{that}", "{arguments}.1.model.gpiiKey"]
+        },
         "onPSPPrerequisitesReady.notifyPSPReady": {
             this: "{that}.events.onPSPReady",
             method: "fire",
@@ -219,7 +364,7 @@ fluid.defaults("gpii.app", {
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
-            args: ["{arguments}.0"] // token
+            args: ["{flowManager}", "{arguments}.0"] // token
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
@@ -229,170 +374,50 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.exit",
             args: "{that}"
         }
-    }
-});
-
-
-
-/**
- * A component for handling errors during app runtime. It triggers showing of an "Error Dialog"
- * with all the details for the occurred error.
- *
- * This error handling system is more or less in a temporary state until GPII-1313 (a mechanism for notifying the
- * PSP for errors) is finished. Currently we are using error descriptions that are hard-coded in the PSP and
- * a listener for any fluid `UncaughtException`.
- */
-fluid.defaults("gpii.app.errorHandler", {
-    gradeNames: ["fluid.component"],
-
-    errorsDescriptionMap: {
-        "EADDRINUSE": {
-            title:   "GPII can't start",
-            subhead: "There is another application listening on port the same port",
-            details: "Stop the other running application and try again. If the problem is still present, contact GPII Technical Support.",
-            fatal: true
-        },
-        "EKEYINFAIL": {
-            title:   "Cannot Key In",
-            subhead: "There might be a problem with the user you are trying to use",
-            details: "You can try keying in again. If the problem is still present, contact GPII Technical Support.",
-            btnLabel1: "OK",
-            fatal: false
-        },
-        "ENOCONNECTION": {
-            title:   "No Internet connection",
-            subhead: "There seem to be a problem your Internet connectivity",
-            details: "Have you tried turning it off and on again? If the problem is still present, contact GPII Technical Support.",
-            btnLabel1: "OK",
-            btnLabel2: "Cancel",
-            fatal: false
-        }
     },
-
-    events: {
-        onFatalError: null
-    },
-
-    listeners: {
-        "onCreate.registerErrorListener": {
-            funcName: "gpii.app.errorHandler.registerErrorListener",
-            args: ["{that}"]
-        },
-        "onDestroy.clearListener": {
-            funcName: "fluid.onUncaughtException.removeListener",
-            args: ["gpii.app.errorHandler"]
-        }
-    },
-
-    // Attach keyIn error listener to the core component
-    distributeOptions: {
-        target: "{flowManager requests stateChangeHandler}.options.listeners.onError",
-        record: "gpii.app.errorHandler.onKeyInError"
-    },
-
-    invokers: {
-        handleUncaughtException: {
-            funcName: "gpii.app.errorHandler.handleUncaughtException",
-            args: [
-                "{that}",
-                "{dialogManager}",
-                "{that}.options.errorsDescriptionMap",
-                "{arguments}.0" // error
-            ]
-        }
-    }
+    defaultTheme: "white"
 });
 
 /**
- * A function which is called whenever an error occurs while keying in. Note that a real error would have its `isError`
- * property set to true.
- *
- * @param {Object} error - The error which has occurred.
+ * Invoked when a QSS setting has been altered by the user either by changing the
+ * value directly via the QSS (e.g. for toggle buttons), or by adjusting it using
+ * the QSS widget (for "number" and "string" settings).
+ * Note that the "App / Text Zoom" setting is different than the rest of the
+ * settings. It is not applied by sending a command via the pspChannel but instead
+ * the `gpii.windows.appZoom#sendZoom` invoker is called with an "increase" or
+ * "decrease" string as a parameter in order to change the zoom level in the last
+ * active application.
+ * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
+ * @param {Object} setting - The setting which has been altered via the QSS or its
+ * widget.
+ * @param {String} appTextZoomPath - The path of the "App / Text Zoom" setting.
  */
-gpii.app.errorHandler.onKeyInError = function (error) {
-    if (error.isError) {
-        fluid.onUncaughtException.fire({
-            code: "EKEYINFAIL"
-        });
-    }
-};
-
-/**
- * Handles the process of displaying errors through the usage of the "error dialog".
- * @param {Component} that - An instance of gpii.app.
- * @param {Component} dialogManager - An instance of `gpii.app.dialogManager`.
- * @param {Object} errorsDescription - A map with more detailed description for the errors.
- * @param {Object} error - The error which has occurred.
- */
-gpii.app.errorHandler.handleUncaughtException = function (that, dialogManager, errorsDescription, error) {
-    var errCode = error && error.code,
-        errDetails = errorsDescription[errCode],
-        errorOptions = fluid.extend(true, {}, errDetails, {
-            errCode: errCode
-        });
-
-    if (!fluid.isValue(errDetails)) {
+gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, appTextZoomPath) {
+    // Special handling of the "App / Text Zoom" setting
+    if (setting.path === appTextZoomPath) {
+        var direction = setting.value > setting.oldValue ? "increase" : "decrease";
+        appZoom.sendZoom(direction);
         return;
     }
 
-    dialogManager.hide("waitDialog");
-    dialogManager.show("error", errorOptions);
-
-    if (errDetails.fatal) {
-        dialogManager.error.applier.modelChanged.addListener("isShown", function (isShown) {
-            if (!isShown) {
-                that.onFatalError.fire(errDetails);
-            }
-        });
-    }
+    settingsBroker.applySetting(setting);
 };
 
-/**
- * Register a global listener for all fluid exceptions.
- *
- * @param {Component} errorHandler - The `gpii.app.errorHandler` component
- */
-gpii.app.errorHandler.registerErrorListener = function (errorHandler) {
-    fluid.onUncaughtException.addListener(function (err) {
-        fluid.log("Uncaught Exception", err);
-        errorHandler.handleUncaughtException(err);
-    }, "gpii.app.errorHandler", "last");
+gpii.app.getIsKeyedIn = function (keyedInUserToken, defaultUserToken) {
+    return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken;
 };
 
-
-/**
- * Either hides or shows the warning in the PSP.
- *
- * @param {Component} psp - The `gpii.app.psp` component
- * @param {Object[]} pendingChanges - A list of the current state of pending changes
- */
-gpii.app.togglePspRestartWarning = function (psp, pendingChanges) {
-    if (pendingChanges.length === 0) {
-        psp.hideRestartWarning();
+gpii.app.onIsKeyedInChanged = function (that, isKeyedIn) {
+    if (isKeyedIn) {
+        that.events.onKeyedIn.fire();
     } else {
-        psp.showRestartWarning(pendingChanges);
+        that.events.onKeyedOut.fire();
     }
 };
 
-/**
- * Hides the restart dialog if the PSP is being shown.
- * @param {Component} dialogManager - The `gpii.app.dialogManager` instance
- * @param {Boolean} isPspShown - Whether the psp window is being shown
- */
-gpii.app.hideRestartDialogIfNeeded = function (dialogManager, isPspShown) {
-    if (isPspShown) {
-        dialogManager.hide("restartDialog");
-    }
-};
-
-/**
- * Shows the restart dialog if there is at least one pending change.
- * @param {Component} dialogManager - The `gpii.app.dialogManager` instance
- * @param {Object[]} pendingChanges - A list containing the current pending changes
- */
-gpii.app.showRestartDialogIfNeeded = function (dialogManager, pendingChanges) {
-    if (pendingChanges.length > 0) {
-        dialogManager.show("restartDialog", pendingChanges);
+gpii.app.pspInApp.onQssToggled = function (psp, isQssShown) {
+    if (!isQssShown) {
+        psp.hide();
     }
 };
 
@@ -405,9 +430,25 @@ gpii.app.fireAppReady = function (fireFn) {
   * Currently uses an url to key in although this should be changed to use Electron IPC.
   * @param {String} token - The token to key in with.
   */
-gpii.app.keyIn = function (token) {
-    request("http://localhost:8081/user/" + token + "/login", function (/* error, response */) {
-        // empty
+gpii.app.keyIn = function (flowManager, token) {
+    request("http://localhost:8081/user/" + token + "/proximityTriggered", function (error, response, body) {
+
+        // Try is needed as the response body has two formats:
+        //  - success message - simple string (like message key of the object)
+        //  - object - "{isError: Boolean, message: string}"
+        try {
+            /// XXX temporary way for triggering key in error
+            if (typeof body === "string" && JSON.parse(body).isError) {
+                flowManager.userErrors.events.userError.fire({
+                    isError: true,
+                    messageKey: "KeyInFail",
+                    originalError: JSON.parse(response.body).message
+                });
+            }
+        }
+        // SyntaxError
+        // Should be a success
+        catch (e) { return; }
     });
 };
 
@@ -419,15 +460,15 @@ gpii.app.keyIn = function (token) {
   */
 gpii.app.keyOut = function (token) {
     var togo = fluid.promise();
-    request("http://localhost:8081/user/" + token + "/logout", function (error, response, body) {
+    request("http://localhost:8081/user/" + token + "/proximityTriggered", function (error, response, body) {
         //TODO Put in some error logging
-        if (error) {
-            togo.reject(error);
-            fluid.log("Key out response:", response);
-            fluid.log("Key out body:", body);
-        } else {
-            togo.resolve();
-        }
+        // if (error) {
+        //     togo.reject(error);
+        //     fluid.log("Key out response:", response);
+        //     fluid.log("Key out body:", body);
+        // } else {
+        //     togo.resolve();
+        // }
     });
     return togo;
 };

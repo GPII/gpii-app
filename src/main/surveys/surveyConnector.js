@@ -63,7 +63,7 @@ var fluid = require("infusion"),
  *            width: 800,
  *            height: 600,
  *            resizable: true,
- *            title: "GPII Auto-Personalization Survey",
+ *            title: "Morphic Survey",
  *            closable: true, // whether the survey can be closed via a button in the titlebar
  *            minimizable: false, // whether the survey can be minimized via a button in the titlebar
  *            maximizable: false // whether the survey can be maximied via a button in the titlebar

@@ -6,7 +6,7 @@
         "height": 600,
         "resizable": true,
 
-        "title": "GPII Auto-Personalization Survey",
+        "title": "Morphic Survey",
         "closable": true,
         "minimizable": false,
         "maximizable": false

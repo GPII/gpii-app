@@ -36,13 +36,8 @@ var surveyDialogFixture = {
 
 gpii.tests.dialogManager.testManagerWithNoKeyedInUser = function (dialogManager) {
     jqUnit.assertFalse("There is no keyed in user for the dialog manager",
-        dialogManager.model.keyedInUserToken);
+        dialogManager.model.isKeyedIn);
     gpii.tests.dialogManager.testSurveyDialogClosed(dialogManager);
-};
-
-gpii.tests.dialogManager.testManagerAfterKeyIn = function (dialogManager, expectedUserToken) {
-    jqUnit.assertEquals("The keyed in user token matches the token of the user",
-        expectedUserToken, dialogManager.model.keyedInUserToken);
 };
 
 gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, surveyDialogFixture) {
@@ -85,9 +80,12 @@ gpii.tests.dialogManager.testDefs = {
         args: ["snapset_1a"]
     }, {
         changeEvent: "{that}.app.dialogManager.applier.modelChanged",
-        path: "keyedInUserToken",
-        listener: "gpii.tests.dialogManager.testManagerAfterKeyIn",
-        args: ["{that}.app.dialogManager", "snapset_1a"]
+        path: "isKeyedIn",
+        listener: "jqUnit.assertTrue",
+        args:[
+            "There is a keyed in user for the dialog manager",
+            "{that}.app.dialogManager.model.isKeyedIn"
+        ]
     }, {
         func: "{that}.app.dialogManager.show",
         args: ["survey", surveyDialogFixture]
@@ -123,7 +121,7 @@ gpii.tests.dialogManager.testDefs = {
         func: "{that}.app.keyOut"
     }, { // Test that the survey dialog is closed when the user keys out
         changeEvent: "{that}.app.dialogManager.applier.modelChanged",
-        path: "keyedInUserToken",
+        path: "isKeyedIn",
         listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
         args: ["{that}.app.dialogManager"]
     }]
