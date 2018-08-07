@@ -185,7 +185,7 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady"
         },
         qssWrapper: {
-            type: "gpii.app.qssWrapper",
+            type: "gpii.app.resetableQssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 appTextZoomPath: "appTextZoom",
@@ -206,7 +206,8 @@ fluid.defaults("gpii.app", {
                             true,
                             "{change}.value",
                             { oldValue: "{change}.oldValue.value" }
-                        ]
+                        ],
+                        includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
                     }, {
                         funcName: "gpii.app.onQssSettingAltered",
                         args: [
@@ -215,7 +216,7 @@ fluid.defaults("gpii.app", {
                             "{change}.value",
                             "{that}.options.appTextZoomPath"
                         ],
-                        includeSource: ["qss", "qssWidget", "gpii.app.undoStack.notUndoable"]
+                        includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
                     }]
                 }
             }
