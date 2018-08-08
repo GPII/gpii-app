@@ -185,7 +185,7 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady"
         },
         qssWrapper: {
-            type: "gpii.app.resetableQssWrapper",
+            type: "gpii.app.resettableQssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 appTextZoomPath: "appTextZoom",
@@ -234,6 +234,9 @@ fluid.defaults("gpii.app", {
                         funcName: "gpii.app.pspInApp.onQssToggled",
                         args: ["{that}", "{change}.value"]
                     }
+                },
+                events: {
+                    onActivePreferenceSetAltered: "{qssWrapper}.events.onActivePreferenceSetAltered"
                 },
                 listeners: {
                     "{qssWrapper}.events.onQssPspOpen": {
@@ -398,10 +401,9 @@ gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, appTe
     if (setting.path === appTextZoomPath) {
         var direction = setting.value > setting.oldValue ? "increase" : "decrease";
         appZoom.sendZoom(direction);
-        return;
+    } else {
+        settingsBroker.applySetting(setting);
     }
-
-    settingsBroker.applySetting(setting);
 };
 
 gpii.app.getIsKeyedIn = function (keyedInUserToken, defaultUserToken) {

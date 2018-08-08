@@ -26,17 +26,20 @@ require("./qssMorePanel.js");
 require("../undoStack.js");
 
 
-fluid.defaults("gpii.app.resetableQssWrapper", {
+fluid.defaults("gpii.app.resettableQssWrapper", {
     gradeNames: ["gpii.app.qssWrapper"],
 
     members: {
-        lastPrefSetUpdateKey: null
+        previousState: {
+            gpiiKey: null,
+            activeSet: null
+        }
     },
 
     listeners: {
         // override existing listener
         "onPreferencesUpdated.applyPrefSettings": {
-            func: "gpii.app.resetableQssWrapper.applyDecoratedPreferenceSettings",
+            func: "gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings",
             args: [
                 "{that}",
                 "{that}.options.defaultQssSettings",
@@ -64,13 +67,13 @@ fluid.defaults("gpii.app.resetableQssWrapper", {
     }]
 });
 
-gpii.app.resetableQssWrapper.applyDecoratedPreferenceSettings = function (that, defaultQssSettings, preferences) {
-    var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences && preferences.settingGroups);
-    var notUndoable = false;
+gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings = function (that, defaultQssSettings, preferences) {
+    var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences && preferences.settingGroups),
+        notUndoable = false;
 
-    if (that.lastPrefSetUpdateKey !== preferences.gpiiKey) {
+    if (that.previousState.gpiiKey !== preferences.gpiiKey || that.previousState.activeSet !== preferences.activeSet) {
         /// Else comes from addition of new setting
-        console.log("resetableQssWrapper: Apply QSS original settings");
+        console.log("resettableQssWrapper: Apply QSS original settings");
 
         notUndoable = true;
 
@@ -86,7 +89,10 @@ gpii.app.resetableQssWrapper.applyDecoratedPreferenceSettings = function (that, 
         });
     }
 
-    that.lastPrefSetUpdateKey = preferences.gpiiKey;
+    that.previousState = {
+        gpiiKey: preferences.gpiiKey,
+        activeSet: preferences.activeSet
+    };
 
     fluid.each(settings, function (setting) {
         that.updateSetting(setting, notUndoable);
@@ -119,6 +125,7 @@ fluid.defaults("gpii.app.qssWrapper", {
     events: {
         onSettingUpdated: null,
         onPreferencesUpdated: null,
+        onActivePreferenceSetAltered: null,
         onUndoRequired: null,
         onSaveRequired: null,
         onQssPspOpen: null,
@@ -503,7 +510,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
 fluid.defaults("gpii.app.undoInWrapper", {
     gradeNames: "gpii.app.undoStack",
     // paths of settings that are not undoable
-    unwatchedSettings: ["http://registry\\.gpii\\.net/common/fontSize"],
+    unwatchedSettings: ["appTextZoom"],
 
     listeners: {
         "onChangeUndone.applyChange": {
@@ -512,6 +519,9 @@ fluid.defaults("gpii.app.undoInWrapper", {
                 "{qssWrapper}",
                 "{arguments}.0" // change
             ]
+        },
+        "{qssWrapper}.events.onActivePreferenceSetAltered": {
+            func: "{that}.clear"
         }
     },
     modelListeners: {
