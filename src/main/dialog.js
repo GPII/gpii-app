@@ -74,10 +74,21 @@ fluid.defaults("gpii.app.dialog", {
     config: {
         // dialog behaviour settings
         showInactive: false,
+
         // Whether to position the dialog after creation. This is used instead of x and y as raw
         // options as they depend on the offset and latter is not yet defined at the time of the
         // dialog creation
         positionOnInit: true,
+
+        // Whether the window is hidden offscreen and should be treated as such. It's usage is
+        // mainly assotiated with the `gpii.app.dialog.offScreenHidable` grade
+        offScreenHide: false,
+
+        // Whether the windows can be closed at all. In case this setting is active the only
+        // way for a window to be closed is through the usage of the `destroy` method and
+        // a close command would simply hide the window.
+        // This is mainly needed to avoid closing a window using the Alf + F4 combination
+        closable: true,
 
         restrictions: {
             minHeight: null
@@ -197,8 +208,8 @@ fluid.defaults("gpii.app.dialog", {
             method: "hide"
         },
         show: {
-            changePath: "isShown",
-            value: true
+            funcName: "gpii.app.dialog.show",
+            args: ["{that}"]
         },
         hide: {
             changePath: "isShown",
@@ -250,6 +261,9 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
 
     dialog.loadURL(url);
 
+    // Keep record in the window itself for its wrapping grade
+    dialog.grade = that.options.gradeNames[that.options.gradeNames.length - 1];
+
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095
     dialog.params = params || {};
@@ -260,12 +274,29 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
         dialog.show();
     }
 
+    if (!that.options.config.closable) {
+        // As proposed in https://github.com/electron/electron/issues/6702
+        dialog.on("close", function (e) {
+            that.hide();
+            e.preventDefault();
+        });
+    }
+
     return dialog;
 };
 
 gpii.app.dialog.onDialogCreated = function (that) {
     if (that.options.config.positionOnInit) {
         that.setPosition();
+    }
+};
+
+
+gpii.app.dialog.show = function (that) {
+    if (that.model.isShown) {
+        that.focus();
+    } else {
+        that.applier.change("isShown", true);
     }
 };
 

@@ -56,6 +56,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
 
     config: {
         showInactive: true, // not focused when shown
+        closable: false,
 
         attrs: {
             width: 200,

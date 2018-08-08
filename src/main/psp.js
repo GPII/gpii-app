@@ -183,6 +183,8 @@ fluid.defaults("gpii.app.psp", {
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
      */
     config: {
+        closable: false,
+
         restrictions: {
             minHeight: 600
         },

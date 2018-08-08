@@ -30,6 +30,8 @@ fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
 
     config: {
+        closable: false,
+
         attrs: {
             width: 984,
             height: 95,
@@ -146,12 +148,7 @@ fluid.defaults("gpii.app.qss", {
  * opened via an ArrowLeft/ArrowRight key or using the global shortcut.
  */
 gpii.app.qss.show = function (that, params) {
-    // TODO move to _show ?
-    if (that.model.isShown) {
-        that.focus();
-    } else {
-        that.applier.change("isShown", true);
-    }
+    gpii.app.dialog.show(that);
 
     that.events.onQssOpen.fire(params);
 };
