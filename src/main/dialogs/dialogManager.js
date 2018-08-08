@@ -18,10 +18,10 @@ var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
 require("./waitDialog.js");
-require("./surveys/surveyDialog.js");
+require("./surveyDialog.js");
 require("./errorDialog.js");
 require("./aboutDialog.js");
-require("./utils.js");
+require("../utils.js");
 
 
 /**

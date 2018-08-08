@@ -18,12 +18,12 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
-require("./qssDialog.js");
-require("./qssTooltipDialog.js");
-require("./qssWidgetDialog.js");
-require("./qssNotificationDialog.js");
-require("./qssMorePanel.js");
-require("../undoStack.js");
+require("./dialogs/quickSetStrip/qssDialog.js");
+require("./dialogs/quickSetStrip/qssTooltipDialog.js");
+require("./dialogs/quickSetStrip/qssWidgetDialog.js");
+require("./dialogs/quickSetStrip/qssNotificationDialog.js");
+require("./dialogs/quickSetStrip/qssMorePanel.js");
+require("./undoStack.js");
 
 
 fluid.defaults("gpii.app.resettableQssWrapper", {

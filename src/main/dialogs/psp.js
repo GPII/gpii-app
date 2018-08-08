@@ -23,7 +23,7 @@ var ipcMain           = electron.ipcMain,
 var gpii              = fluid.registerNamespace("gpii");
 
 require("./resizable.js");
-require("./utils.js");
+require("../utils.js");
 require("./blurrable.js");
 
 
