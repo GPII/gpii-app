@@ -18,7 +18,8 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
-require("../dialog.js");
+require("../basic/blurrable.js");
+require("../basic/centeredDialog.js");
 
 fluid.defaults("gpii.app.qssNotification", {
     gradeNames: ["gpii.app.centeredDialog", "gpii.app.blurrable"],

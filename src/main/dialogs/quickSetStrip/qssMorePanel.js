@@ -16,7 +16,8 @@
 
 var fluid = require("infusion");
 
-require("../dialog.js");
+require("../basic/blurrable.js");
+require("../basic/centeredDialog.js");
 
 fluid.defaults("gpii.app.qssMorePanel", {
     gradeNames: ["gpii.app.centeredDialog", "gpii.app.blurrable"],

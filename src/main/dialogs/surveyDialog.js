@@ -19,7 +19,7 @@ var fluid = require("infusion"),
     ipcMain = electron.ipcMain,
     gpii = fluid.registerNamespace("gpii");
 
-require("./dialog.js");
+require("./basic/dialogWrapper.js");
 
 /**
  * A component which extends the base `gpii.app.dialog` by registering additional

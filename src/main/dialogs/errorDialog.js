@@ -19,7 +19,7 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var ipcMain = require("electron").ipcMain;
 
-require("./dialog.js");
+require("./basic/dialogWrapper.js");
 require("../utils.js");
 
 /**

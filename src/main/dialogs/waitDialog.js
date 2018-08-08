@@ -18,7 +18,7 @@ var fluid = require("infusion");
 
 var gpii  = fluid.registerNamespace("gpii");
 
-require("./dialog.js");
+require("./basic/dialog.js");
 
 /**
  * Component that contains an Electron Dialog.

@@ -18,8 +18,9 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
-require("../dialog.js");
-require("../blurrable.js");
+require("../basic/dialog.js");
+require("../basic/blurrable.js");
+require("../basic/offScreenHidable.js");
 require("../../../common/channelUtils.js");
 
 
