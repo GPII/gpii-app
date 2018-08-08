@@ -5,13 +5,13 @@
             "type": "string",
             "title": "Language",
             "keys": [
-                "en",
+                "en-US",
                 "hy",
                 "zh-Hans",
                 "zh-Hant",
-                "ko",
+                "ko-KR",
                 "ru",
-                "es"
+                "es-ES"
             ],
             "enum": [
                 "English",
@@ -23,9 +23,9 @@
                 "Español · Spanish"
             ],
             "image": "language.svg",
-            "default": "en"
+            "default": "en-US"
         },
-        "value": "en",
+        "value": "en-US",
         "tip": "<div><strong>Changes language.</strong></div><div>Works in Windows and programs that support Windows language settings.</div><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
         "tooltip": "<div><strong>Change language.</strong></div><div>Works in Windows, Edge, and many other applications.</div>",
         "restartWarning": true,
