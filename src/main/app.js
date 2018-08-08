@@ -91,10 +91,6 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.onIsKeyedInChanged",
             args: ["{that}", "{change}.value"],
             excludeSource: "init"
-        },
-        keyedInUserToken: {
-            func: "console.log",
-            args: ["=======keyedInUserToken", "{change}.value"]
         }
     },
     defaultUserToken: "noUser",
