@@ -84,14 +84,14 @@ var settingGroupsFixture = {
                     }
                 },
                 "http://registry\\.gpii\\.net/common/DPIScale":{
-                    "value":1.25,
+                    "value":1,
                     "schema":{
                         "title":"DPI Scale",
                         "description":"DPI scale factor on default monitor",
                         "type":"number",
-                        "min":1,
-                        "max":2,
-                        "divisibleBy":0.25
+                        "min":-2,
+                        "max":4,
+                        "divisibleBy":1
                     }
                 },
                 "http://registry\\.gpii\\.net/common/cursorSize":{
@@ -184,14 +184,14 @@ jqUnit.test("Group setting tests", function () {
 
     var dpiScaleKey = "http://registry\\.gpii\\.net/common/DPIScale";
     jqUnit.assertLeftHand("The default group contains the DPI scale setting", {
-        value: 1.25,
+        value: 1,
         schema: {
             title: "DPI Scale",
             description: "DPI scale factor on default monitor",
             type: "number",
-            min: 1,
-            max: 2,
-            divisibleBy: 0.25
+            min: -2,
+            max: 4,
+            divisibleBy: 1
         }
     }, defaultGroup.settingControls[dpiScaleKey]);
 
