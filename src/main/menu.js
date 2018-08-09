@@ -281,10 +281,16 @@ fluid.defaults("gpii.app.menuInAppDev", {
                 token: "multi_context"
             }
         }, {
-            label: "Invalid user",
+            label: "onKeyInFail",
             click: "onKeyIn",
             args: {
                 token: "danailbd"
+            }
+        }, {
+            label: "onSettingWriteFail",
+            click: "onKeyIn",
+            args: {
+                token: "explodeSettingsHandlerSet"
             }
         }]
     },
