@@ -22,7 +22,7 @@ var ipcMain           = electron.ipcMain,
     systemPreferences = electron.systemPreferences;
 var gpii              = fluid.registerNamespace("gpii");
 
-require("../utils.js");
+require("../common/utils.js");
 
 require("./basic/dialog.js");
 require("./basic/blurrable.js");

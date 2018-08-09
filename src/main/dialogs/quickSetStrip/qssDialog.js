@@ -20,7 +20,7 @@ var gpii = fluid.registerNamespace("gpii");
 
 require("../basic/dialog.js");
 require("../basic/blurrable.js");
-require("../../../common/channelUtils.js");
+require("../../../shared/channelUtils.js");
 
 
 /**

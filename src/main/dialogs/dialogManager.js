@@ -21,7 +21,7 @@ require("./waitDialog.js");
 require("./surveyDialog.js");
 require("./errorDialog.js");
 require("./aboutDialog.js");
-require("../utils.js");
+require("../common/utils.js");
 
 
 /**

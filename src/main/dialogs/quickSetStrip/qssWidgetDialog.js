@@ -21,7 +21,7 @@ var gpii = fluid.registerNamespace("gpii");
 require("../basic/dialog.js");
 require("../basic/blurrable.js");
 require("../basic/offScreenHidable.js");
-require("../../../common/channelUtils.js");
+require("../../../shared/channelUtils.js");
 
 
 fluid.defaults("gpii.app.qssWidget", {

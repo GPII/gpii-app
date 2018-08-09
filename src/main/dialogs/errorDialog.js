@@ -20,7 +20,7 @@ var gpii    = fluid.registerNamespace("gpii");
 var ipcMain = require("electron").ipcMain;
 
 require("./basic/dialogWrapper.js");
-require("../utils.js");
+require("../common/utils.js");
 
 /**
  * A component that serves as simple interface for communication with the

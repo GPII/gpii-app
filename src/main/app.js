@@ -20,7 +20,7 @@ var request = require("request");
 
 require("./assetsManager.js");
 require("./shortcutsManager.js");
-require("./ws.js");
+require("./common/ws.js");
 require("./factsManager.js");
 require("./dialogs/dialogManager.js");
 require("./gpiiConnector.js");
@@ -30,11 +30,11 @@ require("./qss.js");
 require("./settingsBroker.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
-require("./utils.js");
+require("./common/utils.js");
 require("./userErrorsHandler.js");
-require("../common/messageBundles.js");
-require("../common/utils.js");
-require("../common/channelUtils.js");
+require("../shared/messageBundles.js");
+require("../shared/utils.js");
+require("../shared/channelUtils.js");
 
 // enhance the normal require to work with .json5 files
 require("json5/lib/register");

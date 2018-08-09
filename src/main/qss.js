@@ -23,7 +23,7 @@ require("./dialogs/quickSetStrip/qssTooltipDialog.js");
 require("./dialogs/quickSetStrip/qssWidgetDialog.js");
 require("./dialogs/quickSetStrip/qssNotificationDialog.js");
 require("./dialogs/quickSetStrip/qssMorePanel.js");
-require("./undoStack.js");
+require("./common/undoStack.js");
 
 
 fluid.defaults("gpii.app.resettableQssWrapper", {

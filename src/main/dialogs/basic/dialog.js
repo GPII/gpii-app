@@ -421,7 +421,7 @@ fluid.defaults("gpii.app.i18n.channel", {
  * Listens for events from the renderer process (the BrowserWindow).
  */
 fluid.defaults("gpii.app.channelListener", {
-    gradeNames: ["gpii.app.common.simpleChannelListener"],
+    gradeNames: ["gpii.app.shared.simpleChannelListener"],
     ipcTarget: require("electron").ipcMain
 });
 
