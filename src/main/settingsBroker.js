@@ -110,6 +110,7 @@ fluid.defaults("gpii.app.settingsBroker", {
 });
 
 gpii.app.settingsBroker.applySetting = function (settingsBroker, setting) {
+    console.log("SettingBroker: Apply setting - ", setting);
     settingsBroker.events.onSettingApplied.fire(setting);
     settingsBroker.removePendingChange(setting);
 };

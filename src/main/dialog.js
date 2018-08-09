@@ -95,6 +95,7 @@ fluid.defaults("gpii.app.dialog", {
             transparent: true,
             alwaysOnTop: true,
             skipTaskbar: true,
+            type: "toolbar",
             resizable: false
         },
         filePrefixPath: "src/renderer",

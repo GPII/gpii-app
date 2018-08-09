@@ -128,6 +128,12 @@ fluid.defaults("gpii.app.qss", {
         },
         handleBlur: {
             funcName: "fluid.identity"
+        },
+        updateUndoIndicator: {
+            func: "{that}.events.onUndoIndicatorChanged.fire",
+            args: [
+                "{arguments}.0" // state
+            ]
         }
     }
 });

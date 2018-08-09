@@ -29,7 +29,7 @@
         "tip": "<div><strong>Changes language.</strong></div><div>Works in Windows and programs that support Windows language settings.</div><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
         "tooltip": "<div><strong>Change language.</strong></div><div>Works in Windows, Edge, and many other applications.</div>",
         "restartWarning": true,
-        "learnMoreLink": "https://www.gpii.net"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#language"
     }, {
         "path": "appTextZoom",
         "schema": {
@@ -45,7 +45,7 @@
         "widget": {
             "footerTip": "You can also use the CTRL key plus the Scroll (wheel or gesture) at any time."
         },
-        "learnMoreLink": "https://www.gpii.net"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
     }, {
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
         "schema": {
@@ -54,15 +54,15 @@
             "min": 1,
             "max": 2,
             "divisibleBy": 0.25,
-            "default": 1.25
+            "default": 1
         },
-        "value": 1.25,
+        "value": 1,
         "tip": "<div><strong>Zooms everything on the screen</strong></div><div>Amount of Zoom up and down differs by computer.</div>",
         "tooltip": "<div><strong>Change the screen size to make everything larger/smaller.</strong></div><div>Works everywhere.</div>",
         "widget": {
             "footerTip": ""
         },
-        "learnMoreLink": "https://www.gpii.net"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
     }, {
         "path": "http://registry\\.gpii\\.net/common/captions/enabled",
         "schema": {
@@ -73,7 +73,7 @@
         "value": false,
         "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div><div>Works in Chrome only.</div>"
     }, {
-        "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
+        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
             "type": "string",
             "title": "High / Low Contrast",
@@ -144,7 +144,7 @@
         },
         "tip": "<div><strong>Changes contrast & colors</strong></div><div>Works in Chrome, Windows and apps that support Windows contrast themes.  (May need to restart some programs)</div>",
         "tooltip": "<div><strong>Change the contrast between the text and background color, so text is easier to read.</strong></div><div>Contrast changes will affect Windows, Edge, and some other applications.</div>",
-        "learnMoreLink": "https://www.gpii.net"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#contrast"
     }, {
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
         "schema": {
