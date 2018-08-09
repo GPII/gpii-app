@@ -22,9 +22,12 @@ var ipcMain           = electron.ipcMain,
     systemPreferences = electron.systemPreferences;
 var gpii              = fluid.registerNamespace("gpii");
 
-require("./resizable.js");
-require("./utils.js");
-require("./blurrable.js");
+require("../common/utils.js");
+
+require("./basic/dialog.js");
+require("./basic/blurrable.js");
+require("./basic/resizable.js");
+require("./basic/offScreenHidable.js");
 
 
 /**
@@ -183,6 +186,8 @@ fluid.defaults("gpii.app.psp", {
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
      */
     config: {
+        closable: false,
+
         restrictions: {
             minHeight: 600
         },

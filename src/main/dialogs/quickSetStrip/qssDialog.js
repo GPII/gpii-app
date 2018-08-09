@@ -18,9 +18,9 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
-require("../dialog.js");
-require("../blurrable.js");
-require("../../common/channelUtils.js");
+require("../basic/dialog.js");
+require("../basic/blurrable.js");
+require("../../../shared/channelUtils.js");
 
 
 /**
@@ -30,6 +30,8 @@ fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
 
     config: {
+        closable: false,
+
         attrs: {
             width: 984,
             height: 95,

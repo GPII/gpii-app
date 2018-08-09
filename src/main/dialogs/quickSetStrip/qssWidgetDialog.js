@@ -18,9 +18,10 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
-require("../dialog.js");
-require("../blurrable.js");
-require("../../common/channelUtils.js");
+require("../basic/dialog.js");
+require("../basic/blurrable.js");
+require("../basic/offScreenHidable.js");
+require("../../../shared/channelUtils.js");
 
 
 fluid.defaults("gpii.app.qssWidget", {
@@ -42,6 +43,8 @@ fluid.defaults("gpii.app.qssWidget", {
     },
 
     config: {
+        closable: false,
+
         params: {
             sounds: {
                 boundReached: {

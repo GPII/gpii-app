@@ -16,9 +16,12 @@
 
 var fluid = require("infusion");
 
-require("../dialog.js");
-require("../blurrable.js");
-require("../../common/channelUtils.js");
+
+require("../basic/dialog.js");
+require("../basic/delayedShow.js");
+require("../basic/blurrable.js");
+require("../basic/offScreenHidable.js");
+require("../../../shared/channelUtils.js");
 
 var gpii = fluid.registerNamespace("gpii");
 
@@ -56,6 +59,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
 
     config: {
         showInactive: true, // not focused when shown
+        closable: false,
 
         attrs: {
             width: 200,

@@ -18,7 +18,7 @@ var fluid = require("infusion");
 
 var app = require("electron").app;
 
-require("./dialog.js");
+require("./basic/dialog.js");
 
 
 /**

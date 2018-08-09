@@ -14,7 +14,7 @@
  * https://github.com/GPII/universal/blob/master/LICENSE.txt
  */
 "use strict";
-require("./utils.js");
+require("./common/utils.js");
 
 var fluid = require("infusion");
 var groupingTemplate = fluid.require("%gpii-app/testData/grouping/groupingTemplate.json");

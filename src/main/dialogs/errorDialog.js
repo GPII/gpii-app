@@ -19,8 +19,8 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var ipcMain = require("electron").ipcMain;
 
-require("./dialog.js");
-require("./utils.js");
+require("./basic/dialogWrapper.js");
+require("../common/utils.js");
 
 /**
  * A component that serves as simple interface for communication with the

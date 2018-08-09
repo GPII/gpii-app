@@ -18,7 +18,7 @@ var fluid = require("infusion");
 
 var gpii  = fluid.registerNamespace("gpii");
 
-require("./dialog.js");
+require("./basic/dialog.js");
 
 /**
  * Component that contains an Electron Dialog.
@@ -28,6 +28,8 @@ fluid.defaults("gpii.app.waitDialog", {
     gradeNames: ["gpii.app.dialog"],
 
     config: {
+        closable: false,
+
         attrs: {
             width: 800,
             height: 600
