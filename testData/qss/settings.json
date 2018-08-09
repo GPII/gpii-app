@@ -6,11 +6,11 @@
             "title": "Language",
             "keys": [
                 "en-US",
-                "hy",
-                "zh-Hans",
-                "zh-Hant",
+                "hy-AM",
+                "zh-CN",
+                "zh-TW",
                 "ko-KR",
-                "ru",
+                "ru-RU",
                 "es-ES"
             ],
             "enum": [
