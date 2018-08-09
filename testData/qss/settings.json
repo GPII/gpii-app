@@ -73,7 +73,7 @@
         "value": false,
         "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div><div>Works in Chrome only.</div>"
     }, {
-        "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
+        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
             "type": "string",
             "title": "High / Low Contrast",
