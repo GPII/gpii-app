@@ -48,6 +48,14 @@ if (gpiiIsRunning) {
     return;
 }
 
+
+// XXX just a temporary way of keeping the application alive even
+// after a crashing error
+fluid.onUncaughtException.addListener(function () {
+    // The message should have been already logged anyways
+}, "fail");
+
+
 require("gpii-windows/index.js");
 
 kettle.config.loadConfig({
