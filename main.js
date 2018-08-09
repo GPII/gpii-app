@@ -11,6 +11,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 /* eslint-env node */
 "use strict";
 
+var dns = require("dns");
+var lookupReal = dns.lookup;
+dns.lookup = function lookup(hostname, options, callback) {
+    if (hostname === "localhost") {
+        hostname = "127.0.0.1";
+    }
+    return lookupReal(hostname, options, callback);
+};
+
 var fluid = require("infusion"),
     app = require("electron").app,
     gpii = fluid.registerNamespace("gpii"),
