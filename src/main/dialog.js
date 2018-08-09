@@ -95,6 +95,7 @@ fluid.defaults("gpii.app.dialog", {
             transparent: true,
             alwaysOnTop: true,
             skipTaskbar: true,
+            type: "toolbar",
             resizable: false
         },
         filePrefixPath: "src/renderer",
@@ -246,11 +247,6 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
  * @return {BrowserWindow} The Electron `BrowserWindow` component
  */
 gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
-    if (windowOptions.skipTaskbar && !windowOptions.type) {
-        // Keep it out of the task-tray.
-        windowOptions.type = "toolbar";
-    }
-
     var dialog = new BrowserWindow(windowOptions);
 
     dialog.loadURL(url);
