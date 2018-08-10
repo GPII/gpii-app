@@ -40,21 +40,21 @@ fluid.registerNamespace("gpii.browserWindow");
 
 gpii.browserWindow.computeWindowSize = function (width, height, offsetX, offsetY) {
     // ensure proper values are given
-    offsetX = Math.max(0, (offsetX || 0));
+    // offsetX = Math.max(0, (offsetX || 0));
     offsetY = Math.max(0, (offsetY || 0));
 
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
     // Restrict the size of the window according to its position
     // we want our windows to be fully visible
-    var maxWidth = screenSize.width - offsetX;
+    // var maxWidth = screenSize.width - offsetX;
     var maxHeight = screenSize.height - offsetY;
 
-    var optimalWidth  = Math.min(width, maxWidth);
-    var optimalHeight = Math.min(height, maxHeight);
+    // width  = Math.min(width, maxWidth);
+    height = Math.min(height, maxHeight);
 
     return {
-        width:  Math.ceil(optimalWidth),
-        height: Math.ceil(optimalHeight)
+        width:  Math.ceil(width),
+        height: Math.ceil(height)
     };
 };
 
@@ -84,7 +84,7 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     desiredY = Math.ceil(screenSize.height - (height + offsetY));
 
     // restrict to the window to to exit from the left side
-    desiredX = Math.max(desiredX, 0);
+    // desiredX = Math.max(desiredX, 0);
     desiredY = Math.max(desiredY, 0);
 
     return {
