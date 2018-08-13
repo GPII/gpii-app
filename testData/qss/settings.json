@@ -52,7 +52,7 @@
             "type": "number",
             "title": "Screen Zoom",
             "min": -2,
-            "max": 2,
+            "max": 4,
             "divisibleBy": 1,
             "default": 0
         },
