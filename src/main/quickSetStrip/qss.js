@@ -59,7 +59,7 @@ fluid.defaults("gpii.app.resettableQssWrapper", {
         "path": "http://registry\\.gpii\\.net/common/captions/enabled",
         "value": false
     }, {
-        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.highContrast.http://registry\\.gpii\\.net/common/highContrastTheme",
+        "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "value": "regular-contrast"
     }, {
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
