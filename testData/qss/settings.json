@@ -6,18 +6,18 @@
             "title": "Language",
             "keys": [
                 "en-US",
-                "hy",
-                "zh-Hans",
-                "zh-Hant",
+                "hy-AM",
+                "zh-CN",
+                "zh-TW",
                 "ko-KR",
-                "ru",
+                "ru-RU",
                 "es-ES"
             ],
             "enum": [
                 "English",
                 "Հայերէն · Armenian",
                 "汉语 · Chinese (Simplified)",
-                "漢語 · Chinese (Traditional)",
+                "漢語 · Chinese (Traditional - Taiwan)",
                 "한국어 · Korean",
                 "Ру́сский · Russian",
                 "Español · Spanish"
@@ -51,12 +51,12 @@
         "schema": {
             "type": "number",
             "title": "Screen Zoom",
-            "min": 1,
-            "max": 2,
-            "divisibleBy": 0.25,
-            "default": 1.25
+            "min": -2,
+            "max": 4,
+            "divisibleBy": 1,
+            "default": 0
         },
-        "value": 1.25,
+        "value": 0,
         "tip": "<div><strong>Zooms everything on the screen</strong></div><div>Amount of Zoom up and down differs by computer.</div>",
         "tooltip": "<div><strong>Change the screen size to make everything larger/smaller.</strong></div><div>Works everywhere.</div>",
         "widget": {

@@ -49,6 +49,7 @@ fluid.defaults("gpii.app.surveyDialog", {
 
             show: false,
             skipTaskbar: false,
+            type: null,
             frame: true,
             transparent: false, // needs to be false to enable resizing and maximizing
             fullscreenable: true,

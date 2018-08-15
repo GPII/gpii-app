@@ -51,10 +51,10 @@ fluid.defaults("gpii.app.resettableQssWrapper", {
     // The "original" values of the QSS settings
     defaultQssSettings: [{
         "path": "http://registry\\.gpii\\.net/common/language",
-        "value": "en"
+        "value": "en-US"
     }, {
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
-        "value": 1.25
+        "value": 0
     }, {
         "path": "http://registry\\.gpii\\.net/common/captions/enabled",
         "value": false
