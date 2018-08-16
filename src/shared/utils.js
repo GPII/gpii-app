@@ -29,7 +29,7 @@ fluid.defaults("gpii.app.timer", {
     },
 
     listeners: {
-        "onTimerFinished.clearState": "{that}.clear", // used for isActive
+        "onTimerFinished.clearState": "{that}.clear",
         "onDestroy.clearTimer": "{that}.clear"
     },
 
@@ -58,9 +58,9 @@ fluid.defaults("gpii.app.timer", {
 });
 
 /**
- * Starts a timer. In `timeoutDuration` milliseconds, the `onTimerFinished` event will be fired. Any previously
- * registered timers will be cleared upon the invokation of this function.
- *
+ * Starts a timer. In `timeoutDuration` milliseconds the `onTimerFinished`
+ * event will be fired. Any previously registered timers will be cleared
+ * upon the invocation of this function.
  * @param {Component} that -The `gpii.app.timer` instance.
  * @param {Number} timeoutDuration -The timeout duration in milliseconds.
  * @param {Any[]} eventArguments - Events to be passed with the fired event.
@@ -77,8 +77,7 @@ gpii.app.timer.start = function (that, timeoutDuration, eventArguments) {
 };
 
 /**
- * Clears the timer.
- *
+ * Clears the timer (if any).
  * @param {Component} that -The `gpii.app.timer` instance.
  */
 gpii.app.timer.clear = function (that) {
@@ -90,6 +89,18 @@ gpii.app.timer.clear = function (that) {
 
 fluid.registerNamespace("gpii.app.applier");
 
+/**
+ * Replaces the value at a given path in a component's model in a single
+ * transaction. Useful because the default behavior when invoking an
+ * `applier.change` function is to merge the new object with the value of
+ * the old object at the specified model path which may not always be
+ * appropriate for all situations.
+ * @param {ChangeApplier} applier - The change applier for a model component.
+ * @param {String} path - The path in the component's model.
+ * @param {Any} value - The new value which should be set at the specified
+ * `path`.
+ * @param {String} [source] - The source of the model change.
+ */
 gpii.app.applier.replace = function (applier, path, value, source) {
     var transaction = applier.initiate();
 

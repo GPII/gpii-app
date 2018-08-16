@@ -17,8 +17,6 @@
 
 var gpii = fluid.registerNamespace("gpii");
 
-
-
 /**
  * Represents messages for a single component.
  * It simply follows the format:

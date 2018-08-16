@@ -1,7 +1,9 @@
 /**
  * Settings Broker - Postpone settings applying
  *
- * Introduces component that serves as a "broker" for the communication bettween the PcpChannel and the PSP itself. It postpones sending of a setting change, in case the later requires OS or Application restart. It provides mechanism for undo as well as applying of all such "pending" setting changes.
+ * Introduces a component that serves as a "broker" for the communication bettween the
+ * PSPChannel and the PSP itself. It postpones sending of a setting change in case the
+ * latter requires an OS or Application restart. It provides a mechanism for undo, too.
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -109,12 +111,22 @@ fluid.defaults("gpii.app.settingsBroker", {
     }
 });
 
+/**
+ * Immediately applies a pending setting change and removes it from the queue.
+ * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
+ * @param {Object} setting - A descriptor of the setting which is to be applied.
+ */
 gpii.app.settingsBroker.applySetting = function (settingsBroker, setting) {
-    console.log("SettingBroker: Apply setting - ", setting);
     settingsBroker.events.onSettingApplied.fire(setting);
     settingsBroker.removePendingChange(setting);
 };
 
+/**
+ * Cancels the application of the given pending setting change and removes it from
+ * the queue.
+ * @param {Component} settingsBroker - An instance of `gpii.app.settingsBroker`.
+ * @param {Object} setting - A descriptor of the setting which is to be undone.
+ */
 gpii.app.settingsBroker.undoSetting = function (settingsBroker, setting) {
     setting = fluid.extend(true, setting, {
         value: setting.oldValue

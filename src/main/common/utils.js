@@ -16,8 +16,7 @@
 
 var os            = require("os");
 var fluid         = require("infusion");
-var electron      = require("electron"),
-    BrowserWindow = electron.BrowserWindow;
+var electron      = require("electron");
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -34,22 +33,27 @@ gpii.app.isWin10OS = function () {
     return majorVersion === "10";
 };
 
-
+/**
+ * This namespace contains useful functions for computing the position and
+ * dimensions of a `BrowserWindow`.
+ */
 fluid.registerNamespace("gpii.browserWindow");
 
-
+/**
+ * Computes the new dimensions of a `BrowserWindow` so that all its content
+ * is vertically fully visible on the screen.
+ * @param {Number} width - The width of the `BrowserWindow`.
+ * @param {Number} height - The height of the `BrowserWindow`.
+ * @param {Number} offsetX - The x offset from the right edge of the screen.
+ * @param {Number} offsetY - The y offset from the bottom edge of the screen.
+ * @return {{width: Number, height: Number}} The desired window size.
+ */
 gpii.browserWindow.computeWindowSize = function (width, height, offsetX, offsetY) {
     // ensure proper values are given
-    // offsetX = Math.max(0, (offsetX || 0));
     offsetY = Math.max(0, (offsetY || 0));
 
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
-    // Restrict the size of the window according to its position
-    // we want our windows to be fully visible
-    // var maxWidth = screenSize.width - offsetX;
-    var maxHeight = screenSize.height - offsetY;
-
-    // width  = Math.min(width, maxWidth);
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+        maxHeight = screenSize.height - offsetY;
     height = Math.min(height, maxHeight);
 
     return {
@@ -59,14 +63,15 @@ gpii.browserWindow.computeWindowSize = function (width, height, offsetX, offsetY
 };
 
 /**
- * Compute the position of the given window from the bottom right corner.
- * It ensures that the window is not positioned outside of the screen.
- *
+ * Computes the position of a window given its dimensions and the offset which
+ * the windows should have relative to the bottom right corner of the screen.
+ * It ensures that the window is not positioned vertically outside of the
+ * screen.
  * @param {Number} width - The width of the `BrowserWindow`.
  * @param {Number} height - The height of the `BrowserWindow`.
- * @param {Number} offsetY - The y bottom offset.
- * @param {Number} offsetX - The x right offset.
- * @return {{x: Number, y: Number}} The desired window position
+ * @param {Number} offsetX - The x offset from the right edge of the screen.
+ * @param {Number} offsetY - The y offset from the bottom edge of the screen.
+ * @return {{x: Number, y: Number}} The desired window position.
  */
 gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, offsetY) {
     // ensure proper values are given
@@ -74,17 +79,14 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     offsetY = Math.max(0, (offsetY || 0));
 
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
-    var desiredX,
-        desiredY;
 
     // position relatively to the bottom right corner
     // note that as offset is positive we're restricting window
-    // from being position outside the screen to the right
-    desiredX = Math.ceil(screenSize.width - (width + offsetX));
-    desiredY = Math.ceil(screenSize.height - (height + offsetY));
+    // from being position outside the screen
+    var desiredX = Math.ceil(screenSize.width - (width + offsetX));
+    var desiredY = Math.ceil(screenSize.height - (height + offsetY));
 
-    // restrict to the window to to exit from the left side
-    // desiredX = Math.max(desiredX, 0);
+    // avoids overflowing at the top
     desiredY = Math.max(desiredY, 0);
 
     return {
@@ -93,6 +95,13 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     };
 };
 
+/**
+ * Computes the position of a window given its dimensions so that it is
+ * positioned centrally on the screen.
+ * @param {Number} width - The width of the `BrowserWindow`.
+ * @param {Number} height - The height of the `BrowserWindow`..
+ * @return {{x: Number, y: Number}} The desired window position.
+ */
 gpii.browserWindow.computeCentralWindowPosition = function (width, height) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
         desiredX = Math.ceil((screenSize.width - width) / 2),
@@ -107,19 +116,17 @@ gpii.browserWindow.computeCentralWindowPosition = function (width, height) {
     };
 };
 
-
 /**
- * Gets the desired bounds (i.e. the coordinates and the width and
- * height, the latter two being restricted by the corresponding
- * dimensions of the primary display) of an Electron `BrowserWindow`
- * given its width and height. If used in the `window.setBounds`
- * function of the `BrowserWindow`, the window will be positioned
- * in  the lower right corner of the primary display.
- * @param width {Number} The width of the `BrowserWindow`.
- * @param height {Number} The height of the `BrowserWindow`.
- * @param {Number} offsetX - The x right offset.
- * @param {Number} offsetY - The y bottom offset.
- * @return {{x: Number, y: Number, width: Number, height: Number}}
+ * Gets the desired bounds (i.e. the coordinates and dimensions) of an
+ * Electron `BrowserWindow` given its width, height and offset from the
+ * bottom right corner of the screen so that the window is positioned in
+ * the lower right corner of the primary display.
+ * @param {Number} width - The width of the `BrowserWindow`.
+ * @param {Number} height - The height of the `BrowserWindow`.
+ * @param {Number} offsetX - The x offset from the right edge of the screen.
+ * @param {Number} offsetY - The y offset from the bottom edge of the screen.
+ * @return {{x: Number, y: Number, width: Number, height: Number}} The
+ * desired coordinates, width and height of the `BrowserWindow`.
  */
 gpii.browserWindow.computeWindowBounds = function (width, height, offsetX, offsetY) {
     // restrict offset to be positive
@@ -134,6 +141,15 @@ gpii.browserWindow.computeWindowBounds = function (width, height, offsetX, offse
     };
 };
 
+/**
+ * Gets the desired bounds (i.e. the coordinates and dimensions) of an
+ * Electron `BrowserWindow` given its width and height so that it is
+ * positioned centrally on the screen.
+ * @param {Number} width - The width of the `BrowserWindow`.
+ * @param {Number} height - The height of the `BrowserWindow`.
+ * @return {{x: Number, y: Number, width: Number, height: Number}} The
+ * desired coordinates, width and height of the `BrowserWindow`.
+ */
 gpii.browserWindow.getCenterWindowBounds = function (width, height) {
     var position = gpii.browserWindow.computeCentralWindowPosition(width, height),
         size = gpii.browserWindow.computeWindowSize(width, height);
@@ -145,24 +161,10 @@ gpii.browserWindow.getCenterWindowBounds = function (width, height) {
     };
 };
 
-
 /**
- * A function which capitalizes its input text. It does nothing if the provided argument is `null` or `undefined`.
- *
- * @param {String} text - The input text.
- * @return {String} the capitalized version of the input text.
- */
-gpii.app.capitalize = function (text) {
-    if (fluid.isValue(text)) {
-        return text.charAt(0).toUpperCase() + text.slice(1);
-    }
-};
-
-/**
- * Sends a message to the given Electron `BrowserWindow`
- *
+ * Sends a message to the given Electron `BrowserWindow`.
  * @param {Object} browserWindow - An Electron `BrowserWindow` object
- * @param {String} messageChannel - The channel to which the message to be sent
+ * @param {String} messageChannel - The channel to which the message should be sent
  * @param {String} message - The message to be sent.
  */
 gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
@@ -182,13 +184,12 @@ gpii.app.isHashNotEmpty = function (hash) {
 };
 
 /**
- * Set proper context for arrays.
+ * Sets a proper context for arrays.
  * This is needed in order for arrays to pass the more strict
  * check of: `instanceof array`. In general such checks are to be avoided
  * in favor of the `fluid.isArray` function, but is useful when dealing with
  * third party dependencies.
  * Related to: https://github.com/electron/electron/issues/12698
- *
  * @param {Object|Array} object - The object/array that needs to have its contexts fixed.
  * @return {Object} The fixed object
  */
