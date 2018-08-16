@@ -422,7 +422,7 @@ gpii.app.dev.gpiiConnector.getSettingControls = function (element, groupSolution
     fluid.each(element.settings, function (setting) {
         var path = setting.path,
             settingDescriptor = channelSettingControls[path];
-        if (settingDescriptor) {
+        if (settingDescriptor && settingDescriptor.schema) {
             settingControls[path] = fluid.copy(settingDescriptor);
 
             // No need for a solution name if the group already has one.
@@ -491,7 +491,7 @@ gpii.app.dev.gpiiConnector.createDefaultGroup = function (channelSettingControls
     };
 
     fluid.each(channelSettingControls, function (settingDescriptor, path) {
-        if (!settingDescriptor.grouped) {
+        if (!settingDescriptor.grouped && settingDescriptor.schema) {
             defaultGroup.settingControls[path] = fluid.copy(settingDescriptor);
         }
     });
