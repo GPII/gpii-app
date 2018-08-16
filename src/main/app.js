@@ -181,7 +181,7 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady"
         },
         qssWrapper: {
-            type: "gpii.app.resettableQssWrapper",
+            type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 appTextZoomPath: "appTextZoom",
@@ -190,9 +190,11 @@ fluid.defaults("gpii.app", {
                     keyedInUserToken: "{app}.model.keyedInUserToken"
                 },
                 listeners: {
-                    "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
-                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
-                    "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated"
+                    "{gpiiConnector}.events.onQssSettingsUpdate": {
+                        funcName: "{that}.updateSettings"
+                    },
+                    // local sync with PSP
+                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated"
                 },
                 modelListeners: {
                     "settings.*": {

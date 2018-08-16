@@ -31,6 +31,7 @@ fluid.defaults("gpii.app.qss", {
 
     config: {
         closable: false,
+        awaitWindowReadiness: true,
 
         attrs: {
             width: 984,

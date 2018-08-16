@@ -823,7 +823,12 @@
      * for loading them.
      */
     fluid.defaults("gpii.psp.translatedQss", {
-        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
+        gradeNames: [
+            "gpii.psp.messageBundles",
+            "fluid.viewComponent",
+            "gpii.psp.linksInterceptor",
+            "gpii.psp.rendererWrapper.signalDialogReady"
+        ],
 
         components: {
             quickSetStrip: {

@@ -17,6 +17,7 @@
 
 var fluid         = require("infusion");
 var BrowserWindow = require("electron").BrowserWindow;
+var ipcMain       = require("electron").ipcMain;
 
 var gpii  = fluid.registerNamespace("gpii");
 
@@ -63,7 +64,12 @@ fluid.defaults("gpii.app.dialog", {
 
     events: {
         onDialogShown: null,
-        onDialogHidden: null
+        onDialogHidden: null,
+        /*
+         * Event fired when the current dialog is fully created (its renderer components
+         * have been successfully initialized).
+         */
+        onDialogReady: null
     },
 
     config: {
@@ -84,6 +90,10 @@ fluid.defaults("gpii.app.dialog", {
         // the usage of the `destroy` method and a close command would simply hide the window.
         // This is mainly needed to avoid closing a window using the Alf + F4 combination
         closable: false,
+
+        // Whether to register a listener for BrowserWindow "readiness". The BrowserWindow is ready
+        // once all its components are created.
+        awaitWindowReadiness: false,
 
         restrictions: {
             minHeight: null
@@ -146,6 +156,10 @@ fluid.defaults("gpii.app.dialog", {
         "onCreate.positionOnInit": {
             funcName: "gpii.app.dialog.positionOnInit",
             args: ["{that}"]
+        },
+        "onCreate.registerDialogReadyListener": {
+            funcName: "gpii.app.dialog.registerDailogReadyListener",
+            args: "{that}"
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -291,6 +305,31 @@ gpii.app.dialog.positionOnInit = function (that) {
 };
 
 /**
+ * Listens for a notification from the corresponding BrowserWindow for components' initialization.
+ * It uses a shared channel for dialog creation - `onDialogReady` - where every BrowserWindow of a `gpii.app.dialog`
+ * type may sent a notification for its creation. Messages in this shared channel are distinguished based on
+ * the grade that is sent with the notification. The sent grade corresponds to
+ * the dialog instance's grade ({that}.dialog.grade).
+ * @param {Component} that - The instance of `gpii.app.dialog` component
+ */
+gpii.app.dialog.registerDailogReadyListener = function (that) {
+    // Use a local function so that its we can de-register the channel listener when needed
+    function handleReadyResponse(event, grade) {
+        if (that.dialog.grade === grade) {
+            that.events.onDialogReady.fire();
+
+            // detach current dialog's "ready listener"
+            ipcMain.removeListener("onDialogReady", handleReadyResponse);
+        }
+    }
+
+    if (that.options.config.awaitWindowReadiness) {
+        // register listener that is to be removed once a notification for the current dialog is received
+        ipcMain.on("onDialogReady", handleReadyResponse);
+    }
+};
+
+/**
  * Shows the window if it is currently hidden or focuses it otherwise.
  * This is the simplest way for showing a dialog. If the dialog has
  * other rules for showing itself, this invoker can be overridden.
@@ -420,7 +459,7 @@ fluid.defaults("gpii.app.i18n.channel", {
  */
 fluid.defaults("gpii.app.channelListener", {
     gradeNames: ["gpii.app.shared.simpleChannelListener"],
-    ipcTarget: require("electron").ipcMain
+    ipcTarget: ipcMain
 });
 
 /**

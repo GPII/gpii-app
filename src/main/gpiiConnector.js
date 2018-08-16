@@ -144,6 +144,9 @@ gpii.app.gpiiConnector.handleSettingUpdateMessage = function (gpiiConnector, mes
     });
 };
 
+gpii.app.gpiiConnector.isPrefSetUpdate = function (operation, path) {
+    return (operation === "ADD" && path.length === 0) || operation === "DELETE";
+};
 
 /**
  * Responsible for parsing messages from the GPII socket connection.
@@ -159,7 +162,7 @@ gpii.app.gpiiConnector.handleRawChannelMessage = function (gpiiConnector, messag
         operation = payload.type,
         path = payload.path;
 
-    if ((operation === "ADD" && path.length === 0) || operation === "DELETE") {
+    if (gpii.app.gpiiConnector.isPrefSetUpdate(operation, path)) {
         gpii.app.gpiiConnector.handlePreferencesChangeMessage(gpiiConnector, payload);
     } else if (operation === "ADD") {
         gpii.app.gpiiConnector.handleSettingUpdateMessage(gpiiConnector, payload);
@@ -272,9 +275,11 @@ gpii.app.extractSnapsetName = function (message) {
  * Extension of `gpiiController` used for dev purposes.
  */
 fluid.defaults("gpii.app.dev.gpiiConnector", {
-    gradeNames: ["gpii.app.gpiiConnector"],
+    // TODO split to smaller grades
+    gradeNames: ["gpii.app.gpiiConnector", "gpii.app.dev.gpiiConnector.qss"],
 
     events: {
+        // Decorate events' arguments
         mockPrefSets: {
             event: "onPreferencesUpdated",
             args: "@expand:gpii.app.dev.gpiiConnector.mockPreferences({arguments}.0)"
@@ -369,11 +374,11 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
 
 
 /**
-  * Represents the `settingControls` object from the PSP channel message. Contains
-  * information about each setting that is to be displayed in the PSP. Each key in
-  * this hash is a unique setting's path.
-  * @typedef {Object.<String, ChannelSettingDescriptor>} ChannelSettingControls
-  */
+ * Represents the `settingControls` object from the PSP channel message. Contains
+ * information about each setting that is to be displayed in the PSP. Each key in
+ * this hash is a unique setting's path.
+ * @typedef {Object.<String, ChannelSettingDescriptor>} ChannelSettingControls
+ */
 
 
 /**
@@ -539,10 +544,139 @@ gpii.app.dev.gpiiConnector.groupSettings = function (groupingTemplate, message) 
         if (defaultGroup) {
             value.settingGroups.unshift(defaultGroup);
         }
-
-        // Remove the `settingControls` element as it is no longer needed.
-        delete value.settingControls;
     }
 
     return message;
 };
+
+
+
+fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
+    members: {
+        // keep the state to determine the type of next change
+        previousState: {
+            gpiiKey: null,
+            activeSet: null
+        }
+    },
+
+    events: {
+        // Simply ensure the message is in state for QSS
+        prepareMessageForQss: {
+            event: "onMessageReceived",
+            args: {
+                expander: {
+                    funcName: "gpii.app.dev.gpiiConnector.qss.prepareMessageForQss",
+                    args: [
+                        "{that}.options.defaultQssSettings",
+                        "{arguments}.0" // message
+                    ]
+                }
+            }
+        },
+
+        onQssSettingsUpdate: null
+    },
+
+    listeners: {
+        // applyDefaults
+        // apply traslations
+        // notify QSS
+        "onMessageReceived.distributeQssSettings": {
+            func: "gpii.app.dev.gpiiConnector.qss.distributeQssSettings",
+            args: [
+                "{that}",
+                "{messageBundles}.model.messages",
+                "{arguments}.0"
+            ]
+        }
+    },
+
+    // The "original" values of the QSS settings
+    defaultQssSettings: [{
+        "path": "http://registry\\.gpii\\.net/common/language",
+        "value": "en-US"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/DPIScale",
+        "value": 0
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
+        "value": false
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
+        "value": "regular-contrast"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+        "value": false
+    }]
+});
+
+/**
+ * Extract settings for the QSS from the Preference Set update and add a field
+ * to these settings.
+ */
+gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (defaultQssSettings, message) {
+    var payload = message.payload;
+
+    if (payload && payload.value) {
+        var value = payload.value,
+            channelSettingControls = value.settingControls || [];
+
+        // leave only QSS settings
+        // Note that settings that doesn't have specific values such as "App / Text Zoom" will not receive setting updates
+        var qssSettings = fluid.filterKeys(channelSettingControls, defaultQssSettings.map(function (setting) { return setting.path; }));
+
+        value.qssSettingControls = qssSettings;
+    }
+
+    return message;
+};
+
+
+gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, messagesBundle, message) {
+    var payload = message.payload || {},
+        operation = payload.type,
+        path = payload.path,
+        value = payload.value || {},
+        qssSettingControls = value.qssSettingControls || {};
+
+    console.log("gpiiConnector.QSS Controls: ", value.qssSettingControls);
+
+    if (gpii.app.gpiiConnector.isPrefSetUpdate(operation, path)) {
+        // add settings' default values in case settings are not sent (this includes adding the setting themselves)
+        // if needed
+        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, that.options.defaultQssSettings, qssSettingControls, value);
+
+        // in case it is setting update coming from single setting change that was missing
+        // TODO explain better -- isSingleSettingUpdate and pass to defaults
+        var notUndoableUpdate = that.previousState.gpiiKey !== value.gpiiKey || that.previousState.activeSet !== value.activeContextName ;
+
+        // ... TODO
+        that.previousState = {
+            gpiiKey: value.gpiiKey,
+            activeSet: value.activeContextName
+        };
+
+        that.events.onQssSettingsUpdate.fire(qssSettingControls, notUndoableUpdate);
+    }
+};
+
+gpii.app.dev.gpiiConnector.qss.applySettingDefaults = function (that, defaultQssSettings, qssSettingControls, updateDetails) {
+    // Whether the update is fired from change in the snapset or active preference set
+    // or a change in a missing in the preference set setting
+    if (that.previousState.gpiiKey !== updateDetails.gpiiKey || that.previousState.activeSet !== updateDetails.activeSet) {
+        console.log("gpiiConnect.qss: Merge QSS default settings");
+
+        // add missing QSS settings to the update list (this is needed for triggering reset of the QSS)
+        fluid.each(defaultQssSettings, function (defaultSetting) {
+            var isSettingPresent = fluid.isValue(qssSettingControls[defaultSetting.path]);
+
+            if (!isSettingPresent) {
+                qssSettingControls[defaultSetting.path] = defaultSetting;
+            }
+        });
+    }
+
+    return qssSettingControls;
+};
+
