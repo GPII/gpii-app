@@ -1,7 +1,8 @@
 /**
- * The Quick Set Strip widget pop-up
+ * The Quick Set Strip notification dialog
  *
- * Introduces a component that uses an Electron BrowserWindow to represent the QSS widget (menu or increment/decrement).
+ * Introduces a component that uses an Electron BrowserWindow to represent the QSS
+ * notification dialog.
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -21,6 +22,11 @@ var gpii = fluid.registerNamespace("gpii");
 require("../basic/blurrable.js");
 require("../basic/centeredDialog.js");
 
+/**
+ * A centered blurrable dialog which represents the QSS notification.
+ * Used to signal setting changes that require a restart (e.g. Language
+ * changes) or the status of the "Save" operation.
+ */
 fluid.defaults("gpii.app.qssNotification", {
     gradeNames: ["gpii.app.centeredDialog", "gpii.app.blurrable"],
 
@@ -76,7 +82,12 @@ fluid.defaults("gpii.app.qssNotification", {
     }
 });
 
-
+/**
+ * Hides the notification window and if specified, focuses a different
+ * dialog.
+ * @param {Component} qssNotification - The `gpii.app.qssNotification`
+ * instance.
+ */
 gpii.app.qssNotification.close = function (qssNotification) {
     qssNotification.hide();
 

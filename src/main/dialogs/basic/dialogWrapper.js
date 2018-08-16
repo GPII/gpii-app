@@ -1,5 +1,5 @@
 /**
- * Recreate dialog when shown
+ * Recreates a dialog when shown
  *
  * Every time the dialog is shown a new BrowserWindow instance is created.
  * GPII Application
@@ -88,6 +88,10 @@ gpii.app.dialogWrapper.hide = function (that) {
     }
 };
 
+/**
+ * Responsible for focusing the wrapped dialog if it exists.
+ * @param {Component} that - The `gpii.app.dialogWrapper` instance.
+ */
 gpii.app.dialogWrapper.focus = function (that) {
     if (that.dialog) {
         that.dialog.focus();

@@ -66,7 +66,7 @@ gpii.tests.qss.simulateShortcut = function (dialog, shortcut) {
         type: "keyDown",
         keyCode: shortcut.key,
         modifiers: shortcut.modifiers
-    })
+    });
 };
 
 gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
@@ -434,7 +434,7 @@ var clickUndoButtonSeqEl = { // ... and clicking undo button
 var undoCrossTestSequence = [
     { // When the tray icon is clicked...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, 
+    },
     simpleSettingChangeSeqEl,
     clickUndoButtonSeqEl, // ... and clicking undo button
     { // ... should revert setting's value

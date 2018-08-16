@@ -1,8 +1,8 @@
 /**
- * Hide `gpii.app.dialog` off screen
+ * Hides a `gpii.app.dialog` off screen
  *
  * An enhancement that replaces the original `show` and `hide`
- * BrowserWindow methods with ones that hide the component off screen.
+ * `BrowserWindow` methods with ones that hide the component off screen.
  * GPII Application
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
@@ -24,7 +24,13 @@ require("./resizable.js");
 fluid.registerNamespace("gpii.app.dialog.offScreenHidable");
 
 
-// Mixin
+/**
+ * This mixin adds functionality that modifies the built-in `hide` method of the
+ * `BrowserWindow` so that when it is invoked, the window will be moved off
+ * screen instead of hidden. This may be useful in cases where the content of the
+ * dialog needs to be changed even if the dialog is not visible (DOM manipulations
+ * do not occur when a Chromium window is hidden).
+ */
 fluid.defaults("gpii.app.dialog.offScreenHidable", {
     config: {
         positionOnInit: false,
@@ -33,7 +39,7 @@ fluid.defaults("gpii.app.dialog.offScreenHidable", {
 
     invokers: {
         _show: {
-            funcName: "gpii.app.dialog.offScreenHidable.moveOnScreen",
+            funcName: "gpii.app.dialog.offScreenHidable.moveToScreen",
             args: [
                 "{that}",
                 "{arguments}.0" // showInactive
@@ -69,11 +75,12 @@ fluid.defaults("gpii.app.dialog.offScreenHidable", {
 });
 
 /**
- * Shows the PSP window by moving it to the lower right part of the screen and changes
- * the `isShown` model property accordingly.
- * @param {Component} psp - The `gpii.app.psp` instance.
+ * Shows the dialog and focuses it if necessary.
+ * @param {Component} that - The `gpii.app.dialog.offScreenHidable` instance.
+ * @param {Boolean} showInactive - Whether the window should be shown but
+ * without giving focus to it.
  */
-gpii.app.dialog.offScreenHidable.moveOnScreen = function (that, showInactive) {
+gpii.app.dialog.offScreenHidable.moveToScreen = function (that, showInactive) {
     // Move to screen
     that.setPosition();
     if (!showInactive) {
@@ -82,10 +89,10 @@ gpii.app.dialog.offScreenHidable.moveOnScreen = function (that, showInactive) {
 };
 
 /**
- * Moves the BrowserWindow to a non-visible part of the screen. This function in conjunction
- * with `gpii.browserWindow.moveToScreen` help avoid the flickering issue when the content
- * of the PSP window changes.
- * @param {Object} window - An Electron `BrowserWindow`.
+ * Moves the `BrowserWindow` to a non-visible part of the screen. This function in
+ * conjunction with `gpii.app.dialog.offScreenHidable.moveToScreen` helps avoid the
+ * flickering issue when the content of the dialog changes.
+ * @param {Object} dialog - An Electron `BrowserWindow`.
  */
 gpii.app.dialog.offScreenHidable.moveOffScreen = function (dialog) {
     // Move the BrowserWindow so far away that even if there is an additional screen attached,
@@ -102,6 +109,15 @@ gpii.app.dialog.offScreenHidable.moveOffScreen = function (dialog) {
     });
 };
 
+/**
+ * Resizes the current window and if it is visible on screen, positions it appropriately.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Object} restrictions - Restrictions for resizing and positioning the window.
+ * @param {Number} width - The new width for the window.
+ * @param {Number} height - The new height for the window.
+ * @param {Number} offsetX - The x offset from the right edge of the screen.
+ * @param {Number} offsetY - The y offset from the bottom edge of the screen.
+ */
 gpii.app.dialog.offScreenHidable.setBounds = function (that, restrictions, width, height, offsetX, offsetY) {
     if (that.model.isShown) {
         // simply redirect to work as a normal dialog bounds change
@@ -110,7 +126,7 @@ gpii.app.dialog.offScreenHidable.setBounds = function (that, restrictions, width
         // we don't want to move it to screen (visible area)
         that.setRestrictedSize(width, height);
 
-        // only save the new position without applying it
+        // only save the new offset without applying it
         offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
         offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
         that.applier.change("offset", { x: offsetX, y: offsetY });

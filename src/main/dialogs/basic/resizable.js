@@ -33,8 +33,8 @@ fluid.defaults("gpii.app.resizable", {
     gradeNames: ["fluid.component"],
     config: {
         attrs: {
-            width: null, // the initial width of the `BrowserWindow`
-            height: null // the initial height of the `BrowserWindow`
+            width: null,
+            height: null
         }
     },
     members: {
@@ -105,7 +105,7 @@ fluid.defaults("gpii.app.resizable", {
 /**
  * Registers a listener to be called whenever the `display-metrics-changed`
  * event is emitted by the electron screen.
- * @param {Component} that The `gpii.app.resizable` component.
+ * @param {Component} that - The `gpii.app.resizable` component.
  */
 gpii.app.resizable.addDisplayMetricsListener = function (that) {
     electron.screen.on("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
@@ -124,9 +124,9 @@ gpii.app.resizable.scaleDialog = function (that) {
 };
 
 /**
- * Handle electron's display-metrics-changed event by resizing the component if
+ * Handle electron's `display-metrics-changed` event by resizing the component if
  * necessary.
- * @param {Component} that The `gpii.app.resizable` component.
+ * @param {Component} that - The `gpii.app.resizable` component.
  */
 gpii.app.resizable.handleDisplayMetricsChange = function (that) {
     // Electron BrowserWindows are not resized automatically on Display Metrics Changes, so

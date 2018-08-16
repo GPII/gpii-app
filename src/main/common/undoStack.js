@@ -117,8 +117,8 @@ gpii.app.undoStack.registerChange = function (that, change) {
  * Returns whether there are changes in the undo stack.
  * @param {Any[]} undoStack - The array of the registered undoable changes
  * so far.
- * @return `true` if there is at least one registered undoable change and
- * `false` otherwise.
+ * @return {Boolean} `true` if there is at least one registered undoable
+ * change and `false` otherwise.
  */
 gpii.app.undoStack.hasChanges = function (undoStack) {
     return undoStack.length > 0;

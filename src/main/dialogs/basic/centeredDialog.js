@@ -1,7 +1,7 @@
 /**
- * Dialog that is showed always in the center of the screen
+ * A centered on the screen dialog
  *
- * GPII Application
+ * Dialog that is showed always in the center of the screen
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -21,7 +21,10 @@ require("./resizable.js");
 
 fluid.registerNamespace("gpii.app.dialog");
 
-
+/**
+ * A component representing a dialog which should be positioned in the center
+ * of the screen.
+ */
 fluid.defaults("gpii.app.centeredDialog", {
     gradeNames: ["gpii.app.dialog"],
 
@@ -45,6 +48,14 @@ fluid.defaults("gpii.app.centeredDialog", {
     }
 });
 
+/**
+ * Sets the desired bounds (i.e. the coordinates and dimensions) of an
+ * Electron `BrowserWindow` given its (possibly new) width and height
+ * so that it is positioned centrally on the screen.
+ * @param {Component} that - The `gpii.app.centeredDialog` instance.
+ * @param {Number} width - The width of the `BrowserWindow`.
+ * @param {Number} height - The height of the `BrowserWindow`.
+ */
 gpii.app.centeredDialog.setBounds = function (that, width, height) {
     width  = width || that.width;
     height = height || that.height;

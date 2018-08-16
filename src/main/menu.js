@@ -133,7 +133,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
         // of the keyout of the preious key.
         "onKeyIn.performKeyIn": {
             listener: "{app}.keyIn",
-            args: ["{arguments}.0.token"], // token
+            args: ["{arguments}.0.token"] // token
         },
         // onKeyIn event is fired when a new user keys in through the task tray.
         // This should result in:

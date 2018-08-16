@@ -1,5 +1,5 @@
 /**
- * The Quick Set Strip pop-up
+ * The Quick Set Strip dialog
  *
  * Introduces a component that uses an Electron BrowserWindow to represent the QSS.
  * Copyright 2016 Steven Githens
@@ -24,7 +24,7 @@ require("../../../shared/channelUtils.js");
 
 
 /**
- * Component that represents the Quick Set strip.
+ * A component that represents the Quick Set Strip.
  */
 fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],

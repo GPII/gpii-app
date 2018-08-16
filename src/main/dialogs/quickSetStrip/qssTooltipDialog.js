@@ -1,5 +1,5 @@
 /**
- * The Quick Set Strip tooltip pop-up
+ * The Quick Set Strip tooltip dialog
  *
  * Introduces a component that uses an Electron BrowserWindow to represent a QSS tooltip.
  * Copyright 2016 Steven Githens
@@ -25,8 +25,11 @@ require("../../../shared/channelUtils.js");
 
 var gpii = fluid.registerNamespace("gpii");
 
-
-
+/**
+ * A blurrable, shown with a delay dialog which represents the QSS
+ * tooltip. It is also hidden off-screen to avoid flickering when
+ * a new QSS button is focused and the tooltip needs to change.
+ */
 fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: [
         "gpii.app.dialog",
@@ -86,8 +89,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
             funcName: "gpii.app.qssTooltipDialog.show",
             args: [
                 "{that}",
-                "{arguments}.0",
-                "{arguments}.1"
+                "{arguments}.0"
             ]
         }
     },
@@ -113,6 +115,14 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     }
 });
 
+/**
+ * Returns the tooltip for the particular QSS button based on whether
+ * there is an actually keyed-in user.
+ * @param {Boolean} isKeyedIn - Whether there is an actually keyed-in user.
+ * The "noUser" is not considered an actual user.
+ * @param {Object} setting - The setting corresponding to the QSS button.
+ * @return {String} The tooltip for the button.
+ */
 gpii.app.qssTooltipDialog.getTooltip = function (isKeyedIn, setting) {
     if (setting) {
         var tooltip = setting.tooltip;
@@ -120,32 +130,46 @@ gpii.app.qssTooltipDialog.getTooltip = function (isKeyedIn, setting) {
     }
 };
 
+/**
+ * If there is a tooltip defined for the particular QSS button, this function
+ * will schedule showing of the tooltip dialog with a delay.
+ * @param {Component} that - The `gpii.app.qssTooltipDialog` instance.
+ * @param {Object} setting - The setting for whose button a tooltip needs to
+ * be shown.
+ * @param {Object} btnCenterOffset - An object containing metrics for the QSS
+ * button.
+ */
 gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOffset) {
     if (setting && fluid.isValue(setting.tooltip)) {
-        that.delayedShow(setting, btnCenterOffset);
-
-        // trigger update in the tooltip BrowserWindow
-        // and keep the last shown setting
+        that.delayedShow(btnCenterOffset);
         gpii.app.applier.replace(that.applier, "setting", setting);
     }
 };
 
-
 /**
- * Retrieve element position.
+ * Retrieves the tooltip dialog's position.
+ * @param {Object} btnCenterOffset - An object containing metrics for the QSS
+ * button.
+ * @return {Object} The offset of the tooltip from the bottom right corner of
+ * the screen.
  */
-function getTooltipPosition(dialog, btnCenterOffset) {
+gpii.app.qssTooltipDialog.getTooltipPosition = function (btnCenterOffset) {
     // XXX extract hardcoded value to a better place
     var arrowSize = 44; // px
     return {
         offsetX: btnCenterOffset.x - arrowSize,
         offsetY: btnCenterOffset.y
     };
-}
+};
 
-// TODO reuse widget show
-gpii.app.qssTooltipDialog.show = function (that, setting, btnCenterOffset) {
-    var offset = getTooltipPosition(that, btnCenterOffset);
+/**
+ * Shows the tooltip dialog immediately.
+ * @param {Component} that - The `gpii.app.qssTooltipDialog` instance.
+ * @param {Object} btnCenterOffset - An object containing metrics for the QSS
+ * button.
+ */
+gpii.app.qssTooltipDialog.show = function (that, btnCenterOffset) {
+    var offset = gpii.app.qssTooltipDialog.getTooltipPosition(btnCenterOffset);
 
     that.dialog.setAlwaysOnTop(true);
 

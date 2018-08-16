@@ -142,26 +142,6 @@ gpii.browserWindow.computeWindowBounds = function (width, height, offsetX, offse
 };
 
 /**
- * Gets the desired bounds (i.e. the coordinates and dimensions) of an
- * Electron `BrowserWindow` given its width and height so that it is
- * positioned centrally on the screen.
- * @param {Number} width - The width of the `BrowserWindow`.
- * @param {Number} height - The height of the `BrowserWindow`.
- * @return {{x: Number, y: Number, width: Number, height: Number}} The
- * desired coordinates, width and height of the `BrowserWindow`.
- */
-gpii.browserWindow.getCenterWindowBounds = function (width, height) {
-    var position = gpii.browserWindow.computeCentralWindowPosition(width, height),
-        size = gpii.browserWindow.computeWindowSize(width, height);
-    return {
-        x:      position.x,
-        y:      position.y,
-        width:  size.width,
-        height: size.height
-    };
-};
-
-/**
  * Sends a message to the given Electron `BrowserWindow`.
  * @param {Object} browserWindow - An Electron `BrowserWindow` object
  * @param {String} messageChannel - The channel to which the message should be sent

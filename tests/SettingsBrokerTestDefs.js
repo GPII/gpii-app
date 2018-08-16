@@ -87,7 +87,7 @@ gpii.tests.settingsBroker.testBrokerBeforeKeyIn = function (settingsBroker) {
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
 };
 
-gpii.tests.settingsBroker.testBrokerAfterKeyIn = function (settingsBroker, tray) {
+gpii.tests.settingsBroker.testBrokerAfterKeyIn = function (settingsBroker) {
     jqUnit.assertTrue("There is a keyed in user", settingsBroker.model.isKeyedIn);
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
 };
@@ -143,7 +143,7 @@ gpii.tests.settingsBroker.testDefs = {
         changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
         path: "isKeyedIn",
         listener: "gpii.tests.settingsBroker.testBrokerAfterKeyIn",
-        args: ["{that}.app.settingsBroker", "{that}.app.tray"]
+        args: ["{that}.app.settingsBroker"]
     }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [liveSettingChange]

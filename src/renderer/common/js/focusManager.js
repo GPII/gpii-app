@@ -1,7 +1,7 @@
 /**
- * Generic utilities for the renderer
+ * Different types of focus managers
  *
- * Contains utility functions and components shared between different BrowserWindows.
+ * Responsible for managing the focused element within a container.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -131,7 +131,7 @@
      * Adds the necessary listeners so that the default Tab key behavior is overridden and
      * also in order to detect clicks in the document. All listeners have the jQuery namespace
      * "focusManager" so that they can be easily deregistered.
-     * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {Component} that - The `gpii.qss.focusManager` instance.
      */
     gpii.qss.focusManager.addListeners = function (that) {
         $(document).on("keydown.focusManager", function (KeyboardEvent) {
@@ -156,9 +156,9 @@
     /**
      * Returns information about the focusable elements in the page as well as the index of
      * the currently focused element.
-     * @param {jQuery} container The jQuery element representing the container in which this
+     * @param {jQuery} container - The jQuery element representing the container in which this
      * focus manager handles focus.
-     * @param {Object} styles A styles object containing various classes related to focusing
+     * @param {Object} styles - A styles object containing various classes related to focusing
      * of elements
      * @return {Object} Information about the focusable elements.
      */
@@ -181,10 +181,10 @@
      * Removes the keyboard navigation highlight (i.e. the "fl-highlighted" class) from all
      * focusable elements within the container of the focus manager and optionally clears
      * the marker "fl-focused" class.
-     * @param {Component} that The `gpii.qss.focusManager` instance.
-     * @param {jQuery} container The jQuery element representing the container in which this
+     * @param {Component} that - The `gpii.qss.focusManager` instance.
+     * @param {jQuery} container - The jQuery element representing the container in which this
      * focus manager handles focus.
-     * @param {Boolean} clearFocus Whether the marker "fl-focused" class should be removed
+     * @param {Boolean} clearFocus - Whether the marker "fl-focused" class should be removed
      * as well.
      */
     gpii.qss.focusManager.removeHighlight = function (that, container, clearFocus) {
@@ -201,11 +201,11 @@
     /**
      * Focuses a focusable and visible element with a given index in the container and optionally applies
      * the keyboard navigation highlight (the "fl-highlighted" class).
-     * @param {Component} that The `gpii.qss.focusManager` instance.
-     * @param {jQuery} container The jQuery element representing the container in which this
+     * @param {Component} that - The `gpii.qss.focusManager` instance.
+     * @param {jQuery} container - The jQuery element representing the container in which this
      * focus manager handles focus.
-     * @param {Number} index The index of the focusable element to be focused.
-     * @param {Boolean} applyHighlight Whether the keyboard navigation highlight should be
+     * @param {Number} index - The index of the focusable element to be focused.
+     * @param {Boolean} applyHighlight - Whether the keyboard navigation highlight should be
      * applied to the element which is to be focused.
      */
     gpii.qss.focusManager.focus = function (that, container, index, applyHighlight) {
@@ -221,9 +221,9 @@
     /**
      * Focuses the given focusable element and optionally applies the keyboard navigation
      * highlight (the "fl-highlighted" class).
-     * @param {Component} that The `gpii.qss.focusManager` instance.
-     * @param {jQuery} element A jQuery object representing the element to be focused.
-     * @param {Boolean} applyHighlight Whether the keyboard navigation highlight should be
+     * @param {Component} that - The `gpii.qss.focusManager` instance.
+     * @param {jQuery} element - A jQuery object representing the element to be focused.
+     * @param {Boolean} applyHighlight - Whether the keyboard navigation highlight should be
      * applied to the element which is to be focused.
      */
     gpii.qss.focusManager.focusElement = function (that, element, applyHighlight) {
@@ -246,7 +246,7 @@
      * Focuses the next available visible focusable element. If the last focusable element has
      * been reached, the first element will be focused, then the second and so on. Note
      * that the keyboard navigation highlight will be applied in this case.
-     * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {Component} that - The `gpii.qss.focusManager` instance.
      */
     gpii.qss.focusManager.focusNext = function (that) {
         var focusInfo = that.getFocusInfo(),
@@ -267,7 +267,7 @@
      * Focuses the previous available focusable element. If the first focusable element has
      * been reached, the last element will be focused, then the last but one and so on. Note
      * that the keyboard navigation highlight will be applied in this case.
-     * @param {Component} that The `gpii.qss.focusManager` instance.
+     * @param {Component} that - The `gpii.qss.focusManager` instance.
      */
     gpii.qss.focusManager.focusPrevious = function (that) {
         var focusInfo = that.getFocusInfo(),
@@ -288,8 +288,8 @@
      * Focuses the next available focusable element when the Tab key is pressed. If the Tab
      * key is pressed in conjunction with the Shift key, the previous focusable element will
      * receive the focus.
-     * @param {Component} that The `gpii.qss.focusManager` instance.
-     * @param {KeyboardEvent} KeyboardEvent The event which triggered the invocation of this
+     * @param {Component} that - The `gpii.qss.focusManager` instance.
+     * @param {KeyboardEvent} KeyboardEvent - The event which triggered the invocation of this
      * function.
      */
     gpii.qss.focusManager.onTabPressed = function (that, KeyboardEvent) {
@@ -302,8 +302,8 @@
 
     /**
      * Returns whether the given element has a keyboard navigation highlight.
-     * @param {Component} that The `gpii.qss.focusManager` instance.
-     * @param {jQuery} element A jQuery object representing the element to be checked.
+     * @param {Component} that - The `gpii.qss.focusManager` instance.
+     * @param {jQuery} element - A jQuery object representing the element to be checked.
      * @return `true` if the element has a keyboard navigation highlight and `false`
      * otherwise.
      */

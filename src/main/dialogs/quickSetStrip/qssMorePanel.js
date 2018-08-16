@@ -1,7 +1,8 @@
 /**
- * The Quick Set Strip widget pop-up
+ * The "More" dialog for the QSS
  *
- * Introduces a component that uses an Electron BrowserWindow to represent the QSS widget (menu or increment/decrement).
+ * Introduces a component that uses an Electron BrowserWindow to represent the QSS
+ * "More" dialog.
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -19,6 +20,10 @@ var fluid = require("infusion");
 require("../basic/blurrable.js");
 require("../basic/centeredDialog.js");
 
+/**
+ * A centered blurrable dialog which represents the "More" window
+ * in the QSS.
+ */
 fluid.defaults("gpii.app.qssMorePanel", {
     gradeNames: ["gpii.app.centeredDialog", "gpii.app.blurrable"],
 

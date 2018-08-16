@@ -1,9 +1,7 @@
 /**
- * Show `gpii.app.dialog` with delay
+ * Show `a gpii.app.dialog` with delay
  *
- * An enhancement that add functionality for
- * postponed displaying of a BrowserWindow
- * GPII Application
+ * An enhancement that adds a functionality for postponed displaying of a `BrowserWindow`
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *

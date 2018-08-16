@@ -338,13 +338,13 @@ gpii.app.dialog.toggle = function (that, isShown, showInactive) {
 };
 
 /**
- * Both resizes the current window and repositions it.
+ * Both resizes the current window and positions it appropriately.
  * @param {Component} that - The `gpii.app.dialog` instance
  * @param {Object} restrictions - Restrictions for resizing and positioning the window
  * @param {Number} width - The new width for the window
  * @param {Number} height - The new height for the window
- * @param {Number} offsetX - The new width for the window
- * @param {Number} offsetY - The new height for the window
+ * @param {Number} offsetX - The x offset from the right edge of the screen.
+ * @param {Number} offsetY - The y offset from the bottom edge of the screen.
  */
 gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX, offsetY) {
     // XXX Unites both setPosition and setRestrictedSize but cannot use them separately

@@ -67,6 +67,7 @@ gpii.tests.surveyTriggerManager.testHandlerRemoved = function (surveyTriggerMana
  * the socket on the Core's end to hang up and emit an error. This is probably an edge case
  * which is not handled and will probably be tackled in the future and for now it would be better
  * to delay the tests a bit.
+ * @return {Promise} A promise which is resolved 2 seconds after the invocation of the function.
  */
 gpii.tests.surveyTriggerManager.initialize = function () {
     var promise = fluid.promise();
