@@ -45,14 +45,14 @@ fluid.defaults("gpii.app.gpiiConnector", {
 
     listeners: {
         "onCreate.connect": "{that}.connect",
-        "onMessageReceived.parseMessage": {
-            funcName: "{gpiiConnector}.parseMessage"
+        "onMessageReceived.handleRawChannelMessage": {
+            funcName: "{gpiiConnector}.handleRawChannelMessage"
         }
     },
 
     invokers: {
-        parseMessage: {
-            funcName: "gpii.app.gpiiConnector.parseMessage",
+        handleRawChannelMessage: {
+            funcName: "gpii.app.gpiiConnector.handleRawChannelMessage",
             args: ["{that}", "{arguments}.0"] // message
         },
         updateSetting: {
@@ -109,43 +109,60 @@ gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
     });
 };
 
+
+/**
+ * Preferences change update has been received
+ *
+ * @param gpiiConnector
+ * @param message
+ */
+gpii.app.gpiiConnector.handlePreferencesChangeMessage = function (gpiiConnector, message) {
+    console.log("GpiiConnector: Updated preference set:", message);
+    var snapsetName = gpii.app.extractSnapsetName(message);
+    gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
+
+    var preferences = gpii.app.extractPreferencesData(message);
+    gpiiConnector.events.onPreferencesUpdated.fire(preferences);
+};
+
+
+/**
+ * Setting change update has been received
+ *
+ * @param gpiiConnector
+ * @param message
+ */
+gpii.app.gpiiConnector.handleSettingUpdateMessage = function (gpiiConnector, message) {
+    var settingPath = message.path[message.path.length - 2],
+        settingValue = message.value;
+
+    console.log("GpiiConnector: Updated setting:", settingPath, settingValue);
+
+    gpiiConnector.events.onSettingUpdated.fire({
+        path: settingPath,
+        value: settingValue
+    });
+};
+
+
 /**
  * Responsible for parsing messages from the GPII socket connection.
  * @param {Object} gpiiConnector - The `gpii.app.gpiiConnector` instance
  * @param {Object} message - The received message
+ * @param {Object} message.payload - The message's payload
+ * @param {Object} message.payload.type - The type of the sent message
+ * @param {Object} message.payload.path - TODO
+ * @param {Object} message.payload.value - Contains the real data of the message
  */
-gpii.app.gpiiConnector.parseMessage = function (gpiiConnector, message) {
+gpii.app.gpiiConnector.handleRawChannelMessage = function (gpiiConnector, message) {
     var payload = message.payload || {},
         operation = payload.type,
-        path = payload.path,
-        preferences;
+        path = payload.path;
 
-    if ((operation === "ADD" && path.length === 0) ||
-            operation === "DELETE") {
-
-        console.log("GpiiConnector: Updated preference set:", payload);
-
-        /*
-         * Preferences change update has been received
-         */
-        var snapsetName = gpii.app.extractSnapsetName(payload);
-        gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
-
-        preferences = gpii.app.extractPreferencesData(payload);
-        gpiiConnector.events.onPreferencesUpdated.fire(preferences);
+    if ((operation === "ADD" && path.length === 0) || operation === "DELETE") {
+        gpii.app.gpiiConnector.handlePreferencesChangeMessage(gpiiConnector, payload);
     } else if (operation === "ADD") {
-        /*
-         * Setting change update has been received
-         */
-        var settingPath = path[path.length - 2],
-            settingValue = payload.value;
-
-        console.log("GpiiConnector: Updated setting:", settingPath, settingValue);
-
-        gpiiConnector.events.onSettingUpdated.fire({
-            path: settingPath,
-            value: settingValue
-        });
+        gpii.app.gpiiConnector.handleSettingUpdateMessage(gpiiConnector, payload);
     }
 };
 
