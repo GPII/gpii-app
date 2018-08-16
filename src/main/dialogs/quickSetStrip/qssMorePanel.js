@@ -47,12 +47,5 @@ fluid.defaults("gpii.app.qssMorePanel", {
                 }
             }
         }
-    },
-
-    listeners: {
-        "onCreate.initBlurrable": {
-            func: "{that}.initBlurrable",
-            args: ["{that}.dialog"]
-        }
     }
 });

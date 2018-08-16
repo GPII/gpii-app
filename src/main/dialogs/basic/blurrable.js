@@ -1,7 +1,8 @@
 /**
- * A simple WebSocket wrapper
+ * A dialog which is hidden when it loses focus.
  *
- * An Infusion component which manages a WebSocket connection.
+ * A dialog which is hidden whenever it or a window which is "linked" to it
+ * loses focus. The performed action can be customized by the implementor.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -17,30 +18,40 @@ var fluid = require("infusion"),
     BrowserWindow = require("electron").BrowserWindow,
     gpii = fluid.registerNamespace("gpii");
 
+/**
+ * A dialog which is hidden whenever it or a window which is "linked" to it
+ * loses focus AND the newly focused window is not "linked" to the current
+ * window. Each dialog defines the other dialogs to which it is linked
+ * by specifying at least one of their gradeNames in the `linkedWindowsGrades`
+ * array. The "linked to" relation is always reflexive but may not be symmetric.
+ * Note that the action performed when the window (or a linked one) loses focus
+ * can be customized by the implementor.
+ */
 fluid.defaults("gpii.app.blurrable", {
     gradeNames: ["fluid.component"],
 
     linkedWindowsGrades: [],
 
     events: {
+        // All blurrable dialogs share one and the same `onBlur` event so that
+        // they can hide themselves even if they have already lost focus but
+        // were not hidden because a linked window has gained it
         onBlur: "{app}.events.onBlur"
     },
 
     listeners: {
+        "onCreate.initBlurrable": {
+            funcName: "gpii.app.blurrable.initBlurrable",
+            args: ["{that}"]
+        },
         onBlur: {
             funcName: "gpii.app.blurrable.onBlur",
-            args: ["{that}", "{that}.options.linkedWindowsGrades"]
+            args: ["{that}"]
         }
     },
 
     invokers: {
-        initBlurrable: {
-            funcName: "gpii.app.blurrable.initBlurrable",
-            args: [
-                "{that}",
-                "{arguments}.0" // targetWindow
-            ]
-        },
+        // The action which should be performed when the window loses focus
         handleBlur: {
             funcName: "gpii.app.blurrable.handleBlur",
             args: ["{that}"]
@@ -48,19 +59,25 @@ fluid.defaults("gpii.app.blurrable", {
     }
 });
 
-gpii.app.blurrable.initBlurrable = function (that, targetWindow) {
-    if (targetWindow) {
-        // Attach the grade names as window parameters
-        targetWindow.gradeNames = that.options.gradeNames;
-        // Initialize the listener
-        targetWindow.on("blur", that.events.onBlur.fire);
-    }
+/**
+ * Initializes the component by registering a blur listener for the member
+ * dialog.
+ * @param {Component} that - The `gpii.app.blurrable` instance.
+ */
+gpii.app.blurrable.initBlurrable = function (that) {
+    // Attach the grade names as window parameters
+    that.dialog.gradeNames = that.options.gradeNames;
 
-
+    that.dialog.on("blur", that.events.onBlur.fire);
 };
 
-gpii.app.blurrable.onBlur = function (that, linkedWindowsGrades) {
-    var focusedWindow = BrowserWindow.getFocusedWindow(),
+/**
+ * Called whenever this or another blurrable window loses focus.
+ * @param {Component} that - The `gpii.app.blurrable` instance.
+ */
+gpii.app.blurrable.onBlur = function (that) {
+    var linkedWindowsGrades = that.options.linkedWindowsGrades,
+        focusedWindow = BrowserWindow.getFocusedWindow(),
         allowBlur = !linkedWindowsGrades.some(function (linkedWindowGrade) {
             if (focusedWindow && focusedWindow.gradeNames) {
                 return focusedWindow.gradeNames.indexOf(linkedWindowGrade) >= 0;
@@ -72,6 +89,11 @@ gpii.app.blurrable.onBlur = function (that, linkedWindowsGrades) {
     }
 };
 
+/**
+ * Defines the action which should be performed when the window loses
+ * focus and the newly focused window is not linked to this one.
+ * @param {Component} that - The `gpii.app.blurrable` instance.
+ */
 gpii.app.blurrable.handleBlur = function (that) {
     if (that.hide) {
         that.hide();

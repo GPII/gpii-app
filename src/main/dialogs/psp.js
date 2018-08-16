@@ -246,10 +246,6 @@ fluid.defaults("gpii.app.psp", {
             listener: "gpii.app.psp.registerAccentColorListener",
             args: ["{that}"]
         },
-        "onCreate.initBlurrable": {
-            func: "{that}.initBlurrable",
-            args: ["{that}.dialog"]
-        },
 
         "onDestroy.cleanupElectron": {
             "this": "{that}.dialog",

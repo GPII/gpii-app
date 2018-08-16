@@ -115,12 +115,6 @@ fluid.defaults("gpii.app.qss", {
             }
         }
     },
-    listeners: {
-        "onCreate.initBlurrable": {
-            func: "{that}.initBlurrable",
-            args: ["{that}.dialog"]
-        }
-    },
     invokers: {
         show: {
             funcName: "gpii.app.qss.show",

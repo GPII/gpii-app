@@ -92,13 +92,6 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
         }
     },
 
-    listeners: {
-        "onCreate.initBlurrable": {
-            func: "{that}.initBlurrable",
-            args: ["{that}.dialog"]
-        }
-    },
-
     components: {
         channelNotifier: {
             type: "gpii.app.channelNotifier",

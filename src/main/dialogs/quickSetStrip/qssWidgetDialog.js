@@ -115,12 +115,6 @@ fluid.defaults("gpii.app.qssWidget", {
             }
         }
     },
-    listeners: {
-        "onCreate.initBlurrable": {
-            func: "{that}.initBlurrable",
-            args: ["{that}.dialog"]
-        }
-    },
     modelListeners: {
         "isShown": {
             func: "{that}.events.onQssWidgetToggled",

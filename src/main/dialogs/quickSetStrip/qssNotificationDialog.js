@@ -65,13 +65,6 @@ fluid.defaults("gpii.app.qssNotification", {
         }
     },
 
-    listeners: {
-        "onCreate.initBlurrable": {
-            func: "{that}.initBlurrable",
-            args: ["{that}.dialog"]
-        }
-    },
-
     invokers: {
         show: {
             funcName: "gpii.app.qssNotification.show",
