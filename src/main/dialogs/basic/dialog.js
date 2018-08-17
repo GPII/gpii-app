@@ -26,19 +26,15 @@ fluid.registerNamespace("gpii.app.dialog");
 
 
 /**
- * Base dialog component that provides initialization of
- * an Electron `BrowserWindow` and the generation of
+ * Base dialog component that provides initialization of an Electron `BrowserWindow` and the generation of
  * the file URL that is to be loaded in the same `BrowserWindow`.
- * NOTE: The generated URL is always relative to the working
- * directory of the application (`module.terms()`)
+ * NOTE: The generated URL is always relative to the working directory of the application (`module.terms()`)
  *
- * It also provides show/hide operations of the window through interaction
- * with the `isShown` property of the component
- * and handles Electron objects cleanup upon destruction.
+ * It also provides show/hide operations of the window through interaction with the `isShown` property of
+ * the component and handles Electron objects cleanup upon destruction.
  *
- * TODO positioning
- *  Positioning of the window is relative to the bottom right corner of the screen (contrary to the
- *  behaviour of the Electron positioning approach) as most windows are positioned in that exact region.
+ * Positioning of the window is relative to the bottom right corner of the screen (contrary to the
+ * default Electron positioning behaviour in the center of the screen).
  *
  * Requires:
  * - (optional) `attrs` - used as raw options for `BrowserWindow` generation.
@@ -47,8 +43,7 @@ fluid.registerNamespace("gpii.app.dialog");
  *    - `fileSuffixPath` - the suffix to the file
  *    - `filePrefixPath` (optional) - the prefix to the file
  *
- *   For example, a relative path such as `"/src/rendered/waitDialog/index.html"`,
- *   might be split into:
+ *   For example, a relative path such as `"/src/rendered/waitDialog/index.html"` might be split into:
  *   `prefixPath = "src/renderer"`
  *   `fileSuffixPath = "waitDialog/index.html"`
  */
@@ -76,13 +71,13 @@ fluid.defaults("gpii.app.dialog", {
         showInactive: false,
 
         // Whether to position the dialog after creation. This is used instead of x and y as raw
-        // options as they depend on the offset and latter is not yet defined at the time of the
+        // options as they depend on the offset and the latter is not yet defined at the time of the
         // dialog creation
         positionOnInit: true,
 
-        // Whether the window is hidden offscreen and should be treated as such. It's usage is
+        // Whether the window is hidden offscreen and should be treated as such. Its usage is
         // mainly assotiated with the `gpii.app.dialog.offScreenHidable` grade
-        offScreenHide: false,
+        hideOffScreen: false,
 
         // Whether the window can be closed (which will destroy it). In case
         // this setting is active the only way for a window to be closed is through
@@ -148,8 +143,8 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     listeners: {
-        "onCreate.postInit": {
-            funcName: "gpii.app.dialog.onDialogCreated",
+        "onCreate.positionOnInit": {
+            funcName: "gpii.app.dialog.positionOnInit",
             args: ["{that}"]
         },
         "onDestroy.cleanupElectron": {
@@ -158,14 +153,13 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
-        /// XXX The `setBounds` function is used instead of
-        /// `setPosition` alone because of a
-        // related Electron issue https://github.com/electron/electron/issues/9477
-        //
         // Changing the position of a BrowserWindow when the scale factor is different than
-        // the default one ( that is 100% ) changes the window's size (either width of height).
-        // To ensure its size is correct simply reset the size of the window with its stored one.
-        // Once the issues is addressed this can be changed back to simple `setPosition` functionality
+        // the default one (100%) changes the window's size (either width or height).
+        // To ensure its size is correct simply set the size of the window again with the one
+        // that has already been stored.
+        // Related Electron issue: https://github.com/electron/electron/issues/9477
+        // Once fixed we can move back to uising the native `setPosition` method of the
+        // `BrowserWindow` instead of `setBounds`.
         setPosition: {
             funcName: "gpii.app.dialog.setBounds",
             args: [
@@ -248,9 +242,9 @@ gpii.app.dialog.buildFileUrl = function (prefixPath, suffixPath) {
 };
 
 /**
- * Creates a dialog. This is done up front to avoid the delay from creating a new
- * dialog every time a new message should be displayed.
- * @param {Component} that - The raw Electron `BrowserWindow` settings
+ * Creates a dialog. This is done upfront to avoid the delay from creating a new
+ * dialog every time the displayed content should change.
+ * @param {Component} that - The `gpii.app.dialog` instance
  * @param {Object} windowOptions - The raw Electron `BrowserWindow` settings
  * @param {String} url - The URL to be loaded in the `BrowserWindow`
  * @param {Object} params -  Options that are to be supplied to the render process of
@@ -270,7 +264,7 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
     dialog.params = params || {};
 
     // ensure the window is hidden properly
-    if (that.options.config.offScreenHide && !windowOptions.show) {
+    if (that.options.config.hideOffScreen && !windowOptions.show) {
         gpii.app.dialog.offScreenHidable.moveOffScreen(dialog);
         dialog.show();
     }
@@ -286,13 +280,22 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
     return dialog;
 };
 
-gpii.app.dialog.onDialogCreated = function (that) {
+/**
+ * Positions the dialog (if needed) after it has been created.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ */
+gpii.app.dialog.positionOnInit = function (that) {
     if (that.options.config.positionOnInit) {
         that.setPosition();
     }
 };
 
-
+/**
+ * Shows the window if it is currently hidden or focuses it otherwise.
+ * This is the simplest way for showing a dialog. If the dialog has
+ * other rules for showing itself, this invoker can be overridden.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ */
 gpii.app.dialog.show = function (that) {
     if (that.model.isShown) {
         that.focus();
@@ -301,13 +304,14 @@ gpii.app.dialog.show = function (that) {
     }
 };
 
-
 /**
- * TODO
- *
- * @param that
- * @param showInactive
- * @returns {undefined}
+ * Shows the window by calling the appropriate native `BrowserWindow` method
+ * depending on whether the window should be focused when shown. This is a
+ * low level utility function which could be useful in case the `show` invoker
+ * is overridden.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Boolean} showInactive - If `true`, the dialog should not have focus
+ * when shown. Otherwise it will.
  */
 gpii.app.dialog._show = function (that, showInactive) {
     var showMethod = showInactive ?
@@ -320,9 +324,6 @@ gpii.app.dialog._show = function (that, showInactive) {
 /**
  * Default show/hide behaviour of the electron `BrowserWindow` dialog, depending
  * on the `isShown` flag state.
- * In case it is shown, resets the position and shows the current dialog (`BrowserWindow`).
- * The reset is needed in order to handle cases such as resolution or
- * DPI settings changes.
  * @param {Component} that - The diolog component to be shown
  * @param {Boolean} isShown - Whether the window has to be shown
  * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
@@ -347,7 +348,6 @@ gpii.app.dialog.toggle = function (that, isShown, showInactive) {
  * @param {Number} offsetY - The y offset from the bottom edge of the screen.
  */
 gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX, offsetY) {
-    // XXX Unites both setPosition and setRestrictedSize but cannot use them separately
     // As default use currently set values
     offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
     offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
@@ -361,20 +361,18 @@ gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX
 
     var bounds = gpii.browserWindow.computeWindowBounds(width, height, offsetX, offsetY);
 
-    that.width  = width;
-    that.height = height;
+    that.width = bounds.width;
+    that.height = bounds.height;
     that.applier.change("offset", { x: offsetX, y: offsetY });
 
     that.dialog.setBounds(bounds);
 };
 
-
-
 /**
- * Resizes the Electron BrowserWindow. Ensures that the window will be resized to fit the available screen
- * area.
- *
+ * Resizes the Electron BrowserWindow. Ensures that the window will be resized to fit
+ * vertically in the available screen area.
  * @param {Component} that - The `gpii.app.dialog` instance
+ * @param {Object} restrictions - Restrictions for resizing and positioning the window
  * @param {Number} [width] - The desired width for the window
  * @param {Number} [height] - The desired height for the window
  */
@@ -392,12 +390,11 @@ gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height)
 
     var size = gpii.browserWindow.computeWindowSize(width, height, offset.x, offset.y);
 
-    that.width  = width;
-    that.height = height;
+    that.width  = size.width;
+    that.height = size.height;
 
     that.dialog.setSize(size.width, size.height);
 };
-
 
 /**
  * A generic channel extension which listens for locale changes and
@@ -434,4 +431,3 @@ fluid.defaults("gpii.app.channelNotifier", {
     // TODO improve `i18n.channel` to use event instead of a direct notifying
     ipcTarget: "{dialog}.dialog.webContents" // get the closest dialog
 });
-

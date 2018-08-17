@@ -1,5 +1,5 @@
 /**
- * The Quick Set Strip pop-up
+ * The Quick Set Strip dialog
  *
  * Introduces a component that uses an Electron BrowserWindow to represent the QSS.
  * Copyright 2016 Steven Githens
@@ -25,7 +25,11 @@ require("./dialogs/quickSetStrip/qssNotificationDialog.js");
 require("./dialogs/quickSetStrip/qssMorePanel.js");
 require("./common/undoStack.js");
 
-
+/**
+ * A QSS wrapper which defines default values for its settings. The default
+ * values are applied every time a user keys in or out or changes his active
+ * preference set (in case there is more than one available set).
+ */
 fluid.defaults("gpii.app.resettableQssWrapper", {
     gradeNames: ["gpii.app.qssWrapper"],
 
@@ -37,7 +41,7 @@ fluid.defaults("gpii.app.resettableQssWrapper", {
     },
 
     listeners: {
-        // override existing listener
+        // override the existing listener
         "onPreferencesUpdated.applyPrefSettings": {
             func: "gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings",
             args: [
@@ -48,7 +52,7 @@ fluid.defaults("gpii.app.resettableQssWrapper", {
         }
     },
 
-    // The "original" values of the QSS settings
+    // The default values of the QSS settings
     defaultQssSettings: [{
         "path": "http://registry\\.gpii\\.net/common/language",
         "value": "en-US"
@@ -67,17 +71,30 @@ fluid.defaults("gpii.app.resettableQssWrapper", {
     }]
 });
 
+/**
+ * Similar to `gpii.app.qssWrapper.applyPreferenceSettings`. In addition to
+ * propagating the changes to the QSS, this function also takes care of
+ * notifying the QSS if it is necessary to apply the default values for its
+ * settings.
+ * @param {Component} that - The `gpii.app.resettableQssWrapper` instance.
+ * @param {Object[]} defaultQssSettings - An array containing the default
+ * values of the QSS settings
+ * @param {Obeject[]} preferences - The new preferences that are delivered to
+ * the QSS wrapper.
+ */
 gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings = function (that, defaultQssSettings, preferences) {
     var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences && preferences.settingGroups),
         notUndoable = false;
 
+    /**
+     * If this check fails, it means that the new preference set is due to a
+     * new setting being added to the user's preferences as a result of a
+     *change to that setting from the QSS.
+     */
     if (that.previousState.gpiiKey !== preferences.gpiiKey || that.previousState.activeSet !== preferences.activeSet) {
-        /// Else comes from addition of new setting
-        console.log("resettableQssWrapper: Apply QSS original settings");
-
         notUndoable = true;
 
-        /// merge new settings with the original qss settings
+        // merge new settings with the original qss settings
         fluid.each(defaultQssSettings, function (defaultSetting) {
             var prefSetting = fluid.find_if(settings, function (setting) {
                 return setting.path === defaultSetting.path;
@@ -99,9 +116,11 @@ gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings = function (that,
     });
 };
 
-
 /**
- * Loads the initial settings from a local configuration file.
+ * A component which coordinates the operation of all QSS related components
+ * (the QSS itself and its widget, tooltip, notification and "More" dialogs,
+ * as well as the undo stack). It also takes care of loading the QSS settings
+ * from a local configuration file.
  */
 fluid.defaults("gpii.app.qssWrapper", {
     gradeNames: "fluid.modelComponent",
@@ -166,7 +185,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         "{qssWrapper}.model.settings.*": [
             { // Undo Stack
                 funcName: "{undoStack}.registerUndoableChange",
-                args: ["{change}.path", "{change}.oldValue"],
+                args: ["{change}.oldValue"],
                 excludeSource: ["gpii.app.undoStack.undo", "gpii.app.undoStack.notUndoable", "init"]
             }, { // QSS
                 func: "{qss}.events.onSettingUpdated.fire",
@@ -253,16 +272,16 @@ fluid.defaults("gpii.app.qssWrapper", {
 
                     // TODO we could also have a modelListener and always hide. See widget
                     "{gpii.app.qss}.events.onDialogHidden": {
-                        func: "{that}.delayedHide"
+                        func: "{that}.hide"
                     },
                     "{gpii.app.qss}.channelListener.events.onQssButtonActivated": {
-                        func: "{that}.delayedHide"
+                        func: "{that}.hide"
                     },
                     "{gpii.app.qss}.channelListener.events.onQssButtonsFocusLost": {
-                        func: "{that}.delayedHide"
+                        func: "{that}.hide"
                     },
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseLeave": {
-                        func: "{that}.delayedHide"
+                        func: "{that}.hide"
                     }
                 }
             }
@@ -276,6 +295,15 @@ fluid.defaults("gpii.app.qssWrapper", {
     }
 });
 
+/**
+ * If there is a keyed in user, saves his settings and shows a confirmation message.
+ * If there is no keyed in user, a warning message is shown.
+ * @param {Component} that - The `gpii.app.qssWrapper` instance.
+ * @param {Component} flowManager - The `gpii.flowManager` instance.
+ * @param {Component} qssNotification - The `gpii.app.qssNotification` instance.
+ * @param {Component} qss - The `gpii.app.qss` instance.
+ * @param {String} description - The message that should be shown in the QSS notification.
+ */
 gpii.app.qssWrapper.saveSettings = function (that, flowManager, qssNotification, qss, description) {
     // Request that the settings are saved only if there is a keyed in user
     if (that.model.isKeyedIn) {
@@ -292,9 +320,12 @@ gpii.app.qssWrapper.saveSettings = function (that, flowManager, qssNotification,
 };
 
 /**
- * Whenever a button in the QSS is focused hides the QSS widget and the PSP in case
+ * Whenever a button in the QSS is focused, hides the QSS widget and the PSP in case
  * the setting for the newly focused button is different from the QSS widget's setting
  * (or the setting for the PSP button respectively).
+ * @param {Component} that - The `gpii.app.qss` instance.
+ * @param {Component} qssWidget - The `gpii.app.qssWidget` instance.
+ * @param {Object} setting - the setting for the newly focused QSS button.
  */
 gpii.app.qss.hideQssMenus = function (that, qssWidget, setting) {
     if (setting.path !== qssWidget.model.setting.path) {
@@ -306,30 +337,38 @@ gpii.app.qss.hideQssMenus = function (that, qssWidget, setting) {
     }
 };
 
-gpii.app.qssWrapper.registerUndoableChange = function (that, changePath, oldValue) {
+/**
+ * When a setting's value in the QSS is modified and if the setting can be undone, adds
+ * the change that has occurred to the undo stack.
+ * @param {Component} that - The `gpii.app.undoStack` instance.
+ * @param {Object} oldValue - The previous value of the setting before its modification.
+ */
+gpii.app.qssWrapper.registerUndoableChange = function (that, oldValue) {
     var isChangeUndoable = !fluid.find_if(
         that.options.unwatchedSettings,
         function (excludedPath) { return oldValue.path === excludedPath; });
 
     if (isChangeUndoable) {
-        that.registerChange({
-            oldValue: oldValue,
-            changePath: changePath
-        });
+        that.registerChange(oldValue);
     }
 };
 
+/**
+ * When the "Undo" button is pressed, reverts the topmost change in the undo stack.
+ * Actually, a change is reverted by applying the previous value of the setting.
+ * @param {Component} qssWrapper - The `gpii.app.undoStack` instance.
+ * @param {Object} change - The change to be reverted.
+ */
 gpii.app.undoStack.revertChange = function (qssWrapper, change) {
     qssWrapper.alterSetting({
-        path:  change.oldValue.path,
-        value: change.oldValue.value
+        path:  change.path,
+        value: change.value
     }, "gpii.app.undoStack.undo");
 };
 
 /**
- * Update the state of a QSS setting, i.e. only the value of the setting
- * is updated.
- *
+ * Updates the value of a QSS setting. Called when the change originated from outside
+ * the QSS or the QSS widget.
  * @param {Component} that - The `gpii.app.qssWrapper` component
  * @param {Object} updatedSetting - The setting with updated state
  * @param {Boolean} notUndoable - Whether the setting is undoable or not
@@ -344,6 +383,14 @@ gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable)
     );
 };
 
+/**
+ * Returns all available settings (including subsettings) in the provided
+ * item (either a setting group or a setting). In case the passed argument
+ * is a setting, it is also added to the resulting list.
+ * @param {Object} item - The setting group or the setting from which to
+ * retrieve settings
+ * @return {Object[]} An array of all available settings for that `item`.
+ */
 gpii.app.qssWrapper.getItemSettings = function (item) {
     var settings = [];
 
@@ -358,6 +405,13 @@ gpii.app.qssWrapper.getItemSettings = function (item) {
     return settings;
 };
 
+/**
+ * Returns all settings (including subsettings) available in the provided
+ * settings groups.
+ * @param {Object[]} settingGroups - An array with setting group items as
+ * per the parsed message in the `gpiiConnector`.
+ * @return {Object[]} An array of all available settings.
+ */
 gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
     var settings = [];
 
@@ -369,14 +423,14 @@ gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
     return settings;
 };
 
-
-
 /**
- * Update QSS settings from the updated preference set.
- * Note: preference set changes are not undoable.
- *
- * @param {Component} that
- * @param {Obeject[]} preferences
+ * When new preferences are delivered to the QSS wrapper, this function takes
+ * care of notifying the QSS about the changes which should in turn update its
+ * internal models and UI. Note that settings changes as a result of a change
+ * in the preference set are not undoable.
+ * @param {Component} that - The `gpii.app.qssWrapper` instance.
+ * @param {Obeject[]} preferences - The new preferences that are delivered to
+ * the QSS wrapper.
  */
 gpii.app.qssWrapper.applyPreferenceSettings = function (that, preferences) {
     var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences.settingGroups);
@@ -386,6 +440,15 @@ gpii.app.qssWrapper.applyPreferenceSettings = function (that, preferences) {
     });
 };
 
+/**
+ * Retrieves synchronously the QSS settings from a file on the local machine
+ * and resolves any assets that they reference with respect to the `gpii-app`
+ * folder.
+ * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
+ * @param {String} settingsPath - The path to the file containing the QSS
+ * settings with respect to the `gpii-app` folder.
+ * @return {Object[]} An array of the loaded settings
+ */
 gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
     var resolvedPath = fluid.module.resolvePath(settingsPath),
         loadedSettings = fluid.require(resolvedPath);
@@ -401,11 +464,12 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
 };
 
 /**
- * Update a QSS setting - all its data.
- *
- * @param that
- * @param updatedSetting
- * @param source
+ * Update a QSS setting (all of its data). Called when the change originated from the
+ * QSS or the QSS widget.
+ * @param {Component} that - The `gpii.app.qssWrapper` instance.
+ * @param {Object} updatedSetting - The new setting. The setting with the same path in
+ * the QSS will be replaced.
+ * @param {String} [source] - The source of the update.
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
     var settingIndex = that.model.settings.findIndex(function (setting) {
@@ -419,7 +483,14 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
 
 
 /**
- * Compute the center of the button.
+ * Given the metrics of the focused/activated QSS button, computes the coordinates of
+ * the topmost middle point of the button with respect to the bottom right corner of
+ * the QSS.
+ * @param {Component} qss - The `gpii.app.qss` instance.
+ * @param {Object} buttonElemMetrics - An object containing metrics for the QSS button
+ * that has been interacted with.
+ * @return {Object} the coordinates of the topmost middle point of the corresponding QSS
+ * button.
  */
 gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
     return {
@@ -429,6 +500,12 @@ gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
     };
 };
 
+/**
+ * Propagates a setting update to the QSS widget only if the setting has the same path
+ * as the one which the widget is currently displaying.
+ * @param {Component} qssWidget - The `gpii.app.qssWidget` instance.
+ * @param {Object} updatedSetting - The new setting.
+ */
 gpii.app.qssWidget.updateIfMatching = function (qssWidget, updatedSetting) {
     // Update the widget only if the changed setting is the one which the widget is displaying
     if (qssWidget.model.setting.path === updatedSetting.path) {
@@ -436,8 +513,9 @@ gpii.app.qssWidget.updateIfMatching = function (qssWidget, updatedSetting) {
     }
 };
 
-
-
+/**
+ * Configuration for using the `gpii.app.qss` in the QSS wrapper component.
+ */
 fluid.defaults("gpii.app.qssInWrapper", {
     gradeNames: "gpii.app.qss",
     config: {
@@ -505,8 +583,9 @@ fluid.defaults("gpii.app.qssInWrapper", {
     }
 });
 
-
-
+/**
+ * Configuration for using the `gpii.app.undoInWrapper` in the QSS wrapper component.
+ */
 fluid.defaults("gpii.app.undoInWrapper", {
     gradeNames: "gpii.app.undoStack",
     // paths of settings that are not undoable
@@ -539,8 +618,7 @@ fluid.defaults("gpii.app.undoInWrapper", {
             funcName: "gpii.app.qssWrapper.registerUndoableChange",
             args: [
                 "{undoStack}",
-                "{arguments}.0", // changePath
-                "{arguments}.1" // oldValue
+                "{arguments}.0" // oldValue
             ]
         }
     }

@@ -21,11 +21,10 @@ require("./resizable.js");
 
 fluid.registerNamespace("gpii.app.dialog");
 
-
 /**
- * TODO
+ * A component which adds the ability for a dialog to be shown with a delay.
  */
-fluid.defaults("gpii.app.dialog.delayedShow", {
+fluid.defaults("gpii.app.delayedDialog", {
     gradeNames: ["gpii.app.timer"],
 
     // the desired delay in milliseconds
@@ -39,24 +38,30 @@ fluid.defaults("gpii.app.dialog.delayedShow", {
     },
 
     invokers: {
-        // _show: null, // expected from implementor
-        // _hide: null,
-        delayedShow: {
-            funcName: "gpii.app.dialog.delayedShow.delayedShow",
+        showWithDelay: {
+            funcName: "gpii.app.delayedDialog.showWithDelay",
             args: [
                 "{that}",
                 "{that}.options.showDelay",
                 "{arguments}" // showArgs
             ]
         },
-        delayedHide: {
-            funcName: "gpii.app.dialog.delayedShow.delayedHide",
+        hide: {
+            funcName: "gpii.app.delayedDialog.hide",
             args: ["{that}"]
         }
     }
 });
 
-gpii.app.dialog.delayedShow.delayedShow = function (that, delay, showArgs) {
+/**
+ * Schedules the dialog to be shown in `delay` milliseconds. In case a
+ * `delay` is not specified, the dialog will be shown immediately.
+ * @param {Component} that - The `gpii.app.delayedDialog` instance.
+ * @param {Number} [delay] - The delay in milliseconds.
+ * @param {Any[]} [showArgs] - An array of arguments which will be
+ * provided to the `show` invoker when the `delay` is up.
+ */
+gpii.app.delayedDialog.showWithDelay = function (that, delay, showArgs) {
     // process raw arguments
     showArgs = fluid.values(showArgs);
 
@@ -70,11 +75,14 @@ gpii.app.dialog.delayedShow.delayedShow = function (that, delay, showArgs) {
     }
 };
 
-gpii.app.dialog.delayedShow.delayedHide = function (that) {
-    // clear any existing timer
+/**
+ * If the dialog is scheduled to be shown but has not been shown yet,
+ * this function will discard the showing. Otherwise, if the dialog is
+ * already visible on screen, it will be hidden.
+ * @param {Component} that - The `gpii.app.delayedDialog` instance.
+ */
+gpii.app.delayedDialog.hide = function (that) {
     that.clear();
 
-    that.hide();
+    that.applier.change("isShown", false);
 };
-
-

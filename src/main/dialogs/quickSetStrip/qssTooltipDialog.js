@@ -18,7 +18,7 @@ var fluid = require("infusion");
 
 
 require("../basic/dialog.js");
-require("../basic/delayedShow.js");
+require("../basic/delayedDialog.js");
 require("../basic/blurrable.js");
 require("../basic/offScreenHidable.js");
 require("../../../shared/channelUtils.js");
@@ -34,7 +34,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: [
         "gpii.app.dialog",
         "gpii.app.blurrable",
-        "gpii.app.dialog.delayedShow",
+        "gpii.app.delayedDialog",
         "gpii.app.dialog.offScreenHidable"
     ],
 
@@ -141,7 +141,7 @@ gpii.app.qssTooltipDialog.getTooltip = function (isKeyedIn, setting) {
  */
 gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOffset) {
     if (setting && fluid.isValue(setting.tooltip)) {
-        that.delayedShow(btnCenterOffset);
+        that.showWithDelay(btnCenterOffset);
         gpii.app.applier.replace(that.applier, "setting", setting);
     }
 };
@@ -149,7 +149,7 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
 /**
  * Retrieves the tooltip dialog's position.
  * @param {Object} btnCenterOffset - An object containing metrics for the QSS
- * button.
+ * button that has been activated.
  * @return {Object} The offset of the tooltip from the bottom right corner of
  * the screen.
  */

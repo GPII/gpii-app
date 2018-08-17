@@ -34,7 +34,7 @@ fluid.registerNamespace("gpii.app.dialog.offScreenHidable");
 fluid.defaults("gpii.app.dialog.offScreenHidable", {
     config: {
         positionOnInit: false,
-        offScreenHide: true
+        hideOffScreen: true
     },
 
     invokers: {

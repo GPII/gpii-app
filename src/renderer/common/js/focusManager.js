@@ -304,7 +304,7 @@
      * Returns whether the given element has a keyboard navigation highlight.
      * @param {Component} that - The `gpii.qss.focusManager` instance.
      * @param {jQuery} element - A jQuery object representing the element to be checked.
-     * @return `true` if the element has a keyboard navigation highlight and `false`
+     * @return {Boolean} `true` if the element has a keyboard navigation highlight and `false`
      * otherwise.
      */
     gpii.qss.focusManager.isHighlighted = function (that, element) {

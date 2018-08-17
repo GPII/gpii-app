@@ -23,7 +23,11 @@ require("../basic/blurrable.js");
 require("../basic/offScreenHidable.js");
 require("../../../shared/channelUtils.js");
 
-
+/**
+ * A blurrable dialog which represents the QSS widget. As this dialog is reused,
+ * it is hidden off-screen to avoid content flickering when the displayed setting
+ * changes.
+ */
 fluid.defaults("gpii.app.qssWidget", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
@@ -32,7 +36,7 @@ fluid.defaults("gpii.app.qssWidget", {
     },
 
     members: {
-        // Used for postponed show of the dialog (e.g. based on an event)
+        // Used for postponed showing of the dialog (based on an event)
         shouldShow: false
     },
 
@@ -108,7 +112,7 @@ fluid.defaults("gpii.app.qssWidget", {
                         args: ["Settings Altered: ", "{arguments}.0"]
                     },
                     onQssWidgetCreated: {
-                        funcName: "gpii.app.qssWidget.onQssWidgetCreated",
+                        funcName: "gpii.app.qssWidget.showOnInit",
                         args: ["{qssWidget}"]
                     }
                 }
@@ -154,6 +158,17 @@ fluid.defaults("gpii.app.qssWidget", {
     }
 });
 
+/**
+ * Called whenever a QSS button is activated. Determines whether the QSS dialog
+ * should be shown or hidden.
+ * @param {Component} that - The `gpii.app.qssWidget` instance
+ * @param {Object} setting - The setting corresponding to the QSS button that
+ * has been activated
+ * @param {Object} btnCenterOffset - An object containing metrics for the QSS
+ * button that has been activated
+ * @param {Object} [activationParams] - Parameters sent to the renderer portion
+ * of the QSS dialog (e.g. whether the activation occurred via keyboard)
+ */
 gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activationParams) {
     if (that.model.isShown && that.model.setting.path === setting.path) {
         that.hide();
@@ -167,25 +182,33 @@ gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activation
     }
 };
 
-function getWidgetPosition(widget, btnCenterOffset) {
+/**
+ * Retrieves the QSS widget dialog's position.
+ * @param {Component} that - The `gpii.app.qssWidget` instance
+ * @param {Object} btnCenterOffset - An object containing metrics for the QSS
+ * button that has been activated.
+ * @return {Object} The offset of the widget from the bottom right corner of
+ * the screen.
+ */
+gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
     return {
-        x: btnCenterOffset.x - widget.width / 2,
+        x: btnCenterOffset.x - that.width / 2,
         y: btnCenterOffset.y
     };
-}
+};
 
 /**
- * Show the widget window and position it relatively to the
- * specified element. The window is positioned centered over
- * the element.
- *
+ * Shows the widget window and position it centered with respect to the
+ * corresponding QSS button.
  * @param {Component} that - The `gpii.app.qssWidget` instance
- * @param {Object} setting - The qssSetting object
- * @param {Object} btnCenterOffset - The metrics of the relative element
- * @param {Number} btnCenterOffset.offsetX - The offset of the element from the
- * @param {Number} btnCenterOffset.offsetY - The offset of the element from the
- * @param {Object} activationParams - Defines the way this show was triggered
- * @param {Object} activationParams.shortcut - Defines the way the show was triggered
+ * @param {Object} heightMap - A hash containing the height the QSS widget must
+ * have if the `setting` has a path matching a key in the hash.
+ * @param {Object} setting - The setting corresponding to the QSS button that
+ * has been activated
+ * @param {Object} btnCenterOffset - An object containing metrics for the QSS
+ * button that has been activated
+ * @param {Object} [activationParams] - Parameters sent to the renderer portion
+ * of the QSS dialog (e.g. whether the activation occurred via keyboard)
  */
 gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, activationParams) {
     activationParams = activationParams || {};
@@ -195,8 +218,9 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
     gpii.app.applier.replace(that.applier, "setting", setting);
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
-    // reposition window properly
-    that.model.offset = getWidgetPosition(that, elementMetrics);
+    // store the offset so that the widget can be positioned correctly when
+    // the renderer process sends the corresponding message
+    that.model.offset = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics);
 
     that.height = heightMap[setting.path] || that.options.config.attrs.height;
     that.setRestrictedSize(that.width, that.height);
@@ -204,7 +228,12 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
     that.shouldShow = true;
 };
 
-gpii.app.qssWidget.onQssWidgetCreated = function (qssWidget) {
+/**
+ * Shows the QSS widget when the renderer process notifies the main process that
+ * the view has been initialized.
+ * @param {Component} qssWidget - The `gpii.app.qssWidget` instance
+ */
+gpii.app.qssWidget.showOnInit = function (qssWidget) {
     if (qssWidget.shouldShow) {
         qssWidget.shouldShow = false;
         setTimeout(function () {
@@ -212,5 +241,3 @@ gpii.app.qssWidget.onQssWidgetCreated = function (qssWidget) {
         }, 100);
     }
 };
-
-
