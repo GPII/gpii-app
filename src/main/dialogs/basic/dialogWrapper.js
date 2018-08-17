@@ -2,7 +2,6 @@
  * Recreates a dialog when shown
  *
  * Every time the dialog is shown a new BrowserWindow instance is created.
- * GPII Application
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *

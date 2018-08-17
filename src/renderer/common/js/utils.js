@@ -21,7 +21,13 @@
 
     fluid.registerNamespace("gpii.psp");
 
-    // Fixes the JavaScript modulo bug.
+    /**
+     * An implementation of the modulation operation which resolves the
+     * notorious "JavaScrip Modulo bug".
+     * @param {Number} a - The dividend
+     * @param {Number} b - The divisor
+     * @return {Number} The remainder - a number in the range [0, Math.abs(b) - 1]
+     */
     gpii.psp.modulo = function (a, b) {
         return ((a % b) + b) % b;
     };
@@ -70,8 +76,6 @@
         }
     });
 
-
-
     /**
      * Render text for DOM elements referenced by component's
      * selectors. It simply adds text (using jquery .text) method)
@@ -93,7 +97,6 @@
             }
         }
     });
-
 
     /**
      * Sets (rich) text to dom elements using jQuery.

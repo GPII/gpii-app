@@ -3,7 +3,6 @@
  *
  * An enhancement that replaces the original `show` and `hide`
  * `BrowserWindow` methods with ones that hide the component off screen.
- * GPII Application
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *

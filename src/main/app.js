@@ -195,25 +195,17 @@ fluid.defaults("gpii.app", {
                     "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated"
                 },
                 modelListeners: {
-                    "settings.*": [{
-                        // A funny way to decorate the new value with the old value
-                        funcName: "fluid.extend",
-                        args: [
-                            true,
-                            "{change}.value",
-                            { oldValue: "{change}.oldValue.value" }
-                        ],
-                        includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
-                    }, {
+                    "settings.*": {
                         funcName: "gpii.app.onQssSettingAltered",
                         args: [
                             "{settingsBroker}",
                             "{appZoom}",
                             "{change}.value",
+                            "{change}.oldValue",
                             "{that}.options.appTextZoomPath"
                         ],
                         includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
-                    }]
+                    }
                 }
             }
         },
@@ -227,7 +219,7 @@ fluid.defaults("gpii.app", {
                 },
                 modelListeners: {
                     "{qssWrapper}.qss.model.isShown": {
-                        funcName: "gpii.app.pspInApp.onQssToggled",
+                        funcName: "gpii.app.pspInApp.hidePspIfNeeded",
                         args: ["{that}", "{change}.value"]
                     }
                 },
@@ -388,11 +380,19 @@ fluid.defaults("gpii.app", {
  * "decrease" string as a parameter in order to change the zoom level in the last
  * active application.
  * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
+ * @param {Component} appZoom - The `gpii.windows.appZoom` instance.
  * @param {Object} setting - The setting which has been altered via the QSS or its
  * widget.
+ * @param {Object} oldValue - The previous value of the altered setting.
  * @param {String} appTextZoomPath - The path of the "App / Text Zoom" setting.
  */
-gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, appTextZoomPath) {
+gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, oldValue, appTextZoomPath) {
+    // Adds the previous value to the setting in order to enable reverting back to
+    // it when needed.
+    fluid.extend(true, setting, {
+        oldValue: oldValue.value
+    });
+
     // Special handling of the "App / Text Zoom" setting
     if (setting.path === appTextZoomPath) {
         var direction = setting.value > setting.oldValue ? "increase" : "decrease";
@@ -402,10 +402,23 @@ gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, appTe
     }
 };
 
+/**
+ * Returns whether there is an actual keyed in user, i.e. if the user token is
+ * defined and is different from the token of the default (the so-called "no man")
+ * user.
+ * @param {String} keyedInUserToken - The user token of the currently keyed in user.
+ * @param {String} defaultUserToken - The user token of the default user.
+ * @return {Boolean} `true` if there is an actual keyed in user and `false` otherwise.
+ */
 gpii.app.getIsKeyedIn = function (keyedInUserToken, defaultUserToken) {
     return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken;
 };
 
+/**
+ * Fires the appropriate event based on whether there is an actual keyed in user or not.
+ * @param {Component} that - The `gpii.app` instance.
+ * @param {Boolean} isKeyedIn - whether there is an actual keyed in user or not.
+ */
 gpii.app.onIsKeyedInChanged = function (that, isKeyedIn) {
     if (isKeyedIn) {
         that.events.onKeyedIn.fire();
@@ -414,19 +427,28 @@ gpii.app.onIsKeyedInChanged = function (that, isKeyedIn) {
     }
 };
 
-gpii.app.pspInApp.onQssToggled = function (psp, isQssShown) {
+/**
+ * Hides the PSP is the QSS is no longer visible.
+ * @param {Component} psp - The `gpii.app.psp` instance.
+ * @param {Boolean} isQssShown - Whether the QSS is visible or not.
+ */
+gpii.app.pspInApp.hidePspIfNeeded = function (psp, isQssShown) {
     if (!isQssShown) {
         psp.hide();
     }
 };
 
+/**
+ * Invokes the passed function when the `gpii.app` component is created.
+ * @param {Function} fireFn - The function to be invoked.
+ */
 gpii.app.fireAppReady = function (fireFn) {
     gpii.app.appReady.then(fireFn);
 };
 
 /**
-  * Keys into the GPII.
-  * Currently uses an url to key in although this should be changed to use Electron IPC.
+  * Keys a user into the GPII.
+  * @param {Component} flowManager - The `gpii.flowManager` instance.
   * @param {String} token - The token to key in with.
   */
 gpii.app.keyIn = function (flowManager, token) {
@@ -453,13 +475,12 @@ gpii.app.keyIn = function (flowManager, token) {
 
 /**
   * Keys out of the GPII.
-  * Currently uses an url to key out although this should be changed to use Electron IPC.
   * @param {String} token - The token to key out with.
   * @return {Promise} A promise that will be resolved/rejected when the request is finished.
   */
 gpii.app.keyOut = function (token) {
     var togo = fluid.promise();
-    request("http://localhost:8081/user/" + token + "/proximityTriggered", function (error, response, body) {
+    request("http://localhost:8081/user/" + token + "/proximityTriggered", function () {
         //TODO Put in some error logging
         // if (error) {
         //     togo.reject(error);

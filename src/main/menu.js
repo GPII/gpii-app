@@ -65,7 +65,6 @@ fluid.defaults("gpii.app.menuInApp", {
 
 /**
  * Refreshes the task tray menu for the GPII Application using the menu in the model.
- *
  * @param {Object} tray - An Electron 'Tray' object.
  * @param {Array} menuTemplate - A nested array that is the menu template for the GPII Application.
  * @param {Object} events - An object containing the events that may be fired by items in the menu.
@@ -142,6 +141,8 @@ fluid.defaults("gpii.app.menuInAppDev", {
         //   a) trigger GPII {lifecycleManager}.events.onSessionStart
         //   b) fire a model change to set the new model.keyedInUserToken
         //   c) update the menu
+        // XXX: Commented out temporarily until the proper implementation of the
+        // "noUser" functionality is ready.
         // "onKeyIn.performKeyOut": {
         //     listener: "{app}.keyOut",
         //     args: ["{that}.model.keyedInUserToken", true]
@@ -425,7 +426,6 @@ fluid.defaults("gpii.app.menu", {
 
 /**
  * Generates an object that represents the menu item for keying in.
- *
  * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {String} snapsetName - The user-friendly name of the keyed in snapset.
  * @param {String} keyedInStrTemp - The string template for the label when a user is keyed in.
@@ -461,8 +461,8 @@ gpii.app.menu.getKeyOut = function (keyedInUserToken, keyOutStr) {
 };
 
 /**
- * Generates an array that represents the menu items related to a user's preference sets. The returned array can be used
- * in the context menu of a {Tray} object.
+ * Generates an array that represents the menu items related to a user's preference sets.
+ * The returned array can be used in the context menu of a {Tray} object.
  * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed in user.
  * @param {Array} preferenceSets - An array of all preference sets for the user.
  * @param {String} activeSet - The path of the currently active preference set.
@@ -510,7 +510,7 @@ gpii.app.menu.getSimpleMenuItem = function (label, event, payload) {
 };
 
 /**
- * Generate a simple Electron context menu separator item.
+ * Generates a simple Electron context menu separator item.
  * @return {Object} The separator menu item.
  */
 gpii.app.menu.getSeparatorItem = function () {

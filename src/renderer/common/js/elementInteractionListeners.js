@@ -18,7 +18,10 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-
+    /**
+     * A component whose container can be clicked. Whenever such an interaction
+     * occurs, the `onClicked` event will be fired.
+     */
     fluid.defaults("gpii.app.clickable", {
         events: {
             onClicked: null
@@ -34,8 +37,10 @@
     });
 
     /**
-     * TODO
-     * add timeout?
+     * A component whose container can be hovered. When the mouse pointer enters the
+     * DOM element, the `onMouseEnter` event will be fired. After that, when the mouse
+     * pointer is no longer within the element's container, the `onMouseLeave` event
+     * will be fired.
      */
     fluid.defaults("gpii.app.hoverable", {
         events: {
@@ -55,19 +60,18 @@
         }
     });
 
-
     /**
-     * Register keyup events on a DOM element. Once a key is pressed a
-     * corresponding component's event is fired, if event by a special name
-     * is supplied for it.
-     * Every special component event follow the format: `on<KeyName>Clicked`
-     * where the available <KeyName>s can be view here:
+     * Register keyup events on a DOM element. Once a key is pressed the and the
+     * corresponding event is registered in the component's configuration, the
+     * latter will be fired.
+     * Every special component event follow the format: `on<KeyName>Pressed`
+     * where the available <KeyName>s can be viewed here:
      * https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
      *
-     * Expects the either a target (jquery element) to be given or
-     * the implementor component to have container (fluid.viewComponent).
+     * Expects either a target (jquery element) to be given or the implementor's
+     * component to have container (i.e. to be a `fluid.viewComponent`).
      *
-     * N.B.! The <KeyName> for the space bar is "Spacebar", which differs from the name
+     * Note: The <KeyName> for the space bar is "Spacebar", which differs from the name
      * in the specification which is simply " "
      */
     fluid.defaults("gpii.app.keyListener", {
@@ -77,7 +81,6 @@
         target: null,
 
         // Some keys lack descriptive names so we attach such to them
-        // The full list of key names can be view here: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
         specialKeyEvents: {
             " ": "Spacebar",
             "+": "Add",
@@ -104,12 +107,22 @@
         }
     });
 
+    /**
+     * Registers a `keyup` listener either for the specified `target` in
+     * the component's configuration or for the component's container.
+     * @param {Component} that - The `gpii.app.keyListener` instance.
+     */
     gpii.app.keyListener.registerListener = function (that) {
         var target = that.options.target || that.container;
 
         target.on("keyup", that.registerKeyPress);
     };
 
+    /**
+     * Deregisters the `keyup` listener for the specified `target` in
+     * the component's configuration or for the component's container.
+     * @param {Component} that - The `gpii.app.keyListener` instance.
+     */
     gpii.app.keyListener.deregisterListener = function (that) {
         var target = that.options.target || that.container;
 
@@ -117,7 +130,9 @@
     };
 
     /**
-     * TODO
+     * The function which will actually handle a key press.
+     * @param {Component} that - The `gpii.app.keyListener` instance.
+     * @param {Object} KeyboardEvent - The keyboard event that has been triggered.
      */
     gpii.app.keyListener.registerKeyPress = function (that, KeyboardEvent) {
         // Make use of a relatively new feature https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key

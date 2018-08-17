@@ -2,7 +2,6 @@
  * PSP BrowserWindow dialog
  *
  * Introduces a component that manages the PSP's Electron BrowserWindow (the panel itself).
- * GPII Application
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -32,8 +31,8 @@ require("./basic/offScreenHidable.js");
 
 /**
  * Configuration for using the `gpii.app.psp` component in the App (the `gpii.app` component).
- * Note that this is an incomplete grade which references the App and other
- * App related components (subcomponents).
+ * Note that this is an incomplete grade which references the App and other App related
+ * components (subcomponents).
  */
 fluid.defaults("gpii.app.pspInApp", {
     gradeNames: "gpii.app.psp",
@@ -84,11 +83,6 @@ fluid.defaults("gpii.app.pspInApp", {
             ]
         },
 
-
-        /*
-         * Restart Warning related listeners
-         */
-
         onSettingAltered: {
             listener: "{settingsBroker}.enqueue"
         },
@@ -119,21 +113,14 @@ fluid.defaults("gpii.app.pspInApp", {
 
 
 /**
- * Apply offset for the PSP window. Currently only the QSS requires
- * offsetting the PSP.
- *
+ * Takes care of properly positioning the PSP when the QSS is shown
+ * or hidden.
  * @param {Component} psp - The `gpii.app.psp` instance
  * @param {Number} qssHeight - The height of the QSS
  * @param {Boolean} isQssShown - Whether the QSS is shown
  */
 gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
-    // TODO refactor
-    if (isQssShown) {
-        psp.model.offset.y = qssHeight;
-    } else {
-        // reset the heightOffset
-        psp.model.offset.y = 0;
-    }
+    psp.model.offset.y = isQssShown ? qssHeight : 0;
 
     // in case it was shown, it will be also repositioned
     if (psp.model.isShown) {
@@ -144,8 +131,7 @@ gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
 };
 
 /**
- * Either hides or shows the warning in the PSP.
- *
+ * Either hides or shows the restart warning in the PSP.
  * @param {Component} psp - The `gpii.app.psp` component
  * @param {Object[]} pendingChanges - A list of the current state of pending changes
  */
@@ -156,7 +142,6 @@ gpii.app.pspInApp.togglePspRestartWarning = function (psp, pendingChanges) {
         psp.showRestartWarning(pendingChanges);
     }
 };
-
 
 /**
  * Handles logic for the PSP window.
@@ -376,6 +361,8 @@ gpii.app.psp.onPreferencesUpdated = function (that) {
  * for a setting whose liveness is "manualRestart".
  * @param {Component} psp - The `gpii.app.psp` instance.
  * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
+ * @param {Boolean} ignoreClosePreference - If `true`, the user's preference for closing
+ * the PSP won't matter.
  */
 gpii.app.psp.handleBlur = function (psp, settingsBroker, ignoreClosePreference) {
     var isShown = psp.model.isShown,

@@ -112,7 +112,6 @@
         }
     });
 
-
     /**
      * A component which injects all the necessary markup for an item and
      * initializes a handler of the corresponding `handlerType` to visualize
@@ -294,6 +293,12 @@
         }
     });
 
+    /**
+     * Invoked whenever a handler component for a `repeater.item` is created. When the number of
+     * created handlers coincides with the number of items, the `onRepeaterCreated` event will
+     * be fired.
+     * @param {Component} that - The `gpii.psp.repeater` instance.
+     */
     gpii.psp.repeater.onHandlerCreated = function (that) {
         that.handlersCount++;
         if (that.handlersCount >= that.model.items.length) {
@@ -302,11 +307,10 @@
     };
 
     /**
-     * Notify the `gpii.psp.repeater` component for changes that are present in its element handlers.
-     *
+     * Notifies the `gpii.psp.repeater` component for changes  in its element handlers.
      * @param {Component} repeater - The `gpii.psp.repeater` component
-     * @param {String} elIndex - The index of the handler which matches the index of the item that
-     * the handler processes
+     * @param {String} elIndex - The index of the handler (which matches the index of the item in
+     * the repeater)
      * @param {Object} newValue - The new state of the item
      */
     gpii.psp.repeater.notifyElementChange = function (repeater, elIndex, newValue) {
@@ -314,25 +318,25 @@
     };
 
     /**
-     * Notify the corresponding dynamic component about its setting change.
-     * The dynamic component is computed using the changed setting's index.
-     *
-     * @param {Component} that - The `gpii.psp.repeater` component.
-     * @param {String} index - The item's path, which represents the index of the changed element
-     * @param {Object} newValue - The new state of the item
+     * Notifies the corresponding handler about a change in its setting. The origin of the
+     * change is the `repeater`. The handler to be notified is computed using the changed
+     * setting's index.
+     * @param {Component} handler - The handler instance.
+     * @param {String} elIndex - The index of the handler (which matches the index of the item in
+     * the repeater).
+     * @param {String} itemIndex - The index of the item that has been changed.
+     * @param {Object} newValue - The new state of the item.
      */
-    gpii.psp.repeater.notifyListChange = function (elHandler, elIndex , itemIndex, newValue) {
+    gpii.psp.repeater.notifyListChange = function (handler, elIndex , itemIndex, newValue) {
         itemIndex = fluid.parseInteger(itemIndex);
 
-        // does the current handler, handles the changed item?
-        if (elIndex !== itemIndex) { return; }
-
-        elHandler.applier.change("item", newValue, null, "gpii.psp.repeater.itemUpdate");
+        if (elIndex === itemIndex) {
+            handler.applier.change("item", newValue, null, "gpii.psp.repeater.itemUpdate");
+        }
     };
 
     /**
      * Constructs the markup for the indexed container - sets proper index.
-     *
      * @param {Object} markup - An object containing various HTML markup.
      * @param {String} markup.containerClassPrefix - The class prefix for the indexed container.
      * Should have a `id` interpolated expression.

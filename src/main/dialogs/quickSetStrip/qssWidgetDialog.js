@@ -205,7 +205,7 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
  * have if the `setting` has a path matching a key in the hash.
  * @param {Object} setting - The setting corresponding to the QSS button that
  * has been activated
- * @param {Object} btnCenterOffset - An object containing metrics for the QSS
+ * @param {Object} elementMetrics - An object containing metrics for the QSS
  * button that has been activated
  * @param {Object} [activationParams] - Parameters sent to the renderer portion
  * of the QSS dialog (e.g. whether the activation occurred via keyboard)

@@ -247,8 +247,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                 modelListeners: {
                     // Ensure the widget window is closed with the QSS
                     "{gpii.app.qss}.model.isShown": {
-                        // it won't hurt if this is called
-                        // even on QSS show
+                        // it won't hurt if this is called even if QSS shows up
                         func: "{that}.hide"
                     }
                 }
@@ -270,7 +269,6 @@ fluid.defaults("gpii.app.qssWrapper", {
                         ]
                     },
 
-                    // TODO we could also have a modelListener and always hide. See widget
                     "{gpii.app.qss}.events.onDialogHidden": {
                         func: "{that}.hide"
                     },
@@ -367,8 +365,8 @@ gpii.app.undoStack.revertChange = function (qssWrapper, change) {
 };
 
 /**
- * Updates the value of a QSS setting. Called when the change originated from outside
- * the QSS or the QSS widget.
+ * Updates only the value of a QSS setting. Called when the change originated from
+ * outside the QSS or the QSS widget.
  * @param {Component} that - The `gpii.app.qssWrapper` component
  * @param {Object} updatedSetting - The setting with updated state
  * @param {Boolean} notUndoable - Whether the setting is undoable or not
@@ -376,7 +374,6 @@ gpii.app.undoStack.revertChange = function (qssWrapper, change) {
 gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable) {
     var updateNamespace = notUndoable ? "gpii.app.undoStack.notUndoable" : null;
 
-    // update only the value of the setting
     that.alterSetting(
         fluid.filterKeys(updatedSetting, ["path", "value"]),
         updateNamespace
@@ -494,7 +491,6 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
  */
 gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
     return {
-        // center of the button
         x: qss.width - buttonElemMetrics.offsetLeft - (buttonElemMetrics.width / 2),
         y: buttonElemMetrics.height
     };
@@ -507,7 +503,6 @@ gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
  * @param {Object} updatedSetting - The new setting.
  */
 gpii.app.qssWidget.updateIfMatching = function (qssWidget, updatedSetting) {
-    // Update the widget only if the changed setting is the one which the widget is displaying
     if (qssWidget.model.setting.path === updatedSetting.path) {
         qssWidget.events.onSettingUpdated.fire(updatedSetting);
     }

@@ -1,6 +1,7 @@
 /*
  * GPII User Errors handler
  *
+ * A component responsible for handling user errors.
  * Copyright 2018 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -16,9 +17,9 @@ var fluid = fluid || require("infusion");
 var gpii = fluid.registerNamespace("gpii");
 
 /**
- * A component for handling user errors during app runtime. It triggers an "gpii.app.errorDialog"
+ * A component for handling user errors during app runtime. It triggers a "gpii.app.errorDialog"
  * with all the details for the occurred error.
- * The error details are collected from specified messages bundle: it uses an "errorCode" given with
+ * The error details are collected from the specified messages bundle: it uses an "errorCode" given with
  * the error which corresponds to several messages ("title", "subhead", "details" properties) in the bundle.
  */
 fluid.defaults("gpii.app.userErrorsHandler", {
@@ -53,21 +54,18 @@ fluid.defaults("gpii.app.userErrorsHandler", {
     }
 });
 
-
 /**
  * Extracts error details for the specified error code from provided error messages.
- * For every error it is expects there to be several messages - for each `errorProperties`.
+ * For every error it expects there to be several messages (specified in `errorProperties`).
  * Currently there are three such properties - "title", "subhead", "details".
  * Every message key is expected to follow the format: <errorSupplierComponent>_<errorCode>-<errorProperty>,
- * e.g. GPII_userErrors_KeyInFail-title
- *
+ * e.g. GPII_userErrors_KeyInFail-title.
  * @param {Object} errorMessages - Object containing all messages for the different error codes
  * @param {String} messagePrefix - The prefix for each error message key
  * @param {String[]} errorProperties - The properties of an error to be looked for
  * @param {String} errorCode - The code of the error that has occurred
- * @returns {{title: String, subhead: String, details: String}}
+ * @return {Object} {{title: String, subhead: String, details: String}}
  */
-
 gpii.app.userErrorsHandler.getErrorDetails = function (errorMessages, messagePrefix, errorProperties, errorCode) {
     return errorProperties.reduce(function (errorDetails, errorProp) {
         var propKey =  messagePrefix + "_" + errorCode + "-" + errorProp;
@@ -95,5 +93,3 @@ gpii.app.userErrorsHandler.handleUserError = function (that, dialogManager, erro
     dialogManager.hide("waitDialog");
     dialogManager.show("error", errorDialogOptions);
 };
-
-

@@ -22,7 +22,6 @@
 
     fluid.registerNamespace("gpii.psp.channel");
 
-
     /**
      * Sends a message to the main process.
      * @param {...Any} The channel to be notified and the parameters to be passed
@@ -32,12 +31,11 @@
         ipcRenderer.send.apply(null, arguments);
     };
 
-
     /**
-     * Listen for events from the main process.
+     * Listens for events from the main process.
      * It expects component events to be supplied and it uses their keys as
      * channel names to which it attaches. Once data from a specific channel is
-     * received a corresponding event is fired.
+     * received, the corresponding event will be fired.
      */
     fluid.defaults("gpii.psp.channelListener", {
         gradeNames: "gpii.app.shared.simpleChannelListener",
@@ -46,9 +44,8 @@
         events: {} // defined by implementor
     });
 
-
     /**
-     * Send data to the main process.
+     * Sends data to the main process.
      * It expects component events to be supplied and it uses their keys as
      * channel names to which it sends data. Data is sent once a matching event
      * is fired.

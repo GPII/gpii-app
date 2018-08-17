@@ -1,8 +1,7 @@
 /**
- * The PcpChannel connector
+ * The PSP Channel connector
  *
- * Introduces component that manages the connection with the PcpChannel.
- * GPII Application
+ * Introduces component that manages the connection with the PSP Channel.
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -151,8 +150,7 @@ gpii.app.gpiiConnector.parseMessage = function (gpiiConnector, message) {
 };
 
 /**
- * Send active set change request to GPII.
- *
+ * Sends an active set change request to GPII.
  * @param {Object} gpiiConnector - The `gpii.app.gpiiConnector` instance
  * @param {String} newPrefSet - The id of the new preference set
  */
@@ -196,18 +194,11 @@ gpii.app.extractSettings = function (element) {
 };
 
 /**
-  * Extracts data for the user's preference sets (including the active preference
+ * Extracts data for the user's preference sets (including the active preference
  * set and the applicable settings) from the message received when the user keys in
  * or out.
  * @param {Object} message - The message sent when the user keys is or out (a JSON
  * object).
- * @param {Object} message.value - Payload with the settings
- * @param {String} message.value.gpiiKey - The current keyed in key
- * @param {String} message.value.activeContextName - The current active set e.g. "gpii-default"
- * @param {Object} message.value.preferences
- * @param {Object} message.value.preferences.contexts
- * @param {Object} message.value.preferences.name
- * @param {Object[]} value.settingGroups
  * @return {Object} An object containing all preference sets, the active preference
  * set and the corresponding settings.
  */
@@ -285,7 +276,6 @@ fluid.defaults("gpii.app.dev.gpiiConnector", {
         }
     }
 });
-
 
 /*
  * A decorator for the extracted preferences that applies values that are to be used
