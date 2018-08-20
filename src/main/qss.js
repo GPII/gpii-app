@@ -304,49 +304,6 @@ gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable)
     );
 };
 
-<<<<<<< HEAD
-/**
- * Returns all available settings (including subsettings) in the provided
- * item (either a setting group or a setting). In case the passed argument
- * is a setting, it is also added to the resulting list.
- * @param {Object} item - The setting group or the setting from which to
- * retrieve settings
- * @return {Object[]} An array of all available settings for that `item`.
- */
-gpii.app.qssWrapper.getItemSettings = function (item) {
-    var settings = [];
-
-    fluid.each(item.settings, function (setting) {
-        settings.push(setting);
-        if (setting.settings) {
-            var subsettings = gpii.app.qssWrapper.getItemSettings(setting);
-            settings = settings.concat(subsettings);
-        }
-    });
-
-    return settings;
-};
-
-/**
- * Returns all settings (including subsettings) available in the provided
- * settings groups.
- * @param {Object[]} settingGroups - An array with setting group items as
- * per the parsed message in the `gpiiConnector`.
- * @return {Object[]} An array of all available settings.
- */
-gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
-    var settings = [];
-
-    fluid.each(settingGroups, function (settingGroup) {
-        var settingGroupSettings = gpii.app.qssWrapper.getItemSettings(settingGroup);
-        settings = settings.concat(settingGroupSettings);
-    });
-
-    return settings;
-};
-
-=======
->>>>>>> GPII-3169: Improve QSS setting updates scheme
 /**
  * When new preferences are delivered to the QSS wrapper, this function takes
  * care of notifying the QSS about the changes which should in turn update its
@@ -553,7 +510,7 @@ fluid.defaults("gpii.app.undoInWrapper", {
  * @param {Object} qssSettingMessages - The QSS settings messages. Currently, a qss setting
  * has the following messages: title, tooltip, [tip], [enum], [footerTip]
  * @param {Object} setting - The setting to be applied messages to
- * @returns {Object} A translated copy of the QSS setting
+ * @return {Object} A translated copy of the QSS setting
  */
 gpii.app.qssWrapper.applySettingTranslation = function (that, qssSettingMessages, setting) {
     var translatedSetting = fluid.copy(setting);
