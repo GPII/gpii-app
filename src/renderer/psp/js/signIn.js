@@ -143,6 +143,11 @@
         }
     });
 
+    /**
+     * Adds a listener so that whenever the page is focused, the email
+     * field in the sign-in form (provided that it is visible) is focused.
+     * @param {jQuery} emailInput - The email input element
+     */
     gpii.psp.signIn.addFocusListener = function (emailInput) {
         jQuery(window).on("focus.signIn", function () {
             if (emailInput.is(":visible")) {
@@ -151,6 +156,10 @@
         });
     };
 
+    /**
+     * Removes the listener which focuses the email field in the sign-in form.
+     * Useful if the component is destroyed.
+     */
     gpii.psp.signIn.removeFocusListener = function () {
         jQuery(window).off("focus.signIn");
     };

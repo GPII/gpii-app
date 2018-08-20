@@ -132,7 +132,7 @@
     /**
      * The function which will actually handle a key press.
      * @param {Component} that - The `gpii.app.keyListener` instance.
-     * @param {Object} KeyboardEvent - The keyboard event that has been triggered.
+     * @param {KeyboardEvent} KeyboardEvent - The keyboard event that has been triggered.
      */
     gpii.app.keyListener.registerKeyPress = function (that, KeyboardEvent) {
         // Make use of a relatively new feature https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key

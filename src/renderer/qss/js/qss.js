@@ -18,7 +18,10 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-
+    /**
+     * An instance of `gpii.app.keyListener` which specified all key
+     * events in which the QSS is interested.
+     */
     fluid.defaults("gpii.qss.qssKeyListener", {
         gradeNames: "gpii.app.keyListener",
 
@@ -34,7 +37,10 @@
     });
 
     /**
-     * TODO
+     * A component that handles interactions with a single QSS button. It is responsible
+     * for applying the necessary changes whenever the component is focused or activated,
+     * for firing the corresponding events when the button is hovered or no longer hovered,
+     * for changing its label if there is a keyed in user, etc.
      */
     fluid.defaults("gpii.qss.buttonPresenter", {
         gradeNames: [
@@ -100,10 +106,9 @@
             role: "button"
         },
 
+        // whether the button should be highlighted if activated via keyboard
         applyKeyboardHighlight: false,
 
-        // pass hover item as it is in order to use its position
-        // TODO probably use something like https://stackoverflow.com/questions/3234977/using-jquery-how-to-get-click-coordinates-on-the-target-element
         events: {
             onMouseEnter: null,
             onMouseLeave: null,
@@ -130,7 +135,7 @@
                 args: [
                     "{that}",
                     "{that}.container",
-                    "{arguments}.0"     // element
+                    "{arguments}.0" // focusedElement
                 ]
             },
 
@@ -169,8 +174,6 @@
                 ]
             },
 
-            // Element interaction events
-
             "onClicked.activate": {
                 func: "{that}.activate"
             },
@@ -197,8 +200,8 @@
                     "{arguments}.0" // activationParams
                 ]
             },
-            onButtonActivated: {
-                funcName: "gpii.qss.buttonPresenter.onButtonActivated",
+            notifyButtonActivated: {
+                funcName: "gpii.qss.buttonPresenter.notifyButtonActivated",
                 args: [
                     "{that}",
                     "{focusManager}",
@@ -217,10 +220,27 @@
         }
     });
 
+    /**
+     * Returns the title (label) of the button depending on whether there is a
+     * currently keyed in user or not. The `title` property in the QSS setting's
+     * schema can either be a simple string which is used in both cases or an
+     * object with `keyedIn` and `keyedOut` keys in which case their respective
+     * values are used in the corresponding cases.
+     * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user. The
+     * "noUser" is not considererd an actual user.
+     * @param {String|Object} title - The `title` property of the setting's schema.
+     * @return {String} The title of the button.
+     */
     gpii.qss.buttonPresenter.getTitle = function (isKeyedIn, title) {
         return (isKeyedIn ? title.keyedIn : title.keyedOut) || title;
     };
 
+    /**
+     * If available in the setting's schema, shows the specified image for the button.
+     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+     * @param {jQuery} imageElem - The jQuery object corresponding to the image of the
+     * button.
+     */
     gpii.qss.buttonPresenter.renderImage = function (that, imageElem) {
         var image = that.model.item.schema.image;
         if (image) {
@@ -228,24 +248,54 @@
                 image: image
             });
 
+            // use a mask image to avoid having 2 different images (one for when the
+            // button is activated and one when it is not)
             imageElem.css("mask-image", maskImageValue);
         } else {
             imageElem.hide();
         }
     };
 
+    /**
+     * Invoked when a button is activated using the Spacebar or Enter key. Some QSS buttons
+     * can also be activated using ArrowUp or ArrowDown keys in which case this function is
+     * also invoked. Only if the QSS button has a keyboard highlight will it be actually
+     * activated.
+     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+     * @param {focusManager} focusManager - The `gpii.qss.focusManager` instance for the QSS.
+     * @param {jQuery} container - A jQuery object representing the button's container.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
     gpii.qss.buttonPresenter.onActivationKeyPressed = function (that, focusManager, container, activationParams) {
         if (focusManager.isHighlighted(container)) {
             that.activate(activationParams);
         }
     };
 
+    /**
+     * Styles appropriately the button if the QSS widget for that particular button has been
+     * shown or hidden.
+     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+     * @param {jQuery} container - A jQuery object representing the button's container.
+     * @param {Object} setting - The setting object corresponding to this QSS button.
+     * @param {Boolean} isShown - Whether the QSS widget has been shown or hidden.
+     */
     gpii.qss.buttonPresenter.onQssWidgetToggled = function (that, container, setting, isShown) {
         var activatedClass = that.options.styles.activated;
         container.toggleClass(activatedClass, isShown && that.model.item.path === setting.path);
     };
 
-    gpii.qss.buttonPresenter.onButtonActivated = function (that, focusManager, container, qssList, activationParams) {
+    /**
+     * Fires the appropriate event when the button is activated and manages the button's focus.
+     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+     * @param {focusManager} focusManager - The `gpii.qss.focusManager` instance for the QSS.
+     * @param {jQuery} container - A jQuery object representing the button's container.
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
+    gpii.qss.buttonPresenter.notifyButtonActivated = function (that, focusManager, container, qssList, activationParams) {
         var metrics = gpii.qss.getElementMetrics(container),
             isKeyPressed = fluid.get(activationParams, "key"),
             applyKeyboardHighlight = that.options.applyKeyboardHighlight;
@@ -254,10 +304,26 @@
         qssList.events.onButtonActivated.fire(that.model.item, metrics, activationParams);
     };
 
+    /**
+     * A generic invoker for handling QSS button activation. In its most basic form it simply
+     * calls the `notifyButtonActivated`. However, some QSS buttons may need to override this
+     * behavior as they may have more complex activation behavior.
+     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
     gpii.qss.buttonPresenter.activate = function (that, activationParams) {
-        that.onButtonActivated(activationParams);
+        that.notifyButtonActivated(activationParams);
     };
 
+    /**
+     * Fires the appropriate event if the `container` for the current button is the element
+     * that has been focused by the `focusManager`.
+     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+     * @param {jQuery} container - A jQuery object representing the button's container.
+     * @param {jQuery} focusedElement - A jQuery object representing the focused QSS button's
+     * container (if any).
+     */
     gpii.qss.buttonPresenter.notifyButtonFocused = function (that, container, focusedElement) {
         if (container.is(focusedElement)) {
             that.events.onButtonFocused.fire(
@@ -266,12 +332,28 @@
         }
     };
 
+    /**
+     * Focuses the current QSS button if its index among the rest of the QSS buttons coincides
+     * with the `index` parameter.
+     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+     * @param {focusManager} focusManager - The `gpii.qss.focusManager` instance for the QSS.
+     * @param {jQuery} container - A jQuery object representing the button's container.
+     * @param {Number} index - The index of the QSS button to be focused.
+     * @param {Boolean} applyHighlight - Whether highlighting should be applied to the QSS
+     * button. The latter happens when the element has been focused via the keyboard.
+     */
     gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index, applyHighlight) {
         if (that.model.index === index) {
             focusManager.focusElement(container, applyHighlight);
         }
     };
 
+    /**
+     * When the value of the QSS button's setting changes, fires an event that a notification
+     * must be shown to the user.
+     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     */
     gpii.qss.buttonPresenter.showNotification = function (that, qssList) {
         if (that.model.item.restartWarning) {
             var notification = fluid.stringTemplate(that.model.messages.notification, {
@@ -282,12 +364,11 @@
     };
 
     /**
-     * Return the metrics of a clicked element. These can be used
-     * for positioning. Note that the position is relative to the right.
-     *
-     * @param {jQuery} target - The DOM element which
-     * positioning metrics are needed.
-     * @returns {{width: Number, height: Number, offsetRight: Number}}
+     * Returns the metrics of a given element. These can be used for positioning the QSS
+     * button's tooltip or the QSS widget.
+     * @param {jQuery} target - The DOM element for which positioning
+     * metrics are needed.
+     * @return {Object} {{width: Number, height: Number, offsetLeft: Number}}
      */
     gpii.qss.getElementMetrics = function (target) {
         return {
@@ -297,7 +378,13 @@
         };
     };
 
-
+    /**
+     * Represents a QSS button that can have a LED change indicator in the upper right
+     * corner. For setting buttons, the presence of that LED light indicates that if the
+     * setting can be undone, its value is different than its default one. If the LED
+     * light is shown for the undo button, this means that there are settings changes
+     * that can be undone.
+     */
     fluid.defaults("gpii.qss.changeIndicator", {
         gradeNames: ["fluid.viewComponent"],
 
@@ -316,6 +403,12 @@
         }
     });
 
+    /**
+     * In the QSS there are two types of buttons - setting buttons (which this grade
+     * describes) are used for altering the value of their corresponding buttons and
+     * "system" buttons which have various supplementary functions such as saving the
+     * user's preferences, undoing changes made via the QSS, closing the QSS, etc.
+     */
     fluid.defaults("gpii.qss.settingButtonPresenter", {
         gradeNames: ["fluid.viewComponent", "gpii.qss.changeIndicator"],
 
@@ -347,6 +440,14 @@
         }
     });
 
+    /**
+     * Shows or hides the toggle indicator when the setting's value is changed depending
+     * on whether the changes to the setting can be undone and whether the new value of
+     * the setting is the same as its default one.
+     * @param {Component} that - The `gpii.qss.settingButtonPresenter` instance.
+     * @param {Object} setting - The setting object corresponding to this QSS button.
+     * @param {Any} value - The new value of the `setting`.
+     */
     gpii.qss.settingButtonPresenter.updateChangeIndicator = function (that, setting, value) {
         // The dot should be shown if the setting has a default value and the new value of the
         // setting is different from that value.
@@ -355,6 +456,10 @@
         that.toggleIndicator(shouldShow);
     };
 
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS toggle
+     * buttons.
+     */
     fluid.defaults("gpii.qss.toggleButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.settingButtonPresenter"],
         model: {
@@ -414,15 +519,34 @@
         }
     });
 
+    /**
+     * Returns the caption of the toggle button that needs to be shown below the button's
+     * title in case the state of the button is "on".
+     * @param {Boolean} value - The state of the button.
+     * @param {Object} messages - An object containing internationalizable messages for
+     * this component.
+     * @return {String} The caption message for the toggle button.
+     */
     gpii.qss.toggleButtonPresenter.getCaption = function (value, messages) {
         return value ? messages.caption : "";
     };
 
+    /**
+     * A custom function for handling activation of QSS toggle buttons. Reuses the generic
+     * `notifyButtonActivated` invoker.
+     * @param {Component} that - The `gpii.qss.toggleButtonPresenter` instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
     gpii.qss.toggleButtonPresenter.activate = function (that, activationParams) {
-        that.onButtonActivated(activationParams);
+        that.notifyButtonActivated(activationParams);
         that.applier.change("value", !that.model.value);
     };
 
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Key in"
+     * QSS button.
+     */
     fluid.defaults("gpii.qss.keyInButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         attrs: {
@@ -440,11 +564,23 @@
         }
     });
 
+    /**
+     * A custom function for handling activation of the "Key in" QSS button. Reuses the generic
+     * `notifyButtonActivated` invoker.
+     * @param {Component} that - The `gpii.qss.closeButtonPresenter` instance.
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
     gpii.qss.keyInButtonPresenter.activate = function (that, qssList, activationParams) {
-        that.onButtonActivated(activationParams);
+        that.notifyButtonActivated(activationParams);
         qssList.events.onPSPOpen.fire();
     };
 
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Close"
+     * QSS button.
+     */
     fluid.defaults("gpii.qss.closeButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
@@ -459,11 +595,23 @@
         }
     });
 
+    /**
+     * A custom function for handling activation of the "Close" QSS button. Reuses the generic
+     * `notifyButtonActivated` invoker.
+     * @param {Component} that - The `gpii.qss.closeButtonPresenter` instance.
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
     gpii.qss.closeButtonPresenter.activate = function (that, qssList, activationParams) {
-        that.onButtonActivated(activationParams);
+        that.notifyButtonActivated(activationParams);
         qssList.events.onQssClosed.fire();
     };
 
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS buttons which
+     * can have their values changed via the QSS widget.
+     */
     fluid.defaults("gpii.qss.widgetButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.settingButtonPresenter"],
         listeners: {
@@ -482,6 +630,10 @@
         }
     });
 
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Save"
+     * QSS button.
+     */
     fluid.defaults("gpii.qss.saveButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         model: {
@@ -505,14 +657,28 @@
         }
     });
 
+    /**
+     * A custom function for handling activation of the "Save" QSS button. Reuses the generic
+     * `notifyButtonActivated` invoker.
+     * @param {Component} that - The `gpii.qss.saveButtonPresenter` instance.
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user. The
+     * "noUser" is not considererd an actual user.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
     gpii.qss.saveButtonPresenter.activate = function (that, qssList, isKeyedIn, activationParams) {
-        that.onButtonActivated(activationParams);
+        that.notifyButtonActivated(activationParams);
 
         var messages = that.model.messages.notification,
             notification = isKeyedIn ? messages.keyedIn : messages.keyedOut;
         qssList.events.onSaveRequired.fire(notification);
     };
 
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "More..."
+     * QSS button.
+     */
     fluid.defaults("gpii.qss.moreButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
@@ -527,11 +693,23 @@
         }
     });
 
+    /**
+     * A custom function for handling activation of the "More..." QSS button. Reuses the generic
+     * `notifyButtonActivated` invoker.
+     * @param {Component} that - The `gpii.qss.moreButtonPresenter` instance.
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
     gpii.qss.moreButtonPresenter.activate = function (that, qssList, activationParams) {
-        that.onButtonActivated(activationParams);
+        that.notifyButtonActivated(activationParams);
         qssList.events.onMorePanelRequired.fire();
     };
 
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Undo"
+     * QSS button.
+     */
     fluid.defaults("gpii.qss.undoButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.changeIndicator"],
         applyKeyboardHighlight: true,
@@ -554,15 +732,23 @@
         }
     });
 
+    /**
+     * A custom function for handling activation of the "Undo" QSS button. Reuses the generic
+     * `notifyButtonActivated` invoker.
+     * @param {Component} that - The `gpii.qss.undoButtonPresenter` instance.
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
     gpii.qss.undoButtonPresenter.activate = function (that, qssList, activationParams) {
-        that.onButtonActivated(activationParams);
+        that.notifyButtonActivated(activationParams);
         qssList.events.onUndoRequired.fire();
     };
 
 
     /**
-     * Represents the list of qss settings. It renders the settings and listens
-     * for events on them.
+     * Represents the list of QSS settings. It renders the settings and listens
+     * for events triggered by the buttons.
      */
     fluid.defaults("gpii.qss.list", {
         gradeNames: ["gpii.psp.repeater"],
@@ -603,8 +789,14 @@
         }
     });
 
-    gpii.qss.list.getHandlerType = function (item) {
-        switch (item.schema.type) {
+    /**
+     * Returns the correct handler type (a grade inheriting from `gpii.qss.buttonPresenter`)
+     * for the given setting depending on its type.
+     * @param {Object} setting - The setting for which the handler type is to be determined.
+     * @return {String} The grade name of the setting's handler.
+     */
+    gpii.qss.list.getHandlerType = function (setting) {
+        switch (setting.schema.type) {
         case "boolean":
             return "gpii.qss.toggleButtonPresenter";
         case "number":
@@ -626,7 +818,29 @@
     };
 
     /**
-     * Represents the QSS as a whole.
+     * Wrapper that enables internationalization of the `gpii.qss` component and
+     * intercepts all anchor tags on the page so that an external browser is used
+     * for loading them.
+     */
+    fluid.defaults("gpii.psp.translatedQss", {
+        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
+
+        components: {
+            quickSetStrip: {
+                type: "gpii.qss",
+                container: "{translatedQss}.container",
+                options: {
+                    model: {
+                        settings: "{translatedQss}.model.settings"
+                    }
+                }
+            }
+        }
+    });
+
+    /**
+     * Represents all renderer components of the QSS including the list of settings,
+     * the `focusManager` and the channels for communication with the main process.
      */
     fluid.defaults("gpii.qss", {
         gradeNames: ["fluid.viewComponent"],
@@ -732,29 +946,43 @@
         }
     });
 
-
     /**
-     * Find a setting in a list of settings and update it. Settings are identified by their
-     * `path` property which is expected to be existent and unique.
-     *
-     * @param {Component} that - The component containing `settings` in its model
-     * @param {Object} settingNewState - The new state of the setting
-     * @param {String} settingNewState.path - The path of the setting. This field is required.
+     * Returns the index of the `setting` object in the `settings` array. Settings are identified
+     * by their `path` property which is expected to be existent and unique.
+     * @param {Object[]} settings - An array of QSS settings.
+     * @param {Object} setting - The particular setting whose index is queried.
+     * @return {Number} The index of the setting in the specified array or -1 if the setting is not
+     * present in the array.
      */
-    gpii.qss.updateSetting = function (that, settingNewState) {
-        var settingIndex = that.model.settings.findIndex(function (setting) {
-            return setting.path === settingNewState.path;
-        });
-
-        gpii.app.applier.replace(that.applier, "settings." + settingIndex, settingNewState, "channelNotifier.settingUpdate");
-    };
-
     gpii.qss.getSettingIndex = function (settings, setting) {
         return settings.findIndex(function (currentSetting) {
             return currentSetting.path === setting.path;
         });
     };
 
+    /**
+     * Finds a setting in a list of settings and updates it.
+     * @param {Component} that - The component containing `settings` in its model
+     * @param {Object} settingNewState - The new state of the setting
+     * @param {String} settingNewState.path - The path of the setting. This field is required.
+     */
+    gpii.qss.updateSetting = function (that, settingNewState) {
+        var settingIndex = gpii.qss.getSettingIndex(that.model.settings, settingNewState);
+        gpii.app.applier.replace(that.applier, "settings." + settingIndex, settingNewState, "channelNotifier.settingUpdate");
+    };
+
+    /**
+     * Handles opening of the QSS by focusing or removing the focus for the QSS buttons
+     * depending on how the QSS was opened (using the keyboard shortcut, by clicking the
+     * tray icon, by closing the QSS widget using the left, right arrow keys or the ESC).
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {focusManager} focusManager - The `gpii.qss.focusManager` instance for the QSS.
+     * @param {Object[]} settings - An array of QSS settings.
+     * @param {String} defaultFocusButtonType - The gradeName of the QSS button which should
+     * be focused by default (i.e. when the QSS is opened using the keyboard shortcut).
+     * @param {Object} params - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to open the QSS).
+     */
     gpii.qss.onQssOpen = function (qssList, focusManager, settings, defaultFocusButtonType, params) {
         // Focus the first button of the specified `defaultFocusButtonType` if
         // the QSS is opened using the global shortcut.

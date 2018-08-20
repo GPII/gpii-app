@@ -1,8 +1,8 @@
 /**
- * The quick set strip widget
+ * The QSS menu widget
  *
- * Represents the quick set strip stepper widget. It is used for
- * incrementing/decrementing a setting.
+ * Represents the QSS menu widget which is used for settings that have a list
+ * of predefined values.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -19,6 +19,12 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
+    /**
+     * Represents the QSS menu widget. Responsible for initializing the DOM and
+     * for handling user interactions. Note that this component is reused, i.e.
+     * there is a single instance of it which is modified appropriately in order
+     * to display a new QSS setting with its possible values.
+     */
     fluid.defaults("gpii.qssWidget.menu", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
         model: {
@@ -131,11 +137,28 @@
         }
     });
 
+    /**
+     * Invoked whenever the user changes the value of the given setting. Schedules that
+     * the widget should be closed in `closeDelay` milliseconds.
+     * @param {Component} that - The `gpii.qssWidget.menu` instance.
+     * @param {Component} closeTimer - An instance of `gpii.app.timer` used for closing
+     * the widget with a delay.
+     * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
+     * change in the setting's value.
+     */
     gpii.qssWidget.menu.close = function (that, closeTimer, keyboardEvent) {
         that.keyboardEvent = keyboardEvent;
         closeTimer.start(that.options.closeDelay);
     };
 
+    /**
+     * Adds a listener which stops the close timer in case the dialog was closed before
+     * the timer has finished as a result of another user interaction (e.g. clicking
+     * outside of the widget's window or clicking on a different QSS button which opens
+     * the QSS widget again).
+     * @param {Component} closeTimer - An instance of `gpii.app.timer` used for closing
+     * the widget with a delay.
+     */
     gpii.qssWidget.menu.addVisibilityChangeListener = function (closeTimer) {
         $(document).on("visibilitychange.qssMenuWidget", function () {
             if (document.visibilityState === "hidden") {
@@ -144,10 +167,25 @@
         });
     };
 
+    /**
+     * Removes the listener for clearing the `closeTimer`. Useful when the component is
+     * destroyed.
+     */
     gpii.qssWidget.menu.removeVisibilityChangeListener = function () {
         $(document).off("visibilitychange.qssMenuWidget");
     };
 
+    /**
+     * Updates the value in the model of the widget's repeater. Ensures that interaction
+     * with the QSS menu widget is disabled as it is about to close.
+     * @param {Component} that - The `gpii.psp.repeater` instance.
+     * @param {Component} menu - The `gpii.qssWidget.menu` instance.
+     * @param {jQuery} container - The jQuery object representing the container of the
+     * QSS menu widget.
+     * @param {Any} value - The new value of the setting in the QSS menu.
+     * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
+     * change in the setting's value.
+     */
     gpii.qssWidget.menu.updateValue = function (that, menu, container, value, keyboardEvent) {
         if (!that.model.disabled && that.model.value !== value) {
             that.applier.change("value", value, null, "settingAlter");
@@ -160,6 +198,13 @@
         }
     };
 
+    /**
+     * Creates an array of possible values for the given setting to be provided to the
+     * `gpii.psp.repeater` instance.
+     * @param {Object} setting - the current setting for the QSS menu.
+     * @return {Object[]} - An array of key-value pairs describing the key and the value
+     * (the visible name) of the setting.
+     */
     gpii.qssWidget.menu.getRepeaterItems = function (setting) {
         var schema = setting.schema || {},
             values = schema["enum"],
@@ -173,6 +218,10 @@
         });
     };
 
+    /**
+     * A handler for the `repeater` instance in the QSS widget menu. Takes care of rendering
+     * a particular setting option and handling user interaction.
+     */
     fluid.defaults("gpii.qssWidget.menu.presenter", {
         gradeNames: ["fluid.viewComponent", "gpii.qssWidget.button"],
         model: {
@@ -225,20 +274,47 @@
         }
     });
 
+    /**
+     * Focuses the current QSS menu option if its index matches the specified `index` parameter.
+     * @param {Component} that - The `gpii.qssWidget.menu.presenter` instance.
+     * @param {focusManager} focusManager - The `gpii.qss.focusManager` instance. for the QSS.
+     * @param {jQuery} container - A jQuery object representing the setting option's container.
+     * @param {Number} index - The index of the setting option to be focused.
+     */
     gpii.qssWidget.menu.presenter.focusItem = function (that, focusManager, container, index) {
         if (that.model.index === index) {
             focusManager.focusElement(container, true);
         }
     };
 
+    /**
+     * Adds a checkmark next to a setting option if it is the currently selected one for the setting.
+     * @param {String} key - The `key` of the selected setting option.
+     * @param {Object} item - The current setting option.
+     * @param {jQuery} container - A jQuery object representing the setting option's container.
+     */
     gpii.qssWidget.menu.presenter.toggleCheckmark = function (key, item, container) {
         container.attr("aria-checked", item.key === key);
     };
 
+    /**
+     * Applies the necessary CSS classes to the current setting option if it has been just selected
+     * by the user to be the new setting value.
+     * @param {String} key - The `key` of the selected setting option.
+     * @param {Object} item - The current setting option.
+     * @param {jQuery} container - A jQuery object representing the setting option's container.
+     * @param {Object} styles - An object containing useful predefined CSS classes.
+     */
     gpii.qssWidget.menu.presenter.animateActivation = function (key, item, container, styles) {
         container.toggleClass(styles.active, item.key === key);
     };
 
+    /**
+     * Applies any predefined styles for the particular setting option.
+     * @param {Component} that - The `gpii.qssWidget.menu.presenter` instance.
+     * @param {jQuery} container - A jQuery object representing the setting option's container.
+     * @param {Object} styles - The styles for the current QSS menu setting.
+     */
     gpii.qssWidget.menu.presenter.applyStyles = function (that, container, styles) {
         var elementStyles = fluid.get(styles, that.model.item.key);
         if (elementStyles) {

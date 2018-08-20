@@ -16,32 +16,9 @@
 
 "use strict";
 (function (fluid) {
-    var gpii = fluid.registerNamespace("gpii");
-
-    var electron = require("electron");
-    var windowInitialParams = electron.remote.getCurrentWindow().params;
-
-    /**
-     * Wrapper that enables translations for the `gpii.qss` component and
-     * applies interception of all anchor tags on the page so that an external browser is used
-     * for loading them.
-     */
-    fluid.defaults("gpii.psp.translatedQss", {
-        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
-
-        components: {
-            quickSetStrip: {
-                type: "gpii.qss",
-                container: "{translatedQss}.container",
-                options: {
-                    model: {
-                        settings: "{translatedQss}.model.settings"
-                    }
-                }
-            }
-        }
-    });
-
+    var gpii = fluid.registerNamespace("gpii"),
+        electron = require("electron"),
+        windowInitialParams = electron.remote.getCurrentWindow().params;
 
     jQuery(function () {
         gpii.psp.translatedQss(".flc-quicksetstrip", {
@@ -49,18 +26,5 @@
                 settings: windowInitialParams.settings
             }
         });
-
-        /// XXX for dev in browser
-        // gpii.qss(".flc-quickSetStrip", {
-        //     model: {
-        //         settings: [
-        //             {label: "More ..."},
-        //             {label: "Some long long long long setting label"},
-        //             {label: "Caption"},
-        //             {label: "Languages"},
-        //             {label: "Key out"}
-        //         ]
-        //     }
-        // });
     });
 })(fluid);

@@ -1,7 +1,7 @@
 /**
- * The QSS tooltip popup
+ * The QSS tooltip dialog
  *
- * Represents an QSS tooltip popup.
+ * Represents the QSS tooltip dialog.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -53,7 +53,6 @@
                         }
                     },
                     events: {
-                        // Add events from the main process to be listened for
                         onTooltipUpdated: null
                     }
                 }

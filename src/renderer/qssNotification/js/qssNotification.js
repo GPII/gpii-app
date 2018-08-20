@@ -18,6 +18,9 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
+    /**
+     * Enables internationalization of the QSS notification.
+     */
     fluid.defaults("gpii.psp.translatedQssNotification", {
         gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent"],
 
@@ -29,6 +32,10 @@
         }
     });
 
+    /**
+     * A component representing the QSS notification. Takes care of initializing
+     * the necessary DOM elements and handling user interaction.
+     */
     fluid.defaults("gpii.psp.qssNotification", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable", "gpii.psp.linksInterceptor"],
 
@@ -120,6 +127,16 @@
         }
     });
 
+    /**
+     * Calculates the total height of the QSS notification assuming that its whole content is fully
+     * displayed and there is no need to scroll (i.e. if there were enough vertical space for the
+     * whole document).
+     * @param {jQuery} container - A jQuery object representing the notification's container.
+     * @param {jQuery} dialogContent - A jQuery object representing the content of the dialog.
+     * @param {jQuery} heightListenerContainer - A jQuery object representing the container which
+     * houses the height listener element.
+     * @return {Number} - The height of the QSS notification assuming it is fully displayed.
+     */
     gpii.psp.qssNotification.calculateHeight = function (container, dialogContent, heightListenerContainer) {
         return Math.ceil(container.outerHeight(true) - dialogContent.height() + heightListenerContainer.height());
     };
