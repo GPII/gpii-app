@@ -494,7 +494,7 @@ var undoCrossTestSequence = [
     ////
     simpleSettingChangeSeqEl, // Changing a setting
     { // ... should enable undo indicator
-        event: "{that}.app.qssWrapper.events.onUndoIndicatorChanged",
+        event: "{that}.app.qssWrapper.qss.events.onUndoIndicatorChanged",
         listener: "jqUnit.assertTrue",
         args: [
             "QSS change should enable undo indicator",
@@ -503,7 +503,7 @@ var undoCrossTestSequence = [
     },
     clickUndoButtonSeqEl, // ... and unding it
     { // ... should disable it
-        event: "{that}.app.qssWrapper.events.onUndoIndicatorChanged",
+        event: "{that}.app.qssWrapper.qss.events.onUndoIndicatorChanged",
         listener: "jqUnit.assertFalse",
         args: [
             "QSS undo should disable undo indicator",
@@ -542,7 +542,7 @@ var undoTestSequence = [
             "QSS single setting change should be undone properly",
             {
                 path: "http://registry\\.gpii\\.net/common/DPIScale",
-                value: 1.25
+                value: 0 // this is the default value of the DPI Scale setting
             },
             "{arguments}.0"
         ]
@@ -591,9 +591,9 @@ var undoTestSequence = [
             "QSS last setting change should be undone",
             {
                 path: "http://registry\\.gpii\\.net/common/DPIScale",
-                value: 1.25
+                value: 0
             },
-            "{arguments}.0.oldValue"
+            "{arguments}.0"
         ]
     }, { // ... and `hasChanges` should have its state restored
         funcName: "jqUnit.assertFalse",
@@ -613,7 +613,7 @@ var undoTestSequence = [
     //
     { // make a change to an undoable setting shouldn't have effect
         func: "{that}.app.qssWrapper.alterSetting",
-        args: [{path: "http://registry\\.gpii\\.net/common/fontSize", value: 1.5}]
+        args: [{path: "appTextZoom", value: 1.5}]
     }, { // ... and making a watched change
         func: "{that}.app.qssWrapper.applier.change",
         args: ["settings.2", {value: 1.5}]
