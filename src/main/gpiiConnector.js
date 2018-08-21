@@ -111,30 +111,28 @@ gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
 
 
 /**
- * Preferences change update has been received
- *
- * @param gpiiConnector
- * @param message
+ * Extracts data from the preferences change update message that has been received.
+ * @param {Object} gpiiConnector - Instance of the `gpii.app.gpiiConnector`
+ * @param {Object} updateDetails - The PSP Channel massage's details about the update
  */
-gpii.app.gpiiConnector.handlePreferencesChangeMessage = function (gpiiConnector, message) {
-    console.log("GpiiConnector: Updated preference set:", message);
-    var snapsetName = gpii.app.extractSnapsetName(message);
+gpii.app.gpiiConnector.handlePreferencesChangeMessage = function (gpiiConnector, updateDetails) {
+    console.log("GpiiConnector: Updated preference set:", updateDetails);
+    var snapsetName = gpii.app.extractSnapsetName(updateDetails);
     gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
 
-    var preferences = gpii.app.extractPreferencesData(message);
+    var preferences = gpii.app.extractPreferencesData(updateDetails);
     gpiiConnector.events.onPreferencesUpdated.fire(preferences);
 };
 
 
 /**
- * Setting change update has been received
- *
- * @param gpiiConnector
- * @param message
+ * Extracts data from the single setting update message that has been received.
+ * @param {Object} gpiiConnector - Instance of the `gpii.app.gpiiConnector`
+ * @param {Object} updateDetails - The PSP Channel massage's details about the update
  */
-gpii.app.gpiiConnector.handleSettingUpdateMessage = function (gpiiConnector, message) {
-    var settingPath = message.path[message.path.length - 2],
-        settingValue = message.value;
+gpii.app.gpiiConnector.handleSettingUpdateMessage = function (gpiiConnector, updateDetails) {
+    var settingPath = updateDetails.path[updateDetails.path.length - 2],
+        settingValue = updateDetails.value;
 
     console.log("GpiiConnector: Updated setting:", settingPath, settingValue);
 
@@ -147,19 +145,28 @@ gpii.app.gpiiConnector.handleSettingUpdateMessage = function (gpiiConnector, mes
 
 /**
  * Determines whether the current PSP channel message is a preference set update.
- * @param {String} operation
- * @param {String} path
- * @return {Boolean}
+ * Currently in case of preference set update the update path is empty.
+ * @param {Object} messagePayload - The payload of the message that represents a `changeApplier` change object
+ * @param {String} messagePayload.type - The type of `changeApplier` operation
+ * @param {String} messagePayload.path - The changePath for the update
+ * @return {Boolean} - The status of the query
  */
-gpii.app.gpiiConnector.isPrefSetUpdate = function (operation, path) {
-    return (operation === "ADD" && path.length === 0) || operation === "DELETE";
+gpii.app.gpiiConnector.isPrefSetUpdate = function (messagePayload) {
+    return (messagePayload.type === "ADD" && messagePayload.path.length === 0) ||
+        messagePayload.type === "DELETE";
 };
 
 
 /**
- * @param previousUpdateState
- * @param currentUpdateState
- * @return {Boolean}
+ * Use the previous state of preference set update message to determine the source of the current update.
+ * Currently there are three sources:
+ * - snapset change,
+ * - active set change,
+ * - or add of new setting to the preference set.
+ * In some cases we need the need to distinguish these source as different behaviour may be wanted.
+ * @param {Object} previousUpdateState - The previous state of preference set update
+ * @param {Object} currentUpdateState - The current preference update state
+ * @return {Boolean} - The status of the query
  */
 gpii.app.gpiiConnector.isFullPrefSetUpdate = function (previousUpdateState, currentUpdateState) {
     var isSnapsetUpdate = previousUpdateState.gpiiKey !== currentUpdateState.gpiiKey,
@@ -168,20 +175,20 @@ gpii.app.gpiiConnector.isFullPrefSetUpdate = function (previousUpdateState, curr
 };
 
 /**
- * Responsible for parsing messages from the GPII socket connection.
+ * Responsible for parsing messages from the GPII socket connection. Currently messages use
+ * the format of changeApplier with the path, value and type.
  * @param {Object} gpiiConnector - The `gpii.app.gpiiConnector` instance
- * @param {Object} message - The received message
- * @param {Object} message.payload - The message's payload
- * @param {Object} message.payload.type - The type of the sent message
- * @param {Object} message.payload.path - TODO
+ * @param {Object} message - The received PSP Channel message
+ * @param {Object} message.payload - The message's payload that describes the update
+ * @param {String} message.payload.type - The type of the sent message - ADD or DELETE
+ * @param {String} message.payload.path - The path of the updated element
  * @param {Object} message.payload.value - Contains the real data of the message
  */
 gpii.app.gpiiConnector.handleRawChannelMessage = function (gpiiConnector, message) {
     var payload = message.payload || {},
-        operation = payload.type,
-        path = payload.path;
+        operation = payload.type;
 
-    if (gpii.app.gpiiConnector.isPrefSetUpdate(operation, path)) {
+    if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {
         gpii.app.gpiiConnector.handlePreferencesChangeMessage(gpiiConnector, payload);
     } else if (operation === "ADD") {
         gpii.app.gpiiConnector.handleSettingUpdateMessage(gpiiConnector, payload);
@@ -597,7 +604,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
                     funcName: "gpii.app.dev.gpiiConnector.qss.prepareMessageForQss",
                     args: [
                         "{that}",
-                        "{that}.options.defaultQssSettings",
+                        "{that}.options.defaultQssSettingValues",
                         "{arguments}.0" // message
                     ]
                 }
@@ -619,22 +626,13 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
 
     // The "original" values of the QSS settings. These are to be provided from the core
     // in the future.
-    defaultQssSettings: [{
-        "path": "http://registry\\.gpii\\.net/common/language",
-        "value": "en-US"
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/DPIScale",
-        "value": 0
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
-        "value": false
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
-        "value": "regular-contrast"
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
-        "value": false
-    }]
+    defaultQssSettingValues: {
+        "http://registry\\.gpii\\.net/common/language": { value: "en-US" },
+        "http://registry\\.gpii\\.net/common/DPIScale": { value: 0 },
+        "http://registry\\.gpii\\.net/common/captions/enabled": { value: false },
+        "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
+        "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false }
+    }
 });
 
 /**
@@ -645,25 +643,23 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
  * In case it is needed (it's a full preference set update after a snapset or active set change), it
  * also populates with QSS settings that are missing using a predefined set of default values.
  * @param {Component} that - The instance of `gpii.app.dev.gpiiComponent` component
- * @param {Object} defaultQssSettings - The list of default
+ * @param {Object} defaultQssSettingValues - The default QSS settings in the format - <path>: <value>
  * @param {Object} message - The raw PSP channel message
  * @return {Object} The decorated PSP channel message
  */
-gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQssSettings, message) {
-    var payload = message.payload || {},
-        operation = payload.type,
-        path = payload.path;
+gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQssSettingValues, message) {
+    var payload = message.payload || {};
 
-    if (gpii.app.gpiiConnector.isPrefSetUpdate(operation, path)) {
+    if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {
         var value = payload.value || {},
             channelSettingControls = value.settingControls || [];
 
         // leave only QSS settings
         // Note that settings that doesn't have specific values such as "App / Text Zoom" will not receive setting updates
-        var qssSettingControls = fluid.filterKeys(channelSettingControls, defaultQssSettings.map(function (setting) { return setting.path; }));
+        var qssSettingControls = fluid.filterKeys(channelSettingControls, fluid.keys(defaultQssSettingValues));
 
         // add missing setting values if needed
-        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, that.options.defaultQssSettings, qssSettingControls, value);
+        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, that.options.defaultQssSettingValues, qssSettingControls, value);
 
         value.qssSettingControls = qssSettingControls;
     }
@@ -674,22 +670,20 @@ gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQss
 
 /**
  * Fires the `onQssSettingsUpdate` event if needed to notify the QSS about setting changes.
- * Note that in case the changes are coming from snapset or active set update, they are not undoable (the QSS is reset).
+ * Note that in case the changes are coming from snapset or active set update, they are not undoable (they indicate a full QSS reset).
  * @param {Component} that - The instance of `gpii.app.dev.gpiiConnector` component
  * @param {Object} message - The PSP channel decorated (with QSS data) massage
  */
 gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) {
     var payload = message.payload || {},
-        operation = payload.type,
-        path = payload.path,
         value = payload.value || {},
         qssSettingControls = value.qssSettingControls || {};
 
-    if (gpii.app.gpiiConnector.isPrefSetUpdate(operation, path)) {
-        console.log("gpiiConnector.QSS Controls: ", value.qssSettingControls);
+    if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {
+        console.log("gpiiConnector.qss Controls to be sent: ", value.qssSettingControls);
 
         that.events.onQssSettingsUpdate.fire(
-            qssSettingControls,
+            fluid.hashToArray(qssSettingControls, "path"), // set to the expected format
             gpii.app.gpiiConnector.isFullPrefSetUpdate(that.previousState, value)
         );
 
@@ -706,25 +700,19 @@ gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) 
 /**
  * Adds missing QSS settings with default values in case it is a full pref set update.
  * @param {Component} that - The instance of `gpii.app.dev.gpiiComponent` component
- * @param {Object[]} defaultQssSettings - List of default values for the settings
+ * @param {Object} defaultQssSettingValues - The default QSS settings in the format <path>: <value>
  * @param {Object} qssSettingControls - The map of qss settings
  * @param {Object} updateDetails - The metadata for the current update
  * @return {Object} - the populated setting controls
  */
-gpii.app.dev.gpiiConnector.qss.applySettingDefaults = function (that, defaultQssSettings, qssSettingControls, updateDetails) {
+gpii.app.dev.gpiiConnector.qss.applySettingDefaults = function (that, defaultQssSettingValues, qssSettingControls, updateDetails) {
     // Whether the update is a full preference set update (fired from change in the snapset or active preference set),
     // or a change of a missing in the preference set setting from the QSS
     if (gpii.app.gpiiConnector.isFullPrefSetUpdate(that.previousState, updateDetails)) {
         console.log("gpiiConnect.qss: Merge QSS default settings");
 
         // add missing QSS settings to the update list (this is needed for triggering reset of the QSS)
-        fluid.each(defaultQssSettings, function (defaultSetting) {
-            var isSettingPresent = fluid.isValue(qssSettingControls[defaultSetting.path]);
-
-            if (!isSettingPresent) {
-                qssSettingControls[defaultSetting.path] = defaultSetting;
-            }
-        });
+        qssSettingControls = fluid.extend(true, {}, defaultQssSettingValues, qssSettingControls);
     }
 
     return qssSettingControls;
