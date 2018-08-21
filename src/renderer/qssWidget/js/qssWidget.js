@@ -150,7 +150,10 @@
                 container: "{that}.dom.learnMoreLink",
                 options: {
                     model: {
-                        setting: "{qssWidget}.model.setting"
+                        setting: "{qssWidget}.model.setting",
+                        messages: {
+                            learnMore: "{qssWidget}.model.messages.learnMore"
+                        }
                     }
                 }
             },
@@ -282,7 +285,7 @@
         model: {
             setting: null,
             messages: {
-                learnMore: "Learn more..."
+                learnMore: null
             }
         },
 

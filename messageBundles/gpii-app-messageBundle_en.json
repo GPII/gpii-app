@@ -48,5 +48,7 @@
 
     "gpii_psp_footer_help": "Help",
 
-    "gpii_qss_toggleButtonPresenter_caption": "[now ON]"
+    "gpii_qss_toggleButtonPresenter_caption": "[now ON]",
+
+    "gpii_psp_qssWidget_learnMore": "Learn more..."
 }
