@@ -20,6 +20,8 @@ var fluid = require("infusion"),
     jqUnit = fluid.require("node-jqunit", require, "jqUnit"),
     gpii = fluid.registerNamespace("gpii");
 
+require("./testUtils.js");
+
 /*
  * Scripts for interaction with the renderer
  */
@@ -35,13 +37,16 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(3)\").click()",
-    clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()";
+    clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()",
+    getQssSettingsList = "(function getItems() { console.log('HERE'); var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
+
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:first-child').click()";
+    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-child(2)').click()";
 // Generic
 var closeClosableDialog = "jQuery(\".flc-closeBtn\").click()";
+
 
 require("../src/main/app.js");
 
@@ -59,6 +64,13 @@ gpii.tests.qss.awaitQssInitialization = function (qss) {
 
 gpii.tests.qss.executeCommand = function (dialog, command) {
     return dialog.webContents.executeJavaScript(command, true);
+        // .then(function(result) {
+        //     // XXX DEV
+        //     console.log("Success! - ", result, command);
+        // }, function(err) {
+        //     // XXX DEV
+        //     console.log("Sorrow...: ", err);
+        // });
 };
 
 gpii.tests.qss.simulateShortcut = function (dialog, shortcut) {
@@ -337,7 +349,7 @@ var qssCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "Change event was fired from QSS widget interaction.",
-            { path: "http://registry\\.gpii\\.net/common/language", value: "hy" },
+            { path: "http://registry\\.gpii\\.net/common/language", value: "hy-AM" },
             "{arguments}.0"
         ]
     },
@@ -628,20 +640,143 @@ var undoTestSequence = [
     }
 ];
 
+gpii.tests.assertLeastEventCallsCount = function (event, expectedCount) {
+    var togo = fluid.promise();
+
+    var callsCount = 0;
+    function listener() {
+        callsCount++;
+
+        if (callsCount === expectedCount) {
+            togo.resolve();
+        }
+    }
+
+    event.addListener(listener);
+
+    return togo;
+};
+
+
+// Override a subset of the QSS setting messages
+var qssSettingMessages = {
+    bg: {
+        "gpii_app_qss_settings_common-language": {
+            "title": "Избери Език",
+            tooltip: "Some different tooltip",
+            "enum": [
+                "Анг",
+                "Арм",
+                "Кит",
+                "Китс",
+                "Кор",
+                "Рус",
+                "Исп"
+            ]
+        },
+        "gpii_app_qss_settings_save": {
+            "title": "Запиши ме"
+        },
+        "gpii_app_qss_settings_close": {
+            "title": "Затвори ме"
+        },
+        "gpii_app_qss_settings_appTextZoom": {
+            title: "Приближи този текст",
+            tooltip: "Some tooltip",
+            tip: "Some helpful tip",
+            footerTip: "Hopefully something helpful as the tip"
+        }
+    }
+};
+
+// define setting's transtations subset
+var translatedSettings = {
+    "http://registry\\.gpii\\.net/common/language": {
+        schema: {
+            "title": "Избери Език",
+            "enum": [
+                "Анг",
+                "Арм",
+                "Кит",
+                "Китс",
+                "Кор",
+                "Рус",
+                "Исп"
+            ]
+        },
+        tooltip: "Some different tooltip"
+    },
+    "save": {
+        schema: {
+            "title": "Запиши ме"
+        }
+    },
+    "close": {
+        schema: {
+            "title": "Затвори ме"
+        }
+    },
+    "appTextZoom": {
+        schema: {
+            title: "Приближи този текст"
+        },
+        tooltip: "Some tooltip",
+        tip: "Some helpful tip",
+        widget: {
+            footerTip: "Hopefully something helpful as the tip"
+        }
+    }
+};
+
+
+// TODO describe
+var qssTranslations = [
+    { // trigger locale change
+        funcName: "{that}.app.applier.change",
+        args: ["locale", "bg"]
+    },
+    { // check whether the settings' text was updated
+        funcName: "gpii.test.assertLeftHandDeep",
+        args: [
+            "QSS should have its settings translated with locale change",
+            translatedSettings,
+            "@expand:gpii.test.objectArrayToHash({that}.app.qssWrapper.model.settings, path)"
+        ]
+    }, { // ... and the menu widget shouldn't be shown
+        task: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getQssSettingsList
+        ],
+        resolve: "gpii.test.assertLeftHandDeep",
+        resolveArgs: [
+            "QSS dialog should have its settings translated with locale change",
+            translatedSettings,
+            "@expand:gpii.test.objectArrayToHash({arguments}.0, path)"
+        ]
+    }
+];
+
 
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 36,
+    expect: 38,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
     },
     distributeOptions: {
-        // Supply the list of QSS settings
-        // For now we're using the same settings list
-        record: "%gpii-app/tests/fixtures/qssSettings.json",
-        target: "{that gpii.app.qssWrapper}.options.settingsPath"
+        mockedSettings: {
+            // Supply the list of QSS settings
+            // For now we're using the same settings list
+            record: "%gpii-app/tests/fixtures/qssSettings.json",
+            target: "{that gpii.app.qssWrapper}.options.settingsPath"
+        },
+        mockedMessages: {
+            record: qssSettingMessages,
+            target: "{that gpii.app}.options.messageBundles"
+        }
     },
 
     gradeNames: ["gpii.test.common.testCaseHolder"],
@@ -654,6 +789,7 @@ gpii.tests.qss.testDefs = {
         }],
         undoCrossTestSequence,
         undoTestSequence,
-        qssCrossTestSequence
+        qssCrossTestSequence,
+        qssTranslations
     )
 };
