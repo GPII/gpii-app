@@ -77,7 +77,7 @@ gpii.tests.dialogManager.testDefs = {
         args: ["{that}.app.dialogManager"]
     }, {
         func: "{that}.app.keyIn",
-        args: ["snapset_1a"]
+        args: ["snapset_5"]
     }, {
         changeEvent: "{that}.app.dialogManager.applier.modelChanged",
         path: "isKeyedIn",

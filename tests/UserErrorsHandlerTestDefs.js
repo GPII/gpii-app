@@ -37,7 +37,7 @@ gpii.tests.userErrorsHandler.assertErrorDialogOptions = function (dialogOptions)
 
 gpii.tests.userErrorsHandler.testDefs = {
     name: "User errors handler integration tests",
-    expect: 4,
+    expect: 5,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"

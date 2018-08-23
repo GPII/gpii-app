@@ -34,6 +34,7 @@ require("./SurveyTriggerManagerTestsDefs.js");
 require("./SurveysTestDefs.js");
 require("./UserErrorsHandlerTestDefs.js");
 require("./WebviewTestDefs.js");
+require("./GpiiConnectorTestDefs.js");
 
 // TODO: Review this following CI run.
 //fluid.setLogging(fluid.logLevel.FATAL);
@@ -104,5 +105,6 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
     fluid.copy(gpii.tests.surveys.testDefs),
     fluid.copy(gpii.tests.userErrorsHandler.testDefs),
-    fluid.copy(gpii.tests.webview.testDefs)
+    fluid.copy(gpii.tests.webview.testDefs),
+    fluid.copy(gpii.tests.gpiiConnector.testDefs)
 ]);
