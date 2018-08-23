@@ -33,3 +33,29 @@ fluid.registerNamespace("gpii.test");
 gpii.test.executeCommand = function (dialog, command) {
     return dialog.webContents.executeJavaScript(command, true);
 };
+
+/**
+ * Executes a JavaScript snippet in the `BrowserWindow` of the given dialog
+ * after a certain delay has passed.
+ * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
+ * to be executed.
+ * @param {String} command - A string representing the JavaScript code to be
+ * executed.
+ * @param {Number} delay - The delay after which the JavaScript code should be
+ * executed.
+ * @return {Promise} - A promise which is resolved when the JavaScript code is
+ * executed.
+ */
+gpii.test.executeCommandDelayed = function (dialog, command, delay) {
+    var promise = fluid.promise();
+
+    promise.then(function () {
+        return gpii.test.executeCommand(dialog, command);
+    });
+
+    setTimeout(function () {
+        promise.resolve();
+    }, delay);
+
+    return promise;
+};
