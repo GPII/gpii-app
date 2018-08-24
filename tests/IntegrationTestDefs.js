@@ -111,19 +111,13 @@ gpii.tests.app.testDefs = {
         path: "preferenceSetsMenuItems",
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenuSnapsetKeyedIn"
-    }, { // Test key in attempt while someone is keyed in
-        func: "{that}.app.keyIn",
-        args: "snapset_2a"
-    }, {
-        event: "{that flowManager kettle.request.http}.events.onError",
-        listener: "gpii.tests.app.testMenuSnapsetKeyedIn",
-        args: ["{that}.app.tray.menu.model.menuTemplate"]
     }, { // Test menu after key out
         func: "{that}.app.keyOut"
     }, {
-        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
+        // changeEvent: "{that}.app.tray.menu.applier.modelChanged",
+        event: "{that}.app.tray.menu.applier.modelChanged",
         // XXX {{1}} see above
-        path: "preferenceSetsMenuItems",
+        // path: "preferenceSetsMenuItems",
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenu"
     }]
