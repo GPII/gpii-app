@@ -73,15 +73,13 @@ fluid.defaults("gpii.app.gpiiConnector", {
  * @param {Object} preferences - The preferences received via the PSP channel.
  */
 gpii.app.gpiiConnector.resolveAssetPaths = function (assetsManager, preferences) {
-    if (preferences) {
-        fluid.each(preferences.sets, function (prefSet) {
-            var imageMapKeys = fluid.keys(prefSet.imageMap);
-            fluid.each(imageMapKeys, function (imageMapKey) {
-                prefSet.imageMap[imageMapKey] =
-                    assetsManager.resolveAssetPath(prefSet.imageMap[imageMapKey]);
-            });
+    fluid.each(preferences.sets, function (prefSet) {
+        var imageMapKeys = fluid.keys(prefSet.imageMap);
+        fluid.each(imageMapKeys, function (imageMapKey) {
+            prefSet.imageMap[imageMapKey] =
+                assetsManager.resolveAssetPath(prefSet.imageMap[imageMapKey]);
         });
-    }
+    });
 };
 
 /**
@@ -324,45 +322,55 @@ fluid.defaults("gpii.app.dev.gpiiConnector", {
     }
 });
 
+/**
+ * As the liveness option for a setting is not yet supported on the Core's end, this function
+ * takes care of adjusting it properly for the "Magnifier" settings (it should require an
+ * application restart) and for the "Speech Control" setting (it should require an OS restart).
+ * @param {Object[]} settings - An array of settings. As a setting can have subsettings, this
+ * function has to be applied recursively for them.
+ */
+gpii.app.dev.gpiiConnector.applyLivenessFlag = function (settings) {
+    fluid.each(settings, function (setting) {
+        // XXX a workaround as the Magnifier settings are missing the `solutionName` property
+        if (setting.path.match("common\/magnifi")) {
+            setting.liveness = "manualRestart";
+        } else if (setting.path.match("common\/speechControl")) {
+            setting.liveness = "OSRestart";
+        }
+
+        if (setting.settings) {
+            gpii.app.dev.gpiiConnector.applyLivenessFlag(setting.settings);
+        }
+    });
+};
+
+/**
+ * Adds an image for the provided preference sets. If the preference sets are more than the
+ * available mock images, the latter are sequentially cycled through.
+ * @param {Object[]} prefSets - The preference sets for which the images are to be added.
+ */
+gpii.app.dev.gpiiConnector.applyPrefSetImages = function (prefSets) {
+    var whiteThemeimages = ["paris.jpg", "mountains.jpg", "lights.jpg"],
+        darkThemeimages = ["nature_wide.jpg", "fjords_wide.jpg", "mountains_wide.jpg"];
+
+    prefSets.forEach(function (prefSet, index) {
+        prefSet.imageMap = {
+            white: whiteThemeimages[index % whiteThemeimages.length],
+            dark: darkThemeimages[index % darkThemeimages.length]
+        };
+    });
+};
+
 /*
  * A decorator for the extracted preferences that applies values that are to be used
- * for development.
+ * for development purposes.
  */
 gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
-    function applyLivenessFlag(settings) {
-        fluid.each(settings, function (setting) {
-            // XXX a workaround as the Magnifier settings are missing the `solutionName` property
-            if (setting.path.match("common\/magnifi")) {
-                setting.liveness = "manualRestart";
-            } else if (setting.path.match("common\/speechControl")) {
-                setting.liveness = "OSRestart";
-            }
+    gpii.app.dev.gpiiConnector.applyPrefSetImages(preferences.sets);
 
-            if (setting.settings) {
-                applyLivenessFlag(setting.settings);
-            }
-        });
-    }
-
-    function applyPrefSetImages(prefSets) {
-        var whiteThemeimages = ["paris.jpg", "mountains.jpg", "lights.jpg"],
-            darkThemeimages = ["nature_wide.jpg", "fjords_wide.jpg", "mountains_wide.jpg"];
-
-        prefSets.forEach(function (prefSet, index) {
-            prefSet.imageMap = {
-                white: whiteThemeimages[index % whiteThemeimages.length],
-                dark: darkThemeimages[index % darkThemeimages.length]
-            };
-        });
-    }
-
-    if (preferences) {
-        applyPrefSetImages(preferences.sets);
-
-        fluid.each(preferences.settingGroups, function (settingGroup) {
-            applyLivenessFlag(settingGroup.settings);
-        });
-    }
+    fluid.each(preferences.settingGroups, function (settingGroup) {
+        gpii.app.dev.gpiiConnector.applyLivenessFlag(settingGroup.settings);
+    });
 };
 
 /**

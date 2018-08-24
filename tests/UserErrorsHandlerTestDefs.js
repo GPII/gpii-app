@@ -18,6 +18,7 @@ var fluid = require("infusion"),
 
 
 require("../src/main/app.js");
+require("./testUtils.js");
 
 fluid.registerNamespace("gpii.tests.userErrorsHandler.testDefs");
 
@@ -36,22 +37,33 @@ gpii.tests.userErrorsHandler.assertErrorDialogOptions = function (dialogOptions)
 
 gpii.tests.userErrorsHandler.testDefs = {
     name: "User errors handler integration tests",
-    expect: 4,
+    expect: 5,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    sequence: [
-        // Acceptance scenario
-        { // When error is fired
-            func: "{that}.app.keyIn",
-            args: invalidUser
-        }, { // ... error dialog should be shown with proper values
-            event: "{that}.app.dialogManager.error.events.onDialogCreate",
-            listener: "gpii.tests.userErrorsHandler.assertErrorDialogOptions",
-            args: [
-                "{arguments}.0"
-            ]
-        }]
+    sequence: [{ // When an error is fired...
+        func: "{that}.app.keyIn",
+        args: invalidUser
+    }, { // ... an error dialog should be shown with the proper values.
+        event: "{that}.app.dialogManager.error.events.onDialogCreate",
+        listener: "gpii.tests.userErrorsHandler.assertErrorDialogOptions",
+        args: [
+            "{arguments}.0"
+        ]
+    }, { // Clicking the close button in the error dialog...
+        func: "gpii.tests.qss.executeJavascript",
+        args: [
+            "{that}.app.dialogManager.error.dialog.dialog",
+            "jQuery(\".flc-closeBtn\").click()"
+        ]
+    }, { // ... results in the error dialog being hidden.
+        event: "{that}.app.dialogManager.error.dialog.dialogChannel.events.onErrorDialogClosed",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The error dialog is closed when its close button is clicked",
+            "{that}.app.dialogManager.error.dialog.model.isShown"
+        ]
+    }]
 };

@@ -117,7 +117,7 @@ var qssCrossTestSequence = [
             {psp: false, qss: true}
         ]
     }, { // Clicking on the close button in the QSS...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -142,7 +142,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
     }, { // ... and hover on its close button.
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             hoverCloseBtn
@@ -156,7 +156,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
     }, { // When the button is no longer hovered...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             unhoverCloseBtn
@@ -170,7 +170,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
     }, { // If the button is focused using keyboard interaction...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             focusCloseBtn
@@ -188,7 +188,7 @@ var qssCrossTestSequence = [
      * Notification & QSS integration
      */
     { // When the "Save" button is clicked...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickSaveBtn
@@ -202,7 +202,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
     }, { // When the "Close" button in the QSS notification is clicked...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qssNotification.dialog",
             closeClosableDialog
@@ -221,7 +221,7 @@ var qssCrossTestSequence = [
      */
     // QSS widget visibility tests
     { // If the language button in the QSS is clicked...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -235,7 +235,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
     }, { // If the button is focused using keyboard interaction...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             closeClosableDialog
@@ -249,7 +249,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
     }, { // If the language button in the QSS is clicked once...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -259,7 +259,7 @@ var qssCrossTestSequence = [
         path: "isShown",
         listener: "fluid.identity"
     }, { // ... and is then clicked again...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -277,13 +277,13 @@ var qssCrossTestSequence = [
     // CROSS tests
     //
     { // ... open the widget again
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
         ]
     }, { // ... and check whether it is the correct widget
-        task: "gpii.tests.executeScriptInDialog",
+        task: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             checkIfMenuWidget
@@ -291,14 +291,14 @@ var qssCrossTestSequence = [
         resolve: "jqUnit.assertTrue",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     }, { // Open the stepper widget
-        task: "gpii.tests.executeScriptInDialog",
+        task: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickFontSizeBtn
         ],
         resolve: "fluid.identity"
     }, { // ... and the menu widget shouldn't be shown
-        task: "gpii.tests.executeScriptInDialog",
+        task: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             checkIfMenuWidget
@@ -306,7 +306,7 @@ var qssCrossTestSequence = [
         resolve: "jqUnit.assertFalse",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     }, { // ... and stepper widget should be
-        task: "gpii.tests.executeScriptInDialog",
+        task: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             checkIfStepperWidget
@@ -320,14 +320,14 @@ var qssCrossTestSequence = [
     // Setting changes tests
     //
     { // Open the menu Widget
-        task: "gpii.tests.executeScriptInDialog",
+        task: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
         ],
         resolve: "fluid.identity"
     }, { // ... click on menu item (we know the order from the config we are using)
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickMenuWidgetItem
@@ -359,7 +359,7 @@ var qssCrossTestSequence = [
     },
     // Toggle
     { // Activation of toggle button should
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCaptionsBtn
@@ -383,7 +383,7 @@ var qssCrossTestSequence = [
         event: "{that}.app.events.onKeyedIn",
         listener: "fluid.identity"
     }, { // If the Key in button in the QSS is clicked...
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickPspBtn
@@ -397,7 +397,7 @@ var qssCrossTestSequence = [
             "{that}.app.psp.model.isShown"
         ]
     }, { // ... changing setting from QSS
-        func: "gpii.tests.executeScriptInDialog",
+        func: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickReadAloudBtn
@@ -416,7 +416,7 @@ var qssCrossTestSequence = [
 ];
 
 var simpleSettingChangeSeqEl = { // Changeing single setting
-    task: "gpii.tests.executeScriptInDialog",
+    task: "gpii.test.executeJavascript",
     args: [
         "{that}.app.qssWrapper.qss.dialog",
         clickCaptionsBtn
@@ -424,7 +424,7 @@ var simpleSettingChangeSeqEl = { // Changeing single setting
     resolve: "fluid.identity"
 };
 var clickUndoButtonSeqEl = { // ... and clicking undo button
-    funcName: "gpii.tests.executeScriptInDialog",
+    funcName: "gpii.test.executeJavascript",
     args: [
         "{that}.app.qssWrapper.qss.dialog",
         clickUndoBtn
@@ -510,7 +510,7 @@ var undoCrossTestSequence = [
             "{arguments}.0"
         ]
     }, { // close and ensure setting changes have been applied
-        task: "gpii.tests.executeScriptInDialog",
+        task: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -628,23 +628,6 @@ var undoTestSequence = [
     }
 ];
 
-gpii.tests.assertLeastEventCallsCount = function (event, expectedCount) {
-    var togo = fluid.promise();
-
-    var callsCount = 0;
-    function listener() {
-        callsCount++;
-
-        if (callsCount === expectedCount) {
-            togo.resolve();
-        }
-    }
-
-    event.addListener(listener);
-
-    return togo;
-};
-
 
 /*
  * A subset of the QSS setting messages.
@@ -730,23 +713,23 @@ var crossQssTranslations = [
         args: ["locale", "bg"]
     },
     { // ... and check whether the settings' text has been updated in the main
-        funcName: "gpii.tests.assertLeftHandDeep",
+        funcName: "gpii.test.assertLeftHandDeep",
         args: [
             "QSS should have its settings translated with locale change",
             expectedTranslatedSettings,
-            "@expand:gpii.tests.objectArrayToHash({that}.app.qssWrapper.model.settings, path)"
+            "@expand:gpii.test.objectArrayToHash({that}.app.qssWrapper.model.settings, path)"
         ]
     }, { // ... and in the renderer as well
-        task: "gpii.tests.executeScriptInDialog",
+        task: "gpii.test.executeJavascript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             getQssSettingsList
         ],
-        resolve: "gpii.tests.assertLeftHandDeep",
+        resolve: "gpii.test.assertLeftHandDeep",
         resolveArgs: [
             "QSS dialog should have its settings translated with locale change",
             expectedTranslatedSettings,
-            "@expand:gpii.tests.objectArrayToHash({arguments}.0, path)"
+            "@expand:gpii.test.objectArrayToHash({arguments}.0, path)"
         ]
     }
 ];

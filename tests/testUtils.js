@@ -20,14 +20,14 @@ var fluid = require("infusion"),
     jqUnit = fluid.require("node-jqunit", require, "jqUnit"),
     gpii = fluid.registerNamespace("gpii");
 
-fluid.registerNamespace("gpii.tests");
+fluid.registerNamespace("gpii.test");
 
 /**
  * Simple utility to change an object array into a map with
  * keys - a specified objects' property that is unique for all elements.
  */
 
-gpii.tests.objectArrayToHash = function (array, key) {
+gpii.test.objectArrayToHash = function (array, key) {
     return fluid.isArrayable(array) && array.reduce(function (acc, value) {
         acc[value[key]] = value;
         return acc;
@@ -44,7 +44,7 @@ gpii.tests.objectArrayToHash = function (array, key) {
  * @param {Object} actual - The superset of keys that are to be tested
  * @return {Boolean} - The success of the operation
  */
-gpii.tests.assertLeftHandDeep = function (message, expected, actual) {
+gpii.test.assertLeftHandDeep = function (message, expected, actual) {
     /**
      * Get an object that represents the interception of the keys of two objects.
      * It does a deep interception.
@@ -68,15 +68,41 @@ gpii.tests.assertLeftHandDeep = function (message, expected, actual) {
     return jqUnit.assertDeepEq(message, expected, filterKeysDeep(actual, expected));
 };
 
-
-
 /**
- * Execute Javascipt code in a given Electron BrowserWindow.
- * @param {BrowserWindow} dialog - The dialog in which the code will be executed
- * @param {String} script - The JS code to be executed inside the BrowserWindow
- * @return {Promise} - A promise for the code execution
+ * Executes a JavaScript snippet in the `BrowserWindow` of the given dialog.
+ * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
+ * to be executed.
+ * @param {String} command - A string representing the JavaScript code to be
+ * executed.
+ * @return {Promise} - A promise which is resolved when the JavaScript code is
+ * executed.
  */
-gpii.tests.executeScriptInDialog = function (dialog, script) {
-    return dialog.webContents.executeJavaScript(script, true);
+gpii.test.executeJavascript = function (dialog, command) {
+    return dialog.webContents.executeJavaScript(command, true);
 };
 
+/**
+ * Executes a JavaScript snippet in the `BrowserWindow` of the given dialog
+ * after a certain delay has passed.
+ * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
+ * to be executed.
+ * @param {String} command - A string representing the JavaScript code to be
+ * executed.
+ * @param {Number} delay - The delay after which the JavaScript code should be
+ * executed.
+ * @return {Promise} - A promise which is resolved when the JavaScript code is
+ * executed.
+ */
+gpii.test.executeJavascriptDelayed = function (dialog, command, delay) {
+    var promise = fluid.promise();
+
+    promise.then(function () {
+        return gpii.test.executeJavascript(dialog, command);
+    });
+
+    setTimeout(function () {
+        promise.resolve();
+    }, delay);
+
+    return promise;
+};
