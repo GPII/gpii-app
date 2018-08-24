@@ -77,7 +77,7 @@ gpii.test.assertLeftHandDeep = function (message, expected, actual) {
  * @return {Promise} - A promise which is resolved when the JavaScript code is
  * executed.
  */
-gpii.test.executeJavascript = function (dialog, command) {
+gpii.test.executeJavaScript = function (dialog, command) {
     return dialog.webContents.executeJavaScript(command, true);
 };
 
@@ -93,11 +93,11 @@ gpii.test.executeJavascript = function (dialog, command) {
  * @return {Promise} - A promise which is resolved when the JavaScript code is
  * executed.
  */
-gpii.test.executeJavascriptDelayed = function (dialog, command, delay) {
+gpii.test.executeJavaScriptDelayed = function (dialog, command, delay) {
     var promise = fluid.promise();
 
     promise.then(function () {
-        return gpii.test.executeJavascript(dialog, command);
+        return gpii.test.executeJavaScript(dialog, command);
     });
 
     setTimeout(function () {

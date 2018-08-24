@@ -53,7 +53,7 @@ gpii.tests.userErrorsHandler.testDefs = {
             "{arguments}.0"
         ]
     }, { // Clicking the close button in the error dialog...
-        func: "gpii.tests.qss.executeJavascript",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.dialogManager.error.dialog.dialog",
             "jQuery(\".flc-closeBtn\").click()"

@@ -52,7 +52,7 @@ gpii.tests.psp.testDefs = {
     sequence: [{
         func: "{that}.app.psp.show"
     }, { // Clicking the close button in the PSP...
-        func: "gpii.test.executeJavascript",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             clickCloseBtn
@@ -70,7 +70,7 @@ gpii.tests.psp.testDefs = {
         func: "{that}.app.keyIn",
         args: ["multi_context"]
     }, {
-        task: "gpii.test.executeJavascriptDelayed",
+        task: "gpii.test.executeJavaScriptDelayed",
         args: [
             "{that}.app.psp.dialog",
             clickDecreaseVolumeBtn,
@@ -89,7 +89,7 @@ gpii.tests.psp.testDefs = {
             "{arguments}.0"
         ]
     }, {
-        task: "gpii.test.executeJavascript",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             selectBrightPrefSet
@@ -104,7 +104,7 @@ gpii.tests.psp.testDefs = {
             "{arguments}.0"
         ]
     }, {
-        func: "gpii.test.executeJavascript",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             clickKeyOutBtn

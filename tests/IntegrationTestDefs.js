@@ -81,7 +81,7 @@ fluid.registerNamespace("gpii.tests.app.testDefs");
 
 gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
-    expect: 36,
+    expect: 28,
     config: {
         configName: "gpii.tests.production.config",
         configPath: "tests/configs"
@@ -114,10 +114,9 @@ gpii.tests.app.testDefs = {
     }, { // Test menu after key out
         func: "{that}.app.keyOut"
     }, {
-        // changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        event: "{that}.app.tray.menu.applier.modelChanged",
+        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
         // XXX {{1}} see above
-        // path: "preferenceSetsMenuItems",
+        path: "preferenceSetsMenuItems",
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenu"
     }]
@@ -146,7 +145,7 @@ gpii.tests.dev.testKeyInList = function (item) {
     jqUnit.assertEquals("Item is 'Key In' List", "Key in ...", item.label);
     var submenu = item.submenu;
     jqUnit.assertValue("Item has submenu", submenu);
-    jqUnit.assertEquals("Key in list has 14 items", 14, submenu.length);
+    jqUnit.assertEquals("Key in list has 15 items", 15, submenu.length);
 
     gpii.tests.app.testItem(submenu[0], "Voice control with Increased Size");
     gpii.tests.app.testItem(submenu[1], "Larger 125%");
@@ -161,7 +160,8 @@ gpii.tests.dev.testKeyInList = function (item) {
     gpii.tests.app.testItem(submenu[10], "Magnifier 200% & Display Scaling 175%");
     gpii.tests.app.testItem(submenu[11], "Dark Magnifier 200%");
     gpii.tests.app.testItem(submenu[12], "Multiple pref sets. Magnifier & Volume Control");
-    gpii.tests.app.testItem(submenu[13], "Invalid user");
+    gpii.tests.app.testItem(submenu[13], "onKeyInFail");
+    gpii.tests.app.testItem(submenu[14], "onSettingWriteFail");
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
@@ -239,7 +239,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 165,
+    expect: 171,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
