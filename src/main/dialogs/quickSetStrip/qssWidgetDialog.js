@@ -42,7 +42,7 @@ fluid.defaults("gpii.app.qssWidget", {
 
     // Temporary. Should be removed when the widget becomes truly resizable.
     heightMap: {
-        "http://registry\\.gpii\\.net/common/language": 625,
+        "http://registry\\.gpii\\.net/common/language": 637,
         "http://registry\\.gpii\\.net/common/highContrastTheme": 627
     },
 

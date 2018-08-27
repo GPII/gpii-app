@@ -143,19 +143,12 @@ jqUnit.test("Menu.getKeyedInSnapset", function () {
 });
 
 jqUnit.test("Menu.getKeyOut", function () {
-    jqUnit.expect(7);
+    jqUnit.expect(4);
     var token = "alice";
     var keyOutStr = "Reset Morphic";
-    var notKeyedInStr = "(No one keyed in)";
 
-    var keyOutObj = gpii.app.menu.getKeyOut(false, null, keyOutStr, notKeyedInStr);
-    jqUnit.assertEquals("Label is set in the key out object when there is no user",
-        notKeyedInStr, keyOutObj.label);
-    jqUnit.assertFalse("Key out object is disabled when no token is provided.", keyOutObj.enabled);
-
-    keyOutObj = gpii.app.menu.getKeyOut(true, token, keyOutStr, notKeyedInStr);
+    var keyOutObj = gpii.app.menu.getKeyOut(token, keyOutStr);
     jqUnit.assertTrue("Key out object exists", keyOutObj);
-    jqUnit.assertTrue("Key out object is enabled when a token is provided", keyOutObj.enabled);
     jqUnit.assertEquals("Key out is bound to onClick", "onKeyOut", keyOutObj.click);
     jqUnit.assertEquals("Token is set in the key out object", token, keyOutObj.args.token);
     jqUnit.assertEquals("Label is set in the key out object", keyOutStr, keyOutObj.label);

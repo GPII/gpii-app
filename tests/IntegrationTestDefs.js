@@ -64,7 +64,7 @@ gpii.tests.app.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 4);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     gpii.tests.app.testItem(menuTemplate[1], "About...");
-    gpii.tests.app.testItem(menuTemplate[3], "(No one keyed in)");
+    gpii.tests.app.testItem(menuTemplate[3], "Reset Morphic");
 };
 
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
@@ -175,7 +175,7 @@ gpii.tests.dev.testMenu = function (menuTemplate) {
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     gpii.tests.dev.testKeyInList(menuTemplate[3]);
     gpii.tests.app.testItem(menuTemplate[4], "About...");
-    gpii.tests.app.testItem(menuTemplate[6], "(No one keyed in)");
+    gpii.tests.app.testItem(menuTemplate[6], "Reset Morphic");
     gpii.tests.app.testItem(menuTemplate[7], "Exit GPII");
 };
 
