@@ -127,10 +127,14 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     members: {
-        // XXX move to the model probably
         width:  "{that}.options.config.attrs.width", // the actual width of the content
         height: "{that}.options.config.attrs.height", // the actual height of the content
 
+        /*
+         * A unique identifier to the component that is to be used by its BrowserWindow instance
+         * for backward relation.
+         */
+        relatedCmpId: null,
         dialog: {
             expander: {
                 funcName: "gpii.app.dialog.makeDialog",
@@ -270,8 +274,9 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
 
     dialog.loadURL(url);
 
-    // Keep record in the window itself for its wrapping grade
-    dialog.grade = that.options.gradeNames[that.options.gradeNames.length - 1];
+    that.relatedCmpId = fluid.allocateGuid();
+    // Keep record in the window itself for its wrapping dialog instance
+    dialog.relatedCmpId = that.relatedCmpId;
 
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095
@@ -308,14 +313,14 @@ gpii.app.dialog.positionOnInit = function (that) {
  * Listens for a notification from the corresponding BrowserWindow for components' initialization.
  * It uses a shared channel for dialog creation - `onDialogReady` - where every BrowserWindow of a `gpii.app.dialog`
  * type may sent a notification for its creation. Messages in this shared channel are distinguished based on
- * the grade that is sent with the notification. The sent grade corresponds to
- * the dialog instance's grade ({that}.dialog.grade).
+ * an unique identifier that is sent with the notification. The sent identifier corresponds to
+ * a `gpii.app.dialog` instance's grade.
  * @param {Component} that - The instance of `gpii.app.dialog` component
  */
 gpii.app.dialog.registerDailogReadyListener = function (that) {
     // Use a local function so that its we can de-register the channel listener when needed
-    function handleReadyResponse(event, grade) {
-        if (that.dialog.grade === grade) {
+    function handleReadyResponse(event, relatedCmpId) {
+        if (that.dialog.relatedCmpId === relatedCmpId) {
             that.events.onDialogReady.fire();
 
             // detach current dialog's "ready listener"

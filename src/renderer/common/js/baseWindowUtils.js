@@ -17,14 +17,22 @@
 (function (fluid) {
     var electron = require("electron");
 
-    fluid.defaults("gpii.psp.rendererWrapper.signalDialogReady", {
+    /**
+     * Notify the corresponding dialog wrapper component in main,
+     * that the base window component has finished initialization.
+     *
+     * This is needed as the Electon's "ready-to-show" event may
+     * be fired too soon - before the renderer wrapper component has
+     * finished loading which causes troubles with init data sent from the main.
+     */
+    fluid.defaults("gpii.psp.baseWindowCmp.signalDialogReady", {
         listeners: {
             "onCreate.signalInit": {
                 funcName: "gpii.psp.channel.notifyChannel",
                 args: [
                     "onDialogReady",
-                    // use the gradeName as a unique dialog identifier
-                    electron.remote.getCurrentWindow().grade
+                    // use the main component gradeName as a unique dialog identifier
+                    electron.remote.getCurrentWindow().relatedCmpId
                 ]
             }
         }

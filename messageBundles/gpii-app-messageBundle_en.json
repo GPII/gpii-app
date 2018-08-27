@@ -57,6 +57,7 @@
     "gpii_psp_qssNotification_title": "Morphic Notification",
     "gpii_psp_qssNotification_dismissButtonLabel": "OK",
 
+    "gpii_qss_buttonPresenter_notification": "To see the %settingTitle change, you may need to restart some applications.",
     "gpii_qss_saveButtonPresenter_notification": {
         "keyedOut": "To save your settings you need to setup a Morphic Account.  Go to <a href=\"http://Morphic.world/account\">http://Morphic.world/account</a>",
         "keyedIn": "Your settings were saved to the Morphic Cloud."

@@ -56,7 +56,7 @@
             },
             value: "{that}.model.item.value",
             messages: {
-                notification: "To see the %settingTitle change, you may need to restart some applications."
+                notification: null
             }
         },
 
@@ -827,7 +827,7 @@
             "gpii.psp.messageBundles",
             "fluid.viewComponent",
             "gpii.psp.linksInterceptor",
-            "gpii.psp.rendererWrapper.signalDialogReady"
+            "gpii.psp.baseWindowCmp.signalDialogReady"
         ],
 
         components: {
