@@ -15,8 +15,8 @@
         "gpii-windows": "0.3.0-dev.20180813T173305Z.600f33e.feds-audit",
         "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
         "node-jqunit": "1.1.8",
-        "request": "2.85.0",
-        "winstrap": "0.5.11"
+        "request": "2.88.0",
+        "winstrap": "0.5.12"
     },
     "devDependencies": {
         "electron-packager": "8.5.1",
@@ -24,7 +24,7 @@
         "gpii-grunt-lint-all": "1.0.4",
         "gpii-testem": "2.1.1-dev.20180508T091631Z.1168649",
         "graceful-fs": "4.1.11",
-        "grunt": "1.0.2",
+        "grunt": "1.0.3",
         "grunt-shell": "2.1.0",
         "mkdirp": "0.5.1",
         "nyc": "11.7.1",

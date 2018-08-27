@@ -191,14 +191,14 @@ fluid.defaults("gpii.app.dialog", {
                 "{arguments}.1"  // height
             ]
         },
-        _show: {
-            funcName: "gpii.app.dialog._show",
+        showImp: {
+            funcName: "gpii.app.dialog.showImp",
             args: [
                 "{that}",
                 "{arguments}.0" // showInactive
             ]
         },
-        _hide: {
+        hideImpl: {
             this: "{that}.dialog",
             method: "hide"
         },
@@ -313,7 +313,7 @@ gpii.app.dialog.show = function (that) {
  * @param {Boolean} showInactive - If `true`, the dialog should not have focus
  * when shown. Otherwise it will.
  */
-gpii.app.dialog._show = function (that, showInactive) {
+gpii.app.dialog.showImp = function (that, showInactive) {
     var showMethod = showInactive ?
         that.dialog.showInactive :
         that.dialog.show;
@@ -330,10 +330,10 @@ gpii.app.dialog._show = function (that, showInactive) {
  */
 gpii.app.dialog.toggle = function (that, isShown, showInactive) {
     if (isShown) {
-        that._show(showInactive);
+        that.showImp(showInactive);
         that.events.onDialogShown.fire();
     } else {
-        that._hide();
+        that.hideImpl();
         that.events.onDialogHidden.fire();
     }
 };
