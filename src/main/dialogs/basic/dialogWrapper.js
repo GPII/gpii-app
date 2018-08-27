@@ -106,4 +106,3 @@ gpii.app.dialogWrapper.close = function (that) {
         that.dialog.close();
     }
 };
-

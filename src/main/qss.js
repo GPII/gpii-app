@@ -79,7 +79,7 @@ fluid.defaults("gpii.app.resettableQssWrapper", {
  * @param {Component} that - The `gpii.app.resettableQssWrapper` instance.
  * @param {Object[]} defaultQssSettings - An array containing the default
  * values of the QSS settings
- * @param {Obeject[]} preferences - The new preferences that are delivered to
+ * @param {Object[]} preferences - The new preferences that are delivered to
  * the QSS wrapper.
  */
 gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings = function (that, defaultQssSettings, preferences) {
@@ -426,7 +426,7 @@ gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
  * internal models and UI. Note that settings changes as a result of a change
  * in the preference set are not undoable.
  * @param {Component} that - The `gpii.app.qssWrapper` instance.
- * @param {Obeject[]} preferences - The new preferences that are delivered to
+ * @param {Object[]} preferences - The new preferences that are delivered to
  * the QSS wrapper.
  */
 gpii.app.qssWrapper.applyPreferenceSettings = function (that, preferences) {
