@@ -41,8 +41,8 @@
 
         model: {
             messages: {
-                title: "Morphic Notification",
-                dismissButtonLabel: "OK"
+                title: null,
+                dismissButtonLabel: null
             }
         },
 
