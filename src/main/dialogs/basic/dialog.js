@@ -121,6 +121,9 @@ fluid.defaults("gpii.app.dialog", {
         width:  "{that}.options.config.attrs.width", // the actual width of the content
         height: "{that}.options.config.attrs.height", // the actual height of the content
 
+        // Blurrable dialogs will have the `gradeNames` property which will contain
+        // all gradeNames of the current component. Useful when performing checks about
+        // the component if only its dialog is available.
         dialog: {
             expander: {
                 funcName: "gpii.app.dialog.makeDialog",
@@ -191,14 +194,14 @@ fluid.defaults("gpii.app.dialog", {
                 "{arguments}.1"  // height
             ]
         },
-        _show: {
-            funcName: "gpii.app.dialog._show",
+        showImp: {
+            funcName: "gpii.app.dialog.showImp",
             args: [
                 "{that}",
                 "{arguments}.0" // showInactive
             ]
         },
-        _hide: {
+        hideImpl: {
             this: "{that}.dialog",
             method: "hide"
         },
@@ -256,9 +259,6 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
 
     dialog.loadURL(url);
 
-    // Keep record in the window itself for its wrapping grade
-    dialog.grade = that.options.gradeNames[that.options.gradeNames.length - 1];
-
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095
     dialog.params = params || {};
@@ -313,7 +313,7 @@ gpii.app.dialog.show = function (that) {
  * @param {Boolean} showInactive - If `true`, the dialog should not have focus
  * when shown. Otherwise it will.
  */
-gpii.app.dialog._show = function (that, showInactive) {
+gpii.app.dialog.showImp = function (that, showInactive) {
     var showMethod = showInactive ?
         that.dialog.showInactive :
         that.dialog.show;
@@ -330,10 +330,10 @@ gpii.app.dialog._show = function (that, showInactive) {
  */
 gpii.app.dialog.toggle = function (that, isShown, showInactive) {
     if (isShown) {
-        that._show(showInactive);
+        that.showImp(showInactive);
         that.events.onDialogShown.fire();
     } else {
-        that._hide();
+        that.hideImpl();
         that.events.onDialogHidden.fire();
     }
 };

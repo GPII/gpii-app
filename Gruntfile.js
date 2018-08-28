@@ -1,13 +1,15 @@
 "use strict";
 
 module.exports = function (grunt) {
-
     grunt.initConfig({
-        eslint: {
-            all: ["*.js", "src/**/*.js", "tests/**/*.js"]
-        },
-        jsonlint: {
-            all: [".eslintrc.json", "package.json", "configs/**/*.json", "src/**/*.json", "tests/**/*.json"]
+        lintAll: {
+            sources: {
+                md: [ "./*.md","./documentation/*.md", "./examples/**/*.md"],
+                js: ["src/**/*.js", "tests/**/*.js", "examples/**/*.js", "*.js"],
+                json: ["src/**/*.json", "tests/**/*.json", "testData/**/*.json", "configs/**/*.json", "*.json"],
+                json5: ["src/**/*.json5", "tests/**/*.json5", "testData/**/*.json5", "*.json5"],
+                other: ["./.*"]
+            }
         },
         shell: {
             options: {
@@ -25,12 +27,11 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.loadNpmTasks("fluid-grunt-eslint");
-    grunt.loadNpmTasks("grunt-jsonlint");
+    grunt.loadNpmTasks("gpii-grunt-lint-all");
     grunt.loadNpmTasks("grunt-shell");
 
     grunt.registerTask("default", ["lint"]);
-    grunt.registerTask("lint", "Run eslint and jsonlint", ["eslint", "jsonlint"]);
+    grunt.registerTask("lint", "Perform all standard lint checks.", ["lint-all"]);
 
 
     grunt.registerMultiTask("compileMessages", function () {

@@ -23,5 +23,5 @@
     },
     "mergeConfigs": [
         "%gpii-app/configs/app.base.json"
-     ]
+    ]
 }

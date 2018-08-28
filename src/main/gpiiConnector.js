@@ -20,6 +20,7 @@ var groupingTemplate = fluid.require("%gpii-app/testData/grouping/groupingTempla
 var gpii = fluid.registerNamespace("gpii");
 
 /**
+ * @module gpiiConnector
  * Responsible for creation and housekeeping of the connection to the PSP Channel WebSocket
  */
 fluid.defaults("gpii.app.gpiiConnector", {
@@ -150,7 +151,7 @@ gpii.app.gpiiConnector.parseMessage = function (gpiiConnector, message) {
 /**
  * Sends an active set change request to GPII.
  * @param {Object} gpiiConnector - The `gpii.app.gpiiConnector` instance
- * @param {String} newPrefSet - The id of the new preference set
+ * @param {String} newPrefSet - The path of the new preference set
  */
 gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefSet) {
     gpiiConnector.send({
@@ -197,8 +198,7 @@ gpii.app.extractSettings = function (element) {
  * or out.
  * @param {Object} message - The message sent when the user keys is or out (a JSON
  * object).
- * @return {Object} An object containing all preference sets, the active preference
- * set and the corresponding settings.
+ * @return {Preferences} The preferences object that can be used in the GPII app.
  */
 gpii.app.extractPreferencesData = function (message) {
     var value = message.value || {},
@@ -279,8 +279,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector", {
  * As the liveness option for a setting is not yet supported on the Core's end, this function
  * takes care of adjusting it properly for the "Magnifier" settings (it should require an
  * application restart) and for the "Speech Control" setting (it should require an OS restart).
- * @param {Object[]} settings - An array of settings. As a setting can have subsettings, this
- * function has to be applied recursively for them.
+ * @param {SettingDescriptor[]} settings - The array of settings to be decorated.
  */
 gpii.app.dev.gpiiConnector.applyLivenessFlag = function (settings) {
     fluid.each(settings, function (setting) {
@@ -300,7 +299,7 @@ gpii.app.dev.gpiiConnector.applyLivenessFlag = function (settings) {
 /**
  * Adds an image for the provided preference sets. If the preference sets are more than the
  * available mock images, the latter are sequentially cycled through.
- * @param {Object[]} prefSets - The preference sets for which the images are to be added.
+ * @param {PreferenceSet[]} prefSets - The preference sets for which the images are to be added.
  */
 gpii.app.dev.gpiiConnector.applyPrefSetImages = function (prefSets) {
     var whiteThemeimages = ["paris.jpg", "mountains.jpg", "lights.jpg"],
@@ -317,6 +316,8 @@ gpii.app.dev.gpiiConnector.applyPrefSetImages = function (prefSets) {
 /*
  * A decorator for the extracted preferences that applies values that are to be used
  * for development purposes.
+ * @param {Preferences} preferences - The preferences that are
+ * to be decorated
  */
 gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
     gpii.app.dev.gpiiConnector.applyPrefSetImages(preferences.sets);
@@ -383,6 +384,23 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
 
 
 /**
+ * Represents a setting after the grouping transformation has been applied to the
+ * original PSP channel message and after any parsing specific to the GPII app is
+ * done. Almost identical to the PSPSettingDescriptor but it has a `settings`
+ * property instead of a `settingControls` property.
+ * @typedef {Object} module:gpiiConnector.SettingDescriptor
+ * @property {String|Number|Array|Boolean} value @see PSPSettingDescriptor.value.
+ * @property {SettingSchema} schema
+ * @property {PSPSettingDescriptor} [settings] Represents the subsettings (if any)
+ * which this setting has. The settings are parsed into the appropriate format
+ * needed by the GPII app.
+ * @property {String} [solutionName] @see PSPSettingDescriptor.solutionName.
+ * @property {String} [liveness] @see PSPSettingDescriptor.liveness.
+ * @property {Boolean} [memory] @see PSPSettingDescriptor.memory.
+ */
+
+
+/**
  * Represents the `settingControls` object obtained after the original message received
  * via the PSP channel has been modified so that grouping is applied to its settings.
  * Each key in this hash is a unique setting's path.
@@ -399,6 +417,38 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
  * setting in this group is modified. It will be used in the restart warning message.
  * @property {PSPSettingControls} settingControls
  */
+
+
+ /**
+ * Represents a group of setting created when the grouping algorithm is applied to the
+ * original PSP channel message and after any parsing specific to the GPII app is
+ * done. Almost identical to PSPSettingGroup.
+ * @typedef {Object} module:gpiiConnector.SettingGroup
+ * @property {String} [name] @see PSPSettingGroup.name.
+ * @property {String} [solutionName] @see PSPSettingGroup.solutionName.
+ * @property {SettingDescriptor[]} settings The settings for the group.
+ */
+
+/**
+ * Represents a preference set within the GPII app.
+ * @typedef {Object} PreferenceSet
+ * @property {String} path The path of the prefererence set. Must be unique.
+ * @property {String} name The name of the preference set. This is the human-readable
+ * name of the set.
+ */
+
+ /**
+  * Represents the object which is the final result when parsing of the channel message
+  * is done (including grouping and any specific adjustments needed by the GPII app).
+  * @typedef {Object} module:gpiiConnector.Preferences
+  * @property {String} gpiiKey The token of the currently keyed in user (if any).
+  * @property {PreferenceSet[]} sets The available preference sets from the message.
+  * @property {String} activeSet - The path of the currently active preference set.
+  * @property {SettingGroup[]} settingGroups - The setting groups
+  * for the parsed message.
+  * @property {Boolean} closePSPOnBlur - Whether the PSP should be closed when the user
+  * clicks outside of it or not.
+  */
 
 
 /**

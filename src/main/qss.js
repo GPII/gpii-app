@@ -78,9 +78,10 @@ fluid.defaults("gpii.app.resettableQssWrapper", {
  * settings.
  * @param {Component} that - The `gpii.app.resettableQssWrapper` instance.
  * @param {Object[]} defaultQssSettings - An array containing the default
- * values of the QSS settings
- * @param {Obeject[]} preferences - The new preferences that are delivered to
- * the QSS wrapper.
+ * values of the QSS settings. Each setting is identified by its path and each
+ * object in the array contains the default value for that setting.
+ * @param {module:gpiiConnector.Preferences} preferences - The new preferences
+ * that are delivered to the QSS wrapper.
  */
 gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings = function (that, defaultQssSettings, preferences) {
     var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences && preferences.settingGroups),
@@ -397,9 +398,10 @@ gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable)
  * Returns all available settings (including subsettings) in the provided
  * item (either a setting group or a setting). In case the passed argument
  * is a setting, it is also added to the resulting list.
- * @param {Object} item - The setting group or the setting from which to
- * retrieve settings
- * @return {Object[]} An array of all available settings for that `item`.
+ * @param {module:gpiiConnector.SettingGroup | module:gpiiConnector.SettingDescriptor} item - The
+ * setting group or the setting from which to retrieve settings
+ * @return {module:gpiiConnector.SettingDescriptor[]} An array of all available
+ * settings for that `item`.
  */
 gpii.app.qssWrapper.getItemSettings = function (item) {
     var settings = [];
@@ -418,9 +420,10 @@ gpii.app.qssWrapper.getItemSettings = function (item) {
 /**
  * Returns all settings (including subsettings) available in the provided
  * settings groups.
- * @param {Object[]} settingGroups - An array with setting group items as
- * per the parsed message in the `gpiiConnector`.
- * @return {Object[]} An array of all available settings.
+ * @param {module:gpiiConnector.SettingGroup[]} settingGroups - An array with
+ * setting group items as per the parsed message in the `gpiiConnector`.
+ * @return {module:gpiiConnector.SettingDescriptor[]} An array of all available
+ * settings.
  */
 gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
     var settings = [];
@@ -439,8 +442,8 @@ gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
  * internal models and UI. Note that settings changes as a result of a change
  * in the preference set are not undoable.
  * @param {Component} that - The `gpii.app.qssWrapper` instance.
- * @param {Obeject[]} preferences - The new preferences that are delivered to
- * the QSS wrapper.
+ * @param {module:gpiiConnector.Preferences} preferences - The new preferences
+ * that are delivered to the QSS wrapper.
  */
 gpii.app.qssWrapper.applyPreferenceSettings = function (that, preferences) {
     var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences.settingGroups);

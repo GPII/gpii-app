@@ -17,4 +17,3 @@ fluid.module.register("gpii-app", __dirname, require);
 
 require("./src/main/logging.js");
 require("./src/main/app.js");
-

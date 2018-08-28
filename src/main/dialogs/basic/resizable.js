@@ -101,7 +101,6 @@ fluid.defaults("gpii.app.resizable", {
     }
 });
 
-
 /**
  * Registers a listener to be called whenever the `display-metrics-changed`
  * event is emitted by the electron screen.
@@ -111,15 +110,19 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
     electron.screen.on("display-metrics-changed", that.events.onDisplayMetricsChanged.fire);
 };
 
-// TODO
+/**
+ * Scales the current dialog as a result of a `display-metrics-changed` event.
+ * Note that this function will reset the position and the size of the dialog
+ * so that the scale factor can be applied.
+ * @param {Component} that - The `gpii.app.resizable` component.
+ */
 gpii.app.resizable.scaleDialog = function (that) {
-    // reset it's position and size in order for the scale factor to be applied
     that.setBounds();
 
-    // Correct the state of windows
+    // Show the dialog if it was shown when a `display-metrics-changed` event occurred
     if (that.options.config.hideOffScreen || that.model.isShown) {
-        // low level show
-        gpii.app.dialog._show(that, !that.displayMetricsChanged.wasFocused);
+        // Use the low level show
+        gpii.app.dialog.showImp(that, !that.displayMetricsChanged.wasFocused);
     }
 };
 
@@ -129,34 +132,27 @@ gpii.app.resizable.scaleDialog = function (that) {
  * @param {Component} that - The `gpii.app.resizable` component.
  */
 gpii.app.resizable.handleDisplayMetricsChange = function (that) {
-    // Electron BrowserWindows are not resized automatically on Display Metrics Changes, so
-    // manual resizing is necessary.
-    // On the other when resizing an Electron BrowserWindow the width and height values that are passed
-    // are altered according to the scale factor of the environment (DPI setting for Windows). In other words
-    // calling the resize method with the same metrics will update the window with respect to the scaling.
-    //
-    // There's a problem with the `display-metrics-changed` event.
-    // In older versions of Electron (e.g. 1.4.1) whenever the DPI was changed, one
-    // `display-metrics-changed` event was fired. In newer versions (e.g. 1.8.1) the
-    // `display-metrics-changed` event is fired multiple times. The change of the DPI
-    // appears to be applied at different times on different machines. On some as soon
-    // as the first `display-metrics-changed` event is fired, the DPI changes are
-    // applied. On others, this is not the case until the event is fired again. That is
-    // why for the resizing it best to happen only after the last time the event is fired to
-    // ensure that the changes from the system have taken place in the dialog rendering unit
-    // as well.
-    // https://issues.gpii.net/browse/GPII-2890.
-
-
-    // in case this is the first call notification of the display-metrics-changed event
-    // hide the dialog, and keep its state
+    /**
+     * There is a notorious issue about wrong positioning and sizing of Electron `BrowserWindow`s
+     * when the screen DPI has a value different from 1: https://github.com/electron/electron/issues/10862.
+     * We tried to employ different strategies to work around this issue but the biggest problem
+     * with all of them is that the `display-metrics-changed` event is probably not fired when the
+     * DPI change has been completely applied. Thus, there is no way to know when to resize the
+     * dialogs in the GPII app.
+     *
+     * The current approach for handling this situation is as follows:
+     * Whenever a change in the DPI occurs, multiple `display-metrics-changed` events are fired. During
+     * the first event, the dialog is hidden and a resizing timer is started. If more `display-metrics-changed`
+     * continue to arrive, the timer that has been started is discarded and a new timer is started.
+     * When the time is up, the DPI changes are considered to be applied successfully and the dialog can
+     * be resized/repositioned and shown again.
+     */
     if (!that.rescaleDialogTimer.isActive()) {
         that.displayMetricsChanged.wasFocused = that.dialog.isFocused();
-        // low level hide
+        // Low level hide - hides the dialog but preserves the `isShown` model state of its component.
         that.dialog.hide();
     }
 
-    // to ensure the DPI change has taken place, wait for a while after its last event
     that.rescaleDialogTimer.start(1000);
 };
 
