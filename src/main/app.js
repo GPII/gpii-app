@@ -18,23 +18,24 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
-require("./assetsManager.js");
-require("./shortcutsManager.js");
-require("./common/ws.js");
-require("./factsManager.js");
-require("./dialogs/dialogManager.js");
-require("./gpiiConnector.js");
-require("./menu.js");
-require("./dialogs/psp.js");
-require("./qss.js");
-require("./settingsBroker.js");
-require("./surveys/surveyManager.js");
-require("./tray.js");
-require("./common/utils.js");
-require("./userErrorsHandler.js");
+require("../shared/channelUtils.js");
 require("../shared/messageBundles.js");
 require("../shared/utils.js");
-require("../shared/channelUtils.js");
+require("./assetsManager.js");
+require("./common/utils.js");
+require("./common/ws.js");
+require("./dialogs/dialogManager.js");
+require("./dialogs/psp.js");
+require("./factsManager.js");
+require("./gpiiConnector.js");
+require("./menu.js");
+require("./qss.js");
+require("./settingsBroker.js");
+require("./shortcutsManager.js");
+require("./siteConfigurationHandler.js");
+require("./surveys/surveyManager.js");
+require("./tray.js");
+require("./userErrorsHandler.js");
 
 // enhance the normal require to work with .json5 files
 require("json5/lib/register");
@@ -99,6 +100,9 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
+        configurationHandler: {
+            type: "gpii.app.siteConfigurationHandler"
+        },
         userErrorHandler: {
             type: "gpii.app.userErrorsHandler",
             options: {

@@ -125,11 +125,24 @@ gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings = function (that,
 fluid.defaults("gpii.app.qssWrapper", {
     gradeNames: "fluid.modelComponent",
 
+
+    /*
+     * Additional options for QSS settings. These are options that are always
+     * valid and may be dependent on some local configuration.
+     * Currently they are used for the "site configuration" for conditionally
+     * disabling the "Save" button.
+     */
+    settingOptions: {
+        disabledSettings: []
+    },
+
     settingsPath: "%gpii-app/testData/qss/settings.json",
     loadedSettings: {
         expander: {
             funcName: "gpii.app.qssWrapper.loadSettings",
             args: [
+                "{that}",
+                "{that}.options.settingOptions",
                 "{assetsManager}",
                 "{that}.options.settingsPath"
             ]
@@ -441,14 +454,16 @@ gpii.app.qssWrapper.applyPreferenceSettings = function (that, preferences) {
  * Retrieves synchronously the QSS settings from a file on the local machine
  * and resolves any assets that they reference with respect to the `gpii-app`
  * folder.
+ * It also applies any other mutations to the settings, such as disabling.
+ * @param {Component} that - The instance of `gpii.app.qssWrapper` component
+ * @param {Object} settingOptions - The options for setting mutations
  * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
  * @param {String} settingsPath - The path to the file containing the QSS
  * settings with respect to the `gpii-app` folder.
  * @return {Object[]} An array of the loaded settings
  */
-gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
-    var resolvedPath = fluid.module.resolvePath(settingsPath),
-        loadedSettings = fluid.require(resolvedPath);
+gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager, settingsPath) {
+    var loadedSettings = fluid.require(settingsPath);
 
     fluid.each(loadedSettings, function (loadedSetting) {
         var imageAsset = loadedSetting.schema.image;
@@ -456,6 +471,25 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
             loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);
         }
     });
+
+    /*
+     * Disable settings
+     */
+    if (settingOptions.disabledSettings) {
+        fluid.each(settingOptions.disabledSettings, function (disabledSettingPath) {
+            var settingToDisable = loadedSettings.find(function (setting) {
+                return setting.path === disabledSettingPath;
+            });
+
+            /*
+             * In the renderer the type property is used for choosing the proper handling
+             * approach. Use a special such type that is handled in disable fashion.
+             */
+            if (settingToDisable) {
+                settingToDisable.schema.type = "disabled";
+            }
+        });
+    }
 
     return loadedSettings;
 };

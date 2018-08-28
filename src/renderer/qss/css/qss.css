@@ -51,6 +51,10 @@ body {
     display: none;
 }
 
+.fl-qss-button.fl-qss-disabledButton {
+    pointer-events: none;
+    opacity: 0.4;
+}
 
 .fl-qss-button.fl-qss-settingButton {
     background-color: #3b66b2;

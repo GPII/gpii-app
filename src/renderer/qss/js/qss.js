@@ -379,6 +379,32 @@
     };
 
     /**
+     * Represent a disabled button. These are buttons that cannot be interacted with (event not focusable).
+     */
+    fluid.defaults("gpii.qss.disabledButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+
+        styles: {
+            disabledButton: "fl-qss-disabledButton",
+            focusableButton: "fl-focusable"
+        },
+
+        listeners: {
+            "onCreate.removeButtonStyles": {
+                this: "{that}.container",
+                method: "removeClass",
+                args: ["{that}.options.styles.focusableButton"]
+            },
+            "onCreate.addButtonStyles": {
+                this: "{that}.container",
+                method: "addClass",
+                args: ["{that}.options.styles.disabledButton"]
+            }
+        }
+    });
+
+
+    /**
      * Represents a QSS button that can have a LED change indicator in the upper right
      * corner. For setting buttons, the presence of that LED light indicates that if the
      * setting can be undone, its value is different than its default one. If the LED
@@ -812,6 +838,8 @@
             return "gpii.qss.undoButtonPresenter";
         case "more":
             return "gpii.qss.moreButtonPresenter";
+        case "disabled":
+            return "gpii.qss.disabledButtonPresenter";
         default:
             return "gpii.qss.buttonPresenter";
         };
