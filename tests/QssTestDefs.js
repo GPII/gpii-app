@@ -32,7 +32,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
 
     clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
     clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
-    clickFontSizeBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
+    clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
     clickCaptionsBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(4)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
@@ -43,7 +43,10 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-child(2)').click()";
+    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:first-child').click()",
+    clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
+    clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()";
+
 // Generic
 var closeClosableDialog = "jQuery(\".flc-closeBtn\").click()";
 
@@ -294,7 +297,7 @@ var qssCrossTestSequence = [
         task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            clickFontSizeBtn
+            clickAppTextZoomBtn
         ],
         resolve: "fluid.identity"
     }, { // ... and the menu widget shouldn't be shown
@@ -628,6 +631,75 @@ var undoTestSequence = [
     }
 ];
 
+var appZoomTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // ... and click on the "App / Text Zoom" button.
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickAppTextZoomBtn
+        ]
+    }, {
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, { // Click on the increment button
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn
+        ]
+    }, {
+        event: "{that}.app.appZoom.events.onAppZoomed",
+        listener: "jqUnit.assertEquals",
+        args: [
+            "App Zoom zooms in when the + button in the QSS widget is pressed",
+            "increase",
+            "{arguments}.0"
+        ]
+    }, { // Click on the decrement button
+        func: "gpii.tests.qss.executeCommand",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn
+        ]
+    }, {
+        event: "{that}.app.appZoom.events.onAppZoomed",
+        listener: "jqUnit.assertEquals",
+        args: [
+            "App Zoom zooms out when the - button in the QSS widget is pressed",
+            "decrease",
+            "{arguments}.0"
+        ]
+    }
+];
+
+fluid.defaults("gpii.tests.qss.mockedAppZoom", {
+    gradeNames: "fluid.component",
+
+    events: {
+        onAppZoomed: null
+    },
+
+    invokers: {
+        sendZoom: {
+            func: "{that}.events.onAppZoomed.fire",
+            args: [
+                "{arguments}.0" // direction
+            ]
+        }
+    }
+});
+
+fluid.defaults("gpii.tests.qss.mockedAppZoomWrapper", {
+    gradeNames: "fluid.component",
+    components: {
+        appZoom: {
+            type: "gpii.tests.qss.mockedAppZoom"
+        }
+    }
+});
 
 /*
  * A subset of the QSS setting messages.
@@ -735,7 +807,6 @@ var crossQssTranslations = [
 ];
 
 
-
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
     expect: 38,
@@ -744,6 +815,10 @@ gpii.tests.qss.testDefs = {
         configPath: "tests/configs"
     },
     distributeOptions: {
+        applyMockedAppZoomWrapper: {
+            record: "gpii.tests.qss.mockedAppZoomWrapper",
+            target: "{that gpii.app}.options.gradeNames"
+        },
         mockedSettings: {
             // Supply the list of QSS settings
             // For now we're using the same settings list
@@ -767,6 +842,7 @@ gpii.tests.qss.testDefs = {
         undoCrossTestSequence,
         undoTestSequence,
         qssCrossTestSequence,
-        crossQssTranslations
+        crossQssTranslations,
+        appZoomTestSequence
     )
 };

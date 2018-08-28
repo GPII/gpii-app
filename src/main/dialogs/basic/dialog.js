@@ -130,11 +130,9 @@ fluid.defaults("gpii.app.dialog", {
         width:  "{that}.options.config.attrs.width", // the actual width of the content
         height: "{that}.options.config.attrs.height", // the actual height of the content
 
-        /*
-         * A unique identifier to the component that is to be used by its BrowserWindow instance
-         * for backward relation.
-         */
-        relatedCmpId: null,
+        // Blurrable dialogs will have the `gradeNames` property which will contain
+        // all gradeNames of the current component. Useful when performing checks about
+        // the component if only its dialog is available.
         dialog: {
             expander: {
                 funcName: "gpii.app.dialog.makeDialog",
@@ -209,14 +207,14 @@ fluid.defaults("gpii.app.dialog", {
                 "{arguments}.1"  // height
             ]
         },
-        _show: {
-            funcName: "gpii.app.dialog._show",
+        showImp: {
+            funcName: "gpii.app.dialog.showImp",
             args: [
                 "{that}",
                 "{arguments}.0" // showInactive
             ]
         },
-        _hide: {
+        hideImpl: {
             this: "{that}.dialog",
             method: "hide"
         },
@@ -274,9 +272,11 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
 
     dialog.loadURL(url);
 
-    that.relatedCmpId = fluid.allocateGuid();
-    // Keep record in the window itself for its wrapping dialog instance
-    dialog.relatedCmpId = that.relatedCmpId;
+    /*
+     * Use the component's unique identifier as a way for backward relation from the
+     * BrowserWindow. Keep that id in the window itself.
+     */
+    dialog.relatedCmpId = that.id;
 
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095
@@ -314,13 +314,13 @@ gpii.app.dialog.positionOnInit = function (that) {
  * It uses a shared channel for dialog creation - `onDialogReady` - where every BrowserWindow of a `gpii.app.dialog`
  * type may sent a notification for its creation. Messages in this shared channel are distinguished based on
  * an unique identifier that is sent with the notification. The sent identifier corresponds to
- * a `gpii.app.dialog` instance's grade.
+ * the id of a `gpii.app.dialog` instance.
  * @param {Component} that - The instance of `gpii.app.dialog` component
  */
 gpii.app.dialog.registerDailogReadyListener = function (that) {
     // Use a local function so that its we can de-register the channel listener when needed
     function handleReadyResponse(event, relatedCmpId) {
-        if (that.dialog.relatedCmpId === relatedCmpId) {
+        if (that.id === relatedCmpId) {
             that.events.onDialogReady.fire();
 
             // detach current dialog's "ready listener"
@@ -357,7 +357,7 @@ gpii.app.dialog.show = function (that) {
  * @param {Boolean} showInactive - If `true`, the dialog should not have focus
  * when shown. Otherwise it will.
  */
-gpii.app.dialog._show = function (that, showInactive) {
+gpii.app.dialog.showImp = function (that, showInactive) {
     var showMethod = showInactive ?
         that.dialog.showInactive :
         that.dialog.show;
@@ -374,10 +374,10 @@ gpii.app.dialog._show = function (that, showInactive) {
  */
 gpii.app.dialog.toggle = function (that, isShown, showInactive) {
     if (isShown) {
-        that._show(showInactive);
+        that.showImp(showInactive);
         that.events.onDialogShown.fire();
     } else {
-        that._hide();
+        that.hideImpl();
         that.events.onDialogHidden.fire();
     }
 };

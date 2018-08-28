@@ -18,23 +18,24 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
-require("./assetsManager.js");
-require("./shortcutsManager.js");
-require("./common/ws.js");
-require("./factsManager.js");
-require("./dialogs/dialogManager.js");
-require("./gpiiConnector.js");
-require("./menu.js");
-require("./dialogs/psp.js");
-require("./qss.js");
-require("./settingsBroker.js");
-require("./surveys/surveyManager.js");
-require("./tray.js");
-require("./common/utils.js");
-require("./userErrorsHandler.js");
+require("../shared/channelUtils.js");
 require("../shared/messageBundles.js");
 require("../shared/utils.js");
-require("../shared/channelUtils.js");
+require("./assetsManager.js");
+require("./common/utils.js");
+require("./common/ws.js");
+require("./dialogs/dialogManager.js");
+require("./dialogs/psp.js");
+require("./factsManager.js");
+require("./gpiiConnector.js");
+require("./menu.js");
+require("./qss.js");
+require("./settingsBroker.js");
+require("./shortcutsManager.js");
+require("./siteConfigurationHandler.js");
+require("./surveys/surveyManager.js");
+require("./tray.js");
+require("./userErrorsHandler.js");
 
 // enhance the normal require to work with .json5 files
 require("json5/lib/register");
@@ -99,6 +100,9 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
+        configurationHandler: {
+            type: "gpii.app.siteConfigurationHandler"
+        },
         userErrorHandler: {
             type: "gpii.app.userErrorsHandler",
             options: {
@@ -454,6 +458,7 @@ gpii.app.fireAppReady = function (fireFn) {
   * @param {String} token - The token to key in with.
   */
 gpii.app.keyIn = function (flowManager, token) {
+    // TODO: Replace this with direct function call when https://github.com/GPII/universal/pull/653 gets merged
     request("http://localhost:8081/user/" + token + "/proximityTriggered", function (error, response, body) {
 
         // Try is needed as the response body has two formats:
@@ -461,6 +466,7 @@ gpii.app.keyIn = function (flowManager, token) {
         //  - object - "{isError: Boolean, message: string}"
         try {
             /// XXX temporary way for triggering key in error
+            // TODO: Replace this when https://github.com/GPII/universal/pull/653 gets merged
             if (typeof body === "string" && JSON.parse(body).isError) {
                 flowManager.userErrors.events.userError.fire({
                     isError: true,
@@ -482,6 +488,7 @@ gpii.app.keyIn = function (flowManager, token) {
   */
 gpii.app.keyOut = function (token) {
     var togo = fluid.promise();
+    // TODO: Replace this with direct function call when https://github.com/GPII/universal/pull/653 gets merged
     request("http://localhost:8081/user/" + token + "/proximityTriggered", function () {
         //TODO Put in some error logging
         // if (error) {

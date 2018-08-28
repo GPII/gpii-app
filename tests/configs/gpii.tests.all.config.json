@@ -30,5 +30,5 @@
     },
     "mergeConfigs": [
         "%gpii-universal/gpii/configs/gpii.config.development.all.local.json5"
-     ]
+    ]
 }
