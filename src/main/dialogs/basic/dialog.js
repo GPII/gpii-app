@@ -312,13 +312,13 @@ gpii.app.dialog.positionOnInit = function (that) {
 /**
  * Listens for a notification from the corresponding BrowserWindow for components' initialization.
  * It uses a shared channel for dialog creation - `onDialogReady` - where every BrowserWindow of a `gpii.app.dialog`
- * type may sent a notification for its creation. Messages in this shared channel are distinguished based on
- * an unique identifier that is sent with the notification. The sent identifier corresponds to
+ * grade may sent a notification for its creation. Messages in this shared channel are distinguished based on
+ * an unique identifier that is sent with the notification. The identifier that is sent corresponds to
  * the id of a `gpii.app.dialog` instance.
  * @param {Component} that - The instance of `gpii.app.dialog` component
  */
 gpii.app.dialog.registerDailogReadyListener = function (that) {
-    // Use a local function so that its we can de-register the channel listener when needed
+    // Use a local function so that we can de-register the channel listener when needed
     function handleReadyResponse(event, relatedCmpId) {
         if (that.id === relatedCmpId) {
             that.events.onDialogReady.fire();

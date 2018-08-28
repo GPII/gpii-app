@@ -155,7 +155,6 @@ gpii.app.gpiiConnector.isPrefSetUpdate = function (messagePayload) {
         messagePayload.type === "DELETE";
 };
 
-
 /**
  * Use the previous state of preference set update message to determine the source of the current update.
  * Currently there are three sources:
@@ -466,7 +465,7 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
  */
 
 
- /**
+/**
  * Represents a group of setting created when the grouping algorithm is applied to the
  * original PSP channel message and after any parsing specific to the GPII app is
  * done. Almost identical to PSPSettingGroup.
@@ -484,7 +483,7 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
  * name of the set.
  */
 
- /**
+/**
   * Represents the object which is the final result when parsing of the channel message
   * is done (including grouping and any specific adjustments needed by the GPII app).
   * @typedef {Object} module:gpiiConnector.Preferences

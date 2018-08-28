@@ -323,8 +323,10 @@ gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable)
  * internal models and UI. Note that settings changes as a result of a change
  * in the preference set are not undoable.
  * @param {Component} that - The `gpii.app.qssWrapper` instance.
- * @param {module:gpiiConnector.Preferences} preferences - The new preferences
- * that are delivered to the QSS wrapper.
+ * @param {Object[]} settings - Setting changes to be applied
+ * @param {String} settings.path - The path of the setting to be updated
+ * @param {Any} settings.value - The new value of the setting
+ * @param {Boolean} notUndoable - Whether these setting changes are undoable
  */
 gpii.app.qssWrapper.updateSettings = function (that, settings, notUndoable) {
     fluid.each(settings, function (setting) {
