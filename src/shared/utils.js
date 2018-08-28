@@ -121,3 +121,8 @@ gpii.app.applier.replace = function (applier, path, value, source) {
 
     transaction.commit();
 };
+
+gpii.app.scale = function (scaleFactor, num) {
+    return scaleFactor * num;
+};
+

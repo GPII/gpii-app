@@ -21,7 +21,7 @@
      * information about the current setting.
      */
     fluid.defaults("gpii.qss.qssTooltipPopup", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.scaledPage", "gpii.psp.selectorsTextRenderer"],
 
         model: {
             messages: {

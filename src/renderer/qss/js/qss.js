@@ -372,9 +372,9 @@
      */
     gpii.qss.getElementMetrics = function (target) {
         return {
-            offsetLeft: target.offset().left,
-            height:     target.outerHeight() - 3, // TODO: Think of a better formula.
-            width:      target.outerWidth()
+            offsetLeft: 0.8 * target.offset().left,
+            height:     0.8 * (target.outerHeight() - 3), // TODO: Think of a better formula.
+            width:      0.8 * (target.outerWidth())
         };
     };
 
@@ -830,6 +830,7 @@
                 type: "gpii.qss",
                 container: "{translatedQss}.container",
                 options: {
+                    scaleFactor: "{translatedQss}.options.scaleFactor",
                     model: {
                         settings: "{translatedQss}.model.settings"
                     }
@@ -843,7 +844,7 @@
      * the `focusManager` and the channels for communication with the main process.
      */
     fluid.defaults("gpii.qss", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.scaledPage"],
 
         model: {
             isKeyedIn: false,

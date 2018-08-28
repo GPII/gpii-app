@@ -27,7 +27,10 @@
         components: {
             qssNotification: {
                 type: "gpii.psp.qssNotification",
-                container: "{translatedQssNotification}.container"
+                container: "{translatedQssNotification}.container",
+                options: {
+                    scaleFactor: "{translatedQssNotification}.options.scaleFactor"
+                }
             }
         }
     });
@@ -37,7 +40,7 @@
      * the necessary DOM elements and handling user interaction.
      */
     fluid.defaults("gpii.psp.qssNotification", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable", "gpii.psp.linksInterceptor"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.scaledPage", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable", "gpii.psp.linksInterceptor"],
 
         model: {
             messages: {

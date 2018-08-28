@@ -132,4 +132,21 @@
             }
         });
     };
+
+    fluid.defaults("gpii.psp.scaledPage", {
+        gradeNames: "fluid.viewComponent",
+        scaleFactor: 1,
+        listeners: {
+            onCreate: {
+                funcName: "gpii.psp.scaledPage.setZoom",
+                args: [
+                    "{that}.options.scaleFactor"
+                ]
+            }
+        }
+    });
+
+    gpii.psp.scaledPage.setZoom = function (scaleFactor) {
+        $("body").css("zoom", scaleFactor);
+    };
 })(fluid, jQuery);

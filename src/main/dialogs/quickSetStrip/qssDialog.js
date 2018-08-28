@@ -22,19 +22,54 @@ require("../basic/dialog.js");
 require("../basic/blurrable.js");
 require("../../../shared/channelUtils.js");
 
+fluid.defaults("gpii.app.scaledDialog", {
+    gradeNames: ["fluid.component"],
+
+    scaleFactor: 1,
+    defaultWidth: 800,
+    defaultHeight: 600,
+
+    config: {
+        attrs: {
+            width: {
+                expander: {
+                    funcName: "gpii.app.scale",
+                    args: [
+                        "{that}.options.scaleFactor",
+                        "{that}.options.defaultWidth"
+                    ]
+                }
+            },
+            height: {
+                expander: {
+                    funcName: "gpii.app.scale",
+                    args: [
+                        "{that}.options.scaleFactor",
+                        "{that}.options.defaultHeight"
+                    ]
+                }
+            }
+        },
+        params: {
+            scaleFactor: "{that}.options.scaleFactor"
+        }
+    }
+});
 
 /**
  * A component that represents the Quick Set Strip.
  */
 fluid.defaults("gpii.app.qss", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
+
+    scaleFactor: 1,
+    defaultWidth: 984,
+    defaultHeight: 95,
 
     config: {
         closable: false,
 
         attrs: {
-            width: 984,
-            height: 95,
             alwaysOnTop: true,
             transparent: false,
             enableLargerThanScreen: true

@@ -44,7 +44,7 @@
      * showing the "Learn more" links, etc.
      */
     fluid.defaults("gpii.psp.qssWidget", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.scaledPage"],
 
         model: {
             setting: {}
