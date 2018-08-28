@@ -121,6 +121,9 @@ fluid.defaults("gpii.app.dialog", {
         width:  "{that}.options.config.attrs.width", // the actual width of the content
         height: "{that}.options.config.attrs.height", // the actual height of the content
 
+        // Blurrable dialogs will have the `gradeNames` property which will contain
+        // all gradeNames of the current component. Useful when performing checks about
+        // the component if only its dialog is available.
         dialog: {
             expander: {
                 funcName: "gpii.app.dialog.makeDialog",
@@ -255,9 +258,6 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
     var dialog = new BrowserWindow(windowOptions);
 
     dialog.loadURL(url);
-
-    // Keep record in the window itself for its wrapping grade
-    dialog.grade = that.options.gradeNames[that.options.gradeNames.length - 1];
 
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095

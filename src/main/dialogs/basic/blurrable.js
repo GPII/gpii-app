@@ -65,7 +65,14 @@ fluid.defaults("gpii.app.blurrable", {
  * @param {Component} that - The `gpii.app.blurrable` instance.
  */
 gpii.app.blurrable.initBlurrable = function (that) {
-    // Attach the grade names as window parameters
+    /**
+     * Add the gradeNames of the current component to the dialog `BrowserWindow`.
+     * This makes it possible to perform checks based on the grade names of the
+     * component even if only the dialog can be accessed. Of course, we can always
+     * discover the actual component to which a given dialog belongs but this may
+     * require traversing the tree of components which may slow down the application.
+     * For example usage, please see `gpii.app.blurrable.onBlur`.
+     */
     that.dialog.gradeNames = that.options.gradeNames;
 
     that.dialog.on("blur", that.events.onBlur.fire);

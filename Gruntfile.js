@@ -10,6 +10,20 @@ module.exports = function (grunt) {
                 json5: ["src/**/*.json5", "tests/**/*.json5", "testData/**/*.json5", "*.json5"],
                 other: ["./.*"]
             }
+        },
+        shell: {
+            options: {
+                stdout: true,
+                srderr: true,
+                failOnError: true
+            }
+        },
+        compileMessages: {
+            defaults: {
+                messageCompilerPath: "./messageBundlesCompiler.js",
+                messagesDirs: ["./messageBundles"],
+                resultFilePath: "./build/gpii-app-messageBundles.json"
+            }
         }
     });
 

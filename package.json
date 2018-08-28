@@ -10,7 +10,7 @@
     "license": "BSD-3-Clause",
     "dependencies": {
         "electron": "1.8.4",
-        "electron-edge-js": "8.3.2",
+        "electron-edge-js": "8.3.8",
         "electron-localshortcut": "3.1.0",
         "gpii-windows": "0.3.0-dev.20180813T173305Z.600f33e.feds-audit",
         "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
@@ -27,9 +27,9 @@
         "grunt": "1.0.3",
         "grunt-shell": "2.1.0",
         "mkdirp": "0.5.1",
-        "nyc": "11.7.1",
+        "nyc": "13.0.1",
         "rimraf": "2.6.2",
-        "shelljs": "0.3.0"
+        "shelljs": "0.8.2"
     },
     "scripts": {
         "start": "electron .",
