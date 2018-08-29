@@ -121,3 +121,13 @@ gpii.app.applier.replace = function (applier, path, value, source) {
 
     transaction.commit();
 };
+
+/**
+ * Scales a number by a particular scale factor. A simple multiplication.
+ * @param {Number} scaleFactor - The scale factor.
+ * @param {Number} num - The number to be scaled.
+ * @return {Number} - The scaled number.
+ */
+gpii.app.scale = function (scaleFactor, num) {
+    return scaleFactor * num;
+};

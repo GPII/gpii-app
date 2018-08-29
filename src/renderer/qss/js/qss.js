@@ -50,6 +50,8 @@
             "fluid.viewComponent"
         ],
 
+        scaleFactor: "{gpii.qss}.options.scaleFactor",
+
         model: {
             item: {
                 value: null
@@ -163,14 +165,14 @@
                 func: "{gpii.qss.list}.events.onButtonMouseEnter",
                 args: [
                     "{that}.model.item",
-                    "@expand:gpii.qss.getElementMetrics({that}.container)"
+                    "@expand:gpii.qss.getElementMetrics({that}.container, {that}.options.scaleFactor)"
                 ]
             },
             onMouseLeave: {
                 func: "{gpii.qss.list}.events.onButtonMouseLeave",
                 args: [
                     "{that}.model.item",
-                    "@expand:gpii.qss.getElementMetrics({that}.container)"
+                    "@expand:gpii.qss.getElementMetrics({that}.container, {that}.options.scaleFactor)"
                 ]
             },
 
@@ -296,7 +298,8 @@
      * of the button (e.g. which key was used to activate the button).
      */
     gpii.qss.buttonPresenter.notifyButtonActivated = function (that, focusManager, container, qssList, activationParams) {
-        var metrics = gpii.qss.getElementMetrics(container),
+        var scaleFactor = that.options.scaleFactor,
+            metrics = gpii.qss.getElementMetrics(container, scaleFactor),
             isKeyPressed = fluid.get(activationParams, "key"),
             applyKeyboardHighlight = that.options.applyKeyboardHighlight;
 
@@ -326,9 +329,10 @@
      */
     gpii.qss.buttonPresenter.notifyButtonFocused = function (that, container, focusedElement) {
         if (container.is(focusedElement)) {
+            var scaleFactor = that.options.scaleFactor;
             that.events.onButtonFocused.fire(
                 that.model.item,
-                gpii.qss.getElementMetrics(focusedElement));
+                gpii.qss.getElementMetrics(focusedElement, scaleFactor));
         }
     };
 
@@ -368,14 +372,18 @@
      * button's tooltip or the QSS widget.
      * @param {jQuery} target - The DOM element for which positioning
      * metrics are needed.
+     * @param {Number} scaleFactor - A number indicating the current scaling applied to
+     * the QSS. 1 means that no scaling is applied.
      * @return {Object} {{width: Number, height: Number, offsetLeft: Number}}
      */
-    gpii.qss.getElementMetrics = function (target) {
-        return {
-            offsetLeft: target.offset().left,
-            height:     target.outerHeight() - 3, // TODO: Think of a better formula.
-            width:      target.outerWidth()
+    gpii.qss.getElementMetrics = function (target, scaleFactor) {
+        var result = {
+            offsetLeft: scaleFactor * target.offset().left,
+            height:     scaleFactor * (target.outerHeight() - 3), // TODO: Think of a better formula.
+            width:      scaleFactor * (target.outerWidth())
         };
+
+        return result;
     };
 
     /**
@@ -869,6 +877,7 @@
                 type: "gpii.qss",
                 container: "{translatedQss}.container",
                 options: {
+                    scaleFactor: "{translatedQss}.options.scaleFactor",
                     model: {
                         settings: "{translatedQss}.model.settings"
                     }
@@ -882,7 +891,7 @@
      * the `focusManager` and the channels for communication with the main process.
      */
     fluid.defaults("gpii.qss", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.scaledPage"],
 
         model: {
             isKeyedIn: false,

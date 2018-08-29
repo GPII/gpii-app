@@ -60,6 +60,8 @@ fluid.defaults("gpii.app.qssWrapper", {
 
     settingMessagesPrefix: "gpii_app_qss_settings",
 
+    scaleFactor: 1,
+
     model: {
         isKeyedIn: false,
         settings: "{that}.options.loadedSettings"
@@ -160,11 +162,15 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.undoInWrapper"
         },
         qss: {
-            type: "gpii.app.qssInWrapper"
+            type: "gpii.app.qssInWrapper",
+            options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor"
+            }
         },
         qssWidget: {
             type: "gpii.app.qssWidget",
             options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor",
                 listeners: {
                     onQssWidgetSettingAltered: {
                         func: "{qssWrapper}.alterSetting",
@@ -193,6 +199,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssTooltip: {
             type: "gpii.app.qssTooltipDialog",
             options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor",
                 model: {
                     isKeyedIn: "{qssWrapper}.model.isKeyedIn"
                 },
@@ -222,10 +229,16 @@ fluid.defaults("gpii.app.qssWrapper", {
             }
         },
         qssNotification: {
-            type: "gpii.app.qssNotification"
+            type: "gpii.app.qssNotification",
+            options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor"
+            }
         },
         qssMorePanel: {
-            type: "gpii.app.qssMorePanel"
+            type: "gpii.app.qssMorePanel",
+            options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor"
+            }
         }
     }
 });
