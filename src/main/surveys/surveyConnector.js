@@ -123,8 +123,8 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
 });
 
 /**
- * Should be called whenever the user keys in in order to obtain the survey
- * triggers. For this implementation a static payload will always be served.
+ * Used to retrieve the survey triggers. For this implementation a static
+ * payload will always be served.
  * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
  */
 gpii.app.staticSurveyConnector.requestTriggers = function (that) {

@@ -14,7 +14,8 @@
  */
 "use strict";
 
-var fluid = require("infusion");
+var fluid = require("infusion"),
+    gpii = fluid.registerNamespace("gpii");
 
 /**
  * This component is responsible for retrieving, storing and updating (when applicable)
@@ -32,16 +33,65 @@ var fluid = require("infusion");
 fluid.defaults("gpii.app.factsManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {
-        keyedInTimestamp: null
+        keyedInTimestamp: null,
+        interactionsCount: 0
+    },
+    modelListeners: {
+        "{qssWrapper}.qss.model.isShown": {
+            func: "gpii.app.factsManager.onDialogShown",
+            args: ["{that}", "{change}.value"]
+        },
+        "{psp}.model.isShown": {
+            func: "gpii.app.factsManager.onDialogShown",
+            args: ["{that}", "{change}.value"]
+        },
+        interactionsCount: {
+            func: "console.log",
+            args: [
+                "=======interactionsCount",
+                "{change}.value"
+            ]
+        }
     },
     listeners: {
-        "{app}.events.onKeyedIn": {
+        "{app}.events.onKeyedIn": [{
             changePath: "keyedInTimestamp",
             value: "@expand:Date.now()"
-        },
+        }, {
+            func: "{that}.increaseInteractionsCount"
+        }],
         "{app}.events.onKeyedOut": {
             changePath: "keyedInTimestamp",
             value: null
         }
+    },
+    invokers: {
+        increaseInteractionsCount: {
+            funcName: "gpii.app.factsManager.increaseInteractionsCount",
+            args: ["{that}"]
+        }
     }
 });
+
+/**
+ * Increases the `interactionsCount` fact by 1.
+ * @param {Component} that - The `gpii.app.factsManager` instance.
+ */
+gpii.app.factsManager.increaseInteractionsCount = function (that) {
+    var interactionsCount = that.model.interactionsCount;
+    that.applier.change("interactionsCount", interactionsCount + 1);
+};
+
+/**
+ * Invoked whenever the PSP or QSS dialogs are shown or hidden. If the
+ * corresponding dialog is shown, this should increase the `interactionsCount`
+ * fact.
+ * @param {Component} that - The `gpii.app.factsManager` instance.
+ * @param {Boolean} isShown - `true` if the dialog is show on screen and is
+ * visible to the user and `false` otherwise.
+ */
+gpii.app.factsManager.onDialogShown = function (that, isShown) {
+    if (isShown) {
+        that.increaseInteractionsCount();
+    }
+};

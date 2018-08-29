@@ -35,7 +35,8 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
         registeredTriggerHandlers: {}
     },
     conditionHandlerGrades: {
-        keyedInFor: "gpii.app.keyedInForHandler"
+        keyedInFor: "gpii.app.keyedInForHandler",
+        sessionTimer: "gpii.app.sessionTimerHandler"
     },
     events: {
         onTriggerAdded: null,
@@ -295,4 +296,61 @@ fluid.defaults("gpii.app.keyedInForHandler", {
 gpii.app.keyedInForHandler.start = function (that, keyedInTimestamp) {
     var offset = Date.now() - keyedInTimestamp;
     that.start(that.model.condition.value - offset);
+};
+
+fluid.defaults("gpii.app.sessionTimerHandler", {
+    gradeNames: ["gpii.app.timedConditionHandler"],
+
+    defaultSessionModulus: 1,
+
+    modelRelay: {
+        "hasSettings": {
+            target: "hasSettings",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.sessionTimerHandler.hasSettings",
+                args: [
+                    "{app}.model.isKeyedIn",
+                    "{app}.model.preferences.settingGroups"
+                ]
+            }
+        }
+    },
+
+    listeners: {
+        "{qssWrapper}.qss.events.onQssSettingAltered": {
+            func: "{that}.startTimer"
+        },
+        "{psp}.events.onSettingAltered": {
+            func: "{that}.startTimer"
+        }
+    },
+
+    invokers: {
+        startTimer: {
+            funcName: "gpii.app.sessionTimerHandler.startTimer",
+            args: ["{that}", "{factsManager}.model.interactionsCount"]
+        }
+    }
+});
+
+gpii.app.sessionTimerHandler.hasSettings = function (isKeyedIn, settingGroups) {
+    return !isKeyedIn || !!fluid.find_if(settingGroups, function (settingGroup) {
+        return settingGroup.settings.length > 0;
+    });
+};
+
+gpii.app.sessionTimerHandler.startTimer = function (that, interactionsCount) {
+    var hasSettings = that.model.hasSettings,
+        condition = that.model.condition,
+        sessionModulus = condition.sessionModulus || that.options.defaultSessionModulus;
+
+    // The timer can be started only during the "lucky session", i.e. if the
+    // interactionsCount is a multiple of the sessionModulus.
+    if (hasSettings && interactionsCount % sessionModulus === 0 && !that.isActive()) {
+        console.log("======starting timer", hasSettings, that.model.condition.value);
+        that.start(that.model.condition.value);
+    } else {
+        console.log("======not starting timer, not a lucky session", hasSettings, interactionsCount, !that.isActive());
+    }
 };

@@ -3,8 +3,9 @@
         "id": "trigger_1",
         "conditions": [
             {
-                "type": "keyedInFor",
-                "value": 600000
+                "type": "sessionTimer",
+                "value": 600000,
+                "sessionModulus": 1
             }
         ]
     }

@@ -26,9 +26,17 @@ require("./surveyConnector.js");
  * `surveyTriggerManager` and the app itself.
  */
 fluid.defaults("gpii.app.surveyManager", {
-    gradeNames: ["fluid.component"],
+    gradeNames: ["fluid.modelComponent"],
+
     events: {
         onSurveyRequired: null
+    },
+
+    modelListeners: {
+        "{app}.model.keyedInUserToken": {
+            func: "{that}.requestTriggers",
+            excludeSource: "init"
+        }
     },
 
     components: {
@@ -43,10 +51,6 @@ fluid.defaults("gpii.app.surveyManager", {
                     onSurveyRequired: "{surveyManager}.events.onSurveyRequired"
                 },
                 listeners: {
-                    "{app}.events.onKeyedIn": {
-                        func: "{that}.requestTriggers"
-                    },
-
                     onTriggerDataReceived: {
                         funcName: "gpii.app.surveyManager.registerTriggers",
                         args: [
@@ -62,7 +66,6 @@ fluid.defaults("gpii.app.surveyManager", {
             type: "gpii.app.surveyTriggerManager",
             options: {
                 listeners: {
-                    "{app}.events.onKeyedOut": "{that}.reset",
                     onTriggerOccurred: {
                         func: "{surveyConnector}.notifyTriggerOccurred",
                         args: "{arguments}.0" // the trigger payload
@@ -70,8 +73,33 @@ fluid.defaults("gpii.app.surveyManager", {
                 }
             }
         }
+    },
+
+    invokers: {
+        requestTriggers: {
+            funcName: "gpii.app.surveyManager.requestTriggers",
+            args: [
+                "{surveyTriggerManager}",
+                "{surveyConnector}",
+                "{app}.model.keyedInUserToken"
+            ]
+        }
     }
 });
+
+/**
+ * Retrieves the survey triggers (which may differ depending on the keyed in user).
+ * Any previously registered triggers and trigger handlers will be removed.
+ * @param {Component} surveyTriggerManager - The `gpii.app.surveyTriggerManager` instance.
+ * @param {Component} surveyConnector - The `gpii.app.surveyConnector` instance.
+ * @param {String} keyedInUserToken - The token of the currently keyed in user (if any).
+ */
+gpii.app.surveyManager.requestTriggers = function (surveyTriggerManager, surveyConnector, keyedInUserToken) {
+    surveyTriggerManager.reset();
+    if (keyedInUserToken) {
+        surveyConnector.requestTriggers();
+    }
+};
 
 /**
  * Registers all survey triggers received via the `surveyConnector` with

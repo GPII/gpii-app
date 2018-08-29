@@ -122,9 +122,6 @@ fluid.defaults("gpii.app", {
         assetsManager: {
             type: "gpii.app.assetsManager"
         },
-        factsManager: {
-            type: "gpii.app.factsManager"
-        },
         settingsBroker: {
             type: "gpii.app.settingsBroker",
             options: {
@@ -298,6 +295,10 @@ fluid.defaults("gpii.app", {
                     }
                 }
             }
+        },
+        factsManager: {
+            type: "gpii.app.factsManager",
+            createOnEvent: "onPSPPrerequisitesReady"
         }
     },
     events: {
