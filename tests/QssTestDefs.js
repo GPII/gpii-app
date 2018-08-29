@@ -43,7 +43,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:first-child').click()",
+    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-child(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()";
 
@@ -635,7 +635,7 @@ var appZoomTestSequence = [
     { // Open the QSS...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
     }, { // ... and click on the "App / Text Zoom" button.
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickAppTextZoomBtn
@@ -645,7 +645,7 @@ var appZoomTestSequence = [
         path: "isShown",
         listener: "fluid.identity"
     }, { // Click on the increment button
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickIncreaseBtn
@@ -659,7 +659,7 @@ var appZoomTestSequence = [
             "{arguments}.0"
         ]
     }, { // Click on the decrement button
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickDecreaseBtn
@@ -809,7 +809,7 @@ var crossQssTranslations = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 38,
+    expect: 40,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
