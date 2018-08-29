@@ -125,7 +125,12 @@
         invokers: {
             calculateHeight: {
                 funcName: "gpii.psp.qssNotification.calculateHeight",
-                args: ["{that}.container", "{that}.dom.dialogContent", "{that}.dom.heightListenerContainer"]
+                args: [
+                    "{that}.container",
+                    "{that}.dom.dialogContent",
+                    "{that}.dom.heightListenerContainer",
+                    "{that}.options.scaleFactor"
+                ]
             }
         }
     });
@@ -138,9 +143,12 @@
      * @param {jQuery} dialogContent - A jQuery object representing the content of the dialog.
      * @param {jQuery} heightListenerContainer - A jQuery object representing the container which
      * houses the height listener element.
+     * @param {Number} scaleFactor - A number indicating the current scaling applied to
+     * the QSS. 1 means that no scaling is applied.
      * @return {Number} - The height of the QSS notification assuming it is fully displayed.
      */
-    gpii.psp.qssNotification.calculateHeight = function (container, dialogContent, heightListenerContainer) {
-        return Math.ceil(container.outerHeight(true) - dialogContent.height() + heightListenerContainer.height());
+    gpii.psp.qssNotification.calculateHeight = function (container, dialogContent, heightListenerContainer, scaleFactor) {
+        var height = container.outerHeight(true) - dialogContent.height() + heightListenerContainer.height();
+        return Math.ceil(scaleFactor * height);
     };
 })(fluid);

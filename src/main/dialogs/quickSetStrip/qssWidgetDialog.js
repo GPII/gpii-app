@@ -29,7 +29,7 @@ require("../../../shared/channelUtils.js");
  * changes.
  */
 fluid.defaults("gpii.app.qssWidget", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.scaledQssDialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
     scaleFactor: 1,
     defaultWidth: 316,

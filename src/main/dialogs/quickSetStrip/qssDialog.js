@@ -22,7 +22,14 @@ require("../basic/dialog.js");
 require("../basic/blurrable.js");
 require("../../../shared/channelUtils.js");
 
-fluid.defaults("gpii.app.scaledDialog", {
+/**
+ * A special dialog which enables QSS scaling. It has the following
+ * options: defaultWidth and defaultHeight which specify the dimensions
+ * of the dialog when no scaling is applied and scaleFactor which
+ * determines how smaller (if less than 1) or bigger (if more than 1)
+ * than its original size the dialog should be.
+ */
+fluid.defaults("gpii.app.scaledQssDialog", {
     gradeNames: ["fluid.component"],
 
     scaleFactor: 1,
@@ -60,7 +67,7 @@ fluid.defaults("gpii.app.scaledDialog", {
  * A component that represents the Quick Set Strip.
  */
 fluid.defaults("gpii.app.qss", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.scaledQssDialog", "gpii.app.blurrable"],
 
     scaleFactor: 1,
     defaultWidth: 984,

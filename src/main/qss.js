@@ -137,7 +137,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     },
 
-    scaleFactor: 0.8,
+    scaleFactor: 1,
 
     model: {
         isKeyedIn: false,

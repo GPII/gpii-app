@@ -33,7 +33,7 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: [
         "gpii.app.dialog",
-        "gpii.app.scaledDialog",
+        "gpii.app.scaledQssDialog",
         "gpii.app.blurrable",
         "gpii.app.delayedDialog",
         "gpii.app.dialog.offScreenHidable"
@@ -151,6 +151,7 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
 
 /**
  * Retrieves the tooltip dialog's position.
+ * @param {Component} that - The `gpii.app.qssTooltipDialog` instance.
  * @param {Object} btnCenterOffset - An object containing metrics for the QSS
  * button that has been activated.
  * @return {Object} The offset of the tooltip from the bottom right corner of
