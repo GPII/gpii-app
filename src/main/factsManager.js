@@ -33,7 +33,6 @@ var fluid = require("infusion"),
 fluid.defaults("gpii.app.factsManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {
-        keyedInTimestamp: null,
         interactionsCount: 0
     },
     modelListeners: {
@@ -54,15 +53,8 @@ fluid.defaults("gpii.app.factsManager", {
         }
     },
     listeners: {
-        "{app}.events.onKeyedIn": [{
-            changePath: "keyedInTimestamp",
-            value: "@expand:Date.now()"
-        }, {
+        "{app}.events.onKeyedIn": {
             func: "{that}.increaseInteractionsCount"
-        }],
-        "{app}.events.onKeyedOut": {
-            changePath: "keyedInTimestamp",
-            value: null
         }
     },
     invokers: {
