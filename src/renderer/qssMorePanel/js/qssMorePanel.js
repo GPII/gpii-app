@@ -39,9 +39,9 @@
 
         model: {
             messages: {
-                title: "More",
-                details: "Watch this space for more Morphic buttons,  as well as additional features to help you tune the computer to your specific needs and preferences.",
-                link: "For more information on Morphic go to <a target=\"_blank\" href=\"http://morphic.world/more\">http://morphic.world/more</a>."
+                title: null,
+                details: null,
+                link: null
             }
         },
 

@@ -118,7 +118,7 @@ gpii.tests.psp.testDefs = {
     sequence: [{
         func: "{that}.app.psp.show"
     }, { // Clicking the close button in the PSP...
-        func: "gpii.test.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             closePSP
@@ -142,7 +142,7 @@ gpii.tests.psp.testDefs = {
             defaultPrefSetMessage
         ]
     }, { // Delay the tests a bit so that the UI can initialize properly.
-        task: "gpii.test.executeCommandDelayed",
+        task: "gpii.test.executeJavaScriptDelayed",
         args: [
             "{that}.app.psp.dialog",
             decreaseVolume,
@@ -161,14 +161,14 @@ gpii.tests.psp.testDefs = {
             "{arguments}.0"
         ]
     }, { // Change a setting which shows a restart warning
-        task: "gpii.test.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             decreaseMangification
         ],
         resolve: "fluid.identity"
     }, { // ...and click the "undo" button
-        task: "gpii.test.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             undo
@@ -186,14 +186,14 @@ gpii.tests.psp.testDefs = {
             "{arguments}.0"
         ]
     }, { // Change a setting which shows a restart warning
-        task: "gpii.test.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             decreaseMangification
         ],
         resolve: "fluid.identity"
     }, { // ...and click the "restart" button.
-        task: "gpii.test.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             resetNow
@@ -211,7 +211,7 @@ gpii.tests.psp.testDefs = {
             "{arguments}.0"
         ]
     }, {
-        task: "gpii.test.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             selectBrightPrefSet
@@ -226,7 +226,7 @@ gpii.tests.psp.testDefs = {
             "{arguments}.0"
         ]
     }, {
-        func: "gpii.test.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
             keyOut

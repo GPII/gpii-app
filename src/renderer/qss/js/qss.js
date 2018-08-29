@@ -56,7 +56,7 @@
             },
             value: "{that}.model.item.value",
             messages: {
-                notification: "To see the %settingTitle change, you may need to restart some applications."
+                notification: null
             }
         },
 
@@ -665,8 +665,8 @@
         model: {
             messages: {
                 notification: {
-                    keyedOut: "To save your settings you need to setup a Morphic Account.  Go to <a href=\"http://Morphic.world/account\">http://Morphic.world/account</a>",
-                    keyedIn: "Your settings were saved to the Morphic Cloud."
+                    keyedOut: null,
+                    keyedIn: null
                 }
             }
         },
@@ -851,7 +851,12 @@
      * for loading them.
      */
     fluid.defaults("gpii.psp.translatedQss", {
-        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
+        gradeNames: [
+            "gpii.psp.messageBundles",
+            "fluid.viewComponent",
+            "gpii.psp.linksInterceptor",
+            "gpii.psp.baseWindowCmp.signalDialogReady"
+        ],
 
         components: {
             quickSetStrip: {

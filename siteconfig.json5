@@ -1,5 +1,5 @@
 {
     // Whether to disable the QSS save button.
     // Set to `true` if you want it disabled.
-    disableQssSaveButton: true
+    disableQssSaveButton: false
 }

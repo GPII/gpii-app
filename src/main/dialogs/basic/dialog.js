@@ -17,6 +17,7 @@
 
 var fluid         = require("infusion");
 var BrowserWindow = require("electron").BrowserWindow;
+var ipcMain       = require("electron").ipcMain;
 
 var gpii  = fluid.registerNamespace("gpii");
 
@@ -63,7 +64,12 @@ fluid.defaults("gpii.app.dialog", {
 
     events: {
         onDialogShown: null,
-        onDialogHidden: null
+        onDialogHidden: null,
+        /*
+         * Event fired when the current dialog is fully created (its renderer components
+         * have been successfully initialized).
+         */
+        onDialogReady: null
     },
 
     config: {
@@ -84,6 +90,10 @@ fluid.defaults("gpii.app.dialog", {
         // the usage of the `destroy` method and a close command would simply hide the window.
         // This is mainly needed to avoid closing a window using the Alf + F4 combination
         closable: false,
+
+        // Whether to register a listener for BrowserWindow "readiness". The BrowserWindow is ready
+        // once all its components are created.
+        awaitWindowReadiness: false,
 
         restrictions: {
             minHeight: null
@@ -117,7 +127,6 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     members: {
-        // XXX move to the model probably
         width:  "{that}.options.config.attrs.width", // the actual width of the content
         height: "{that}.options.config.attrs.height", // the actual height of the content
 
@@ -149,6 +158,10 @@ fluid.defaults("gpii.app.dialog", {
         "onCreate.positionOnInit": {
             funcName: "gpii.app.dialog.positionOnInit",
             args: ["{that}"]
+        },
+        "onCreate.registerDialogReadyListener": {
+            funcName: "gpii.app.dialog.registerDailogReadyListener",
+            args: "{that}"
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -259,6 +272,12 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
 
     dialog.loadURL(url);
 
+    /*
+     * Use the component's unique identifier as a way for backward relation from the
+     * BrowserWindow. Keep that id in the window itself.
+     */
+    dialog.relatedCmpId = that.id;
+
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095
     dialog.params = params || {};
@@ -287,6 +306,31 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
 gpii.app.dialog.positionOnInit = function (that) {
     if (that.options.config.positionOnInit) {
         that.setPosition();
+    }
+};
+
+/**
+ * Listens for a notification from the corresponding BrowserWindow for components' initialization.
+ * It uses a shared channel for dialog creation - `onDialogReady` - where every BrowserWindow of a `gpii.app.dialog`
+ * grade may sent a notification for its creation. Messages in this shared channel are distinguished based on
+ * an unique identifier that is sent with the notification. The identifier that is sent corresponds to
+ * the id of a `gpii.app.dialog` instance.
+ * @param {Component} that - The instance of `gpii.app.dialog` component
+ */
+gpii.app.dialog.registerDailogReadyListener = function (that) {
+    // Use a local function so that we can de-register the channel listener when needed
+    function handleReadyResponse(event, relatedCmpId) {
+        if (that.id === relatedCmpId) {
+            that.events.onDialogReady.fire();
+
+            // detach current dialog's "ready listener"
+            ipcMain.removeListener("onDialogReady", handleReadyResponse);
+        }
+    }
+
+    if (that.options.config.awaitWindowReadiness) {
+        // register listener that is to be removed once a notification for the current dialog is received
+        ipcMain.on("onDialogReady", handleReadyResponse);
     }
 };
 
@@ -420,7 +464,7 @@ fluid.defaults("gpii.app.i18n.channel", {
  */
 fluid.defaults("gpii.app.channelListener", {
     gradeNames: ["gpii.app.shared.simpleChannelListener"],
-    ipcTarget: require("electron").ipcMain
+    ipcTarget: ipcMain
 });
 
 /**

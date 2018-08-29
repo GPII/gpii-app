@@ -102,11 +102,11 @@ fluid.defaults("gpii.app.surveyDialog", {
                 "{arguments}.1"  // message
             ]
         },
-        executeCommand: {
+        executeJavaScript: {
             funcName: "gpii.app.notifyWindow",
             args: [
                 "{that}.dialog",
-                "onExecuteCommand",
+                "onExecuteJavaScript",
                 "{arguments}.0" // message
             ]
         }

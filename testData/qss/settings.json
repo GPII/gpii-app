@@ -25,6 +25,7 @@
             "image": "language.svg",
             "default": "en-US"
         },
+        "messageKey": "common-language",
         "value": "en-US",
         "tip": "<div><strong>Changes language.</strong></div><div>Works in Windows and programs that support Windows language settings.</div><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
         "tooltip": "<div><strong>Change language.</strong></div><div>Works in Windows, Edge, and many other applications.</div>",
@@ -39,6 +40,7 @@
             "max": null,
             "divisibleBy": 1
         },
+        "messageKey": "appTextZoom",
         "value": 0,
         "tip": "<div><strong>Zooms one application.</strong></div><div>Works in many applications -- for the window on top.</div>",
         "tooltip": "<div><strong>Change text size.</strong></div><div>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</div>",
@@ -56,6 +58,7 @@
             "divisibleBy": 1,
             "default": 0
         },
+        "messageKey": "common-DPIScale",
         "value": 0,
         "tip": "<div><strong>Zooms everything on the screen</strong></div><div>Amount of Zoom up and down differs by computer.</div>",
         "tooltip": "<div><strong>Change the screen size to make everything larger/smaller.</strong></div><div>Works everywhere.</div>",
@@ -70,6 +73,7 @@
             "title": "Youtube Captions",
             "default": false
         },
+        "messageKey": "common-captions-enabled",
         "value": false,
         "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div><div>Works in Chrome only.</div>"
     }, {
@@ -99,6 +103,7 @@
             ],
             "default": "regular-contrast"
         },
+        "messageKey": "common-highContrastTheme",
         "value": "regular-contrast",
         "styles": {
             "regular-contrast": {
@@ -153,15 +158,16 @@
             "type": "boolean",
             "default": false
         },
+        "messageKey": "common-selfVoicing-enabled",
         "value": false,
         "tooltip": "<div><strong>Turn Chrome’s ability to read text on/off.</strong></div><div>Works in Chrome only.</div>"
     }, {
-
         "path": "more",
         "schema": {
             "type": "more",
             "title": "More..."
         },
+        "messageKey": "more",
         "tooltip": "<div><strong>More options for changing the settings on this computer.</strong></div>"
     }, {
         "path": "save",
@@ -169,6 +175,7 @@
             "type": "save",
             "title": "Save"
         },
+        "messageKey": "save",
         "tooltip": "<div><strong>Save your preferences so you can access them from other Morphic-enabled computers.</strong></div>"
     }, {
         "path": "undo",
@@ -177,6 +184,7 @@
             "title": "Undo",
             "image": "undo.svg"
         },
+        "messageKey": "undo",
         "tooltip": "<div><strong>Undo the last change you made in the Morphic Bar.</strong></div>"
     }, {
         "path": "psp",
@@ -187,6 +195,7 @@
                 "keyedOut": "Sign In"
             }
         },
+        "messageKey": "psp",
         "tooltip": {
             "keyedIn": "<div><strong>Open the Morphic Panel</strong></div><div>Where you can quickly adjust often-changed settings of yours.</div>",
             "keyedOut": "<div><strong>Open the Morphic Panel</strong></div><div>Where you can sign in to apply your saved personal settings.</div>"
@@ -198,6 +207,7 @@
             "title": "Close",
             "image": "close.svg"
         },
+        "messageKey": "close",
         "tooltip": "<div><strong>Close the Morphic Panel</strong></div><div>You can reopen it using the Morphic Icon <img height=20 src='../../icons/gpii-icon-balloon.png'></img></div>"
     }
 ]

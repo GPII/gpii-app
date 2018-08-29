@@ -89,7 +89,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [clickBreakOutLink]
             }, {
                 event: "{that}.app.dialogManager.survey.dialog.events.onSurveyClose",
@@ -105,7 +105,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [clickNonBreakOutLink]
             }, {
                 func: "jqUnit.assertTrue",
@@ -123,7 +123,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [clickCloseButton]
             }, {
                 event: "{that}.app.dialogManager.survey.dialog.events.onSurveyClose",
@@ -139,7 +139,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [addEndOfSurveyElement]
             }, {
                 event: "{that}.app.dialogManager.survey.dialog.events.onSurveyClose",
@@ -155,7 +155,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [addEndOfSurveyElement]
             }, {
                 func: "jqUnit.assertTrue",

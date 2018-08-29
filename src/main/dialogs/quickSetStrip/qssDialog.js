@@ -31,6 +31,7 @@ fluid.defaults("gpii.app.qss", {
 
     config: {
         closable: false,
+        awaitWindowReadiness: true,
 
         attrs: {
             width: 984,
@@ -70,7 +71,7 @@ fluid.defaults("gpii.app.qss", {
                 listeners: {
                     onSettingUpdated: {
                         "funcName": "console.log",
-                        args: ["Sending Updated QSS: ", "{arguments}.0"]
+                        args: ["QssDialog settingUpdate: ", "{arguments}.0"]
                     }
                 },
                 modelListeners: {
