@@ -18,7 +18,7 @@ fluid.registerNamespace("gpii.tests.siteConfigurationHandler");
 
 gpii.tests.siteConfigurationHandler.testDefs = {
     name: "Site configuration handler options distributions integration tests",
-    expect: 1,
+    expect: 2,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -37,6 +37,13 @@ gpii.tests.siteConfigurationHandler.testDefs = {
             "QSS disable save button setting should be distributed",
             ["save"],
             "{that}.app.qssWrapper.options.settingOptions.disabledSettings"
+        ]
+    }, { // once everything is created, check for options distribution
+        funcName: "jqUnit.assertDeepEq",
+        args: [
+            "QSS scale factor have been distributed",
+            0.5,
+            "{that}.app.qssWrapper.options.scaleFactor"
         ]
     }]
 };

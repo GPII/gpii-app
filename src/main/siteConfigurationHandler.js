@@ -47,6 +47,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
                 }
             },
             target: "{app qssWrapper}.options.settingOptions.disabledSettings"
+        },
+        distributeQssScaleFactor: {
+            record: "{that}.options.siteConfig.qssScaleFactor",
+            target: "{app qssWrapper}.options.scaleFactor"
         }
     }
 });

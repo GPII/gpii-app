@@ -1,3 +1,4 @@
 {
-    disableQssSaveButton: true
+    disableQssSaveButton: true,
+    qssScaleFactor: 0.5
 }
