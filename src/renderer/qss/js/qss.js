@@ -385,20 +385,26 @@
         gradeNames: ["gpii.qss.buttonPresenter"],
 
         styles: {
-            disabledButton: "fl-qss-disabledButton",
-            focusableButton: "fl-focusable"
+            disabled: "fl-qss-disabled",
+            focusable: "fl-focusable"
         },
 
         listeners: {
             "onCreate.removeButtonStyles": {
                 this: "{that}.container",
                 method: "removeClass",
-                args: ["{that}.options.styles.focusableButton"]
+                args: ["{that}.options.styles.focusable"]
             },
             "onCreate.addButtonStyles": {
                 this: "{that}.container",
                 method: "addClass",
-                args: ["{that}.options.styles.disabledButton"]
+                args: ["{that}.options.styles.disabled"]
+            }
+        },
+        invokers: {
+            // Override button activation behaviour
+            activate: {
+                funcName: "fluid.identity"
             }
         }
     });

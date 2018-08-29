@@ -51,7 +51,7 @@ body {
     display: none;
 }
 
-.fl-qss-button.fl-qss-disabledButton {
+.fl-qss-button.fl-qss-disabled {
     pointer-events: none;
     opacity: 0.4;
 }
