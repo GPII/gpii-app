@@ -289,10 +289,36 @@ fluid.defaults("gpii.app.sessionTimerHandler", {
                     "{app}.model.preferences.settingGroups"
                 ]
             }
+        },
+        "isLuckySession": {
+            target: "isLuckySession",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.sessionTimerHandler.getIsLuckySession",
+                args: [
+                    "{that}.model.condition.sessionModulus",
+                    "{that}.options.defaultSessionModulus",
+                    "{factsManager}.model.interactionsCount"
+                ]
+            }
+        }
+    },
+
+    modelListeners: {
+        isLuckySession: {
+            funcName: "gpii.app.sessionTimerHandler.onIsLuckySessionChanged",
+            args: ["{that}", "{change}.value"]
         }
     },
 
     listeners: {
+        "onCreate.startTimer": {
+            funcName: "gpii.app.sessionTimerHandler.onHandlerCreated",
+            args: [
+                "{that}",
+                "{app}.model.isKeyedIn"
+            ]
+        },
         "{qssWrapper}.qss.events.onQssSettingAltered": {
             func: "{that}.startTimer"
         },
@@ -304,28 +330,44 @@ fluid.defaults("gpii.app.sessionTimerHandler", {
     invokers: {
         startTimer: {
             funcName: "gpii.app.sessionTimerHandler.startTimer",
-            args: ["{that}", "{factsManager}.model.interactionsCount"]
+            args: ["{that}"]
         }
     }
 });
 
 gpii.app.sessionTimerHandler.hasSettings = function (isKeyedIn, settingGroups) {
-    return !isKeyedIn || !!fluid.find_if(settingGroups, function (settingGroup) {
-        return settingGroup.settings.length > 0;
-    });
+    return !isKeyedIn || gpii.app.settingGroups.hasSettings(settingGroups);
 };
 
-gpii.app.sessionTimerHandler.startTimer = function (that, interactionsCount) {
-    var hasSettings = that.model.hasSettings,
-        condition = that.model.condition,
-        sessionModulus = condition.sessionModulus || that.options.defaultSessionModulus;
-
+gpii.app.sessionTimerHandler.getIsLuckySession = function (sessionModulus, defaultSessionModulus, interactionsCount) {
     // The timer can be started only during the "lucky session", i.e. if the
     // interactionsCount is a multiple of the sessionModulus.
-    if (hasSettings && interactionsCount % sessionModulus === 0 && !that.isActive()) {
-        console.log("======starting timer", hasSettings, that.model.condition.value);
+    sessionModulus = sessionModulus || defaultSessionModulus;
+    return interactionsCount % sessionModulus === 0;
+};
+
+gpii.app.sessionTimerHandler.onHandlerCreated = function (that, isKeyedIn) {
+    if (isKeyedIn) {
+        that.startTimer();
+    }
+};
+
+gpii.app.sessionTimerHandler.onIsLuckySessionChanged = function (that, isLuckySession) {
+    console.log("============isLuckySession", isLuckySession);
+    if (!isLuckySession) {
+        that.clear();
+    }
+};
+
+gpii.app.sessionTimerHandler.startTimer = function (that) {
+    var hasSettings = that.model.hasSettings,
+        isLuckySession = that.model.isLuckySession,
+        timeoutDuration = that.model.condition.value;
+
+    if (hasSettings && isLuckySession && !that.isActive()) {
+        console.log("============starting survey timer", timeoutDuration);
         that.start(that.model.condition.value);
     } else {
-        console.log("======not starting timer, not a lucky session", hasSettings, interactionsCount, !that.isActive());
+        console.log("============not starting timer", hasSettings, timeoutDuration, !that.isActive());
     }
 };

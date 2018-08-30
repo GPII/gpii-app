@@ -121,3 +121,22 @@ gpii.app.applier.replace = function (applier, path, value, source) {
 
     transaction.commit();
 };
+
+/**
+ * A namespace for utility functions related to setting groups.
+ */
+fluid.registerNamespace("gpii.app.settingGroups");
+
+/**
+ * Determines if there is at least one setting group in the provided array of
+ * setting groups which contains at least one setting.
+ * @param {module:gpiiConnector.SettingGroup[]} settingGroups - An array of
+ * setting groups.
+ * @return {Boolean} `true` - if there is at least one setting group with at
+ * least one setting in it.
+ */
+gpii.app.settingGroups.hasSettings = function (settingGroups) {
+    return !!fluid.find_if(settingGroups, function (settingGroup) {
+        return settingGroup.settings.length > 0;
+    });
+};

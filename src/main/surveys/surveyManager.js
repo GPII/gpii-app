@@ -34,7 +34,16 @@ fluid.defaults("gpii.app.surveyManager", {
 
     modelListeners: {
         "{app}.model.keyedInUserToken": {
-            func: "{that}.requestTriggers",
+            func: "{surveyTriggerManager}.reset",
+            excludeSource: "init"
+        },
+        // Request the triggers only when the user's preferences are delivered to the app
+        "{app}.model.preferences.gpiiKey": {
+            funcName: "gpii.app.surveyManager.requestTriggers",
+            args: [
+                "{surveyConnector}",
+                "{change}.value"
+            ],
             excludeSource: "init"
         }
     },
@@ -73,30 +82,16 @@ fluid.defaults("gpii.app.surveyManager", {
                 }
             }
         }
-    },
-
-    invokers: {
-        requestTriggers: {
-            funcName: "gpii.app.surveyManager.requestTriggers",
-            args: [
-                "{surveyTriggerManager}",
-                "{surveyConnector}",
-                "{app}.model.keyedInUserToken"
-            ]
-        }
     }
 });
 
 /**
- * Retrieves the survey triggers (which may differ depending on the keyed in user).
- * Any previously registered triggers and trigger handlers will be removed.
- * @param {Component} surveyTriggerManager - The `gpii.app.surveyTriggerManager` instance.
+ * Retrieves the survey triggers for the current user.
  * @param {Component} surveyConnector - The `gpii.app.surveyConnector` instance.
  * @param {String} keyedInUserToken - The token of the currently keyed in user (if any).
  */
-gpii.app.surveyManager.requestTriggers = function (surveyTriggerManager, surveyConnector, keyedInUserToken) {
-    surveyTriggerManager.reset();
-    if (keyedInUserToken) {
+gpii.app.surveyManager.requestTriggers = function (surveyConnector, keyedInUserToken) {
+    if (fluid.isValue(keyedInUserToken)) {
         surveyConnector.requestTriggers();
     }
 };
