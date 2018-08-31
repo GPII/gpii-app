@@ -19,6 +19,18 @@
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell;
 
+
+
+    /**
+     * Negate the given condition.
+     * @param {Boolean|Any} condition - The condition to be negated
+     * @return {Boolean} The negated value
+     */
+    fluid.negate = function (condition) {
+        return !condition;
+    };
+
+
     fluid.registerNamespace("gpii.psp");
 
     /**
