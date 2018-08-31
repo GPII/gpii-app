@@ -33,7 +33,7 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: [
         "gpii.app.dialog",
-        "gpii.app.scaledQssDialog",
+        "gpii.app.scaledDialog",
         "gpii.app.blurrable",
         "gpii.app.delayedDialog",
         "gpii.app.dialog.offScreenHidable"

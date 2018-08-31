@@ -33,7 +33,9 @@
      * @return {Number} - The height of the PSP assuming the settings panel is displayed fully.
      */
     gpii.psp.calculateHeight = function (mainWindow, container, content, settingsList) {
-        return container.outerHeight(true) - content.height() + settingsList.height();
+        var scaleFactor = mainWindow.options.scaleFactor,
+            height = container.outerHeight(true) - content.height() + settingsList.height();
+        return Math.ceil(scaleFactor * height);
     };
 
     /**
@@ -109,7 +111,7 @@
      * Note: currently only single update of available setting is supported
      */
     fluid.defaults("gpii.psp.mainWindow", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.scaledPage"],
         model: {
             messages: {
                 titlebarAppName: null

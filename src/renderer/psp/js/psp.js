@@ -21,6 +21,7 @@
 
     fluid.defaults("gpii.psp", {
         gradeNames: ["fluid.component", "gpii.psp.messageBundles"],
+        scaleFactor: 1,
         model: {
             theme: null,
             sounds: {}
@@ -56,6 +57,7 @@
                 type: "gpii.psp.mainWindow",
                 container: "#flc-body",
                 options: {
+                    scaleFactor: "{psp}.options.scaleFactor",
                     model: {
                         theme: "{psp}.model.theme",
                         sounds: "{psp}.model.sounds"

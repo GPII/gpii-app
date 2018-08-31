@@ -18,6 +18,7 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
+require("./dialogs/basic/scaledDialog.js");
 require("./dialogs/quickSetStrip/qssDialog.js");
 require("./dialogs/quickSetStrip/qssTooltipDialog.js");
 require("./dialogs/quickSetStrip/qssWidgetDialog.js");
