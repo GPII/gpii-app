@@ -678,6 +678,19 @@
                 }
             }
         },
+        styles: {
+            dimmed: "fl-qss-dimmed"
+        },
+        modelListeners: {
+            "{gpii.qss}.model.isKeyedIn": {
+                this: "{that}.container",
+                method: "toggleClass",
+                args: [
+                    "{that}.options.styles.dimmed",
+                    "@exapnd:fluid.negate({change}.value)" // dim if not keyed in
+                ]
+            }
+        },
         invokers: {
             activate: {
                 funcName: "gpii.qss.saveButtonPresenter.activate",

@@ -25,7 +25,7 @@ gpii.tests.siteConfigurationHandler.testDefs = {
     },
     distributeOptions: {
         useSiteConfigFixture: {
-            record: "%gpii-app/tests/fixtures/siteconfigSaveDisabled.json5",
+            record: "%gpii-app/tests/fixtures/siteconfigSaveHidden.json5",
             target: "{that siteConfigurationHandler}.options.siteConfigPath"
         }
     },
@@ -36,7 +36,7 @@ gpii.tests.siteConfigurationHandler.testDefs = {
         args: [
             "QSS disable save button setting should be distributed",
             ["save"],
-            "{that}.app.qssWrapper.options.settingOptions.disabledSettings"
+            "{that}.app.qssWrapper.options.settingOptions.hiddenSettings"
         ]
     }, { // once everything is created, check for options distribution
         funcName: "jqUnit.assertDeepEq",

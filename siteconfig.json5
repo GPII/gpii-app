@@ -1,7 +1,7 @@
 {
-    // Whether to disable the QSS save button.
-    // `true` if the button should be disabled and `false` otherwise.
-    disableQssSaveButton: false,
+    // Whether to hide the QSS save button.
+    // `true` if the button should be hidden and `false` otherwise.
+    hideQssSaveButton: true,
 
     // The scaling factor for the QSS
     qssScaleFactor: 1,

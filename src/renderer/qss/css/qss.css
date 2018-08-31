@@ -56,6 +56,10 @@ body {
     opacity: 0.4;
 }
 
+.fl-qss-button.fl-qss-dimmed {
+    opacity: 0.6;
+}
+
 .fl-qss-button.fl-qss-settingButton {
     background-color: #3b66b2;
 }

@@ -42,11 +42,11 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
                     funcName: "gpii.app.siteConfigurationHandler.getSaveDistribution",
                     args: [
                         "{that}.options.saveSettingPath",
-                        "{that}.options.siteConfig.disableQssSaveButton"
+                        "{that}.options.siteConfig.hideQssSaveButton"
                     ]
                 }
             },
-            target: "{app qssWrapper}.options.settingOptions.disabledSettings"
+            target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
         },
         distributeQssScaleFactor: {
             record: "{that}.options.siteConfig.qssScaleFactor",
@@ -64,11 +64,11 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
 });
 
 /**
- * Get value for disabling the save button in QSS.
+ * Get value for hiding the save button in QSS.
  * @param {String} saveSettingPath - The path for the "Save" button setting
- * @param {Boolean} shouldDisableSaveButton - Whether the save button should be disabled or not
- * @return {String[]} - In case it should be disabled, return the "Save" setting's path
+ * @param {Boolean} shouldHideSaveButton - Whether the save button should be hidden or not
+ * @return {String[]} - In case it should be hidden, return the "Save" setting's path
  */
-gpii.app.siteConfigurationHandler.getSaveDistribution = function (saveSettingPath, shouldDisableSaveButton) {
-    return shouldDisableSaveButton ? [saveSettingPath] : [];
+gpii.app.siteConfigurationHandler.getSaveDistribution = function (saveSettingPath, shouldHideSaveButton) {
+    return shouldHideSaveButton ? [saveSettingPath] : [];
 };
