@@ -7,5 +7,16 @@
     qssScaleFactor: 0.8,
 
     // The scaling factor for the PSP
-    pspScaleFactor: 0.75
+    pspScaleFactor: 0.75,
+
+    // Configuration options for the QSS More panel
+    qssMorePanel: {
+    	// These are default values. The actual dimensions of the QSS more panel
+    	// are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
+    	defaultWidth: 600,
+    	defaultHeight: 450,
+    	movable: true,
+    	resizable: true,
+    	alwaysOnTop: true
+    }
 }

@@ -487,8 +487,6 @@ fluid.defaults("gpii.app.qssInWrapper", {
             ]
         }, {
             func: "{qssNotification}.hide"
-        }, {
-            func: "{qssMorePanel}.hide"
         }],
         onQssSettingAltered: {
             func: "{qssWrapper}.alterSetting",

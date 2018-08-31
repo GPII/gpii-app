@@ -55,6 +55,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributePspScaleFactor: {
             record: "{that}.options.siteConfig.pspScaleFactor",
             target: "{app psp}.options.scaleFactor"
+        },
+        distributeQssMorePanelConfig: {
+            record: "{that}.options.siteConfig.qssMorePanel",
+            target: "{app qssMorePanel}.options.siteConfig"
         }
     }
 });

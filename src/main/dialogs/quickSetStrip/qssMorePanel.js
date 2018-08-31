@@ -17,7 +17,6 @@
 
 var fluid = require("infusion");
 
-require("../basic/blurrable.js");
 require("../basic/centeredDialog.js");
 
 /**
@@ -25,34 +24,50 @@ require("../basic/centeredDialog.js");
  * in the QSS.
  */
 fluid.defaults("gpii.app.qssMorePanel", {
-    gradeNames: ["gpii.app.centeredDialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
+    gradeNames: ["gpii.app.centeredDialog", "gpii.app.scaledDialog"],
+
+    // Configuration which may differ depending on the machine on which the app is deployed
+    siteConfig: {
+        defaultWidth: 600,
+        defaultHeight: 450,
+        alwaysOnTop: true,
+        movable: true,
+        resizable: true
+    },
 
     scaleFactor: 1,
-    defaultWidth: 600,
-    defaultHeight: 450,
+    defaultWidth: "{that}.options.siteConfig.defaultWidth",
+    defaultHeight: "{that}.options.siteConfig.defaultHeight",
 
     config: {
         attrs: {
-            alwaysOnTop: true
+            icon: {
+                expander: {
+                    funcName: "fluid.module.resolvePath",
+                    args: ["%gpii-app/src/icons/gpii-color.ico"]
+                }
+            },
+
+            alwaysOnTop: "{that}.options.siteConfig.alwaysOnTop",
+            frame: true,
+            type: null,
+            transparent: false,
+            fullscreenable: true,
+
+            movable: "{that}.options.siteConfig.movable",
+            resizable: "{that}.options.siteConfig.resizable",
+            closable: true,
+            minimizable: false,
+            maximizable: false
         },
         fileSuffixPath: "qssMorePanel/index.html"
     },
 
-    linkedWindowsGrades: ["gpii.app.qssMorePanel"],
-
-    components: {
-        channelListener: {
-            type: "gpii.app.channelListener",
-            options: {
-                events: {
-                    onQssMorePanelClosed: null
-                },
-                listeners: {
-                    onQssMorePanelClosed: {
-                        func: "{qssMorePanel}.hide"
-                    }
-                }
-            }
+    listeners: {
+        "onCreate.hideMenu": {
+            this: "{that}.dialog",
+            method: "setMenu",
+            args: [null]
         }
     }
 });
