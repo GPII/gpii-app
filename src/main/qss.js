@@ -40,10 +40,14 @@ fluid.defaults("gpii.app.qssWrapper", {
      * Additional options for QSS settings. These are options that are always
      * valid and may be dependent on some local configuration.
      * Currently they are used for the "site configuration" for conditionally
-     * disabling the "Save" button.
+     * hiding the "Save" button.
      */
     settingOptions: {
-        disabledSettings: []
+        /*
+         * The list of hidden settings. These settings are removed from the QSS settings
+         * and a placeholder is left at their place.
+         */
+        hiddenSettings: []
     },
 
     settingsPath: "%gpii-app/testData/qss/settings.json",
@@ -352,7 +356,7 @@ gpii.app.qssWrapper.updateSettings = function (that, settings, notUndoable) {
  * Retrieves synchronously the QSS settings from a file on the local machine
  * and resolves any assets that they reference with respect to the `gpii-app`
  * folder.
- * It also applies any other mutations to the settings, such as disabling.
+ * It also applies any other mutations to the settings, such as hiding.
  * @param {Component} that - The instance of `gpii.app.qssWrapper` component
  * @param {Object} settingOptions - The options for setting mutations
  * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
@@ -371,20 +375,29 @@ gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager
     });
 
     /*
-     * Disable settings
+     * Hide settings
      */
-    if (settingOptions.disabledSettings) {
-        fluid.each(settingOptions.disabledSettings, function (disabledSettingPath) {
-            var settingToDisable = loadedSettings.find(function (setting) {
-                return setting.path === disabledSettingPath;
+    if (settingOptions.hiddenSettings) {
+        fluid.each(settingOptions.hiddenSettings, function (hiddenSettingPath) {
+            var settingToHideIdx = loadedSettings.findIndex(function (setting) {
+                return setting.path === hiddenSettingPath;
             });
 
-            /*
-             * In the renderer the type property is used for choosing the proper handling
-             * approach. Use a special such type that is handled in disable fashion.
-             */
-            if (settingToDisable) {
-                settingToDisable.schema.type = "disabled";
+            if (settingToHideIdx > -1) {
+                // Ensure there isn't any metadata left for the button
+                // Make the button a placeholder (a button in hidden state)
+                loadedSettings[settingToHideIdx] = {
+                    path: null,
+                    schema: {
+                        /*
+                         * In the renderer the type property is used for choosing the proper handling
+                         * approach. Use a special type of "disabled" so that the button (placeholder) is
+                         * represented disable fashion.
+                         */
+                        type: "disabled",
+                        title: ""
+                    }
+                };
             }
         });
     }
