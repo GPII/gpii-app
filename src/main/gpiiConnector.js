@@ -686,7 +686,6 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
     defaultQssSettingValues: {
         "http://registry\\.gpii\\.net/common/language": { value: "en-US" },
         "http://registry\\.gpii\\.net/common/DPIScale": { value: 0 },
-        "http://registry\\.gpii\\.net/common/captions/enabled": { value: false },
         "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
         "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false }
     }

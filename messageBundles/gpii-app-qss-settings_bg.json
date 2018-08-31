@@ -34,10 +34,6 @@
         "title": "igh / Low Contrast",
         "tip": "<div><strong>Changes contrast & colors</strong></div><div>Works in Chrome, Windows and apps that support Windows contrast themes.  (May need to restart some programs)</div>"
     },
-    "gpii_app_qss_settings_common-captions-enabled": {
-        "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div><div>Works in Chrome only.</div>",
-        "title": "outube Captions"
-    },
     "gpii_app_qss_settings_common-DPIScale": {
         "tooltip": "<div><strong>Change the screen size to make everything larger/smaller.</strong></div><div>Works everywhere.</div>",
         "title": "creen Zoom",

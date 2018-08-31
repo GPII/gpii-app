@@ -33,8 +33,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
     clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
     clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
-    clickCaptionsBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(4)\").click()",
-    clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(6)\").click()",
+    clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(5)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(3)\").click()",
     clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()",
@@ -365,14 +364,14 @@ var qssCrossTestSequence = [
         func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            clickCaptionsBtn
+            clickReadAloudBtn
         ]
     }, { // ... notify the core
         event: "{that}.app.settingsBroker.events.onSettingApplied",
         listener: "jqUnit.assertLeftHand",
         args: [
             "Change event was fired from QSS widget interaction.",
-            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: true },
+            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
     },
@@ -422,7 +421,7 @@ var simpleSettingChangeSeqEl = { // Changeing single setting
     task: "gpii.test.executeJavaScript",
     args: [
         "{that}.app.qssWrapper.qss.dialog",
-        clickCaptionsBtn
+        clickReadAloudBtn
     ],
     resolve: "fluid.identity"
 };
@@ -446,7 +445,7 @@ var undoCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "QSS undo button should undo setting change",
-            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: false },
+            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: false },
             "{arguments}.0"
         ]
     },
@@ -470,7 +469,7 @@ var undoCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "QSS undo shortcut should undo setting change",
-            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: true },
+            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
     }, { // ... and using shortcut in the widget
@@ -488,7 +487,7 @@ var undoCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "QSS widget undo shortcut should undo setting change",
-            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: false },
+            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: false },
             "{arguments}.0"
         ]
     },
@@ -580,7 +579,7 @@ var undoTestSequence = [
         args: [
             "QSS last setting change should be undone",
             {
-                path: "http://registry\\.gpii\\.net/common/captions/enabled",
+                path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
                 value: false
             },
             "{arguments}.0"

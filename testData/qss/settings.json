@@ -67,16 +67,6 @@
         },
         "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
     }, {
-        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
-        "schema": {
-            "type": "boolean",
-            "title": "Youtube Captions",
-            "default": false
-        },
-        "messageKey": "common-captions-enabled",
-        "value": false,
-        "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div><div>Works in Chrome only.</div>"
-    }, {
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
             "type": "string",
