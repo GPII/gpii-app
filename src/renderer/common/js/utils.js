@@ -132,31 +132,4 @@
             }
         });
     };
-
-    /**
-     * A component which applies a zoom factor to the whole page.
-     */
-    fluid.defaults("gpii.psp.scaledPage", {
-        gradeNames: "fluid.viewComponent",
-        scaleFactor: 1,
-        listeners: {
-            onCreate: {
-                funcName: "gpii.psp.scaledPage.setZoom",
-                args: [
-                    "{that}.options.scaleFactor"
-                ]
-            }
-        }
-    });
-
-    /**
-     * Applies a custom scaling factor to the whole HTML page by using the
-     * css `zoom` property.
-     * @param {Number} scaleFactor - The scaling factor to be applied. If
-     * it is 1, this means that no scaling will be provided. If it is smaller
-     * than 1, the page will shrink. Otherwise, it will get bigger.
-     */
-    gpii.psp.scaledPage.setZoom = function (scaleFactor) {
-        $("body").css("zoom", scaleFactor);
-    };
 })(fluid, jQuery);

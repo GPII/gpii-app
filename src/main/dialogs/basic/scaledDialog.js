@@ -13,7 +13,8 @@
  */
 "use strict";
 
-var fluid = require("infusion");
+var fluid = require("infusion"),
+    gpii = fluid.registerNamespace("gpii");
 
 /**
  * A special dialog which enables scaling of the dialog together with its
@@ -53,5 +54,28 @@ fluid.defaults("gpii.app.scaledDialog", {
         params: {
             scaleFactor: "{that}.options.scaleFactor"
         }
+    },
+
+    listeners: {
+        "onCreate.setZoom": {
+            funcName: "gpii.app.scaledDialog.setZoom",
+            args: ["{that}.dialog", "{that}.options.scaleFactor"]
+        }
     }
 });
+
+/**
+ * Applies a custom scaling factor to the whole HTML page of the dialog.
+ * @param {BrowserWindow} dialog - The `BrowserWindow` whose content needs
+ * to be scaled up or down.
+ * @param {Number} scaleFactor - The scaling factor to be applied.
+ */
+gpii.app.scaledDialog.setZoom = function (dialog, scaleFactor) {
+    var script = fluid.stringTemplate("jQuery(\"body\").css(\"zoom\", %scaleFactor)", {
+        scaleFactor: scaleFactor
+    });
+
+    if (dialog) {
+        dialog.webContents.executeJavaScript(script);
+    }
+};

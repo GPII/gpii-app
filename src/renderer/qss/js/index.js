@@ -22,7 +22,6 @@
 
     jQuery(function () {
         gpii.psp.translatedQss(".flc-quicksetstrip", {
-            scaleFactor: windowInitialParams.scaleFactor,
             model: {
                 settings: windowInitialParams.settings
             }

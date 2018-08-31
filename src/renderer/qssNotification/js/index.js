@@ -16,13 +16,9 @@
 
 "use strict";
 (function (fluid) {
-    var gpii = fluid.registerNamespace("gpii"),
-        electron = require("electron"),
-        windowParams = electron.remote.getCurrentWindow().params;
+    var gpii = fluid.registerNamespace("gpii");
 
     jQuery(function () {
-        gpii.psp.translatedQssNotification(".flc-qssNotification", {
-            scaleFactor: windowParams.scaleFactor
-        });
+        gpii.psp.translatedQssNotification(".flc-qssNotification");
     });
 })(fluid);

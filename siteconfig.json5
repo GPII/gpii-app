@@ -4,10 +4,10 @@
     disableQssSaveButton: false,
 
     // The scaling factor for the QSS
-    qssScaleFactor: 0.8,
+    qssScaleFactor: 1,
 
     // The scaling factor for the PSP
-    pspScaleFactor: 0.75,
+    pspScaleFactor: 1,
 
     // Configuration options for the QSS More panel
     qssMorePanel: {

@@ -422,9 +422,14 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
  * button.
  */
 gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
+    var scaleFactor = qss.options.scaleFactor,
+        offsetLeft = scaleFactor * buttonElemMetrics.offsetLeft,
+        buttonWidth = scaleFactor * buttonElemMetrics.width,
+        buttonHeight = scaleFactor * buttonElemMetrics.height;
+
     return {
-        x: qss.width - buttonElemMetrics.offsetLeft - (buttonElemMetrics.width / 2),
-        y: buttonElemMetrics.height
+        x: qss.width - offsetLeft - buttonWidth / 2,
+        y: buttonHeight
     };
 };
 

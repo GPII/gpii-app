@@ -25,10 +25,7 @@
         components: {
             qssMorePanel: {
                 type: "gpii.psp.qssMorePanel",
-                container: "{translatedQssMorePanel}.container",
-                options: {
-                    scaleFactor: "{translatedQssMorePanel}.options.scaleFactor"
-                }
+                container: "{translatedQssMorePanel}.container"
             }
         }
     });
@@ -38,7 +35,7 @@
      * user interaction.
      */
     fluid.defaults("gpii.psp.qssMorePanel", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.scaledPage", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         model: {
             messages: {

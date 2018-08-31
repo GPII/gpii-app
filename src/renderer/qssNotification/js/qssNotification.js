@@ -27,10 +27,7 @@
         components: {
             qssNotification: {
                 type: "gpii.psp.qssNotification",
-                container: "{translatedQssNotification}.container",
-                options: {
-                    scaleFactor: "{translatedQssNotification}.options.scaleFactor"
-                }
+                container: "{translatedQssNotification}.container"
             }
         }
     });
@@ -40,7 +37,7 @@
      * the necessary DOM elements and handling user interaction.
      */
     fluid.defaults("gpii.psp.qssNotification", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.scaledPage", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable", "gpii.psp.linksInterceptor"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable", "gpii.psp.linksInterceptor"],
 
         model: {
             messages: {
@@ -128,8 +125,7 @@
                 args: [
                     "{that}.container",
                     "{that}.dom.dialogContent",
-                    "{that}.dom.heightListenerContainer",
-                    "{that}.options.scaleFactor"
+                    "{that}.dom.heightListenerContainer"
                 ]
             }
         }
@@ -143,12 +139,9 @@
      * @param {jQuery} dialogContent - A jQuery object representing the content of the dialog.
      * @param {jQuery} heightListenerContainer - A jQuery object representing the container which
      * houses the height listener element.
-     * @param {Number} scaleFactor - A number indicating the current scaling applied to
-     * the QSS. 1 means that no scaling is applied.
      * @return {Number} - The height of the QSS notification assuming it is fully displayed.
      */
-    gpii.psp.qssNotification.calculateHeight = function (container, dialogContent, heightListenerContainer, scaleFactor) {
-        var height = container.outerHeight(true) - dialogContent.height() + heightListenerContainer.height();
-        return Math.ceil(scaleFactor * height);
+    gpii.psp.qssNotification.calculateHeight = function (container, dialogContent, heightListenerContainer) {
+        return container.outerHeight(true) - dialogContent.height() + heightListenerContainer.height();
     };
 })(fluid);

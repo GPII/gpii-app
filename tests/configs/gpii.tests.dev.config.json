@@ -11,7 +11,7 @@
                 "record": "gpii.app.dev.gpiiConnector",
                 "target": "{that gpiiConnector}.options.gradeNames"
             }
-       }
+        }
     },
     "mergeConfigs": [
         "./gpii.tests.all.config.json"

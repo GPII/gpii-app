@@ -22,7 +22,6 @@
 
     $(function () {
         gpii.psp({
-            scaleFactor: pspParams.scaleFactor,
             model: {
                 theme: pspParams.theme,
                 sounds: pspParams.sounds

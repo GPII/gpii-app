@@ -774,4 +774,3 @@ gpii.app.dev.gpiiConnector.qss.applySettingDefaults = function (that, defaultQss
 
     return qssSettingControls;
 };
-
