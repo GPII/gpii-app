@@ -25,13 +25,13 @@ require("./basic/dialog.js");
  * Component that represents the About dialog
  */
 fluid.defaults("gpii.app.aboutDialog", {
-    gradeNames: ["gpii.app.dialog"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
+
+    scaleFactor: 1,
+    defaultWidth: 400,
+    defaultHeight: 250,
 
     config: {
-        attrs: {
-            width: 400,
-            height: 250
-        },
         params: {
             userListeners: ["USB", "NFC", "Fingerprint", "Webcam & Voice"],
             version: { expander: { func: app.getVersion } }

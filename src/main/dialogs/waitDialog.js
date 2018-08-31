@@ -25,15 +25,14 @@ require("./basic/dialog.js");
  */
 
 fluid.defaults("gpii.app.waitDialog", {
-    gradeNames: ["gpii.app.dialog"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
+
+    scaleFactor: 1,
+    defaultWidth: 800,
+    defaultHeight: 600,
 
     config: {
         closable: false,
-
-        attrs: {
-            width: 800,
-            height: 600
-        },
         fileSuffixPath: "waitDialog/index.html"
     },
     model: {
