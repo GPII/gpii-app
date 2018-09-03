@@ -148,7 +148,7 @@ fluid.defaults("gpii.app.dialog", {
 
     modelListeners: {
         isShown: {
-            funcName: "gpii.app.dialog.toggle",
+            funcName: "gpii.app.dialog.handleShownStateChange",
             args: ["{that}", "{change}.value", "{that}.options.config.showInactive"],
             namespace: "impl",
             excludeSource: "init"
@@ -225,6 +225,10 @@ fluid.defaults("gpii.app.dialog", {
         hide: {
             changePath: "isShown",
             value: false
+        },
+        toggle: {
+            changePath: "isShown",
+            value: "@expand:fluid.negate({that}.model.isShown)"
         },
         focus: {
             this: "{that}.dialog",
@@ -372,7 +376,7 @@ gpii.app.dialog.showImp = function (that, showInactive) {
  * @param {Boolean} isShown - Whether the window has to be shown
  * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
-gpii.app.dialog.toggle = function (that, isShown, showInactive) {
+gpii.app.dialog.handleShownStateChange = function (that, isShown, showInactive) {
     if (isShown) {
         that.showImp(showInactive);
         that.events.onDialogShown.fire();

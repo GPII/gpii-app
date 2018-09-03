@@ -521,7 +521,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
             }] // notificationParams
         },
         "{channelListener}.events.onQssMorePanelRequired": {
-            func: "{qssMorePanel}.show"
+            func: "{qssMorePanel}.toggle"
         },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
         "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
