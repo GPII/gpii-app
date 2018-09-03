@@ -3,10 +3,6 @@
     "options": {
         "gradeNames": ["fluid.component"],
         "distributeOptions": {
-            "distributeTaskTray": {
-                "record": "gpii.appWrapper",
-                "target": "{that flowManager}.options.gradeNames"
-            },
             "distributeMenuDisplay": {
                 "record": "gpii.app.menuInAppDev",
                 "target": "{that menu}.options.gradeNames"
@@ -14,14 +10,6 @@
             "distributeDevPcpChannelConnector": {
                 "record": "gpii.app.dev.gpiiConnector",
                 "target": "{that gpiiConnector}.options.gradeNames"
-            },
-            "distributePcpChannelConnector": {
-                "record": {
-                    "hostname": "localhost",
-                    "port": 8081,
-                    "path": "/pcpChannel"
-                },
-                "target": "{that gpiiConnector}.options.config"
             },
             "distributeSurveyConnector": {
                 "record": "gpii.app.staticSurveyConnector",
@@ -34,6 +22,6 @@
         }
     },
     "mergeConfigs": [
-        "%gpii-universal/gpii/configs/gpii.config.development.all.local.json"
-     ]
+        "%gpii-app/configs/app.base.json"
+    ]
 }

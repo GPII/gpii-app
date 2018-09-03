@@ -17,7 +17,7 @@
 var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
-require("../utils.js");
+require("../common/utils.js");
 require("./surveyTriggerManager.js");
 require("./surveyConnector.js");
 

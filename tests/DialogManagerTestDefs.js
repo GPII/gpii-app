@@ -17,6 +17,7 @@
 "use strict";
 
 var fluid = require("infusion"),
+    BrowserWindow = require("electron").BrowserWindow,
     jqUnit = fluid.require("node-jqunit", require, "jqUnit"),
     gpii = fluid.registerNamespace("gpii");
 
@@ -36,13 +37,8 @@ var surveyDialogFixture = {
 
 gpii.tests.dialogManager.testManagerWithNoKeyedInUser = function (dialogManager) {
     jqUnit.assertFalse("There is no keyed in user for the dialog manager",
-        dialogManager.model.keyedInUserToken);
+        dialogManager.model.isKeyedIn);
     gpii.tests.dialogManager.testSurveyDialogClosed(dialogManager);
-};
-
-gpii.tests.dialogManager.testManagerAfterKeyIn = function (dialogManager, expectedUserToken) {
-    jqUnit.assertEquals("The keyed in user token matches the token of the user",
-        expectedUserToken, dialogManager.model.keyedInUserToken);
 };
 
 gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, surveyDialogFixture) {
@@ -69,9 +65,20 @@ gpii.tests.dialogManager.testSurveyDialogClosed = function (dialogManager) {
         dialogManager.survey.dialog);
 };
 
+gpii.tests.dialogManager.testShowInvalidDialog = function (dialogManager) {
+    var initialFocusedWindow = BrowserWindow.getFocusedWindow();
+    dialogManager.show("invalidDialog");
+
+    jqUnit.assertEquals(
+        "Dialog manager does not show a dialog if it does not exist",
+        initialFocusedWindow,
+        BrowserWindow.getFocusedWindow()
+    );
+};
+
 gpii.tests.dialogManager.testDefs = {
     name: "Dialog manager integration tests",
-    expect: 10,
+    expect: 11,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -82,12 +89,18 @@ gpii.tests.dialogManager.testDefs = {
         args: ["{that}.app.dialogManager"]
     }, {
         func: "{that}.app.keyIn",
-        args: ["snapset_1a"]
+        args: ["snapset_5"]
     }, {
         changeEvent: "{that}.app.dialogManager.applier.modelChanged",
-        path: "keyedInUserToken",
-        listener: "gpii.tests.dialogManager.testManagerAfterKeyIn",
-        args: ["{that}.app.dialogManager", "snapset_1a"]
+        path: "isKeyedIn",
+        listener: "jqUnit.assertTrue",
+        args:[
+            "There is a keyed in user for the dialog manager",
+            "{that}.app.dialogManager.model.isKeyedIn"
+        ]
+    }, {
+        func: "gpii.tests.dialogManager.testShowInvalidDialog",
+        args: ["{that}.app.dialogManager"]
     }, {
         func: "{that}.app.dialogManager.show",
         args: ["survey", surveyDialogFixture]
@@ -123,7 +136,7 @@ gpii.tests.dialogManager.testDefs = {
         func: "{that}.app.keyOut"
     }, { // Test that the survey dialog is closed when the user keys out
         changeEvent: "{that}.app.dialogManager.applier.modelChanged",
-        path: "keyedInUserToken",
+        path: "isKeyedIn",
         listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
         args: ["{that}.app.dialogManager"]
     }]

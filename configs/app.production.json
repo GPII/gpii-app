@@ -2,26 +2,9 @@
     "type": "gpii.appWithTaskTray",
     "options": {
         "gradeNames": ["fluid.component"],
-        "distributeOptions": {
-            "distributeTaskTray": {
-                "record": "gpii.appWrapper",
-                "target": "{that flowManager}.options.gradeNames"
-            },
-            "distributePcpChannelConnector": {
-                "record": {
-                    "hostname": "localhost",
-                    "port": 8081,
-                    "path": "/pcpChannel"
-                },
-                "target": "{that gpiiConnector}.options.config"
-            },
-            "distributeSurveyConnector": {
-                "record": "gpii.app.staticSurveyConnector",
-                "target": "{that surveyConnector}.options.gradeNames"
-            }
-        }
+        "distributeOptions": {}
     },
     "mergeConfigs": [
-        "%gpii-universal/gpii/configs/gpii.config.all.development.dr.production.json"
-     ]
+        "%gpii-app/configs/app.base.json"
+    ]
 }

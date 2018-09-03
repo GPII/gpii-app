@@ -11,6 +11,15 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 /* eslint-env node */
 "use strict";
 
+var dns = require("dns");
+var lookupReal = dns.lookup;
+dns.lookup = function lookup(hostname, options, callback) {
+    if (hostname === "localhost") {
+        hostname = "127.0.0.1";
+    }
+    return lookupReal(hostname, options, callback);
+};
+
 var fluid = require("infusion"),
     app = require("electron").app,
     gpii = fluid.registerNamespace("gpii"),
@@ -18,19 +27,43 @@ var fluid = require("infusion"),
 
 fluid.setLogging(true);
 
-require("gpii-universal");
-require("./index");
+app.disableHardwareAcceleration();
 
-// Check that we are not running another instance of GPII-App.
+
+// The PSP will have a single instance. If an attempt to start a second instance is made,
+// the second one will be closed and the callback provided to `app.makeSingleInstance`
+// in the first instance will be triggered enabling it to show the PSP `BrowserWindow`.
 var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirectory*/) {
-    // TODO: Properly log or handle it.
-    console.log("Attempt to start a second instance of GPII-App failed.");
+    var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
+    if (qssWrapper) {
+        qssWrapper.qss.show();
+    }
 });
-// Check if any instance of GPII is running.
-var gpiiIsRunning = !gpii.singleInstance.registerInstance();
-if (appIsRunning || gpiiIsRunning) {
+
+if (appIsRunning) {
+    console.log("Another instance of gpii-app is running!");
     app.quit();
+    return;
 }
+
+// this module is loaded relatively slow
+require("gpii-universal");
+require("./index.js");
+
+// Close the PSP if there is another instance of it already running.
+var gpiiIsRunning = !gpii.singleInstance.registerInstance();
+if (gpiiIsRunning) {
+    app.quit();
+    return;
+}
+
+
+// XXX just a temporary way of keeping the application alive even
+// after a crashing error
+fluid.onUncaughtException.addListener(function () {
+    // The message should have been already logged anyways
+}, "fail");
+
 
 require("gpii-windows/index.js");
 

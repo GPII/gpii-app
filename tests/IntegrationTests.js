@@ -25,14 +25,17 @@ fluid.require("%gpii-universal/gpii/node_modules/testing");
 
 gpii.loadTestingSupport();
 
-require("./IntegrationTestDefs.js");
-require("./SettingsBrokerTestDefs.js");
-require("./RestartDialogTestDefs.js");
 require("./DialogManagerTestDefs.js");
-require("./SurveysTestDefs.js");
-require("./SurveyTriggerManagerTestsDefs.js");
+require("./IntegrationTestDefs.js");
+require("./QssTestDefs.js");
 require("./SequentialDialogsTestDefs.js");
+require("./SettingsBrokerTestDefs.js");
+require("./SurveyTriggerManagerTestsDefs.js");
+require("./SurveysTestDefs.js");
+require("./UserErrorsHandlerTestDefs.js");
 require("./WebviewTestDefs.js");
+require("./GpiiConnectorTestDefs.js");
+require("./PspTestDefs.js");
 
 // TODO: Review this following CI run.
 //fluid.setLogging(fluid.logLevel.FATAL);
@@ -96,11 +99,14 @@ gpii.tests.app.bootstrapServer = function (testDefs, transformer) {
 gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.app.testDefs),
     fluid.copy(gpii.tests.dev.testDefs),
-    fluid.copy(gpii.tests.settingsBroker.testDefs),
-    fluid.copy(gpii.tests.restartDialog.testDefs),
+    fluid.copy(gpii.tests.psp.testDefs),
     fluid.copy(gpii.tests.dialogManager.testDefs),
-    fluid.copy(gpii.tests.surveys.testDefs),
-    fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
+    fluid.copy(gpii.tests.qss.testDefs),
     fluid.copy(gpii.tests.sequentialDialogs.testDefs),
-    fluid.copy(gpii.tests.webview.testDefs)
+    fluid.copy(gpii.tests.settingsBroker.testDefs),
+    fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
+    fluid.copy(gpii.tests.surveys.testDefs),
+    fluid.copy(gpii.tests.userErrorsHandler.testDefs),
+    fluid.copy(gpii.tests.webview.testDefs),
+    fluid.copy(gpii.tests.gpiiConnector.testDefs)
 ]);
