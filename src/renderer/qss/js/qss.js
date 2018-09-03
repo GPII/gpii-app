@@ -792,6 +792,36 @@
         qssList.events.onUndoRequired.fire();
     };
 
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Reset All
+     * to Standard" QSS button.
+     */
+    fluid.defaults("gpii.qss.resetAllButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.resetAllButtonPresenter.activate",
+                args: [
+                    "{that}",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
+            }
+        }
+    });
+
+    /**
+     * A custom function for handling activation of the "Reset All to Standard" QSS button.
+     * Reuses the generic `notifyButtonActivated` invoker.
+     * @param {Component} that - The `gpii.qss.resetAllButtonPresenter` instance.
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
+    gpii.qss.resetAllButtonPresenter.activate = function (that, qssList, activationParams) {
+        that.notifyButtonActivated(activationParams);
+        qssList.events.onResetAllRequired.fire();
+    };
 
     /**
      * Represents the list of QSS settings. It renders the settings and listens
@@ -824,6 +854,7 @@
             onNotificationRequired: null,
             onMorePanelRequired: null,
             onUndoRequired: null,
+            onResetAllRequired: null,
             onSaveRequired: null,
             onPSPOpen: null
         },
@@ -857,6 +888,8 @@
             return "gpii.qss.saveButtonPresenter";
         case "undo":
             return "gpii.qss.undoButtonPresenter";
+        case "resetAll":
+            return "gpii.qss.resetAllButtonPresenter";
         case "more":
             return "gpii.qss.moreButtonPresenter";
         case "disabled":
@@ -985,6 +1018,7 @@
                         onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired",
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
+                        onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
                         onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
                     }
