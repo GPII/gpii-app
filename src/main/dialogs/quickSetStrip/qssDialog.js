@@ -30,7 +30,7 @@ fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
 
     scaleFactor: 1,
-    defaultWidth: 895,
+    defaultWidth: 984,
     defaultHeight: 95,
 
     config: {
@@ -101,6 +101,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssNotificationRequired: null,
                     onQssMorePanelRequired: null,
                     onQssUndoRequired: null,
+                    onQssResetAllRequired: null,
                     onQssSaveRequired: null,
                     onQssPspOpen: null
                 },

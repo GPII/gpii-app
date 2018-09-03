@@ -7,6 +7,9 @@
         "tooltip": "<div><strong>Undo the last change you made in the Morphic Bar.</strong></div>",
         "title": "Undo"
     },
+    "gpii_app_qss_settings_resetAll": {
+        "title": "Reset All to Standard"
+    },
     "gpii_app_qss_settings_save": {
         "tooltip": "<div><strong>Save your preferences so you can access them from other Morphic-enabled computers.</strong></div>",
         "title": "Save"

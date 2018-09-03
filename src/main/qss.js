@@ -76,6 +76,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         onSettingUpdated: null,
         onActivePreferenceSetAltered: null,
         onUndoRequired: null,
+        onResetAllRequired: null,
         onSaveRequired: null,
         onQssPspOpen: null,
         onQssPspClose: null
@@ -90,6 +91,9 @@ fluid.defaults("gpii.app.qssWrapper", {
         },
         "onUndoRequired.activateUndo": {
             func: "{undoStack}.undo"
+        },
+        onResetAllRequired: {
+            func: "{app}.keyOut"
         },
         onSaveRequired: {
             funcName: "gpii.app.qssWrapper.saveSettings",
@@ -524,8 +528,9 @@ fluid.defaults("gpii.app.qssInWrapper", {
             func: "{qssMorePanel}.show"
         },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
+        "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",
         "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
-        "{channelListener}.events.onQssPspOpen":      "{qssWrapper}.events.onQssPspOpen"
+        "{channelListener}.events.onQssPspOpen": "{qssWrapper}.events.onQssPspOpen"
     }
 });
 
