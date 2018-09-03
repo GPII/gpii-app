@@ -37,14 +37,18 @@ fluid.defaults("gpii.app.surveyManager", {
             func: "{surveyTriggerManager}.reset",
             excludeSource: "init"
         },
-        // Request the triggers only when the user's preferences are delivered to the app
+        /**
+         * Request the triggers only when the user's preferences are delivered to the app.
+         * This is better that requesting both the user's preferences and the triggers at
+         * the same time because in that case there is no guarantee which of them will
+         * arrive first which in turn will make the handling logic more complex.
+         */
         "{app}.model.preferences.gpiiKey": {
             funcName: "gpii.app.surveyManager.requestTriggers",
             args: [
                 "{surveyConnector}",
                 "{change}.value"
-            ],
-            excludeSource: "init"
+            ]
         }
     },
 

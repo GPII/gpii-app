@@ -33,6 +33,8 @@ var fluid = require("infusion"),
 fluid.defaults("gpii.app.factsManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {
+        // Number of interactions with the GPII app. Incremented whenever the PSP or QSS is
+        // opened, as well as when an actual user (i.e. different from `noUser`) keys in.
         interactionsCount: 0
     },
     modelListeners: {
