@@ -122,7 +122,7 @@ gpii.app.resizable.scaleDialog = function (that) {
     // Show the dialog if it was shown when a `display-metrics-changed` event occurred
     if (that.options.config.hideOffScreen || that.model.isShown) {
         // Use the low level show
-        gpii.app.dialog.showImp(that, !that.displayMetricsChanged.wasFocused);
+        gpii.app.dialog.showImpl(that, !that.displayMetricsChanged.wasFocused);
     }
 };
 
