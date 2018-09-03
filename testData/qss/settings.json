@@ -155,7 +155,7 @@
         "path": "more",
         "schema": {
             "type": "more",
-            "title": "More..."
+            "title": "MORE...\n\n(& HELP)"
         },
         "messageKey": "more",
         "tooltip": "<div><strong>More options for changing the settings on this computer.</strong></div>"

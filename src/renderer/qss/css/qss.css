@@ -33,6 +33,10 @@ body {
     user-select: none;
 }
 
+.fl-qss-button .fl-qss-btnLabel {
+    white-space: pre-wrap;
+}
+
 .fl-qss-button .fl-qss-btnChangeIndicator {
     position: absolute;
     top: 3px;

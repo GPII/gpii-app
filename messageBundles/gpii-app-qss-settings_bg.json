@@ -23,7 +23,7 @@
     },
     "gpii_app_qss_settings_more": {
         "tooltip": "<div><strong>More options for changing the settings on this computer.</strong></div>",
-        "title": "ore..."
+        "title": "ORE...\n\n(& HELP)"
     },
     "gpii_app_qss_settings_common-selfVoicing-enabled": {
         "tooltip": "<div><strong>Turn Chrome’s ability to read text on/off.</strong></div><div>Works in Chrome only.</div>",
