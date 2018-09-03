@@ -86,6 +86,7 @@ Invoke-Command "robocopy" "..\testData $(Join-Path $preStagingDir "testData") /j
 Invoke-Command "robocopy" "..\build $(Join-Path $preStagingDir "build") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir LICENSE.txt" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir main.js" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "$projectDir $preStagingDir siteconfig.json5" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir index.js" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir package.json" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir package-lock.json" $provisioningDir -errorLevel 3
