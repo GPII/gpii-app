@@ -17,6 +17,17 @@
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
 
+
+/**
+ * Negate the given condition.
+ * @param {Boolean|Any} condition - The condition to be negated
+ * @return {Boolean} The negated value
+ */
+fluid.negate = function (condition) {
+    return !condition;
+};
+
+
 /*
  * A simple wrapper for the native timeout. Responsible for clearing the interval
  * upon component destruction.
