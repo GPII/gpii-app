@@ -130,9 +130,18 @@ fluid.defaults("gpii.app.dialog", {
         width:  "{that}.options.config.attrs.width", // the actual width of the content
         height: "{that}.options.config.attrs.height", // the actual height of the content
 
-        // Blurrable dialogs will have the `gradeNames` property which will contain
-        // all gradeNames of the current component. Useful when performing checks about
-        // the component if only its dialog is available.
+        /**
+         * Blurrable dialogs will have the `gradeNames` property which will hold all gradeNames
+         * of the containing component. Useful when performing checks about the component if
+         * only its dialog is available. An example of such a situation is when retrieving the
+         * currently focused window via the static method `BrowserWindow.getFocusedWindow`. This
+         * function returns an Electron's `BrowserWindow` instance which will have the `gradeNames`
+         * property and there will be no need to look up the Infusion component if only its grades
+         * can suffice for whatever checks are performed.
+         * Please see `blurrable.js` for how this property is used so that it can be determined if
+         * the newly focused window is "linked" to the current window (with respect to the blurring
+         * behavior).
+         */
         dialog: {
             expander: {
                 funcName: "gpii.app.dialog.makeDialog",
@@ -207,8 +216,8 @@ fluid.defaults("gpii.app.dialog", {
                 "{arguments}.1"  // height
             ]
         },
-        showImp: {
-            funcName: "gpii.app.dialog.showImp",
+        showImpl: {
+            funcName: "gpii.app.dialog.showImpl",
             args: [
                 "{that}",
                 "{arguments}.0" // showInactive
@@ -361,7 +370,7 @@ gpii.app.dialog.show = function (that) {
  * @param {Boolean} showInactive - If `true`, the dialog should not have focus
  * when shown. Otherwise it will.
  */
-gpii.app.dialog.showImp = function (that, showInactive) {
+gpii.app.dialog.showImpl = function (that, showInactive) {
     var showMethod = showInactive ?
         that.dialog.showInactive :
         that.dialog.show;
@@ -378,7 +387,7 @@ gpii.app.dialog.showImp = function (that, showInactive) {
  */
 gpii.app.dialog.handleShownStateChange = function (that, isShown, showInactive) {
     if (isShown) {
-        that.showImp(showInactive);
+        that.showImpl(showInactive);
         that.events.onDialogShown.fire();
     } else {
         that.hideImpl();
