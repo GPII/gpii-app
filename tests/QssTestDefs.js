@@ -34,8 +34,8 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
     clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(5)\").click()",
-    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
-    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(3)\").click()",
+    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(5)\").click()",
+    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
     clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
@@ -375,6 +375,13 @@ var qssCrossTestSequence = [
             "{arguments}.0"
         ]
     },
+    { // Turn off the read aloud
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickReadAloudBtn
+        ]
+    },
     /*
      * QSS & PSP tests
      */
@@ -563,7 +570,7 @@ var undoTestSequence = [
         args: ["settings.2", {value: 1.5}]
     }, { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.3", {value: true}]
+        args: ["settings.4", {value: true}]
     }, { // ... `hasChanges` should have its state kept
         funcName: "jqUnit.assertTrue",
         args: [

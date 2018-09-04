@@ -177,6 +177,13 @@
         "messageKey": "undo",
         "tooltip": "<div><strong>Undo the last change you made in the Morphic Bar.</strong></div>"
     }, {
+        "path": "resetAll",
+        "schema": {
+            "type": "resetAll",
+            "title": "Reset All to Standard"
+        },
+        "messageKey": "resetAll"
+    }, {
         "path": "psp",
         "schema": {
             "type": "psp",
