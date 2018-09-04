@@ -69,6 +69,28 @@ gpii.test.assertLeftHandDeep = function (message, expected, actual) {
 };
 
 /**
+ * Returns a promise which will be resolved in `delayed` milliseconds. Can be
+ * used in test sequences for debugging purposes. Example usage:
+ * {
+ *     task: "gpii.tests.qss.linger",
+ *     args: [2000],
+ *     resolve: "fluid.identity"
+ * }
+ * @param {Number} delay - The delay after which the JavaScript code should be
+ * executed.
+ * @return {Promise} - The promise to be resolved.
+ */
+gpii.test.linger = function (delay) {
+    var promise = fluid.promise();
+
+    setTimeout(function () {
+        promise.resolve();
+    }, delay);
+
+    return promise;
+};
+
+/**
  * Executes a JavaScript snippet in the `BrowserWindow` of the given dialog.
  * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
  * to be executed.
@@ -94,15 +116,7 @@ gpii.test.executeJavaScript = function (dialog, command) {
  * executed.
  */
 gpii.test.executeJavaScriptDelayed = function (dialog, command, delay) {
-    var promise = fluid.promise();
-
-    promise.then(function () {
+    return gpii.test.linger(delay).then(function () {
         return gpii.test.executeJavaScript(dialog, command);
     });
-
-    setTimeout(function () {
-        promise.resolve();
-    }, delay);
-
-    return promise;
 };

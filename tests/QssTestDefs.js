@@ -86,18 +86,6 @@ gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
     );
 };
 
-// XXX: For dev purposes.
-gpii.tests.qss.linger = function () {
-    var promise = fluid.promise();
-
-    setTimeout(function () {
-        promise.resolve();
-    }, 2000);
-
-    return promise;
-};
-
-
 var qssCrossTestSequence = [
     /*
      * CROSS
