@@ -19,6 +19,7 @@
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell;
 
+
     fluid.registerNamespace("gpii.psp");
 
     /**

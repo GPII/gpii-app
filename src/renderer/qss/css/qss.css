@@ -33,6 +33,10 @@ body {
     user-select: none;
 }
 
+.fl-qss-button .fl-qss-btnLabel {
+    white-space: pre-wrap;
+}
+
 .fl-qss-button .fl-qss-btnChangeIndicator {
     position: absolute;
     top: 3px;
@@ -51,9 +55,13 @@ body {
     display: none;
 }
 
-.fl-qss-button.fl-qss-disabledButton {
+.fl-qss-button.fl-qss-disabled {
     pointer-events: none;
     opacity: 0.4;
+}
+
+.fl-qss-button.fl-qss-dimmed {
+    opacity: 0.6;
 }
 
 .fl-qss-button.fl-qss-settingButton {

@@ -41,8 +41,8 @@
 
         model: {
             messages: {
-                title: "Morphic Notification",
-                dismissButtonLabel: "OK"
+                title: null,
+                dismissButtonLabel: null
             }
         },
 
@@ -122,7 +122,11 @@
         invokers: {
             calculateHeight: {
                 funcName: "gpii.psp.qssNotification.calculateHeight",
-                args: ["{that}.container", "{that}.dom.dialogContent", "{that}.dom.heightListenerContainer"]
+                args: [
+                    "{that}.container",
+                    "{that}.dom.dialogContent",
+                    "{that}.dom.heightListenerContainer"
+                ]
             }
         }
     });
@@ -138,6 +142,6 @@
      * @return {Number} - The height of the QSS notification assuming it is fully displayed.
      */
     gpii.psp.qssNotification.calculateHeight = function (container, dialogContent, heightListenerContainer) {
-        return Math.ceil(container.outerHeight(true) - dialogContent.height() + heightListenerContainer.height());
+        return container.outerHeight(true) - dialogContent.height() + heightListenerContainer.height();
     };
 })(fluid);

@@ -33,10 +33,15 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: [
         "gpii.app.dialog",
+        "gpii.app.scaledDialog",
         "gpii.app.blurrable",
         "gpii.app.delayedDialog",
         "gpii.app.dialog.offScreenHidable"
     ],
+
+    scaleFactor: 1,
+    defaultWidth: 200,
+    defaultHeight: 300,
 
     model: {
         isKeyedIn: false,
@@ -65,8 +70,6 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
         closable: false,
 
         attrs: {
-            width: 200,
-            height: 300,
             alwaysOnTop: true
         },
         fileSuffixPath: "qssTooltipPopup/index.html"
@@ -148,16 +151,17 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
 
 /**
  * Retrieves the tooltip dialog's position.
+ * @param {Component} that - The `gpii.app.qssTooltipDialog` instance.
  * @param {Object} btnCenterOffset - An object containing metrics for the QSS
  * button that has been activated.
  * @return {Object} The offset of the tooltip from the bottom right corner of
  * the screen.
  */
-gpii.app.qssTooltipDialog.getTooltipPosition = function (btnCenterOffset) {
+gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) {
     // XXX extract hardcoded value to a better place
     var arrowSize = 44; // px
     return {
-        offsetX: btnCenterOffset.x - arrowSize,
+        offsetX: btnCenterOffset.x - that.options.scaleFactor * arrowSize,
         offsetY: btnCenterOffset.y
     };
 };
@@ -169,7 +173,7 @@ gpii.app.qssTooltipDialog.getTooltipPosition = function (btnCenterOffset) {
  * button.
  */
 gpii.app.qssTooltipDialog.show = function (that, btnCenterOffset) {
-    var offset = gpii.app.qssTooltipDialog.getTooltipPosition(btnCenterOffset);
+    var offset = gpii.app.qssTooltipDialog.getTooltipPosition(that, btnCenterOffset);
 
     that.dialog.setAlwaysOnTop(true);
 

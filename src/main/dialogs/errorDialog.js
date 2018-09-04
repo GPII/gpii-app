@@ -90,13 +90,14 @@ gpii.app.errorDialog.channel.deregister = function () {
  * following attributes: title, subheader, details and error code.
  */
 fluid.defaults("gpii.app.errorDialog", {
-    gradeNames: ["gpii.app.dialog"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
+
+    scaleFactor: 1,
+    defaultWidth: 400,
+    defaultHeight: 250,
 
     config: {
         attrs: {
-            width: 400,
-            height: 250, // This is to be changed with respect to the content needs
-
             title:   null,
             subhead: null,
             details: null,
@@ -167,6 +168,7 @@ fluid.defaults("gpii.app.error", {
         dialog: {
             type: "gpii.app.errorDialog",
             options: {
+                scaleFactor: "{gpii.app.error}.options.scaleFactor",
                 config: {
                     attrs: "{arguments}.0"
                 }

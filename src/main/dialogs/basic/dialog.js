@@ -17,6 +17,7 @@
 
 var fluid         = require("infusion");
 var BrowserWindow = require("electron").BrowserWindow;
+var ipcMain       = require("electron").ipcMain;
 
 var gpii  = fluid.registerNamespace("gpii");
 
@@ -63,7 +64,12 @@ fluid.defaults("gpii.app.dialog", {
 
     events: {
         onDialogShown: null,
-        onDialogHidden: null
+        onDialogHidden: null,
+        /*
+         * Event fired when the current dialog is fully created (its renderer components
+         * have been successfully initialized).
+         */
+        onDialogReady: null
     },
 
     config: {
@@ -84,6 +90,10 @@ fluid.defaults("gpii.app.dialog", {
         // the usage of the `destroy` method and a close command would simply hide the window.
         // This is mainly needed to avoid closing a window using the Alf + F4 combination
         closable: false,
+
+        // Whether to register a listener for BrowserWindow "readiness". The BrowserWindow is ready
+        // once all its components are created.
+        awaitWindowReadiness: false,
 
         restrictions: {
             minHeight: null
@@ -117,13 +127,21 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     members: {
-        // XXX move to the model probably
         width:  "{that}.options.config.attrs.width", // the actual width of the content
         height: "{that}.options.config.attrs.height", // the actual height of the content
 
-        // Blurrable dialogs will have the `gradeNames` property which will contain
-        // all gradeNames of the current component. Useful when performing checks about
-        // the component if only its dialog is available.
+        /**
+         * Blurrable dialogs will have the `gradeNames` property which will hold all gradeNames
+         * of the containing component. Useful when performing checks about the component if
+         * only its dialog is available. An example of such a situation is when retrieving the
+         * currently focused window via the static method `BrowserWindow.getFocusedWindow`. This
+         * function returns an Electron's `BrowserWindow` instance which will have the `gradeNames`
+         * property and there will be no need to look up the Infusion component if only its grades
+         * can suffice for whatever checks are performed.
+         * Please see `blurrable.js` for how this property is used so that it can be determined if
+         * the newly focused window is "linked" to the current window (with respect to the blurring
+         * behavior).
+         */
         dialog: {
             expander: {
                 funcName: "gpii.app.dialog.makeDialog",
@@ -139,7 +157,7 @@ fluid.defaults("gpii.app.dialog", {
 
     modelListeners: {
         isShown: {
-            funcName: "gpii.app.dialog.toggle",
+            funcName: "gpii.app.dialog.handleShownStateChange",
             args: ["{that}", "{change}.value", "{that}.options.config.showInactive"],
             namespace: "impl",
             excludeSource: "init"
@@ -149,6 +167,10 @@ fluid.defaults("gpii.app.dialog", {
         "onCreate.positionOnInit": {
             funcName: "gpii.app.dialog.positionOnInit",
             args: ["{that}"]
+        },
+        "onCreate.registerDialogReadyListener": {
+            funcName: "gpii.app.dialog.registerDailogReadyListener",
+            args: "{that}"
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -194,8 +216,8 @@ fluid.defaults("gpii.app.dialog", {
                 "{arguments}.1"  // height
             ]
         },
-        showImp: {
-            funcName: "gpii.app.dialog.showImp",
+        showImpl: {
+            funcName: "gpii.app.dialog.showImpl",
             args: [
                 "{that}",
                 "{arguments}.0" // showInactive
@@ -212,6 +234,10 @@ fluid.defaults("gpii.app.dialog", {
         hide: {
             changePath: "isShown",
             value: false
+        },
+        toggle: {
+            changePath: "isShown",
+            value: "@expand:fluid.negate({that}.model.isShown)"
         },
         focus: {
             this: "{that}.dialog",
@@ -259,6 +285,12 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
 
     dialog.loadURL(url);
 
+    /*
+     * Use the component's unique identifier as a way for backward relation from the
+     * BrowserWindow. Keep that id in the window itself.
+     */
+    dialog.relatedCmpId = that.id;
+
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095
     dialog.params = params || {};
@@ -291,6 +323,31 @@ gpii.app.dialog.positionOnInit = function (that) {
 };
 
 /**
+ * Listens for a notification from the corresponding BrowserWindow for components' initialization.
+ * It uses a shared channel for dialog creation - `onDialogReady` - where every BrowserWindow of a `gpii.app.dialog`
+ * grade may sent a notification for its creation. Messages in this shared channel are distinguished based on
+ * an unique identifier that is sent with the notification. The identifier that is sent corresponds to
+ * the id of a `gpii.app.dialog` instance.
+ * @param {Component} that - The instance of `gpii.app.dialog` component
+ */
+gpii.app.dialog.registerDailogReadyListener = function (that) {
+    // Use a local function so that we can de-register the channel listener when needed
+    function handleReadyResponse(event, relatedCmpId) {
+        if (that.id === relatedCmpId) {
+            that.events.onDialogReady.fire();
+
+            // detach current dialog's "ready listener"
+            ipcMain.removeListener("onDialogReady", handleReadyResponse);
+        }
+    }
+
+    if (that.options.config.awaitWindowReadiness) {
+        // register listener that is to be removed once a notification for the current dialog is received
+        ipcMain.on("onDialogReady", handleReadyResponse);
+    }
+};
+
+/**
  * Shows the window if it is currently hidden or focuses it otherwise.
  * This is the simplest way for showing a dialog. If the dialog has
  * other rules for showing itself, this invoker can be overridden.
@@ -313,7 +370,7 @@ gpii.app.dialog.show = function (that) {
  * @param {Boolean} showInactive - If `true`, the dialog should not have focus
  * when shown. Otherwise it will.
  */
-gpii.app.dialog.showImp = function (that, showInactive) {
+gpii.app.dialog.showImpl = function (that, showInactive) {
     var showMethod = showInactive ?
         that.dialog.showInactive :
         that.dialog.show;
@@ -328,9 +385,9 @@ gpii.app.dialog.showImp = function (that, showInactive) {
  * @param {Boolean} isShown - Whether the window has to be shown
  * @param {Boolean} showInactive - Whether the window has to be shown inactive (not focused)
  */
-gpii.app.dialog.toggle = function (that, isShown, showInactive) {
+gpii.app.dialog.handleShownStateChange = function (that, isShown, showInactive) {
     if (isShown) {
-        that.showImp(showInactive);
+        that.showImpl(showInactive);
         that.events.onDialogShown.fire();
     } else {
         that.hideImpl();
@@ -420,7 +477,7 @@ fluid.defaults("gpii.app.i18n.channel", {
  */
 fluid.defaults("gpii.app.channelListener", {
     gradeNames: ["gpii.app.shared.simpleChannelListener"],
-    ipcTarget: require("electron").ipcMain
+    ipcTarget: ipcMain
 });
 
 /**

@@ -33,19 +33,46 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
     siteConfigPath: "%gpii-app/siteconfig.json5",
     siteConfig: "@expand:fluid.require({that}.options.siteConfigPath)",
 
+    saveSettingPath: "save",
+
     distributeOptions: {
         distributeSaveSettings: {
-            record: "@expand:gpii.app.siteConfigurationHandler.getSaveDistribution({that}.options.siteConfig.disableQssSaveButton)",
-            target: "{app qssWrapper}.options.settingOptions.disabledSettings"
+            record: {
+                expander: {
+                    funcName: "gpii.app.siteConfigurationHandler.getSaveDistribution",
+                    args: [
+                        "{that}.options.saveSettingPath",
+                        "{that}.options.siteConfig.hideQssSaveButton"
+                    ]
+                }
+            },
+            target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
+        },
+        distributeQssScaleFactor: {
+            record: "{that}.options.siteConfig.qssScaleFactor",
+            target: "{app qssWrapper}.options.scaleFactor"
+        },
+        distributePspScaleFactor: {
+            record: "{that}.options.siteConfig.pspScaleFactor",
+            target: "{app psp}.options.scaleFactor"
+        },
+        distributeDialogScaleFactor: {
+            record: "{that}.options.siteConfig.pspScaleFactor",
+            target: "{app dialogManager}.options.scaleFactor"
+        },
+        distributeQssMorePanelConfig: {
+            record: "{that}.options.siteConfig.qssMorePanel",
+            target: "{app qssMorePanel}.options.siteConfig"
         }
     }
 });
 
 /**
- * Get value for disabling the save button in QSS.
- * @param {Boolean} shouldDisableSaveButton - Whether that option is enabled and should be applied
- * @return {String[]} - In case it should be disabled, return the path the save setting
+ * Get value for hiding the save button in QSS.
+ * @param {String} saveSettingPath - The path for the "Save" button setting
+ * @param {Boolean} shouldHideSaveButton - Whether the save button should be hidden or not
+ * @return {String[]} - In case it should be hidden, return the "Save" setting's path
  */
-gpii.app.siteConfigurationHandler.getSaveDistribution = function (shouldDisableSaveButton) {
-    return shouldDisableSaveButton ? ["save"] : [];
+gpii.app.siteConfigurationHandler.getSaveDistribution = function (saveSettingPath, shouldHideSaveButton) {
+    return shouldHideSaveButton ? [saveSettingPath] : [];
 };

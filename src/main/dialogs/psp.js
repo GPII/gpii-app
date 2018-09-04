@@ -26,6 +26,7 @@ require("../common/utils.js");
 require("./basic/dialog.js");
 require("./basic/blurrable.js");
 require("./basic/resizable.js");
+require("./basic/scaledDialog.js");
 require("./basic/offScreenHidable.js");
 
 
@@ -148,7 +149,16 @@ gpii.app.pspInApp.togglePspRestartWarning = function (psp, pendingChanges) {
  * Creates an Electron `BrowserWindow` and manages it.
  */
 fluid.defaults("gpii.app.psp", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
+    gradeNames: [
+        "gpii.app.dialog",
+        "gpii.app.blurrable",
+        "gpii.app.dialog.offScreenHidable",
+        "gpii.app.scaledDialog"
+    ],
+
+    scaleFactor: 1,
+    defaultWidth: 450,
+    defaultHeight: 600,
 
     model:  {
         isKeyedIn: false,
@@ -174,11 +184,15 @@ fluid.defaults("gpii.app.psp", {
         closable: false,
 
         restrictions: {
-            minHeight: 600
-        },
-        attrs: {
-            width: 450,
-            height: 600
+            minHeight: {
+                expander: {
+                    funcName: "gpii.app.scale",
+                    args: [
+                        "{that}.options.scaleFactor",
+                        600
+                    ]
+                }
+            }
         },
 
         fileSuffixPath: "psp/index.html",

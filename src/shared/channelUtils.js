@@ -70,7 +70,7 @@ fluid.defaults("gpii.app.shared.simpleChannelListener", {
 gpii.app.shared.simpleChannelListener.registerIPCListeners = function (that, events) {
     var userEvents = fluid.censorKeys(events, systemEventNames);
     fluid.each(userEvents, function (event, eventName) {
-        that.registerIPCListener(eventName, event);
+        that.registerIPCListener(eventName, event.fire);
     });
 };
 
@@ -88,11 +88,11 @@ gpii.app.shared.simpleChannelListener.deregisterIPCListeners = function (that, e
  * `ipcRenderer`).
  * @param {Object} ipcTarget - The target for which a channel is to be registered.
  * @param {String} channelName - The name of the channel to be listened to.
- * @param {Object} event - The event to be fired when the channel is notified.
+ * @param {Function} handler - The handler to be triggered once there's an incoming message from the channel
  */
-gpii.app.shared.simpleChannelListener.registerIPCListener = function (ipcTarget, channelName, event) {
+gpii.app.shared.simpleChannelListener.registerIPCListener = function (ipcTarget, channelName, handler) {
     ipcTarget.on(channelName, function (/* event, args... */) {
-        event.fire.apply(event, [].slice.call(arguments, 1));
+        handler.apply(null, [].slice.call(arguments, 1));
     });
 };
 

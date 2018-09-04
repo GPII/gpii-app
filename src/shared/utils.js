@@ -17,6 +17,17 @@
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
 
+
+/**
+ * Negate the given condition.
+ * @param {Boolean|Any} condition - The condition to be negated
+ * @return {Boolean} The negated value
+ */
+fluid.negate = function (condition) {
+    return !condition;
+};
+
+
 /*
  * A simple wrapper for the native timeout. Responsible for clearing the interval
  * upon component destruction.
@@ -139,4 +150,14 @@ gpii.app.settingGroups.hasSettings = function (settingGroups) {
     return !!fluid.find_if(settingGroups, function (settingGroup) {
         return settingGroup.settings.length > 0;
     });
+};
+
+/*
+ * Scales a number by a particular scale factor. A simple multiplication.
+ * @param {Number} scaleFactor - The scale factor.
+ * @param {Number} num - The number to be scaled.
+ * @return {Number} - The scaled number.
+ */
+gpii.app.scale = function (scaleFactor, num) {
+    return scaleFactor * num;
 };

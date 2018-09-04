@@ -37,7 +37,7 @@ fluid.defaults("gpii.app.dialog.offScreenHidable", {
     },
 
     invokers: {
-        showImp: {
+        showImpl: {
             funcName: "gpii.app.dialog.offScreenHidable.moveToScreen",
             args: [
                 "{that}",

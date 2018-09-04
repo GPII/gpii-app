@@ -29,7 +29,11 @@ require("../../../shared/channelUtils.js");
  * changes.
  */
 fluid.defaults("gpii.app.qssWidget", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
+
+    scaleFactor: 1,
+    defaultWidth: 316,
+    defaultHeight: 415,
 
     model: {
         setting: {}
@@ -42,8 +46,24 @@ fluid.defaults("gpii.app.qssWidget", {
 
     // Temporary. Should be removed when the widget becomes truly resizable.
     heightMap: {
-        "http://registry\\.gpii\\.net/common/language": 637,
-        "http://registry\\.gpii\\.net/common/highContrastTheme": 627
+        "http://registry\\.gpii\\.net/common/language": {
+            expander: {
+                funcName: "gpii.app.scale",
+                args: [
+                    "{that}.options.scaleFactor",
+                    637
+                ]
+            }
+        },
+        "http://registry\\.gpii\\.net/common/highContrastTheme": {
+            expander: {
+                funcName: "gpii.app.scale",
+                args: [
+                    "{that}.options.scaleFactor",
+                    627
+                ]
+            }
+        }
     },
 
     config: {
@@ -60,8 +80,6 @@ fluid.defaults("gpii.app.qssWidget", {
             }
         },
         attrs: {
-            width: 316,
-            height: 415,
             alwaysOnTop: true
         },
         fileSuffixPath: "qssWidget/index.html"

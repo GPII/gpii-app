@@ -57,9 +57,9 @@ fluid.defaults("gpii.app.resizable", {
             args: ["{that}"]
         },
         "onContentHeightChanged": {
-            func: "{that}.setBounds",
+            funcName: "gpii.app.resizable.handleContentHeightChange",
             args: [
-                "{that}.width",
+                "{that}",
                 "{arguments}.0" // height
             ]
         },
@@ -102,6 +102,19 @@ fluid.defaults("gpii.app.resizable", {
 });
 
 /**
+ * Handles the change in the height of the content for this component's
+ * dialog. Simply invokes `setBounds` with the current width and the new
+ * height (scaled by the `scaleFactor`).
+ * @param {Component} that - The `gpii.app.resizable` component.
+ * @param {Number} height - The new height of the dialog's content.
+ */
+gpii.app.resizable.handleContentHeightChange = function (that, height) {
+    var scaleFactor = that.options.scaleFactor || 1;
+    height = Math.ceil(scaleFactor * height);
+    that.setBounds(that.width, height);
+};
+
+/**
  * Registers a listener to be called whenever the `display-metrics-changed`
  * event is emitted by the electron screen.
  * @param {Component} that - The `gpii.app.resizable` component.
@@ -122,7 +135,7 @@ gpii.app.resizable.scaleDialog = function (that) {
     // Show the dialog if it was shown when a `display-metrics-changed` event occurred
     if (that.options.config.hideOffScreen || that.model.isShown) {
         // Use the low level show
-        gpii.app.dialog.showImp(that, !that.displayMetricsChanged.wasFocused);
+        gpii.app.dialog.showImpl(that, !that.displayMetricsChanged.wasFocused);
     }
 };
 

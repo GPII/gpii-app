@@ -1,5 +1,22 @@
 {
-    // Whether to disable the QSS save button.
-    // Set to `true` if you want it disabled.
-    disableQssSaveButton: true
+    // Whether to hide the QSS save button.
+    // `true` if the button should be hidden and `false` otherwise.
+    hideQssSaveButton: false,
+
+    // The scaling factor for the QSS
+    qssScaleFactor: 1,
+
+    // The scaling factor for the PSP
+    pspScaleFactor: 1,
+
+    // Configuration options for the QSS More panel
+    qssMorePanel: {
+    	// These are default values. The actual dimensions of the QSS more panel
+    	// are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
+    	defaultWidth: 600,
+    	defaultHeight: 450,
+    	movable: true,
+    	resizable: true,
+    	alwaysOnTop: true
+    }
 }

@@ -56,7 +56,7 @@
             },
             value: "{that}.model.item.value",
             messages: {
-                notification: "To see the %settingTitle change, you may need to restart some applications."
+                notification: null
             }
         },
 
@@ -371,11 +371,13 @@
      * @return {Object} {{width: Number, height: Number, offsetLeft: Number}}
      */
     gpii.qss.getElementMetrics = function (target) {
-        return {
+        var result = {
             offsetLeft: target.offset().left,
-            height:     target.outerHeight() - 3, // TODO: Think of a better formula.
-            width:      target.outerWidth()
+            height:     (target.outerHeight() - 3), // TODO: Think of a better formula.
+            width:      (target.outerWidth())
         };
+
+        return result;
     };
 
     /**
@@ -385,20 +387,26 @@
         gradeNames: ["gpii.qss.buttonPresenter"],
 
         styles: {
-            disabledButton: "fl-qss-disabledButton",
-            focusableButton: "fl-focusable"
+            disabled: "fl-qss-disabled",
+            focusable: "fl-focusable"
         },
 
         listeners: {
             "onCreate.removeButtonStyles": {
                 this: "{that}.container",
                 method: "removeClass",
-                args: ["{that}.options.styles.focusableButton"]
+                args: ["{that}.options.styles.focusable"]
             },
             "onCreate.addButtonStyles": {
                 this: "{that}.container",
                 method: "addClass",
-                args: ["{that}.options.styles.disabledButton"]
+                args: ["{that}.options.styles.disabled"]
+            }
+        },
+        invokers: {
+            // Override button activation behaviour
+            activate: {
+                funcName: "fluid.identity"
             }
         }
     });
@@ -665,9 +673,22 @@
         model: {
             messages: {
                 notification: {
-                    keyedOut: "To save your settings you need to setup a Morphic Account.  Go to <a href=\"http://Morphic.world/account\">http://Morphic.world/account</a>",
-                    keyedIn: "Your settings were saved to the Morphic Cloud."
+                    keyedOut: null,
+                    keyedIn: null
                 }
+            }
+        },
+        styles: {
+            dimmed: "fl-qss-dimmed"
+        },
+        modelListeners: {
+            "{gpii.qss}.model.isKeyedIn": {
+                this: "{that}.container",
+                method: "toggleClass",
+                args: [
+                    "{that}.options.styles.dimmed",
+                    "@exapnd:fluid.negate({change}.value)" // dim if not keyed in
+                ]
             }
         },
         invokers: {
@@ -771,6 +792,36 @@
         qssList.events.onUndoRequired.fire();
     };
 
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Reset All
+     * to Standard" QSS button.
+     */
+    fluid.defaults("gpii.qss.resetAllButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.resetAllButtonPresenter.activate",
+                args: [
+                    "{that}",
+                    "{list}",
+                    "{arguments}.0" // activationParams
+                ]
+            }
+        }
+    });
+
+    /**
+     * A custom function for handling activation of the "Reset All to Standard" QSS button.
+     * Reuses the generic `notifyButtonActivated` invoker.
+     * @param {Component} that - The `gpii.qss.resetAllButtonPresenter` instance.
+     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the button (e.g. which key was used to activate the button).
+     */
+    gpii.qss.resetAllButtonPresenter.activate = function (that, qssList, activationParams) {
+        that.notifyButtonActivated(activationParams);
+        qssList.events.onResetAllRequired.fire();
+    };
 
     /**
      * Represents the list of QSS settings. It renders the settings and listens
@@ -803,6 +854,7 @@
             onNotificationRequired: null,
             onMorePanelRequired: null,
             onUndoRequired: null,
+            onResetAllRequired: null,
             onSaveRequired: null,
             onPSPOpen: null
         },
@@ -836,6 +888,8 @@
             return "gpii.qss.saveButtonPresenter";
         case "undo":
             return "gpii.qss.undoButtonPresenter";
+        case "resetAll":
+            return "gpii.qss.resetAllButtonPresenter";
         case "more":
             return "gpii.qss.moreButtonPresenter";
         case "disabled":
@@ -851,7 +905,12 @@
      * for loading them.
      */
     fluid.defaults("gpii.psp.translatedQss", {
-        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
+        gradeNames: [
+            "gpii.psp.messageBundles",
+            "fluid.viewComponent",
+            "gpii.psp.linksInterceptor",
+            "gpii.psp.baseWindowCmp.signalDialogReady"
+        ],
 
         components: {
             quickSetStrip: {
@@ -959,6 +1018,7 @@
                         onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired",
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
+                        onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
                         onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
                     }

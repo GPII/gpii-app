@@ -18,104 +18,13 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
+require("./dialogs/basic/scaledDialog.js");
 require("./dialogs/quickSetStrip/qssDialog.js");
 require("./dialogs/quickSetStrip/qssTooltipDialog.js");
 require("./dialogs/quickSetStrip/qssWidgetDialog.js");
 require("./dialogs/quickSetStrip/qssNotificationDialog.js");
 require("./dialogs/quickSetStrip/qssMorePanel.js");
 require("./common/undoStack.js");
-
-/**
- * A QSS wrapper which defines default values for its settings. The default
- * values are applied every time a user keys in or out or changes his active
- * preference set (in case there is more than one available set).
- */
-fluid.defaults("gpii.app.resettableQssWrapper", {
-    gradeNames: ["gpii.app.qssWrapper"],
-
-    members: {
-        previousState: {
-            gpiiKey: null,
-            activeSet: null
-        }
-    },
-
-    listeners: {
-        // override the existing listener
-        "onPreferencesUpdated.applyPrefSettings": {
-            func: "gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings",
-            args: [
-                "{that}",
-                "{that}.options.defaultQssSettings",
-                "{arguments}.0"
-            ]
-        }
-    },
-
-    // The default values of the QSS settings
-    defaultQssSettings: [{
-        "path": "http://registry\\.gpii\\.net/common/language",
-        "value": "en-US"
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/DPIScale",
-        "value": 0
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
-        "value": false
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
-        "value": "regular-contrast"
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
-        "value": false
-    }]
-});
-
-/**
- * Similar to `gpii.app.qssWrapper.applyPreferenceSettings`. In addition to
- * propagating the changes to the QSS, this function also takes care of
- * notifying the QSS if it is necessary to apply the default values for its
- * settings.
- * @param {Component} that - The `gpii.app.resettableQssWrapper` instance.
- * @param {Object[]} defaultQssSettings - An array containing the default
- * values of the QSS settings. Each setting is identified by its path and each
- * object in the array contains the default value for that setting.
- * @param {module:gpiiConnector.Preferences} preferences - The new preferences
- * that are delivered to the QSS wrapper.
- */
-gpii.app.resettableQssWrapper.applyDecoratedPreferenceSettings = function (that, defaultQssSettings, preferences) {
-    var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences && preferences.settingGroups),
-        notUndoable = false;
-
-    /**
-     * If this check fails, it means that the new preference set is due to a
-     * new setting being added to the user's preferences as a result of a
-     *change to that setting from the QSS.
-     */
-    if (that.previousState.gpiiKey !== preferences.gpiiKey || that.previousState.activeSet !== preferences.activeSet) {
-        notUndoable = true;
-
-        // merge new settings with the original qss settings
-        fluid.each(defaultQssSettings, function (defaultSetting) {
-            var prefSetting = fluid.find_if(settings, function (setting) {
-                return setting.path === defaultSetting.path;
-            });
-
-            if (!prefSetting) {
-                settings.push(defaultSetting);
-            }
-        });
-    }
-
-    that.previousState = {
-        gpiiKey: preferences.gpiiKey,
-        activeSet: preferences.activeSet
-    };
-
-    fluid.each(settings, function (setting) {
-        that.updateSetting(setting, notUndoable);
-    });
-};
 
 /**
  * A component which coordinates the operation of all QSS related components
@@ -131,10 +40,14 @@ fluid.defaults("gpii.app.qssWrapper", {
      * Additional options for QSS settings. These are options that are always
      * valid and may be dependent on some local configuration.
      * Currently they are used for the "site configuration" for conditionally
-     * disabling the "Save" button.
+     * hiding the "Save" button.
      */
     settingOptions: {
-        disabledSettings: []
+        /*
+         * The list of hidden settings. These settings are removed from the QSS settings
+         * and a placeholder is left at their place.
+         */
+        hiddenSettings: []
     },
 
     settingsPath: "%gpii-app/testData/qss/settings.json",
@@ -150,6 +63,10 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     },
 
+    settingMessagesPrefix: "gpii_app_qss_settings",
+
+    scaleFactor: 1,
+
     model: {
         isKeyedIn: false,
         settings: "{that}.options.loadedSettings"
@@ -157,9 +74,9 @@ fluid.defaults("gpii.app.qssWrapper", {
 
     events: {
         onSettingUpdated: null,
-        onPreferencesUpdated: null,
         onActivePreferenceSetAltered: null,
         onUndoRequired: null,
+        onResetAllRequired: null,
         onSaveRequired: null,
         onQssPspOpen: null,
         onQssPspClose: null
@@ -172,15 +89,11 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{arguments}.0" // setting
             ]
         },
-        "onPreferencesUpdated.applyPrefSettings": {
-            funcName: "gpii.app.qssWrapper.applyPreferenceSettings",
-            args: [
-                "{that}",
-                "{arguments}.0" // preferences
-            ]
-        },
         "onUndoRequired.activateUndo": {
             func: "{undoStack}.undo"
+        },
+        onResetAllRequired: {
+            func: "{app}.keyOut"
         },
         onSaveRequired: {
             funcName: "gpii.app.qssWrapper.saveSettings",
@@ -195,6 +108,11 @@ fluid.defaults("gpii.app.qssWrapper", {
     },
 
     modelListeners: {
+        "{messageBundles}.model.locale": {
+            func: "{that}.applySettingsTranslations",
+            excludeSource: "init"
+        },
+
         // All interested in setting updates
         "{qssWrapper}.model.settings.*": [
             { // Undo Stack
@@ -214,6 +132,14 @@ fluid.defaults("gpii.app.qssWrapper", {
     },
 
     invokers: {
+        updateSettings: {
+            funcName: "gpii.app.qssWrapper.updateSettings",
+            args: [
+                "{that}",
+                "{arguments}.0", // settings
+                "{arguments}.0"  // notUndoable
+            ]
+        },
         updateSetting: {
             funcName: "gpii.app.qssWrapper.updateSetting",
             args: [
@@ -229,6 +155,14 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{arguments}.0", // updatedSetting
                 "{arguments}.1" // source
             ]
+        },
+        applySettingsTranslations: {
+            funcName: "gpii.app.qssWrapper.applySettingsTranslations",
+            args: [
+                "{that}",
+                "{messageBundles}.model.messages",
+                "{that}.model.settings"
+            ]
         }
     },
 
@@ -237,11 +171,15 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.undoInWrapper"
         },
         qss: {
-            type: "gpii.app.qssInWrapper"
+            type: "gpii.app.qssInWrapper",
+            options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor"
+            }
         },
         qssWidget: {
             type: "gpii.app.qssWidget",
             options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor",
                 listeners: {
                     onQssWidgetSettingAltered: {
                         func: "{qssWrapper}.alterSetting",
@@ -270,6 +208,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssTooltip: {
             type: "gpii.app.qssTooltipDialog",
             options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor",
                 model: {
                     isKeyedIn: "{qssWrapper}.model.isKeyedIn"
                 },
@@ -299,10 +238,16 @@ fluid.defaults("gpii.app.qssWrapper", {
             }
         },
         qssNotification: {
-            type: "gpii.app.qssNotification"
+            type: "gpii.app.qssNotification",
+            options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor"
+            }
         },
         qssMorePanel: {
-            type: "gpii.app.qssMorePanel"
+            type: "gpii.app.qssMorePanel",
+            options: {
+                scaleFactor: "{qssWrapper}.options.scaleFactor"
+            }
         }
     }
 });
@@ -395,61 +340,19 @@ gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable)
 };
 
 /**
- * Returns all available settings (including subsettings) in the provided
- * item (either a setting group or a setting). In case the passed argument
- * is a setting, it is also added to the resulting list.
- * @param {module:gpiiConnector.SettingGroup | module:gpiiConnector.SettingDescriptor} item - The
- * setting group or the setting from which to retrieve settings
- * @return {module:gpiiConnector.SettingDescriptor[]} An array of all available
- * settings for that `item`.
- */
-gpii.app.qssWrapper.getItemSettings = function (item) {
-    var settings = [];
-
-    fluid.each(item.settings, function (setting) {
-        settings.push(setting);
-        if (setting.settings) {
-            var subsettings = gpii.app.qssWrapper.getItemSettings(setting);
-            settings = settings.concat(subsettings);
-        }
-    });
-
-    return settings;
-};
-
-/**
- * Returns all settings (including subsettings) available in the provided
- * settings groups.
- * @param {module:gpiiConnector.SettingGroup[]} settingGroups - An array with
- * setting group items as per the parsed message in the `gpiiConnector`.
- * @return {module:gpiiConnector.SettingDescriptor[]} An array of all available
- * settings.
- */
-gpii.app.qssWrapper.getPreferencesSettings = function (settingGroups) {
-    var settings = [];
-
-    fluid.each(settingGroups, function (settingGroup) {
-        var settingGroupSettings = gpii.app.qssWrapper.getItemSettings(settingGroup);
-        settings = settings.concat(settingGroupSettings);
-    });
-
-    return settings;
-};
-
-/**
  * When new preferences are delivered to the QSS wrapper, this function takes
  * care of notifying the QSS about the changes which should in turn update its
  * internal models and UI. Note that settings changes as a result of a change
  * in the preference set are not undoable.
  * @param {Component} that - The `gpii.app.qssWrapper` instance.
- * @param {module:gpiiConnector.Preferences} preferences - The new preferences
- * that are delivered to the QSS wrapper.
+ * @param {Object[]} settings - Setting changes to be applied
+ * @param {String} settings.path - The path of the setting to be updated
+ * @param {Any} settings.value - The new value of the setting
+ * @param {Boolean} notUndoable - Whether these setting changes are undoable
  */
-gpii.app.qssWrapper.applyPreferenceSettings = function (that, preferences) {
-    var settings = gpii.app.qssWrapper.getPreferencesSettings(preferences.settingGroups);
-
+gpii.app.qssWrapper.updateSettings = function (that, settings, notUndoable) {
     fluid.each(settings, function (setting) {
-        that.updateSetting(setting, true);
+        that.updateSetting(setting, notUndoable);
     });
 };
 
@@ -457,7 +360,7 @@ gpii.app.qssWrapper.applyPreferenceSettings = function (that, preferences) {
  * Retrieves synchronously the QSS settings from a file on the local machine
  * and resolves any assets that they reference with respect to the `gpii-app`
  * folder.
- * It also applies any other mutations to the settings, such as disabling.
+ * It also applies any other mutations to the settings, such as hiding.
  * @param {Component} that - The instance of `gpii.app.qssWrapper` component
  * @param {Object} settingOptions - The options for setting mutations
  * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
@@ -476,20 +379,29 @@ gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager
     });
 
     /*
-     * Disable settings
+     * Hide settings
      */
-    if (settingOptions.disabledSettings) {
-        fluid.each(settingOptions.disabledSettings, function (disabledSettingPath) {
-            var settingToDisable = loadedSettings.find(function (setting) {
-                return setting.path === disabledSettingPath;
+    if (settingOptions.hiddenSettings) {
+        fluid.each(settingOptions.hiddenSettings, function (hiddenSettingPath) {
+            var settingToHideIdx = loadedSettings.findIndex(function (setting) {
+                return setting.path === hiddenSettingPath;
             });
 
-            /*
-             * In the renderer the type property is used for choosing the proper handling
-             * approach. Use a special such type that is handled in disable fashion.
-             */
-            if (settingToDisable) {
-                settingToDisable.schema.type = "disabled";
+            if (settingToHideIdx > -1) {
+                // Ensure there isn't any metadata left for the button
+                // Make the button a placeholder (a button in hidden state)
+                loadedSettings[settingToHideIdx] = {
+                    path: null,
+                    schema: {
+                        /*
+                         * In the renderer the type property is used for choosing the proper handling
+                         * approach. Use a special type of "disabled" so that the button (placeholder) is
+                         * represented disable fashion.
+                         */
+                        type: "disabled",
+                        title: ""
+                    }
+                };
             }
         });
     }
@@ -507,7 +419,7 @@ gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
     var settingIndex = that.model.settings.findIndex(function (setting) {
-        return setting.path === updatedSetting.path && !fluid.model.diff(setting.value, updatedSetting.value);
+        return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
     });
 
     if (settingIndex !== -1) {
@@ -527,9 +439,14 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
  * button.
  */
 gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
+    var scaleFactor = qss.options.scaleFactor,
+        offsetLeft = scaleFactor * buttonElemMetrics.offsetLeft,
+        buttonWidth = scaleFactor * buttonElemMetrics.width,
+        buttonHeight = scaleFactor * buttonElemMetrics.height;
+
     return {
-        x: qss.width - buttonElemMetrics.offsetLeft - (buttonElemMetrics.width / 2),
-        y: buttonElemMetrics.height
+        x: qss.width - offsetLeft - buttonWidth / 2,
+        y: buttonHeight
     };
 };
 
@@ -566,6 +483,9 @@ fluid.defaults("gpii.app.qssInWrapper", {
         onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
     },
     listeners: {
+        onDialogReady: {
+            funcName: "{qssWrapper}.applySettingsTranslations"
+        },
         "{channelListener}.events.onQssButtonFocused": [{
             func: "{qssTooltip}.showIfPossible",
             args: [
@@ -589,8 +509,6 @@ fluid.defaults("gpii.app.qssInWrapper", {
             ]
         }, {
             func: "{qssNotification}.hide"
-        }, {
-            func: "{qssMorePanel}.hide"
         }],
         onQssSettingAltered: {
             func: "{qssWrapper}.alterSetting",
@@ -607,11 +525,12 @@ fluid.defaults("gpii.app.qssInWrapper", {
             }] // notificationParams
         },
         "{channelListener}.events.onQssMorePanelRequired": {
-            func: "{qssMorePanel}.show"
+            func: "{qssMorePanel}.toggle"
         },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
+        "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",
         "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
-        "{channelListener}.events.onQssPspOpen":      "{qssWrapper}.events.onQssPspOpen"
+        "{channelListener}.events.onQssPspOpen": "{qssWrapper}.events.onQssPspOpen"
     }
 });
 
@@ -655,3 +574,54 @@ fluid.defaults("gpii.app.undoInWrapper", {
         }
     }
 });
+
+/**
+ * Translate the given setting by updating its text properties with the passed messages.
+ * @param {Component} that  - The instance of `gpii.app.qssWrapper` component
+ * @param {Object} qssSettingMessages - The QSS settings messages. Currently, a qss setting
+ * has the following messages: title, tooltip, [tip], [enum], [footerTip]
+ * @param {Object} setting - The setting to be applied messages to
+ * @return {Object} A translated copy of the QSS setting
+ */
+gpii.app.qssWrapper.applySettingTranslation = function (that, qssSettingMessages, setting) {
+    var translatedSetting = fluid.copy(setting);
+
+    var message = qssSettingMessages[translatedSetting.messageKey];
+
+    if (message) {
+        translatedSetting.tooltip = message.tooltip;
+        translatedSetting.tip = message.tip;
+        if (translatedSetting.widget) {
+            translatedSetting.widget.footerTip = message.footerTip;
+        }
+
+        translatedSetting.schema.title = message.title;
+        if (message["enum"]) {
+            translatedSetting.schema["enum"] = message["enum"];
+        }
+    }
+
+    return translatedSetting;
+};
+
+/**
+ * Apply translations to all settings using the existing messages "mega" bundle. A translated QSS setting is a setting
+ * with all its text properties updated with the current locale messages. A translation is notified trough the changeApplier.
+ * @param {Component} that - The `gpii.app.qssWrapper` instance
+ * @param {Object} messagesBundle - Messages for the current locale
+ * @param {Object[]} qssSettingControls - The list of QSS settings to be applied translations to
+ */
+gpii.app.qssWrapper.applySettingsTranslations = function (that, messagesBundle, qssSettingControls) {
+    var qssSettingMessagesGroup = that.options.settingMessagesPrefix,
+        qssSettingMessages = messagesBundle[qssSettingMessagesGroup];
+
+    fluid.each(qssSettingControls, function (setting) {
+        var translatedSetting = gpii.app.qssWrapper.applySettingTranslation(
+            that,
+            qssSettingMessages,
+            setting
+        );
+
+        that.alterSetting(translatedSetting, "gpii.app.undoStack.notUndoable");
+    });
+};

@@ -5,30 +5,32 @@
             "type": "string",
             "title": "Language",
             "keys": [
-                "hy",
-                "zh-Hans",
-                "zh-Hant",
-                "en",
-                "ko",
-                "ru",
-                "es"
+                "en-US",
+                "hy-AM",
+                "zh-CN",
+                "zh-TW",
+                "ko-KR",
+                "ru-RU",
+                "es-ES"
             ],
             "enum": [
-                "Հայերէն · Armenian",
-                "汉语 · Chinese (Simplified)",
-                "漢語 · Chinese (Traditional)",
                 "English",
+                "Հայերէն · Armenian",
+                "简体中文 · Chinese (Simplified)",
+                "繁体中文 · Chinese (Traditional)",
                 "한국어 · Korean",
                 "Ру́сский · Russian",
                 "Español · Spanish"
             ],
             "image": "language.svg",
-            "defaultValue": "en"
+            "default": "en-US"
         },
-        "value": "en",
+        "messageKey": "common-language",
+        "value": "en-US",
+        "tip": "<div><strong>Changes language.</strong></div><div>Works in Windows and programs that support Windows language settings.</div><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
         "tooltip": "<div><strong>Change language.</strong></div><div>Works in Windows, Edge, and many other applications.</div>",
         "restartWarning": true,
-        "learnMoreLink": "https://www.gpii.net"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#language"
     }, {
         "path": "appTextZoom",
         "schema": {
@@ -38,37 +40,32 @@
             "max": null,
             "divisibleBy": 1
         },
+        "messageKey": "appTextZoom",
         "value": 0,
+        "tip": "<div><strong>Zooms one application.</strong></div><div>Works in many applications -- for the window on top.</div>",
         "tooltip": "<div><strong>Change text size.</strong></div><div>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</div>",
         "widget": {
-            "footerTip": "You can also use Ctrl - and Ctrl + on your keyboard in many applications"
+            "footerTip": "You can also use the CTRL key plus the Scroll (wheel or gesture) at any time."
         },
-        "learnMoreLink": "https://www.gpii.net"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
     }, {
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
         "schema": {
             "type": "number",
             "title": "Screen Zoom",
-            "min": 1,
-            "max": 2,
-            "divisibleBy": 0.25,
-            "defaultValue": 1.25
+            "min": -2,
+            "max": 4,
+            "divisibleBy": 1,
+            "default": 0
         },
-        "value": 1.25,
-        "tooltip": "<div><strong>Change the screen size to make everything larger/smaller.</strong></div>",
+        "messageKey": "common-DPIScale",
+        "value": 0,
+        "tip": "<div><strong>Zooms everything on the screen</strong></div><div>Amount of Zoom up and down differs by computer.</div>",
+        "tooltip": "<div><strong>Change the screen size to make everything larger/smaller.</strong></div><div>Works everywhere.</div>",
         "widget": {
             "footerTip": ""
         },
-        "learnMoreLink": "https://www.gpii.net"
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/captions/enabled",
-        "schema": {
-            "type": "boolean",
-            "title": "Youtube Captions",
-            "defaultValue": false
-        },
-        "value": false,
-        "tooltip": "<div><strong>Turn captions on/off in Youtube videos played in Chrome.</strong></div>"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
     }, {
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
@@ -94,8 +91,9 @@
                 "Grey on white",
                 "Black on brown"
             ],
-            "defaultValue": "regular-contrast"
+            "default": "regular-contrast"
         },
+        "messageKey": "common-highContrastTheme",
         "value": "regular-contrast",
         "styles": {
             "regular-contrast": {
@@ -139,25 +137,27 @@
                 "border-color": "transparent"
             }
         },
-        "tooltip": "<div><strong>Change the contrast between the text and background color, so text is easier to read.</strong></div><div>Contrast changes work in Windows, Edge, and some other applications.</div>",
-        "learnMoreLink": "https://www.gpii.net"
+        "tip": "<div><strong>Changes contrast & colors</strong></div><div>Works in Chrome, Windows and apps that support Windows contrast themes.  (May need to restart some programs)</div>",
+        "tooltip": "<div><strong>Change the contrast between the text and background color, so text is easier to read.</strong></div><div>Contrast changes will affect Windows, Edge, and some other applications.</div>",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#contrast"
     }, {
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
         "schema": {
             "title": "Read Aloud",
             "description": "Whether to enable/disable self voicing",
             "type": "boolean",
-            "defaultValue": false
+            "default": false
         },
+        "messageKey": "common-selfVoicing-enabled",
         "value": false,
-        "tooltip": "<div><strong>Turn Chrome’s ability to read text on/off.</strong></div>"
+        "tooltip": "<div><strong>Turn Chrome’s ability to read text on/off.</strong></div><div>Works in Chrome only.</div>"
     }, {
-
         "path": "more",
         "schema": {
             "type": "more",
-            "title": "More..."
+            "title": "MORE...\n\n(& HELP)"
         },
+        "messageKey": "more",
         "tooltip": "<div><strong>More options for changing the settings on this computer.</strong></div>"
     }, {
         "path": "save",
@@ -165,6 +165,7 @@
             "type": "save",
             "title": "Save"
         },
+        "messageKey": "save",
         "tooltip": "<div><strong>Save your preferences so you can access them from other Morphic-enabled computers.</strong></div>"
     }, {
         "path": "undo",
@@ -173,19 +174,28 @@
             "title": "Undo",
             "image": "undo.svg"
         },
-        "tooltip": "<div><strong>Undo the last change you made in  the Morphic Bar.</strong></div>"
+        "messageKey": "undo",
+        "tooltip": "<div><strong>Undo the last change you made in the Morphic Bar.</strong></div>"
+    }, {
+        "path": "resetAll",
+        "schema": {
+            "type": "resetAll",
+            "title": "Reset All to Standard"
+        },
+        "messageKey": "resetAll"
     }, {
         "path": "psp",
         "schema": {
             "type": "psp",
             "title": {
-                "keyedIn": "Settings Panel",
-                "keyedOut": "Key In"
+                "keyedIn": "My Settings Panel",
+                "keyedOut": "Sign In"
             }
         },
+        "messageKey": "psp",
         "tooltip": {
-            "keyedIn": "<div><strong>Open the Morphic Panel so you can quickly see and adjust a variety of settings.</strong></div>",
-            "keyedOut": "<div><strong>Open the Morphic Panel.</strong></div><div>Where you can use your Morphic account to adjust your personal settings on this computer.</div>"
+            "keyedIn": "<div><strong>Open the Morphic Panel</strong></div><div>Where you can quickly adjust often-changed settings of yours.</div>",
+            "keyedOut": "<div><strong>Open the Morphic Panel</strong></div><div>Where you can sign in to apply your saved personal settings.</div>"
         }
     }, {
         "path": "close",
@@ -194,6 +204,7 @@
             "title": "Close",
             "image": "close.svg"
         },
-        "tooltip": "<div><strong>Close the Morphic Panel.</strong></div><div>You can re-open it from the system tray or from the Morphic desktop icon.</div>"
+        "messageKey": "close",
+        "tooltip": "<div><strong>Close the Morphic Panel</strong></div><div>You can reopen it using the Morphic Icon <img height=20 src='../../icons/gpii-icon-balloon.png'></img></div>"
     }
 ]

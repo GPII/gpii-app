@@ -131,6 +131,7 @@ fluid.defaults("gpii.app.dialogManager", {
         isKeyedIn: false
     },
 
+    scaleFactor: 1,
     sequentialDialogsGrade: "gpii.app.error",
 
     distributeOptions: {
@@ -154,16 +155,25 @@ fluid.defaults("gpii.app.dialogManager", {
 
     components: {
         waitDialog: {
-            type: "gpii.app.waitDialog"
+            type: "gpii.app.waitDialog",
+            options: {
+                scaleFactor: "{dialogManager}.options.scaleFactor"
+            }
         },
         aboutDialog: {
-            type: "gpii.app.aboutDialog"
+            type: "gpii.app.aboutDialog",
+            options: {
+                scaleFactor: "{dialogManager}.options.scaleFactor"
+            }
         },
         survey: {
             type: "gpii.app.survey"
         },
         error: {
-            type: "gpii.app.error"
+            type: "gpii.app.error",
+            options: {
+                scaleFactor: "{dialogManager}.options.scaleFactor"
+            }
         },
 
         errorQueue: {

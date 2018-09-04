@@ -20,21 +20,24 @@ var gpii = fluid.registerNamespace("gpii");
 
 require("../basic/dialog.js");
 require("../basic/blurrable.js");
+require("../basic/scaledDialog.js");
 require("../../../shared/channelUtils.js");
-
 
 /**
  * A component that represents the Quick Set Strip.
  */
 fluid.defaults("gpii.app.qss", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
+
+    scaleFactor: 1,
+    defaultWidth: 984,
+    defaultHeight: 95,
 
     config: {
         closable: false,
+        awaitWindowReadiness: true,
 
         attrs: {
-            width: 984,
-            height: 95,
             alwaysOnTop: true,
             transparent: false,
             enableLargerThanScreen: true
@@ -70,7 +73,7 @@ fluid.defaults("gpii.app.qss", {
                 listeners: {
                     onSettingUpdated: {
                         "funcName": "console.log",
-                        args: ["Sending Updated QSS: ", "{arguments}.0"]
+                        args: ["QssDialog settingUpdate: ", "{arguments}.0"]
                     }
                 },
                 modelListeners: {
@@ -98,6 +101,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssNotificationRequired: null,
                     onQssMorePanelRequired: null,
                     onQssUndoRequired: null,
+                    onQssResetAllRequired: null,
                     onQssSaveRequired: null,
                     onQssPspOpen: null
                 },
