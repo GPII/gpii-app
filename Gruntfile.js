@@ -20,8 +20,11 @@ module.exports = function (grunt) {
         },
         compileMessages: {
             defaults: {
+                messagesDirs: [
+                    "./messageBundles",
+                    "%gpii-user-errors/bundles"
+                ],
                 messageCompilerPath: "./messageBundlesCompiler.js",
-                messagesDirs: ["./messageBundles"],
                 resultFilePath: "./build/gpii-app-messageBundles.json"
             }
         }
@@ -34,10 +37,16 @@ module.exports = function (grunt) {
     grunt.registerTask("lint", "Perform all standard lint checks.", ["lint-all"]);
 
 
-    grunt.registerMultiTask("compileMessages", function () {
-        var compileMessageBundles = require(this.data.messageCompilerPath).compileMessageBundles;
+    /*
+     * Generate "Mega" messages bundle out of all supplied message bundles. Bundles
+     * are loaded from given directories.
+     */
+    grunt.registerMultiTask("compileMessages", "Generate i18n messages 'Mega' bundle", function () {
+        // Get all possible paths
+        require("gpii-universal");
 
-        var compiledMessageBundles = compileMessageBundles(this.data.messagesDirs, "en", {"json": JSON});
+        var compileMessageBundles = require(this.data.messageCompilerPath).compileMessageBundles;
+        var compiledMessageBundles = compileMessageBundles(this.data.messagesDirs, "en", {"json": JSON, "json5": require("json5")});
 
         grunt.file.write(this.data.resultFilePath, JSON.stringify(compiledMessageBundles, null, 4));
     });

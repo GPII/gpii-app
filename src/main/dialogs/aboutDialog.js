@@ -16,10 +16,9 @@
 
 var fluid = require("infusion");
 
-var app = require("electron").app;
-
 require("./basic/dialog.js");
 
+var gpii = fluid.registerNamespace("gpii");
 
 /**
  * Component that represents the About dialog
@@ -34,7 +33,7 @@ fluid.defaults("gpii.app.aboutDialog", {
     config: {
         params: {
             userListeners: ["USB", "NFC", "Fingerprint", "Webcam & Voice"],
-            version: { expander: { func: app.getVersion } }
+            version: "@expand:gpii.app.getVersion()"
         },
         fileSuffixPath: "aboutDialog/index.html"
     },
@@ -59,3 +58,13 @@ fluid.defaults("gpii.app.aboutDialog", {
         }
     }
 });
+
+
+/**
+ * Simple method for retrieving the gpii-app version. Currently it
+ * uses the Electron's api that makes use of the version in the `package.json`.
+ * @return {String} The version of the gpii-app
+ */
+gpii.app.getVersion = function () {
+    return require("electron").app.getVersion();
+};
