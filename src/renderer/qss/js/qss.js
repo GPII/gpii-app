@@ -824,11 +824,28 @@
     };
 
     /**
-     * Represents the list of QSS settings. It renders the settings and listens
-     * for events triggered by the buttons.
+     * Represents the list of QSS settings. It renders the settings and listens for events
+     * triggered by the buttons. The `handlerGrades` hash maps the type of a setting to the
+     * gradeName of the handler which will present the corresponding setting button in the
+     * QSS. If for a given setting type there is no entry in the `handlerGrades` hash, the
+     * the `defaultHandlerGrade` will be used for its presenter.
      */
     fluid.defaults("gpii.qss.list", {
         gradeNames: ["gpii.psp.repeater"],
+
+        defaultHandlerGrade: "gpii.qss.buttonPresenter",
+        handlerGrades: {
+            "boolean":  "gpii.qss.toggleButtonPresenter",
+            "number":   "gpii.qss.widgetButtonPresenter",
+            "string":   "gpii.qss.widgetButtonPresenter",
+            "close":    "gpii.qss.closeButtonPresenter",
+            "psp":      "gpii.qss.keyInButtonPresenter",
+            "save":     "gpii.qss.saveButtonPresenter",
+            "undo":     "gpii.qss.undoButtonPresenter",
+            "resetAll": "gpii.qss.resetAllButtonPresenter",
+            "more":     "gpii.qss.moreButtonPresenter",
+            "disabled": "gpii.qss.disabledButtonPresenter"
+        },
 
         dynamicContainerMarkup: {
             container:
@@ -862,7 +879,10 @@
         invokers: {
             getHandlerType: {
                 funcName: "gpii.qss.list.getHandlerType",
-                args: ["{arguments}.0"] // item
+                args: [
+                    "{that}",
+                    "{arguments}.0" // item
+                ]
             }
         }
     });
@@ -870,33 +890,15 @@
     /**
      * Returns the correct handler type (a grade inheriting from `gpii.qss.buttonPresenter`)
      * for the given setting depending on its type.
+     * @param {Component} that - The `gpii.qss.list` instance.
      * @param {Object} setting - The setting for which the handler type is to be determined.
      * @return {String} The grade name of the setting's handler.
      */
-    gpii.qss.list.getHandlerType = function (setting) {
-        switch (setting.schema.type) {
-        case "boolean":
-            return "gpii.qss.toggleButtonPresenter";
-        case "number":
-        case "string":
-            return "gpii.qss.widgetButtonPresenter";
-        case "close":
-            return "gpii.qss.closeButtonPresenter";
-        case "psp":
-            return "gpii.qss.keyInButtonPresenter";
-        case "save":
-            return "gpii.qss.saveButtonPresenter";
-        case "undo":
-            return "gpii.qss.undoButtonPresenter";
-        case "resetAll":
-            return "gpii.qss.resetAllButtonPresenter";
-        case "more":
-            return "gpii.qss.moreButtonPresenter";
-        case "disabled":
-            return "gpii.qss.disabledButtonPresenter";
-        default:
-            return "gpii.qss.buttonPresenter";
-        };
+    gpii.qss.list.getHandlerType = function (that, setting) {
+        var handlerGrades = that.options.handlerGrades,
+            settingType = setting.schema.type;
+
+        return handlerGrades[settingType] || that.options.defaultHandlerGrade;
     };
 
     /**
