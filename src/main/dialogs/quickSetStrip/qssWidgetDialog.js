@@ -238,7 +238,8 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
 
     // store the offset so that the widget can be positioned correctly when
     // the renderer process sends the corresponding message
-    that.model.offset = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics);
+    var offset = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics);
+    that.applier.change("offset", offset);
 
     that.height = heightMap[setting.path] || that.options.config.attrs.height;
     that.setRestrictedSize(that.width, that.height);
