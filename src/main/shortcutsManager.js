@@ -45,6 +45,12 @@ fluid.defaults("gpii.app.shortcutsManager", {
                 "{arguments}.1"
             ]
         },
+        deregisterGlobalShortcut: {
+            funcName: "gpii.app.shortcutsManager.deregisterGlobalShortcut",
+            args: [
+                "{arguments}.0"
+            ]
+        },
         registerLocalShortcut: {
             funcName: "gpii.app.shortcutsManager.registerLocalShortcut",
             args: [
@@ -87,6 +93,18 @@ gpii.app.shortcutsManager.registerGlobalShortcut = function (that, command, even
     }
 
     globalShortcut.register(command, shortcutEvent.fire);
+};
+
+/**
+ * Deregisters a global shortcut.
+ * @param {String} command - The global shortcut string.
+ */
+gpii.app.shortcutsManager.deregisterGlobalShortcut = function (command) {
+    if (globalShortcut.isRegistered(command)) {
+        globalShortcut.unregister(command);
+    } else {
+        fluid.fail("ShortcutsManager: Cannot unregister an unexisting global shortcut - ", command);
+    }
 };
 
 /**

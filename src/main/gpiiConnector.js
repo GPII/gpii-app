@@ -26,6 +26,8 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.gpiiConnector", {
     gradeNames: ["gpii.app.ws"],
 
+    defaultGpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
+
     events: {
         onPreferencesUpdated: null,
         onSettingUpdated: null,
@@ -119,7 +121,8 @@ gpii.app.gpiiConnector.handlePreferencesChangeMessage = function (gpiiConnector,
     var snapsetName = gpii.app.extractSnapsetName(updateDetails);
     gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
 
-    var preferences = gpii.app.extractPreferencesData(updateDetails);
+    var defaultGpiiAppShortcut = gpiiConnector.options.defaultGpiiAppShortcut,
+        preferences = gpii.app.extractPreferencesData(updateDetails, defaultGpiiAppShortcut);
     gpiiConnector.events.onPreferencesUpdated.fire(preferences);
 };
 
@@ -243,14 +246,18 @@ gpii.app.extractSettings = function (element) {
  * or out.
  * @param {Object} message - The message sent when the user keys is or out (a JSON
  * object).
+ * @param {String} defaultGpiiAppShortcut -The default keyboard shortcut for opening
+ * the GPII given as an accelerator string. Will be used in case the user does not
+ * have a keyboard shortcut of his own.
  * @return {Preferences} The preferences object that can be used in the GPII app.
  */
-gpii.app.extractPreferencesData = function (message) {
+gpii.app.extractPreferencesData = function (message, defaultGpiiAppShortcut) {
     var value = message.value || {},
         // Whether the PSP should be closed when the user clicks outside. The default
         // value is `true` (in case this is not specified in the payload). Note that
         // the latter will always be the case in the keyed out payload!
         closePSPOnBlur = fluid.isValue(value.closePSPOnBlur) ? value.closePSPOnBlur : true,
+        gpiiAppShortcut = value.gpiiAppShortcut || defaultGpiiAppShortcut,
         preferences = value.preferences || {},
         contexts = preferences.contexts,
         gpiiKey = value.gpiiKey,
@@ -277,7 +284,8 @@ gpii.app.extractPreferencesData = function (message) {
         sets: sets,
         activeSet: activeSet,
         settingGroups: settingGroups,
-        closePSPOnBlur: closePSPOnBlur
+        closePSPOnBlur: closePSPOnBlur,
+        gpiiAppShortcut: gpiiAppShortcut
     };
 };
 

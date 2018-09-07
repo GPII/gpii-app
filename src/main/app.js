@@ -252,14 +252,18 @@ fluid.defaults("gpii.app", {
                     onPspOpenShortcut: null,
                     onQssUndoShortcut: null
                 },
-                listeners: {
-                    "onCreate.registerDefaultGlobalShortcut": {
-                        func: "{that}.registerGlobalShortcut",
+                modelListeners: {
+                    "{app}.model.preferences.gpiiAppShortcut": {
+                        funcName: "gpii.app.changeGpiiAppShortcut",
                         args: [
-                            "Shift+CmdOrCtrl+Alt+Super+M",
+                            "{that}",
+                            "{change}.value",
+                            "{change}.oldValue",
                             "onPspOpenShortcut"
                         ]
-                    },
+                    }
+                },
+                listeners: {
                     "onCreate.registerDefaultLocalShortcut": {
                         func: "{that}.registerLocalShortcut",
                         args: [
@@ -375,6 +379,27 @@ fluid.defaults("gpii.app", {
     },
     defaultTheme: "white"
 });
+
+/**
+ * Changes the keyboard shortcut for opening the GPII app. The previously registered
+ * shortcut for this action (if any) is removed.
+ * @param {Component} shortcutsManager - The `gpii.app.shortcutsManager` instance.
+ * @param {String} shortcut - The new shortcut for opening the GPII app given as an
+ * accelerator string (https://electronjs.org/docs/api/accelerator).
+ * @param {String} oldShortcut - The previously used shortcut for opening the GPII
+ * app given as an accelerator string.
+ * @param {String} eventName - The name of the event which should be triggered when
+ * the new GPII app opening shortcut is activated.
+ */
+gpii.app.changeGpiiAppShortcut = function (shortcutsManager, shortcut, oldShortcut, eventName) {
+    if (oldShortcut) {
+        shortcutsManager.deregisterGlobalShortcut(oldShortcut);
+    }
+
+    if (shortcut) {
+        shortcutsManager.registerGlobalShortcut(shortcut, eventName);
+    }
+};
 
 /**
  * Invoked when a QSS setting has been altered by the user either by changing the
