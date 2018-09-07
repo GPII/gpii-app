@@ -123,16 +123,6 @@
                     model: {
                         item: "{element}.model.item",
                         index: "{element}.options.index"
-                    },
-                    events: {
-                        onHandlerCreated: "{repeater}.events.onHandlerCreated"
-                    },
-                    listeners: {
-                        "onCreate.notifyHandlerCreated": {
-                            func: "{that}.events.onHandlerCreated.fire",
-                            args: ["{that}.model.item"],
-                            priority: "last"
-                        }
                     }
                 }
             }
@@ -157,17 +147,8 @@
     fluid.defaults("gpii.psp.repeater", {
         gradeNames: "fluid.viewComponent",
 
-        members: {
-            handlersCount: 0
-        },
-
         model: {
             items: []
-        },
-
-        events: {
-            onRepeaterCreated: null,
-            onHandlerCreated: null
         },
 
         handlerType: null,
@@ -180,13 +161,6 @@
             getHandlerType: {
                 funcName: "fluid.identity",
                 args: ["{that}.options.handlerType"]
-            }
-        },
-
-        listeners: {
-            onHandlerCreated: {
-                funcName: "gpii.psp.repeater.onHandlerCreated",
-                args: ["{that}"]
             }
         },
 
@@ -254,19 +228,6 @@
             }
         }
     });
-
-    /**
-     * Invoked whenever a handler component for a `repeater.item` is created. When the number of
-     * created handlers coincides with the number of items, the `onRepeaterCreated` event will
-     * be fired.
-     * @param {Component} that - The `gpii.psp.repeater` instance.
-     */
-    gpii.psp.repeater.onHandlerCreated = function (that) {
-        that.handlersCount++;
-        if (that.handlersCount >= that.model.items.length) {
-            that.events.onRepeaterCreated.fire();
-        }
-    };
 
     /**
      * Notifies the `gpii.psp.repeater` component for changes  in its element handlers.
