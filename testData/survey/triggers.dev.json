@@ -4,8 +4,8 @@
         "conditions": [
             {
                 "type": "sessionTimer",
-                "value": 5000,
-                "sessionModulus": 1
+                "value": 60000,
+                "sessionModulus": 2
             }
         ]
     }
