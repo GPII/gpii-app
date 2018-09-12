@@ -469,9 +469,7 @@
      * available settings.
      */
     gpii.psp.settingsPanel.onSettingGroupsChanged = function (settingGroups, emptyPrefSetHintElem) {
-        var hasSettings = !!fluid.find_if(settingGroups, function (settingGroup) {
-            return settingGroup.settings.length > 0;
-        });
+        var hasSettings = gpii.app.settingGroups.hasSettings(settingGroups);
         emptyPrefSetHintElem.toggle(!hasSettings);
     };
 
