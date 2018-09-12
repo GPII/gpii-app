@@ -283,8 +283,7 @@ fluid.defaults("gpii.app.timedConditionHandler", {
  * is not defined, the `defaultSessionModulus` option in the component's configuration will
  * be used.
  * 3. There is no timer already started.
- * 4. The user has just keyed in or has adjusted a setting's value either using the QSS or
- * the PSP.
+ * 4. The user has adjusted a setting's value either using the QSS or the PSP.
  *
  * Note that the `isLuckySession` model property of this component cannot be a fact in the
  * `factsManager` because it depends on the value of the `sessionModulus` which may not be
@@ -336,18 +335,11 @@ fluid.defaults("gpii.app.sessionTimerHandler", {
     },
 
     listeners: {
-        "onCreate.startTimer": {
-            funcName: "gpii.app.sessionTimerHandler.onHandlerCreated",
-            args: [
-                "{that}",
-                "{app}.model.isKeyedIn"
-            ]
-        },
         "{qssWrapper}.qss.events.onQssSettingAltered": {
-            func: "{that}.startTimer"
+            func: "{that}.startTimerIfPossible"
         },
         "{psp}.events.onSettingAltered": {
-            func: "{that}.startTimer"
+            func: "{that}.startTimerIfPossible"
         },
         "{qssWrapper}.undoStack.events.onChangeUndone": {
             funcName: "gpii.app.sessionTimerHandler.onChangeUndone",
@@ -356,8 +348,8 @@ fluid.defaults("gpii.app.sessionTimerHandler", {
     },
 
     invokers: {
-        startTimer: {
-            funcName: "gpii.app.sessionTimerHandler.startTimer",
+        startTimerIfPossible: {
+            funcName: "gpii.app.sessionTimerHandler.startTimerIfPossible",
             args: ["{that}"]
         }
     }
@@ -395,18 +387,6 @@ gpii.app.sessionTimerHandler.getIsLuckySession = function (sessionModulus, defau
 };
 
 /**
- * Invoked when the `gpii.app.sessionTimerHandler` is created. Starts the session timer
- * if there is an actual keyed in user.
- * @param {Component} that - The `gpii.app.sessionTimerHandler` instance.
- * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user or not.
- */
-gpii.app.sessionTimerHandler.onHandlerCreated = function (that, isKeyedIn) {
-    if (isKeyedIn) {
-        that.startTimer();
-    }
-};
-
-/**
  * Invoked whenever the "lucky" status of the current session changes. This happens when
  * the `interactionsCount` is no longer a multiple of the `sessionModulus`. If the current
  * session is no longer "lucky", any started timers should be cleared.
@@ -414,7 +394,7 @@ gpii.app.sessionTimerHandler.onHandlerCreated = function (that, isKeyedIn) {
  * @param {Boolean} isLuckySession - Whether the current session is "lucky" or not.
  */
 gpii.app.sessionTimerHandler.onIsLuckySessionChanged = function (that, isLuckySession) {
-    console.log("============isLuckySession", isLuckySession);
+    console.log("SurveyTriggerManager: isLuckySession", isLuckySession);
     if (!isLuckySession) {
         that.clear();
     }
@@ -429,7 +409,7 @@ gpii.app.sessionTimerHandler.onIsLuckySessionChanged = function (that, isLuckySe
  */
 gpii.app.sessionTimerHandler.onChangeUndone = function (that, undoStack) {
     if (!undoStack.model.hasChanges) {
-        console.log("=====there are no more changes to undo. Clearing the timer...");
+        console.log("SurveyTriggerManager: there are no more changes to undo. Clearing the timer...");
         that.clear();
     }
 };
@@ -438,15 +418,15 @@ gpii.app.sessionTimerHandler.onChangeUndone = function (that, undoStack) {
  * Starts a timer for showing a user survey only if all conditions for that are met.
  * @param {Component} that - The `gpii.app.sessionTimerHandler` instance.
  */
-gpii.app.sessionTimerHandler.startTimer = function (that) {
+gpii.app.sessionTimerHandler.startTimerIfPossible = function (that) {
     var hasSettings = that.model.hasSettings,
         isLuckySession = that.model.isLuckySession,
         timeoutDuration = that.model.condition.value;
 
     if (hasSettings && isLuckySession && !that.isActive()) {
-        console.log("============starting survey timer", timeoutDuration);
-        that.start(that.model.condition.value);
+        console.log("SurveyTriggerManager: starting survey timer", timeoutDuration);
+        that.start(timeoutDuration);
     } else {
-        console.log("============not starting timer", hasSettings, timeoutDuration, !that.isActive());
+        console.log("SurveyTriggerManager: not starting timer", hasSettings, timeoutDuration, !that.isActive());
     }
 };

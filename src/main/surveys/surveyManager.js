@@ -91,6 +91,7 @@ fluid.defaults("gpii.app.surveyManager", {
 
 /**
  * Retrieves the survey triggers for the current user.
+ * Note that the "noUser" is treated as a normal user.
  * @param {Component} surveyConnector - The `gpii.app.surveyConnector` instance.
  * @param {String} keyedInUserToken - The token of the currently keyed in user (if any).
  */

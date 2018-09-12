@@ -38,14 +38,6 @@ fluid.defaults("gpii.app.factsManager", {
         interactionsCount: 0
     },
     modelListeners: {
-        "{qssWrapper}.qss.model.isShown": {
-            func: "gpii.app.factsManager.onDialogShown",
-            args: ["{that}", "{change}.value"]
-        },
-        "{psp}.model.isShown": {
-            func: "gpii.app.factsManager.onDialogShown",
-            args: ["{that}", "{change}.value"]
-        },
         interactionsCount: {
             func: "console.log",
             args: [
@@ -55,8 +47,11 @@ fluid.defaults("gpii.app.factsManager", {
         }
     },
     listeners: {
-        "{app}.events.onKeyedIn": {
-            func: "{that}.increaseInteractionsCount"
+        "{qssWrapper}.qss.events.onDialogShown": {
+            funcName: "{that}.increaseInteractionsCount"
+        },
+        "{psp}.events.onDialogShown": {
+            funcName: "{that}.increaseInteractionsCount"
         }
     },
     invokers: {
@@ -74,18 +69,4 @@ fluid.defaults("gpii.app.factsManager", {
 gpii.app.factsManager.increaseInteractionsCount = function (that) {
     var interactionsCount = that.model.interactionsCount;
     that.applier.change("interactionsCount", interactionsCount + 1);
-};
-
-/**
- * Invoked whenever the PSP or QSS dialogs are shown or hidden. If the
- * corresponding dialog is shown, this should increase the `interactionsCount`
- * fact.
- * @param {Component} that - The `gpii.app.factsManager` instance.
- * @param {Boolean} isShown - `true` if the dialog is show on screen and is
- * visible to the user and `false` otherwise.
- */
-gpii.app.factsManager.onDialogShown = function (that, isShown) {
-    if (isShown) {
-        that.increaseInteractionsCount();
-    }
 };
