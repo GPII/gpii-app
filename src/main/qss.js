@@ -171,10 +171,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.undoInWrapper"
         },
         qss: {
-            type: "gpii.app.qssInWrapper",
-            options: {
-                scaleFactor: "{qssWrapper}.options.scaleFactor"
-            }
+            type: "gpii.app.qssInWrapper"
         },
         qssWidget: {
             type: "gpii.app.qssWidget",
@@ -469,15 +466,16 @@ gpii.app.qssWidget.updateIfMatching = function (qssWidget, updatedSetting) {
  */
 fluid.defaults("gpii.app.qssInWrapper", {
     gradeNames: "gpii.app.qss",
+    model: {
+        isKeyedIn: "{qssWrapper}.model.isKeyedIn"
+    },
     config: {
         params: {
             settings: "{qssWrapper}.model.settings"
         }
     },
+    scaleFactor: "{qssWrapper}.options.scaleFactor",
     pspButtonPath: "psp",
-    model: {
-        isKeyedIn: "{qssWrapper}.model.isKeyedIn"
-    },
     events: {
         onQssPspClose: "{qssWrapper}.events.onQssPspClose",
         onUndoIndicatorChanged: null,

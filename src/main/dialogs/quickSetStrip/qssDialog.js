@@ -30,8 +30,11 @@ fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
 
     scaleFactor: 1,
-    defaultWidth: 984,
+
+    buttonWidth: 89,
     defaultHeight: 95,
+
+    defaultWidth: "@expand:gpii.app.qss.computeQssWidth({that}.options.buttonWidth, {that}.options.config.params.settings)",
 
     config: {
         closable: false,
@@ -39,7 +42,7 @@ fluid.defaults("gpii.app.qss", {
 
         attrs: {
             alwaysOnTop: true,
-            transparent: false,
+            transparent: true,
             enableLargerThanScreen: true
         },
         params: {
@@ -150,4 +153,22 @@ gpii.app.qss.show = function (that, params) {
     gpii.app.dialog.show(that);
 
     that.events.onQssOpen.fire(params);
+};
+
+/**
+ * Compute the desired width of the QSS based on the single button size
+ * and the number of buttons.
+ *
+ * @param {Number} buttonWidth - The width of a single QSS button
+ * @param {Object} qssButtons - The list of QSS buttons
+ * @return {Number} The computed QSS width based on the buttons count
+ */
+gpii.app.qss.computeQssWidth = function (buttonWidth, qssButtons) {
+    var bothSidesMargin = 6;
+    var buttonsCount = qssButtons.length;
+    var qssWidth = buttonsCount * buttonWidth + bothSidesMargin;
+
+    console.log("QSS Dialog: Computed width - ", qssWidth);
+
+    return qssWidth;
 };
