@@ -150,7 +150,7 @@
                 ]
             },
             onQssWidgetToggled: {
-                funcName: "gpii.qss.buttonPresenter.onQssWidgetToggled",
+                funcName: "gpii.qss.buttonPresenter.applyActivatedStyle",
                 args: [
                     "{that}",
                     "{that}.container",
@@ -281,7 +281,7 @@
      * @param {Object} setting - The setting object corresponding to this QSS button.
      * @param {Boolean} isShown - Whether the QSS widget has been shown or hidden.
      */
-    gpii.qss.buttonPresenter.onQssWidgetToggled = function (that, container, setting, isShown) {
+    gpii.qss.buttonPresenter.applyActivatedStyle = function (that, container, setting, isShown) {
         var activatedClass = that.options.styles.activated;
         container.toggleClass(activatedClass, isShown && that.model.item.path === setting.path);
     };
