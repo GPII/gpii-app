@@ -219,7 +219,10 @@ fluid.defaults("gpii.app", {
             options: {
                 model: {
                     preferences: "{app}.model.preferences",
-                    theme: "{app}.model.theme"
+                    theme: "{app}.model.theme",
+                    offset: {
+                        y: "{qssWrapper}.qss.options.config.attrs.height"
+                    }
                 },
                 modelListeners: {
                     "{qssWrapper}.qss.model.isShown": {

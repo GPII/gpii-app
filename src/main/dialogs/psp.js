@@ -42,12 +42,6 @@ fluid.defaults("gpii.app.pspInApp", {
     },
 
     modelListeners: {
-        "{qssWrapper}.qss.model.isShown": {
-            funcName: "gpii.app.pspInApp.applyOffset",
-            args: ["{that}", "{qssWrapper}.qss.options.config.attrs.height", "{change}.value"],
-            excludeSource: "init"
-        },
-
         isKeyedIn: {
             func: "{that}.notifyPSPWindow",
             args: [
@@ -112,24 +106,6 @@ fluid.defaults("gpii.app.pspInApp", {
     }
 });
 
-
-/**
- * Takes care of properly positioning the PSP when the QSS is shown
- * or hidden.
- * @param {Component} psp - The `gpii.app.psp` instance
- * @param {Number} qssHeight - The height of the QSS
- * @param {Boolean} isQssShown - Whether the QSS is shown
- */
-gpii.app.pspInApp.applyOffset = function (psp, qssHeight, isQssShown) {
-    psp.model.offset.y = isQssShown ? qssHeight : 0;
-
-    // in case it was shown, it will be also repositioned
-    if (psp.model.isShown) {
-        psp.setBounds(psp.width, psp.height, null, psp.model.offset.y);
-    } else {
-        psp.setRestrictedSize(psp.width, psp.height);
-    }
-};
 
 /**
  * Either hides or shows the restart warning in the PSP.
