@@ -185,9 +185,6 @@ fluid.defaults("gpii.app.qssWrapper", {
                             "qssWidget"
                         ]
                     },
-                    onDialogHidden: {
-                        func: "{gpii.app.qss}.focus"
-                    },
                     onQssWidgetNotificationRequired: {
                         func: "{qssNotification}.show",
                         args: [{
@@ -213,6 +210,7 @@ fluid.defaults("gpii.app.qssWrapper", {
                     isKeyedIn: "{qssWrapper}.model.isKeyedIn"
                 },
                 listeners: {
+                    // TODO list events for a method
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": {
                         func: "{that}.showIfPossible",
                         args: [
