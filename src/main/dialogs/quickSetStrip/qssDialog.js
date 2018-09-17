@@ -42,7 +42,7 @@ fluid.defaults("gpii.app.qss", {
 
         attrs: {
             alwaysOnTop: true,
-            transparent: true,
+            transparent: false,
             enableLargerThanScreen: true
         },
         params: {
