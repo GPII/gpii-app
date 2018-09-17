@@ -106,6 +106,29 @@ var qssCrossTestSequence = [
             "{that}.app",
             {psp: false, qss: true}
         ]
+    }, { // When the tray icon is again...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // ... the QSS will no longer be visible (the tray icon toggles the QSS)
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: false, qss: false}
+        ]
+    }, { // Open the QSS again.
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // Open the PSP via the QSS.
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickPspBtn
+        ],
+        resolve: "fluid.identity"
+    }, {
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: true, qss: true}
+        ]
     }, { // Clicking on the close button in the QSS...
         func: "gpii.test.executeJavaScript",
         args: [
@@ -267,11 +290,12 @@ var qssCrossTestSequence = [
     // CROSS tests
     //
     { // ... open the widget again
-        func: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
-        ]
+        ],
+        resolve: "fluid.identity"
     }, { // ... and check whether it is the correct widget
         task: "gpii.test.executeJavaScript",
         args: [
@@ -364,11 +388,12 @@ var qssCrossTestSequence = [
         ]
     },
     { // Turn off the read aloud
-        func: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickReadAloudBtn
-        ]
+        ],
+        resolve: "fluid.identity"
     },
     /*
      * QSS & PSP tests
@@ -666,6 +691,13 @@ var appZoomTestSequence = [
             "decrease",
             "{arguments}.0"
         ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
     }
 ];
 
@@ -803,7 +835,7 @@ var crossQssTranslations = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 40,
+    expect: 44,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
