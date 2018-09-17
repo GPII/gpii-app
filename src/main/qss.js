@@ -92,9 +92,11 @@ fluid.defaults("gpii.app.qssWrapper", {
         "onUndoRequired.activateUndo": {
             func: "{undoStack}.undo"
         },
-        onResetAllRequired: {
+        onResetAllRequired: [{
+            func: "{qss}.hide"
+        }, {
             func: "{app}.keyOut"
-        },
+        }],
         onSaveRequired: {
             funcName: "gpii.app.qssWrapper.saveSettings",
             args: [
