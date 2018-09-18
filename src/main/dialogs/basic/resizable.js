@@ -37,12 +37,6 @@ fluid.defaults("gpii.app.resizable", {
             height: null
         }
     },
-    members: {
-        // helper variables needed for display metrics changes
-        displayMetricsChanged: {
-            wasFocused: null
-        }
-    },
     events: {
         onDisplayMetricsChanged: null,
         /*
@@ -131,12 +125,6 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
  */
 gpii.app.resizable.scaleDialog = function (that) {
     that.setBounds();
-
-    // Show the dialog if it was shown when a `display-metrics-changed` event occurred
-    if (that.options.config.hideOffScreen || that.model.isShown) {
-        // Use the low level show
-        gpii.app.dialog.showImpl(that, !that.displayMetricsChanged.wasFocused);
-    }
 };
 
 /**
@@ -160,13 +148,8 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that) {
      * When the time is up, the DPI changes are considered to be applied successfully and the dialog can
      * be resized/repositioned and shown again.
      */
-    if (!that.rescaleDialogTimer.isActive()) {
-        that.displayMetricsChanged.wasFocused = that.dialog.isFocused();
-        // Low level hide - hides the dialog but preserves the `isShown` model state of its component.
-        that.dialog.hide();
-    }
 
-    that.rescaleDialogTimer.start(1000);
+    that.rescaleDialogTimer.start(2000);
 };
 
 /**
