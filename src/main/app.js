@@ -178,7 +178,12 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-        appZoom: {
+        /*
+         * Handles the App Zoom settings as it is processed by a separate
+         * mechanism (meaning that it doesn't uses the normal setting change
+         * approach through the PspChannel).
+         */
+        appZoomHandler: {
             type: "gpii.windows.appZoom",
             createOnEvent: "onPSPPrerequisitesReady"
         },
@@ -203,7 +208,7 @@ fluid.defaults("gpii.app", {
                         funcName: "gpii.app.onQssSettingAltered",
                         args: [
                             "{settingsBroker}",
-                            "{appZoom}",
+                            "{appZoomHandler}",
                             "{change}.value",
                             "{change}.oldValue",
                             "{that}.options.appTextZoomPath"
@@ -215,35 +220,7 @@ fluid.defaults("gpii.app", {
         },
         psp: {
             type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady",
-            options: {
-                model: {
-                    preferences: "{app}.model.preferences",
-                    theme: "{app}.model.theme",
-                    offset: {
-                        y: "{qssWrapper}.qss.options.config.attrs.height"
-                    }
-                },
-                modelListeners: {
-                    "{qssWrapper}.qss.model.isShown": {
-                        funcName: "gpii.app.pspInApp.hidePspIfNeeded",
-                        args: ["{that}", "{change}.value"]
-                    }
-                },
-                events: {
-                    onActivePreferenceSetAltered: "{qssWrapper}.events.onActivePreferenceSetAltered"
-                },
-                listeners: {
-                    "{qssWrapper}.events.onQssPspOpen": {
-                        func: "{that}.show",
-                        args: [true]
-                    },
-                    "{qssWrapper}.events.onQssPspClose": {
-                        func: "{that}.handleBlur",
-                        args: [true]
-                    }
-                }
-            }
+            createOnEvent: "onPSPPrerequisitesReady"
         },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
@@ -460,17 +437,6 @@ gpii.app.onIsKeyedInChanged = function (that, isKeyedIn) {
         that.events.onKeyedIn.fire();
     } else {
         that.events.onKeyedOut.fire();
-    }
-};
-
-/**
- * Hides the PSP is the QSS is no longer visible.
- * @param {Component} psp - The `gpii.app.psp` instance.
- * @param {Boolean} isQssShown - Whether the QSS is visible or not.
- */
-gpii.app.pspInApp.hidePspIfNeeded = function (psp, isQssShown) {
-    if (!isQssShown) {
-        psp.hide();
     }
 };
 

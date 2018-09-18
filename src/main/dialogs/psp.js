@@ -38,9 +38,17 @@ require("./basic/offScreenHidable.js");
 fluid.defaults("gpii.app.pspInApp", {
     gradeNames: "gpii.app.psp",
     model: {
-        isKeyedIn: "{app}.model.isKeyedIn"
-    },
+        isKeyedIn: "{app}.model.isKeyedIn",
 
+        preferences: "{app}.model.preferences",
+        theme: "{app}.model.theme",
+        offset: {
+            y: "{qssWrapper}.qss.options.config.attrs.height"
+        }
+    },
+    events: {
+        onActivePreferenceSetAltered: "{qssWrapper}.events.onActivePreferenceSetAltered"
+    },
     modelListeners: {
         isKeyedIn: {
             func: "{that}.notifyPSPWindow",
@@ -53,6 +61,19 @@ fluid.defaults("gpii.app.pspInApp", {
     },
 
     listeners: {
+        "{qssWrapper}.qss.events.onDialogShown": {
+            func: "{that}.hide"
+        },
+
+        "{qssWrapper}.events.onQssPspOpen": {
+            func: "{that}.show",
+            args: [true]
+        },
+        "{qssWrapper}.events.onQssPspClose": {
+            func: "{that}.handleBlur",
+            args: [true]
+        },
+
         "onActivePreferenceSetAltered.notifyChannel": {
             listener: "{gpiiConnector}.updateActivePrefSet",
             args: ["{arguments}.0"] // newPrefSet
