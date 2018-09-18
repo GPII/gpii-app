@@ -338,6 +338,9 @@ fluid.defaults("gpii.app.sessionTimerHandler", {
         "{qssWrapper}.qss.events.onQssSettingAltered": {
             func: "{that}.startTimerIfPossible"
         },
+        "{qssWrapper}.qssWidget.events.onQssWidgetSettingAltered": {
+            func: "{that}.startTimerIfPossible"
+        },
         "{psp}.events.onSettingAltered": {
             func: "{that}.startTimerIfPossible"
         },
