@@ -134,6 +134,7 @@
                 funcName: "gpii.qss.buttonPresenter.notifyButtonFocused",
                 args: [
                     "{that}",
+                    "{focusManager}",
                     "{that}.container",
                     "{arguments}.0" // focusedElement
                 ]
@@ -320,12 +321,13 @@
      * Fires the appropriate event if the `container` for the current button is the element
      * that has been focused by the `focusManager`.
      * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+     * @param {focusManager} focusManager - The `gpii.qss.focusManager` instance for the QSS.
      * @param {jQuery} container - A jQuery object representing the button's container.
      * @param {jQuery} focusedElement - A jQuery object representing the focused QSS button's
      * container (if any).
      */
-    gpii.qss.buttonPresenter.notifyButtonFocused = function (that, container, focusedElement) {
-        if (container.is(focusedElement)) {
+    gpii.qss.buttonPresenter.notifyButtonFocused = function (that, focusManager, container, focusedElement) {
+        if (focusManager.isHighlighted(container)) {
             that.events.onButtonFocused.fire(
                 that.model.item,
                 gpii.qss.getElementMetrics(focusedElement));
@@ -601,7 +603,7 @@
     /**
      * A custom function for handling activation of the "Key in" QSS button. Reuses the generic
      * `notifyButtonActivated` invoker.
-     * @param {Component} that - The `gpii.qss.closeButtonPresenter` instance.
+     * @param {Component} that - The `gpii.qss.keyInButtonPresenter` instance.
      * @param {Component} qssList - The `gpii.qss.list` instance.
      * @param {Object} activationParams - An object containing parameter's for the activation
      * of the button (e.g. which key was used to activate the button).

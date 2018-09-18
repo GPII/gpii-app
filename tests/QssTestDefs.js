@@ -54,16 +54,6 @@ require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.qss.testDefs");
 
-gpii.tests.qss.awaitQssInitialization = function (qss) {
-    var promise = fluid.promise();
-
-    qss.dialog.once("ready-to-show", function () {
-        promise.resolve();
-    });
-
-    return promise;
-};
-
 gpii.tests.qss.simulateShortcut = function (dialog, shortcut) {
     dialog.webContents.sendInputEvent({
         type: "keyDown",
@@ -860,10 +850,9 @@ gpii.tests.qss.testDefs = {
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [].concat(
         [{ // Wait for the QSS to initialize.
-            task: "gpii.tests.qss.awaitQssInitialization",
-            args: ["{that}.app.qssWrapper.qss"],
-            resolve: "jqUnit.assert",
-            resolveArgs: ["QSS has initialized successfully"]
+            event: "{that gpii.app.qss}.events.onDialogReady",
+            listener: "jqUnit.assert",
+            args: ["QSS has initialized successfully"]
         }],
         undoCrossTestSequence,
         undoTestSequence,

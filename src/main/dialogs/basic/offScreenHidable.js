@@ -20,9 +20,6 @@ var gpii  = fluid.registerNamespace("gpii");
 
 require("./resizable.js");
 
-fluid.registerNamespace("gpii.app.dialog.offScreenHidable");
-
-
 /**
  * This mixin adds functionality that modifies the built-in `hide` method of the
  * `BrowserWindow` so that when it is invoked, the window will be moved off
