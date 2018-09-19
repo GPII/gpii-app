@@ -391,6 +391,19 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, settingsPath) {
         loadedSettings = fluid.require(resolvedPath);
 
     fluid.each(loadedSettings, function (loadedSetting) {
+        // Resolve dynamic settings, where the function grade is identified by the 'type' field.
+        loadedSetting.schema = fluid.transform(loadedSetting.schema, function (schemaItem) {
+            var togo;
+            if (schemaItem && schemaItem.type) {
+                // Call the function, and use the result as the value.
+                var result = fluid.invokeGradedFunction(schemaItem.type);
+                togo = schemaItem.path ? fluid.get(result, schemaItem.path) : result;
+            } else {
+                togo = schemaItem;
+            }
+            return togo;
+        });
+
         var imageAsset = loadedSetting.schema.image;
         if (imageAsset) {
             loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);

@@ -51,8 +51,14 @@
         "schema": {
             "type": "number",
             "title": "Screen Zoom",
-            "min": -2,
-            "max": 4,
+            "min": {
+                "type": "gpii.windows.display.getScreenDpi",
+                "path": "minimum"
+            },
+            "max": {
+                "type": "gpii.windows.display.getScreenDpi",
+                "path": "maximum"
+            },
             "divisibleBy": 1,
             "default": 0
         },
