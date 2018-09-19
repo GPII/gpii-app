@@ -149,7 +149,7 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that) {
      * be resized/repositioned and shown again.
      */
 
-    that.rescaleDialogTimer.start(2000);
+    that.rescaleDialogTimer.start(1500);
 };
 
 /**
