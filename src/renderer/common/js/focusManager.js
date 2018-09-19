@@ -99,7 +99,8 @@
                 args: [
                     "{that}",
                     "{arguments}.0", // element
-                    "{arguments}.1" // applyHighlight
+                    "{arguments}.1", // applyHighlight
+                    "{arguments}.2"  // silentFocus
                 ]
             },
             focusNext: {
@@ -220,13 +221,16 @@
 
     /**
      * Focuses the given focusable element and optionally applies the keyboard navigation
-     * highlight (the "fl-highlighted" class).
+     * highlight (the "fl-highlighted" class). Depending on the value of the `silentFocus`
+     * argument, the `onElementFocused` event can be fired when the focusing process completes.
      * @param {Component} that - The `gpii.qss.focusManager` instance.
      * @param {jQuery} element - A jQuery object representing the element to be focused.
      * @param {Boolean} applyHighlight - Whether the keyboard navigation highlight should be
      * applied to the element which is to be focused.
+     * @param {Boolean} silentFocus - If `true` no event will be fired after the necessary UI
+     * changes are made.
      */
-    gpii.qss.focusManager.focusElement = function (that, element, applyHighlight) {
+    gpii.qss.focusManager.focusElement = function (that, element, applyHighlight, silentFocus) {
         var styles = that.options.styles;
         if (!element.hasClass(styles.focusable)) {
             return;
@@ -239,7 +243,9 @@
             .toggleClass(styles.highlighted, applyHighlight)
             .focus();
 
-        that.events.onElementFocused.fire(element);
+        if (!silentFocus) {
+            that.events.onElementFocused.fire(element);
+        }
     };
 
     /**

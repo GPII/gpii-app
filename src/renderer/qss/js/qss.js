@@ -147,7 +147,8 @@
                     "{focusManager}",
                     "{that}.container",
                     "{arguments}.0", // index
-                    "{arguments}.1" // applyHighlight
+                    "{arguments}.1", // applyHighlight
+                    "{arguments}.2"  // silentFocus
                 ]
             },
             onQssWidgetToggled: {
@@ -323,14 +324,12 @@
      * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
      * @param {focusManager} focusManager - The `gpii.qss.focusManager` instance for the QSS.
      * @param {jQuery} container - A jQuery object representing the button's container.
-     * @param {jQuery} focusedElement - A jQuery object representing the focused QSS button's
-     * container (if any).
      */
-    gpii.qss.buttonPresenter.notifyButtonFocused = function (that, focusManager, container, focusedElement) {
+    gpii.qss.buttonPresenter.notifyButtonFocused = function (that, focusManager, container) {
         if (focusManager.isHighlighted(container)) {
             that.events.onButtonFocused.fire(
                 that.model.item,
-                gpii.qss.getElementMetrics(focusedElement));
+                gpii.qss.getElementMetrics(container));
         }
     };
 
@@ -343,10 +342,12 @@
      * @param {Number} index - The index of the QSS button to be focused.
      * @param {Boolean} applyHighlight - Whether highlighting should be applied to the QSS
      * button. The latter happens when the element has been focused via the keyboard.
+     * @param {Boolean} silentFocus - If `true` no event will be fired after the necessary UI
+     * changes are made.
      */
-    gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index, applyHighlight) {
+    gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index, applyHighlight, silentFocus) {
         if (that.model.index === index) {
-            focusManager.focusElement(container, applyHighlight);
+            focusManager.focusElement(container, applyHighlight, silentFocus);
         }
     };
 
@@ -1088,15 +1089,22 @@
         } else if (params.setting) {
             // Focus a button corresponding to a given setting or the previous or
             // following button depending on the activation parameters.
-            var settingIndex = gpii.qss.getSettingIndex(settings, params.setting);
+            var settingIndex = gpii.qss.getSettingIndex(settings, params.setting),
+                silentFocus = false;
 
             if (params.key === "ArrowLeft") {
                 settingIndex = gpii.psp.modulo(settingIndex - 1, settings.length);
             } else if (params.key === "ArrowRight") {
                 settingIndex = gpii.psp.modulo(settingIndex + 1, settings.length);
+            } else {
+                /**
+                 * The main process should not be notified about the focusing of the button if
+                 * that was a result of closing the QSS widget via ESC or via its close button.
+                 */
+                silentFocus = true;
             }
 
-            qssList.events.onButtonFocusRequired.fire(settingIndex, !!params.key);
+            qssList.events.onButtonFocusRequired.fire(settingIndex, !!params.key, silentFocus);
         } else {
             focusManager.removeHighlight(true);
         }

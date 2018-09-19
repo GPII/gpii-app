@@ -213,13 +213,15 @@ fluid.defaults("gpii.app.qssWrapper", {
                 },
                 listeners: {
                     // TODO list events for a method
-                    "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": {
+                    "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": [{
+                        func: "{that}.hide"
+                    }, {
                         func: "{that}.showIfPossible",
                         args: [
                             "{arguments}.0", // setting
                             "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
                         ]
-                    },
+                    }],
 
                     "{gpii.app.qss}.events.onDialogHidden": {
                         func: "{that}.hide"
