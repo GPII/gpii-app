@@ -33,7 +33,7 @@ fluid.defaults("gpii.app.qssWidget", {
 
     scaleFactor: 1,
     defaultWidth: 316,
-    defaultHeight: 415,
+    defaultHeight: 430,
 
     model: {
         setting: {}

@@ -42,7 +42,7 @@
         },
         "messageKey": "appTextZoom",
         "value": 0,
-        "tip": "<div><strong>Zooms one application.</strong></div><div>Works in many applications -- for the window on top.</div>",
+        "tip": "<div><strong>Zooms one application.</strong></div><div>(Undo App Zoom here - not with undo button).</div><div>Works in many applications -- for the window on top.</div>",
         "tooltip": "<div><strong>Change text size.</strong></div><div>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</div>",
         "widget": {
             "footerTip": "You can also use the CTRL key plus the Scroll (wheel or gesture) at any time."

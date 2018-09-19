@@ -46,7 +46,7 @@
     "gpii_app_qss_settings_appTextZoom": {
         "tooltip": "<div><strong>Change text size.</strong></div><div>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</div>",
         "title": "App / Text Zoom",
-        "tip": "<div><strong>Zooms one application.</strong></div><div>Works in many applications -- for the window on top.</div>",
+        "tip": "<div><strong>Zooms one application.</strong></div><div>(Undo App Zoom here - not with undo button).</div><div>Works in many applications -- for the window on top.</div>",
         "footerTip": "You can also use the CTRL key plus the Scroll (wheel or gesture) at any time."
     },
     "gpii_app_qss_settings_common-language": {
