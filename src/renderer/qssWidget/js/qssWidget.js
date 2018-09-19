@@ -109,12 +109,11 @@
                         "onCreate.processParams": {
                             funcName: "gpii.qssWidget.processParams",
                             args: ["{focusManager}", "{that}.options.activationParams"]
-                        }
-                    },
-                    invokers: {
-                        notifyCreated: {
+                        },
+                        "onCreate.notifyCreated": {
                             func: "{that}.events.onQssWidgetCreated.fire",
-                            args: [null]
+                            args: [null],
+                            priority: "last"
                         }
                     }
                 }
@@ -182,23 +181,21 @@
         },
 
         listeners: {
-            onSettingUpdated: {
+            onSettingUpdated: [{
                 funcName: "gpii.app.applier.replace",
                 args: [
                     "{that}.applier",
                     "setting",
                     "{arguments}.0"
                 ]
-            },
-            onQssWidgetCreated: {
+            }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: [
                     "{that}.dom.stepper",
                     "{that}.dom.menu",
                     "{that}.model.setting"
-                ],
-                priority: "last"
-            }
+                ]
+            }]
         },
         invokers: {
             close: {

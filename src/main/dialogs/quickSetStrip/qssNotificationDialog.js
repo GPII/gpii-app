@@ -36,7 +36,8 @@ fluid.defaults("gpii.app.qssNotification", {
 
     config: {
         attrs: {
-            alwaysOnTop: true
+            alwaysOnTop: true,
+            transparent: false
         },
         fileSuffixPath: "qssNotification/index.html"
     },

@@ -17,8 +17,6 @@
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
-require("./resizable.js");
-
 fluid.registerNamespace("gpii.app.dialog");
 
 /**

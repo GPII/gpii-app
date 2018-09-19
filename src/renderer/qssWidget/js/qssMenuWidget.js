@@ -97,10 +97,6 @@
                             this: "{that}.container",
                             method: "removeClass",
                             args: ["{that}.options.styles.disabled"]
-                        },
-                        "onCreate.notifyQssWidgetCreated": {
-                            func: "{menu}.notifyCreated",
-                            priority: "last"
                         }
                     }
                 }
