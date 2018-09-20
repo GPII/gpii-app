@@ -276,17 +276,21 @@ fluid.defaults("gpii.app", {
                         ]
                     },
                     /*
-                     * A local shortcut (registered only for the QSS) should be sufficient for handling
-                     * the closing of the tooltip as, in case the QSS isn't focused, the tooltip shouldn't
-                     * be shown anyway.
-                     * In case the QSS if focused, using the "esc" key will close the tooltip.
+                     * A local shortcut (registered for the QSS, QSS widget and PSP) isn't fully sufficient for handling
+                     * the closing of the tooltip as but it's the best sane that can be done. For example,
+                     * in case the QSS loses focus and neither of the related windows (PSP and qssWidget)
+                     * is focused the tooltip will be hidden but hovering
+                     * a button afterwards will show the tooltip again. In that case the tooltip won't be
+                     * closable with "Esc" because we're using only a local shortcut.
+                     * We're doing so because registering a global shortcut would "swallow" the "Esc" event, meaning
+                     * that the "Escape" key won't work with other applications.
                      */
                     "onCreate.registerQssTooltipCloseShortcut": {
                         func: "{that}.registerLocalShortcut",
                         args: [
                             "{that}.options.shortcutAccelerators.closeQssTooltip",
                             "onCloseQssTooltipShortcut",
-                            ["gpii.app.qss", "gpii.app.qssWidget"]
+                            ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.psp"]
                         ]
                     },
 

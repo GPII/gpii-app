@@ -205,23 +205,13 @@ var qssCrossTestSequence = [
         ]
     },
     // menu close === no tooltip
-    {  // XXX we need some minor timeout for the QSS to get
-       // in normal state. In case this is not present,
-       // the next item doesn't take effect
+    {   // XXX we need some minor timeout for the QSS to get
+        // in normal state. In case this is not present,
+        // the next item doesn't take effect
         task: "gpii.test.linger",
         args: [1000],
         resolve: "fluid.identity"
     },
-    { // ... and then, when Esc is used
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            {
-                key: "Escape"
-            }
-        ]
-    },
-        // timeout and check
     // hover & esc === close
     { // Focusing the close button
         func: "gpii.test.executeJavaScript",
