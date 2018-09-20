@@ -1,0 +1,17 @@
+[
+    /*
+     * Currently the supported triggers are: "sesstionTimer"
+     */
+    /* Example usage of the "sessionTimer" trigger
+    {
+        id: "trigger_1",
+        conditions: [
+            {
+                type: "sessionTimer",
+                value: 600000, // time in milliseconds; 1 sec == 1000 ms
+                sessionModulus: 1
+            }
+        ]
+    }
+    */
+]

@@ -117,8 +117,8 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
         }
     },
     paths: {
-        triggerFixture: "%gpii-app/testData/survey/triggers.json",
-        surveyFixture: "%gpii-app/testData/survey/survey.json"
+        triggerFixture: "%gpii-app/testData/survey/triggers.json5",
+        surveyFixture: "%gpii-app/testData/survey/survey.json5"
     }
 });
 
