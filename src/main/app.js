@@ -246,9 +246,14 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.shortcutsManager",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
+                shortcutAccelerators: {
+                    qssUndo: "CmdOrCtrl+Z",
+                    closeQssTooltip: "Esc"
+                },
                 events: {
                     onQssOpenShortcut: null,
-                    onQssUndoShortcut: null
+                    onQssUndoShortcut: null,
+                    onCloseQssTooltipShortcut: null
                 },
                 modelListeners: {
                     "{app}.model.preferences.gpiiAppShortcut": {
@@ -262,13 +267,31 @@ fluid.defaults("gpii.app", {
                     }
                 },
                 listeners: {
-                    "onCreate.registerDefaultLocalShortcut": {
+                    "onCreate.registerQssUndoShortcut": {
                         func: "{that}.registerLocalShortcut",
                         args: [
-                            "CmdOrCtrl+Z",
+                            "{that}.options.shortcutAccelerators.qssUndo",
                             "onQssUndoShortcut",
                             ["gpii.app.qss", "gpii.app.qssWidget"]
                         ]
+                    },
+                    /*
+                     * A local shortcut (registered only for the QSS) should be sufficient for handling
+                     * the closing of the tooltip as, in case the QSS isn't focused, the tooltip shouldn't
+                     * be shown anyway.
+                     * In case the QSS if focused, using the "esc" key will close the tooltip.
+                     */
+                    "onCreate.registerQssTooltipCloseShortcut": {
+                        func: "{that}.registerLocalShortcut",
+                        args: [
+                            "{that}.options.shortcutAccelerators.closeQssTooltip",
+                            "onCloseQssTooltipShortcut",
+                            ["gpii.app.qss", "gpii.app.qssWidget"]
+                        ]
+                    },
+
+                    onCloseQssTooltipShortcut: {
+                        funcName: "{qssWrapper}.qssTooltip.hide"
                     },
 
                     "onQssUndoShortcut": {
