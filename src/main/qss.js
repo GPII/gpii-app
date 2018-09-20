@@ -226,6 +226,9 @@ fluid.defaults("gpii.app.qssWrapper", {
                     "{gpii.app.qss}.events.onDialogHidden": {
                         func: "{that}.hide"
                     },
+                    "{gpii.app.qss}.events.onBlur": {
+                        func: "{that}.hide"
+                    },
                     "{gpii.app.qss}.channelListener.events.onQssButtonActivated": {
                         func: "{that}.hide"
                     },

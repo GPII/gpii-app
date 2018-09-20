@@ -31,6 +31,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
     focusCloseBtn = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-child\").trigger(event)",
 
     clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
+    hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").trigger('mouseenter')",
     clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(5)\").click()",
@@ -58,7 +59,7 @@ gpii.tests.qss.simulateShortcut = function (dialog, shortcut) {
     dialog.webContents.sendInputEvent({
         type: "keyDown",
         keyCode: shortcut.key,
-        modifiers: shortcut.modifiers
+        modifiers: shortcut.modifiers || []
     });
 };
 
@@ -172,13 +173,15 @@ var qssCrossTestSequence = [
             "The QSS tooltip is hidden when the button is no longer hovered",
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
-    }, { // If the button is focused using keyboard interaction...
+    },
+    // hover & click === close
+    { // Hovering the language button
         func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            focusCloseBtn
+            hoverLanguageBtn
         ]
-    }, {
+    }, { // ... should show the tooltip
         changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
         path: "isShown",
         listener: "jqUnit.assertTrue",
@@ -186,7 +189,57 @@ var qssCrossTestSequence = [
             "The QSS tooltip is shown when a button is focused using the keyboard",
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
+    }, { // ... and clicking (activating) the button
+        funcName: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickLanguageBtn
+        ]
+    }, { // ... should close the tooltip
+        changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS tooltip is closed when a button is activated",
+            "{that}.app.qssWrapper.qssTooltip.model.isShown"
+        ]
     },
+    // menu close === no tooltip
+    {   // XXX we need some minor timeout for the QSS to get
+        // in normal state. In case this is not present,
+        // the next item doesn't take effect
+        task: "gpii.test.linger",
+        args: [1000],
+        resolve: "fluid.identity"
+    },
+    // hover & esc === close
+    { // Focusing the close button
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            focusCloseBtn
+        ]
+    }, { // ... will show the tooltip
+        event: "{that}.app.qssWrapper.qssTooltip.events.onDialogShown",
+        listener: "fluid.identity" // already tested
+    }, { // ... and then, when Esc is used
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            {
+                key: "Escape"
+            }
+        ]
+    }, { // ... should close the tooltip
+        changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS tooltip is closed when Esc is used",
+            "{that}.app.qssWrapper.qssTooltip.model.isShown"
+        ]
+    },
+    // shortcut open === tooltip
     /*
      * Notification & QSS integration
      */
@@ -825,7 +878,7 @@ var crossQssTranslations = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 44,
+    expect: 46,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
