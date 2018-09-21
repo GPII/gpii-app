@@ -374,13 +374,13 @@
      * @return {Object} {{width: Number, height: Number, offsetLeft: Number}}
      */
     gpii.qss.buttonPresenter.getElementMetrics = function (target) {
-        var result = {
-            offsetLeft: target.offset().left,
-            height:     (target.outerHeight() - 3), // TODO: Think of a better formula.
-            width:      (target.outerWidth())
-        };
+        var borderWidth = target.outerHeight() - target.innerHeight();
 
-        return result;
+        return {
+            offsetLeft: target.offset().left,
+            height:     target.outerHeight() - borderWidth / 2,
+            width:      target.outerWidth()
+        };
     };
 
     /**
