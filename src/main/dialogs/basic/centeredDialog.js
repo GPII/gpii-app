@@ -62,7 +62,7 @@ gpii.app.centeredDialog.setBounds = function (that, width, height) {
         bounds = gpii.browserWindow.computeWindowBounds(width, height, position.x, position.y);
 
     that.width = bounds.width;
-    that.heigh = bounds.height;
+    that.height = bounds.height;
 
     that.dialog.setBounds(bounds);
 };
