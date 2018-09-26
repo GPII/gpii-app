@@ -28,8 +28,8 @@ fluid.defaults("gpii.app.waitDialog", {
     gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
 
     scaleFactor: 1,
-    defaultWidth: 800,
-    defaultHeight: 600,
+    defaultWidth: 600,
+    defaultHeight: 450,
 
     config: {
         closable: false,

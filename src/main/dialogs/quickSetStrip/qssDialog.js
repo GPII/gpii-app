@@ -31,10 +31,20 @@ fluid.defaults("gpii.app.qss", {
 
     scaleFactor: 1,
 
+    sideMargin: 5,
     buttonWidth: 89,
     defaultHeight: 95,
 
-    defaultWidth: "@expand:gpii.app.qss.computeQssWidth({that}.options.buttonWidth, {that}.options.config.params.settings)",
+    defaultWidth: {
+        expander: {
+            funcName: "gpii.app.qss.computeQssWidth",
+            args: [
+                "{that}.options.buttonWidth",
+                "{that}.options.sideMargin",
+                "{that}.options.config.params.settings"
+            ]
+        }
+    },
 
     config: {
         closable: false,
@@ -156,17 +166,17 @@ gpii.app.qss.show = function (that, params) {
 };
 
 /**
- * Compute the desired width of the QSS based on the single button size
- * and the number of buttons.
- *
+ * Computes the desired width of the QSS based on the single button size,
+ * the width of the side margin and the number of buttons.
  * @param {Number} buttonWidth - The width of a single QSS button
+ * @param {Number} sideMargin - The margin between the last QSS button and the
+ * right edge of the QSS.
  * @param {Object} qssButtons - The list of QSS buttons
  * @return {Number} The computed QSS width based on the buttons count
  */
-gpii.app.qss.computeQssWidth = function (buttonWidth, qssButtons) {
-    var bothSidesMargin = 6;
-    var buttonsCount = qssButtons.length;
-    var qssWidth = buttonsCount * buttonWidth + bothSidesMargin;
+gpii.app.qss.computeQssWidth = function (buttonWidth, sideMargin, qssButtons) {
+    var buttonsCount = qssButtons.length,
+        qssWidth = buttonsCount * buttonWidth + sideMargin;
 
     console.log("QSS Dialog: Computed width - ", qssWidth);
 
