@@ -35,6 +35,7 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
         registeredTriggerHandlers: {}
     },
     conditionHandlerGrades: {
+        keyedInFor: "gpii.app.keyedInForHandler",
         sessionTimer: "gpii.app.sessionTimerHandler"
     },
     events: {
@@ -101,9 +102,12 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
  * @param {Object} trigger - The survey trigger which is to be registered.
  */
 gpii.app.surveyTriggerManager.registerTrigger = function (that, trigger) {
+    console.log("SurveyTriggerManager: Register trigger - ", trigger);
+
     that.removeTrigger(trigger);
     that.events.onTriggerAdded.fire(trigger);
 };
+
 
 /**
  * Removes a trigger from the `surveyTriggerManager` by destroying its corresponding trigger handler.
@@ -272,6 +276,47 @@ fluid.defaults("gpii.app.timedConditionHandler", {
         onTimerFinished: "{that}.handleSuccess()"
     }
 });
+
+/**
+ * A `timedConditionHandler` for the `keyedInFor` fact. It determines whether a
+ * given amount of time has passed since the user has keyed in.
+ */
+fluid.defaults("gpii.app.keyedInForHandler", {
+    gradeNames: ["gpii.app.timedConditionHandler"],
+    modelListeners: {
+        "{factsManager}.model.keyedInTimestamp": {
+            func: "{that}.restartTimer",
+            args: "{change}.value"
+        }
+    },
+    invokers: {
+        restartTimer: {
+            funcName: "gpii.app.keyedInForHandler.restartTimer",
+            args: [
+                "{that}",
+                "{arguments}.0" // keyedInTimestamp
+            ]
+        }
+    }
+});
+
+/**
+ * Starts a timer in case there's a keyed in timestamp, meaning that a user is
+ * logged on.
+ * @param {Component} that - The `keyedInForHandler` instance.
+ * @param {Number} keyedInTimestamp - The timestamp when the user has keyed in.
+ * In case no user is keyed in the its value will be `null`
+ */
+gpii.app.keyedInForHandler.restartTimer = function (that, keyedInTimestamp) {
+    that.clear();
+
+    // We'd like there to be a keyed in user...
+    if (keyedInTimestamp) {
+        var offset = Date.now() - keyedInTimestamp;
+        that.start(that.model.condition.value - offset);
+    }
+};
+
 
 /**
  * A `gpii.app.timedConditionHandler` which schedules a timer for showing a user survey

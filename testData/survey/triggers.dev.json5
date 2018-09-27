@@ -4,17 +4,16 @@
         "conditions": [
             {
                 "type": "sessionTimer",
-                "value": 60000,
-                "sessionModulus": 2
+                "value": 1000,
+                "sessionModulus": 1
             }
         ]
     }, {
         "id": "trigger_2",
         "conditions": [
             {
-                "type": "sessionTimer",
-                "value": 65000,
-                "sessionModulus": 2
+                "type": "keyedInFor",
+                "value": 15000
             }
         ]
     }
