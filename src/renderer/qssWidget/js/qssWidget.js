@@ -52,8 +52,7 @@
 
         selectors: {
             stepper: ".flc-qssStepperWidget",
-            menu: ".flc-qssMenuWidget",
-            learnMoreLink: ".flc-qssWidget-learnMoreLink"
+            menu: ".flc-qssMenuWidget"
         },
 
         events: {
@@ -88,23 +87,39 @@
             widget: {
                 type: "@expand:gpii.psp.qssWidget.getWidgetType({arguments}.0)",
                 createOnEvent: "onSettingUpdated",
-                container: "{qssWidget}.container",
+                container: "@expand:gpii.psp.qssWidget.getWidgetContainer({arguments}.0, {qssWidget}.dom.stepper, {qssWidget}.dom.menu)",
                 options: {
                     sounds: "{qssWidget}.options.sounds",
+                    activationParams: "{arguments}.1",
+                    model: {
+                        setting: "{qssWidget}.model.setting",
+                        messages: {
+                            tip: "{qssWidget}.model.setting.tip",
+                            learnMore: "{qssWidget}.model.messages.learnMore"
+                        }
+                    },
+                    selectors: {
+                        tip: ".flc-qssWidget-tip",
+                        learnMoreLink: ".flc-qssWidget-learnMoreLink"
+                    },
+                    components: {
+                        learnMoreLink: {
+                            type: "gpii.psp.qssWidget.learnMoreLink",
+                            container: "{that}.dom.learnMoreLink",
+                            options: {
+                                model: {
+                                    setting: "{qssWidget}.model.setting",
+                                    messages: {
+                                        learnMore: "{qssWidget}.model.messages.learnMore"
+                                    }
+                                }
+                            }
+                        }
+                    },
                     events: {
                         onNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                         onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
                     },
-                    model: {
-                        setting: "{qssWidget}.model.setting",
-                        messages: {
-                            tip: "{qssWidget}.model.setting.tip"
-                        }
-                    },
-                    selectors: {
-                        tip: ".flc-qssWidget-tip"
-                    },
-                    activationParams: "{arguments}.1",
                     listeners: {
                         "onCreate.processParams": {
                             funcName: "gpii.qssWidget.processParams",
@@ -141,18 +156,6 @@
                         onArrowLeftPressed: "{qssWidget}.close({arguments}.0)",
                         onArrowRightPressed: "{qssWidget}.close({arguments}.0)",
                         onEscapePressed: "{qssWidget}.close({arguments}.0)"
-                    }
-                }
-            },
-            learnMoreLink: {
-                type: "gpii.psp.qssWidget.learnMoreLink",
-                container: "{that}.dom.learnMoreLink",
-                options: {
-                    model: {
-                        setting: "{qssWidget}.model.setting",
-                        messages: {
-                            learnMore: "{qssWidget}.model.messages.learnMore"
-                        }
                     }
                 }
             },
@@ -236,6 +239,19 @@
     };
 
     /**
+     * Determines the jQuery element which should be the container of the `widget`
+     * view subcomponent depending on the type of the setting.
+     * @param {Object} setting - The setting which corresponds to the activated
+     * QSS button.
+     * @param {jQuery} stepperElement - The container for the QSS stepper widget.
+     * @param {jQuery} menuElement - The container for the QSS menu widget.
+     * @return {jQuery} The jQuery element representing the container object.
+     */
+    gpii.psp.qssWidget.getWidgetContainer = function (setting, stepperElement, menuElement) {
+        return setting.schema.type === "number" ? stepperElement : menuElement;
+    };
+
+    /**
      * Shows the appropriate container depending on the type of the setting.
      * @param {jQuery} stepperElement - The container for the QSS stepper widget.
      * @param {jQuery} menuElement - The container for the QSS menu widget.
@@ -265,8 +281,9 @@
     gpii.qssWidget.processParams = function (focusManager, activationParams) {
         activationParams = activationParams || {};
         if (activationParams.key) {
-            // If the widget is show via the keyboard, focus the first element after the close button.
-            focusManager.focus(1, true);
+            // If the widget is show via the keyboard, focus the second focusable element, i.e. the
+            // element that appears after the close button and the "learn more" link.
+            focusManager.focus(2, true);
         } else {
             // Otherwise there will be no focused element and any remaining highlight will be removed.
             focusManager.removeHighlight(true);

@@ -26,12 +26,7 @@ body {
 }
 
 .fl-qssTooltip-content > * {
-    text-align: center;
     margin: 2px 0 2px 0;
-}
-
-.fl-qssTooltip-content ul {
-    text-align: left;
 }
 
 .fl-footer-arrow {

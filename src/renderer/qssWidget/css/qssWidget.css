@@ -43,11 +43,12 @@ body {
 }
 
 .fl-qssWidget .fl-qssWidget-learnMoreLink {
-    margin: 10px auto;
+    margin: 15px 0;
     border: 2px solid transparent;
 
     color: #000000;
     text-decoration: underline;
+    text-align: center;
     cursor: pointer;
 }
 
@@ -89,13 +90,8 @@ body {
     margin: 0 5px 0 10px;
 }
 
-.fl-qssWidget-tip,
 .fl-qssWidget-footerTip {
-    margin: 1px;
-}
-
-.fl-qssWidget-footerTip {
-    color: #ff0000;
+    color: #21932b;
 }
 
 .fl-qssWidget-tip ul {
@@ -110,7 +106,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 25px 0;
+    padding-bottom: 15px;
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
@@ -206,10 +202,6 @@ body {
 .fl-qssMenuWidget  {
     display: flex;
     flex-direction: column;
-}
-
-.fl-qssMenuWidget .fl-qssWidget-tip {
-    margin-bottom: 20px;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls.disabled {
