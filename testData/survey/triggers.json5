@@ -2,14 +2,21 @@
     /*
      * Currently the supported triggers are: "sesstionTimer"
      */
-    /* Example usage of the "sessionTimer" trigger
+    /* Example usage of multiple "sessionTimer" triggers. The id is used in the `surveys.json5` to specify the survey that is to be shown
     {
-        id: "trigger_1",
-        conditions: [
+        "id": "trigger_1",
+        "conditions": [
             {
-                type: "sessionTimer",
-                value: 600000, // time in milliseconds; 1 sec == 1000 ms
-                sessionModulus: 1
+                "type": "sessionTimer",
+                "value": 5000
+            }
+        ]
+    }, {
+        "id": "trigger_2",
+        "conditions": [
+            {
+                "type": "sessionTimer",
+                "value": 15000
             }
         ]
     }

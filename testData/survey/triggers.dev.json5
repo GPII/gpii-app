@@ -8,5 +8,14 @@
                 "sessionModulus": 2
             }
         ]
+    }, {
+        "id": "trigger_2",
+        "conditions": [
+            {
+                "type": "sessionTimer",
+                "value": 65000,
+                "sessionModulus": 2
+            }
+        ]
     }
 ]

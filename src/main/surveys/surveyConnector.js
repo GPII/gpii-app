@@ -103,8 +103,8 @@ fluid.defaults("gpii.app.surveyConnector", {
 fluid.defaults("gpii.app.staticSurveyConnector", {
     gradeNames: ["gpii.app.surveyConnector"],
     config: {
-        triggerFixture: "@expand:fluid.require({that}.options.paths.triggerFixture)",
-        surveyFixture: "@expand:fluid.require({that}.options.paths.surveyFixture)"
+        triggersFixture: "@expand:fluid.require({that}.options.paths.triggersFixture)",
+        surveysFixture: "@expand:fluid.require({that}.options.paths.surveysFixture)"
     },
     invokers: {
         requestTriggers: {
@@ -113,12 +113,15 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
         },
         notifyTriggerOccurred: {
             funcName: "gpii.app.staticSurveyConnector.notifyTriggerOccurred",
-            args: ["{that}"]
+            args: [
+                "{that}",
+                "{arguments}.0" // triggerPayload
+            ]
         }
     },
     paths: {
-        triggerFixture: "%gpii-app/testData/survey/triggers.json5",
-        surveyFixture: "%gpii-app/testData/survey/survey.json5"
+        triggersFixture: "%gpii-app/testData/survey/triggers.json5",
+        surveysFixture: "%gpii-app/testData/survey/surveys.json5"
     }
 });
 
@@ -128,7 +131,7 @@ fluid.defaults("gpii.app.staticSurveyConnector", {
  * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
  */
 gpii.app.staticSurveyConnector.requestTriggers = function (that) {
-    that.events.onTriggerDataReceived.fire(that.options.config.triggerFixture);
+    that.events.onTriggerDataReceived.fire(that.options.config.triggersFixture);
 };
 
 /**
@@ -137,8 +140,16 @@ gpii.app.staticSurveyConnector.requestTriggers = function (that) {
  * the survey to be displayed will be sent via the `onSurveyRequired` event.
  * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
  */
-gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that) {
-    var fixture = fluid.copy(that.options.config.surveyFixture);
-    fixture.url = fluid.stringTemplate(fixture.url, that.model);
-    that.events.onSurveyRequired.fire(fixture);
+gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that, triggerPayload) {
+    var surveyFixture = fluid.copy(that.options.config.surveysFixture)[triggerPayload.id];
+
+    fluid.log("StaticSurveyConnector: Trigger occurred - " + triggerPayload);
+
+    if (surveyFixture) {
+        surveyFixture.url = fluid.stringTemplate(surveyFixture.url, that.model);
+
+        that.events.onSurveyRequired.fire(surveyFixture);
+    } else {
+        fluid.fail("StaticSurveyConnector: Missing survey for trigger: " + triggerPayload.id);
+    }
 };

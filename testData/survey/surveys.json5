@@ -1,0 +1,28 @@
+{
+    "trigger_1": {
+        "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux?keyedInUserToken=%keyedInUserToken&machineId=%machineId",
+        "closeOnSubmit": true,
+        "window": {
+            "width": 800,
+            "height": 600,
+            "resizable": true,
+            "title": "Morphic Survey",
+            "closable": true,
+            "minimizable": false,
+            "maximizable": false
+        }
+    },
+    "trigger_2": {
+        "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux?keyedInUserToken=%keyedInUserToken&machineId=%machineId",
+        "closeOnSubmit": true,
+        "window": {
+            "width": 400,
+            "height": 500,
+            "resizable": true,
+            "title": "Morphic Second Survey",
+            "closable": true,
+            "minimizable": true,
+            "maximizable": false
+        }
+    }
+}
