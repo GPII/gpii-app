@@ -166,18 +166,6 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-        surveyManager: {
-            type: "gpii.app.surveyManager",
-            createOnEvent: "onPSPPrerequisitesReady",
-            options: {
-                listeners: {
-                    onSurveyRequired: {
-                        func: "{dialogManager}.show",
-                        args: ["survey", "{arguments}.0"]
-                    }
-                }
-            }
-        },
         /*
          * Handles the App Zoom settings as it is processed by a separate
          * mechanism (meaning that it doesn't uses the normal setting change
@@ -214,6 +202,18 @@ fluid.defaults("gpii.app", {
                             "{that}.options.appTextZoomPath"
                         ],
                         includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
+                    }
+                }
+            }
+        },
+        surveyManager: {
+            type: "gpii.app.surveyManager",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                listeners: {
+                    onSurveyRequired: {
+                        func: "{dialogManager}.show",
+                        args: ["survey", "{arguments}.0"]
                     }
                 }
             }

@@ -58,7 +58,8 @@ fluid.defaults("gpii.app.surveyManager", {
             options: {
                 model: {
                     machineId: "{app}.machineId",
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                    keyedInUserToken: "{app}.model.keyedInUserToken",
+                    qssSettings: "{app}.qssWrapper.model.settings"
                 },
                 events: {
                     onSurveyRequired: "{surveyManager}.events.onSurveyRequired"
