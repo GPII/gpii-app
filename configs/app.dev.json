@@ -17,7 +17,7 @@
             },
             "distributeStaticSurveyConnectorFixture": {
                 "record": "%gpii-app/testData/survey/triggers.dev.json5",
-                "target": "{that staticSurveyConnector}.options.paths.triggerFixture"
+                "target": "{that staticSurveyConnector}.options.paths.triggersFixture"
             }
         }
     },
