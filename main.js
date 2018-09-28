@@ -33,10 +33,13 @@ app.disableHardwareAcceleration();
 // The PSP will have a single instance. If an attempt to start a second instance is made,
 // the second one will be closed and the callback provided to `app.makeSingleInstance`
 // in the first instance will be triggered enabling it to show the PSP `BrowserWindow`.
-var appIsRunning = app.makeSingleInstance(function (/*commandLine, workingDirectory*/) {
+var appIsRunning = app.makeSingleInstance(function (commandLine) {
     var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
-    if (qssWrapper) {
-        qssWrapper.qss.show();
+    qssWrapper.qss.show();
+
+    if (commandLine.indexOf("--reset") > -1) {
+        var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
+        gpiiApp.keyOut();
     }
 });
 
