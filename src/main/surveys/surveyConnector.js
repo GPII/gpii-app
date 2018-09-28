@@ -23,7 +23,7 @@ var fluid = require("infusion"),
  * A component which is responsible for:
  * 1. Requesting the survey triggers when a user keys in (see the `requestTriggers` invoker).
  * 2. Firing an event (`onTriggerDataReceived`) when the triggers are sent to it.
- * 3. Informing the interested parties that the a survey trigger has been fulfilled (see the
+ * 3. Informing the interested parties that a survey trigger has been fulfilled (see the
  * `notifyTriggerOccurred` invoker).
  * 4. Firing an event (`onSurveyRequired`) if and when a survey needs to be shown by the PSP.
  *

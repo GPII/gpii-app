@@ -31,7 +31,7 @@ fluid.registerNamespace("gpii.tests.utils");
  *
  * @param {Function} func - The function that is to be binded
  * @param {...Any} args  - Arguments for binding
- * @returns {Function} the binded function
+ * @return {Function} the binded function
  */
 gpii.tests.utils.funcBinder = function (func /*, ...args */) {
     var args = [].slice.call(arguments, 1);
@@ -42,7 +42,7 @@ gpii.tests.utils.funcBinder = function (func /*, ...args */) {
 
 var triggersFixture = [
     {
-        id: "trigger_1",
+        id: "trigger_2",
         conditions: [
             {
                 type: "keyedInFor",
@@ -53,12 +53,12 @@ var triggersFixture = [
 ];
 
 var surveysFixture = {
-    "trigger_1": {
-        "url": "https://fluidproject.org/",
+    "trigger_2": {
+        "url": "https://fluidproject.org/?keyedInUserToken=snapset_1a&machineId=3633aab4-7c85-4d30-9e73-8acc40ff2fcb&DPIScale=1",
         "closeOnSubmit": false,
         "window": {
-            "width": 800,
-            "height": 600
+            "width": 300,
+            "height": 200
         }
     }
 };
@@ -114,7 +114,7 @@ gpii.tests.surveys.surveyConnectorTestDefs = {
     sequence: [{
         func: "{that}.app.keyIn",
         args: ["snapset_1a"]
-    }, {
+    }, { // Survey triggers are received with key in
         event: "{that}.app.surveyManager.surveyConnector.events.onTriggerDataReceived",
         listener: "jqUnit.assertDeepEq",
         args: ["The trigger fixture is correctly received", triggersFixture, "{arguments}.0"]
