@@ -15,7 +15,9 @@
 "use strict";
 
 var fluid = require("infusion"),
-    gpii = fluid.registerNamespace("gpii");
+    gpii = fluid.registerNamespace("gpii"),
+    URL = require("url").URL,
+    URLSearchParams = require("url").URLSearchParams;
 
 /**
  * A component which is responsible for:
@@ -77,7 +79,8 @@ fluid.defaults("gpii.app.surveyConnector", {
 
     model: {
         machineId: null,
-        keyedInUserToken: null
+        keyedInUserToken: null,
+        qssSettings: []
     },
 
     events: {
@@ -102,6 +105,7 @@ fluid.defaults("gpii.app.surveyConnector", {
 
 fluid.defaults("gpii.app.staticSurveyConnector", {
     gradeNames: ["gpii.app.surveyConnector"],
+    qssSettingPrefix: "http://registry\\.gpii\\.net/common/",
     config: {
         triggersFixture: "@expand:fluid.require({that}.options.paths.triggersFixture)",
         surveysFixture: "@expand:fluid.require({that}.options.paths.surveysFixture)"
@@ -139,6 +143,8 @@ gpii.app.staticSurveyConnector.requestTriggers = function (that) {
  * payload (with keyedInUserToken and machineId added as query paramenters) for
  * the survey to be displayed will be sent via the `onSurveyRequired` event.
  * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
+ * @param {Object} triggerPayload - An object describing the trigger whose
+ * conditions have been met.
  */
 gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that, triggerPayload) {
     var surveyFixture = fluid.copy(that.options.config.surveysFixture)[triggerPayload.id];
@@ -146,10 +152,47 @@ gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that, triggerPa
     fluid.log("StaticSurveyConnector: Trigger occurred - " + triggerPayload);
 
     if (surveyFixture) {
-        surveyFixture.url = fluid.stringTemplate(surveyFixture.url, that.model);
+        surveyFixture.url = gpii.app.staticSurveyConnector.getSurveyUrl(that, surveyFixture);
 
         that.events.onSurveyRequired.fire(surveyFixture);
     } else {
         fluid.fail("StaticSurveyConnector: Missing survey for trigger: " + triggerPayload.id);
     }
+};
+
+/**
+ * This function produces the URL of the survey which is to be displayed by adding
+ * any additional information that is necessary. The URL is created as follows:
+ * 1. The URL from the survey fixture is used at first.
+ * 2. The "keyedInUserToken" and the "machineId" are added to the search portion
+ * of the URL.
+ * 3. All QSS settings whose values have been modified by the user are also added
+ * to the search part of the URL.
+ * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
+ * @param {Object} fixture - An object describing the survey which is to be shown.
+ * @param {String} fixture.url - The URL of the survey to be loaded.
+ * @return {String} The URL with all additional information of the survey to be shown.
+ */
+gpii.app.staticSurveyConnector.getSurveyUrl = function (that, fixture) {
+    var url = new URL(fixture.url),
+        searchParams = new URLSearchParams(),
+        qssSettingPrefix = that.options.qssSettingPrefix;
+
+    searchParams.set("keyedInUserToken", that.model.keyedInUserToken);
+    searchParams.set("machineId", that.model.machineId);
+
+    fluid.each(that.model.qssSettings, function (setting) {
+        var path = setting.path,
+            value = setting.value,
+            defaultValue = setting.schema["default"];
+
+        if (path.startsWith(qssSettingPrefix) && !fluid.model.diff(value, defaultValue)) {
+            var settingKey = path.slice(qssSettingPrefix.length);
+            searchParams.set(settingKey, value);
+        }
+    });
+
+    url.search = searchParams;
+
+    return url.toString();
 };

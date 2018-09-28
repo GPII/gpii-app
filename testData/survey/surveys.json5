@@ -1,6 +1,6 @@
 {
     "trigger_1": {
-        "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux?keyedInUserToken=%keyedInUserToken&machineId=%machineId",
+        "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux",
         "closeOnSubmit": true,
         "window": {
             "width": 800,
@@ -13,7 +13,7 @@
         }
     },
     "trigger_2": {
-        "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux?keyedInUserToken=%keyedInUserToken&machineId=%machineId",
+        "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux",
         "closeOnSubmit": true,
         "window": {
             "width": 400,
