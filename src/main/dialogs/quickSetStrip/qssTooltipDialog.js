@@ -40,7 +40,7 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     ],
 
     scaleFactor: 1,
-    defaultWidth: 200,
+    defaultWidth: 205,
     defaultHeight: 300,
 
     model: {

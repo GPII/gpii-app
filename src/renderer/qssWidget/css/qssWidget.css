@@ -94,6 +94,15 @@ body {
     color: #21932b;
 }
 
+.fl-qssWidget-tip p {
+    margin: 0;
+}
+
+.fl-qssWidget-tip p:first-of-type {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
 .fl-qssWidget-tip ul {
     margin-top: 5px;
     margin-bottom: 0;

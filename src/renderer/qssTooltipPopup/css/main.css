@@ -25,8 +25,16 @@ body {
     justify-content: space-around;
 }
 
-.fl-qssTooltip-content > * {
-    margin: 2px 0 2px 0;
+.fl-qssTooltip-content > p {
+    margin: 0;
+    padding: 0;
+
+    line-height: inherit;
+    font-size: 15px;
+}
+
+.fl-qssTooltip-content > p:first-of-type {
+    font-weight: bold;
 }
 
 .fl-footer-arrow {
