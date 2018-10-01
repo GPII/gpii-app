@@ -1,7 +1,8 @@
 /**
- * Initializes the QuickSetStrip widget window
+ * A QSS widget button
  *
- * Creates the Quick Set Strip widget once the document has been loaded.
+ * A button representing a possible setting value in the QSS menu or the increment
+ * and decrement button in the QSS stepper widget.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -18,6 +19,10 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
+    /**
+     * An `activatable` instance of `gpii.psp.widgets.button` used in the
+     * QSS widget.
+     */
     fluid.defaults("gpii.qssWidget.button", {
         gradeNames: ["gpii.psp.widgets.button", "gpii.app.activatable"],
         listeners: {
@@ -28,6 +33,15 @@
         }
     });
 
+    /**
+     * Adds a click handler which activates the button when it is pressed and
+     * adjusts the focus appropriately.
+     * @param {Component} that - The `gpii.qssWidget.button` instance.
+     * @param {Component} focusManager - The `gpii.qss.focusManager` instance
+     * for the QSS widget.
+     * @param {jQuery} container - The jQuery object representing the container
+     * for the QSS widget button.
+     */
     gpii.qssWidget.button.addClickHandler = function (that, focusManager, container) {
         container.on("click", function () {
             focusManager.focusElement(container, false);

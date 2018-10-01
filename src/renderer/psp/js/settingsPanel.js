@@ -333,13 +333,6 @@
             items: null // settings
         },
 
-        listeners: {
-            onCreate: {
-                funcName: "console.log",
-                args: "{that}"
-            }
-        },
-
         handlerType:   "gpii.psp.settingPresenter",
 
         widgetExemplars: null, // passed by parent
@@ -469,10 +462,14 @@
         }
     });
 
+    /**
+     * Shows a warning to the user if he does not have settings in the currently selected preference set.
+     * @param {Object[]} settingGroups - An array of the setting groups for the current preference set.
+     * @param {jQuery} emptyPrefSetHintElem - A jQuery object representing the warning element for no
+     * available settings.
+     */
     gpii.psp.settingsPanel.onSettingGroupsChanged = function (settingGroups, emptyPrefSetHintElem) {
-        var hasSettings = !!fluid.find_if(settingGroups, function (settingGroup) {
-            return settingGroup.settings.length > 0;
-        });
+        var hasSettings = gpii.app.settingGroups.hasSettings(settingGroups);
         emptyPrefSetHintElem.toggle(!hasSettings);
     };
 
@@ -488,7 +485,6 @@
 
     /**
      * Simplifies the `fluid.resourcesLoader`'s resource object, to supply only the fetched data.
-     *
      * @param {Object} resources - The `fluid.resourceLoader`'s `resource` object after fetch.
      * @return {Object} Object with properties like: `{resourceKey}: {resourceText}`
      */
@@ -502,7 +498,6 @@
 
     /**
      * Resources that are to be fetched - settings inner container and widgets'.
-     *
      * @param {Object} settingGroupExemplar - A `gpii.psp.exemplar.settingGroupsVisualizer`
      * object.
      * @param {Object} settingExemplar - A `gpii.psp.exemplar.settingsVisualizer` object.

@@ -1,7 +1,7 @@
 /**
  * Manager for gpii-app shortcuts
  *
- * A component that handles keyboard shortcut registration either for specific windows or global.
+ * A component that handles keyboard shortcut registration either for specific windows or globally.
  * Copyright 2016 Steven Githens
  * Copyright 2016-2017 OCAD University
  *
@@ -19,9 +19,11 @@ var gpii  = fluid.registerNamespace("gpii");
 var globalShortcut = require("electron").globalShortcut;
 var localshortcut = require("electron-localshortcut");
 
-
 /**
- * TODO
+ * A component responsible for registering global and local (i.e. related to a
+ * particular `BrowserWindow`) shortcuts. Takes care of deregistering the
+ * global shortcuts when the component is destroyed. Whenever a keyboard shortcut
+ * is activated, the corresponding component's event will be fired.
  */
 fluid.defaults("gpii.app.shortcutsManager", {
     gradeNames: ["fluid.modelComponent"],
@@ -43,6 +45,12 @@ fluid.defaults("gpii.app.shortcutsManager", {
                 "{arguments}.1"
             ]
         },
+        deregisterGlobalShortcut: {
+            funcName: "gpii.app.shortcutsManager.deregisterGlobalShortcut",
+            args: [
+                "{arguments}.0"
+            ]
+        },
         registerLocalShortcut: {
             funcName: "gpii.app.shortcutsManager.registerLocalShortcut",
             args: [
@@ -55,7 +63,6 @@ fluid.defaults("gpii.app.shortcutsManager", {
     }
 });
 
-
 /**
  * Ensure global shortcuts are cleared after app destruction.
  */
@@ -63,7 +70,15 @@ gpii.app.shortcutsManager.clearShortcuts = function () {
     globalShortcut.unregisterAll();
 };
 
-
+/**
+ * Registers a global shortcut, i.e. a shortcut which is triggered if the app
+ * is running but not necessarily focused.
+ * @param {Component} that - The `gpii.app.shortcutsManager` instance.
+ * @param {String} command - The global shortcut string. For further information,
+ * see https://electronjs.org/docs/api/accelerator.
+ * @param {String} eventName - The name of the event which should be triggered when
+ * the shortcut is activated.
+ */
 gpii.app.shortcutsManager.registerGlobalShortcut = function (that, command, eventName) {
     var shortcutEvent = that.events[eventName];
     if (!shortcutEvent) {
@@ -80,6 +95,29 @@ gpii.app.shortcutsManager.registerGlobalShortcut = function (that, command, even
     globalShortcut.register(command, shortcutEvent.fire);
 };
 
+/**
+ * Deregisters a global shortcut.
+ * @param {String} command - The global shortcut string.
+ */
+gpii.app.shortcutsManager.deregisterGlobalShortcut = function (command) {
+    if (globalShortcut.isRegistered(command)) {
+        globalShortcut.unregister(command);
+    } else {
+        fluid.fail("ShortcutsManager: Cannot unregister an unexisting global shortcut - ", command);
+    }
+};
+
+/**
+ * Registers a local shortcut, i.e. a shortcut which is triggered only if the
+ * given `BrowserWindow` is visible and has focus.
+ * @param {Component} that - The `gpii.app.shortcutsManager` instance.
+ * @param {String} command - The local shortcut string. It has the same format
+ * as the global shortcut string.
+ * @param {String} eventName - The name of the event which should be triggered when
+ * the shortcut is activated.
+ * @param {BrowserWindow[]} targetWindows - An array of windows for which the
+ * shortcut has to be registered.
+ */
 gpii.app.shortcutsManager.registerLocalShortcut = function (that, command, eventName, targetWindows) {
     var shortcutEvent = that.events[eventName];
     var windows = targetWindows;

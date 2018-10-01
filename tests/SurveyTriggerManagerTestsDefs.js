@@ -1,8 +1,7 @@
 /**
- * PSP Rules Engine Integration Test Definitions
+ * Survey Trigger Manager Integration Test Definitions
  *
- * Test definitions for the rules engine. Checks whether a single or multiple rules are
- * satisfied when necessary against provided mock facts.
+ * Test definitions for the surveyTriggerManager component.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -18,24 +17,31 @@ var fluid = require("infusion"),
     jqUnit = fluid.require("node-jqunit", require, "jqUnit"),
     gpii = fluid.registerNamespace("gpii");
 
+require("./testUtils.js");
 require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.surveyTriggerManager.testDefs");
 
-var keyedInForTrigger = {
-    id: "trigger_1",
-    conditions: [{
-        type: "keyedInFor",
-        value: 1000
-    }]
+var sessionTimer = {
+    id: "testTrigger_1",
+    conditions: [
+        {
+            type: "sessionTimer",
+            value: 1000,
+            sessionModulus: 1
+        }
+    ]
 };
 
-var keyedInForTriggerDuplicate = {
-    id: "trigger_1",
-    conditions: [{
-        type: "keyedInFor",
-        value: 30000
-    }]
+var sessionTimerDuplicate = {
+    id: "testTrigger_1",
+    conditions: [
+        {
+            type: "sessionTimer",
+            value: 3000,
+            sessionModulus: 5
+        }
+    ]
 };
 
 gpii.tests.surveyTriggerManager.testHandlerCreated = function (surveyTriggerManager, triggerFixture) {
@@ -60,24 +66,6 @@ gpii.tests.surveyTriggerManager.testHandlerRemoved = function (surveyTriggerMana
     jqUnit.assertFalse("There is no registered trigger for the given fixture", triggerHandler);
 };
 
-/**
- * The tests below seem to complete too fast and the GPII app (including the gpiiConnector and
- * its socket) is destroyed before the "noUser" preferences are delivered to the GPII app. When
- * the Core attempts to do so, the websocket on the PSP's end no longer exists and this causes
- * the socket on the Core's end to hang up and emit an error. This is probably an edge case
- * which is not handled and will probably be tackled in the future and for now it would be better
- * to delay the tests a bit.
- */
-gpii.tests.surveyTriggerManager.initialize = function () {
-    var promise = fluid.promise();
-
-    setTimeout(function () {
-        promise.resolve();
-    }, 2000);
-
-    return promise;
-};
-
 gpii.tests.surveyTriggerManager.testDefs = {
     name: "Trigger Engine integration tests",
     expect: 14,
@@ -87,52 +75,65 @@ gpii.tests.surveyTriggerManager.testDefs = {
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{
-        task: "gpii.tests.surveyTriggerManager.initialize",
+    /**
+     * The tests below seem to complete too fast and the GPII app (including the gpiiConnector and
+     * its socket) is destroyed before the "noUser" preferences are delivered to the GPII app. When
+     * the Core attempts to do so, the websocket on the PSP's end no longer exists and this causes
+     * the socket on the Core's end to hang up and emit an error. This is probably an edge case
+     * which is not handled and will probably be tackled in the future and for now it would be better
+     * to delay the tests a bit.
+     */
+        task: "gpii.test.linger",
+        args: [2000],
         resolve: "fluid.identity"
-    }, {
-        func: "{that}.app.factsManager.applier.change",
-        args: ["keyedInTimestamp", Date.now()]
     }, [ // Testing basic trigger workflow
         {
             func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-            args: [keyedInForTrigger]
+            args: [sessionTimer]
         }, {
             func: "gpii.tests.surveyTriggerManager.testHandlerCreated",
-            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTrigger]
+            args: ["{that}.app.surveyManager.surveyTriggerManager", sessionTimer]
+        }, {
+            // Simulate a setting update via the QSS in order to fulfil the trigger
+            func: "{that}.app.qssWrapper.qss.events.onQssSettingAltered.fire",
+            args: {
+                path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                value: true
+            }
         }, {
             event: "{that}.app.surveyManager.surveyTriggerManager.events.onTriggerOccurred",
             listener: "jqUnit.assertDeepEq",
-            args: ["The correct trigger has occurred", keyedInForTrigger, "{arguments}.0"]
+            args: ["The correct trigger has occurred", sessionTimer, "{arguments}.0"]
         }, {
             func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
-            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTrigger]
+            args: ["{that}.app.surveyManager.surveyTriggerManager", sessionTimer]
         }
     ], [ // Testing registration of triggers with the same id
         {
             func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-            args: [keyedInForTrigger]
+            args: [sessionTimer]
         }, {
             func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-            args: [keyedInForTriggerDuplicate]
+            args: [sessionTimerDuplicate]
         }, {
             func: "gpii.tests.surveyTriggerManager.testHandlerCreated",
-            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
+            args: ["{that}.app.surveyManager.surveyTriggerManager", sessionTimerDuplicate]
         }, {
             func: "{that}.app.surveyManager.surveyTriggerManager.removeTrigger",
-            args: [keyedInForTriggerDuplicate]
+            args: [sessionTimerDuplicate]
         }, {
             func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
-            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
+            args: ["{that}.app.surveyManager.surveyTriggerManager", sessionTimerDuplicate]
         }
     ], [ // Testing resetting of the survey trigger manager
         {
             func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
+            args: ["{that}.app.surveyManager.surveyTriggerManager", sessionTimerDuplicate]
         }, {
             func: "{that}.app.surveyManager.surveyTriggerManager.reset"
         }, {
             func: "gpii.tests.surveyTriggerManager.testHandlerRemoved",
-            args: ["{that}.app.surveyManager.surveyTriggerManager", keyedInForTriggerDuplicate]
+            args: ["{that}.app.surveyManager.surveyTriggerManager", sessionTimerDuplicate]
         }
     ]]
 };

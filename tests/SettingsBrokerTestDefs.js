@@ -54,6 +54,16 @@ var manualSettingChange = {
     }
 };
 
+var oldValueManualSettingChange = fluid.extend(true, {}, manualSettingChange, {
+    oldValue: "New value",
+    value: "Old value"
+});
+
+var anotherManualSettingChange = fluid.extend(true, {}, manualSettingChange, {
+    oldValue: "New value",
+    value: "Another new value"
+});
+
 var osSettingChange = {
     path: "zoomPath",
     oldValue: 0.75,
@@ -87,7 +97,7 @@ gpii.tests.settingsBroker.testBrokerBeforeKeyIn = function (settingsBroker) {
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
 };
 
-gpii.tests.settingsBroker.testBrokerAfterKeyIn = function (settingsBroker, tray) {
+gpii.tests.settingsBroker.testBrokerAfterKeyIn = function (settingsBroker) {
     jqUnit.assertTrue("There is a keyed in user", settingsBroker.model.isKeyedIn);
     gpii.tests.settingsBroker.testNoPendingChanges(settingsBroker);
 };
@@ -127,7 +137,7 @@ gpii.tests.settingsBroker.testBrokerAfterKeyOut = function (settingsBroker) {
 
 gpii.tests.settingsBroker.testDefs = {
     name: "Settings broker integration tests",
-    expect: 22,
+    expect: 27,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -143,7 +153,7 @@ gpii.tests.settingsBroker.testDefs = {
         changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
         path: "isKeyedIn",
         listener: "gpii.tests.settingsBroker.testBrokerAfterKeyIn",
-        args: ["{that}.app.settingsBroker", "{that}.app.tray"]
+        args: ["{that}.app.settingsBroker"]
     }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [liveSettingChange]
@@ -210,10 +220,35 @@ gpii.tests.settingsBroker.testDefs = {
         path: "pendingChanges",
         listener: "gpii.tests.settingsBroker.testNoPendingChanges",
         args: ["{that}.app.settingsBroker"]
+    }, { // Enqueue a manual setting change...
+        func: "{that}.app.settingsBroker.enqueue",
+        args: [manualSettingChange]
+    }, {
+        func: "gpii.tests.settingsBroker.testNonLiveSettingEnqueue",
+        args: ["{that}.app.settingsBroker", "{that}.app.tray", [manualSettingChange]]
+    }, { // ...and enqueue a change of the same setting with the initial value...
+        func: "{that}.app.settingsBroker.enqueue",
+        args: [oldValueManualSettingChange]
+    }, { // As the setting is reverted to its initial value, it will be cleared from the queue.
+        changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
+        path: "pendingChanges",
+        listener: "gpii.tests.settingsBroker.testNoPendingChanges",
+        args: ["{that}.app.settingsBroker"]
     }, { // If there is a pending change...
         func: "{that}.app.settingsBroker.enqueue",
-        args: [osSettingChange]
-    }, { // ...and the user keys out...
+        args: [manualSettingChange]
+    }, { // ...and a change of the same setting is made but with a value different from the initial value...
+        func: "{that}.app.settingsBroker.enqueue",
+        args: [anotherManualSettingChange]
+    }, { // ...then only the last update of the value will be present in the queue.
+        func: "gpii.tests.settingsBroker.testNonLiveSettingEnqueue",
+        args: ["{that}.app.settingsBroker", "{that}.app.tray", [
+            // note the the change in the queue will store the initial old value, not the old value that comes with the setting
+            fluid.extend(true, {}, anotherManualSettingChange, {
+                oldValue: manualSettingChange.oldValue
+            })
+        ]]
+    }, { // Now there is 1 pending change in the queue. If the user keys out...
         func: "{that}.app.keyOut"
     }, { // ...the pending changes will be discarded.
         changeEvent: "{that}.app.applier.modelChanged",

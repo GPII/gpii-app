@@ -17,6 +17,7 @@
 "use strict";
 
 var fluid = require("infusion"),
+    BrowserWindow = require("electron").BrowserWindow,
     jqUnit = fluid.require("node-jqunit", require, "jqUnit"),
     gpii = fluid.registerNamespace("gpii");
 
@@ -64,9 +65,20 @@ gpii.tests.dialogManager.testSurveyDialogClosed = function (dialogManager) {
         dialogManager.survey.dialog);
 };
 
+gpii.tests.dialogManager.testShowInvalidDialog = function (dialogManager) {
+    var initialFocusedWindow = BrowserWindow.getFocusedWindow();
+    dialogManager.show("invalidDialog");
+
+    jqUnit.assertEquals(
+        "Dialog manager does not show a dialog if it does not exist",
+        initialFocusedWindow,
+        BrowserWindow.getFocusedWindow()
+    );
+};
+
 gpii.tests.dialogManager.testDefs = {
     name: "Dialog manager integration tests",
-    expect: 10,
+    expect: 11,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -77,7 +89,7 @@ gpii.tests.dialogManager.testDefs = {
         args: ["{that}.app.dialogManager"]
     }, {
         func: "{that}.app.keyIn",
-        args: ["snapset_1a"]
+        args: ["snapset_5"]
     }, {
         changeEvent: "{that}.app.dialogManager.applier.modelChanged",
         path: "isKeyedIn",
@@ -86,6 +98,9 @@ gpii.tests.dialogManager.testDefs = {
             "There is a keyed in user for the dialog manager",
             "{that}.app.dialogManager.model.isKeyedIn"
         ]
+    }, {
+        func: "gpii.tests.dialogManager.testShowInvalidDialog",
+        args: ["{that}.app.dialogManager"]
     }, {
         func: "{that}.app.dialogManager.show",
         args: ["survey", surveyDialogFixture]

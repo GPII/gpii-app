@@ -20,6 +20,8 @@ var fluid = require("infusion"),
     jqUnit = fluid.require("node-jqunit", require, "jqUnit"),
     gpii = fluid.registerNamespace("gpii");
 
+require("./testUtils.js");
+
 /*
  * Scripts for interaction with the renderer
  */
@@ -29,44 +31,36 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
     focusCloseBtn = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-child\").trigger(event)",
 
     clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
+    hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").trigger('mouseenter')",
     clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
-    clickFontSizeBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
-    clickCaptionsBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(4)\").click()",
-    clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(6)\").click()",
-    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
-    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(3)\").click()",
-    clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()";
+    clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
+    clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(5)\").click()",
+    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(5)\").click()",
+    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
+    clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()",
+    getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
+
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:first-child').click()";
+    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-child(2)').click()",
+    clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
+    clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()";
+
 // Generic
 var closeClosableDialog = "jQuery(\".flc-closeBtn\").click()";
+
 
 require("../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.qss.testDefs");
 
-gpii.tests.qss.awaitQssInitialization = function (qss) {
-    var promise = fluid.promise();
-
-    qss.dialog.once("ready-to-show", function () {
-        promise.resolve();
-    });
-
-    return promise;
-};
-
-gpii.tests.qss.executeCommand = function (dialog, command) {
-    return dialog.webContents.executeJavaScript(command, true);
-};
-
 gpii.tests.qss.simulateShortcut = function (dialog, shortcut) {
     dialog.webContents.sendInputEvent({
         type: "keyDown",
         keyCode: shortcut.key,
-        modifiers: shortcut.modifiers
-    })
+        modifiers: shortcut.modifiers || []
+    });
 };
 
 gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
@@ -82,19 +76,6 @@ gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
         app.qssWrapper.qss.model.isShown
     );
 };
-
-// XXX: For dev purposes.
-gpii.tests.qss.linger = function () {
-    var promise = fluid.promise();
-
-    setTimeout(function () {
-        promise.resolve();
-    }, 2000);
-
-    return promise;
-};
-
-
 
 var qssCrossTestSequence = [
     /*
@@ -116,8 +97,31 @@ var qssCrossTestSequence = [
             "{that}.app",
             {psp: false, qss: true}
         ]
+    }, { // When the tray icon is again...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // ... the QSS will no longer be visible (the tray icon toggles the QSS)
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: false, qss: false}
+        ]
+    }, { // Open the QSS again.
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // Open the PSP via the QSS.
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickPspBtn
+        ],
+        resolve: "fluid.identity"
+    }, {
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: true, qss: true}
+        ]
     }, { // Clicking on the close button in the QSS...
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -142,7 +146,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
     }, { // ... and hover on its close button.
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             hoverCloseBtn
@@ -156,7 +160,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
     }, { // When the button is no longer hovered...
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             unhoverCloseBtn
@@ -169,13 +173,15 @@ var qssCrossTestSequence = [
             "The QSS tooltip is hidden when the button is no longer hovered",
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
-    }, { // If the button is focused using keyboard interaction...
-        func: "gpii.tests.qss.executeCommand",
+    },
+    // hover & click === close
+    { // Hovering the language button
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            focusCloseBtn
+            hoverLanguageBtn
         ]
-    }, {
+    }, { // ... should show the tooltip
         changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
         path: "isShown",
         listener: "jqUnit.assertTrue",
@@ -183,12 +189,62 @@ var qssCrossTestSequence = [
             "The QSS tooltip is shown when a button is focused using the keyboard",
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
+    }, { // ... and clicking (activating) the button
+        funcName: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickLanguageBtn
+        ]
+    }, { // ... should close the tooltip
+        changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS tooltip is closed when a button is activated",
+            "{that}.app.qssWrapper.qssTooltip.model.isShown"
+        ]
     },
+    // menu close === no tooltip
+    {   // XXX we need some minor timeout for the QSS to get
+        // in normal state. In case this is not present,
+        // the next item doesn't take effect
+        task: "gpii.test.linger",
+        args: [1000],
+        resolve: "fluid.identity"
+    },
+    // hover & esc === close
+    { // Focusing the close button
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            focusCloseBtn
+        ]
+    }, { // ... will show the tooltip
+        event: "{that}.app.qssWrapper.qssTooltip.events.onDialogShown",
+        listener: "fluid.identity" // already tested
+    }, { // ... and then, when Esc is used
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            {
+                key: "Escape"
+            }
+        ]
+    }, { // ... should close the tooltip
+        changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS tooltip is closed when Esc is used",
+            "{that}.app.qssWrapper.qssTooltip.model.isShown"
+        ]
+    },
+    // shortcut open === tooltip
     /*
      * Notification & QSS integration
      */
     { // When the "Save" button is clicked...
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickSaveBtn
@@ -202,7 +258,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
     }, { // When the "Close" button in the QSS notification is clicked...
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qssNotification.dialog",
             closeClosableDialog
@@ -221,7 +277,7 @@ var qssCrossTestSequence = [
      */
     // QSS widget visibility tests
     { // If the language button in the QSS is clicked...
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -235,7 +291,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
     }, { // If the button is focused using keyboard interaction...
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             closeClosableDialog
@@ -249,7 +305,7 @@ var qssCrossTestSequence = [
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
     }, { // If the language button in the QSS is clicked once...
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -259,7 +315,7 @@ var qssCrossTestSequence = [
         path: "isShown",
         listener: "fluid.identity"
     }, { // ... and is then clicked again...
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -277,13 +333,14 @@ var qssCrossTestSequence = [
     // CROSS tests
     //
     { // ... open the widget again
-        func: "gpii.tests.qss.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
-        ]
+        ],
+        resolve: "fluid.identity"
     }, { // ... and check whether it is the correct widget
-        task: "gpii.tests.qss.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             checkIfMenuWidget
@@ -291,14 +348,14 @@ var qssCrossTestSequence = [
         resolve: "jqUnit.assertTrue",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     }, { // Open the stepper widget
-        task: "gpii.tests.qss.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            clickFontSizeBtn
+            clickAppTextZoomBtn
         ],
         resolve: "fluid.identity"
     }, { // ... and the menu widget shouldn't be shown
-        task: "gpii.tests.qss.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             checkIfMenuWidget
@@ -306,7 +363,7 @@ var qssCrossTestSequence = [
         resolve: "jqUnit.assertFalse",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     }, { // ... and stepper widget should be
-        task: "gpii.tests.qss.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             checkIfStepperWidget
@@ -320,14 +377,14 @@ var qssCrossTestSequence = [
     // Setting changes tests
     //
     { // Open the menu Widget
-        task: "gpii.tests.qss.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
         ],
         resolve: "fluid.identity"
     }, { // ... click on menu item (we know the order from the config we are using)
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickMenuWidgetItem
@@ -337,7 +394,7 @@ var qssCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "Change event was fired from QSS widget interaction.",
-            { path: "http://registry\\.gpii\\.net/common/language", value: "hy" },
+            { path: "http://registry\\.gpii\\.net/common/language", value: "hy-AM" },
             "{arguments}.0"
         ]
     },
@@ -359,19 +416,27 @@ var qssCrossTestSequence = [
     },
     // Toggle
     { // Activation of toggle button should
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            clickCaptionsBtn
+            clickReadAloudBtn
         ]
     }, { // ... notify the core
         event: "{that}.app.settingsBroker.events.onSettingApplied",
         listener: "jqUnit.assertLeftHand",
         args: [
             "Change event was fired from QSS widget interaction.",
-            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: true },
+            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
+    },
+    { // Turn off the read aloud
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickReadAloudBtn
+        ],
+        resolve: "fluid.identity"
     },
     /*
      * QSS & PSP tests
@@ -383,7 +448,7 @@ var qssCrossTestSequence = [
         event: "{that}.app.events.onKeyedIn",
         listener: "fluid.identity"
     }, { // If the Key in button in the QSS is clicked...
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickPspBtn
@@ -397,7 +462,7 @@ var qssCrossTestSequence = [
             "{that}.app.psp.model.isShown"
         ]
     }, { // ... changing setting from QSS
-        func: "gpii.tests.qss.executeCommand",
+        func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickReadAloudBtn
@@ -416,15 +481,15 @@ var qssCrossTestSequence = [
 ];
 
 var simpleSettingChangeSeqEl = { // Changeing single setting
-    task: "gpii.tests.qss.executeCommand",
+    task: "gpii.test.executeJavaScript",
     args: [
         "{that}.app.qssWrapper.qss.dialog",
-        clickCaptionsBtn
+        clickReadAloudBtn
     ],
     resolve: "fluid.identity"
 };
 var clickUndoButtonSeqEl = { // ... and clicking undo button
-    funcName: "gpii.tests.qss.executeCommand",
+    funcName: "gpii.test.executeJavaScript",
     args: [
         "{that}.app.qssWrapper.qss.dialog",
         clickUndoBtn
@@ -434,7 +499,7 @@ var clickUndoButtonSeqEl = { // ... and clicking undo button
 var undoCrossTestSequence = [
     { // When the tray icon is clicked...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, 
+    },
     simpleSettingChangeSeqEl,
     clickUndoButtonSeqEl, // ... and clicking undo button
     { // ... should revert setting's value
@@ -443,7 +508,7 @@ var undoCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "QSS undo button should undo setting change",
-            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: false },
+            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: false },
             "{arguments}.0"
         ]
     },
@@ -467,7 +532,7 @@ var undoCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "QSS undo shortcut should undo setting change",
-            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: true },
+            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
     }, { // ... and using shortcut in the widget
@@ -485,7 +550,7 @@ var undoCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "QSS widget undo shortcut should undo setting change",
-            { path: "http://registry\\.gpii\\.net/common/captions/enabled", value: false },
+            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: false },
             "{arguments}.0"
         ]
     },
@@ -494,7 +559,7 @@ var undoCrossTestSequence = [
     ////
     simpleSettingChangeSeqEl, // Changing a setting
     { // ... should enable undo indicator
-        event: "{that}.app.qssWrapper.events.onUndoIndicatorChanged",
+        event: "{that}.app.qssWrapper.qss.events.onUndoIndicatorChanged",
         listener: "jqUnit.assertTrue",
         args: [
             "QSS change should enable undo indicator",
@@ -503,14 +568,14 @@ var undoCrossTestSequence = [
     },
     clickUndoButtonSeqEl, // ... and unding it
     { // ... should disable it
-        event: "{that}.app.qssWrapper.events.onUndoIndicatorChanged",
+        event: "{that}.app.qssWrapper.qss.events.onUndoIndicatorChanged",
         listener: "jqUnit.assertFalse",
         args: [
             "QSS undo should disable undo indicator",
             "{arguments}.0"
         ]
     }, { // close and ensure setting changes have been applied
-        task: "gpii.tests.qss.executeCommand",
+        task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -542,7 +607,7 @@ var undoTestSequence = [
             "QSS single setting change should be undone properly",
             {
                 path: "http://registry\\.gpii\\.net/common/DPIScale",
-                value: 1.25
+                value: 0 // this is the default value of the DPI Scale setting
             },
             "{arguments}.0"
         ]
@@ -561,7 +626,7 @@ var undoTestSequence = [
         args: ["settings.2", {value: 1.5}]
     }, { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.3", {value: true}]
+        args: ["settings.4", {value: true}]
     }, { // ... `hasChanges` should have its state kept
         funcName: "jqUnit.assertTrue",
         args: [
@@ -577,7 +642,7 @@ var undoTestSequence = [
         args: [
             "QSS last setting change should be undone",
             {
-                path: "http://registry\\.gpii\\.net/common/captions/enabled",
+                path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
                 value: false
             },
             "{arguments}.0"
@@ -591,9 +656,9 @@ var undoTestSequence = [
             "QSS last setting change should be undone",
             {
                 path: "http://registry\\.gpii\\.net/common/DPIScale",
-                value: 1.25
+                value: 0
             },
-            "{arguments}.0.oldValue"
+            "{arguments}.0"
         ]
     }, { // ... and `hasChanges` should have its state restored
         funcName: "jqUnit.assertFalse",
@@ -613,7 +678,7 @@ var undoTestSequence = [
     //
     { // make a change to an undoable setting shouldn't have effect
         func: "{that}.app.qssWrapper.alterSetting",
-        args: [{path: "http://registry\\.gpii\\.net/common/fontSize", value: 1.5}]
+        args: [{path: "appTextZoom", value: 1.5}]
     }, { // ... and making a watched change
         func: "{that}.app.qssWrapper.applier.change",
         args: ["settings.2", {value: 1.5}]
@@ -628,32 +693,224 @@ var undoTestSequence = [
     }
 ];
 
+var appZoomTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // ... and click on the "App / Text Zoom" button.
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickAppTextZoomBtn
+        ]
+    }, {
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, { // Click on the increment button
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn
+        ]
+    }, {
+        event: "{that}.app.appZoom.events.onAppZoomed",
+        listener: "jqUnit.assertEquals",
+        args: [
+            "App Zoom zooms in when the + button in the QSS widget is pressed",
+            "increase",
+            "{arguments}.0"
+        ]
+    }, { // Click on the decrement button
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn
+        ]
+    }, {
+        event: "{that}.app.appZoom.events.onAppZoomed",
+        listener: "jqUnit.assertEquals",
+        args: [
+            "App Zoom zooms out when the - button in the QSS widget is pressed",
+            "decrease",
+            "{arguments}.0"
+        ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
+fluid.defaults("gpii.tests.qss.mockedAppZoom", {
+    gradeNames: "fluid.component",
+
+    events: {
+        onAppZoomed: null
+    },
+
+    invokers: {
+        sendZoom: {
+            func: "{that}.events.onAppZoomed.fire",
+            args: [
+                "{arguments}.0" // direction
+            ]
+        }
+    }
+});
+
+fluid.defaults("gpii.tests.qss.mockedAppZoomWrapper", {
+    gradeNames: "fluid.component",
+    components: {
+        appZoom: {
+            type: "gpii.tests.qss.mockedAppZoom"
+        }
+    }
+});
+
+/*
+ * A subset of the QSS setting messages.
+ */
+var qssSettingMessagesFixture = {
+    bg: {
+        "gpii_app_qss_settings_common-language": {
+            "title": "Избери Език",
+            tooltip: "Some different tooltip",
+            "enum": [
+                "Анг",
+                "Арм",
+                "Кит",
+                "Китс",
+                "Кор",
+                "Рус",
+                "Исп"
+            ]
+        },
+        "gpii_app_qss_settings_save": {
+            "title": "Запиши ме"
+        },
+        "gpii_app_qss_settings_close": {
+            "title": "Затвори ме"
+        },
+        "gpii_app_qss_settings_appTextZoom": {
+            title: "Приближи този текст",
+            tooltip: "Some tooltip",
+            tip: "Some helpful tip",
+            footerTip: "Hopefully something helpful as the tip"
+        }
+    }
+};
+
+/*
+ * A mock of the settings message
+ */
+var expectedTranslatedSettings = {
+    "http://registry\\.gpii\\.net/common/language": {
+        schema: {
+            "title": "Избери Език",
+            "enum": [
+                "Анг",
+                "Арм",
+                "Кит",
+                "Китс",
+                "Кор",
+                "Рус",
+                "Исп"
+            ]
+        },
+        tooltip: "Some different tooltip"
+    },
+    "save": {
+        schema: {
+            "title": "Запиши ме"
+        }
+    },
+    "close": {
+        schema: {
+            "title": "Затвори ме"
+        }
+    },
+    "appTextZoom": {
+        schema: {
+            title: "Приближи този текст"
+        },
+        tooltip: "Some tooltip",
+        tip: "Some helpful tip",
+        widget: {
+            footerTip: "Hopefully something helpful as the tip"
+        }
+    }
+};
+
+
+var crossQssTranslations = [
+    /*
+     * Tests for the QSS i18n behaviour
+     */
+    { // trigger locale change
+        funcName: "{that}.app.applier.change",
+        args: ["locale", "bg"]
+    },
+    { // ... and check whether the settings' text has been updated in the main
+        funcName: "gpii.test.assertLeftHandDeep",
+        args: [
+            "QSS should have its settings translated with locale change",
+            expectedTranslatedSettings,
+            "@expand:gpii.test.objectArrayToHash({that}.app.qssWrapper.model.settings, path)"
+        ]
+    }, { // ... and in the renderer as well
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getQssSettingsList
+        ],
+        resolve: "gpii.test.assertLeftHandDeep",
+        resolveArgs: [
+            "QSS dialog should have its settings translated with locale change",
+            expectedTranslatedSettings,
+            "@expand:gpii.test.objectArrayToHash({arguments}.0, path)"
+        ]
+    }
+];
 
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 36,
+    expect: 46,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
     },
     distributeOptions: {
-        // Supply the list of QSS settings
-        // For now we're using the same settings list
-        record: "%gpii-app/tests/fixtures/qssSettings.json",
-        target: "{that gpii.app.qssWrapper}.options.settingsPath"
+        applyMockedAppZoomWrapper: {
+            record: "gpii.tests.qss.mockedAppZoomWrapper",
+            target: "{that gpii.app}.options.gradeNames"
+        },
+        mockedSettings: {
+            // Supply the list of QSS settings
+            // For now we're using the same settings list
+            record: "%gpii-app/tests/fixtures/qssSettings.json",
+            target: "{that gpii.app.qssWrapper}.options.settingsPath"
+        },
+        mockedMessages: {
+            record: qssSettingMessagesFixture,
+            target: "{that gpii.app}.options.messageBundles"
+        }
     },
 
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [].concat(
         [{ // Wait for the QSS to initialize.
-            task: "gpii.tests.qss.awaitQssInitialization",
-            args: ["{that}.app.qssWrapper.qss"],
-            resolve: "jqUnit.assert",
-            resolveArgs: ["QSS has initialized successfully"]
+            event: "{that gpii.app.qss}.events.onDialogReady",
+            listener: "jqUnit.assert",
+            args: ["QSS has initialized successfully"]
         }],
         undoCrossTestSequence,
         undoTestSequence,
-        qssCrossTestSequence
+        qssCrossTestSequence,
+        crossQssTranslations,
+        appZoomTestSequence
     )
 };

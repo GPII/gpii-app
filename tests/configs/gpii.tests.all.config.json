@@ -21,10 +21,14 @@
                     "args": ["{testCaseHolder}", "{arguments}.0"]
                 },
                 "target": "{that flowManager gpii.app}.options.listeners.onCreate"
+            },
+            "distributeDevPcpChannelConnector": {
+                "record": "gpii.app.dev.gpiiConnector",
+                "target": "{that gpiiConnector}.options.gradeNames"
             }
         }
     },
     "mergeConfigs": [
         "%gpii-universal/gpii/configs/gpii.config.development.all.local.json5"
-     ]
+    ]
 }

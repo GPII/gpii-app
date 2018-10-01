@@ -1,5 +1,5 @@
 /**
- * The quick set strip widget
+ * The QSS stepper widget
  *
  * Represents the quick set strip stepper widget. It is used for
  * incrementing/decrementing a setting.
@@ -18,7 +18,6 @@
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
-
 
     /**
      * Represents the QSS stepper widget.
@@ -100,11 +99,6 @@
                     "{that}.dom.stepperButton",
                     "{that}.options.styles"
                 ]
-            },
-
-            "onCreate.notifyCreated": {
-                func: "{that}.notifyCreated",
-                priority: "last"
             }
         },
 
@@ -203,18 +197,33 @@
         }
     });
 
-
+    /**
+     * Invoked whenever the value of the setting has reached its upper or lower
+     * bound and an attempt is made to go beyond that bound. In that case an
+     * error tone is played. If at least `specialErrorBoundHitTries` number of
+     * times this has happened, in addition to the error tone, a notification
+     * is shown to the user.
+     * @param {Component} that - The `gpii.qssWidget.stepper` instance.
+     * @param {String} errorMessage - The message to be displayed in the QSS
+     * notification.
+     */
     gpii.qssWidget.stepper.handleBoundReached = function (that, errorMessage) {
-        // play error sound
         gpii.psp.playSound(that.options.sounds.boundReached);
 
-        // require notification
         if (that.boundReachedHits >= that.options.specialErrorBoundHitTries) {
-            // request notification pop-up
             that.events.onNotificationRequired.fire(errorMessage);
         }
     };
 
+    /**
+     * Invoked whenever the increment button is activated. Takes care of
+     * increasing the setting's value with the amount specified in the setting's
+     * schema, animating the button appropriately and/or firing an event if
+     * an attempt is made to increase value above the maximum allowed value.
+     * @param {Component} that - The `gpii.qssWidget.stepper` instance.
+     * @param {jQuery} button - The jQuery object repesenting the increment button
+     * in the QSS stepper widget.
+     */
     gpii.qssWidget.stepper.activateIncButton = function (that, button) {
         var boundReached = that.increment();
         that.animateButton(button, boundReached);
@@ -228,6 +237,15 @@
         }
     };
 
+    /**
+     * Invoked whenever the decrement button is activated. Takes care of
+     * decreasing the setting's value with the amount specified in the setting's
+     * schema, animating the button appropriately and/or firing an event if
+     * an attempt is made to decrease value below the minimum allowed value.
+     * @param {Component} that - The `gpii.qssWidget.stepper` instance.
+     * @param {jQuery} button - The jQuery object repesenting the decrement button
+     * in the QSS stepper widget.
+     */
     gpii.qssWidget.stepper.activateDecButton = function (that, button) {
         var boundReached = that.decrement();
         that.animateButton(button, boundReached);
@@ -242,15 +260,21 @@
     };
 
     /**
-     * Either add or subtract two values.
-     *
-     * @param {Number} value - The initial value
-     * @param {Object} schema TODO
-     * @param {Number} schema.min TODO
-     * @param {Number} schema.max TODO
-     * @param {Number} schema.divisibleBy - The that is to be done
-     * @param {Boolean} shouldSubtract - Whether subtraction to be done
-     * @returns {Number} The summed value.
+     * Either increases or decreases the current setting's value (depending on the
+     * `shouldSubtract` parameter) with the `divisibleBy` amount specified in the
+     * setting's schema. It also takes care that the new value of the setting does
+     * not become bigger/smaller than the maximum/minimum allowed value for the
+     * setting.
+     * @param {Component} that - The `gpii.qssWidget.stepper` instance.
+     * @param {Number} value - The initial value of the setting before the operation.
+     * @param {Object} schema - Describes the schema of the setting.
+     * @param {Number} schema.min - The minimum possible value for the setting.
+     * @param {Number} schema.max - The maximum possible value for the setting.
+     * @param {Number} schema.divisibleBy - The amount which is added or subtracted
+     * from the setting's value every time this function is invoked.
+     * @param {Boolean} shouldSubtract - Whether the `divisibleBy` amount should be
+     * subtracted from or added to the setting's value.
+     * @return {Boolean} Whether there was a change in the setting's value.
      */
     gpii.qssWidget.stepper.makeRestrictedStep = function (that, value, schema, shouldSubtract) {
         var step = (shouldSubtract ? -schema.divisibleBy : schema.divisibleBy);
@@ -273,7 +297,16 @@
         return value !== restrcitedValue;
     };
 
-
+    /**
+     * A utility function for triggering a CSS animation by adding the CSS class
+     * containing the animation description and removing any previously added CSS
+     * classes that may contain animations.
+     * @param {jQuery} element - The jQuery object representing the DOM element that
+     * is to be animated.
+     * @param {String} animationClass - The CSS class of the animation to be triggered.
+     * @param {String[]} animationClasses - An array of CSS animation classes that are
+     * to be removed before the new animation is applied.
+     */
     gpii.qssWidget.stepper.triggerCssAnimation = function (element, animationClass, animationClasses) {
         // ensure animations are cleared (button may be activated before animation's end)
         element.removeClass(animationClasses.join(" "));
@@ -284,14 +317,23 @@
         element.addClass(animationClass);
     };
 
+    /**
+     * Removes any CSS classes associated with an animation from the `animatedElements`.
+     * @param {jQuery} animatedElements - A jQuery object representing the items from
+     * which the animation classes have to be removed.
+     * @param {Object} styles - An object whose values are the CSS classes to be removed.
+     */
     gpii.qssWidget.stepper.clearElementsAnimation = function (animatedElements, styles) {
         var animationClasses = fluid.values(styles);
         animatedElements.removeClass(animationClasses.join(" "));
     };
 
-
     /**
-     * TODO
+     * Applies an animation to an increase/decrease button. The type of animation depends
+     * on whether the value was increased properly or a lower/upper bound has been reached.
+     * @param {Object} styles - An object whose values are the CSS animation classes.
+     * @param {jQuery} button - A jQuery object representing the items to be animated.
+     * @param {Boolean} isError - Whether the upper/lower bound has been reached or not.
      */
     gpii.qssWidget.stepper.animateButton = function (styles, button, isError) {
         var triggerClass = isError ? styles.errorAnimation : styles.warningAnimation;

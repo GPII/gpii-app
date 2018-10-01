@@ -1,0 +1,20 @@
+[
+    {
+        "id": "trigger_1",
+        "conditions": [
+            {
+                "type": "sessionTimer",
+                "value": 1000,
+                "sessionModulus": 1
+            }
+        ]
+    }, {
+        "id": "trigger_2",
+        "conditions": [
+            {
+                "type": "keyedInFor",
+                "value": 15000
+            }
+        ]
+    }
+]

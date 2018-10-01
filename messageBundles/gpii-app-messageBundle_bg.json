@@ -7,7 +7,7 @@
     "gpii_app_tray_defaultTooltip": "Morphic: В готовност",
     "gpii_app_tray_prefSetTooltip": "Morphic: %prefSet",
 
-    "gpii_psp_mainWindow_titlebarAppName": "Morphic Настройки",
+    "gpii_psp_mainWindow_titlebarAppName": "Morphic панел с настройки",
 
     "gpii_psp_signIn_signInHeader": "Никой не е вписан",
 
@@ -48,5 +48,7 @@
 
     "gpii_psp_footer_help": "Помощ",
 
-    "gpii_qss_toggleButtonPresenter_caption": "[ВКЛ.]"
+    "gpii_qss_toggleButtonPresenter_caption": "[ВКЛ.]",
+
+    "gpii_psp_qssWidget_learnMore": "Научи повече..."
 }

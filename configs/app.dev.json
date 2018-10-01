@@ -16,12 +16,12 @@
                 "target": "{that surveyConnector}.options.gradeNames"
             },
             "distributeStaticSurveyConnectorFixture": {
-                "record": "%gpii-app/testData/survey/triggers.dev.json",
-                "target": "{that staticSurveyConnector}.options.paths.triggerFixture"
+                "record": "%gpii-app/testData/survey/triggers.dev.json5",
+                "target": "{that staticSurveyConnector}.options.paths.triggersFixture"
             }
         }
     },
     "mergeConfigs": [
         "%gpii-app/configs/app.base.json"
-     ]
+    ]
 }
