@@ -2,5 +2,5 @@
     "type": "gpii.tests.production.config",
     "mergeConfigs": [
         "./gpii.tests.all.config.json"
-     ]
+    ]
 }

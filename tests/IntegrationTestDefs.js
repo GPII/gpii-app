@@ -64,7 +64,7 @@ gpii.tests.app.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 4);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     gpii.tests.app.testItem(menuTemplate[1], "About...");
-    gpii.tests.app.testItem(menuTemplate[3], "(No one keyed in)");
+    gpii.tests.app.testItem(menuTemplate[3], "Reset Morphic");
 };
 
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
@@ -81,7 +81,7 @@ fluid.registerNamespace("gpii.tests.app.testDefs");
 
 gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
-    expect: 36,
+    expect: 28,
     config: {
         configName: "gpii.tests.production.config",
         configPath: "tests/configs"
@@ -111,13 +111,6 @@ gpii.tests.app.testDefs = {
         path: "preferenceSetsMenuItems",
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenuSnapsetKeyedIn"
-    }, { // Test key in attempt while someone is keyed in
-        func: "{that}.app.keyIn",
-        args: "snapset_2a"
-    }, {
-        event: "{that flowManager kettle.request.http}.events.onError",
-        listener: "gpii.tests.app.testMenuSnapsetKeyedIn",
-        args: ["{that}.app.tray.menu.model.menuTemplate"]
     }, { // Test menu after key out
         func: "{that}.app.keyOut"
     }, {
@@ -152,7 +145,7 @@ gpii.tests.dev.testKeyInList = function (item) {
     jqUnit.assertEquals("Item is 'Key In' List", "Key in ...", item.label);
     var submenu = item.submenu;
     jqUnit.assertValue("Item has submenu", submenu);
-    jqUnit.assertEquals("Key in list has 14 items", 14, submenu.length);
+    jqUnit.assertEquals("Key in list has 15 items", 15, submenu.length);
 
     gpii.tests.app.testItem(submenu[0], "Voice control with Increased Size");
     gpii.tests.app.testItem(submenu[1], "Larger 125%");
@@ -167,7 +160,8 @@ gpii.tests.dev.testKeyInList = function (item) {
     gpii.tests.app.testItem(submenu[10], "Magnifier 200% & Display Scaling 175%");
     gpii.tests.app.testItem(submenu[11], "Dark Magnifier 200%");
     gpii.tests.app.testItem(submenu[12], "Multiple pref sets. Magnifier & Volume Control");
-    gpii.tests.app.testItem(submenu[13], "Invalid user");
+    gpii.tests.app.testItem(submenu[13], "onKeyInFail");
+    gpii.tests.app.testItem(submenu[14], "onSettingWriteFail");
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
@@ -175,7 +169,7 @@ gpii.tests.dev.testMenu = function (menuTemplate) {
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     gpii.tests.dev.testKeyInList(menuTemplate[3]);
     gpii.tests.app.testItem(menuTemplate[4], "About...");
-    gpii.tests.app.testItem(menuTemplate[6], "(No one keyed in)");
+    gpii.tests.app.testItem(menuTemplate[6], "Reset Morphic");
     gpii.tests.app.testItem(menuTemplate[7], "Exit GPII");
 };
 
@@ -245,7 +239,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 165,
+    expect: 171,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"

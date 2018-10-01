@@ -15,7 +15,7 @@ $projectDir = (Get-Item $provisioningDir).parent.FullName
 Import-Module (Join-Path $provisioningDir 'Provisioning.psm1') -Force
 
 $installerRepo = "https://github.com/GPII/gpii-wix-installer"
-$installerBranch = "feds-audit"
+$installerBranch = "HST"
 
 # Obtaining useful tools location.
 $installerDir = Join-Path $env:SystemDrive "installer" # a.k.a. C:\installer\
@@ -86,22 +86,23 @@ Invoke-Command "robocopy" "..\testData $(Join-Path $preStagingDir "testData") /j
 Invoke-Command "robocopy" "..\build $(Join-Path $preStagingDir "build") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir LICENSE.txt" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir main.js" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "$projectDir $preStagingDir siteconfig.json5" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir index.js" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir package.json" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir package-lock.json" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir README.md" $provisioningDir -errorLevel 3
 
-$packagerMetadata = "--app-copyright=`"Raising the Floor - International Association`" --win32metadata.CompanyName=`"Raising the Floor - International Association`" --win32metadata.FileDescription=`"Morphic-App`" --win32metadata.OriginalFilename=`"gpii.exe`" --win32metadata.ProductName=`"Morphic-App`" --win32metadata.InternalName=`"Morphic-App`""
+$packagerMetadata = "--app-copyright=`"Raising the Floor - International Association`" --win32metadata.CompanyName=`"Raising the Floor - International Association`" --win32metadata.FileDescription=`"Morphic-App`" --win32metadata.OriginalFilename=`"morphic-app.exe`" --win32metadata.ProductName=`"Morphic-App`" --win32metadata.InternalName=`"Morphic-App`""
 
 $packagerDir = Join-Path $installerDir "packager"
 md $packagerDir
 # TODO: Delete --prune when got fixed this issue https://github.com/electron-userland/electron-packager/issues/495
 # Invoke-Command $npm "prune --production" $preStagingDir
-Invoke-Command "electron-packager.cmd" "$preStagingDir --platform=win32 --arch=ia32 --no-prune --overwrite --out=$packagerDir $packagerMetadata"
+Invoke-Command "electron-packager.cmd" "$preStagingDir morphic-app --platform=win32 --arch=ia32 --no-prune --overwrite --out=$packagerDir $packagerMetadata"
 
-# Copying the packaged GPII-App content to staging/.
+# Copying the packaged Morphic-app content to staging/.
 # TODO: Try to avoid using the electron-packager directory name hardcoding it.
-$packagedAppDir = (Join-Path $packagerDir "gpii-app-win32-ia32")
+$packagedAppDir = (Join-Path $packagerDir "morphic-app-win32-ia32")
 Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
 
 md (Join-Path $installerDir "output")

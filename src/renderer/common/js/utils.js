@@ -19,9 +19,16 @@
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell;
 
+
     fluid.registerNamespace("gpii.psp");
 
-    // Fixes the JavaScript modulo bug.
+    /**
+     * An implementation of the modulation operation which resolves the
+     * notorious "JavaScrip Modulo bug".
+     * @param {Number} a - The dividend
+     * @param {Number} b - The divisor
+     * @return {Number} The remainder - a number in the range [0, Math.abs(b) - 1]
+     */
     gpii.psp.modulo = function (a, b) {
         return ((a % b) + b) % b;
     };
@@ -70,55 +77,71 @@
         }
     });
 
-
-
     /**
      * Render text for DOM elements referenced by component's
-     * selectors. It simply adds text (using jquery .text) method)
-     * to every selector element in case there exists a message
+     * selectors. It simply adds text (using jquery .text method)
+     * to every selector element in case there exists a string
      * by the same name as the selector's.
+     * This is done with the only `renderText` invoker which needs the
+     * map of strings to be given. In case these strings need to be
+     * interpolated, optionally a "values" map can also be given.
      */
     fluid.defaults("gpii.psp.selectorsTextRenderer", {
         enableRichText: false,
         modelListeners: {
             // Any change means that the whole view should be re-rendered
+            // messages are a default option as it is most likely that
+            // we'll need these to be re-rendered
             "messages": {
+                funcName: "{that}.renderText",
+                args: [
+                    "{that}.model.messages"
+                ]
+            }
+        },
+        invokers: {
+            // This is to be used with model listeners
+            renderText: {
                 funcName: "gpii.psp.selectorsTextRenderer.renderText",
                 args: [
                     "{that}",
+                    "{that}.options.enableRichText",
                     "{that}.options.selectors",
-                    "{that}.model.messages",
-                    "{that}.options.enableRichText"
+                    "{arguments}.0", // strings
+                    "{arguments}.1"  // values (used for interpolation)
                 ]
             }
         }
     });
 
-
     /**
      * Sets (rich) text to dom elements using jQuery.
-     * Text is added to an element ONLY if a message with the same name as the element's
+     * Text is added to an element ONLY if a string with the same name as the element's
      * selector property exists.
      * Example:
      *  selector - { signInHeader: ".flc-signInHeader" }
-     *  uses a message of the type - { messages: { signInHeader: "Header text" } }
+     *  uses a message of the type - { signInHeader: "Header text" }
      *
      * @param {Component} that - The `gpii.psp.signIn` instance.
-     * @param {Object} selectors - The viewComponent's selectors
-     * @param {Object} messages - The translated text
-     * @param {Boolean} enableRichText - Whether the messages can include rich text (e.g.
+     * @param {Boolean} enableRichText - Whether the strings can include rich text (e.g.
      * formatting markup). If `true`, measures will be taken to prevent possible scripts
      * in the message from executing.
+     * @param {Object} selectors - The viewComponent's selectors
+     * @param {Object} strings - The strings to be used for rendering
+     * @param {Object} [values] - The value to be used for interpolation of the strings. This
+     * is passed as it is to the `fluid.stringTemplate` method, meaning that the names must match.
      */
-    gpii.psp.selectorsTextRenderer.renderText = function (that, selectors, messages, enableRichText) {
-        if (!messages) {
+    gpii.psp.selectorsTextRenderer.renderText = function (that, enableRichText, selectors, strings, values) {
+        if (!strings) {
             return;
         }
 
         fluid.each(selectors, function (value, key) {
             var element = that.dom.locate(key),
-                message = messages[key];
+                message = strings[key];
             if (element && fluid.isValue(message)) {
+                // interpolate the string with missing values
+                message = fluid.stringTemplate(message, values || {});
                 if (enableRichText) {
                     // Use parseHTML to prevent scripts from executing.
                     var parsedMessage = jQuery.parseHTML(message);

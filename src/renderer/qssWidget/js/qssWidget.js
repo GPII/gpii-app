@@ -18,6 +18,9 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
+    /**
+     * A wrapper for the QSS widget which enables internationalization.
+     */
     fluid.defaults("gpii.psp.translatedQssWidget", {
         gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
 
@@ -36,9 +39,9 @@
     });
 
     /**
-     * Wrapper that enables translations for the `gpii.qss` component and
-     * applies interception of all anchor tags on the page so that an external browser is used
-     * for loading them.
+     * A wrapper for the QSS widget (either a menu or a stepper) which also contains
+     * the necessary components for managing focus, communication with the main process,
+     * showing the "Learn more" links, etc.
      */
     fluid.defaults("gpii.psp.qssWidget", {
         gradeNames: ["fluid.viewComponent"],
@@ -49,8 +52,7 @@
 
         selectors: {
             stepper: ".flc-qssStepperWidget",
-            menu: ".flc-qssMenuWidget",
-            learnMoreLink: ".flc-qssWidget-learnMoreLink"
+            menu: ".flc-qssMenuWidget"
         },
 
         events: {
@@ -85,33 +87,48 @@
             widget: {
                 type: "@expand:gpii.psp.qssWidget.getWidgetType({arguments}.0)",
                 createOnEvent: "onSettingUpdated",
-                container: "{qssWidget}.container",
+                container: "@expand:gpii.psp.qssWidget.getWidgetContainer({arguments}.0, {qssWidget}.dom.stepper, {qssWidget}.dom.menu)",
                 options: {
                     sounds: "{qssWidget}.options.sounds",
+                    activationParams: "{arguments}.1",
+                    model: {
+                        setting: "{qssWidget}.model.setting",
+                        messages: {
+                            tip: "{qssWidget}.model.setting.tip",
+                            learnMore: "{qssWidget}.model.messages.learnMore"
+                        }
+                    },
+                    selectors: {
+                        tip: ".flc-qssWidget-tip",
+                        learnMoreLink: ".flc-qssWidget-learnMoreLink"
+                    },
+                    components: {
+                        learnMoreLink: {
+                            type: "gpii.psp.qssWidget.learnMoreLink",
+                            container: "{that}.dom.learnMoreLink",
+                            options: {
+                                model: {
+                                    setting: "{qssWidget}.model.setting",
+                                    messages: {
+                                        learnMore: "{qssWidget}.model.messages.learnMore"
+                                    }
+                                }
+                            }
+                        }
+                    },
                     events: {
                         onNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                         onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
                     },
-                    model: {
-                        setting: "{qssWidget}.model.setting",
-                        messages: {
-                            tip: "{qssWidget}.model.setting.tip"
-                        }
-                    },
-                    selectors: {
-                        tip: ".flc-qssWidget-tip"
-                    },
-                    activationParams: "{arguments}.1",
                     listeners: {
                         "onCreate.processParams": {
                             funcName: "gpii.qssWidget.processParams",
                             args: ["{focusManager}", "{that}.options.activationParams"]
-                        }
-                    },
-                    invokers: {
-                        notifyCreated: {
+                        },
+                        "onCreate.notifyCreated": {
                             func: "{that}.events.onQssWidgetCreated.fire",
-                            args: [null]
+                            args: [null],
+                            priority: "last"
                         }
                     }
                 }
@@ -142,15 +159,6 @@
                     }
                 }
             },
-            learnMoreLink: {
-                type: "gpii.psp.qssWidget.learnMoreLink",
-                container: "{that}.dom.learnMoreLink",
-                options: {
-                    model: {
-                        setting: "{qssWidget}.model.setting"
-                    }
-                }
-            },
             // TODO send data from the main process
             channelListener: {
                 type: "gpii.psp.channelListener",
@@ -176,23 +184,21 @@
         },
 
         listeners: {
-            onSettingUpdated: {
+            onSettingUpdated: [{
                 funcName: "gpii.app.applier.replace",
                 args: [
                     "{that}.applier",
                     "setting",
                     "{arguments}.0"
                 ]
-            },
-            onQssWidgetCreated: {
+            }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: [
                     "{that}.dom.stepper",
                     "{that}.dom.menu",
                     "{that}.model.setting"
-                ],
-                priority: "last"
-            }
+                ]
+            }]
         },
         invokers: {
             close: {
@@ -205,6 +211,13 @@
         }
     });
 
+    /**
+     * Fires the appropriate event which is communicated to the main process to
+     * indicate that the QSS widget should be closed.
+     * @param {Component} that - The `gpii.psp.qssWidget` instance.
+     * @param {KeyboardEvent} KeyboardEvent - The keyboard event (if any) which
+     * led to the triggering of this function.
+     */
     gpii.psp.qssWidget.close = function (that, KeyboardEvent) {
         KeyboardEvent = KeyboardEvent || {};
 
@@ -214,10 +227,37 @@
         });
     };
 
+    /**
+     * Determines the type of the `widget` subcomponent (either a menu or a stepper)
+     * depending on the type of the setting.
+     * @param {Object} setting - The setting which corresponds to the activated
+     * QSS button.
+     * @return {String} The grade name for the `widget` subcomponent.
+     */
     gpii.psp.qssWidget.getWidgetType = function (setting) {
         return setting.schema.type === "number" ? "gpii.qssWidget.stepper" : "gpii.qssWidget.menu";
     };
 
+    /**
+     * Determines the jQuery element which should be the container of the `widget`
+     * view subcomponent depending on the type of the setting.
+     * @param {Object} setting - The setting which corresponds to the activated
+     * QSS button.
+     * @param {jQuery} stepperElement - The container for the QSS stepper widget.
+     * @param {jQuery} menuElement - The container for the QSS menu widget.
+     * @return {jQuery} The jQuery element representing the container object.
+     */
+    gpii.psp.qssWidget.getWidgetContainer = function (setting, stepperElement, menuElement) {
+        return setting.schema.type === "number" ? stepperElement : menuElement;
+    };
+
+    /**
+     * Shows the appropriate container depending on the type of the setting.
+     * @param {jQuery} stepperElement - The container for the QSS stepper widget.
+     * @param {jQuery} menuElement - The container for the QSS menu widget.
+     * @param {Object} setting - The setting which corresponds to the activated
+     * QSS button.
+     */
     gpii.psp.qssWidget.updateContainerVisibility = function (stepperElement, menuElement, setting) {
         if (setting.schema.type === "number") {
             stepperElement.show();
@@ -228,24 +268,38 @@
         }
     };
 
+    /**
+     * Depending on whether the QSS widget was shown as a result of keyboard interaction,
+     * this function takes care of either focusing the first focusable element (that comes
+     * after the close button) in the document or removing the focus if there is such
+     * remaining.
+     * @param {focusManager} focusManager - The `gpii.qss.focusManager` instance for the
+     * QSS widget.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the QSS widget (e.g. which key was used to activate the button).
+     */
     gpii.qssWidget.processParams = function (focusManager, activationParams) {
         activationParams = activationParams || {};
         if (activationParams.key) {
-            // If the widget is show via the keyboard, focus the first element after the close button.
-            focusManager.focus(1, true);
+            // If the widget is show via the keyboard, focus the second focusable element, i.e. the
+            // element that appears after the close button and the "learn more" link.
+            focusManager.focus(2, true);
         } else {
             // Otherwise there will be no focused element and any remaining highlight will be removed.
             focusManager.removeHighlight(true);
         }
     };
 
+    /**
+     * A component representing the "Learn more" link in the QSS widget.
+     */
     fluid.defaults("gpii.psp.qssWidget.learnMoreLink", {
         gradeNames: ["gpii.app.activatable"],
 
         model: {
             setting: null,
             messages: {
-                learnMore: "Learn more..."
+                learnMore: null
             }
         },
 
@@ -265,6 +319,11 @@
         }
     });
 
+    /**
+     * Opens the learn more link of the current setting in the default OS browser.
+     * @param {Object} setting - The setting which corresponds to the activated
+     * QSS button.
+     */
     gpii.psp.qssWidget.learnMoreLink.activate = function (setting) {
         if (setting && setting.learnMoreLink) {
             gpii.psp.openUrlExternally(setting.learnMoreLink);

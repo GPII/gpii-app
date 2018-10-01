@@ -1,33 +1,42 @@
 .gpii-message {
-  background-color: #83CBEF;
-  border: 8px solid #83CBEF;
-  position: absolute;
-  bottom: 22px;
-  right: 0;
-  display: inline-block;
+    background-color: #83CBEF;
+    border: 6px solid #83CBEF;
+    position: absolute;
+    bottom: 16px;
+    right: 0;
+    display: inline-block;
+    zoom: 0.75;
 }
+
 /* Draw the arrow pointing to the task bar */
 .gpii-message::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 15%;
-  border: 22px solid transparent;
-  border-top-color: #83CBEF;
-  border-bottom: 0;
-  margin-bottom: -22px;
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    border: 22px solid transparent;
+    border-top-color: #83CBEF;
+    border-bottom: 0;
+    margin-bottom: -22px;
 }
+
 .gpii-icon {
-  float: right;
-  padding-top: .25em;
-  padding-right: .2em;
+    float: right;
+    padding-top: .25em;
+    padding-right: .2em;
 }
+
+.gpii-icon img {
+    vertical-align: -3px;
+}
+
 .gpii-spinner {
-  background-color: white;
-  padding: .5em;
+    background-color: white;
+    padding: .5em;
 }
+
 .spinner {
-  background-image: url("../../../icons/Gear_Cloud_spinning_4s_cw.svg");
-  width: 12em;
-  height: 12em;
+    background-image: url("../../../icons/Gear_Cloud_spinning_4s_cw.svg");
+    width: 12em;
+    height: 12em;
 }

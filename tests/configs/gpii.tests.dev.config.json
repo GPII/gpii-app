@@ -15,5 +15,5 @@
     },
     "mergeConfigs": [
         "./gpii.tests.all.config.json"
-     ]
+    ]
 }

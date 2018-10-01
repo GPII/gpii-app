@@ -18,23 +18,24 @@ var fluid   = require("infusion");
 var gpii    = fluid.registerNamespace("gpii");
 var request = require("request");
 
+require("../shared/channelUtils.js");
+require("../shared/messageBundles.js");
+require("../shared/utils.js");
 require("./assetsManager.js");
-require("./shortcutsManager.js");
-require("./ws.js");
+require("./common/utils.js");
+require("./common/ws.js");
+require("./dialogs/dialogManager.js");
+require("./dialogs/psp.js");
 require("./factsManager.js");
-require("./dialogManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
-require("./psp.js");
-require("./quickSetStrip/qss.js");
+require("./qss.js");
 require("./settingsBroker.js");
+require("./shortcutsManager.js");
+require("./siteConfigurationHandler.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
-require("./utils.js");
 require("./userErrorsHandler.js");
-require("../common/messageBundles.js");
-require("../common/utils.js");
-require("../common/channelUtils.js");
 
 // enhance the normal require to work with .json5 files
 require("json5/lib/register");
@@ -66,6 +67,7 @@ fluid.defaults("gpii.app", {
         keyedInUserToken: null,
         snapsetName: null,
         preferences: {
+            gpiiKey: null,
             sets: [],
             activeSet: null,
             settingGroups: [],
@@ -99,6 +101,9 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
+        configurationHandler: {
+            type: "gpii.app.siteConfigurationHandler"
+        },
         userErrorHandler: {
             type: "gpii.app.userErrorsHandler",
             options: {
@@ -117,9 +122,6 @@ fluid.defaults("gpii.app", {
         },
         assetsManager: {
             type: "gpii.app.assetsManager"
-        },
-        factsManager: {
-            type: "gpii.app.factsManager"
         },
         settingsBroker: {
             type: "gpii.app.settingsBroker",
@@ -164,6 +166,46 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        /*
+         * Handles the App Zoom settings as it is processed by a separate
+         * mechanism (meaning that it doesn't uses the normal setting change
+         * approach through the PspChannel).
+         */
+        appZoomHandler: {
+            type: "gpii.windows.appZoom",
+            createOnEvent: "onPSPPrerequisitesReady"
+        },
+        qssWrapper: {
+            type: "gpii.app.qssWrapper",
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                appTextZoomPath: "appTextZoom",
+                model: {
+                    isKeyedIn: "{app}.model.isKeyedIn",
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                },
+                listeners: {
+                    "{gpiiConnector}.events.onQssSettingsUpdate": {
+                        funcName: "{that}.updateSettings"
+                    },
+                    // local sync with PSP
+                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated"
+                },
+                modelListeners: {
+                    "settings.*": {
+                        funcName: "gpii.app.onQssSettingAltered",
+                        args: [
+                            "{settingsBroker}",
+                            "{appZoomHandler}",
+                            "{change}.value",
+                            "{change}.oldValue",
+                            "{that}.options.appTextZoomPath"
+                        ],
+                        includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
+                    }
+                }
+            }
+        },
         surveyManager: {
             type: "gpii.app.surveyManager",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -176,105 +218,70 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-        appZoom: {
-            type: "gpii.windows.appZoom",
-            createOnEvent: "onPSPPrerequisitesReady"
-        },
-        qssWrapper: {
-            type: "gpii.app.resettableQssWrapper",
-            createOnEvent: "onPSPPrerequisitesReady",
-            options: {
-                appTextZoomPath: "appTextZoom",
-                model: {
-                    isKeyedIn: "{app}.model.isKeyedIn",
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
-                },
-                listeners: {
-                    "{gpiiConnector}.events.onSettingUpdated":  "{that}.events.onSettingUpdated",
-                    "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated",
-                    "{gpiiConnector}.events.onPreferencesUpdated": "{that}.events.onPreferencesUpdated"
-                },
-                modelListeners: {
-                    "settings.*": [{
-                        // A funny way to decorate the new value with the old value
-                        funcName: "fluid.extend",
-                        args: [
-                            true,
-                            "{change}.value",
-                            { oldValue: "{change}.oldValue.value" }
-                        ],
-                        includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
-                    }, {
-                        funcName: "gpii.app.onQssSettingAltered",
-                        args: [
-                            "{settingsBroker}",
-                            "{appZoom}",
-                            "{change}.value",
-                            "{that}.options.appTextZoomPath"
-                        ],
-                        includeSource: ["gpii.app.undoStack.undo", "qss", "qssWidget"]
-                    }]
-                }
-            }
-        },
         psp: {
             type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady",
-            options: {
-                model: {
-                    preferences: "{app}.model.preferences",
-                    theme: "{app}.model.theme"
-                },
-                modelListeners: {
-                    "{qssWrapper}.qss.model.isShown": {
-                        funcName: "gpii.app.pspInApp.onQssToggled",
-                        args: ["{that}", "{change}.value"]
-                    }
-                },
-                events: {
-                    onActivePreferenceSetAltered: "{qssWrapper}.events.onActivePreferenceSetAltered"
-                },
-                listeners: {
-                    "{qssWrapper}.events.onQssPspOpen": {
-                        func: "{that}.show",
-                        args: [true]
-                    },
-                    "{qssWrapper}.events.onQssPspClose": {
-                        func: "{that}.handleBlur",
-                        args: [true]
-                    }
-                }
-            }
+            createOnEvent: "onPSPPrerequisitesReady"
         },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
+                shortcutAccelerators: {
+                    qssUndo: "CmdOrCtrl+Z",
+                    closeQssTooltip: "Esc"
+                },
                 events: {
-                    onPspOpenShortcut: null,
-                    onQssUndoShortcut: null
+                    onQssOpenShortcut: null,
+                    onQssUndoShortcut: null,
+                    onCloseQssTooltipShortcut: null
+                },
+                modelListeners: {
+                    "{app}.model.preferences.gpiiAppShortcut": {
+                        funcName: "gpii.app.changeGpiiAppShortcut",
+                        args: [
+                            "{that}",
+                            "{change}.value",
+                            "{change}.oldValue",
+                            "onQssOpenShortcut"
+                        ]
+                    }
                 },
                 listeners: {
-                    "onCreate.registerDefaultGlobalShortcut": {
-                        func: "{that}.registerGlobalShortcut",
-                        args: [
-                            "Shift+CmdOrCtrl+Alt+Super+M",
-                            "onPspOpenShortcut"
-                        ]
-                    },
-                    "onCreate.registerDefaultLocalShortcut": {
+                    "onCreate.registerQssUndoShortcut": {
                         func: "{that}.registerLocalShortcut",
                         args: [
-                            "CmdOrCtrl+Z",
+                            "{that}.options.shortcutAccelerators.qssUndo",
                             "onQssUndoShortcut",
                             ["gpii.app.qss", "gpii.app.qssWidget"]
                         ]
+                    },
+                    /*
+                     * A local shortcut (registered for the QSS, QSS widget and PSP) isn't fully sufficient for handling
+                     * the closing of the tooltip as but it's the best sane that can be done. For example,
+                     * in case the QSS loses focus and neither of the related windows (PSP and qssWidget)
+                     * is focused the tooltip will be hidden but hovering
+                     * a button afterwards will show the tooltip again. In that case the tooltip won't be
+                     * closable with "Esc" because we're using only a local shortcut.
+                     * We're doing so because registering a global shortcut would "swallow" the "Esc" event, meaning
+                     * that the "Escape" key won't work with other applications.
+                     */
+                    "onCreate.registerQssTooltipCloseShortcut": {
+                        func: "{that}.registerLocalShortcut",
+                        args: [
+                            "{that}.options.shortcutAccelerators.closeQssTooltip",
+                            "onCloseQssTooltipShortcut",
+                            ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.psp"]
+                        ]
+                    },
+
+                    onCloseQssTooltipShortcut: {
+                        funcName: "{qssWrapper}.qssTooltip.hide"
                     },
 
                     "onQssUndoShortcut": {
                         funcName: "{qssWrapper}.undoStack.undo"
                     },
-                    "onPspOpenShortcut": {
+                    "onQssOpenShortcut": {
                         func: "{qssWrapper}.qss.show",
                         args: [
                             {shortcut: true}
@@ -295,13 +302,14 @@ fluid.defaults("gpii.app", {
                 },
                 listeners: {
                     onTrayIconClicked: {
-                        func: "{qssWrapper}.qss.show",
-                        args: [
-                            {shortcut: false}
-                        ]
+                        func: "{qssWrapper}.qss.toggle"
                     }
                 }
             }
+        },
+        factsManager: {
+            type: "gpii.app.factsManager",
+            createOnEvent: "onPSPPrerequisitesReady"
         }
     },
     events: {
@@ -379,6 +387,27 @@ fluid.defaults("gpii.app", {
 });
 
 /**
+ * Changes the keyboard shortcut for opening the GPII app. The previously registered
+ * shortcut for this action (if any) is removed.
+ * @param {Component} shortcutsManager - The `gpii.app.shortcutsManager` instance.
+ * @param {String} shortcut - The new shortcut for opening the GPII app given as an
+ * accelerator string (https://electronjs.org/docs/api/accelerator).
+ * @param {String} oldShortcut - The previously used shortcut for opening the GPII
+ * app given as an accelerator string.
+ * @param {String} eventName - The name of the event which should be triggered when
+ * the new GPII app opening shortcut is activated.
+ */
+gpii.app.changeGpiiAppShortcut = function (shortcutsManager, shortcut, oldShortcut, eventName) {
+    if (oldShortcut) {
+        shortcutsManager.deregisterGlobalShortcut(oldShortcut);
+    }
+
+    if (shortcut) {
+        shortcutsManager.registerGlobalShortcut(shortcut, eventName);
+    }
+};
+
+/**
  * Invoked when a QSS setting has been altered by the user either by changing the
  * value directly via the QSS (e.g. for toggle buttons), or by adjusting it using
  * the QSS widget (for "number" and "string" settings).
@@ -388,11 +417,19 @@ fluid.defaults("gpii.app", {
  * "decrease" string as a parameter in order to change the zoom level in the last
  * active application.
  * @param {Component} settingsBroker - The `gpii.app.settingsBroker` instance.
+ * @param {Component} appZoom - The `gpii.windows.appZoom` instance.
  * @param {Object} setting - The setting which has been altered via the QSS or its
  * widget.
+ * @param {Object} oldValue - The previous value of the altered setting.
  * @param {String} appTextZoomPath - The path of the "App / Text Zoom" setting.
  */
-gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, appTextZoomPath) {
+gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, oldValue, appTextZoomPath) {
+    // Adds the previous value to the setting in order to enable reverting back to
+    // it when needed.
+    fluid.extend(true, setting, {
+        oldValue: oldValue.value
+    });
+
     // Special handling of the "App / Text Zoom" setting
     if (setting.path === appTextZoomPath) {
         var direction = setting.value > setting.oldValue ? "increase" : "decrease";
@@ -402,10 +439,23 @@ gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, appTe
     }
 };
 
+/**
+ * Returns whether there is an actual keyed in user, i.e. if the user token is
+ * defined and is different from the token of the default (the so-called "no man")
+ * user.
+ * @param {String} keyedInUserToken - The user token of the currently keyed in user.
+ * @param {String} defaultUserToken - The user token of the default user.
+ * @return {Boolean} `true` if there is an actual keyed in user and `false` otherwise.
+ */
 gpii.app.getIsKeyedIn = function (keyedInUserToken, defaultUserToken) {
     return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken;
 };
 
+/**
+ * Fires the appropriate event based on whether there is an actual keyed in user or not.
+ * @param {Component} that - The `gpii.app` instance.
+ * @param {Boolean} isKeyedIn - whether there is an actual keyed in user or not.
+ */
 gpii.app.onIsKeyedInChanged = function (that, isKeyedIn) {
     if (isKeyedIn) {
         that.events.onKeyedIn.fire();
@@ -414,22 +464,21 @@ gpii.app.onIsKeyedInChanged = function (that, isKeyedIn) {
     }
 };
 
-gpii.app.pspInApp.onQssToggled = function (psp, isQssShown) {
-    if (!isQssShown) {
-        psp.hide();
-    }
-};
-
+/**
+ * Invokes the passed function when the `gpii.app` component is created.
+ * @param {Function} fireFn - The function to be invoked.
+ */
 gpii.app.fireAppReady = function (fireFn) {
     gpii.app.appReady.then(fireFn);
 };
 
 /**
-  * Keys into the GPII.
-  * Currently uses an url to key in although this should be changed to use Electron IPC.
+  * Keys a user into the GPII.
+  * @param {Component} flowManager - The `gpii.flowManager` instance.
   * @param {String} token - The token to key in with.
   */
 gpii.app.keyIn = function (flowManager, token) {
+    // TODO: Replace this with direct function call when https://github.com/GPII/universal/pull/653 gets merged
     request("http://localhost:8081/user/" + token + "/proximityTriggered", function (error, response, body) {
 
         // Try is needed as the response body has two formats:
@@ -437,6 +486,7 @@ gpii.app.keyIn = function (flowManager, token) {
         //  - object - "{isError: Boolean, message: string}"
         try {
             /// XXX temporary way for triggering key in error
+            // TODO: Replace this when https://github.com/GPII/universal/pull/653 gets merged
             if (typeof body === "string" && JSON.parse(body).isError) {
                 flowManager.userErrors.events.userError.fire({
                     isError: true,
@@ -453,13 +503,13 @@ gpii.app.keyIn = function (flowManager, token) {
 
 /**
   * Keys out of the GPII.
-  * Currently uses an url to key out although this should be changed to use Electron IPC.
   * @param {String} token - The token to key out with.
   * @return {Promise} A promise that will be resolved/rejected when the request is finished.
   */
 gpii.app.keyOut = function (token) {
     var togo = fluid.promise();
-    request("http://localhost:8081/user/" + token + "/proximityTriggered", function (error, response, body) {
+    // TODO: Replace this with direct function call when https://github.com/GPII/universal/pull/653 gets merged
+    request("http://localhost:8081/user/" + token + "/proximityTriggered", function () {
         //TODO Put in some error logging
         // if (error) {
         //     togo.reject(error);

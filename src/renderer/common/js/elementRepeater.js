@@ -37,71 +37,33 @@
             renderedContainer: null
         },
         events: {
-            onElementRendered: {
-                events: {
-                    onContainerRendered: "onContainerRendered",
-                    onMarkupRendered:    "onMarkupRendered"
-                },
-                args: ["{that}.model.renderedContainer"]
-            },
-
-            onContainerRendered: null,
-            onMarkupRendered:    null
+            onElementRendered: null
         },
         listeners: {
+            "onCreate.renderContainer": {
+                this: "{that}.container",
+                method: "append",
+                args: ["{that}.options.markup.container"]
+            },
+            "onCreate.updateContainer": {
+                funcName: "{that}.setContainer",
+                args: "@expand:gpii.psp.getContainerLastChild({that}.container)",
+                priority: "after:renderContainer"
+            },
+            "onCreate.renderElement": {
+                this: "{that}.model.renderedContainer",
+                method: "append",
+                args: "{that}.options.markup.element",
+                priority: "after:updateContainer"
+            },
+            "onCreate.notify": {
+                funcName: "{that}.events.onElementRendered.fire",
+                args: ["{that}.model.renderedContainer"],
+                priority: "after:renderElement"
+            },
             "onDestroy.clearInjectedMarkup": {
                 funcName: "gpii.psp.removeElement",
                 args: "{that}.model.renderedContainer"
-            }
-        },
-        components: {
-            /*
-             * Renders the container for the item's element, saves it and
-             * notifies when done.
-             */
-            renderElementContainer: {
-                type: "fluid.viewComponent",
-                container: "{that}.container",
-                options: {
-                    listeners: {
-                        "onCreate.render": {
-                            this: "{that}.container",
-                            method: "append",
-                            args: ["{renderer}.options.markup.container"]
-                        },
-                        "onCreate.updateContainer": {
-                            funcName: "{renderer}.setContainer",
-                            args: "@expand:gpii.psp.getContainerLastChild({that}.container)",
-                            priority: "after:render"
-                        },
-                        "onCreate.notify": {
-                            funcName: "{renderer}.events.onContainerRendered.fire",
-                            priority: "after:updateContainer"
-                        }
-                    }
-                }
-            },
-            /**
-             * Renders the markup of the item inside the dedicated container.
-             */
-            renderElementMarkup: {
-                type: "fluid.viewComponent",
-                container: "{that}.model.renderedContainer",
-                createOnEvent: "onContainerRendered",
-                options: {
-                    listeners: {
-                        "onCreate.render": {
-                            this: "{that}.container",
-                            method: "append",
-                            args: "{renderer}.options.markup.element"
-                        },
-                        "onCreate.notify": {
-                            funcName: "{renderer}.events.onMarkupRendered.fire",
-                            args: ["{that}.model.renderedContainer"],
-                            priority: "after:render"
-                        }
-                    }
-                }
             }
         },
         invokers: {
@@ -111,7 +73,6 @@
             }
         }
     });
-
 
     /**
      * A component which injects all the necessary markup for an item and
@@ -162,16 +123,6 @@
                     model: {
                         item: "{element}.model.item",
                         index: "{element}.options.index"
-                    },
-                    events: {
-                        onHandlerCreated: "{repeater}.events.onHandlerCreated"
-                    },
-                    listeners: {
-                        "onCreate.notifyHandlerCreated": {
-                            func: "{that}.events.onHandlerCreated.fire",
-                            args: ["{that}.model.item"],
-                            priority: "last"
-                        }
                     }
                 }
             }
@@ -196,17 +147,8 @@
     fluid.defaults("gpii.psp.repeater", {
         gradeNames: "fluid.viewComponent",
 
-        members: {
-            handlersCount: 0
-        },
-
         model: {
             items: []
-        },
-
-        events: {
-            onRepeaterCreated: null,
-            onHandlerCreated: null
         },
 
         handlerType: null,
@@ -219,13 +161,6 @@
             getHandlerType: {
                 funcName: "fluid.identity",
                 args: ["{that}.options.handlerType"]
-            }
-        },
-
-        listeners: {
-            onHandlerCreated: {
-                funcName: "gpii.psp.repeater.onHandlerCreated",
-                args: ["{that}"]
             }
         },
 
@@ -294,19 +229,11 @@
         }
     });
 
-    gpii.psp.repeater.onHandlerCreated = function (that) {
-        that.handlersCount++;
-        if (that.handlersCount >= that.model.items.length) {
-            that.events.onRepeaterCreated.fire();
-        }
-    };
-
     /**
-     * Notify the `gpii.psp.repeater` component for changes that are present in its element handlers.
-     *
+     * Notifies the `gpii.psp.repeater` component for changes  in its element handlers.
      * @param {Component} repeater - The `gpii.psp.repeater` component
-     * @param {String} elIndex - The index of the handler which matches the index of the item that
-     * the handler processes
+     * @param {String} elIndex - The index of the handler (which matches the index of the item in
+     * the repeater)
      * @param {Object} newValue - The new state of the item
      */
     gpii.psp.repeater.notifyElementChange = function (repeater, elIndex, newValue) {
@@ -314,25 +241,25 @@
     };
 
     /**
-     * Notify the corresponding dynamic component about its setting change.
-     * The dynamic component is computed using the changed setting's index.
-     *
-     * @param {Component} that - The `gpii.psp.repeater` component.
-     * @param {String} index - The item's path, which represents the index of the changed element
-     * @param {Object} newValue - The new state of the item
+     * Notifies the corresponding handler about a change in its setting. The origin of the
+     * change is the `repeater`. The handler to be notified is computed using the changed
+     * setting's index.
+     * @param {Component} handler - The handler instance.
+     * @param {String} elIndex - The index of the handler (which matches the index of the item in
+     * the repeater).
+     * @param {String} itemIndex - The index of the item that has been changed.
+     * @param {Object} newValue - The new state of the item.
      */
-    gpii.psp.repeater.notifyListChange = function (elHandler, elIndex , itemIndex, newValue) {
+    gpii.psp.repeater.notifyListChange = function (handler, elIndex , itemIndex, newValue) {
         itemIndex = fluid.parseInteger(itemIndex);
 
-        // does the current handler, handles the changed item?
-        if (elIndex !== itemIndex) { return; }
-
-        elHandler.applier.change("item", newValue, null, "gpii.psp.repeater.itemUpdate");
+        if (elIndex === itemIndex) {
+            handler.applier.change("item", newValue, null, "gpii.psp.repeater.itemUpdate");
+        }
     };
 
     /**
      * Constructs the markup for the indexed container - sets proper index.
-     *
      * @param {Object} markup - An object containing various HTML markup.
      * @param {String} markup.containerClassPrefix - The class prefix for the indexed container.
      * Should have a `id` interpolated expression.
