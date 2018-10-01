@@ -47,11 +47,11 @@
     "gpii_app_qss_settings_appTextZoom": {
         "tooltip": "<p>Change text size.</p><p>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</p>",
         "title": "App / Text Zoom",
-        "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the window on top.</p><p>(Undo does not affect this.)</p>",
+        "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting so won't Save.)</p>",
         "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do App/Text Zoom without using Morphic."
     },
     "gpii_app_qss_settings_common-language": {
-        "tooltip": "<p>Change Windows language setting.</p><p>Works or menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
+        "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
         "title": "Language",
         "tip": "<p>Changes Language of Windows+</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>"
     }
