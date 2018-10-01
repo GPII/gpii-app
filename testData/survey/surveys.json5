@@ -1,4 +1,11 @@
+/*
+ * Contains all the surveys that are shown for the different survey triggers once satisfied. A trigger is represented
+ * with its ID and are defined in the "triggers.json5" file.
+ *
+ * Each element defines survey options for a specific trigger. The following format is followed: <trigger_id>: <survey_data>
+ */
 {
+    // Surrvey for trigger with ID "trigger_1"
     "trigger_1": {
         "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux",
         "closeOnSubmit": true,
@@ -12,6 +19,7 @@
             "maximizable": false
         }
     },
+    // Surrvey for trigger with ID "trigger_2"
     "trigger_2": {
         "url": "https://umdsurvey.umd.edu/jfe/form/SV_8cX5wEIuJsGjuux",
         "closeOnSubmit": true,
