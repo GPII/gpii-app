@@ -58,7 +58,7 @@ fluid.defaults("gpii.app.menuInApp", {
         //    a) change model.keyedInUserToken
         //    b) update the menu
         "onKeyOut.performKeyOut": {
-            listener: "{app}.keyOut"
+            listener: "{app}.resetAllToStandard"
         }
     }
 });

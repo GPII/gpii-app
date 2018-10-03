@@ -39,7 +39,7 @@ var appIsRunning = app.makeSingleInstance(function (commandLine) {
 
     if (commandLine.indexOf("--reset") > -1) {
         var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
-        gpiiApp.keyOut();
+        gpiiApp.resetAllToStandard();
     }
 });
 
