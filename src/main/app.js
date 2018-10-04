@@ -378,6 +378,10 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.keyOut",
             args: "{that}.model.keyedInUserToken"
         },
+        resetAllToStandard: {
+            funcName: "gpii.app.resetAllToStandard",
+            args: ["{that}", "{qssWrapper}.qss"]
+        },
         exit: {
             funcName: "gpii.app.exit",
             args: "{that}"
@@ -520,6 +524,19 @@ gpii.app.keyOut = function (token) {
         // }
     });
     return togo;
+};
+
+/**
+ * Performs a reset of all settings to their standard values. It also closes
+ * the QSS in case it is open.
+ * @param {Component} that - The `gpii.app` instance.
+ * @param {Component} qss - The `gpii.app.qss` instance.
+ * @return {Promise} A promise that will be resolved or rejected when the reset
+ * all operation completes.
+ */
+gpii.app.resetAllToStandard = function (that, qss) {
+    qss.hide();
+    return that.keyOut();
 };
 
 /**
