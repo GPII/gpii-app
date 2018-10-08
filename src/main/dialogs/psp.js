@@ -396,7 +396,7 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
 
     ipcMain.on("onKeyOut", function () {
         psp.hide();
-        app.keyOut();
+        app.resetAllToStandard();
     });
 
     ipcMain.on("onSettingAltered", function (event, setting) {

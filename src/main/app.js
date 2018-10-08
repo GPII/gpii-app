@@ -519,7 +519,7 @@ gpii.app.keyOut = function (lifecycleManager, token) {
  */
 gpii.app.resetAllToStandard = function (that, qss) {
     qss.hide();
-    return that.keyOut();
+    return that.keyIn("reset");
 };
 
 /**
