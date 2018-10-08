@@ -30,7 +30,7 @@
         "title": "MORE...\n\n(& HELP)"
     },
     "gpii_app_qss_settings_common-selfVoicing-enabled": {
-        "tooltip": "<p>Turn “Highlight and Read” extension in Chrome browser on/off.</p>",
+        "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>",
         "title": "Read Aloud"
     },
     "gpii_app_qss_settings_common-highContrastTheme": {

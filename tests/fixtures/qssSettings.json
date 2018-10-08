@@ -87,7 +87,7 @@
                 "White on black",
                 "Yellow on black",
                 "Black on yellow",
-                "Grey on black",
+                "Light on dark grey",
                 "Grey on white",
                 "Black on brown"
             ],
@@ -150,7 +150,7 @@
         },
         "messageKey": "common-selfVoicing-enabled",
         "value": false,
-        "tooltip": "<p>Turn “Highlight and Read” extension in Chrome browser on/off.</p>"
+        "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>"
     }, {
         "path": "more",
         "schema": {
