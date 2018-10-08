@@ -27,9 +27,8 @@ fluid.registerNamespace("gpii.tests.surveys.testDefs");
 fluid.registerNamespace("gpii.tests.utils");
 
 /**
- * Simply bind arguments to a function.
- *
- * @param {Function} func - The function that is to be binded
+ * Simply binds arguments to a function.
+ * @param {Function} func - The function that is to be bound
  * @param {...Any} args  - Arguments for binding
  * @return {Function} the binded function
  */
@@ -54,7 +53,7 @@ var triggersFixture = [
 
 var surveysFixture = {
     "trigger_2": {
-        "url": "https://fluidproject.org/?keyedInUserToken=snapset_1a&machineId=3633aab4-7c85-4d30-9e73-8acc40ff2fcb&DPIScale=1",
+        "url": "https://fluidproject.org",
         "closeOnSubmit": false,
         "window": {
             "width": 300,
@@ -86,12 +85,9 @@ fluid.defaults("gpii.tests.surveys.negativeSurveyConnector", {
 });
 
 
-gpii.tests.surveys.assertSurveyFixture = function (message, expected, actual) {
-    // clean up window object
-    actual.window = fluid.remove_if(actual.window,
-        function (value) { return !fluid.isValue(value); });
-
-    jqUnit.assertDeepEq(message, expected, actual);
+gpii.tests.surveys.assertSurveyFixture = function (expected, actual) {
+    jqUnit.assertTrue("The url of the received survey is correct", actual.url.startsWith(expected.url));
+    jqUnit.assertLeftHand("The properties of the survey BrowserWindow are correct", expected.window, actual.window);
 };
 
 /**
@@ -101,7 +97,7 @@ gpii.tests.surveys.assertSurveyFixture = function (message, expected, actual) {
  */
 gpii.tests.surveys.surveyConnectorTestDefs = {
     name: "Surveys connector integration tests",
-    expect: 2,
+    expect: 3,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -123,9 +119,12 @@ gpii.tests.surveys.surveyConnectorTestDefs = {
         // Note that the argument (passed by the event) will have some extra
         // fields as a side effect of a component creation
         listener: "gpii.tests.surveys.assertSurveyFixture",
-        args: ["The survey fixture is received", surveysFixture[triggersFixture[0].id], "{arguments}.0"]
+        args: [surveysFixture[triggersFixture[0].id], "{arguments}.0"]
     }, {
         func: "{that}.app.keyOut"
+    }, {
+        event: "{that}.app.events.onKeyedOut",
+        listener: "fluid.identity"
     }]
 };
 

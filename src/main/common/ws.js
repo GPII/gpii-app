@@ -27,8 +27,6 @@ var fluid = require("infusion"),
 fluid.defaults("gpii.app.ws", {
     gradeNames: ["fluid.component"],
 
-    // indicates if connection errors should be ignored by the component
-    ignoreErrors: false,
     config: {
         hostname: null,
         port: null,
@@ -52,7 +50,7 @@ fluid.defaults("gpii.app.ws", {
     invokers: {
         connect: {
             funcName: "gpii.app.ws.connect",
-            args: ["{that}", "{that}.options.config", "{that}.options.ignoreErrors"]
+            args: ["{that}", "{that}.options.config"]
         },
         send: {
             funcName: "gpii.app.ws.send",
@@ -71,11 +69,9 @@ fluid.defaults("gpii.app.ws", {
  * will fire the appropriate event of the component.
  * @param {Component} that - The `gpii.app.ws` instance.
  * @param {Object} config - An object containing the hostname, port and path of
- * @param {Boolean} ignoreErrors - Whether socket errors should be ignored if the
- * connection cannot be established.
  * the URL to connect to.
  */
-gpii.app.ws.connect = function (that, config, ignoreErrors) {
+gpii.app.ws.connect = function (that, config) {
     var url = fluid.stringTemplate("ws://%hostname:%port%path", config);
     that.ws = new WebSocket(url);
 
@@ -88,12 +84,6 @@ gpii.app.ws.connect = function (that, config, ignoreErrors) {
     });
 
     that.ws.on("error", function (error) {
-        if (that.ws.readyState === WebSocket.CONNECTING && ignoreErrors) {
-            fluid.log(fluid.logLevel.WARN, "Ignoring WebSocket error:", error);
-            that.events.onConnected.fire();
-            return;
-        }
-
         fluid.log(fluid.logLevel.FAIL, "WebSocket error:", error);
         that.events.onError.fire(error);
     });

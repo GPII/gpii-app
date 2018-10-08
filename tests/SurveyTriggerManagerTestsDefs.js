@@ -209,8 +209,6 @@ var sessionTimerTriggerHandlersSequence = [
             "The survey trigger handler no longer exists after a survey is shown",
             "{that}.app.surveyManager.surveyTriggerManager.triggerHandler"
         ]
-    }, {
-        func: "{that}.app.keyOut"
     }
 ];
 
@@ -275,7 +273,7 @@ var triggersApiSequence = [
 
 gpii.tests.surveyTriggerManager.testDefs = {
     name: "Trigger Engine integration tests",
-    expect: 28,
+    expect: 26,
     config: {
         configName: "gpii.tests.all.config",
         configPath: "tests/configs"
@@ -283,19 +281,19 @@ gpii.tests.surveyTriggerManager.testDefs = {
     gradeNames: ["gpii.test.common.testCaseHolder"],
 
     sequence: [].concat(
-        // {
-        // /**
-        //  * The tests below seem to complete too fast and the GPII app (including the gpiiConnector and
-        //  * its socket) is destroyed before the "noUser" preferences are delivered to the GPII app. When
-        //  * the Core attempts to do so, the websocket on the PSP's end no longer exists and this causes
-        //  * the socket on the Core's end to hang up and emit an error. This is probably an edge case
-        //  * which is not handled and will probably be tackled in the future and for now it would be better
-        //  * to delay the tests a bit.
-        //  */
-        // task: "gpii.test.linger",
-        // args: [4000],
-        // resolve: "fluid.identity"
-        // },
+        {
+        /**
+         * The tests below seem to complete too fast and the GPII app (including the gpiiConnector and
+         * its socket) is destroyed before the "noUser" preferences are delivered to the GPII app. When
+         * the Core attempts to do so, the websocket on the PSP's end no longer exists and this causes
+         * the socket on the Core's end to hang up and emit an error. This is probably an edge case
+         * which is not handled and will probably be tackled in the future and for now it would be better
+         * to delay the tests a bit.
+         */
+            task: "gpii.test.linger",
+            args: [4000],
+            resolve: "fluid.identity"
+        },
         triggerHandlersSequence,
         triggersApiSequence
     )

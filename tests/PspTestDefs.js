@@ -25,69 +25,6 @@ require("./testUtils.js");
 
 fluid.registerNamespace("gpii.tests.psp.testDefs");
 
-var defaultPrefSetMessage = {
-    "type": "modelChanged",
-    "payload": {
-        "path": [],
-        "type": "ADD",
-        "value": {
-            "gpiiKey": "multi_context",
-            "activeContextName": "gpii-default",
-            "preferences": {
-                "name": "Multiple Contexts",
-                "contexts": {
-                    "gpii-default": {
-                        "name": "Default preferences"
-                    },
-                    "bright": {
-                        "name": "bright"
-                    },
-                    "noise": {
-                        "name": "noise"
-                    },
-                    "brightandnoise": {
-                        "name": "bright and noise"
-                    }
-                }
-            },
-            "settingGroups": [
-                {
-                    "settingControls": {
-                        "http://registry\\.gpii\\.net/common/volume": {
-                            "value": 3,
-                            "schema": {
-                                "title": "Volume",
-                                "description": "General volume of the operating system",
-                                "type": "number",
-                                "min": 0,
-                                "max": 3,
-                                "divisibleBy": 1
-                            }
-                        }
-                    }
-                },
-                {
-                    "name": "Magnifier",
-                    "solutionName": "Magnifier",
-                    "settingControls": {
-                        "http://registry\\.gpii\\.net/common/magnification": {
-                            "value": 2,
-                            "schema": {
-                                "title": "Magnification",
-                                "description": "Level of magnification",
-                                "type": "number",
-                                "min": 1,
-                                "divisibleBy": 0.1
-                            },
-                            "liveness": "liveRestart"
-                        }
-                    }
-                }
-            ]
-        }
-    }
-};
-
 var closePSP = "jQuery(\".flc-closeBtn\").click()",
     keyOut = "jQuery(\".flc-keyOutBtn\").click()",
     decreaseVolume = "jQuery(\".flc-setting:eq(0) .flc-textfieldStepper-decrease\").click()",
@@ -133,20 +70,15 @@ gpii.tests.psp.testDefs = {
     }, {
         func: "{that}.app.psp.show"
     }, {
-        func: "{that}.app.keyIn",
-        args: ["multi_context"]
-    }, { // Replace the user's preferences with mocked ones.
-        event: "{that}.app.gpiiConnector.events.onPreferencesUpdated",
-        listener: "{that}.app.gpiiConnector.events.onMessageReceived.fire",
-        args: [
-            defaultPrefSetMessage
-        ]
+        task: "{that}.app.keyIn",
+        args: ["multi_context"],
+        resolve: "fluid.identity"
     }, { // Delay the tests a bit so that the UI can initialize properly.
         task: "gpii.test.executeJavaScriptDelayed",
         args: [
             "{that}.app.psp.dialog",
             decreaseVolume,
-            2000
+            3000
         ],
         resolve: "fluid.identity"
     }, {
@@ -156,7 +88,7 @@ gpii.tests.psp.testDefs = {
             "When the decrease volume button is pressed, the PSP is notified accordingly",
             {
                 path: "http://registry\\.gpii\\.net/common/volume",
-                value: 2
+                value: 0
             },
             "{arguments}.0"
         ]
@@ -181,7 +113,7 @@ gpii.tests.psp.testDefs = {
             "The magnifier setting has been correctly undone",
             {
                 path: "http://registry\\.gpii\\.net/common/magnification",
-                value: 2
+                value: 1.5
             },
             "{arguments}.0"
         ]
@@ -206,7 +138,7 @@ gpii.tests.psp.testDefs = {
             "The magnifier setting has been correctly applied",
             {
                 path: "http://registry\\.gpii\\.net/common/magnification",
-                value: 1.9
+                value: 1.4
             },
             "{arguments}.0"
         ]
@@ -232,8 +164,7 @@ gpii.tests.psp.testDefs = {
             keyOut
         ]
     }, {
-        changeEvent: "{that}.app.applier.modelChanged",
-        path: "isKeyedIn",
+        event: "{that}.app.events.onKeyedOut",
         listener: "gpii.tests.psp.testKeyedOut",
         args: ["{that}.app.psp"]
     }]

@@ -52,6 +52,9 @@ gpii.tests.userErrorsHandler.testDefs = {
         args: [
             "{arguments}.0"
         ]
+    }, { // Wait for the error dialog to be shown.
+        event: "{that gpii.app.errorDialog.channel}.events.onErrorDialogCreated",
+        listener: "fluid.identity"
     }, { // Clicking the close button in the error dialog...
         func: "gpii.test.executeJavaScript",
         args: [
