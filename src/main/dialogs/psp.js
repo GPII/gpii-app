@@ -338,8 +338,8 @@ gpii.app.psp.onPreferencesUpdated = function (that) {
  */
 gpii.app.psp.handleBlur = function (psp, settingsBroker, ignoreClosePreference) {
     var isShown = psp.model.isShown,
-        closePSPOnBlur = psp.model.preferences.closePSPOnBlur || ignoreClosePreference;
-    if (isShown && closePSPOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
+        closePspOnBlur = psp.model.preferences.closePspOnBlur || ignoreClosePreference;
+    if (isShown && closePspOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
         psp.events.onClosed.fire();
     }
 };

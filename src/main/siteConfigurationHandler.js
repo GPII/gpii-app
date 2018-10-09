@@ -63,6 +63,18 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeQssMorePanelConfig: {
             record: "{that}.options.siteConfig.qssMorePanel",
             target: "{app qssMorePanel}.options.siteConfig"
+        },
+        distributesQssClickOutside: {
+            record: "{that}.options.siteConfig.closeQssOnClickOutside",
+            target: "{app gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
+        },
+        distributesPspClickOutside: {
+            record: "{that}.options.siteConfig.closePspOnClickOutside",
+            target: "{app gpiiConnector}.options.defaultPreferences.closePspOnBlur"
+        },
+        distributesOpenQssShortcut: {
+            record: "{that}.options.siteConfig.openQssShortcut",
+            target: "{app gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
         }
     }
 });

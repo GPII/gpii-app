@@ -29,6 +29,11 @@ require("../../../shared/channelUtils.js");
 fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog", "gpii.app.dialog.offScreenHidable", "gpii.app.scaledDialog", "gpii.app.blurrable"],
 
+    model: {
+        // Whether blurring should be respected by the dialog
+        closeQssOnBlur: null
+    },
+
     scaleFactor: 1,
 
     sideMargin: 5,
@@ -141,7 +146,8 @@ fluid.defaults("gpii.app.qss", {
             ]
         },
         handleBlur: {
-            funcName: "fluid.identity"
+            funcName: "gpii.app.qss.handleBlur",
+            args: ["{that}", "{that}.model.closeQssOnBlur"]
         },
         updateUndoIndicator: {
             func: "{that}.events.onUndoIndicatorChanged.fire",
@@ -181,4 +187,11 @@ gpii.app.qss.computeQssWidth = function (buttonWidth, sideMargin, qssButtons) {
     console.log("QSS Dialog: Computed width - ", qssWidth);
 
     return qssWidth;
+};
+
+
+gpii.app.qss.handleBlur = function (that, closeQssOnBlur) {
+    if (closeQssOnBlur) {
+        that.hide();
+    }
 };
