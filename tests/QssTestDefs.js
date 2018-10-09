@@ -443,7 +443,7 @@ var qssCrossTestSequence = [
      */
     { // Test menu after key in
         func: "{that}.app.keyIn",
-        args: "snapset_2a" // Read To Me
+        args: "snapset_1a" // Read To Me
     }, {
         event: "{that}.app.events.onKeyedIn",
         listener: "fluid.identity"
@@ -475,8 +475,11 @@ var qssCrossTestSequence = [
             { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
-    }, { // Test menu after key out
+    }, {
         func: "{that}.app.keyOut"
+    }, {
+        event: "{that}.app.events.onKeyedOut",
+        listener: "fluid.identity"
     }
 ];
 
@@ -513,20 +516,11 @@ var undoCrossTestSequence = [
         ]
     },
     //
-    // Shortcut test
-    //
+    // Multiple setting changes
     simpleSettingChangeSeqEl, // Changing a setting
     simpleSettingChangeSeqEl, // Making second setting change
-    { // ... and using undo shortcut in QSS
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            {
-                key: "Z",
-                modifiers: ["Ctrl"]
-            }
-        ] // simulate Ctrl+Z
-    }, { // ... should restore last setting's state
+    clickUndoButtonSeqEl,
+    { // ... should restore last setting's state
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
         path: "settings.*",
         listener: "jqUnit.assertLeftHand",
@@ -535,16 +529,9 @@ var undoCrossTestSequence = [
             { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
-    }, { // ... and using shortcut in the widget
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            {
-                key: "Z",
-                modifiers: ["Ctrl"]
-            }
-        ] // simulate Ctrl+Z
-    }, { // ... should trigger undo as well
+    },
+    clickUndoButtonSeqEl,
+    { // ... should trigger undo as well
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
         path: "settings.*",
         listener: "jqUnit.assertLeftHand",
@@ -713,7 +700,7 @@ var appZoomTestSequence = [
             clickIncreaseBtn
         ]
     }, {
-        event: "{that}.app.appZoom.events.onAppZoomed",
+        event: "{that}.app.appZoomHandler.events.onAppZoomed",
         listener: "jqUnit.assertEquals",
         args: [
             "App Zoom zooms in when the + button in the QSS widget is pressed",
@@ -727,7 +714,7 @@ var appZoomTestSequence = [
             clickDecreaseBtn
         ]
     }, {
-        event: "{that}.app.appZoom.events.onAppZoomed",
+        event: "{that}.app.appZoomHandler.events.onAppZoomed",
         listener: "jqUnit.assertEquals",
         args: [
             "App Zoom zooms out when the - button in the QSS widget is pressed",
@@ -764,7 +751,7 @@ fluid.defaults("gpii.tests.qss.mockedAppZoom", {
 fluid.defaults("gpii.tests.qss.mockedAppZoomWrapper", {
     gradeNames: "fluid.component",
     components: {
-        appZoom: {
+        appZoomHandler: {
             type: "gpii.tests.qss.mockedAppZoom"
         }
     }
