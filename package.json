@@ -38,7 +38,9 @@
         "pretest": "npm run pretest:clean && npm run build && npm run pretest:instrument",
         "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports build && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
         "pretest:instrument": "node tests/lib/instrumentSource.js",
-        "test": "./node_modules/.bin/electron ./instrumented/tests.js",
+        "test": "npm run test:psp && npm run test:gpiiWindows",
+        "test:psp": "./node_modules/.bin/electron ./instrumented/tests.js",
+        "test:gpiiWindows": "./node_modules/.bin/electron testsGpiiWindows.js",
         "posttest": "node node_modules/nyc/bin/nyc.js report --temp-directory coverage",
         "test:noCoverage": "./node_modules/.bin/electron tests.js"
     }
