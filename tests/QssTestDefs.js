@@ -516,20 +516,11 @@ var undoCrossTestSequence = [
         ]
     },
     //
-    // Shortcut test
-    //
+    // Multiple setting changes
     simpleSettingChangeSeqEl, // Changing a setting
     simpleSettingChangeSeqEl, // Making second setting change
-    { // ... and using undo shortcut in QSS
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            {
-                key: "Z",
-                modifiers: ["Ctrl"]
-            }
-        ] // simulate Ctrl+Z
-    }, { // ... should restore last setting's state
+    clickUndoButtonSeqEl,
+    { // ... should restore last setting's state
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
         path: "settings.*",
         listener: "jqUnit.assertLeftHand",
@@ -538,16 +529,9 @@ var undoCrossTestSequence = [
             { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
-    }, { // ... and using shortcut in the widget
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            {
-                key: "Z",
-                modifiers: ["Ctrl"]
-            }
-        ] // simulate Ctrl+Z
-    }, { // ... should trigger undo as well
+    },
+    clickUndoButtonSeqEl,
+    { // ... should trigger undo as well
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
         path: "settings.*",
         listener: "jqUnit.assertLeftHand",
