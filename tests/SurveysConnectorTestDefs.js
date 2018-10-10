@@ -130,7 +130,7 @@ gpii.tests.surveys.surveyConnectorTestDefs = {
 
 gpii.tests.surveys.surveyConnectorNegativeTestDefs = {
     name: "Surveys connector negative integration tests",
-    expect: 0, // in case  `jqUnit.expectFrameworkDiagnostic` is not failing, no check is registered
+    expect: 0,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"

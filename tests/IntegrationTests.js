@@ -32,6 +32,7 @@ require("./SequentialDialogsTestDefs.js");
 require("./SettingsBrokerTestDefs.js");
 require("./SurveysConnectorTestDefs.js");
 require("./SurveyTriggerManagerTestsDefs.js");
+require("./ShortcutsManagerTestDefs.js");
 require("./UserErrorsHandlerTestDefs.js");
 require("./SiteConfigurationHandlerTestDefs.js");
 require("./WebviewTestDefs.js");
@@ -112,6 +113,7 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.dialogManager.testDefs),
     fluid.copy(gpii.tests.qss.testDefs),
     fluid.copy(gpii.tests.sequentialDialogs.testDefs),
+    fluid.copy(gpii.tests.shortcutsManager.testDefs),
     fluid.copy(gpii.tests.settingsBroker.testDefs),
     fluid.copy(gpii.tests.surveys.surveyConnectorNegativeTestDefs),
     fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
