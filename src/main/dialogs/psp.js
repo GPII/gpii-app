@@ -168,8 +168,8 @@ fluid.defaults("gpii.app.psp", {
             target: "hasSettings",
             singleTransform: {
                 type: "fluid.transforms.free",
-                func: "gpii.app.psp.getHasSettings",
-                args: ["{that}.model.preferences"]
+                func: "gpii.app.settingGroups.hasSettings",
+                args: ["{that}.model.preferences.settingGroups"]
             }
         }
     },
@@ -323,22 +323,6 @@ fluid.defaults("gpii.app.psp", {
         }
     }
 });
-
-/**
- * Computes whether at least one setting group in the specified preferences has at least
- * 1 top level setting.
- * @param {Object} preferences - The current preferences object for the PSP (containing
- * the available preference sets, the currently active one and the setting groups)
- * @return {Boolean} `true` if at least one setting group has at least one setting and
- * `false` otherwise.
- */
-gpii.app.psp.getHasSettings = function (preferences) {
-    // Whether at least one setting group has at least 1 top level setting.
-    var settingGroups = fluid.get(preferences, "settingGroups");
-    return !!fluid.find_if(settingGroups, function (settingGroup) {
-        return settingGroup.settings.length > 0;
-    });
-};
 
 /**
  * Shows the PSP in the following cases:

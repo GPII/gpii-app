@@ -748,11 +748,30 @@ fluid.defaults("gpii.tests.qss.mockedAppZoom", {
     }
 });
 
+/**
+ * No need to actually test if the "App/Text Zoom" functionality works. This
+ * should be done in `gpii-windows` tests. Here we can simply check if the
+ * corresponding function is called when the "App/Text Zoom" is pressed.
+ */
 fluid.defaults("gpii.tests.qss.mockedAppZoomWrapper", {
     gradeNames: "fluid.component",
     components: {
         appZoomHandler: {
             type: "gpii.tests.qss.mockedAppZoom"
+        }
+    }
+});
+
+/**
+ * Needed in order not to send setting updates to the Core. The testing of
+ * the QSS functionalities does not require that the setting updates are
+ * actually applied.
+ */
+fluid.defaults("gpii.tests.qss.mockedGpiiConnector", {
+    gradeNames: "fluid.component",
+    invokers: {
+        updateSetting: {
+            funcName: "fluid.identity"
         }
     }
 });
@@ -871,10 +890,6 @@ gpii.tests.qss.testDefs = {
         configPath: "tests/configs"
     },
     distributeOptions: {
-        applyMockedAppZoomWrapper: {
-            record: "gpii.tests.qss.mockedAppZoomWrapper",
-            target: "{that gpii.app}.options.gradeNames"
-        },
         mockedSettings: {
             // Supply the list of QSS settings
             // For now we're using the same settings list
@@ -884,6 +899,14 @@ gpii.tests.qss.testDefs = {
         mockedMessages: {
             record: qssSettingMessagesFixture,
             target: "{that gpii.app}.options.messageBundles"
+        },
+        mockedAppZoomWrapper: {
+            record: "gpii.tests.qss.mockedAppZoomWrapper",
+            target: "{that gpii.app}.options.gradeNames"
+        },
+        mockedGpiiConnector: {
+            record: "gpii.tests.qss.mockedGpiiConnector",
+            target: "{that gpiiConnector}.options.gradeNames"
         }
     },
 
