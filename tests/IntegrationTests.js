@@ -58,6 +58,17 @@ gpii.tests.app.startSequence = [
     }
 ];
 
+
+/**
+ * Attach instances that are needed in test cases.
+ * @param {Component} testCaseHolder - The overall test cases holder
+ * @param {Component} flowManager - The `gpii.flowManager`
+ */
+gpii.tests.app.receiveApp = function (testCaseHolder, flowManager) {
+    testCaseHolder.flowManager = flowManager;
+    testCaseHolder.app = flowManager.app;
+};
+
 // This is a fork of kettle.test.testDefToCaseHolder which is written in a non-reusable style
 // See: https://issues.fluidproject.org/browse/KETTLE-60
 gpii.tests.app.testDefToCaseHolder = function (configurationName, testDefIn) {
