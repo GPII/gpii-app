@@ -93,9 +93,32 @@ gpii.tests.shortcutsManager.testLocalShortcutOperations = function (shortcutsMan
     }, "ShortcutsManager: Target window either missing or not of `gpii.app.dialog` grade - " + nonDialogGradeName);
 };
 
+gpii.tests.shortcutsManager.testGpiiAppGlobalShortcut = function (app, shortcutsManager) {
+    var defaultGpiiAppShortcut = app.gpiiConnector.options.defaultGpiiAppShortcut,
+        initialShortcut = app.model.preferences.gpiiAppShortcut,
+        newGpiiAppShortcut = "Ctrl+Shift+Alt+D+E+V";
+
+    jqUnit.assertEquals("The initial GPII app shortcut is the same as the default one specified in the GPII connector",
+        defaultGpiiAppShortcut, initialShortcut);
+    jqUnit.assertTrue("The initial GPII app shortcut is actually registered",
+        shortcutsManager.isGlobalShortcutRegistered(initialShortcut));
+
+    // Register a new shortcut
+    app.applier.change("preferences.gpiiAppShortcut", newGpiiAppShortcut);
+    jqUnit.assertFalse("The initial GPII app shortcut is no longer registered",
+        shortcutsManager.isGlobalShortcutRegistered(initialShortcut));
+    jqUnit.assertTrue("The new GPII app shortcut has been registered as a global shortcut",
+        shortcutsManager.isGlobalShortcutRegistered(newGpiiAppShortcut));
+
+    // Register an invalid application shortcut
+    app.applier.change("preferences.gpiiAppShortcut", null);
+    jqUnit.assertFalse("The subsequent GPII app shortcut is no longer registered",
+        shortcutsManager.isGlobalShortcutRegistered(newGpiiAppShortcut));
+};
+
 gpii.tests.shortcutsManager.testDefs = {
     name: "Shortcuts Manager integration tests",
-    expect: 4,
+    expect: 9,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -113,5 +136,8 @@ gpii.tests.shortcutsManager.testDefs = {
     }, {
         func: "gpii.tests.shortcutsManager.testLocalShortcutOperations",
         args: ["{that}.app.shortcutsManager"]
+    }, {
+        func: "gpii.tests.shortcutsManager.testGpiiAppGlobalShortcut",
+        args: ["{that}.app", "{that}.app.shortcutsManager"]
     }]
 };

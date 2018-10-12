@@ -443,7 +443,7 @@ var qssCrossTestSequence = [
      */
     { // Test menu after key in
         func: "{that}.app.keyIn",
-        args: "snapset_1a" // Read To Me
+        args: "snapset_2a"
     }, {
         event: "{that}.app.events.onKeyedIn",
         listener: "fluid.identity"
@@ -776,6 +776,25 @@ fluid.defaults("gpii.tests.qss.mockedGpiiConnector", {
     }
 });
 
+/**
+ * Also, in order to test the QSS functionalities, there is no need to apply
+ * settings when a user keys in.
+ */
+fluid.defaults("gpii.tests.qss.mockedLifecycleManager", {
+    gradeNames: "fluid.component",
+    invokers: {
+        applySolution: {
+            funcName: "gpii.tests.qss.mockedLifecycleManager.applySolution"
+        }
+    }
+});
+
+gpii.tests.qss.mockedLifecycleManager.applySolution = function () {
+    var promise = fluid.promise();
+    promise.resolve();
+    return promise;
+};
+
 /*
  * A subset of the QSS setting messages.
  */
@@ -907,6 +926,10 @@ gpii.tests.qss.testDefs = {
         mockedGpiiConnector: {
             record: "gpii.tests.qss.mockedGpiiConnector",
             target: "{that gpiiConnector}.options.gradeNames"
+        },
+        mockedLifecycleManager: {
+            record: "gpii.tests.qss.mockedLifecycleManager",
+            target: "{that lifecycleManager}.options.gradeNames"
         }
     },
 
