@@ -443,7 +443,7 @@ var qssCrossTestSequence = [
      */
     { // Test menu after key in
         func: "{that}.app.keyIn",
-        args: "snapset_2a" // Read To Me
+        args: "snapset_2a"
     }, {
         event: "{that}.app.events.onKeyedIn",
         listener: "fluid.identity"
@@ -475,8 +475,11 @@ var qssCrossTestSequence = [
             { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
-    }, { // Test menu after key out
+    }, {
         func: "{that}.app.keyOut"
+    }, {
+        event: "{that}.app.events.onKeyedOut",
+        listener: "fluid.identity"
     }
 ];
 
@@ -513,20 +516,11 @@ var undoCrossTestSequence = [
         ]
     },
     //
-    // Shortcut test
-    //
+    // Multiple setting changes
     simpleSettingChangeSeqEl, // Changing a setting
     simpleSettingChangeSeqEl, // Making second setting change
-    { // ... and using undo shortcut in QSS
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            {
-                key: "Z",
-                modifiers: ["Ctrl"]
-            }
-        ] // simulate Ctrl+Z
-    }, { // ... should restore last setting's state
+    clickUndoButtonSeqEl,
+    { // ... should restore last setting's state
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
         path: "settings.*",
         listener: "jqUnit.assertLeftHand",
@@ -535,16 +529,9 @@ var undoCrossTestSequence = [
             { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
             "{arguments}.0"
         ]
-    }, { // ... and using shortcut in the widget
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            {
-                key: "Z",
-                modifiers: ["Ctrl"]
-            }
-        ] // simulate Ctrl+Z
-    }, { // ... should trigger undo as well
+    },
+    clickUndoButtonSeqEl,
+    { // ... should trigger undo as well
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
         path: "settings.*",
         listener: "jqUnit.assertLeftHand",
@@ -713,7 +700,7 @@ var appZoomTestSequence = [
             clickIncreaseBtn
         ]
     }, {
-        event: "{that}.app.appZoom.events.onAppZoomed",
+        event: "{that}.app.appZoomHandler.events.onAppZoomed",
         listener: "jqUnit.assertEquals",
         args: [
             "App Zoom zooms in when the + button in the QSS widget is pressed",
@@ -727,7 +714,7 @@ var appZoomTestSequence = [
             clickDecreaseBtn
         ]
     }, {
-        event: "{that}.app.appZoom.events.onAppZoomed",
+        event: "{that}.app.appZoomHandler.events.onAppZoomed",
         listener: "jqUnit.assertEquals",
         args: [
             "App Zoom zooms out when the - button in the QSS widget is pressed",
@@ -761,14 +748,52 @@ fluid.defaults("gpii.tests.qss.mockedAppZoom", {
     }
 });
 
+/**
+ * No need to actually test if the "App/Text Zoom" functionality works. This
+ * should be done in `gpii-windows` tests. Here we can simply check if the
+ * corresponding function is called when the "App/Text Zoom" is pressed.
+ */
 fluid.defaults("gpii.tests.qss.mockedAppZoomWrapper", {
     gradeNames: "fluid.component",
     components: {
-        appZoom: {
+        appZoomHandler: {
             type: "gpii.tests.qss.mockedAppZoom"
         }
     }
 });
+
+/**
+ * Needed in order not to send setting updates to the Core. The testing of
+ * the QSS functionalities does not require that the setting updates are
+ * actually applied.
+ */
+fluid.defaults("gpii.tests.qss.mockedGpiiConnector", {
+    gradeNames: "fluid.component",
+    invokers: {
+        updateSetting: {
+            funcName: "fluid.identity"
+        }
+    }
+});
+
+/**
+ * Also, in order to test the QSS functionalities, there is no need to apply
+ * settings when a user keys in.
+ */
+fluid.defaults("gpii.tests.qss.mockedLifecycleManager", {
+    gradeNames: "fluid.component",
+    invokers: {
+        applySolution: {
+            funcName: "gpii.tests.qss.mockedLifecycleManager.applySolution"
+        }
+    }
+});
+
+gpii.tests.qss.mockedLifecycleManager.applySolution = function () {
+    var promise = fluid.promise();
+    promise.resolve();
+    return promise;
+};
 
 /*
  * A subset of the QSS setting messages.
@@ -884,10 +909,6 @@ gpii.tests.qss.testDefs = {
         configPath: "tests/configs"
     },
     distributeOptions: {
-        applyMockedAppZoomWrapper: {
-            record: "gpii.tests.qss.mockedAppZoomWrapper",
-            target: "{that gpii.app}.options.gradeNames"
-        },
         mockedSettings: {
             // Supply the list of QSS settings
             // For now we're using the same settings list
@@ -897,6 +918,18 @@ gpii.tests.qss.testDefs = {
         mockedMessages: {
             record: qssSettingMessagesFixture,
             target: "{that gpii.app}.options.messageBundles"
+        },
+        mockedAppZoomWrapper: {
+            record: "gpii.tests.qss.mockedAppZoomWrapper",
+            target: "{that gpii.app}.options.gradeNames"
+        },
+        mockedGpiiConnector: {
+            record: "gpii.tests.qss.mockedGpiiConnector",
+            target: "{that gpiiConnector}.options.gradeNames"
+        },
+        mockedLifecycleManager: {
+            record: "gpii.tests.qss.mockedLifecycleManager",
+            target: "{that lifecycleManager}.options.gradeNames"
         }
     },
 

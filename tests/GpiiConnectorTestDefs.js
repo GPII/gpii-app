@@ -46,6 +46,9 @@ gpii.tests.gpiiConnector.testDefs = {
     sequence: [{
         func: "{that}.app.keyIn",
         args: "snapset_1a"
+    }, { // Wait for the key in process to complete
+        event: "{that}.app.events.onKeyedIn",
+        listener: "fluid.identity"
     }, {
         func: "{that}.app.gpiiConnector.events.onMessageReceived.fire",
         args: [
@@ -64,5 +67,8 @@ gpii.tests.gpiiConnector.testDefs = {
         ]
     }, {
         func: "{that}.app.keyOut"
+    }, {
+        event: "{that}.app.events.onKeyedOut",
+        listener: "fluid.identity"
     }]
 };

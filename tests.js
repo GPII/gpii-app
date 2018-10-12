@@ -7,9 +7,6 @@ var fs = require("graceful-fs");
 var path = require("path");
 var jqUnit = require("node-jqunit");
 
-require("gpii-universal");
-require("gpii-windows/index.js");
-
 // Code coverage harness, hooks into the jqUnit lifecycle and saves tests whenever the `onAllTestsDone` event is fired.
 // Must be hooked in before requiring any actual tests.
 jqUnit.onAllTestsDone.addListener(function () {
@@ -37,7 +34,3 @@ require("./tests/MessageBundlesCompilerTests.js");
 require("./tests/PreferencesGroupingTests.js");
 require("./tests/PreferencesParsingTests.js");
 require("./tests/IntegrationTests.js");
-
-// Run the GPII tests
-fluid.require("%gpii-universal/tests/all-tests.js");
-fluid.require("%gpii-windows/tests/UnitTests.js");

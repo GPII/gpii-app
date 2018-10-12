@@ -41,23 +41,37 @@ fluid.defaults("gpii.app.shortcutsManager", {
             funcName: "gpii.app.shortcutsManager.registerGlobalShortcut",
             args: [
                 "{that}",
-                "{arguments}.0",
-                "{arguments}.1"
+                "{arguments}.0", // command
+                "{arguments}.1"  // eventName
             ]
         },
         deregisterGlobalShortcut: {
             funcName: "gpii.app.shortcutsManager.deregisterGlobalShortcut",
             args: [
-                "{arguments}.0"
+                "{that}",
+                "{arguments}.0" // command
+            ]
+        },
+        isGlobalShortcutRegistered: {
+            funcName: "gpii.app.shortcutsManager.isGlobalShortcutRegistered",
+            args: [
+                "{arguments}.0" // command
             ]
         },
         registerLocalShortcut: {
             funcName: "gpii.app.shortcutsManager.registerLocalShortcut",
             args: [
                 "{that}",
-                "{arguments}.0",
-                "{arguments}.1",
-                "{arguments}.2"
+                "{arguments}.0", // command
+                "{arguments}.1", // eventName
+                "{arguments}.2"  // targetWindows
+            ]
+        },
+        deregisterLocalShortcut: {
+            funcName: "gpii.app.shortcutsManager.deregisterLocalShortcut",
+            args: [
+                "{arguments}.0", // command
+                "{arguments}.1"  // targetWindows
             ]
         }
     }
@@ -83,24 +97,33 @@ gpii.app.shortcutsManager.registerGlobalShortcut = function (that, command, even
     var shortcutEvent = that.events[eventName];
     if (!shortcutEvent) {
         fluid.fail("ShortcutsManager: Missing shortcut event - ", eventName);
-        return;
     }
 
     if (globalShortcut.isRegistered(command)) {
         // Check whether a shortcut is registered.
         fluid.fail("ShortcutsManager: Global shortcut already exists - ", command);
-        return;
     }
 
     globalShortcut.register(command, shortcutEvent.fire);
 };
 
 /**
+ * Checks whether a given accelerator is registered as a global shortcut.
+ * @param {String} command - The global shortcut string.
+ * @return {Boolean} `true` if the given shortcut string is registered as a global
+ * shortcut and `false` otherwise.
+ */
+gpii.app.shortcutsManager.isGlobalShortcutRegistered = function (command) {
+    return globalShortcut.isRegistered(command);
+};
+
+/**
  * Deregisters a global shortcut.
+ * @param {Component} that - The `gpii.app.shortcutsManager` instance.
  * @param {String} command - The global shortcut string.
  */
-gpii.app.shortcutsManager.deregisterGlobalShortcut = function (command) {
-    if (globalShortcut.isRegistered(command)) {
+gpii.app.shortcutsManager.deregisterGlobalShortcut = function (that, command) {
+    if (that.isGlobalShortcutRegistered(command)) {
         globalShortcut.unregister(command);
     } else {
         fluid.fail("ShortcutsManager: Cannot unregister an unexisting global shortcut - ", command);
@@ -124,11 +147,9 @@ gpii.app.shortcutsManager.registerLocalShortcut = function (that, command, event
 
     if (!shortcutEvent) {
         fluid.fail("ShortcutsManager: Missing shortcut event - ", eventName);
-        return;
     }
     if (!windows) {
         fluid.fail("ShortcutsManager: Local shortcuts require windows to be attached to - ", eventName);
-        return;
     }
 
     windows = Array.isArray(windows) ? windows : [windows];
@@ -138,8 +159,28 @@ gpii.app.shortcutsManager.registerLocalShortcut = function (that, command, event
 
         if (!winCmp || !winCmp.dialog) {
             fluid.fail("ShortcutsManager: Target window either missing or not of `gpii.app.dialog` grade - ", winGrade);
-            return;
         }
         localshortcut.register(winCmp.dialog, command, shortcutEvent.fire);
+    });
+};
+
+/**
+ * Deregisters a local shortcut.
+ * @param {String} command - The local shortcut string.
+ * @param {BrowserWindow[]} targetWindows - An array of windows for which the
+ * shortcut has to be deregistered.
+ */
+gpii.app.shortcutsManager.deregisterLocalShortcut = function (command, targetWindows) {
+    var windows = targetWindows;
+    windows = Array.isArray(windows) ? windows : [windows];
+
+    fluid.each(windows, function (winGrade) {
+        var winCmp = fluid.queryIoCSelector(fluid.rootComponent, winGrade)[0];
+
+        if (!winCmp || !winCmp.dialog) {
+            fluid.fail("ShortcutsManager: Target window either missing or not of `gpii.app.dialog` grade - ", winGrade);
+        }
+
+        localshortcut.unregister(winCmp.dialog, command);
     });
 };

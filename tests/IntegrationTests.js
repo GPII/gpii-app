@@ -32,6 +32,7 @@ require("./SequentialDialogsTestDefs.js");
 require("./SettingsBrokerTestDefs.js");
 require("./SurveysConnectorTestDefs.js");
 require("./SurveyTriggerManagerTestsDefs.js");
+require("./ShortcutsManagerTestDefs.js");
 require("./UserErrorsHandlerTestDefs.js");
 require("./SiteConfigurationHandlerTestDefs.js");
 require("./WebviewTestDefs.js");
@@ -50,8 +51,23 @@ gpii.tests.app.startSequence = [
     { // Before the actual tests commence, the PSP application must be fully functional. The `onPSPReady` event guarantees that.
         event: "{that gpii.app}.events.onPSPReady",
         listener: "fluid.identity"
+    },
+    {
+        event: "{testEnvironment}.events.noUserLoggedIn",
+        listener: "fluid.identity"
     }
 ];
+
+
+/**
+ * Attach instances that are needed in test cases.
+ * @param {Component} testCaseHolder - The overall test cases holder
+ * @param {Component} flowManager - The `gpii.flowManager`
+ */
+gpii.tests.app.receiveApp = function (testCaseHolder, flowManager) {
+    testCaseHolder.flowManager = flowManager;
+    testCaseHolder.app = flowManager.app;
+};
 
 // This is a fork of kettle.test.testDefToCaseHolder which is written in a non-reusable style
 // See: https://issues.fluidproject.org/browse/KETTLE-60
@@ -87,6 +103,9 @@ gpii.tests.app.testDefToServerEnvironment = function (testDef) {
                 tests: {
                     options: gpii.tests.app.testDefToCaseHolder(configurationName, testDef)
                 }
+            },
+            events: {
+                noUserLoggedIn: null
             }
         }
     };
@@ -104,15 +123,14 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.psp.testDefs),
     fluid.copy(gpii.tests.dialogManager.testDefs),
     fluid.copy(gpii.tests.qss.testDefs),
+    fluid.copy(gpii.tests.sequentialDialogs.testDefs),
+    fluid.copy(gpii.tests.shortcutsManager.testDefs),
+    fluid.copy(gpii.tests.settingsBroker.testDefs),
     fluid.copy(gpii.tests.surveys.surveyConnectorNegativeTestDefs),
     fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
     fluid.copy(gpii.tests.surveys.surveyConnectorTestDefs),
-    fluid.copy(gpii.tests.sequentialDialogs.testDefs),
-    fluid.copy(gpii.tests.settingsBroker.testDefs),
-    // XXX: Uncoment once cindyli's revised implementation of the `noUser` functionality is available.
-    // fluid.copy(gpii.tests.surveys.testDefs),
     fluid.copy(gpii.tests.siteConfigurationHandler.testDefs),
     fluid.copy(gpii.tests.userErrorsHandler.testDefs),
-    fluid.copy(gpii.tests.webview.testDefs),
-    fluid.copy(gpii.tests.gpiiConnector.testDefs)
+    fluid.copy(gpii.tests.gpiiConnector.testDefs),
+    fluid.copy(gpii.tests.webview.testDefs)
 ]);

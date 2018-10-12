@@ -114,9 +114,7 @@ gpii.tests.app.testDefs = {
     }, { // Test menu after key out
         func: "{that}.app.keyOut"
     }, {
-        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        // XXX {{1}} see above
-        path: "preferenceSetsMenuItems",
+        event: "{that}.app.events.onKeyedOut",
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenu"
     }]
@@ -266,9 +264,7 @@ gpii.tests.dev.testDefs = {
     }, { // Test menu after key out
         func: "{that}.app.keyOut"
     }, {
-        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        // XXX {{1}}
-        path: "preferenceSetsMenuItems",
+        event: "{that}.app.events.onKeyedOut",
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMenu"
     }, {
@@ -295,5 +291,10 @@ gpii.tests.dev.testDefs = {
             "{that}.app.model.preferences"
         ],
         listener: "gpii.tests.dev.testActiveSetChanged"
+    }, {
+        func: "{that}.app.keyOut"
+    }, {
+        event: "{that}.app.events.onKeyedOut",
+        listener: "fluid.identity"
     }]
 };

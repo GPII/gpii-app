@@ -5,7 +5,7 @@
         "distributeOptions": {
             "distributeTaskTray": {
                 "record": "gpii.appWrapper",
-                "target": "{that flowManager}.options.gradeNames"
+                "target": "{that localConfig flowManager}.options.gradeNames"
             },
             "distributePcpChannelConnector": {
                 "record": {
@@ -20,15 +20,21 @@
                     "funcName": "gpii.tests.app.receiveApp",
                     "args": ["{testCaseHolder}", "{arguments}.0"]
                 },
-                "target": "{that flowManager gpii.app}.options.listeners.onCreate"
+                "target": "{that localConfig flowManager}.options.listeners.onCreate"
             },
             "distributeDevPcpChannelConnector": {
                 "record": "gpii.app.dev.gpiiConnector",
                 "target": "{that gpiiConnector}.options.gradeNames"
+            },
+            "flowManager.escalate": {
+                "record": {
+                    "noUserLoggedIn.escalate": "{testEnvironment}.events.noUserLoggedIn"
+                },
+                "target": "{that localConfig flowManager}.options.listeners"
             }
         }
     },
     "mergeConfigs": [
-        "%gpii-universal/gpii/configs/gpii.config.development.all.local.json5"
+        "%gpii-universal/gpii/configs/gpii.config.untrusted.development.all.local.json5"
     ]
 }

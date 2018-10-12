@@ -251,8 +251,7 @@ gpii.tests.settingsBroker.testDefs = {
     }, { // Now there is 1 pending change in the queue. If the user keys out...
         func: "{that}.app.keyOut"
     }, { // ...the pending changes will be discarded.
-        changeEvent: "{that}.app.applier.modelChanged",
-        path: "isKeyedIn",
+        event: "{that}.app.events.onKeyedOut",
         listener: "gpii.tests.settingsBroker.testBrokerAfterKeyOut",
         args: ["{that}.app.settingsBroker"]
     }]

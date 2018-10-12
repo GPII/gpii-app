@@ -80,6 +80,9 @@ gpii.tests.webview.testDefs = {
         {
             func: "{that}.app.keyIn",
             args: ["snapset_1a"]
+        }, {
+            event: "{that}.app.events.onKeyedIn",
+            listener: "fluid.identity"
         },
         [ // Test closing the survey using the break-out link
             {
@@ -167,6 +170,9 @@ gpii.tests.webview.testDefs = {
         ],
         {
             func: "{that}.app.keyOut"
+        }, {
+            event: "{that}.app.events.onKeyedOut",
+            listener: "fluid.identity"
         }
     ]
 };
