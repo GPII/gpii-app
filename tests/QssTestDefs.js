@@ -443,7 +443,7 @@ var qssCrossTestSequence = [
      */
     { // Test menu after key in
         func: "{that}.app.keyIn",
-        args: "snapset_1a" // Read To Me
+        args: "snapset_2a"
     }, {
         event: "{that}.app.events.onKeyedIn",
         listener: "fluid.identity"
@@ -748,6 +748,11 @@ fluid.defaults("gpii.tests.qss.mockedAppZoom", {
     }
 });
 
+/**
+ * No need to actually test if the "App/Text Zoom" functionality works. This
+ * should be done in `gpii-windows` tests. Here we can simply check if the
+ * corresponding function is called when the "App/Text Zoom" is pressed.
+ */
 fluid.defaults("gpii.tests.qss.mockedAppZoomWrapper", {
     gradeNames: "fluid.component",
     components: {
@@ -756,6 +761,39 @@ fluid.defaults("gpii.tests.qss.mockedAppZoomWrapper", {
         }
     }
 });
+
+/**
+ * Needed in order not to send setting updates to the Core. The testing of
+ * the QSS functionalities does not require that the setting updates are
+ * actually applied.
+ */
+fluid.defaults("gpii.tests.qss.mockedGpiiConnector", {
+    gradeNames: "fluid.component",
+    invokers: {
+        updateSetting: {
+            funcName: "fluid.identity"
+        }
+    }
+});
+
+/**
+ * Also, in order to test the QSS functionalities, there is no need to apply
+ * settings when a user keys in.
+ */
+fluid.defaults("gpii.tests.qss.mockedLifecycleManager", {
+    gradeNames: "fluid.component",
+    invokers: {
+        applySolution: {
+            funcName: "gpii.tests.qss.mockedLifecycleManager.applySolution"
+        }
+    }
+});
+
+gpii.tests.qss.mockedLifecycleManager.applySolution = function () {
+    var promise = fluid.promise();
+    promise.resolve();
+    return promise;
+};
 
 /*
  * A subset of the QSS setting messages.
@@ -871,10 +909,6 @@ gpii.tests.qss.testDefs = {
         configPath: "tests/configs"
     },
     distributeOptions: {
-        applyMockedAppZoomWrapper: {
-            record: "gpii.tests.qss.mockedAppZoomWrapper",
-            target: "{that gpii.app}.options.gradeNames"
-        },
         mockedSettings: {
             // Supply the list of QSS settings
             // For now we're using the same settings list
@@ -884,6 +918,18 @@ gpii.tests.qss.testDefs = {
         mockedMessages: {
             record: qssSettingMessagesFixture,
             target: "{that gpii.app}.options.messageBundles"
+        },
+        mockedAppZoomWrapper: {
+            record: "gpii.tests.qss.mockedAppZoomWrapper",
+            target: "{that gpii.app}.options.gradeNames"
+        },
+        mockedGpiiConnector: {
+            record: "gpii.tests.qss.mockedGpiiConnector",
+            target: "{that gpiiConnector}.options.gradeNames"
+        },
+        mockedLifecycleManager: {
+            record: "gpii.tests.qss.mockedLifecycleManager",
+            target: "{that lifecycleManager}.options.gradeNames"
         }
     },
 

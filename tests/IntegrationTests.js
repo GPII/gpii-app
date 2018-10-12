@@ -32,6 +32,7 @@ require("./SequentialDialogsTestDefs.js");
 require("./SettingsBrokerTestDefs.js");
 require("./SurveysConnectorTestDefs.js");
 require("./SurveyTriggerManagerTestsDefs.js");
+require("./ShortcutsManagerTestDefs.js");
 require("./UserErrorsHandlerTestDefs.js");
 require("./SiteConfigurationHandlerTestDefs.js");
 require("./WebviewTestDefs.js");
@@ -56,6 +57,17 @@ gpii.tests.app.startSequence = [
         listener: "fluid.identity"
     }
 ];
+
+
+/**
+ * Attach instances that are needed in test cases.
+ * @param {Component} testCaseHolder - The overall test cases holder
+ * @param {Component} flowManager - The `gpii.flowManager`
+ */
+gpii.tests.app.receiveApp = function (testCaseHolder, flowManager) {
+    testCaseHolder.flowManager = flowManager;
+    testCaseHolder.app = flowManager.app;
+};
 
 // This is a fork of kettle.test.testDefToCaseHolder which is written in a non-reusable style
 // See: https://issues.fluidproject.org/browse/KETTLE-60
@@ -112,6 +124,7 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.dialogManager.testDefs),
     fluid.copy(gpii.tests.qss.testDefs),
     fluid.copy(gpii.tests.sequentialDialogs.testDefs),
+    fluid.copy(gpii.tests.shortcutsManager.testDefs),
     fluid.copy(gpii.tests.settingsBroker.testDefs),
     fluid.copy(gpii.tests.surveys.surveyConnectorNegativeTestDefs),
     fluid.copy(gpii.tests.surveyTriggerManager.testDefs),

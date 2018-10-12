@@ -95,11 +95,11 @@ fluid.defaults("gpii.app.qssWrapper", {
         onResetAllRequired: {
             func: "{app}.resetAllToStandard"
         },
-        onSaveRequired: {
+        "onSaveRequired.issuesSaveSettingsRequest": {
             funcName: "gpii.app.qssWrapper.saveSettings",
             args: [
                 "{that}",
-                "{flowManager}",
+                "{pspChannel}",
                 "{qssNotification}",
                 "{gpii.app.qss}",
                 "{arguments}.0"
@@ -255,22 +255,17 @@ fluid.defaults("gpii.app.qssWrapper", {
 });
 
 /**
- * If there is a keyed in user, saves his settings and shows a confirmation message.
- * If there is no keyed in user, a warning message is shown.
+ * Notifies the `gpii.pspChannel` to trigger preferences save and shows a confirmation message.
  * @param {Component} that - The `gpii.app.qssWrapper` instance.
- * @param {Component} flowManager - The `gpii.flowManager` instance.
+ * @param {Component} pspChannel - The `gpii.pspChannel` instance.
  * @param {Component} qssNotification - The `gpii.app.qssNotification` instance.
  * @param {Component} qss - The `gpii.app.qss` instance.
  * @param {String} description - The message that should be shown in the QSS notification.
  */
-gpii.app.qssWrapper.saveSettings = function (that, flowManager, qssNotification, qss, description) {
-    // Request that the settings are saved only if there is a keyed in user
-    if (that.model.isKeyedIn) {
-        // Instead of sending a request via the pspChannel, the flowManager is used directly.
-        var pspChannel = flowManager.pspChannel,
-            saveButtonClickCount = pspChannel.model.saveButtonClickCount || 0;
-        pspChannel.applier.change("saveButtonClickCount", saveButtonClickCount + 1, null, "PSP");
-    }
+gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, qss, description) {
+    // Instead of sending a request via the pspChannel, the pspChannel is used directly.
+    var saveButtonClickCount = pspChannel.model.saveButtonClickCount || 0;
+    pspChannel.applier.change("saveButtonClickCount", saveButtonClickCount + 1, null, "PSP");
 
     qssNotification.show({
         description: description,

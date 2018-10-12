@@ -17,14 +17,12 @@
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
-
 /**
  * A simple wrapper of an array to simulate an undo stack. It simply stores a
- * number of reversible changes (no more than `maxUndoEntries` in total). If
- * a change has to be undone, it is removed from the stack and the `onChangeUndone`
- * event is fired. It is up to the users of the undo stack to define what the
- * change object should contain and how exactly the effect of the change should
- * be undone when necessary.
+ * number of reversible changes. If a change has to be undone, it is removed
+ * from the stack and the `onChangeUndone` event is fired. It is up to the users
+ * of the undo stack to define what the change object should contain and how
+ * exactly the effect of the change should be undone when necessary.
  */
 fluid.defaults("gpii.app.undoStack", {
     gradeNames: "fluid.modelComponent",
@@ -52,8 +50,6 @@ fluid.defaults("gpii.app.undoStack", {
             }
         }
     },
-
-    maxUndoEntries: 100,
 
     invokers: {
         undo: {
@@ -104,12 +100,6 @@ gpii.app.undoStack.registerChange = function (that, change) {
     var undoStack = fluid.copy(that.model.undoStack);
 
     undoStack.push(change);
-
-    // get rid of the oldest change if there are a lot of changes
-    if (that.options.maxUndoEntries <= undoStack.length) {
-        undoStack.shift();
-    }
-
     that.applier.change("undoStack", undoStack);
 };
 
