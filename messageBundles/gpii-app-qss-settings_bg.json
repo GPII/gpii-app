@@ -53,7 +53,7 @@
     "gpii_app_qss_settings_common-language": {
         "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
         "title": "anguage",
-        "tip": "<p>Changes Language of Windows+</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
+        "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
         "enum": [
                 "Английски",
                 "Հայերէն · Арменски",
