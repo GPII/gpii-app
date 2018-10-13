@@ -50,8 +50,18 @@ try {
     exit 1
 }
 
-$npm = "npm" -f $env:SystemDrive
-Invoke-Command $npm "install" $mainDir
+# Determine the right dir we are building from
+If ($mainDir -eq "C:\vagrant") {
+    Write-Verbose "I'm running from a GPII provisioned box. Changing into V: folder to avoid problems during 'npm install'"
+    #$npm = "npm" -f $env:SystemDrive
+    $npmInstallDir = "V:\"
+    net use V: \\vboxsvr\vagrant
+    pushd V:
+} Else {
+    $npmInstallDir = (get-item $originalBuildScriptPath).parent.FullName
+}
+
+Invoke-Command "npm" "install" $npmInstallDir
 
 # Currently required to generate the "mega" messages bundle (similar to Installer.ps1)
-Invoke-Command $npm "run build --prefix" $mainDir
+Invoke-Command "npm" "run build --prefix" $npmInstallDir
