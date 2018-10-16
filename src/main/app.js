@@ -382,7 +382,7 @@ fluid.defaults("gpii.app", {
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
-            args: ["{lifecycleManager}", "{flowManager}", "{arguments}.0"] // token
+            args: ["{lifecycleManager}", "{arguments}.0"] // token
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
@@ -489,23 +489,11 @@ gpii.app.fireAppReady = function (fireFn) {
 /**
   * Keys a user into the GPII.
   * @param {Component} lifecycleManager - The `gpii.lifecycleManager` instance.
-  * @param {Component} flowManager - The `gpii.flowManager` instance.
   * @param {String} token - The token to key in with.
   * @return {Promise} A promise that will be resolved/rejected when the request is finished.
   */
-gpii.app.keyIn = function (lifecycleManager, flowManager, token) {
-    var togo = lifecycleManager.performLogin(token);
-
-    togo.then(fluid.identity, function (error) {
-        // XXX temporary way for triggering key in error
-        flowManager.userErrors.events.userError.fire({
-            isError: true,
-            messageKey: "KeyInFail",
-            originalError: error
-        });
-    });
-
-    return togo;
+gpii.app.keyIn = function (lifecycleManager, token) {
+    return lifecycleManager.performLogin(token);
 };
 
 /**
