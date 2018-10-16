@@ -66,8 +66,7 @@ fluid.defaults("gpii.app.pspInApp", {
         },
 
         "{qssWrapper}.events.onQssPspOpen": {
-            func: "{that}.show",
-            args: [true]
+            func: "{that}.show"
         },
         "{qssWrapper}.events.onQssPspClose": {
             func: "{that}.handleBlur",
@@ -298,13 +297,6 @@ fluid.defaults("gpii.app.psp", {
             func: "{psp}.notifyPSPWindow",
             args: ["onRestartRequired", []]
         },
-        show: {
-            funcName: "gpii.app.psp.show",
-            args: [
-                "{that}",
-                "{arguments}.0" // forceShow
-            ]
-        },
         onThemeChanged: {
             funcName: "gpii.app.notifyWindow",
             args: [
@@ -323,21 +315,6 @@ fluid.defaults("gpii.app.psp", {
         }
     }
 });
-
-/**
- * Shows the PSP in the following cases:
- * 1. If the `forceShow` argument is true (regardless of whether there is a keyed in user
- * or not).
- * 2. If there is no keyed in user.
- * 3. If there is a keyed in user who has at least one setting specified.
- * @param {Component} that - The `gpii.app.psp` instance.
- * @param {Boolean} forceShow - Whether to show the PSP unconditionally.
- */
-gpii.app.psp.show = function (that, forceShow) {
-    if (forceShow || !that.model.isKeyedIn || that.model.hasSettings) {
-        that.applier.change("isShown", true);
-    }
-};
 
 /**
  * Invoked whenever the `preferences` object in the PSP's model changes. Responsible for

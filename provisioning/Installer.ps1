@@ -43,6 +43,12 @@ if (Test-Path -Path $installerDir){
 }
 Invoke-Command $git "clone --branch $($installerBranch) $($installerRepo) $($installerDir)"
 
+# Place filebeat inside the installer directory, if it's here.
+$filebeatFile = (Join-Path $provisioningDir 'filebeat.msm')
+if (Test-Path $filebeatFile) {
+    Copy-Item $filebeatFile $installerDir
+}
+
 # If gpii-hst-tools exists delete it and clone it again
 $hstToolsDir = Join-Path (Join-Path $installerDir "staging") "gpii-hst-tools"
 if (Test-Path -Path $hstToolsDir){

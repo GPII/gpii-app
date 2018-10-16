@@ -347,6 +347,15 @@ fluid.defaults("gpii.app", {
             listener: "gpii.app.handleSessionStop",
             args: ["{that}", "{arguments}.1.model.gpiiKey"]
         },
+
+        "onCreate.systemShutdown": "{gpii.windows.messages}.start({that})",
+        "onDestroy.systemShutdown": "{gpii.windows.messages}.stop({that})",
+        "{gpii.windows.messages}.events.onMessage": {
+            funcName: "gpii.app.windowMessage",
+            // that, hwnd, msg, wParam, lParam, result
+            args: [ "{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2", "{arguments}.3", "{arguments}.4" ]
+        },
+
         "onPSPPrerequisitesReady.notifyPSPReady": {
             this: "{that}.events.onPSPReady",
             method: "fire",
@@ -373,7 +382,7 @@ fluid.defaults("gpii.app", {
         },
         keyIn: {
             funcName: "gpii.app.keyIn",
-            args: ["{lifecycleManager}", "{flowManager}", "{arguments}.0"] // token
+            args: ["{lifecycleManager}", "{arguments}.0"] // token
         },
         keyOut: {
             funcName: "gpii.app.keyOut",
@@ -480,23 +489,11 @@ gpii.app.fireAppReady = function (fireFn) {
 /**
   * Keys a user into the GPII.
   * @param {Component} lifecycleManager - The `gpii.lifecycleManager` instance.
-  * @param {Component} flowManager - The `gpii.flowManager` instance.
   * @param {String} token - The token to key in with.
   * @return {Promise} A promise that will be resolved/rejected when the request is finished.
   */
-gpii.app.keyIn = function (lifecycleManager, flowManager, token) {
-    var togo = lifecycleManager.performLogin(token);
-
-    togo.then(fluid.identity, function (error) {
-        // XXX temporary way for triggering key in error
-        flowManager.userErrors.events.userError.fire({
-            isError: true,
-            messageKey: "KeyInFail",
-            originalError: error
-        });
-    });
-
-    return togo;
+gpii.app.keyIn = function (lifecycleManager, token) {
+    return lifecycleManager.performLogin(token);
 };
 
 /**
@@ -564,6 +561,28 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
         console.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
     } else {
         that.updateKeyedInUserToken(null);
+    }
+};
+
+/**
+ * Handles the onMessage event of the gpii.windows.messages component.
+ *
+ * @param {Component} that An instance of gpii.app
+ * @param {Number} hwnd Window handle.
+ * @param {Number} msg The message.
+ * @param {Number} wParam Message parameter.
+ * @param {Number} lParam Message parameter.
+ * @param {Object} result Set a 'value' field to specify a return value.
+ */
+gpii.app.windowMessage = function (that, hwnd, msg, wParam, lParam, result) {
+    console.log(hwnd, msg, wParam, lParam, result);
+    // https://msdn.microsoft.com/library/aa376889
+    var WM_QUERYENDSESSION = 0x11;
+    if (msg === WM_QUERYENDSESSION) {
+        console.log("SHUTDOWN");
+        fluid.log(fluid.logLevel.FATAL, "System shutdown detected.");
+        that.exit();
+        result.value = 0;
     }
 };
 
