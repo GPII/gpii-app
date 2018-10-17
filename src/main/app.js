@@ -575,7 +575,6 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
  * @param {Object} result Set a 'value' field to specify a return value.
  */
 gpii.app.windowMessage = function (that, hwnd, msg, wParam, lParam, result) {
-    console.log(hwnd, msg, wParam, lParam, result);
     // https://msdn.microsoft.com/library/aa376889
     var WM_QUERYENDSESSION = 0x11;
     if (msg === WM_QUERYENDSESSION) {
