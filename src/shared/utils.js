@@ -35,6 +35,8 @@ fluid.negate = function (condition) {
 fluid.defaults("gpii.app.timer", {
     gradeNames: ["fluid.modelComponent"],
 
+    defaultTimeoutDuration: 0,
+
     members: {
         timer: null
     },
@@ -57,6 +59,13 @@ fluid.defaults("gpii.app.timer", {
                 "{arguments}.1"  // eventArguments
             ]
         },
+        notifyTimerFinished: {
+            funcName: "gpii.app.timer.notifyTimerFinished",
+            args: [
+                "{that}",
+                "{arguments}.0" // eventArguments
+            ]
+        },
         clear: {
             funcName: "gpii.app.timer.clear",
             args: ["{that}"]
@@ -70,21 +79,36 @@ fluid.defaults("gpii.app.timer", {
 
 /**
  * Starts a timer. In `timeoutDuration` milliseconds the `onTimerFinished`
- * event will be fired. Any previously registered timers will be cleared
- * upon the invocation of this function.
+ * event will be fired. If the `timeoutDuration` is not specified, the
+ * `defaultTimeoutDuration` will be used instead. In case the `timeoutDuration`
+ * is not an integer, an error will be thrown. Any previously registered timers
+ * will be cleared upon the invocation of this function.
  * @param {Component} that -The `gpii.app.timer` instance.
- * @param {Number} timeoutDuration -The timeout duration in milliseconds.
- * @param {Any[]} eventArguments - Events to be passed with the fired event.
+ * @param {Number} [timeoutDuration] -The timeout duration in milliseconds.
+ * In case it is not specified, the `onTimerFinished` event will be fired
+ * immediately.
+ * @param {Any[]} [eventArguments] - Events to be passed with the fired event.
  */
 gpii.app.timer.start = function (that, timeoutDuration, eventArguments) {
-    var timeoutArgs = [
-        that.events.onTimerFinished.fire,
-        timeoutDuration
-    ]
-        .concat(eventArguments);
+    timeoutDuration = fluid.isValue(timeoutDuration) ? timeoutDuration : that.options.defaultTimeoutDuration;
 
-    that.clear();
-    that.timer = setTimeout.apply(null, timeoutArgs);
+    if (Number.isInteger(timeoutDuration)) {
+        that.clear();
+        that.timer = setTimeout(function () {
+            that.notifyTimerFinished(eventArguments);
+        }, timeoutDuration);
+    } else {
+        fluid.fail("Timer's delay must be a number.");
+    }
+};
+
+/**
+ * Fires the `onTimerFinished` event for the current `gpii.app.timer` instance.
+ * @param {Component} that -The `gpii.app.timer` instance.
+ * @param {Any[]} [eventArguments] - Events to be passed with the fired event.
+ */
+gpii.app.timer.notifyTimerFinished = function (that, eventArguments) {
+    that.events.onTimerFinished.fire.apply(that.events.onTimerFinished, eventArguments);
 };
 
 /**
