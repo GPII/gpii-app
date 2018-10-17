@@ -54,8 +54,7 @@ fluid.defaults("gpii.app.delayedDialog", {
 });
 
 /**
- * Schedules the dialog to be shown in `delay` milliseconds. In case a
- * `delay` is not specified, the dialog will be shown immediately.
+ * Schedules the dialog to be shown in `delay` milliseconds.
  * @param {Component} that - The `gpii.app.delayedDialog` instance.
  * @param {Number} [delay] - The delay in milliseconds.
  * @param {Any[]} [showArgs] - An array of arguments which will be
@@ -64,15 +63,7 @@ fluid.defaults("gpii.app.delayedDialog", {
 gpii.app.delayedDialog.showWithDelay = function (that, delay, showArgs) {
     // process raw arguments
     showArgs = fluid.values(showArgs);
-
-    if (!fluid.isValue(delay)) {
-        // simply trigger a show synchronously
-        that.events.onTimerFinished.fire.apply(that.events.onTimerFinished, showArgs);
-    } else if (Number.isInteger(delay)) {
-        that.start(delay, showArgs);
-    } else {
-        fluid.fail("Dialog's delay must be a number.");
-    }
+    that.start(delay, showArgs);
 };
 
 /**
