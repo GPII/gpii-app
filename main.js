@@ -38,8 +38,11 @@ var appIsRunning = app.makeSingleInstance(function (commandLine) {
     qssWrapper.qss.show();
 
     if (commandLine.indexOf("--reset") > -1) {
-        var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
-        gpiiApp.resetAllToStandard();
+        process.nextTick(function () {
+            // GPII-3455: Call this in the next tick, to allow electron to free some things.
+            var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
+            gpiiApp.resetAllToStandard();
+        });
     }
 });
 
