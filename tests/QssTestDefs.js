@@ -80,6 +80,24 @@ gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
     );
 };
 
+
+// for DEV purposes
+var _promise;
+gpii.tests.blockTestsElement = function () {
+    _promise = fluid.promise();
+    return _promise;
+};
+
+var electron = require("electron");
+// Restore tests running cycle
+electron.app.on("ready", function () {
+    electron.globalShortcut.register("Space", function () {
+        console.log("Go Go Go!");
+        _promise.resolve();
+    });
+});
+
+
 var qssCrossTestSequence = [
     /*
      * CROSS

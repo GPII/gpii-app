@@ -7,6 +7,17 @@ var fs = require("graceful-fs");
 var path = require("path");
 var jqUnit = require("node-jqunit");
 
+var gpii = fluid.registerNamespace("gpii");
+
+fluid.require("%gpii-app/tests/lib/rendererCoverageCollector");
+
+/*
+ * Start the coverage server
+ * XXX still recreated multiple times...
+ */
+var coverageServer = gpii.tests.app.rendererCoverageServer();
+
+
 // Code coverage harness, hooks into the jqUnit lifecycle and saves tests whenever the `onAllTestsDone` event is fired.
 // Must be hooked in before requiring any actual tests.
 jqUnit.onAllTestsDone.addListener(function () {
@@ -25,6 +36,8 @@ jqUnit.onAllTestsDone.addListener(function () {
     else {
         fluid.log("No code coverage data to save.");
     }
+
+    coverageServer.destroy();
 });
 
 // Run the electron app tests with code coverage if possible.

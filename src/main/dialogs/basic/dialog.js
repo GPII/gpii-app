@@ -174,7 +174,8 @@ fluid.defaults("gpii.app.dialog", {
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
-            method: "destroy"
+            method: "destroy",
+            priority: "last"
         }
     },
     invokers: {

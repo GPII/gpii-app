@@ -22,6 +22,7 @@ var fluid = require("gpii-universal"),
 
 require("gpii-windows/index.js");
 fluid.require("%gpii-universal/gpii/node_modules/testing");
+require("./lib/rendererCoverageCollector.js");
 
 gpii.loadTestingSupport();
 
@@ -59,7 +60,6 @@ gpii.tests.app.startSequence = [
     }
 ];
 
-
 /**
  * Attach instances that are needed in test cases.
  * @param {Component} testCaseHolder - The overall test cases holder
@@ -81,6 +81,11 @@ gpii.tests.app.testDefToCaseHolder = function (configurationName, testDefIn) {
     // as well as the server
     // sequence.unshift.apply(sequence, kettle.test.startServerSequence);
     sequence.unshift.apply(sequence, gpii.tests.app.startSequence);
+    sequence.push({
+        task: "gpii.tests.app.instrumentedDialog.requestCoverage",
+        resolve: "console.log",
+        resolveArgs: "COVERAGE!"
+    });
     testDef.modules = [{
         name: configurationName + " tests",
         tests: [{

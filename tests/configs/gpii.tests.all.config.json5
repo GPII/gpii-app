@@ -31,6 +31,10 @@
                     "noUserLoggedIn.escalate": "{testEnvironment}.events.noUserLoggedIn"
                 },
                 "target": "{that localConfig flowManager}.options.listeners"
+            },
+            "distribureInstrumentedDialog": {
+                "record": "gpii.tests.app.instrumentedDialog",
+                "target": "{that gpii.app.dialog}.options.gradeNames"
             }
         }
     },
