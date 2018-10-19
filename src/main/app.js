@@ -462,7 +462,7 @@ gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, oldVa
  * @return {Boolean} `true` if there is an actual keyed in user and `false` otherwise.
  */
 gpii.app.getIsKeyedIn = function (keyedInUserToken, defaultUserToken) {
-    return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken;
+    return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken && keyedInUserToken !== "restore";
 };
 
 /**
