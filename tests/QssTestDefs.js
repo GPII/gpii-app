@@ -33,7 +33,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
     clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
     hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").trigger('mouseenter')",
     clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
-    clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
+    clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(3)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(5)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
@@ -575,7 +575,7 @@ var undoCrossTestSequence = [
 var undoTestSequence = [
     { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.2", {value: 1.5}]
+        args: ["settings.1", {value: 1.5}]
     }, { // ... there should be a setting registered
         changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
         path: "hasChanges",
@@ -610,7 +610,7 @@ var undoTestSequence = [
     //
     { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.2", {value: 1.5}]
+        args: ["settings.1", {value: 1.5}]
     }, { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
         args: ["settings.4", {value: true}]
@@ -668,7 +668,7 @@ var undoTestSequence = [
         args: [{path: "appTextZoom", value: 1.5}]
     }, { // ... and making a watched change
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.2", {value: 1.5}]
+        args: ["settings.1", {value: 1.5}]
     }, { // ... should change `hasChanges` flag state
         changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
         path: "hasChanges",
@@ -909,12 +909,6 @@ gpii.tests.qss.testDefs = {
         configPath: "tests/configs"
     },
     distributeOptions: {
-        mockedSettings: {
-            // Supply the list of QSS settings
-            // For now we're using the same settings list
-            record: "%gpii-app/tests/fixtures/qssSettings.json",
-            target: "{that gpii.app.qssWrapper}.options.settingsPath"
-        },
         mockedMessages: {
             record: qssSettingMessagesFixture,
             target: "{that gpii.app}.options.messageBundles"
