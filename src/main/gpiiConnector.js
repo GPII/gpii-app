@@ -27,14 +27,17 @@ fluid.defaults("gpii.app.gpiiConnector", {
     gradeNames: ["gpii.app.ws"],
 
     /*
-     * Here recide options that are either simply ommitted or aren't yet supported by the PSPChannel
+     * Options that are either simply omitted or aren't yet supported by the PSPChannel
      */
     defaultPreferences: {
-        /* The default keyboard shortcut for opening
-         * the GPII given as an accelerator string. Will be used in case the user does not
-         * have a keyboard shortcut of his own.
+        /* The default keyboard shortcut for opening the GPII given as an accelerator string.
+         * Will be used in case the user does not have a keyboard shortcut of his own.
          */
         gpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
+        /* Whether the QSS and the PSP should be closed once their BrowserWindows lose
+         * focus. If there are different values specified in the siteconfig.json5, they will
+         * be used instead.
+         */
         closeQssOnBlur: false,
         closePspOnBlur: true
     },

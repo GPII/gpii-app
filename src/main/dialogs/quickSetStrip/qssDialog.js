@@ -189,7 +189,13 @@ gpii.app.qss.computeQssWidth = function (buttonWidth, sideMargin, qssButtons) {
     return qssWidth;
 };
 
-
+/**
+ * Handles the blur event for the QSS which is fired when the window loses focus. The QSS
+ * will be closed only if this is the user's preference.
+ * @param {Component} that - The `gpii.app.qss` instance.
+ * @param {Boolean} closeQssOnBlur - If `true`, the QSS will be hidden once the window
+ * loses focus. Otherwise, it will stay open.
+ */
 gpii.app.qss.handleBlur = function (that, closeQssOnBlur) {
     if (closeQssOnBlur) {
         that.hide();
