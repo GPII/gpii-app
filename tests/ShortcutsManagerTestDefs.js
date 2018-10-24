@@ -94,7 +94,7 @@ gpii.tests.shortcutsManager.testLocalShortcutOperations = function (shortcutsMan
 };
 
 gpii.tests.shortcutsManager.testGpiiAppGlobalShortcut = function (app, shortcutsManager) {
-    var defaultGpiiAppShortcut = app.gpiiConnector.options.defaultGpiiAppShortcut,
+    var defaultGpiiAppShortcut = app.gpiiConnector.options.defaultPreferences.gpiiAppShortcut,
         initialShortcut = app.model.preferences.gpiiAppShortcut,
         newGpiiAppShortcut = "Ctrl+Shift+Alt+D+E+V";
 

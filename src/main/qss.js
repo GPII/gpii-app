@@ -69,7 +69,9 @@ fluid.defaults("gpii.app.qssWrapper", {
 
     model: {
         isKeyedIn: false,
-        settings: "{that}.options.loadedSettings"
+        settings: "{that}.options.loadedSettings",
+
+        closeQssOnBlur: false
     },
 
     events: {
@@ -478,7 +480,9 @@ gpii.app.qssWidget.updateIfMatching = function (qssWidget, updatedSetting) {
 fluid.defaults("gpii.app.qssInWrapper", {
     gradeNames: "gpii.app.qss",
     model: {
-        isKeyedIn: "{qssWrapper}.model.isKeyedIn"
+        isKeyedIn: "{qssWrapper}.model.isKeyedIn",
+
+        closeQssOnBlur: "{qssWrapper}.model.closeQssOnBlur"
     },
     config: {
         params: {
