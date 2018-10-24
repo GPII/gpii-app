@@ -465,7 +465,7 @@ gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, oldVa
  * @return {Boolean} `true` if there is an actual keyed in user and `false` otherwise.
  */
 gpii.app.getIsKeyedIn = function (keyedInUserToken, defaultUserToken) {
-    return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken;
+    return fluid.isValue(keyedInUserToken) && keyedInUserToken !== defaultUserToken && keyedInUserToken !== "restore";
 };
 
 /**
@@ -578,7 +578,6 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
  * @param {Object} result Set a 'value' field to specify a return value.
  */
 gpii.app.windowMessage = function (that, hwnd, msg, wParam, lParam, result) {
-    console.log(hwnd, msg, wParam, lParam, result);
     // https://msdn.microsoft.com/library/aa376889
     var WM_QUERYENDSESSION = 0x11;
     if (msg === WM_QUERYENDSESSION) {
