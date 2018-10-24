@@ -16,7 +16,7 @@
                 "target": "{that gpiiConnector}.options.config"
             },
             "distributeSurveyConnector": {
-                "record": "gpii.app.staticSurveyConnector",
+                "record": "gpii.app.dynamicSurveyConnector",
                 "target": "{that surveyConnector}.options.gradeNames"
             }
         }
