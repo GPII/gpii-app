@@ -92,7 +92,8 @@ fluid.defaults("gpii.app.dialog", {
         closable: false,
 
         // Whether to register a listener for BrowserWindow "readiness". The BrowserWindow is ready
-        // once all its components are created.
+        // once all its components are created. Once a window is ready the `onDialogReady` event will
+        // be fired.
         awaitWindowReadiness: false,
 
         restrictions: {
@@ -291,6 +292,8 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
      * BrowserWindow. Keep that id in the window itself.
      */
     dialog.relatedCmpId = that.id;
+    // XXX dev
+    dialog.webContents.grades = that.options.gradeNames.slice(-2)[0];
 
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095

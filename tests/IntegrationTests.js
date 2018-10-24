@@ -22,7 +22,6 @@ var fluid = require("gpii-universal"),
 
 require("gpii-windows/index.js");
 fluid.require("%gpii-universal/gpii/node_modules/testing");
-require("./lib/rendererCoverageCollector.js");
 
 gpii.loadTestingSupport();
 
@@ -46,6 +45,9 @@ require("./TimerTestDefs.js");
 
 fluid.registerNamespace("gpii.tests.app");
 
+/*
+ * Preceding items for every test sequence.
+ */
 gpii.tests.app.startSequence = [
     { // This sequence point is required because of a QUnit bug - it defers the start of sequence by 13ms "to avoid any current callbacks" in its words
         func: "{testEnvironment}.events.constructServer.fire"
@@ -59,6 +61,20 @@ gpii.tests.app.startSequence = [
         listener: "fluid.identity"
     }
 ];
+
+/*
+ * Items added after every test sequence.
+ */
+gpii.tests.app.endSequence = [];
+
+/*
+ * In case there is need for distributions for all tests that is conditionally present.
+ * This is extremely useful in the case of coverage collecting for the renderer processes
+ * as we need to distribute options only if we are running instrumented code (coverage data
+ * is to be collected).
+ */
+gpii.tests.app.testsDistributions = {};
+
 
 /**
  * Attach instances that are needed in test cases.
@@ -81,11 +97,7 @@ gpii.tests.app.testDefToCaseHolder = function (configurationName, testDefIn) {
     // as well as the server
     // sequence.unshift.apply(sequence, kettle.test.startServerSequence);
     sequence.unshift.apply(sequence, gpii.tests.app.startSequence);
-    sequence.push({
-        task: "gpii.tests.app.instrumentedDialog.requestCoverage",
-        resolve: "console.log",
-        resolveArgs: "COVERAGE!"
-    });
+    sequence.push.apply(sequence, gpii.tests.app.endSequence);
     testDef.modules = [{
         name: configurationName + " tests",
         tests: [{
@@ -110,6 +122,7 @@ gpii.tests.app.testDefToServerEnvironment = function (testDef) {
                     options: gpii.tests.app.testDefToCaseHolder(configurationName, testDef)
                 }
             },
+            distributeOptions: gpii.tests.app.testsDistributions,
             events: {
                 noUserLoggedIn: null
             }
@@ -122,6 +135,20 @@ gpii.tests.app.testDefToServerEnvironment = function (testDef) {
 gpii.tests.app.bootstrapServer = function (testDefs, transformer) {
     return kettle.test.bootstrap(testDefs, fluid.makeArray(transformer).concat([gpii.tests.app.testDefToServerEnvironment]));
 };
+
+/*
+ * In case we're running tests with coverage data collecting,
+ * we'd need to collect coverage data for the renderer as well.
+ */
+if (gpii.tests.app.isInstrumented) {
+    /*
+     * Run coverage collecting for the BrowserWindow-s.
+     *
+     * NOTE: This should be required last as it overrides existing items, such as `gpii.tests.app.endSequence`
+     */
+    fluid.require("%gpii-app/tests/lib/enableRendererCoverage.js");
+}
+
 
 gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.app.testDefs),
