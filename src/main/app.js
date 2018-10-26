@@ -70,7 +70,8 @@ fluid.defaults("gpii.app", {
             sets: [],
             activeSet: null,
             settingGroups: [],
-            closePSPOnBlur: null
+            closePspOnBlur: null,
+            closeQssOnBlur: null
         },
         theme: "{that}.options.defaultTheme"
     },
@@ -181,7 +182,9 @@ fluid.defaults("gpii.app", {
                 appTextZoomPath: "appTextZoom",
                 model: {
                     isKeyedIn: "{app}.model.isKeyedIn",
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                    keyedInUserToken: "{app}.model.keyedInUserToken",
+
+                    closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur"
                 },
                 listeners: {
                     "{gpiiConnector}.events.onQssSettingsUpdate": {

@@ -26,7 +26,21 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.gpiiConnector", {
     gradeNames: ["gpii.app.ws"],
 
-    defaultGpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
+    /*
+     * Options that are either simply omitted or aren't yet supported by the PSPChannel
+     */
+    defaultPreferences: {
+        /* The default keyboard shortcut for opening the GPII given as an accelerator string.
+         * Will be used in case the user does not have a keyboard shortcut of his own.
+         */
+        gpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
+        /* Whether the QSS and the PSP should be closed once their BrowserWindows lose
+         * focus. If there are different values specified in the siteconfig.json5, they will
+         * be used instead.
+         */
+        closeQssOnBlur: false,
+        closePspOnBlur: true
+    },
 
     events: {
         onPreferencesUpdated: null,
@@ -121,8 +135,7 @@ gpii.app.gpiiConnector.handlePreferencesChangeMessage = function (gpiiConnector,
     var snapsetName = gpii.app.extractSnapsetName(updateDetails);
     gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
 
-    var defaultGpiiAppShortcut = gpiiConnector.options.defaultGpiiAppShortcut,
-        preferences = gpii.app.extractPreferencesData(updateDetails, defaultGpiiAppShortcut);
+    var preferences = gpii.app.extractPreferencesData(updateDetails, gpiiConnector.options.defaultPreferences);
     gpiiConnector.events.onPreferencesUpdated.fire(preferences);
 };
 
@@ -246,18 +259,18 @@ gpii.app.extractSettings = function (element) {
  * or out.
  * @param {Object} message - The message sent when the user keys is or out (a JSON
  * object).
- * @param {String} defaultGpiiAppShortcut -The default keyboard shortcut for opening
- * the GPII given as an accelerator string. Will be used in case the user does not
- * have a keyboard shortcut of his own.
+ * @param {String} defaultPreferences - Preferences that can be used in case such
+ * are missing from the preferneces sent by the PSPChannel.
  * @return {Preferences} The preferences object that can be used in the GPII app.
  */
-gpii.app.extractPreferencesData = function (message, defaultGpiiAppShortcut) {
+gpii.app.extractPreferencesData = function (message, defaultPreferences) {
     var value = message.value || {},
         // Whether the PSP should be closed when the user clicks outside. The default
         // value is `true` (in case this is not specified in the payload). Note that
         // the latter will always be the case in the keyed out payload!
-        closePSPOnBlur = fluid.isValue(value.closePSPOnBlur) ? value.closePSPOnBlur : true,
-        gpiiAppShortcut = value.gpiiAppShortcut || defaultGpiiAppShortcut,
+        closePspOnBlur = fluid.isValue(value.closePspOnBlur) ? value.closePspOnBlur : defaultPreferences.closePspOnBlur,
+        closeQssOnBlur = fluid.isValue(value.closeQssOnBlur) ? value.closeQssOnBlur : defaultPreferences.closeQssOnBlur,
+        gpiiAppShortcut = value.gpiiAppShortcut || defaultPreferences.gpiiAppShortcut,
         preferences = value.preferences || {},
         contexts = preferences.contexts,
         gpiiKey = value.gpiiKey,
@@ -284,7 +297,8 @@ gpii.app.extractPreferencesData = function (message, defaultGpiiAppShortcut) {
         sets: sets,
         activeSet: activeSet,
         settingGroups: settingGroups,
-        closePSPOnBlur: closePSPOnBlur,
+        closePspOnBlur: closePspOnBlur,
+        closeQssOnBlur: closeQssOnBlur,
         gpiiAppShortcut: gpiiAppShortcut
     };
 };
@@ -500,7 +514,7 @@ gpii.app.dev.gpiiConnector.mockPreferences = function (preferences) {
   * @property {String} activeSet - The path of the currently active preference set.
   * @property {SettingGroup[]} settingGroups - The setting groups
   * for the parsed message.
-  * @property {Boolean} closePSPOnBlur - Whether the PSP should be closed when the user
+  * @property {Boolean} closePspOnBlur - Whether the PSP should be closed when the user
   * clicks outside of it or not.
   */
 

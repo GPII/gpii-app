@@ -80,7 +80,7 @@ fluid.defaults("gpii.app.qssWidget", {
             }
         },
         attrs: {
-            alwaysOnTop: true
+            alwaysOnTop: false
         },
         fileSuffixPath: "qssWidget/index.html"
     },
@@ -230,8 +230,6 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
  */
 gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, activationParams) {
     activationParams = activationParams || {};
-
-    that.dialog.setAlwaysOnTop(true);
 
     gpii.app.applier.replace(that.applier, "setting", setting);
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
