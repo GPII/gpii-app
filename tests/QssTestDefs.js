@@ -33,10 +33,12 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
     clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
     hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").trigger('mouseenter')",
     clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
+    clickScreenZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(3)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(5)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
+    clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(3)\").click()",
     clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
@@ -328,6 +330,143 @@ var qssCrossTestSequence = [
             "The QSS widget is hidden when its closed button is pressed",
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
+    }, { // Click on the "Screen Zoom" button...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickScreenZoomBtn
+        ]
+    }, { // ... and wait for the QSS widget menu to be shown.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, { // Clicking on the increment button...
+        func: "gpii.test.executeJavaScriptDelayed",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn,
+            1000
+        ]
+    }, { // ... will change the value of the DPI setting
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "DPI setting change is correctly registered",
+            {
+                path: "http://registry\\.gpii\\.net/common/DPIScale",
+                value: 1
+            },
+            "{arguments}.0"
+        ]
+    }, { // Click on the increment button again...
+        task: "gpii.test.executeJavaScriptDelayed",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn,
+            1000
+        ],
+        resolve: "fluid.identity"
+    }, { // ... will not change the DPI setting's value because it is already reached at its highest value
+        func: "jqUnit.assertEquals",
+        args: [
+            "The DPI setting value is not changed once its highest value has been reached",
+            1,
+            "{that}.app.qssWrapper.model.settings.1.value"
+        ]
+    }, { // Clicking on the increment button once again...
+        func: "gpii.test.executeJavaScriptDelayed",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn,
+            1000
+        ]
+    }, { // ... will make the QSS warning notification show up.
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS notification is shown when the DPI setting has reached its highest value",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
+        ]
+    }, { // Close the QSS notification
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssNotification.dialog",
+            closeClosableDialog
+        ]
+    }, {
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, { // Clicking on the decrement button...
+        func: "gpii.test.executeJavaScriptDelayed",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn,
+            1000
+        ]
+    }, { // ... will change the value of the DPI setting
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "First decrease in DPI setting change is correctly registered",
+            {
+                path: "http://registry\\.gpii\\.net/common/DPIScale",
+                value: 0
+            },
+            "{arguments}.0"
+        ]
+    }, { // Click on the decrement button again...
+        func: "gpii.test.executeJavaScriptDelayed",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn,
+            1000
+        ]
+    }, { // ... will change the value of the DPI setting to its lowest possible value
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "Second decrease in DPI setting change is correctly registered",
+            {
+                path: "http://registry\\.gpii\\.net/common/DPIScale",
+                value: -1
+            },
+            "{arguments}.0"
+        ]
+    }, { // Clicking on the decrement button once again...
+        task: "gpii.test.executeJavaScriptDelayed",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn,
+            1000
+        ],
+        resolve: "fluid.identity"
+    }, { // ... will not change the DPI setting's value because it is already reached its lowest value
+        func: "jqUnit.assertEquals",
+        args: [
+            "The DPI setting value is not changed once its lowest value has been reached",
+            -1,
+            "{that}.app.qssWrapper.model.settings.1.value"
+        ]
+    }, { // Clicking on the decrement button once again...
+        func: "gpii.test.executeJavaScriptDelayed",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn,
+            1000
+        ]
+    }, { // ... will make the QSS warning notification show up.
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS notification is shown when the DPI setting has reached its lowest value",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
+        ]
     },
     //
     // CROSS tests
@@ -575,7 +714,7 @@ var undoCrossTestSequence = [
 var undoTestSequence = [
     { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.1", {value: 1.5}]
+        args: ["settings.1", {value: 1}]
     }, { // ... there should be a setting registered
         changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
         path: "hasChanges",
@@ -610,7 +749,7 @@ var undoTestSequence = [
     //
     { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.1", {value: 1.5}]
+        args: ["settings.1", {value: 1}]
     }, { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
         args: ["settings.4", {value: true}]
@@ -665,10 +804,10 @@ var undoTestSequence = [
     //
     { // make a change to an undoable setting shouldn't have effect
         func: "{that}.app.qssWrapper.alterSetting",
-        args: [{path: "appTextZoom", value: 1.5}]
+        args: ["settings.2", {value: 2}]
     }, { // ... and making a watched change
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.1", {value: 1.5}]
+        args: ["settings.1", {value: 1}]
     }, { // ... should change `hasChanges` flag state
         changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
         path: "hasChanges",
@@ -676,6 +815,21 @@ var undoTestSequence = [
         args: [
             "QSS setting change indicator should restore state when stack is emptied",
             "{that}.app.qssWrapper.undoStack.model.hasChanges"
+        ]
+    }, { // Click the "Reset All to Standard" button
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickResetAllBtn
+        ]
+    }, {
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.1.value",
+        listener: "jqUnit.assertEquals",
+        args: [
+            "Reset All to Standard will revert the DPI setting to its original value",
+            0,
+            "{that}.app.qssWrapper.model.settings.1.value"
         ]
     }
 ];
@@ -903,12 +1057,16 @@ var crossQssTranslations = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 46,
+    expect: 54,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
     },
     distributeOptions: {
+        mockedSettings: {
+            record: "%gpii-app/tests/fixtures/qssSettings.json",
+            target: "{that gpii.app.qssWrapper}.options.settingsPath"
+        },
         mockedMessages: {
             record: qssSettingMessagesFixture,
             target: "{that gpii.app}.options.messageBundles"
