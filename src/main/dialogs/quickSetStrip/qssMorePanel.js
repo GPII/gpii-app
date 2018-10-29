@@ -24,7 +24,7 @@ require("../basic/centeredDialog.js");
  * in the QSS.
  */
 fluid.defaults("gpii.app.qssMorePanel", {
-    gradeNames: ["gpii.app.centeredDialog", "gpii.app.scaledDialog"],
+    gradeNames: ["gpii.app.centeredDialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
 
     // Configuration which may differ depending on the machine on which the app is deployed
     siteConfig: {
@@ -34,6 +34,8 @@ fluid.defaults("gpii.app.qssMorePanel", {
         movable: true,
         resizable: true
     },
+
+    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssMorePanel"],
 
     scaleFactor: 1,
     defaultWidth: "{that}.options.siteConfig.defaultWidth",
