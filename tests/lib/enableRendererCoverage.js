@@ -47,10 +47,17 @@ fluid.defaults("gpii.tests.app.instrumentedDialog", {
         "onCreate.registerDomStateListener": {
             funcName: "gpii.tests.app.domStateListener",
             args: ["{that}.dialog"]
+        },
+        "onCreate.collectCoverageBeforeQuit": {
+            func: "gpii.tests.app.instrumentedDialog.attachCoverageCollector",
+            args: "{that}"
+        },
+        "onDestroy.cleanupElectron": {
+            func: "gpii.tests.app.instrumentedDialog.cleanupElectron",
+            args: "{that}"
         }
     }
 });
-
 
 /**
  * Attach flag to that BrowserWindow object that specify whether the DOM of the
@@ -67,6 +74,17 @@ gpii.tests.app.domStateListener = function (dialog) {
     });
 };
 
+
+gpii.tests.app.instrumentedDialog.cleanupElectron = function (that) {
+    if (!that.dialog.isDestroyed()) {
+        if (that.options.config.closable) {
+            // Use a graceful destruction
+            that.dialog.close();
+        } else {
+            that.dialog.destroy();
+        }
+    }
+};
 
 
 /**
@@ -115,9 +133,11 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
     var activeDialogs = BrowserWindow.getAllWindows();
     var awaitingReportDialogs = activeDialogs.length;
 
+    console.log("COVERAGE: ", activeDialogs.length);
+
     fluid.each(activeDialogs, function (dialog) {
         // XXX DEV
-        console.log("Request coverage: ", dialog.webContents.grades);
+        console.log("Request coverage: ", dialog.webContents.grades, dialog.relatedCmpId);
         var collectDailogCoverage = gpii.tests.app.instrumentedDialog.requestDialogCoverage.bind(null, dialog);
 
         /*
@@ -139,8 +159,18 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
     /*
      * Wait for coverage report success from all of the BrowserWindows.
      */
-    ipcMain.on("reportCoverageSuccess", function (/* event */) {
+    ipcMain.on("reportCoverageSuccess", function (e) {
+        var responseDialog = BrowserWindow.fromWebContents(e.sender);
         awaitingReportDialogs--;
+
+        // XXX DEV
+        console.log("COLLECTED: ",  awaitingReportDialogs, activeDialogs.length);
+        if (responseDialog) {
+            // XXX DEV
+            console.log(responseDialog.relatedCmpId);
+        } else {
+            console.log(e.sender.grades);
+        }
 
         if (awaitingReportDialogs <= 0) {
             promise.resolve();
@@ -168,6 +198,55 @@ fluid.defaults("gpii.tests.app.rendererCoverageServer", {
         }
     }
 });
+
+
+gpii.tests.app.instrumentedDialog.attachCoverageCollector = function (that) {
+    // XXX DEV
+    console.log("WILL IT ATTACH?", that.options.config.closable);
+    if (that.options.config.closable) {
+        var dialog = that.dialog;
+        var awaiting = false;
+        // XXX DEV
+        // dialog.webContents.toggleDevTools();
+        console.log("--- Attached to: ", dialog.webContents.grades);
+        dialog.on("close", function (e) {
+            console.log("Prevent closing");
+            e.preventDefault();
+            dialog.hide(); // behave normally
+            // TODO destroy dialog
+            dialog.webContents.toggleDevTools();
+            // TODO load script form file
+            // XXX DEV
+            // console.log("REQUEST SINGLE COVERAGE: ", dialog.webContents.grades, dialog.relatedCmpId, awaiting);
+            // if (!awaiting) {
+            //     awaiting = true;
+            //     console.log("REAL REQUEST", dialog.webContents.grades, dialog.relatedCmpId, awaiting);
+            //     gpii.tests.app.instrumentedDialog.requestDialogCoverage(dialog);
+            // }
+        });
+
+        // TODO this is to be handled by
+        ipcMain.on("reportCoverageSuccess", function (e) {
+            // As we've deattached the default destruction mechanism, ensure BrowserWindows are destroyed
+            var responseDialog = BrowserWindow.fromWebContents(e.sender);
+            if (!responseDialog) {
+                return;
+            }
+
+            console.log( "SINGLE COVERAGE SUCCESS: ",
+                e.sender.grades,
+                that.dialog.relatedCmpId,
+                responseDialog.relatedCmpId,
+                dialog.isDestroyed()
+            );
+
+            if (dialog.relatedCmpId === responseDialog.relatedCmpId && !dialog.isDestroyed()) { // use sender
+                console.log("DESTROY: ", e.sender.grades, responseDialog.relatedCmpId);
+                dialog.destroy();
+            }
+        });
+    }
+};
 
 
 /*

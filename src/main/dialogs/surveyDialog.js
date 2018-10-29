@@ -69,11 +69,11 @@ fluid.defaults("gpii.app.surveyDialog", {
         onSurveyClose: null
     },
     listeners: {
-        "onCreate.hideMenu": {
-            this: "{that}.dialog",
-            method: "setMenu",
-            args: [null]
-        },
+        // "onCreate.hideMenu": {
+        //     this: "{that}.dialog",
+        //     method: "setMenu",
+        //     args: [null]
+        // },
         "onCreate.initClosedListener": {
             listener: "gpii.app.surveyDialog.initClosedListener",
             args: ["{that}"]
@@ -121,8 +121,11 @@ fluid.defaults("gpii.app.surveyDialog", {
  * right corner.
  * @param {Component} that - The `gpii.app.surveyDialog` instance.
  */
+// TODO move to all dialogs
 gpii.app.surveyDialog.initClosedListener = function (that) {
     that.dialog.on("closed", function () {
+        // XXX DEV
+        console.log("DIALOG DEST", that.id);
         that.destroy();
     });
 };
@@ -181,7 +184,7 @@ fluid.defaults("gpii.app.survey", {
             type: "gpii.app.surveyDialog",
             options: {
                 config: {
-                    // closable: true,
+                    closable: true,
                     surveyUrl: "{arguments}.0",
                     closeOnSubmit: "{arguments}.1",
                     attrs: "{arguments}.2"

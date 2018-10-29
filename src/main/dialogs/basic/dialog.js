@@ -246,8 +246,8 @@ fluid.defaults("gpii.app.dialog", {
             method: "focus"
         },
         close: {
-            this: "{that}.dialog",
-            method: "close"
+            funcName: "gpii.app.dialog.close",
+            args: ["{that}"]
         }
     }
 });
@@ -363,6 +363,14 @@ gpii.app.dialog.show = function (that) {
     } else {
         that.applier.change("isShown", true);
     }
+};
+
+gpii.app.dialog.close = function (that) {
+    // update the dialog shown state
+    that.hide();
+
+    // init destroying
+    that.dialog.close();
 };
 
 /**

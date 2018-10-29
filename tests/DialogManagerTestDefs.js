@@ -128,13 +128,16 @@ gpii.tests.dialogManager.testDefs = {
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    sequence: [{
+    sequence: [ {
+        func: "gpii.tests.dialogManager.testShowInvalidDialog",
+        args: ["{that}.app.dialogManager"]
+    }, { // move to dialog tests
         func: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
         args: ["{that}.app.dialogManager"]
     }, {
         func: "{that}.app.keyIn",
         args: ["snapset_5"]
-    }, {
+    }, { // TODO remove or replace with event
         changeEvent: "{that}.app.dialogManager.applier.modelChanged",
         path: "isKeyedIn",
         listener: "jqUnit.assertTrue",
@@ -142,9 +145,6 @@ gpii.tests.dialogManager.testDefs = {
             "There is a keyed in user for the dialog manager",
             "{that}.app.dialogManager.model.isKeyedIn"
         ]
-    }, {
-        func: "gpii.tests.dialogManager.testShowInvalidDialog",
-        args: ["{that}.app.dialogManager"]
     },
-    surveyDialogSequence]
+        surveyDialogSequence]
 };

@@ -91,12 +91,11 @@ gpii.tests.blockTestsElement = function () {
 var electron = require("electron");
 // Restore tests running cycle
 electron.app.on("ready", function () {
-    electron.globalShortcut.register("Space", function () {
-        console.log("Go Go Go!");
-        _promise.resolve();
-    });
+    // electron.globalShortcut.register("Space", function () {
+    //     console.log("Go Go Go!");
+    //     _promise.resolve();
+    // });
 });
-
 
 var qssCrossTestSequence = [
     /*
