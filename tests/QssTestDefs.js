@@ -33,10 +33,13 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"m
     clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
     hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").trigger('mouseenter')",
     clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
+    clickScreenZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(3)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(5)\").click()",
+    clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
+    clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(3)\").click()",
     clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
@@ -57,7 +60,7 @@ fluid.registerNamespace("gpii.tests.qss.testDefs");
 
 gpii.tests.qss.simulateShortcut = function (dialog, shortcut) {
     dialog.webContents.sendInputEvent({
-        type: "keyDown",
+        type: shortcut.type || "keyUp",
         keyCode: shortcut.key,
         modifiers: shortcut.modifiers || []
     });
@@ -133,6 +136,37 @@ var qssCrossTestSequence = [
             "{that}.app",
             {psp: false, qss: false}
         ]
+    }, { // Simulate opening of the QSS using the global shortcut
+        func: "{that}.app.qssWrapper.qss.show",
+        args: [
+            {shortcut: true}
+        ]
+    }, { // The QSS will be shown but the PSP won't be.
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: false, qss: true}
+        ]
+    }, { // Clicking on the "Sign in" button in the QSS...
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickPspBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... will also bring up the PSP.
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: true, qss: true}
+        ]
+    }, {
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
     },
     /*
      * Tooltip & QSS integration
@@ -227,7 +261,8 @@ var qssCrossTestSequence = [
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             {
-                key: "Escape"
+                key: "Escape",
+                type: "keyDown"
             }
         ]
     }, { // ... should close the tooltip
@@ -273,6 +308,38 @@ var qssCrossTestSequence = [
         ]
     },
     /*
+     * "More" panel
+     */
+    {  // When the "More" button is clicked...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickMoreBtn
+        ]
+    }, { // ... the QSS More panel will show up.
+        changeEvent: "{that}.app.qssWrapper.qssMorePanel.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS More panel is shown when the More button in the QSS is clicked",
+            "{that}.app.qssWrapper.qssMorePanel.model.isShown"
+        ]
+    }, { // If the "More" button is clicked once again...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickMoreBtn
+        ]
+    }, { // ... the QSS More panel will be hidden.
+        changeEvent: "{that}.app.qssWrapper.qssMorePanel.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS More panel is hidden if the More button in the QSS is clicked while the More panel is open",
+            "{that}.app.qssWrapper.qssMorePanel.model.isShown"
+        ]
+    },
+    /*
      * Widget & QSS integration
      */
     // QSS widget visibility tests
@@ -290,7 +357,7 @@ var qssCrossTestSequence = [
             "The QSS widget is shown when the language button is pressed",
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
-    }, { // If the button is focused using keyboard interaction...
+    }, { // If the close button in the QSS is pressed...
         func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
@@ -327,6 +394,242 @@ var qssCrossTestSequence = [
         args: [
             "The QSS widget is hidden when its closed button is pressed",
             "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }, { // Attempts to activate a button which does not have keyboard highlight...
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            {
+                key: "Enter"
+            }
+        ]
+    }, { // ... will fail
+        func: "jqUnit.assertFalse",
+        args: [
+            "QSS button cannot be activated using the keyboard if the button does not have focus",
+            "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }, { // Click the language button again...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickLanguageBtn
+        ]
+    }, { // ... and wait for the QSS widget to show up...
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, { // ... and then simulate an ArrowLeft key press.
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            {
+                key: "Left" // The key should be a value allowed to appear in an accelerator string.
+            }
+        ]
+    }, { // This should close the QSS widget dialog.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS widget is hidden when the ArrowLeft key is pressed",
+            "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }, { // Now the focus is on the "Close" button. Pressing Tab will move it back to the language button.
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            {
+                key: "Tab"
+            }
+        ]
+    }, { // Pressing the spacebar key...
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            {
+                key: "Space" // The key should be a value allowed to appear in an accelerator string.
+            }
+        ]
+    }, { // ... will make the language menu show up.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS widget is shown when the QSS button is activated using spacebar",
+            "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }, { // Pressing the ESC key while the QSS widget is focused...
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            {
+                key: "Escape"
+            }
+        ]
+    }, { // ... will close it.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS widget is closed when it has focus and the ESC key is pressed",
+            "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }, { // Click the language button again...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickLanguageBtn
+        ]
+    }, { // ... and wait for the QSS widget to show up.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, { // Pressing the ArrowRight key while the QSS widget is focused...
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            {
+                key: "Right" // The key should be a value allowed to appear in an accelerator string.
+            }
+        ]
+    }, { // ... will close it.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS widget is hidden when the ArrowRight key is pressed",
+            "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }, { // Click on the "Screen Zoom" button...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickScreenZoomBtn
+        ]
+    }, { // ... and wait for the QSS widget menu to be shown.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, { // Clicking on the increment button...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn
+        ]
+    }, { // ... will change the value of the DPI setting
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "DPI setting change is correctly registered",
+            {
+                path: "http://registry\\.gpii\\.net/common/DPIScale",
+                value: 1
+            },
+            "{arguments}.0"
+        ]
+    }, { // Click on the increment button again...
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... will not change the DPI setting's value because it is already reached at its highest value
+        func: "jqUnit.assertEquals",
+        args: [
+            "The DPI setting value is not changed once its highest value has been reached",
+            1,
+            "{that}.app.qssWrapper.model.settings.1.value"
+        ]
+    }, { // Clicking on the increment button once again...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn
+        ]
+    }, { // ... will make the QSS warning notification show up.
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS notification is shown when the DPI setting has reached its highest value",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
+        ]
+    }, { // Close the QSS notification
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssNotification.dialog",
+            closeClosableDialog
+        ]
+    }, {
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, { // Clicking on the decrement button...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn
+        ]
+    }, { // ... will change the value of the DPI setting
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "First decrease in DPI setting change is correctly registered",
+            {
+                path: "http://registry\\.gpii\\.net/common/DPIScale",
+                value: 0
+            },
+            "{arguments}.0"
+        ]
+    }, { // Click on the decrement button again...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn
+        ]
+    }, { // ... will change the value of the DPI setting to its lowest possible value
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "Second decrease in DPI setting change is correctly registered",
+            {
+                path: "http://registry\\.gpii\\.net/common/DPIScale",
+                value: -1
+            },
+            "{arguments}.0"
+        ]
+    }, { // Clicking on the decrement button once again...
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... will not change the DPI setting's value because it is already reached its lowest value
+        func: "jqUnit.assertEquals",
+        args: [
+            "The DPI setting value is not changed once its lowest value has been reached",
+            -1,
+            "{that}.app.qssWrapper.model.settings.1.value"
+        ]
+    }, { // Clicking on the decrement button once again...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickDecreaseBtn
+        ]
+    }, { // ... will make the QSS warning notification show up.
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS notification is shown when the DPI setting has reached its lowest value",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
     },
     //
@@ -575,7 +878,7 @@ var undoCrossTestSequence = [
 var undoTestSequence = [
     { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.1", {value: 1.5}]
+        args: ["settings.1", {value: 1}]
     }, { // ... there should be a setting registered
         changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
         path: "hasChanges",
@@ -610,7 +913,7 @@ var undoTestSequence = [
     //
     { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.1", {value: 1.5}]
+        args: ["settings.1", {value: 1}]
     }, { // make a change to a setting
         func: "{that}.app.qssWrapper.applier.change",
         args: ["settings.4", {value: true}]
@@ -665,10 +968,10 @@ var undoTestSequence = [
     //
     { // make a change to an undoable setting shouldn't have effect
         func: "{that}.app.qssWrapper.alterSetting",
-        args: [{path: "appTextZoom", value: 1.5}]
+        args: ["settings.2", {value: 2}]
     }, { // ... and making a watched change
         func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.1", {value: 1.5}]
+        args: ["settings.1", {value: 1}]
     }, { // ... should change `hasChanges` flag state
         changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
         path: "hasChanges",
@@ -676,6 +979,21 @@ var undoTestSequence = [
         args: [
             "QSS setting change indicator should restore state when stack is emptied",
             "{that}.app.qssWrapper.undoStack.model.hasChanges"
+        ]
+    }, { // Click the "Reset All to Standard" button
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickResetAllBtn
+        ]
+    }, {
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.1.value",
+        listener: "jqUnit.assertEquals",
+        args: [
+            "Reset All to Standard will revert the DPI setting to its original value",
+            0,
+            "{that}.app.qssWrapper.model.settings.1.value"
         ]
     }
 ];
@@ -903,12 +1221,16 @@ var crossQssTranslations = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 46,
+    expect: 65,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
     },
     distributeOptions: {
+        mockedSettings: {
+            record: "%gpii-app/tests/fixtures/qssSettings.json",
+            target: "{that gpii.app.qssWrapper}.options.settingsPath"
+        },
         mockedMessages: {
             record: qssSettingMessagesFixture,
             target: "{that gpii.app}.options.messageBundles"
