@@ -121,11 +121,8 @@ fluid.defaults("gpii.app.surveyDialog", {
  * right corner.
  * @param {Component} that - The `gpii.app.surveyDialog` instance.
  */
-// TODO move to all dialogs
 gpii.app.surveyDialog.initClosedListener = function (that) {
     that.dialog.on("closed", function () {
-        // XXX DEV
-        console.log("DIALOG DEST", that.id);
         that.destroy();
     });
 };

@@ -55,8 +55,9 @@ gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, survey
     );
 };
 
-gpii.tests.dialogManager.testSurveyDialogHidden = function (dialogManager) {
-    var dialogVisibilityState = dialogManager.survey.dialog.model.isShown;
+gpii.tests.dialogManager.testSurveyDialogNotVisible = function (dialogManager) {
+    // either destroyed or hidden
+    var dialogVisibilityState = dialogManager.survey.dialog && dialogManager.survey.dialog.model.isShown;
     jqUnit.assertFalse("Survey dialog is hidden", dialogVisibilityState);
 };
 
@@ -89,7 +90,7 @@ var surveyDialogSequence = [
         func: "{that}.app.dialogManager.hide",
         args: ["survey"]
     }, { // ... should simply hide the survey
-        func: "gpii.tests.dialogManager.testSurveyDialogHidden",
+        func: "gpii.tests.dialogManager.testSurveyDialogNotVisible",
         args: ["{that}.app.dialogManager"]
     }, { // ... showing it again
         func: "{that}.app.dialogManager.show",
@@ -101,7 +102,7 @@ var surveyDialogSequence = [
         func: "{that}.app.dialogManager.close",
         args: ["survey"]
     }, { // ... should also hide the dialog
-        func: "gpii.tests.dialogManager.testSurveyDialogHidden",
+        func: "gpii.tests.dialogManager.testSurveyDialogNotVisible",
         args: ["{that}.app.dialogManager"]
     }, {
         func: "{that}.app.dialogManager.show",
@@ -114,7 +115,7 @@ var surveyDialogSequence = [
     }, { // Test that the survey dialog is closed when the user keys out
         changeEvent: "{that}.app.dialogManager.applier.modelChanged",
         path: "isKeyedIn",
-        listener: "gpii.tests.dialogManager.testSurveyDialogHidden",
+        listener: "gpii.tests.dialogManager.testSurveyDialogNotVisible",
         args: ["{that}.app.dialogManager"]
     }
 ];
