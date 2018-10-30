@@ -75,6 +75,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributesOpenQssShortcut: {
             record: "{that}.options.siteConfig.openQssShortcut",
             target: "{app gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
+        },
+        distributeSurveyTriggersUrl: {
+            record: "{that}.options.siteConfig.surveyTriggersUrl",
+            target: "{app surveyConnector}.options.config.surveyTriggersUrl"
         }
     }
 });

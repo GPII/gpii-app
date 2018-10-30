@@ -45,6 +45,7 @@ var fluid = require("infusion"),
  * The response of the server would be an array of trigger objects in the following format:
  *     {
  *         id: <trigger_id>, // mandatory, used to distinguish the triggers
+ *         surveyUrl: <surveyUrl>, // optional - the URL of the survey if it is in a remote location
  *         conditions: {
  *             // lists all conditions that need to be satisfied for this trigger
  *         }
@@ -209,7 +210,7 @@ fluid.defaults("gpii.app.dynamicSurveyConnector", {
     },
 
     config: {
-        triggersUrl: "https://gtodorov.free.beeceptor.com/triggers"
+        triggersUrl: null // will be distributed from the siteConfig.json5
     },
 
     modelListeners: {
@@ -235,14 +236,20 @@ fluid.defaults("gpii.app.dynamicSurveyConnector", {
 });
 
 gpii.app.dynamicSurveyConnector.requestTriggers = function (that) {
-    that.triggersRequest = request(that.options.config.triggersUrl, function (error, response, body) {
+    that.triggersRequest = request(that.options.config.surveyTriggersUrl, function (error, response, body) {
+        console.log("===========fetch", that.options.config.surveyTriggersUrl);
         that.triggersRequest = null;
 
         if (error) {
-            fluid.log(fluid.logLevel.WARN, "Survey connector: Cannot get trigger data", error);
+            console.log(fluid.logLevel.WARN, "Survey connector: Cannot get trigger data", error);
         } else {
-            var triggers = JSON.parse(body);
-            that.events.onTriggerDataReceived.fire(triggers);
+            try {
+                var triggers = JSON.parse(body);
+                console.log("======triggers", triggers);
+                that.events.onTriggerDataReceived.fire(triggers);
+            } catch (parsingError) {
+                console.log(fluid.logLevel.WARN, "Survey connector: Error parsing trigger data", parsingError);
+            }
         }
     });
 };
@@ -254,11 +261,16 @@ gpii.app.dynamicSurveyConnector.notifyTriggerOccurred = function (that, triggerP
         delete that.surveyRequests[triggerPayload.id];
 
         if (error) {
-            fluid.log(fluid.logLevel.WARN, "Survey connector: Cannot get survey data", error);
+            console.log(fluid.logLevel.WARN, "Survey connector: Cannot get survey data", error);
         } else {
-            var surveyPayload = JSON.parse(body);
-            surveyPayload.url = gpii.app.surveyConnector.getSurveyUrl(that, surveyPayload);
-            that.events.onSurveyRequired.fire(surveyPayload);
+            try {
+                var surveyPayload = JSON.parse(body);
+                console.log("========survey payload", surveyPayload);
+                surveyPayload.url = gpii.app.surveyConnector.getSurveyUrl(that, surveyPayload);
+                that.events.onSurveyRequired.fire(surveyPayload);
+            } catch (parsingError) {
+                console.log(fluid.logLevel.WARN, "Survey connector: Error parsing survey data", parsingError);
+            }
         }
     });
 };
