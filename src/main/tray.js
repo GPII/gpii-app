@@ -34,8 +34,8 @@ fluid.defaults("gpii.app.tray", {
         }
     },
     icons: {
-        keyedIn: "%gpii-app/src/icons/gpii-color.ico",
-        keyedOut: "%gpii-app/src/icons/gpii.ico"
+        keyedIn: "%gpii-app/src/icons/Morphic-tray-icon-green.ico",
+        keyedOut: "%gpii-app/src/icons/Morphic-tray-icon-white.ico"
     },
     components: {
         menu: {

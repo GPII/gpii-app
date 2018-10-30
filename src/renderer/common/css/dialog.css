@@ -94,11 +94,7 @@ body {
 
 .fl-dialog .fl-dialog-footer .fl-gpiiIcon {
     float: right;
-}
-
-.fl-dialog .fl-dialog-footer .fl-gpiiIcon img {
-    height: 16px;
-    margin-top: -3px; /* vertial align text and image properly */
+    height: 20px;
 }
 
 .fl-dialog .fl-speech-triangle {

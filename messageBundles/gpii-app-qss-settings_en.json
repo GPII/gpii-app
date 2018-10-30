@@ -1,6 +1,6 @@
 {
     "gpii_app_qss_settings_close": {
-        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/gpii-icon-balloon.png'></img></p>",
+        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/Morphic-tray-icon-white.ico'></img></p>",
         "title": "Close"
     },
     "gpii_app_qss_settings_undo": {

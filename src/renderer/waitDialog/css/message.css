@@ -22,12 +22,8 @@
 
 .gpii-icon {
     float: right;
+    height: 20px;
     padding-top: .25em;
-    padding-right: .2em;
-}
-
-.gpii-icon img {
-    vertical-align: -3px;
 }
 
 .gpii-spinner {
