@@ -18,14 +18,15 @@
 }
 
 .fl-signIn .fl-signIn-content .fl-signIn-contentIcon {
-    float: left;
-    width: 48px;
     height: 48px;
-    margin-right: 10px;
 }
 
 .fl-signIn .fl-signIn-content .fl-signIn-contentText {
     overflow: hidden;
+}
+
+.fl-signIn .fl-signIn-content .fl-signIn-contentIcon + .fl-signIn-contentText {
+    margin-left: 58px;
 }
 
 .fl-signIn .fl-signIn-content .fl-signIn-contentText .fl-title {

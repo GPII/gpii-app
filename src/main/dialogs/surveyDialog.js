@@ -43,7 +43,7 @@ fluid.defaults("gpii.app.surveyDialog", {
             icon: {
                 expander: {
                     funcName: "fluid.module.resolvePath",
-                    args: ["%gpii-app/src/icons/gpii-color.ico"]
+                    args: ["%gpii-app/src/icons/Morphic-Desktop-Icon.ico"]
                 }
             },
 
