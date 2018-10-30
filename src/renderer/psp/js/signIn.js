@@ -36,8 +36,6 @@
             messages: {
                 signInHeader: null,
 
-                titleIntro: null,
-
                 subtitleIntro: null,
 
                 title: null,
@@ -62,7 +60,6 @@
         selectors: {
             signInHeader:         ".flc-signInHeader",
 
-            titleIntro:           ".flc-contentTitleIntro",
             subtitleIntro:        ".flc-contentSubTitleIntro",
 
             title:                ".flc-contentTitle",
