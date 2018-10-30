@@ -318,9 +318,7 @@ gpii.app.dialogManager.hide = function (dialogManager, selector) {
  */
 gpii.app.dialogManager.close = function (dialogManager, selector) {
     var dialog = dialogManager.get(selector);
-    // XXX dev
     if (dialog) {
-        console.log("Closing dialog: ", dialog.id);
         dialog.close();
     }
 };

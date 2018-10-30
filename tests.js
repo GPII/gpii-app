@@ -16,7 +16,7 @@ require("./src/main/app");
 
 
 fluid.registerNamespace("gpii.tests.app");
-// In case the "instrumented" source is loaded this global variable will be attached.
+// In case the "instrumented" source is loaded the `__coverage` variable will be present.
 gpii.tests.app.isInstrumented = fluid.isValue(global.__coverage__);
 
 
