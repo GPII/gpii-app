@@ -29,11 +29,10 @@ var fluid = require("infusion"),
  * 4. Firing an event (`onSurveyRequired`) if and when a survey needs to be shown by the PSP.
  *
  * This component does not provide an implementation for its invokers, nor does it fire the
- * events mentioned above on its own. This is left to the implementors. Currently, the only
- * implementation of this component is the `gpii.app.staticSurveyConnector` which simply
- * serves static payloads whenever its invokers are called. When the smart survey server is
- * available, there should be an implementor which communicates with it via HTTP(S) and fires
- * the appropriate events according to the server's responses.
+ * events mentioned above on its own. This is left to the implementors. The
+ * `gpii.app.staticSurveyConnector` simply serves static payloads which reside in the GPII app
+ * whenever its invokers are called. The `gpii.app.dynamicSurveyConnector` serves payloads which
+ * are fetched from a remote location.
  *
  * In the future, when a user keyes in, the `surveyConnector` would request the survey triggers
  * by issuing a request to the corresponding server route with the following JSON parameter:
@@ -143,6 +142,9 @@ gpii.app.surveyConnector.getSurveyUrl = function (that, fixture) {
     return url.toString();
 };
 
+/**
+ * Serves static payloads which reside in the GPII app itself.
+ */
 fluid.defaults("gpii.app.staticSurveyConnector", {
     gradeNames: ["gpii.app.surveyConnector"],
     config: {
@@ -199,6 +201,10 @@ gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that, triggerPa
     }
 };
 
+/**
+ * Serves triggers and survey payloads from a remote location using the `request`
+ * module.
+ */
 fluid.defaults("gpii.app.dynamicSurveyConnector", {
     gradeNames: ["gpii.app.surveyConnector"],
 
@@ -235,6 +241,13 @@ fluid.defaults("gpii.app.dynamicSurveyConnector", {
     }
 });
 
+/**
+ * Used to retrieve the survey triggers from a remote location. Note that survey triggers
+ * will always be fetched when a new user keys in (including the "noUser"). This means that
+ * if the payload residing in the remote location changes between two key-ins, then the
+ * surveys will also be different (i.e. survey triggers are not cached).
+ * @param {Component} that - The `gpii.app.dynamicSurveyConnector` instance.
+ */
 gpii.app.dynamicSurveyConnector.requestTriggers = function (that) {
     that.triggersRequest = request(that.options.config.surveyTriggersUrl, function (error, response, body) {
         console.log("===========fetch", that.options.config.surveyTriggersUrl);
@@ -254,6 +267,14 @@ gpii.app.dynamicSurveyConnector.requestTriggers = function (that) {
     });
 };
 
+/**
+ * Should be called when a trigger's conditions are met. As a result, the payload for the
+ * corresponding survey will be fetched from a remote location (specified in the `surveyUrl`
+ * property of the `triggerPayload`) and afterwards will be sent via the `onSurveyRequired` event.
+ * @param {Component} that - The `gpii.app.dynamicSurveyConnector` instance.
+ * @param {Object} triggerPayload - An object describing the trigger whose
+ * conditions have been met.
+ */
 gpii.app.dynamicSurveyConnector.notifyTriggerOccurred = function (that, triggerPayload) {
     that.surveyRequests = that.surveyRequests || {};
 
@@ -275,6 +296,11 @@ gpii.app.dynamicSurveyConnector.notifyTriggerOccurred = function (that, triggerP
     });
 };
 
+/**
+ * Whenever a user keys out, this function takes care of aborting any pending requests for
+ * fetching triggers and/or survey payloads data.
+ * @param {Component} that - The `gpii.app.dynamicSurveyConnector` instance.
+ */
 gpii.app.dynamicSurveyConnector.abortPendingRequests = function (that) {
     // Abort the request for fetching triggers (if any)
     if (that.triggersRequest) {
