@@ -147,5 +147,5 @@ gpii.tests.dialogManager.testDefs = {
             "{that}.app.dialogManager.model.isKeyedIn"
         ]
     },
-        surveyDialogSequence]
+    surveyDialogSequence]
 };

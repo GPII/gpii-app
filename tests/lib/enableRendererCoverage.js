@@ -22,15 +22,22 @@ var fluid = require("infusion"),
 require("gpii-testem"); // needed for the coverage server `gpii.testem.coverage.express`
 
 /*
- * The process for collecting BrowserWindows tests is the following:
- * - Runs coverage server (gpii.testem.coverage.express) to be enable collecting of coverage data
- * - Ensures all BrowserWindows are loading instrumented code in order to enable coverage collecting
- * - Collects coverage data from BrowserWindows after every test sequence
+ * - Run coverage server (gpii.testem.coverage.express) that will be collecting the renderer's coverage data
+ * - Ensure all BrowserWindows are loading instrumented code to introduce coverage collecting in the renderer processes' code
+ * - Ensure dialogs (BrowserWindows) are not destroyed before their coverage is collected
+ *     - currently the only dialogs that are being destroyed are the `closable` dialogs and we simply prevent
+ *     their destruction for until their coverage is collected which is done at the end of a test sequence;
+ *     - this is done by disabling both their mechanism for getting destroyed by being closed and getting destroyed with
+ *     their wrapping component destruction;
+ *     - Note that we don't destroy every dialog in the final step but only the ones that are `closable` and have their
+ *     wrapping component destroyed. This is so as these components might be used in some post test sequence code execution;
+ * - Collect coverage data from BrowserWindows after every test sequence and destroy postponed dialogs
  *     - this is needed as we need to collect coverage data before the BrowserWindows are destructed;
- *     - once a test sequence has finished execute a snippet in all running BrowserWindows - this sends coverage data
- *       to the running coverage server which stores this BrowserWindow coverage;
+ *     - once a test sequence has finished snippet in all running BrowserWindows is executed - this sends coverage data
+ *       to the running coverage server which stores this BrowserWindow coverage inforamtion;
  *     - Note that single BrowserWindows type (e.g. QSS) would get multiple coverage data
- *       reports (for every test sequence) which are merged by "istanbul" (nyc) in the final coverage report.
+ *       reports (for every test sequence) that might test different elements of the renderer code. These coverage files
+ *       are then merged by "istanbul" (nyc) in the final coverage report.
  */
 
 
@@ -48,12 +55,12 @@ fluid.defaults("gpii.tests.app.instrumentedDialog", {
             funcName: "gpii.tests.app.domStateListener",
             args: ["{that}.dialog"]
         },
-        "onCreate.collectCoverageBeforeQuit": {
-            func: "gpii.tests.app.instrumentedDialog.attachCoverageCollector",
+        "onCreate.disableWindowDestr": { // in case they an be destructed
+            func: "gpii.tests.app.instrumentedDialog.disableWindowDestr",
             args: "{that}"
         },
         "onDestroy.cleanupElectron": {
-            func: "gpii.tests.app.instrumentedDialog.cleanupElectron",
+            func: "gpii.tests.app.instrumentedDialog.disableCleanUpDestr",
             args: "{that}"
         }
     }
@@ -63,7 +70,6 @@ fluid.defaults("gpii.tests.app.instrumentedDialog", {
  * Attach flag to that BrowserWindow object that specify whether the DOM of the
  * window is fully initialized. This is needed as `webContents.executeJavaScript`
  * can only be used in case the DOM is ready.
- *
  * @param {Component} dialog - The BrowserWindows instance
  */
 gpii.tests.app.domStateListener = function (dialog) {
@@ -74,17 +80,47 @@ gpii.tests.app.domStateListener = function (dialog) {
     });
 };
 
-
-gpii.tests.app.instrumentedDialog.cleanupElectron = function (that) {
+/**
+ * Disable destruction of the BrowserWindow of `closable` components as we need to collect their
+ * coverage first. They should be the only type of dialogs that are being destroyed throughout a gpii-app run.
+ * @param {Component} that - The `gpii.app.dialog` instance
+ */
+gpii.tests.app.instrumentedDialog.disableCleanUpDestr = function (that) {
     if (!that.dialog.isDestroyed()) {
+        // XXX We handle only the case when a dialog is closable
+        // what if a normal dialog's component gets destroyed earlier (before coverage collecting)
         if (that.options.config.closable) {
-            // Use a graceful destruction
-            that.dialog.close();
+            /*
+             * Keep information about the dialog's wrapping component. This is
+             * useful when dialog's destruction is postponed e.g. when coverage
+             * collecting is needed.
+             */
+            that.dialog.componentDestroyed = true;
+
+            // disable destruction
+            that.dialog.hide();
         } else {
             that.dialog.destroy();
         }
     }
 };
+
+/**
+ * This method is only applicable to dialogs that are destroyed when closed and
+ * prevents destruction of the dialog in order for its coverage data to be collected
+ * @param {Component} that - The `gpii.app.dialog` instance
+ */
+gpii.tests.app.instrumentedDialog.disableWindowDestr = function (that) {
+    if (that.options.config.closable) {
+        var dialog = that.dialog;
+
+        dialog.on("close", function (e) {
+            e.preventDefault();
+            dialog.hide(); // behave normally in case the close button is used
+        });
+    }
+};
+
 
 
 /**
@@ -100,7 +136,7 @@ gpii.tests.app.sendRendererCoverage = function () {
     require("../../../../node_modules/gpii-testem/src/js/client/coverageSender");
 
     function notifyreportCoverageSuccess() {
-        require("electron").ipcRenderer.send("reportCoverageSuccess");
+        require("electron").ipcRenderer.send("coverageReportSuccess");
     }
 
     var options = {
@@ -119,7 +155,7 @@ gpii.tests.app.instrumentedDialog.requestDialogCoverage = function (dialog) {
 /**
  * Request coverage data from all currently created BrowserWindows. Continues with
  * tests execution once all windows have notified that their coverage had been sent successfully.
- * Tests notify success over the IPC using the predefined socket - "reportCoverageSuccess".
+ * Tests notify success over the IPC using the predefined socket - "coverageReportSuccess".
  *
  * Note that the coverage is collected by executing a command sent from the main process - `gpii.tests.app.sendRendererCoverage`.
  * For more details refer to gpii.test.executeJavaScript.
@@ -131,13 +167,11 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
     var promise = fluid.promise();
 
     var activeDialogs = BrowserWindow.getAllWindows();
-    var awaitingReportDialogs = activeDialogs.length;
+    var awaitingDialogResports = activeDialogs.length;
 
-    console.log("COVERAGE: ", activeDialogs.length);
+    fluid.log("Collect coverage from active dialogs: ", activeDialogs.length);
 
     fluid.each(activeDialogs, function (dialog) {
-        // XXX DEV
-        console.log("Request coverage: ", dialog.webContents.grades, dialog.relatedCmpId);
         var collectDailogCoverage = gpii.tests.app.instrumentedDialog.requestDialogCoverage.bind(null, dialog);
 
         /*
@@ -159,22 +193,24 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
     /*
      * Wait for coverage report success from all of the BrowserWindows.
      */
-    ipcMain.on("reportCoverageSuccess", function (e) {
-        var responseDialog = BrowserWindow.fromWebContents(e.sender);
-        awaitingReportDialogs--;
+    ipcMain.on("coverageReportSuccess", function (event) {
+        awaitingDialogResports--;
 
-        // XXX DEV
-        console.log("COLLECTED: ",  awaitingReportDialogs, activeDialogs.length);
-        if (responseDialog) {
-            // XXX DEV
-            console.log(responseDialog.relatedCmpId);
-        } else {
-            console.log(e.sender.grades);
+        var responseDialog = BrowserWindow.fromWebContents(event.sender);
+        /*
+         * Ensure the dialog is destroyed after its coverage is collected as dialogs shouldn't
+         * be needed anymore. That is because we are running this collecting
+         * be the final step in every test sequence.
+         * This is most useful for dialogs which destruction have been postponed
+         * for until their coverage is collected (closable dialogs)
+         */
+        if (responseDialog && !responseDialog.isDestroyed() && responseDialog.componentDestroyed) {
+            responseDialog.destroy();
         }
 
-        if (awaitingReportDialogs <= 0) {
+        if (awaitingDialogResports <= 0) {
             promise.resolve();
-            ipcMain.removeAllListeners("reportCoverageSuccess");
+            ipcMain.removeAllListeners("coverageReportSuccess");
         }
     });
 
@@ -198,56 +234,6 @@ fluid.defaults("gpii.tests.app.rendererCoverageServer", {
         }
     }
 });
-
-
-gpii.tests.app.instrumentedDialog.attachCoverageCollector = function (that) {
-    // XXX DEV
-    console.log("WILL IT ATTACH?", that.options.config.closable);
-    if (that.options.config.closable) {
-        var dialog = that.dialog;
-        var awaiting = false;
-        // XXX DEV
-        // dialog.webContents.toggleDevTools();
-        console.log("--- Attached to: ", dialog.webContents.grades);
-        dialog.on("close", function (e) {
-            console.log("Prevent closing");
-            e.preventDefault();
-            dialog.hide(); // behave normally
-            // TODO destroy dialog
-            dialog.webContents.toggleDevTools();
-            // TODO load script form file
-            // XXX DEV
-            // console.log("REQUEST SINGLE COVERAGE: ", dialog.webContents.grades, dialog.relatedCmpId, awaiting);
-            // if (!awaiting) {
-            //     awaiting = true;
-            //     console.log("REAL REQUEST", dialog.webContents.grades, dialog.relatedCmpId, awaiting);
-            //     gpii.tests.app.instrumentedDialog.requestDialogCoverage(dialog);
-            // }
-        });
-
-        // TODO this is to be handled by
-        ipcMain.on("reportCoverageSuccess", function (e) {
-            // As we've deattached the default destruction mechanism, ensure BrowserWindows are destroyed
-            var responseDialog = BrowserWindow.fromWebContents(e.sender);
-            if (!responseDialog) {
-                return;
-            }
-
-            console.log( "SINGLE COVERAGE SUCCESS: ",
-                e.sender.grades,
-                that.dialog.relatedCmpId,
-                responseDialog.relatedCmpId,
-                dialog.isDestroyed()
-            );
-
-            if (dialog.relatedCmpId === responseDialog.relatedCmpId && !dialog.isDestroyed()) { // use sender
-                console.log("DESTROY: ", e.sender.grades, responseDialog.relatedCmpId);
-                dialog.destroy();
-            }
-        });
-    }
-};
-
 
 /*
  * Collect renderer coverage report at the end of every test sequence. This is needed

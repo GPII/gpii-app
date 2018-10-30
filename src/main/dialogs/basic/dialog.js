@@ -81,6 +81,13 @@ fluid.defaults("gpii.app.dialog", {
         // dialog creation
         positionOnInit: true,
 
+        // Whether to the destroy the component after its dialog (BrowserWindow) is destroyed. It
+        // is more convenient that the component gets destroyed as it can't behave properly without
+        // its BrowserWindow. Note that the `closed` event fires both when it is closed programatically
+        // or via the close button in the upper right corner but it might not be fired when the `destroy`
+        // method is used on the BrowserWindow.
+        destroyWithWindow: true,
+
         // Whether the window is hidden offscreen and should be treated as such. Its usage is
         // mainly assotiated with the `gpii.app.dialog.offScreenHidable` grade
         hideOffScreen: false,
@@ -292,8 +299,6 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
      * BrowserWindow. Keep that id in the window itself.
      */
     dialog.relatedCmpId = that.id;
-    // XXX dev
-    dialog.webContents.grades = that.options.gradeNames.slice(-2)[0];
 
     // Approach for sharing initial options for the renderer process
     // proposed in: https://github.com/electron/electron/issues/1095
@@ -323,6 +328,17 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
 gpii.app.dialog.positionOnInit = function (that) {
     if (that.options.config.positionOnInit) {
         that.setPosition();
+    }
+
+    if (that.options.config.destroyWithWindow) {
+        that.dialog.on("closed", function () {
+            // ensure there isn't some inconsistency
+            // it might be the case that the component is destroyed before
+            // the BrowserWindow itself
+            if (!fluid.isDestroyed(that)) {
+                that.destroy();
+            }
+        });
     }
 };
 

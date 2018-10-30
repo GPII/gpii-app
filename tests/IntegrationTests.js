@@ -139,6 +139,7 @@ gpii.tests.app.bootstrapServer = function (testDefs, transformer) {
 /*
  * In case we're running tests with coverage data collecting,
  * we'd need to collect coverage data for the renderer as well.
+ * This allows running the tests without coverage collecting.
  */
 if (gpii.tests.app.isInstrumented) {
     /*
