@@ -10,14 +10,6 @@
             "distributeDevPcpChannelConnector": {
                 "record": "gpii.app.dev.gpiiConnector",
                 "target": "{that gpiiConnector}.options.gradeNames"
-            },
-            "distributeSurveyConnector": {
-                "record": "gpii.app.staticSurveyConnector",
-                "target": "{that surveyConnector}.options.gradeNames"
-            },
-            "distributeStaticSurveyConnectorFixture": {
-                "record": "%gpii-app/testData/survey/triggers.dev.json5",
-                "target": "{that staticSurveyConnector}.options.paths.triggersFixture"
             }
         }
     },

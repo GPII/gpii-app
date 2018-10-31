@@ -1,6 +1,7 @@
 [
     {
         "id": "trigger_1",
+        "surveyUrl": "https://gtodorov.free.beeceptor.com/survey1",
         "conditions": [
             {
                 "type": "sessionTimer",
@@ -10,6 +11,7 @@
         ]
     }, {
         "id": "trigger_2",
+        "surveyUrl": "https://gtodorov.free.beeceptor.com/survey2",
         "conditions": [
             {
                 "type": "keyedInFor",
