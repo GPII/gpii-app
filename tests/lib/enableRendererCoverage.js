@@ -153,7 +153,7 @@ gpii.tests.app.sendRendererCoverage = function () {
  * @param {Component} dialog - The `BrowserWindow` instance
  */
 gpii.tests.app.instrumentedDialog.requestDialogCoverage = function (dialog) {
-    var sendCoverageCommand = fluid.stringTemplate("(%function)()", { function: gpii.tests.app.sendRendererCoverage.toString() });
+    var sendCoverageCommand = gpii.test.toIIFEString(gpii.tests.app.sendRendererCoverage);
     gpii.test.executeJavaScript(dialog, sendCoverageCommand);
 };
 

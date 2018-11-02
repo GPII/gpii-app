@@ -91,6 +91,17 @@ gpii.test.linger = function (delay) {
 };
 
 
+/**
+ * Creates an IIFE string version of the passed function. Currently this is used
+ * for executing commands in the BrowserWindows.
+ * @param {Function} func - The function that is to be "decorated"
+ * @return {String} - The function wrapped in IIFE
+ */
+gpii.test.toIIFEString = function (func) {
+    return fluid.stringTemplate("(%func)()", { func: func.toString() });
+};
+
+
 // For DEV purposes
 /**
  * Add a blocking element to the sequence that can be resolved

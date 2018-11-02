@@ -49,12 +49,6 @@ gpii.tests.renderer.signIn.triggerSignIn = function () {
     jQuery(".flc-signInBtn").click();
 };
 
-fluid.registerNamespace("gpii.test");
-gpii.test.createIIFEString = function (fun) {
-    return fluid.stringTemplate("(%fun)()", { fun: fun.toString() });
-};
-
-
 gpii.tests.renderer.signIn.triggerSignInError = function () {
     jQuery(".flc-signInBtn").click();
     return [
@@ -71,7 +65,7 @@ var signInCrossSequence = [
         task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
-            gpii.test.createIIFEString(gpii.tests.renderer.signIn.triggerSignInError)
+            gpii.test.toIIFEString(gpii.tests.renderer.signIn.triggerSignInError)
         ],
         // resolve: "jqUnit.assertDeepEq",
         resolve: "jqUnit.assertDeepEq",
@@ -89,7 +83,7 @@ var signInCrossSequence = [
         func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.psp.dialog",
-            gpii.test.createIIFEString(gpii.tests.renderer.signIn.triggerSignIn)
+            gpii.test.toIIFEString(gpii.tests.renderer.signIn.triggerSignIn)
         ]
     }, {
         event: "{that}.app.psp.events.onSignInRequested",
