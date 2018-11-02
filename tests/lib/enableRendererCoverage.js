@@ -56,12 +56,12 @@ fluid.defaults("gpii.tests.app.instrumentedDialog", {
             funcName: "gpii.tests.app.domStateListener",
             args: ["{that}.dialog"]
         },
-        "onCreate.disableWindowDestr": {
-            func: "gpii.tests.app.instrumentedDialog.disableWindowDestr",
+        "onCreate.disableWindowDestruction": {
+            func: "gpii.tests.app.instrumentedDialog.disableWindowDestruction",
             args: "{that}"
         },
         "onDestroy.cleanupElectron": {
-            func: "gpii.tests.app.instrumentedDialog.disableCleanUpDestr",
+            func: "gpii.tests.app.instrumentedDialog.disableCleanUpDestruction",
             args: "{that}"
         }
     }
@@ -86,7 +86,7 @@ gpii.tests.app.domStateListener = function (dialog) {
  * coverage first. They should be the only type of dialogs that are being destroyed throughout a gpii-app run.
  * @param {Component} that - The `gpii.app.dialog` instance
  */
-gpii.tests.app.instrumentedDialog.disableCleanUpDestr = function (that) {
+gpii.tests.app.instrumentedDialog.disableCleanUpDestruction = function (that) {
     if (!that.dialog.isDestroyed()) {
         if (that.options.config.closable) {
             /*
@@ -109,7 +109,7 @@ gpii.tests.app.instrumentedDialog.disableCleanUpDestr = function (that) {
  * prevents destruction of the dialog in order for its coverage data to be collected
  * @param {Component} that - The `gpii.app.dialog` instance
  */
-gpii.tests.app.instrumentedDialog.disableWindowDestr = function (that) {
+gpii.tests.app.instrumentedDialog.disableWindowDestruction = function (that) {
     if (that.options.config.closable) {
         var dialog = that.dialog;
 
@@ -178,19 +178,19 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
     fluid.log("Collect coverage from active dialogs: ", activeDialogs.length);
 
     fluid.each(activeDialogs, function (dialog) {
-        var collectDialogCoverage = gpii.tests.app.instrumentedDialog.requestDialogCoverage.bind(null, dialog);
-
         /*
          * It might be the case that a test sequence has finished execution before all BrowserWindows have been fully
          * initialized. In that case we should wait for the BrowserWindows to be ready.
          */
-        if (!dialog.domReady) {
+        if (dialog.domReady) {
+            gpii.tests.app.instrumentedDialog.requestDialogCoverage(dialog);
+        } else {
             dialog.webContents.on(
                 "dom-ready",
-                collectDialogCoverage
+                function () {
+                    gpii.tests.app.instrumentedDialog.requestDialogCoverage(dialog);
+                }
             );
-        } else {
-            collectDialogCoverage();
         }
     });
 
@@ -246,15 +246,11 @@ fluid.defaults("gpii.tests.app.rendererCoverageServer", {
  * before it is lost as all of the BrowserWindows will be destroyed with the start
  * of the next test sequence
  */
-gpii.tests.app.endSequence.push.apply(gpii.tests.app.endSequence,
-    [
-        {
-            task: "gpii.tests.app.instrumentedDialog.requestCoverage",
-            resolve: "console.log",
-            resolveArgs: "Renderer coverage collected!"
-        }
-    ]
-);
+gpii.tests.app.endSequence.push({
+    task: "gpii.tests.app.instrumentedDialog.requestCoverage",
+    resolve: "fluid.log",
+    resolveArgs: "Renderer coverage collected!"
+});
 
 /*
  * Simply distribute the dialog grade that is needed for coverage data collecting.

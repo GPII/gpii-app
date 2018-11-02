@@ -80,6 +80,8 @@ gpii.app.errorDialog.channel.register = function (that) {
  */
 gpii.app.errorDialog.channel.deregister = function () {
     ipcMain.removeAllListeners("onErrorDialogCreated");
+    ipcMain.removeAllListeners("onErrorDialogClosed");
+    ipcMain.removeAllListeners("onErrorDialogHeightChanged");
 };
 
 /**

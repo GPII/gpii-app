@@ -101,6 +101,8 @@ gpii.test.linger = function (delay) {
  * @return {Promise} The blocking task promise
  */
 gpii.tests.blockTestsElement = function () {
+    var _promise = fluid.promise();
+
     function resolveTaskOnSpacebar() {
         var electron = require("electron");
         // Restore tests running cycle
@@ -111,8 +113,6 @@ gpii.tests.blockTestsElement = function () {
             });
         });
     }
-
-    var _promise = fluid.promise();
 
     resolveTaskOnSpacebar();
 

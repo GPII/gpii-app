@@ -68,7 +68,11 @@ gpii.tests.app.startSequence = [
 gpii.tests.app.endSequence = [];
 
 /*
- * In case there is need for distributions for all tests that is conditionally present.
+ * We might need to conditionally make some options distributions that should affect all test sequences.
+ * Every test sequence specifies a configuration file to be used for creating the gpii-app.
+ * As we can't easily change all test sequences configuration files to some containing desired distribution
+ * we can use this property to do so.
+ *
  * This is extremely useful in the case of coverage collecting for the renderer processes
  * as we need to distribute options only if we are running instrumented code (coverage data
  * is to be collected).

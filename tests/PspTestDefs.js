@@ -231,7 +231,7 @@ var basicPspInteractionsCrossSequence = [
  */
 gpii.tests.psp.testDefs = {
     name: "PSP integration tests",
-    expect: 7,
+    expect: 9,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
