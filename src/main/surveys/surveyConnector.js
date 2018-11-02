@@ -285,10 +285,10 @@ gpii.app.dynamicSurveyConnector.handleTriggersResponse = function (that, error, 
  * @param {String} surveyTriggersUrl - The URL that leads to the survey triggers data
  */
 gpii.app.dynamicSurveyConnector.requestTriggers = function (that, surveyTriggersUrl) {
-    if (!surveyTriggersUrl) {
-        fluid.log(fluid.logLevel.WARN, "Survey connector: Missing survey triggers URL");
-    } else {
+    if (surveyTriggersUrl) {
         that.triggersRequest = request(surveyTriggersUrl, gpii.app.dynamicSurveyConnector.handleTriggersResponse.bind(null, that));
+    } else {
+        fluid.log(fluid.logLevel.WARN, "Survey connector: Missing survey triggers URL");
     }
 };
 
@@ -329,13 +329,13 @@ gpii.app.dynamicSurveyConnector.handleSurveyResponse = function (that, triggerId
 gpii.app.dynamicSurveyConnector.requestSurvey = function (that, triggerPayload) {
     that.surveyRequests = that.surveyRequests || {};
 
-    if (!triggerPayload.surveyUrl) {
-        fluid.log(fluid.logLevel.WARN, "Survey connector: Missing survey URL for trigger - ", triggerPayload);
-    } else {
+    if (triggerPayload.surveyUrl) {
         that.surveyRequests[triggerPayload.id] = request(
             triggerPayload.surveyUrl,
             gpii.app.dynamicSurveyConnector.handleSurveyResponse.bind(null, that, triggerPayload.id)
         );
+    } else {
+        fluid.log(fluid.logLevel.WARN, "Survey connector: Missing survey URL for trigger - ", triggerPayload);
     }
 };
 

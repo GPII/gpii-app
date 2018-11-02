@@ -81,8 +81,7 @@ var noUserTriggersSequence = [
         ]
     },
     { // ... make it a lucky session
-        event: "{that gpii.app.qss}.events.onDialogReady",
-        listener: "{that}.app.qssWrapper.qss.show"
+        func: "{that}.app.qssWrapper.qss.show"
     },
     { // ... simulate change happening from the QSS
         func: "{that}.app.qssWrapper.qss.events.onQssSettingAltered.fire",
@@ -197,8 +196,12 @@ gpii.tests.surveys.dynamicSurveyConnectorTestDefs = {
         }
     },
     sequence: [
-        noUserTriggersSequence,
+        {
+            event: "{that gpii.app.qss}.events.onDialogReady",
+            listener: "fluid.identity"
+        },
         keyedInTriggersSequence,
+        noUserTriggersSequence,
         {
             funcName: "gpii.tests.surveys.testTriggersFailCases",
             args: ["{that}.app.surveyManager.surveyConnector"]
