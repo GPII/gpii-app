@@ -1,6 +1,7 @@
 [
     {
         "id": "trigger_1",
+        "surveyUrl": "http://localhost:8083/surveys/survey1.json",
         "conditions": [
             {
                 "type": "sessionTimer",
@@ -10,10 +11,11 @@
         ]
     }, {
         "id": "trigger_2",
+        "surveyUrl": "http://localhost:8083/surveys/survey2.json",
         "conditions": [
             {
                 "type": "keyedInFor",
-                "value": 15000
+                "value": 1000
             }
         ]
     }

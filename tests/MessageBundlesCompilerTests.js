@@ -104,7 +104,8 @@ jqUnit.test("Fallback options are included properly", function () {
 
 
 var bundlesDir1 = "./tests/fixtures/messageBundles/",
-    bundlesDir2 = "./tests/fixtures/messageBundles/inner/";
+    bundlesDir2 = "./tests/fixtures/messageBundles/inner/",
+    missingDir = ".tests/fixtures/messageBundles/some/missing/dir";
 
 jqUnit.test("Bundles loading", function () {
     jqUnit.expect(1);
@@ -125,4 +126,35 @@ jqUnit.test("Bundles loading", function () {
     jqUnit.assertDeepEq("Should load files from multiple directories properly",
         loadedBundlesFixture.sort(cmpFiles),
         loadedBundles.sort(cmpFiles));
+});
+
+
+jqUnit.test("Messages compiling", function () {
+    jqUnit.expect(1);
+
+    var compiledMessages = gpii.app.messageBundlesCompiler.compileMessageBundles(
+        [bundlesDir1, bundlesDir2],
+        DEFAULT_LOCALE,
+        {
+            "json": JSON,
+            "json5": JSON
+        }
+    );
+
+    jqUnit.assertDeepEq(
+        "Should load files from multiple directories properly",
+        enhancedBundleFixture,
+        compiledMessages
+    );
+
+    jqUnit.expectFrameworkDiagnostic(
+        "The compiler should log there's a problem loading message bundles",
+        function () {
+            gpii.app.messageBundlesCompiler.compileMessageBundles(
+                [missingDir],
+                DEFAULT_LOCALE
+            );
+        },
+        "Messages Compiler: Problem loading message bundles"
+    );
 });

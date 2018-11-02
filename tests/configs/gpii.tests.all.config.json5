@@ -15,6 +15,10 @@
                 },
                 "target": "{that gpiiConnector}.options.config"
             },
+            "distributeTestsSiteConfig": {
+                "record": "%gpii-app/tests/fixtures/siteconfig.json5",
+                "target": "{that gpii.app.siteConfigurationHandler}.options.siteConfigPath"
+            },
             "receiveApp": {
                 "record": {
                     "funcName": "gpii.tests.app.receiveApp",
