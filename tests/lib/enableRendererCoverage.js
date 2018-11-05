@@ -110,6 +110,8 @@ gpii.tests.app.instrumentedDialog.disableCleanUpDestruction = function (that) {
  * @param {Component} that - The `gpii.app.dialog` instance
  */
 gpii.tests.app.instrumentedDialog.disableWindowDestruction = function (that) {
+    that.dialog.grade = that.options.gradeNames.slice(-2)[0];
+
     if (that.options.config.destroyOnClose) {
         var dialog = that.dialog;
 
@@ -200,7 +202,14 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
     ipcMain.on("coverageReportSuccess", function (event) {
         awaitingDialogReports--;
 
+
         var responseDialog = BrowserWindow.fromWebContents(event.sender);
+        // XXX DEV
+        console.log("Report collected: ", awaitingDialogReports, responseDialog.grade);
+        activeDialogs = activeDialogs.filter( function (dialog) {
+            return dialog.grade !== responseDialog.grade;
+        } );
+        console.log("Still awating: ", activeDialogs.map( function (d) { return d.grade; } ));
         /*
          * Ensure the "BrowserWindow" is destroyed after its coverage is collected and its wrapping
          * component has been already destroyed as it won't be needed anymore.
