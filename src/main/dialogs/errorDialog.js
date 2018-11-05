@@ -97,6 +97,8 @@ fluid.defaults("gpii.app.errorDialog", {
     defaultHeight: 250,
 
     config: {
+        closable: true,
+
         attrs: {
             title:   null,
             subhead: null,

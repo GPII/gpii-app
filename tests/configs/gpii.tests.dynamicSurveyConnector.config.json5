@@ -14,6 +14,6 @@
         }
     },
     "mergeConfigs": [
-        "./gpii.tests.dev.config.json"
+        "./gpii.tests.dev.config.json5"
     ]
 }

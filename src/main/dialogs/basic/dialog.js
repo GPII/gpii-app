@@ -81,6 +81,13 @@ fluid.defaults("gpii.app.dialog", {
         // dialog creation
         positionOnInit: true,
 
+        // Whether to the destroy the component after its dialog (BrowserWindow) is destroyed. It
+        // is more convenient that the component gets destroyed as it can't behave properly without
+        // its BrowserWindow. Note that the `closed` event fires both when it is closed programatically
+        // or via the close button in the upper right corner but it might not be fired when the `destroy`
+        // method is used on the BrowserWindow.
+        destroyWithWindow: true,
+
         // Whether the window is hidden offscreen and should be treated as such. Its usage is
         // mainly assotiated with the `gpii.app.dialog.offScreenHidable` grade
         hideOffScreen: false,
@@ -92,7 +99,8 @@ fluid.defaults("gpii.app.dialog", {
         closable: false,
 
         // Whether to register a listener for BrowserWindow "readiness". The BrowserWindow is ready
-        // once all its components are created.
+        // once all its components are created. Once a window is ready the `onDialogReady` event will
+        // be fired.
         awaitWindowReadiness: false,
 
         restrictions: {
@@ -174,7 +182,8 @@ fluid.defaults("gpii.app.dialog", {
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
-            method: "destroy"
+            method: "destroy",
+            priority: "last"
         }
     },
     invokers: {
@@ -244,8 +253,8 @@ fluid.defaults("gpii.app.dialog", {
             method: "focus"
         },
         close: {
-            this: "{that}.dialog",
-            method: "close"
+            funcName: "gpii.app.dialog.close",
+            args: ["{that}"]
         }
     }
 });
@@ -320,6 +329,17 @@ gpii.app.dialog.positionOnInit = function (that) {
     if (that.options.config.positionOnInit) {
         that.setPosition();
     }
+
+    if (that.options.config.destroyWithWindow) {
+        that.dialog.on("closed", function () {
+            // ensure there isn't some inconsistency
+            // it might be the case that the component is destroyed before
+            // the BrowserWindow itself
+            if (!fluid.isDestroyed(that)) {
+                that.destroy();
+            }
+        });
+    }
 };
 
 /**
@@ -359,6 +379,14 @@ gpii.app.dialog.show = function (that) {
     } else {
         that.applier.change("isShown", true);
     }
+};
+
+gpii.app.dialog.close = function (that) {
+    // update the dialog shown state
+    that.hide();
+
+    // init destroying
+    that.dialog.close();
 };
 
 /**

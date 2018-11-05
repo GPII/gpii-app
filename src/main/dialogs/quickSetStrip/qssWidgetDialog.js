@@ -67,8 +67,6 @@ fluid.defaults("gpii.app.qssWidget", {
     },
 
     config: {
-        closable: false,
-
         params: {
             sounds: {
                 boundReached: {

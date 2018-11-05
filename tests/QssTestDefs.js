@@ -80,6 +80,7 @@ gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
     );
 };
 
+
 var qssCrossTestSequence = [
     /*
      * CROSS

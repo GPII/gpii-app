@@ -74,10 +74,6 @@ fluid.defaults("gpii.app.surveyDialog", {
             method: "setMenu",
             args: [null]
         },
-        "onCreate.initClosedListener": {
-            listener: "gpii.app.surveyDialog.initClosedListener",
-            args: ["{that}"]
-        },
         "onCreate.initSurveyWindowIPC": {
             listener: "gpii.app.surveyDialog.initSurveyWindowIPC",
             args: ["{that}"]
@@ -112,20 +108,6 @@ fluid.defaults("gpii.app.surveyDialog", {
         }
     }
 });
-
-/**
- * Initializes the `closed` listener for the `BrowserWindow`. Whenever the window
- * is closed, the `surveyDialog` should be destroyed, as it can no longer be shown,
- * hidden or interacted with in any other way. Note that the `closed` event fires
- * both when it is closed programatically or via the close button in the upper
- * right corner.
- * @param {Component} that - The `gpii.app.surveyDialog` instance.
- */
-gpii.app.surveyDialog.initClosedListener = function (that) {
-    that.dialog.on("closed", function () {
-        that.destroy();
-    });
-};
 
 /**
  * Initializes the IPC listeners needed for the communication with the `BrowserWindow`.

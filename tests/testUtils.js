@@ -90,6 +90,49 @@ gpii.test.linger = function (delay) {
     return promise;
 };
 
+
+/**
+ * Creates an IIFE string version of the passed function. Currently this is used
+ * for executing commands in the BrowserWindows.
+ * @param {Function} func - The function that is to be "decorated"
+ * @return {String} - The function wrapped in IIFE
+ */
+gpii.test.toIIFEString = function (func) {
+    return fluid.stringTemplate("(%func)()", { func: func.toString() });
+};
+
+
+// For DEV purposes
+/**
+ * Add a blocking element to the sequence that can be resolved
+ * by pressing "Space". This is useful if we want to pause tests
+ * execution at some point and run diagnostics inside created
+ * BrowserWindows.
+ *
+ * @return {Promise} The blocking task promise
+ */
+gpii.tests.blockTestsElement = function () {
+    var _promise = fluid.promise();
+
+    function resolveTaskOnSpacebar() {
+        var electron = require("electron");
+        // Restore tests running cycle
+        electron.app.on("ready", function () {
+            electron.globalShortcut.register("Space", function () {
+                console.log("Go Go Go!");
+                _promise.resolve();
+            });
+        });
+    }
+
+    resolveTaskOnSpacebar();
+
+    return _promise;
+};
+
+
+
+
 /**
  * Executes a JavaScript snippet in the `BrowserWindow` of the given dialog.
  * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
