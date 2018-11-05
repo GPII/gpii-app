@@ -96,7 +96,7 @@ fluid.defaults("gpii.app.dialog", {
         // this setting is active the only way for a window to be closed is through
         // the usage of the `destroy` method and a close command would simply hide the window.
         // This is mainly needed to avoid closing a window using the Alf + F4 combination
-        closable: false,
+        destroyOnClose: false,
 
         // Whether to register a listener for BrowserWindow "readiness". The BrowserWindow is ready
         // once all its components are created. Once a window is ready the `onDialogReady` event will
@@ -310,7 +310,7 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
         dialog.show();
     }
 
-    if (!that.options.config.closable) {
+    if (!that.options.config.destroyOnClose) {
         // As proposed in https://github.com/electron/electron/issues/6702
         dialog.on("close", function (e) {
             that.hide();

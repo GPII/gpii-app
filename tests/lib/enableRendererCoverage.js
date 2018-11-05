@@ -25,11 +25,11 @@ require("gpii-testem"); // needed for the coverage server `gpii.testem.coverage.
  * - Run coverage server (gpii.testem.coverage.express) that will collect the renderer's coverage data
  * - Ensure all BrowserWindows are loading instrumented code to introduce coverage collecting in the renderer processes' code
  * - Ensure dialogs (BrowserWindows) are not destroyed before their coverage is collected
- *     - currently the only dialogs that are being destroyed are the `closable` dialogs and we simply prevent
+ *     - currently the only dialogs that are being destroyed are the `destroyOnClose` dialogs and we simply prevent
  *     their destruction until their coverage is collected which is done at the end of a test sequence;
  *     - this is done by disabling both their mechanism for getting destroyed by being closed and getting destroyed with
  *     their wrapping component destruction;
- *     - Note that we don't destroy every dialog in the final step but only the ones that are `closable` and have their
+ *     - Note that we don't destroy every dialog in the final step but only the ones that are `destroyOnClose` and have their
  *     wrapping component destroyed. The reason behind this is that these components might be used in some post
  *     test sequence code execution;
  * - Collect coverage data from BrowserWindows after every test sequence and destroy postponed dialogs
@@ -82,13 +82,13 @@ gpii.tests.app.domStateListener = function (dialog) {
 };
 
 /**
- * Disable destruction of the BrowserWindow of `closable` components as we need to collect their
+ * Disable destruction of the BrowserWindow of `destroyOnClose` components as we need to collect their
  * coverage first. They should be the only type of dialogs that are being destroyed throughout a gpii-app run.
  * @param {Component} that - The `gpii.app.dialog` instance
  */
 gpii.tests.app.instrumentedDialog.disableCleanUpDestruction = function (that) {
     if (!that.dialog.isDestroyed()) {
-        if (that.options.config.closable) {
+        if (that.options.config.destroyOnClose) {
             /*
              * Keep information about the dialog's wrapping component. This is
              * useful when dialog's destruction is postponed e.g. when coverage
@@ -110,7 +110,7 @@ gpii.tests.app.instrumentedDialog.disableCleanUpDestruction = function (that) {
  * @param {Component} that - The `gpii.app.dialog` instance
  */
 gpii.tests.app.instrumentedDialog.disableWindowDestruction = function (that) {
-    if (that.options.config.closable) {
+    if (that.options.config.destroyOnClose) {
         var dialog = that.dialog;
 
         dialog.on("close", function (e) {
@@ -205,7 +205,7 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
          * Ensure the "BrowserWindow" is destroyed after its coverage is collected and its wrapping
          * component has been already destroyed as it won't be needed anymore.
          * This is most used for dialogs whose destruction has been postponed until their
-         * coverage is collected (closable dialogs)
+         * coverage is collected (destroyOnClose dialogs)
          */
         if (responseDialog && !responseDialog.isDestroyed() && responseDialog.componentDestroyed) {
             responseDialog.destroy();

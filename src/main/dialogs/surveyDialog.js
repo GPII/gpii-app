@@ -163,7 +163,7 @@ fluid.defaults("gpii.app.survey", {
             type: "gpii.app.surveyDialog",
             options: {
                 config: {
-                    closable: true,
+                    destroyOnClose: true,
                     surveyUrl: "{arguments}.0",
                     closeOnSubmit: "{arguments}.1",
                     attrs: "{arguments}.2"

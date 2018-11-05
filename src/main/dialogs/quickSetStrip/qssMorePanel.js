@@ -58,7 +58,7 @@ fluid.defaults("gpii.app.qssMorePanel", {
 
             movable: "{that}.options.siteConfig.movable",
             resizable: "{that}.options.siteConfig.resizable",
-            closable: true,
+            destroyOnClose: true,
             minimizable: false,
             maximizable: false
         },

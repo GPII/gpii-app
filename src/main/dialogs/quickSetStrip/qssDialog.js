@@ -52,7 +52,7 @@ fluid.defaults("gpii.app.qss", {
     },
 
     config: {
-        closable: false,
+        destroyOnClose: false,
         awaitWindowReadiness: true,
 
         attrs: {
