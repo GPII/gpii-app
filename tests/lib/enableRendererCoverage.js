@@ -206,8 +206,15 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
         var responseDialog = BrowserWindow.fromWebContents(event.sender);
         // XXX DEV
         console.log("Report collected: ", awaitingDialogReports, responseDialog.grade);
+
+        // dummy way to filter only the first occurrence
+        var isFirst = true;
         activeDialogs = activeDialogs.filter( function (dialog) {
-            return dialog.grade !== responseDialog.grade;
+            if (dialog.grade === responseDialog.grade && isFirst) {
+                isFirst = false;
+                return false;
+            }
+            return true;
         } );
         console.log("Still awating: ", activeDialogs.map( function (d) { return d.grade; } ));
         /*
