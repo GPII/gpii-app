@@ -67,6 +67,7 @@ fluid.defaults("gpii.app", {
         snapsetName: null,
         preferences: {
             gpiiKey: null,
+            isFirstKeyIn: true,
             sets: [],
             activeSet: null,
             settingGroups: [],

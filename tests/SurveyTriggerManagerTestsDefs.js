@@ -54,6 +54,16 @@ var keyedInForTrigger = {
     ]
 };
 
+var firstKeyInTrigger = {
+    id: "firstKeyInTrigger_1",
+    conditions: [
+        {
+            type: "firstKeyIn",
+            value: true
+        }
+    ]
+};
+
 gpii.tests.surveyTriggerManager.testHandlerCreated = function (surveyTriggerManager, triggerFixture) {
     var triggerId = triggerFixture.id,
         triggerHandler = surveyTriggerManager.registeredTriggerHandlers[triggerId],
@@ -80,6 +90,22 @@ gpii.tests.surveyTriggerManager.satisfyTrigger = function (surveyTriggerManager,
     surveyTriggerManager.registeredTriggerHandlers[triggerFixture.id].events.onConditionSatisfied.fire();
 };
 
+var firstKeyInTriggerHandlerSequence = [
+    { // Simulate a key in...
+        func: "{that}.app.applier.change",
+        args: ["keyedInUserToken", "snapset_1a"]
+    }, { // ... which is the first key in into the GPII app of this user
+        func: "{that}.app.factsManager.applier.change",
+        args: ["isFirstKeyIn", true]
+    }, {
+        func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
+        args: [firstKeyInTrigger]
+    }, {
+        event: "{that}.app.surveyManager.surveyTriggerManager.events.onTriggerOccurred",
+        listener: "jqUnit.assertDeepEq",
+        args: ["The first key in trigger has occurred", firstKeyInTrigger, "{arguments}.0"]
+    }
+];
 
 var keyedInForTriggerHandlersSequence = [
     {
@@ -214,7 +240,8 @@ var sessionTimerTriggerHandlersSequence = [
 
 var triggerHandlersSequence = [].concat(
     sessionTimerTriggerHandlersSequence,
-    keyedInForTriggerHandlersSequence
+    keyedInForTriggerHandlersSequence,
+    firstKeyInTriggerHandlerSequence
 );
 
 var triggersApiSequence = [
@@ -273,7 +300,7 @@ var triggersApiSequence = [
 
 gpii.tests.surveyTriggerManager.testDefs = {
     name: "Trigger Engine integration tests",
-    expect: 26,
+    expect: 27,
     config: {
         configName: "gpii.tests.all.config",
         configPath: "tests/configs"

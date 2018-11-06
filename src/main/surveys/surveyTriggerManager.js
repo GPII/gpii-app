@@ -36,7 +36,8 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
     },
     conditionHandlerGrades: {
         keyedInFor: "gpii.app.keyedInForHandler",
-        sessionTimer: "gpii.app.sessionTimerHandler"
+        sessionTimer: "gpii.app.sessionTimerHandler",
+        firstKeyIn: "gpii.app.firstKeyInConditionHandler"
     },
     events: {
         onTriggerAdded: null,
@@ -263,6 +264,35 @@ gpii.app.conditionHandler.handleSuccess = function (that) {
     that.events.onConditionSatisfied.fire(that.model.condition);
     if (!fluid.isDestroyed(that)) {
         that.destroy();
+    }
+};
+
+/**
+ * A condition handler for the `isFirstKeyIn` fact. Determines whether the value of that
+ * fact is the same as the value of the condition. If this is the case, the condition is
+ * considered to be fulfilled.
+ */
+fluid.defaults("gpii.app.firstKeyInConditionHandler", {
+    gradeNames: ["gpii.app.conditionHandler"],
+    modelListeners: {
+        "{factsManager}.model.isFirstKeyIn": {
+            funcName: "gpii.app.firstKeyInConditionHandler.handleSuccess",
+            args: ["{that}", "{factsManager}.model.isKeyedIn", "{change}.value"]
+        }
+    }
+});
+
+/**
+ * Checks whether the conditions for the handler have been satisifed. If so, fires the
+ * `onConditionSatisfied` event and destroys the condition handler as it is no longer
+ * needed.
+ * @param {Component} that - The `gpii.app.firstKeyInConditionHandler` instance.
+ * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user.
+ * @param {Boolean} isFirstKeyIn - Whether this is the first key in of the user.
+ */
+gpii.app.firstKeyInConditionHandler.handleSuccess = function (that, isKeyedIn, isFirstKeyIn) {
+    if (isKeyedIn && that.model.condition.value === isFirstKeyIn) {
+        that.handleSuccess();
     }
 };
 

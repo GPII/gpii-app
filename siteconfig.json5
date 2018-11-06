@@ -30,5 +30,5 @@
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
-    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json"
+    surveyTriggersUrl: "http://www.mocky.io/v2/5be1a0be3000005600d9aad5"
 }
