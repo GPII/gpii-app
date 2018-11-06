@@ -165,7 +165,6 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.sequentialDialogs.testDefs),
     fluid.copy(gpii.tests.shortcutsManager.testDefs),
     fluid.copy(gpii.tests.settingsBroker.testDefs),
-    fluid.copy(gpii.tests.surveys.staticSurveyConnectorTestDefs),
     fluid.copy(gpii.tests.surveys.dynamicSurveyConnectorTestDefs),
     fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
     fluid.copy(gpii.tests.siteConfigurationHandler.testDefs),

@@ -22,24 +22,7 @@ var jqUnit = fluid.require("node-jqunit");
 require("../src/main/app.js");
 require("gpii-express");
 
-fluid.registerNamespace("gpii.tests.surveys.testDefs");
-
-
-fluid.registerNamespace("gpii.tests.utils");
-
-/**
- * Simply binds arguments to a function.
- * @param {Function} func - The function that is to be bound
- * @param {...Any} args  - Arguments for binding
- * @return {Function} the binded function
- */
-gpii.tests.utils.funcBinder = function (func /*, ...args */) {
-    var args = [].slice.call(arguments, 1);
-    return func.bind.apply(func, [null].concat(args));
-};
-
-
-var surveyTriggersUrl = "http://localhost:8083/surveys/triggers.json";
+fluid.registerNamespace("gpii.tests.surveys");
 
 fluid.defaults("gpii.tests.app.simpleTriggersServer", {
     gradeNames: ["gpii.express"],
@@ -135,66 +118,42 @@ var keyedInTriggersSequence = [
     }
 ];
 
-gpii.tests.surveys.testTriggersFailCases = function (surveyConnector) {
-    gpii.app.dynamicSurveyConnector.requestTriggers(surveyConnector, null);
-    jqUnit.assert("requestTriggers should not throw exception if no URL is given");
+var edgeCasesSequence = [
+    {
+        task: "gpii.app.dynamicSurveyConnector.requestData",
+        args: [
+            "{that}.app.surveyManager.surveyConnector",
+            "http://localhost:8083/surveys/invalid_triggers.json"
+        ],
+        reject: "jqUnit.assertEquals",
+        rejectArgs: [
+            "The survey connector cannot load triggers from an invalid URL",
+            "Survey connector: Cannot get data",
+            "{arguments}.0"
+        ]
+    }, {
+        task: "gpii.app.dynamicSurveyConnector.requestData",
+        args: [
+            "{that}.app.surveyManager.surveyConnector",
+            "http://localhost:8083/surveys/malformed_triggers.json"
+        ],
+        reject: "jqUnit.assertEquals",
+        rejectArgs: [
+            "The survey connector cannot parse malformed triggers JSON file",
+            "Survey connector: Error parsing data",
+            "{arguments}.0"
+        ]
+    }
+];
 
-
-    jqUnit.expectFrameworkDiagnostic("handleTriggersResponse: Should log error when missing url is given", function () {
-        gpii.app.dynamicSurveyConnector.handleTriggersResponse(surveyConnector, null, {statusCode: 404}, null);
-    }, "Survey connector: Cannot get trigger data");
-
-    jqUnit.expectFrameworkDiagnostic("handleTriggersResponse: Should log error when error in request", function () {
-        gpii.app.dynamicSurveyConnector.handleTriggersResponse(surveyConnector, "Something bad had happened", {statusCode: 500}, null);
-    }, "Survey connector: Cannot get trigger data");
-
-    jqUnit.expectFrameworkDiagnostic("handleTriggersResponse: Should log error when incorrect json returned", function () {
-        gpii.app.dynamicSurveyConnector.handleTriggersResponse(surveyConnector, null, {statusCode: 200}, "Almost success");
-    }, "Survey connector: Error parsing trigger data");
-};
-
-
-gpii.tests.surveys.testSurveysFailCases = function (surveyConnector) {
-    gpii.app.dynamicSurveyConnector.requestSurvey(surveyConnector, { surveyUrl: null });
-    jqUnit.assert("requestSurvey should not throw exception if no URL is given");
-
-    jqUnit.expectFrameworkDiagnostic("handleSurveyResponse: Should log error when missing url is given", function () {
-        gpii.app.dynamicSurveyConnector.handleSurveyResponse(surveyConnector, null, null, {statusCode: 404}, null);
-    }, "Survey connector: Cannot get survey data");
-
-    jqUnit.expectFrameworkDiagnostic("handleSurveyResponse: Should log error when error in request", function () {
-        gpii.app.dynamicSurveyConnector.handleSurveyResponse(surveyConnector, null, "Something bad had happened", {statusCode: 500}, null);
-    }, "Survey connector: Cannot get survey data");
-
-    jqUnit.expectFrameworkDiagnostic("handleSurveyResponse: Should log error when incorrect json returned", function () {
-        gpii.app.dynamicSurveyConnector.handleSurveyResponse(surveyConnector, null, null, {statusCode: 200}, "Almost success");
-    }, "Survey connector: Error parsing survey data");
-};
-
-
-/**
- * Because of https://issues.fluidproject.org/browse/FLUID-5502, it is not possible to
- * add separate sequence elements to test the consecutive occurring of the
- * `onTriggerOccurred`, `onSurveyRequired` and the `onSurveyCreated` events.
- */
 gpii.tests.surveys.dynamicSurveyConnectorTestDefs = {
-    name: "Surveys connector integration tests",
+    name: "Dynamic survey connector integration tests",
     expect: 8,
     config: {
         configName: "gpii.tests.dynamicSurveyConnector.config",
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        "distributeTestTriggerUrl": {
-            // apply test triggers URL
-            // NOTE that this should be distributed after any other
-            // distributions such as the `siteconfig` one
-            record: surveyTriggersUrl,
-            target: "{that surveyConnector}.options.config.triggersUrl",
-            priority: "last"
-        }
-    },
     sequence: [
         {
             event: "{that gpii.app.qss}.events.onDialogReady",
@@ -202,111 +161,6 @@ gpii.tests.surveys.dynamicSurveyConnectorTestDefs = {
         },
         keyedInTriggersSequence,
         noUserTriggersSequence,
-        {
-            funcName: "gpii.tests.surveys.testTriggersFailCases",
-            args: ["{that}.app.surveyManager.surveyConnector"]
-        },
-        {
-            funcName: "gpii.tests.surveys.testSurveysFailCases",
-            args: ["{that}.app.surveyManager.surveyConnector"]
-        }
+        edgeCasesSequence
     ]
 };
-
-
-
-
-var triggersFixture = [
-    {
-        id: "trigger_2",
-        conditions: [
-            {
-                type: "keyedInFor",
-                value: 1000
-            }
-        ]
-    }
-];
-
-var surveysFixture = {
-    "trigger_2": {
-        "url": "https://fluidproject.org",
-        "closeOnSubmit": false,
-        "window": {
-            "width": 300,
-            "height": 200
-        }
-    }
-};
-
-fluid.defaults("gpii.tests.surveys.staticSurveyConnector", {
-    gradeNames: ["gpii.app.staticSurveyConnector"],
-    config: {
-        triggersFixture: triggersFixture,
-        surveysFixture: surveysFixture
-    },
-    mergePolicy: {
-        config: "replace"
-    }
-});
-
-/**
- * Because of https://issues.fluidproject.org/browse/FLUID-5502, it is not possible to
- * add separate sequence elements to test the consecutive occurring of the
- * `onTriggerOccurred`, `onSurveyRequired` and the `onSurveyCreated` events.
- */
-gpii.tests.surveys.staticSurveyConnectorTestDefs = {
-    name: "Surveys connector integration tests",
-    expect: 3,
-    config: {
-        configName: "gpii.tests.dev.config",
-        configPath: "tests/configs"
-    },
-    gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        distributeSurveyConnector: {
-            record: "gpii.tests.surveys.staticSurveyConnector",
-            target: "{that surveyConnector}.options.gradeNames"
-        }
-    },
-    sequence: [{
-        func: "{that}.app.keyIn",
-        args: ["snapset_1a"]
-    }, { // Survey triggers are received with key in
-        event: "{that}.app.surveyManager.surveyConnector.events.onTriggerDataReceived",
-        listener: "jqUnit.assertDeepEq",
-        args: ["The trigger fixture is correctly received", triggersFixture, "{arguments}.0"]
-    }, {
-        event: "{that}.app.surveyManager.surveyConnector.events.onSurveyRequired",
-        // Note that the argument (passed by the event) will have some extra
-        // fields as a side effect of a component creation
-        listener: "gpii.tests.surveys.assertSurveyFixture",
-        args: [surveysFixture[triggersFixture[0].id], "{arguments}.0"]
-    }, {
-        func: "{that}.app.keyOut"
-    }, {
-        event: "{that}.app.events.onKeyedOut",
-        listener: "fluid.identity"
-    }, { // Test failing cases
-        // do more of a Unit test to check fail behaviour...
-        func: "jqUnit.expectFrameworkDiagnostic",
-        args: [
-            "Should log error when missing survey fixture",
-            {
-                expander: {
-                    funcName: "gpii.tests.utils.funcBinder",
-                    args: [
-                        // func
-                        gpii.app.staticSurveyConnector.notifyTriggerOccurred,
-                        // args
-                        "{that}.app.surveyManager.surveyConnector",
-                        {}, // surveyFixture
-                        triggersFixture[0]
-                    ]
-                }
-            },
-            "Missing survey for trigger: " + triggersFixture[0].id
-        ]
-    }]
-};
-
