@@ -49,6 +49,7 @@ fluid.defaults("gpii.app.storage", {
     modelListeners: {
         "": {
             func: "{that}.persistData",
+            args: ["{change}.value"],
             excludeSource: ["init", "retrieveData"]
         }
     },
@@ -62,7 +63,10 @@ fluid.defaults("gpii.app.storage", {
     invokers: {
         persistData: {
             funcName: "gpii.app.storage.persistData",
-            args: ["{that}"]
+            args: [
+                "{that}",
+                "{arguments}.0" // data
+            ]
         },
         retrieveData: {
             funcName: "gpii.app.storage.retrieveData",
@@ -88,16 +92,17 @@ gpii.app.storage.getAbsoluteStorageFileName = function (storageFilePath) {
 };
 
 /**
- * Persists asynchronously by writing to a file the model of the `storage` component.
+ * Persists asynchronously by writing to a file the provided `data`.
  * @param {Component} that - The `gpii.app.storage` instance.
+ * @param {Object} data - The data to be persisted.
  * @return {Promise} A promise which will be resolved when the persistence completes and will
  * be rejected otherwise.
  */
-gpii.app.storage.persistData = function (that) {
+gpii.app.storage.persistData = function (that, data) {
     var togo = fluid.promise(),
-        data = JSON.stringify(that.model);
+        stringifiedData = JSON.stringify(data);
 
-    fs.writeFile(that.options.absoluteStorageFilePath, data, function (error) {
+    fs.writeFile(that.options.absoluteStorageFilePath, stringifiedData, function (error) {
         if (error) {
             fluid.log(fluid.logLevel.WARN, "GPII storage: Cannot persist data", error);
             togo.reject(error);
