@@ -25,6 +25,7 @@ require("./common/utils.js");
 require("./common/ws.js");
 require("./dialogs/dialogManager.js");
 require("./dialogs/psp.js");
+require("./storage.js");
 require("./factsManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
@@ -130,6 +131,9 @@ fluid.defaults("gpii.app", {
                     isKeyedIn: "{app}.model.isKeyedIn"
                 }
             }
+        },
+        storage: {
+            type: "gpii.app.storage"
         },
         gpiiConnector: {
             type: "gpii.app.gpiiConnector",
@@ -311,7 +315,12 @@ fluid.defaults("gpii.app", {
         },
         factsManager: {
             type: "gpii.app.factsManager",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    interactionsCount: "{storage}.model.interactionsCount"
+                }
+            }
         }
     },
     events: {
