@@ -211,7 +211,10 @@
         gpii.psp.playSound(that.options.sounds.boundReached);
 
         if (that.boundReachedHits >= that.options.specialErrorBoundHitTries) {
-            that.events.onNotificationRequired.fire(errorMessage);
+            that.events.onNotificationRequired.fire({
+                description: errorMessage,
+                closeOnBlur: true
+            });
         }
     };
 

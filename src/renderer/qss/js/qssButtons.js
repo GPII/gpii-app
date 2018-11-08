@@ -359,10 +359,14 @@
      */
     gpii.qss.buttonPresenter.showNotification = function (that, qssList) {
         if (that.model.item.restartWarning) {
-            var notification = fluid.stringTemplate(that.model.messages.notification, {
+            var description = fluid.stringTemplate(that.model.messages.notification, {
                 settingTitle: that.model.item.schema.title
             });
-            qssList.events.onNotificationRequired.fire(notification);
+
+            qssList.events.onNotificationRequired.fire({
+                description: description,
+                closeOnBlur: false
+            });
         }
     };
 
