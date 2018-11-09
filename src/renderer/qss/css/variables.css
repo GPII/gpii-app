@@ -1,0 +1,9 @@
+:root {
+    --main-theme-button-background-color: #83cbef;
+    --main-theme-button-padding-color: #000000;
+    --main-theme-hover-color: #000000;
+    --main-theme-click-color: #000000;
+    --main-theme-disabled-color: #000000;
+
+    --main-theme-text-color: #000000;
+}

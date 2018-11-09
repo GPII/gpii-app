@@ -17,7 +17,7 @@
 var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii");
 
-require("../utils.js");
+require("../common/utils.js");
 require("./surveyTriggerManager.js");
 require("./surveyConnector.js");
 
@@ -26,9 +26,30 @@ require("./surveyConnector.js");
  * `surveyTriggerManager` and the app itself.
  */
 fluid.defaults("gpii.app.surveyManager", {
-    gradeNames: ["fluid.component"],
+    gradeNames: ["fluid.modelComponent"],
+
     events: {
         onSurveyRequired: null
+    },
+
+    modelListeners: {
+        "{app}.model.keyedInUserToken": {
+            func: "{surveyTriggerManager}.reset",
+            excludeSource: "init"
+        },
+        /**
+         * Request the triggers only when the user's preferences are delivered to the app.
+         * This is better that requesting both the user's preferences and the triggers at
+         * the same time because in that case there is no guarantee which of them will
+         * arrive first which in turn will make the handling logic more complex.
+         */
+        "{app}.model.preferences.gpiiKey": {
+            funcName: "gpii.app.surveyManager.requestTriggers",
+            args: [
+                "{surveyConnector}",
+                "{change}.value"
+            ]
+        }
     },
 
     components: {
@@ -37,16 +58,13 @@ fluid.defaults("gpii.app.surveyManager", {
             options: {
                 model: {
                     machineId: "{app}.machineId",
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                    keyedInUserToken: "{app}.model.keyedInUserToken",
+                    qssSettings: "{app}.qssWrapper.model.settings"
                 },
                 events: {
                     onSurveyRequired: "{surveyManager}.events.onSurveyRequired"
                 },
                 listeners: {
-                    "{app}.events.onKeyedIn": {
-                        func: "{that}.requestTriggers"
-                    },
-
                     onTriggerDataReceived: {
                         funcName: "gpii.app.surveyManager.registerTriggers",
                         args: [
@@ -62,7 +80,6 @@ fluid.defaults("gpii.app.surveyManager", {
             type: "gpii.app.surveyTriggerManager",
             options: {
                 listeners: {
-                    "{app}.events.onKeyedOut": "{that}.reset",
                     onTriggerOccurred: {
                         func: "{surveyConnector}.notifyTriggerOccurred",
                         args: "{arguments}.0" // the trigger payload
@@ -72,6 +89,18 @@ fluid.defaults("gpii.app.surveyManager", {
         }
     }
 });
+
+/**
+ * Retrieves the survey triggers for the current user.
+ * Note that the "noUser" is treated as a normal user.
+ * @param {Component} surveyConnector - The `gpii.app.surveyConnector` instance.
+ * @param {String} keyedInUserToken - The token of the currently keyed in user (if any).
+ */
+gpii.app.surveyManager.requestTriggers = function (surveyConnector, keyedInUserToken) {
+    if (fluid.isValue(keyedInUserToken)) {
+        surveyConnector.requestTriggers();
+    }
+};
 
 /**
  * Registers all survey triggers received via the `surveyConnector` with

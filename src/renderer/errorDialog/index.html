@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>GPII Error</title>
+        <title>Morphic Error</title>
         <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
         <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="../common/css/dialog.css">
@@ -10,15 +10,19 @@
 
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+        
+        <script type="text/javascript" src="../common/js/channelUtils.js"></script>
+        <script type="text/javascript" src="../common/js/utils.js"></script>
 
         <script type="text/javascript" src="../psp/js/widgets.js"></script>
+        <script type="text/javascript" src="../common/js/elementInteractionListeners.js"></script>
         <script type="text/javascript" src="../common/js/titlebar.js"></script>
         <script type="text/javascript" src="js/errorDialog.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
         <script type="text/javascript" src="../common/js/heightObservable.js"></script>
 
-        <script type="text/javascript" src="../../common/messageBundles.js"></script>
+        <script type="text/javascript" src="../../shared/messageBundles.js"></script>
         <script type="text/javascript" src="../common/js/messageBundles.js"></script>
     </head>
     <body class="fl-dialog-resizable">
@@ -26,11 +30,11 @@
             <div class="fl-dialog-contentWrapper">
                 <div class="flc-titlebar fl-titlebar">
                     <span class="flc-title fl-appName" tabindex="0"></span>
-                    <button class="flc-closeBtn fl-closeBtn btn btn-regular">&#x2715;</button>
+                    <div class="flc-closeBtn fl-closeBtn btn btn-regular" role="button" tabindex="0">&#x2715;</div>
                 </div>
 
                 <div class="fl-dialog-content">
-                    <img class="fl-dialog-contentIcon" src="../../icons/gpii-color.ico">
+                    <img class="fl-dialog-contentIcon" src="../../icons/Morphic-Desktop-Icon.ico">
 
                     <div class="fl-dialog-contentText" tabindex="0">
                         <div class="flc-contentTitle fl-title"></div>
@@ -52,7 +56,7 @@
 
                 <div class="fl-dialog-footer">
                     <span class="flc-errCode" tabindex="0"></span>
-                    <span class="fl-gpiiIcon">GPII <img src="../../icons/gear-cloud-black.png"></span>
+                    <img class="fl-gpiiIcon" src="../../icons/Morphic-Logo-Black.svg">
                     <div class="clear-both"></div>
                 </div>
             </div>

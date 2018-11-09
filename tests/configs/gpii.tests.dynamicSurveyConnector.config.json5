@@ -1,0 +1,19 @@
+{
+    "type": "gpii.tests.dynamicSurveyConnector.config",
+    "options": {
+        "gradeNames": ["fluid.component"],
+        "distributeOptions": {
+            "distributeSurveyConnector": {
+                "record": "gpii.app.dynamicSurveyConnector",
+                "target": "{that surveyConnector}.options.gradeNames"
+            },
+            "distributeTriggersServer": {
+                "record": "gpii.tests.app.simpleTriggersServerWrapper",
+                "target": "{that gpii.app}.options.gradeNames"
+            }
+        }
+    },
+    "mergeConfigs": [
+        "./gpii.tests.dev.config.json5"
+    ]
+}

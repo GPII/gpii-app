@@ -1,0 +1,15 @@
+{
+    "type": "gpii.tests.dev.config",
+    "options": {
+        "gradeNames": ["fluid.component"],
+        "distributeOptions": {
+            "distributeMenuDisplay": {
+                "record": "gpii.app.menuInAppDev",
+                "target": "{that menu}.options.gradeNames"
+            }
+        }
+    },
+    "mergeConfigs": [
+        "./gpii.tests.all.config.json5"
+    ]
+}

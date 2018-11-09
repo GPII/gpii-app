@@ -16,9 +16,16 @@
 
 "use strict";
 (function (fluid) {
-    var gpii = fluid.registerNamespace("gpii");
+    var gpii = fluid.registerNamespace("gpii"),
+        electron = require("electron"),
+        pspParams = electron.remote.getCurrentWindow().params;
 
     $(function () {
-        gpii.psp();
+        gpii.psp({
+            model: {
+                theme: pspParams.theme,
+                sounds: pspParams.sounds
+            }
+        });
     });
 })(fluid);

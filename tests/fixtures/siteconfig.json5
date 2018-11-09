@@ -1,0 +1,16 @@
+{
+    hideQssSaveButton: false,
+    qssScaleFactor: 0.85,
+    pspScaleFactor: 0.85,
+    closeQssOnClickOutside: true,
+    closePspOnClickOutside: true,
+    openQssShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
+    qssMorePanel: {
+    	defaultWidth: 600,
+    	defaultHeight: 450,
+    	movable: true,
+    	resizable: true,
+    	alwaysOnTop: true
+    },
+    surveyTriggersUrl: "http://localhost:8083/surveys/triggers.json"
+}

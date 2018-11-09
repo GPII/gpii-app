@@ -62,6 +62,10 @@
         }
     };
 
+    var compositeSwitchSettingFixture = fluid.extend(true, {}, switchSettingFixture, {
+        settings: [textfieldSettingFixture, dropdownSettingFixture]
+    });
+
     var stepperSettingFixture = {
         path: "zoomPath",
         value: 1,
@@ -92,18 +96,19 @@
         }
     };
 
-    var allSettingTypesFixture = [dropdownSettingFixture, {
-        path: "settingTwoPath",
-        value: "c",
-        solutionName: "solutions2",
-
-        schema: {
-            type: "string",
-            "enum": ["b", "c", "d", "e"],
-            title: "Setting two title",
-            description: "Setting two description"
+    var allSettingGroupsFixtures = [
+        {
+            settings: [dropdownSettingFixture]
+        }, {
+            settings: [textfieldSettingFixture]
+        }, {
+            settings: [switchSettingFixture]
+        }, {
+            settings: [stepperSettingFixture]
+        }, {
+            settings: [multipickerSettingFixture]
         }
-    }, textfieldSettingFixture, switchSettingFixture, stepperSettingFixture, multipickerSettingFixture];
+    ];
 
     fluid.registerNamespace("gpii.tests.psp.utils");
 
@@ -113,9 +118,10 @@
     };
 
     gpii.tests.psp.utils.testContainerEmpty = function (containerClass) {
-        jqUnit.assertTrue(
+        jqUnit.assertEquals(
             "DOM container is empty",
-            $(containerClass).is(":empty")
+            0,
+            $(containerClass).find("*[class^=flc-settingGroup-]").length
         );
     };
 
@@ -126,13 +132,20 @@
      */
     fluid.defaults("gpii.tests.psp.settingsPanelTestsWrapper", {
         gradeNames: "fluid.component",
+        distributeOptions: {
+            target: "{/ settingPresenter}.options.model.messages",
+            record: {
+                osRestart: "To change this setting,\nWindows requires a restart.",
+                osRestartRequired: "You changed this setting, which\nrequires Windows to restart."
+            }
+        },
         components: {
             settingsPanelMock: {
                 type: "gpii.tests.psp.settingsPanelMock",
                 container: ".flc-settingsPanel-all",
                 options: {
                     model: {
-                        settings: allSettingTypesFixture
+                        settingGroups: allSettingGroupsFixtures
                     }
                 }
             },
@@ -267,9 +280,9 @@
         );
     };
 
-    gpii.tests.psp.testSettingsRendered = function (containerClass, setting) {
-        // Search for such element
-        var settingContainers = $(".flc-setting", containerClass); // get the list of all settings
+    gpii.tests.psp.testSettingGroupsRendered = function (containerClass, settingGroups) {
+        // Get the containers of all setting groups
+        var settingGroupContainers = $("*[class^=flc-settingGroup-]", containerClass);
 
         // Widgets tests
         /*
@@ -283,49 +296,54 @@
             "boolean": gpii.tests.psp.testSwitch
         };
 
-        settingContainers.each(function (idx, settingContainer) {
-            jqUnit.assertEquals(
-                "Setting element should have title",
-                setting[idx].schema.title,
-                $(".flc-title", settingContainer).text().trim()
-            );
+        settingGroupContainers.each(function (groupIndex, settingGroupContainer) {
+            var settingGroup = settingGroups[groupIndex],
+                settingContainers = $(".flc-setting", settingGroupContainer);
+            settingContainers.each(function (settingIndex, settingContainer) {
+                var setting = settingGroup.settings[settingIndex];
+                jqUnit.assertEquals(
+                    "Setting element should have title",
+                    setting.schema.title,
+                    $(".flc-title", settingContainer).text().trim()
+                );
 
-            var solutionName = setting[idx].solutionName || "";
-            jqUnit.assertEquals(
-                "Setting element should have solutionName",
-                solutionName,
-                $(".flc-solutionName", settingContainer).text().trim()
-            );
+                var solutionName = setting.solutionName || "";
+                jqUnit.assertEquals(
+                    "Setting element should have solutionName",
+                    solutionName,
+                    $(".flc-solutionName", settingContainer).text().trim()
+                );
 
-            widgetCheckersMap[setting[idx].schema.type](
-                settingContainers[idx],
-                setting[idx]
-            );
+                widgetCheckersMap[setting.schema.type](
+                    settingContainer,
+                    setting
+                );
+            });
         });
     };
 
     gpii.tests.psp.testSettingPanelConstruction = function (settingsPanel) {
         var widgetsCount = 5;
         jqUnit.assertEquals("SettingsPanel should have proper number of loaded resources",
-            widgetsCount + 1,
+            widgetsCount + 2, /* one for the group template and one for the settings row */
             fluid.values(settingsPanel.resourcesLoader.resources).length
         );
 
-        var settingComponents = gpii.tests.psp.utils.getSubcomponents(settingsPanel.settingsVisualizer);
+        var settingComponents = gpii.tests.psp.utils.getSubcomponents(settingsPanel.settingGroupsVisualizer);
         jqUnit.assertEquals("SettingsPanel should have valid number of subcomponents",
-            allSettingTypesFixture.length,
+            allSettingGroupsFixtures.length,
             settingComponents.length
         );
 
         settingComponents.forEach(function (settingContainer, idx) {
             jqUnit.assertEquals("SettingsPanel setting containers should have proper identifiers",
-                "flc-settingListRow-" + idx,
-                settingComponents[idx].settingPresenter.container.attr("class")
+                "flc-settingGroup-" + idx,
+                settingComponents[idx].handler.container.attr("class")
             );
 
             jqUnit.assertLeftHand("SettingsPanel subelements should have proper model values",
-                allSettingTypesFixture[idx],
-                settingComponents[idx].settingPresenter.model
+                allSettingGroupsFixtures[idx],
+                settingComponents[idx].handler.model
             );
         });
     };
@@ -337,7 +355,7 @@
             tests: [{
                 // Test all components construction
                 name: "Test components constucted properly",
-                expect: 14,
+                expect: 12,
                 sequence: [{ // initiate `settingsVisualizer` creation
                     funcName: "{settingsPanelMock}.events.onTemplatesLoaded.fire"
                 }, {
@@ -347,14 +365,13 @@
             }, {
                 // Test all visible markup
                 name: "Test elements rendered properly",
-                expect: 23,
+                expect: 19,
                 sequence: [{
-                    funcName: "gpii.tests.psp.testSettingsRendered",
-                    args: ["{settingsPanelMock}.container", allSettingTypesFixture]
+                    funcName: "gpii.tests.psp.testSettingGroupsRendered",
+                    args: ["{settingsPanelMock}.container", allSettingGroupsFixtures]
                 }, {
                     // NOTE - a destructive step
                     //   this should always be last in the sequence
-                    spec: {path: "", priority: "last"},
                     func: "{settingsPanelMock}.destroy"
                 }, { // Dom cleared with component destruction
                     event: "{settingsPanelMock}.events.onDestroy",
@@ -375,6 +392,15 @@
         });
     };
 
+    gpii.tests.psp.testSubsettingVisibility = function (container, visible) {
+        var subsettingsContainer = container.find(".flc-subsettings");
+        jqUnit.assertEquals(
+            "Widgets: Subsettings are correctly shown / hidden",
+            visible,
+            subsettingsContainer.is(":visible")
+        );
+    };
+
     gpii.tests.psp.testWidgetMemoryIcon = function (container, memory) {
         var memoryIcon = container.find(".flc-memoryIcon");
         jqUnit.assertEquals(
@@ -384,47 +410,24 @@
         );
     };
 
-    gpii.tests.psp.testOSRestartIcon = function (container, isModified, styles, labels) {
+    gpii.tests.psp.testRestartIcon = function (container, isVisible, isModified, settingGroupPresenter) {
         var restartIcon = $(".flc-restartIcon", container);
-        jqUnit.assertTrue(
-            "Widgets: OS restart widget icon has the proper restart CSS class",
-            restartIcon.hasClass(styles.osRestartIcon)
-        );
-
-        jqUnit.assertFalse(
-            "Widgets: OS restart widget icon does not have the application restart CSS class",
-            restartIcon.hasClass(styles.appRestartIcon)
-        );
-
-        var label = isModified ? labels.osRestartRequired : labels.osRestart;
         jqUnit.assertEquals(
-            "Widget: Os restart widget has correct tooltip text",
-            label,
-            restartIcon.attr("title")
-        );
-    };
-
-    gpii.tests.psp.testAppRestartIcon = function (container, isModified, fixture, styles, labels) {
-        var restartIcon = $(".flc-restartIcon", container);
-        jqUnit.assertTrue(
-            "Widgets: App restart widget icon has the proper CSS class",
-            restartIcon.hasClass(styles.appRestartIcon)
+            "Widgets: Restart icon is correctly shown / hidden",
+            isVisible,
+            restartIcon.is(":visible")
         );
 
-        jqUnit.assertFalse(
-            "Widgets: App restart widget icon does not have the OS restart CSS class",
-            restartIcon.hasClass(styles.osRestartIcon)
-        );
-
-        var label = isModified ? labels.appRestartRequired : labels.appRestart;
-        label = fluid.stringTemplate(label, {
-            solutionName: fixture.solutionName
-        });
-        jqUnit.assertEquals(
-            "Widget: Os restart widget has correct tooltip text",
-            label,
-            restartIcon.attr("title")
-        );
+        if (isVisible) {
+            var settingPresenter = settingGroupPresenter.settings.element.handler,
+                messages = settingPresenter.model.messages,
+                tooltip = isModified ? messages.osRestartRequired : messages.osRestart;
+            jqUnit.assertEquals(
+                "Widget: Restart icon has correct tooltip text",
+                tooltip,
+                restartIcon.attr("title")
+            );
+        }
     };
 
     gpii.tests.psp.testStepperModelInteraction = function (container, expected) {
@@ -508,20 +511,32 @@
             name: "PSP widgets interaction tests",
             tests: [{
                 name: "Widgets: Switch - interactions test",
-                expect: 4,
+                expect: 8,
                 sequence: [{ // initiate `settingsVisualizer` creation
                     funcName: "{singleSettingPanelsMock}.switchPanel.events.onTemplatesLoaded.fire"
                 }, {
                     funcName: "gpii.tests.psp.testWidgetAccessibility",
                     args: [
                         ["@expand:$(.flc-switchUI-control, {singleSettingPanelsMock}.switchPanel.container)"],
-                        switchSettingFixture.path
+                        compositeSwitchSettingFixture.path
                     ]
                 }, {
                     funcName: "gpii.tests.psp.testWidgetMemoryIcon",
                     args: [
                         "{singleSettingPanelsMock}.switchPanel.container",
-                        switchSettingFixture.memory
+                        compositeSwitchSettingFixture.memory
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testRestartIcon",
+                    args: [
+                        "{singleSettingPanelsMock}.switchPanel.container",
+                        false
+                    ]
+                }, {
+                    funcName: "gpii.tests.psp.testSubsettingVisibility",
+                    args: [
+                        "{singleSettingPanelsMock}.switchPanel.container",
+                        true
                     ]
                 }, [ // Test DOM interaction
                     { // simulate manual click from the user
@@ -532,23 +547,35 @@
                         listener: "jqUnit.assertDeepEq",
                         args: [
                             "Widgets: Switch - component notified for the update with proper path/value",
-                            [switchSettingFixture.path, !switchSettingFixture.value],
+                            [compositeSwitchSettingFixture.path, !compositeSwitchSettingFixture.value],
                             ["{arguments}.0.path", "{arguments}.0.value"]
+                        ]
+                    }, {
+                        funcName: "gpii.tests.psp.testSubsettingVisibility",
+                        args: [
+                            "{singleSettingPanelsMock}.switchPanel.container",
+                            false
                         ]
                     }
                 ], [ // Test model interaction (settingsVisualizer is already created)
                     { // simulate setting from PSP update
                         funcName: "{singleSettingPanelsMock}.switchPanel.events.onSettingUpdated.fire",
-                        args: [switchSettingFixture.path, switchSettingFixture.value]
+                        args: [compositeSwitchSettingFixture.path, compositeSwitchSettingFixture.value]
                     }, { // Test if rendered item updated
                         event: "{singleSettingPanelsMock}.switchPanel.events.onSettingUpdated",
                         listener: "gpii.tests.psp.testSwitchInteraction",
                         args: ["{singleSettingPanelsMock}.switchPanel.container", true]
+                    }, {
+                        funcName: "gpii.tests.psp.testSubsettingVisibility",
+                        args: [
+                            "{singleSettingPanelsMock}.switchPanel.container",
+                            true
+                        ]
                     }]
                 ]
             }, {
                 name: "Widgets: Stepper - interactions test",
-                expect: 10,
+                expect: 8,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.stepperPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -558,12 +585,12 @@
                         stepperSettingFixture.path
                     ]
                 }, {
-                    funcName: "gpii.tests.psp.testOSRestartIcon",
+                    funcName: "gpii.tests.psp.testRestartIcon",
                     args: [
                         "{singleSettingPanelsMock}.stepperPanel.container",
+                        true,
                         false,
-                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
-                        "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
+                        "{singleSettingPanelsMock}.stepperPanel.settingGroupsVisualizer.element.handler"
                     ]
                 }, [
                     {
@@ -586,12 +613,12 @@
                         ]
                     }, {
                         event: "{singleSettingPanelsMock}.stepperPanel.events.onRestartRequired",
-                        listener: "gpii.tests.psp.testOSRestartIcon",
+                        listener: "gpii.tests.psp.testRestartIcon",
                         args: [
                             "{singleSettingPanelsMock}.stepperPanel.container",
                             true,
-                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
-                            "{singleSettingPanelsMock}.stepperPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
+                            true,
+                            "{singleSettingPanelsMock}.stepperPanel.settingGroupsVisualizer.element.handler"
                         ]
                     }, {
                         jQueryTrigger: "click",
@@ -653,7 +680,7 @@
                 ]]
             }, {
                 name: "Widgets: Dropdown - interactions test",
-                expect: 10,
+                expect: 5,
                 sequence: [{
                     funcName: "{singleSettingPanelsMock}.dropdownPanel.events.onTemplatesLoaded.fire"
                 }, {
@@ -663,13 +690,10 @@
                         dropdownSettingFixture.path
                     ]
                 }, {
-                    funcName: "gpii.tests.psp.testAppRestartIcon",
+                    funcName: "gpii.tests.psp.testRestartIcon",
                     args: [
                         "{singleSettingPanelsMock}.dropdownPanel.container",
-                        false,
-                        dropdownSettingFixture,
-                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
-                        "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
+                        false
                     ]
                 }, {
                     funcName: "gpii.tests.psp.testWidgetMemoryIcon",
@@ -688,21 +712,6 @@
                             "Widgets: Dropdown - component notified for the update with proper path/value",
                             [dropdownSettingFixture.path, dropdownSettingFixture.schema["enum"][2]],
                             ["{arguments}.0.path", "{arguments}.0.value"]
-                        ]
-                    }, {
-                        func: "{singleSettingPanelsMock}.dropdownPanel.events.onRestartRequired.fire",
-                        args: [
-                            [dropdownSettingFixture]
-                        ]
-                    }, {
-                        event: "{singleSettingPanelsMock}.dropdownPanel.events.onRestartRequired",
-                        listener: "gpii.tests.psp.testAppRestartIcon",
-                        args: [
-                            "{singleSettingPanelsMock}.dropdownPanel.container",
-                            true,
-                            dropdownSettingFixture,
-                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.styles",
-                            "{singleSettingPanelsMock}.dropdownPanel.settingsVisualizer.settingVisualizer.settingPresenter.options.labels"
                         ]
                     }
                 ], [
@@ -779,7 +788,11 @@
                 container: ".flc-settingsPanel-widgets-dropdown",
                 options: {
                     model: {
-                        settings: [dropdownSettingFixture]
+                        settingGroups: [
+                            {
+                                settings: [dropdownSettingFixture]
+                            }
+                        ]
                     },
                     listeners: {
                         "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onDropdownPanelLoaded"
@@ -791,7 +804,11 @@
                 container: ".flc-settingsPanel-widgets-textfield",
                 options: {
                     model: {
-                        settings: [textfieldSettingFixture]
+                        settingGroups: [
+                            {
+                                settings: [textfieldSettingFixture]
+                            }
+                        ]
                     },
                     listeners: {
                         "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onTextfieldPanelLoaded"
@@ -803,7 +820,11 @@
                 container: ".flc-settingsPanel-widgets-switch",
                 options: {
                     model: {
-                        settings: [switchSettingFixture]
+                        settingGroups: [
+                            {
+                                settings: [compositeSwitchSettingFixture]
+                            }
+                        ]
                     },
                     listeners: {
                         "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onSwitchPanelLoaded"
@@ -815,7 +836,11 @@
                 container: ".flc-settingsPanel-widgets-stepper",
                 options: {
                     model: {
-                        settings: [stepperSettingFixture]
+                        settingGroups: [
+                            {
+                                settings: [stepperSettingFixture]
+                            }
+                        ]
                     },
                     listeners: {
                         "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onStepperPanelLoaded"
@@ -827,7 +852,11 @@
                 container: ".flc-settingsPanel-widgets-multipicker",
                 options: {
                     model: {
-                        settings: [multipickerSettingFixture]
+                        settingGroups: [
+                            {
+                                settings: [multipickerSettingFixture]
+                            }
+                        ]
                     },
                     listeners: {
                         "{resourcesLoader}.events.onResourcesLoaded": "{singleSettingPanelsMock}.events.onMultipickerPanelLoaded"
@@ -846,7 +875,7 @@
             target: "{/ exemplar}.options.resourceDir"
         },
         model: {
-            settings: null
+            settingGroups: null
         },
         // XXX in order to avoid async behavior
         //   fire event for `settingsVisualizer` manually
@@ -935,31 +964,17 @@
             $(restartWarning.container).is(":visible"));
     };
 
-    gpii.tests.psp.testRestartWarningText = function (restartWarning, solutionNames, osRestart) {
+    gpii.tests.psp.testRestartWarningText = function (restartWarning, osRestart, solutionNames) {
         var restartText = $(".flc-restartText", restartWarning.container).text().trim();
         if (osRestart) {
             jqUnit.assertEquals("Restart warning has correct OS restart text message",
-                restartWarning.options.labels.osRestartText,
+                restartWarning.model.messages.osRestartText,
                 restartText);
         } else {
             var expectedTextSuffix = solutionNames.join(", ");
             jqUnit.assertTrue("Restart warning has correct text message",
                 restartText.endsWith(expectedTextSuffix));
         }
-    };
-
-    gpii.tests.psp.testRestartWarningIcon = function (restartWarning, osRestart) {
-        var restartIcon = $(".flc-restartIcon", restartWarning.container),
-            styles = restartWarning.options.styles,
-            iconClass = osRestart ? styles.osRestartIcon : styles.applicationRestartIcon;
-        jqUnit.assertTrue("Restart warning has correct icon",
-            restartIcon.hasClass(iconClass));
-    };
-
-    gpii.tests.psp.testRestartWarningMessage = function (restartWarning, solutionNames, osRestart) {
-        gpii.tests.psp.testRestartWarningVisibility(restartWarning, true);
-        gpii.tests.psp.testRestartWarningText(restartWarning, solutionNames, osRestart);
-        gpii.tests.psp.testRestartWarningIcon(restartWarning, osRestart);
     };
 
     fluid.defaults("gpii.tests.psp.restartWarningTester", {
@@ -970,7 +985,7 @@
             tests:[
                 {
                     name: "Restart warning text, icon and buttons tests",
-                    expect: 13,
+                    expect: 6,
                     sequence: [
                         {
                             funcName: "gpii.tests.psp.testRestartWarningVisibility",
@@ -981,15 +996,11 @@
                                 [dropdownSettingFixture, multipickerSettingFixture]
                             ]
                         }, {
-                            event: "{restartWarning}.events.onHeightChanged",
-                            listener: "jqUnit.assert",
-                            args: ["When the restart warning is shown, onHeightChanged event is fired"]
-                        }, {
-                            funcName: "gpii.tests.psp.testRestartWarningMessage",
+                            funcName: "gpii.tests.psp.testRestartWarningText",
                             args: [
                                 "{restartWarning}",
-                                [dropdownSettingFixture.solutionName, multipickerSettingFixture.schema.title],
-                                false
+                                false,
+                                [dropdownSettingFixture.solutionName, multipickerSettingFixture.schema.title]
                             ]
                         }, {
                             funcName: "{restartWarning}.updatePendingChanges",
@@ -997,10 +1008,9 @@
                                 [dropdownSettingFixture, multipickerSettingFixture, stepperSettingFixture]
                             ]
                         }, {
-                            funcName: "gpii.tests.psp.testRestartWarningMessage",
+                            funcName: "gpii.tests.psp.testRestartWarningText",
                             args: [
                                 "{restartWarning}",
-                                ["{restartWarning}.options.labels.os"],
                                 true
                             ]
                         },
@@ -1022,21 +1032,10 @@
                             listener: "jqUnit.assert",
                             args: ["Restart warning's restart now button fires the correct event"]
                         }, {
-                            jQueryTrigger: "click",
-                            element: "@expand:$(.flc-restartLater, {restartWarning}.container)"
-                        }, {
-                            event: "{restartWarning}.events.onRestartLater",
-                            listener: "jqUnit.assert",
-                            args: ["Restart warning's restart later button fires the correct event"]
-                        }, {
                             funcName: "{restartWarning}.updatePendingChanges",
                             args: [
                                 []
                             ]
-                        }, {
-                            event: "{restartWarning}.events.onHeightChanged",
-                            listener: "jqUnit.assert",
-                            args: ["When the restart warning is hidden, onHeightChanged event is fired"]
                         }, {
                             funcName: "gpii.tests.psp.testRestartWarningVisibility",
                             args: ["{restartWarning}.container", false]
@@ -1052,7 +1051,19 @@
         components: {
             restartWarning: {
                 type: "gpii.psp.restartWarning",
-                container: ".fl-restartWarning"
+                container: ".fl-restartWarning",
+                options: {
+                    model: {
+                        messages: {
+                            osName: "Windows",
+                            osRestartText: "Windows needs to restart to apply your changes.",
+                            restartText: "These applications will restart when this GPII Settings panel closes: %solutions",
+                            undo: "Undo Changes",
+                            applyNow: "Apply changes now",
+                            restartNow: "Restart Now"
+                        }
+                    }
+                }
             },
             restartWarningTester: {
                 type: "gpii.tests.psp.restartWarningTester"
@@ -1060,10 +1071,224 @@
         }
     });
 
-    $(document).ready(function () {
+    var multiPreferencesFixture = {
+        sets: [
+            {
+                name: "Default preferences",
+                path: "gpii-default",
+                imageSrc: "https://www.w3schools.com/howto/img_paris.jpg"
+            },
+            {
+                name: "bright",
+                path: "bright",
+                imageSrc: "https://www.w3schools.com/howto/img_mountains.jpg"
+            },
+            {
+                name: "noise",
+                path: "noise",
+                imageSrc: "https://www.w3schools.com/howto/img_mountains.jpg"
+            },
+            {
+                name: "bright and noise",
+                path: "brightandnoise",
+                imageSrc: "https://www.w3schools.com/howto/img_paris.jpg"
+            }
+        ],
+        activeSet: "gpii-default"
+    };
+
+    var singlePreferenceFixture = {
+        sets: [
+            {
+                name: "Default preferences",
+                path: "gpii-default",
+                imageSrc: "https://www.w3schools.com/howto/img_paris.jpg"
+            }
+        ],
+        activeSet: "gpii-default"
+    };
+
+    gpii.tests.psp.getActivePreferenceSet = function (preferences) {
+        return fluid.find_if(preferences.sets, function (preferenceSet) {
+            return preferenceSet.path === preferences.activeSet;
+        });
+    };
+
+    gpii.tests.psp.selectDropdownItem = function (dropdownContainer, itemIndex) {
+        var dropdownToggle = dropdownContainer.find(".dropdown-toggle");
+        dropdownToggle.click(); // show the menu
+
+        var dropdownMenuItems = $(".flc-imageDropdown-item", dropdownContainer);
+        dropdownMenuItems[itemIndex].click(); // select the dropdown item with the given index
+    };
+
+    gpii.tests.psp.testHeaderItem = function (textElement, imageElement, preferenceSet) {
+        jqUnit.assertEquals(
+            "Header: The provided item has a correct image",
+            preferenceSet.imageSrc,
+            imageElement.attr("src")
+        );
+
+        jqUnit.assertEquals(
+            "Header: The provided item has correct text",
+            preferenceSet.name,
+            textElement.text().trim()
+        );
+    };
+
+    gpii.tests.psp.testSelectedDropdownItem = function (element, preferenceSet) {
+        var selectedItemText = element.find(".flc-imageDropdown-selectedItemText"),
+            selectedItemImage = element.find(".flc-imageDropdown-selectedItemImage");
+        gpii.tests.psp.testHeaderItem(selectedItemText, selectedItemImage, preferenceSet);
+    };
+
+    gpii.tests.psp.testImageDropdown = function (element, preferences) {
+        var activePreferenceSet = gpii.tests.psp.getActivePreferenceSet(preferences);
+        gpii.tests.psp.testSelectedDropdownItem(element, activePreferenceSet);
+
+        var dropdownMenu = element.find(".flc-imageDropdown-menu"),
+            dropdownMenuItems = dropdownMenu.find(".flc-imageDropdown-item");
+
+        dropdownMenuItems.each(function (index, dropdownMenuItem) {
+            var dropdownMenuItemImage = $(dropdownMenuItem).find(".flc-imageDropdown-itemImage"),
+                dropdownMenuItemText = $(dropdownMenuItem).find(".flc-imageDropdown-itemText"),
+                preferenceSet = preferences.sets[index];
+
+            gpii.tests.psp.testHeaderItem(dropdownMenuItemText, dropdownMenuItemImage, preferenceSet);
+            if (preferenceSet.path === preferences.activeSet) {
+                jqUnit.assertTrue(
+                    "Header: The active element in the dropdown has the correct class",
+                    $(dropdownMenuItem).hasClass("active")
+                );
+            }
+        });
+    };
+
+    gpii.tests.psp.testActivePreferenceSet = function (element, preferences) {
+        var prefSetText = element.find(".flc-activePreferenceSetName"),
+            prefSetImage = element.find(".flc-activePreferenceSetImage");
+        gpii.tests.psp.testHeaderItem(prefSetText, prefSetImage, preferences.sets[0]);
+    };
+
+    gpii.tests.psp.testHeaderState = function (container, preferences) {
+        var hasMultipleSets = preferences.sets.length > 1,
+            preferenceSetPicker = container.find(".flc-prefSetPicker"),
+            activePreferenceSet = container.find(".flc-activePreferenceSet");
+
+        jqUnit.assertEquals(
+            "Header: Preference set picker element has correct visibility",
+            hasMultipleSets,
+            preferenceSetPicker.is(":visible")
+        );
+
+        jqUnit.assertEquals(
+            "Header: Active preference set element has correct visibility",
+            !hasMultipleSets,
+            activePreferenceSet.is(":visible")
+        );
+
+        if (hasMultipleSets) {
+            gpii.tests.psp.testImageDropdown(preferenceSetPicker, preferences);
+        } else {
+            gpii.tests.psp.testActivePreferenceSet(activePreferenceSet, preferences);
+        }
+    };
+
+    fluid.defaults("gpii.tests.psp.headerTester", {
+        gradeNames: ["fluid.test.testCaseHolder"],
+
+        modules: [{
+            name: "Header tests",
+            tests:[
+                { // Tests when there are multiple available preference sets (i.e. a dropdown is present in the header).
+                    name: "Header dropdown tests",
+                    expect: 16,
+                    sequence: [
+                        { // Set the preferences.
+                            funcName: "{header}.applier.change",
+                            args: ["preferences", multiPreferencesFixture]
+                        }, { // Fire `onPreferencesUpdated` so that the header can be created.
+                            funcName: "{header}.events.onPreferencesUpdated.fire"
+                        }, { // Test the selected dropdown items and the dropdown menu.
+                            funcName: "gpii.tests.psp.testHeaderState",
+                            args: ["{header}.container", multiPreferencesFixture]
+                        }, {
+                            funcName: "gpii.tests.psp.selectDropdownItem",
+                            args: ["{header}.preferenceSetPicker.container", 2]
+                        }, {
+                            event: "{header}.events.onActivePreferenceSetAltered",
+                            listener: "jqUnit.assertEquals",
+                            args: [
+                                "Header: The active preference set was correctly changed",
+                                multiPreferencesFixture.sets[2].path,
+                                "{arguments}.0"
+                            ]
+                        }, {
+                            funcName: "gpii.tests.psp.testSelectedDropdownItem",
+                            args: [
+                                "{header}.preferenceSetPicker.container",
+                                multiPreferencesFixture.sets[2]
+                            ]
+                        }
+                    ]
+                }, { // Tests when there is just a single available preference set (and no dropdown in the header)
+                    name: "Header active preference set tests",
+                    expect: 4,
+                    sequence: [
+                        {
+                            funcName: "{header}.applier.change",
+                            args: ["preferences", singlePreferenceFixture]
+                        }, {
+                            funcName: "{header}.events.onPreferencesUpdated.fire"
+                        }, {
+                            funcName: "gpii.tests.psp.testHeaderState",
+                            args: ["{header}.container", singlePreferenceFixture]
+                        }
+                    ]
+                }, {
+                    name: "Header key out button tests",
+                    expect: 1,
+                    sequence: [
+                        {
+                            jQueryTrigger: "click",
+                            element: "@expand:$(.flc-keyOutBtn, {header}.container)"
+                        }, {
+                            event: "{header}.events.onKeyOut",
+                            listener: "jqUnit.assert",
+                            args: ["Header: clicking the key out button fires the appropriate event"]
+                        }
+                    ]
+                }
+            ]
+        }]
+    });
+
+    fluid.defaults("gpii.tests.psp.headerTests", {
+        gradeNames: ["fluid.test.testEnvironment"],
+        components: {
+            header: {
+                type: "gpii.psp.header",
+                container: ".flc-header",
+                options: {
+                    model: {
+                        messages: {
+                            autosaveText: "Auto-save is on",
+                            keyOut:"Key Out"
+                        }
+                    }
+                }
+            },
+            headerTester: {
+                type: "gpii.tests.psp.headerTester"
+            }
+        }
+    });
+
+    $(function () {
         fluid.test.runTests([
             "gpii.tests.psp.attrsExpanderTests",
             "gpii.tests.psp.restartWarningTests",
+            "gpii.tests.psp.headerTests",
             "gpii.tests.psp.settingsPanelTestsWrapper"
         ]);
     });

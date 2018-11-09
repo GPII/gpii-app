@@ -32,8 +32,8 @@
                         onSurveyOpen: {
                             funcName: "{popup}.openSurvey"
                         },
-                        onExecuteCommand: {
-                            funcName: "{popup}.executeCommand"
+                        onExecuteJavaScript: {
+                            funcName: "{popup}.executeJavaScript"
                         }
                     }
                 }

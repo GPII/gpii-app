@@ -107,10 +107,15 @@
                         "onCreate.render": {
                             funcName: "gpii.psp.heightObservable.renderMarkup",
                             args: [
+                                "{that}",
                                 "{that}.container",
                                 "{heightObservable}.options.markup.heightChangeListener",
                                 "{heightObservable}.events.onHeightListenerMarkupRendered"
                             ]
+                        },
+                        "onDestroy.removeMarkup": {
+                            funcName: "gpii.psp.heightObservable.removeMarkup",
+                            args: ["{that}"]
                         }
                     }
                 }
@@ -161,15 +166,29 @@
     /**
      * Creates the height change listner DOM element, adds it to the specified
      * container and fires an event when done.
+     * @param {Component} that - The `renderHeightListenerMarkup` instance.
      * @param {jQuery} container - The container to which the height change listener
      * element will be added.
      * @param {String} markup - The markup of the height change listner element.
      * @param {Object} onRenderedEvent - The event which will be fired once the
      * markup has been rendered.
      */
-    gpii.psp.heightObservable.renderMarkup = function (container, markup, onRenderedEvent) {
+    gpii.psp.heightObservable.renderMarkup = function (that, container, markup, onRenderedEvent) {
         var heightListenerElement = jQuery(markup);
         container.prepend(heightListenerElement);
+
+        that.heightListenerElement = heightListenerElement;
         onRenderedEvent.fire(heightListenerElement);
+    };
+
+    /**
+     * Removes the height change listener DOM element when it is no longer needed
+     * (i.e. when the component is destroyed).
+     * @param {Component} that - The `renderHeightListenerMarkup` instance.
+     */
+    gpii.psp.heightObservable.removeMarkup = function (that) {
+        if (that.heightListenerElement) {
+            that.heightListenerElement.remove();
+        }
     };
 })(fluid);

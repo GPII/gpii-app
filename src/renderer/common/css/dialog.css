@@ -3,6 +3,11 @@
  */
 body {
     background-color: transparent;
+
+    /* override properties */
+    margin: 0;
+    /* uncomment when proper way for content scrolling is found */
+    /* overflow: hidden; */
 }
 
 /*
@@ -15,12 +20,21 @@ body {
     left: 0;
 }
 
+/*
+ * Take up the whole window space
+ */
 .fl-dialog .fl-dialog-contentWrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
     padding: 8px 8px 0 8px;
     background-color: #83CBEF;
 }
 
 .fl-dialog .fl-dialog-content {
+    flex: 1;
+
     padding: 12px;
 
     background-color: #ffffff;
@@ -41,6 +55,11 @@ body {
     margin-bottom: 10px;
     color: #034EA2;
     font-size: 1.5em;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-title + .fl-subtitle {
+    margin: -12px 0 10px 0;
+    font-size: 0.9em;
 }
 
 .fl-dialog .fl-dialog-content .fl-dialog-contentText .fl-details {
@@ -75,11 +94,7 @@ body {
 
 .fl-dialog .fl-dialog-footer .fl-gpiiIcon {
     float: right;
-}
-
-.fl-dialog .fl-dialog-footer .fl-gpiiIcon img {
-    height: 16px;
-    margin-top: -3px; /* vertial align text and image properly */
+    height: 20px;
 }
 
 .fl-dialog .fl-speech-triangle {
@@ -118,4 +133,13 @@ body {
 
 .clear-both {
     clear: both;
+}
+
+.fl-dialog .fl-dialog-content ul li {
+    margin: 0;
+}
+
+/* Useful for dialog content without a height listener */
+.fl-scrollable {
+    overflow: auto;
 }

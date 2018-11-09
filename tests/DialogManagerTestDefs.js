@@ -17,6 +17,7 @@
 "use strict";
 
 var fluid = require("infusion"),
+    BrowserWindow = require("electron").BrowserWindow,
     jqUnit = fluid.require("node-jqunit", require, "jqUnit"),
     gpii = fluid.registerNamespace("gpii");
 
@@ -36,13 +37,8 @@ var surveyDialogFixture = {
 
 gpii.tests.dialogManager.testManagerWithNoKeyedInUser = function (dialogManager) {
     jqUnit.assertFalse("There is no keyed in user for the dialog manager",
-        dialogManager.model.keyedInUserToken);
-    gpii.tests.dialogManager.testSurveyDialogClosed(dialogManager);
-};
-
-gpii.tests.dialogManager.testManagerAfterKeyIn = function (dialogManager, expectedUserToken) {
-    jqUnit.assertEquals("The keyed in user token matches the token of the user",
-        expectedUserToken, dialogManager.model.keyedInUserToken);
+        dialogManager.model.isKeyedIn);
+    gpii.tests.dialogManager.testSurveyDialogIsDestroyed(dialogManager);
 };
 
 gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, surveyDialogFixture) {
@@ -59,59 +55,54 @@ gpii.tests.dialogManager.testSurveyDialogShown = function (dialogManager, survey
     );
 };
 
-gpii.tests.dialogManager.testSurveyDialogHidden = function (dialogManager) {
-    var dialog = dialogManager.survey.dialog.dialog;
-    jqUnit.assertFalse("Survey dialog is hidden", dialog.isVisible());
+gpii.tests.dialogManager.testSurveyDialogNotVisible = function (dialogManager) {
+    // either destroyed or hidden
+    var dialogVisibilityState = dialogManager.survey.dialog && dialogManager.survey.dialog.model.isShown;
+    jqUnit.assertFalse("Survey dialog is hidden", dialogVisibilityState);
 };
 
-gpii.tests.dialogManager.testSurveyDialogClosed = function (dialogManager) {
+gpii.tests.dialogManager.testSurveyDialogIsDestroyed = function (dialogManager) {
+    // it is either not created yet or hidden
     jqUnit.assertFalse("There is no survey dialog available",
         dialogManager.survey.dialog);
 };
 
-gpii.tests.dialogManager.testDefs = {
-    name: "Dialog manager integration tests",
-    expect: 10,
-    config: {
-        configName: "gpii.tests.dev.config",
-        configPath: "tests/configs"
-    },
-    gradeNames: ["gpii.test.common.testCaseHolder"],
-    sequence: [{
-        func: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
-        args: ["{that}.app.dialogManager"]
-    }, {
-        func: "{that}.app.keyIn",
-        args: ["snapset_1a"]
-    }, {
-        changeEvent: "{that}.app.dialogManager.applier.modelChanged",
-        path: "keyedInUserToken",
-        listener: "gpii.tests.dialogManager.testManagerAfterKeyIn",
-        args: ["{that}.app.dialogManager", "snapset_1a"]
-    }, {
+gpii.tests.dialogManager.testShowInvalidDialog = function (dialogManager) {
+    var initialFocusedWindow = BrowserWindow.getFocusedWindow();
+    dialogManager.show("invalidDialog");
+
+    jqUnit.assertEquals(
+        "Dialog manager does not show a dialog if it does not exist",
+        initialFocusedWindow,
+        BrowserWindow.getFocusedWindow()
+    );
+};
+
+var surveyDialogSequence = [
+    { // triggering show of a survey
         func: "{that}.app.dialogManager.show",
         args: ["survey", surveyDialogFixture]
-    }, {
+    }, { // ... should create one
         event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
         listener: "gpii.tests.dialogManager.testSurveyDialogShown",
         args: ["{that}.app.dialogManager", surveyDialogFixture]
     }, { // Test hiding of a dialog via the manager
         func: "{that}.app.dialogManager.hide",
         args: ["survey"]
-    }, {
-        func: "gpii.tests.dialogManager.testSurveyDialogHidden",
+    }, { // ... should simply hide the survey
+        func: "gpii.tests.dialogManager.testSurveyDialogNotVisible",
         args: ["{that}.app.dialogManager"]
-    }, {
+    }, { // ... showing it again
         func: "{that}.app.dialogManager.show",
         args: ["survey", surveyDialogFixture]
-    }, {
+    }, { // should create a new survey
         event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
         listener: "fluid.identity"
     }, { // Test closing of a dialog via the manager
         func: "{that}.app.dialogManager.close",
         args: ["survey"]
-    }, {
-        func: "gpii.tests.dialogManager.testSurveyDialogClosed",
+    }, { // ... should also hide the dialog
+        func: "gpii.tests.dialogManager.testSurveyDialogNotVisible",
         args: ["{that}.app.dialogManager"]
     }, {
         func: "{that}.app.dialogManager.show",
@@ -123,8 +114,38 @@ gpii.tests.dialogManager.testDefs = {
         func: "{that}.app.keyOut"
     }, { // Test that the survey dialog is closed when the user keys out
         changeEvent: "{that}.app.dialogManager.applier.modelChanged",
-        path: "keyedInUserToken",
-        listener: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
+        path: "isKeyedIn",
+        listener: "gpii.tests.dialogManager.testSurveyDialogNotVisible",
         args: ["{that}.app.dialogManager"]
-    }]
+    }
+];
+
+
+gpii.tests.dialogManager.testDefs = {
+    name: "Dialog manager integration tests",
+    expect: 10,
+    config: {
+        configName: "gpii.tests.dev.config",
+        configPath: "tests/configs"
+    },
+    gradeNames: ["gpii.test.common.testCaseHolder"],
+    sequence: [ {
+        func: "gpii.tests.dialogManager.testShowInvalidDialog",
+        args: ["{that}.app.dialogManager"]
+    }, { // move to dialog tests
+        func: "gpii.tests.dialogManager.testManagerWithNoKeyedInUser",
+        args: ["{that}.app.dialogManager"]
+    }, {
+        func: "{that}.app.keyIn",
+        args: ["snapset_5"]
+    }, { // TODO remove or replace with event
+        changeEvent: "{that}.app.dialogManager.applier.modelChanged",
+        path: "isKeyedIn",
+        listener: "jqUnit.assertTrue",
+        args:[
+            "There is a keyed in user for the dialog manager",
+            "{that}.app.dialogManager.model.isKeyedIn"
+        ]
+    },
+    surveyDialogSequence]
 };

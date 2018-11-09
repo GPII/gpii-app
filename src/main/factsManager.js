@@ -14,7 +14,8 @@
  */
 "use strict";
 
-var fluid = require("infusion");
+var fluid = require("infusion"),
+    gpii = fluid.registerNamespace("gpii");
 
 /**
  * This component is responsible for retrieving, storing and updating (when applicable)
@@ -32,16 +33,51 @@ var fluid = require("infusion");
 fluid.defaults("gpii.app.factsManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {
-        keyedInTimestamp: null
+        keyedInTimestamp: null,
+        // Number of interactions with the GPII app. Incremented whenever the PSP or QSS is
+        // opened, as well as when an actual user (i.e. different from `noUser`) keys in.
+        interactionsCount: 0
+    },
+    modelListeners: {
+        interactionsCount: {
+            func: "console.log",
+            args: [
+                "FactsManager: Changed interactionsCount: ",
+                "{change}.value"
+            ]
+        }
     },
     listeners: {
-        "{app}.events.onKeyedIn": {
-            changePath: "keyedInTimestamp",
-            value: "@expand:Date.now()"
-        },
         "{app}.events.onKeyedOut": {
             changePath: "keyedInTimestamp",
             value: null
+        },
+        "{app}.events.onKeyedIn": [{
+            changePath: "keyedInTimestamp",
+            value: "@expand:Date.now()"
+        }, {
+            func: "{that}.increaseInteractionsCount"
+        }],
+        "{qssWrapper}.qss.events.onDialogShown": {
+            funcName: "{that}.increaseInteractionsCount"
+        },
+        "{psp}.events.onDialogShown": {
+            funcName: "{that}.increaseInteractionsCount"
+        }
+    },
+    invokers: {
+        increaseInteractionsCount: {
+            funcName: "gpii.app.factsManager.increaseInteractionsCount",
+            args: ["{that}"]
         }
     }
 });
+
+/**
+ * Increases the `interactionsCount` fact by 1.
+ * @param {Component} that - The `gpii.app.factsManager` instance.
+ */
+gpii.app.factsManager.increaseInteractionsCount = function (that) {
+    var interactionsCount = that.model.interactionsCount;
+    that.applier.change("interactionsCount", interactionsCount + 1);
+};
