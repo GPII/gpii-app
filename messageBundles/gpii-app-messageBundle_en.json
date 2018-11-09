@@ -23,7 +23,7 @@
     "gpii_psp_signIn_forgotPasswordButton": "Forgot Password?",
 
     "gpii_psp_header_autosaveText": "Auto-save is on",
-    "gpii_psp_header_keyOut":"Key Out",
+    "gpii_psp_header_keyOut":"Sign out",
 
     "gpii_psp_settingsPanel_emptyPrefSetHint": "When the features you select have settings, their controls will appear here.",
 
