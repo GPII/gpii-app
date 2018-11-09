@@ -26,7 +26,6 @@ require("../common/utils.js");
 require("./basic/dialog.js");
 require("./basic/blurrable.js");
 require("./basic/resizable.js");
-require("./basic/scaledDialog.js");
 require("./basic/offScreenHidable.js");
 
 
@@ -148,13 +147,8 @@ fluid.defaults("gpii.app.psp", {
     gradeNames: [
         "gpii.app.dialog",
         "gpii.app.blurrable",
-        "gpii.app.dialog.offScreenHidable",
-        "gpii.app.scaledDialog"
+        "gpii.app.dialog.offScreenHidable"
     ],
-
-    scaleFactor: 1,
-    defaultWidth: 450,
-    defaultHeight: 600,
 
     model:  {
         isKeyedIn: false,
@@ -189,6 +183,11 @@ fluid.defaults("gpii.app.psp", {
                     ]
                 }
             }
+        },
+
+        attrs: {
+            width: 450,
+            height: 600
         },
 
         fileSuffixPath: "psp/index.html",

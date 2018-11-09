@@ -24,7 +24,7 @@ require("../basic/centeredDialog.js");
  * in the QSS.
  */
 fluid.defaults("gpii.app.qssMorePanel", {
-    gradeNames: ["gpii.app.centeredDialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
+    gradeNames: ["gpii.app.centeredDialog", "gpii.app.blurrable"],
 
     // Configuration which may differ depending on the machine on which the app is deployed
     siteConfig: {
@@ -43,6 +43,9 @@ fluid.defaults("gpii.app.qssMorePanel", {
 
     config: {
         attrs: {
+            width: "{that}.options.siteConfig.defaultWidth",
+            height: "{that}.options.siteConfig.defaultHeight",
+
             icon: {
                 expander: {
                     funcName: "fluid.module.resolvePath",

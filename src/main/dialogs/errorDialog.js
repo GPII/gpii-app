@@ -90,16 +90,15 @@ gpii.app.errorDialog.channel.deregister = function () {
  * following attributes: title, subheader, details and error code.
  */
 fluid.defaults("gpii.app.errorDialog", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
-
-    scaleFactor: 1,
-    defaultWidth: 400,
-    defaultHeight: 250,
+    gradeNames: ["gpii.app.dialog"],
 
     config: {
         destroyOnClose: true,
 
         attrs: {
+            width: 400,
+            height: 250,
+
             title:   null,
             subhead: null,
             details: null,

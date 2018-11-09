@@ -20,42 +20,39 @@ var gpii = fluid.registerNamespace("gpii");
 
 require("../basic/dialog.js");
 require("../basic/blurrable.js");
-require("../basic/scaledDialog.js");
 require("../../../shared/channelUtils.js");
 
 /**
  * A component that represents the Quick Set Strip.
  */
 fluid.defaults("gpii.app.qss", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.dialog.offScreenHidable", "gpii.app.scaledDialog", "gpii.app.blurrable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.dialog.offScreenHidable", "gpii.app.blurrable"],
 
     model: {
         // Whether blurring should be respected by the dialog
         closeQssOnBlur: null
     },
 
-    scaleFactor: 1,
-
     sideMargin: 5,
     buttonWidth: 89,
-    defaultHeight: 95,
-
-    defaultWidth: {
-        expander: {
-            funcName: "gpii.app.qss.computeQssWidth",
-            args: [
-                "{that}.options.buttonWidth",
-                "{that}.options.sideMargin",
-                "{that}.options.config.params.settings"
-            ]
-        }
-    },
 
     config: {
         destroyOnClose: false,
         awaitWindowReadiness: true,
 
         attrs: {
+            width: {
+                expander: {
+                    funcName: "gpii.app.qss.computeQssWidth",
+                    args: [
+                        "{that}.options.buttonWidth",
+                        "{that}.options.sideMargin",
+                        "{that}.options.config.params.settings"
+                    ]
+                }
+            },
+            height: 95,
+
             alwaysOnTop: true,
             transparent: false,
             enableLargerThanScreen: true

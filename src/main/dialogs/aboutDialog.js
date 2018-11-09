@@ -24,13 +24,13 @@ var gpii = fluid.registerNamespace("gpii");
  * Component that represents the About dialog
  */
 fluid.defaults("gpii.app.aboutDialog", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
-
-    scaleFactor: 1,
-    defaultWidth: 400,
-    defaultHeight: 250,
+    gradeNames: ["gpii.app.dialog"],
 
     config: {
+        attrs: {
+            width: 400,
+            height: 250
+        },
         params: {
             userListeners: ["USB", "NFC", "Fingerprint", "Webcam & Voice"],
             version: "@expand:gpii.app.getVersion()"

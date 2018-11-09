@@ -33,15 +33,10 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.qssTooltipDialog", {
     gradeNames: [
         "gpii.app.dialog",
-        "gpii.app.scaledDialog",
         "gpii.app.blurrable",
         "gpii.app.delayedDialog",
         "gpii.app.dialog.offScreenHidable"
     ],
-
-    scaleFactor: 1,
-    defaultWidth: 205,
-    defaultHeight: 300,
 
     model: {
         isKeyedIn: false,
@@ -70,6 +65,8 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
         destroyOnClose: false,
 
         attrs: {
+            width: 205,
+            height: 300,
             alwaysOnTop: true
         },
         fileSuffixPath: "qssTooltipPopup/index.html"

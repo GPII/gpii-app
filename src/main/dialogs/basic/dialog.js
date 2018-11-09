@@ -51,6 +51,8 @@ fluid.registerNamespace("gpii.app.dialog");
 fluid.defaults("gpii.app.dialog", {
     gradeNames: ["fluid.modelComponent", "gpii.app.resizable"],
 
+    scaleFactor: 1,
+
     model: {
         isShown: false,
         // the positions of the window,
@@ -59,7 +61,11 @@ fluid.defaults("gpii.app.dialog", {
         offset: {
             x: 0,
             y: 0
-        }
+        },
+
+        scaleFactor: null,        // the actual scale factor
+        width:       "{that}.options.config.attrs.width", // the actual width of the content
+        height:      "{that}.options.config.attrs.height" // the actual height of the content
     },
 
     events: {
@@ -135,9 +141,6 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     members: {
-        width:  "{that}.options.config.attrs.width", // the actual width of the content
-        height: "{that}.options.config.attrs.height", // the actual height of the content
-
         /**
          * Blurrable dialogs will have the `gradeNames` property which will hold all gradeNames
          * of the containing component. Useful when performing checks about the component if
@@ -169,6 +172,15 @@ fluid.defaults("gpii.app.dialog", {
             args: ["{that}", "{change}.value", "{that}.options.config.showInactive"],
             namespace: "impl",
             excludeSource: "init"
+        },
+        scaleFactor: {
+            funcName: "gpii.app.dialog.rescaleDialog",
+            args: [
+                "{that}",
+                "{change}.value",
+                "{change}.oldValue"
+            ],
+            excludeSource: "init"
         }
     },
     listeners: {
@@ -179,6 +191,10 @@ fluid.defaults("gpii.app.dialog", {
         "onCreate.registerDialogReadyListener": {
             funcName: "gpii.app.dialog.registerDailogReadyListener",
             args: "{that}"
+        },
+        "onCreate.applyScaleFactor": {
+            func: "{that}.applier.change",
+            args: ["scaleFactor", "{that}.options.scaleFactor"]
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
@@ -342,6 +358,41 @@ gpii.app.dialog.positionOnInit = function (that) {
     }
 };
 
+gpii.app.dialog.rescaleDialog = function (that, scaleFactor, oldScaleFactor) {
+    scaleFactor = scaleFactor || 1;
+    oldScaleFactor = oldScaleFactor || 1;
+
+    if (scaleFactor === oldScaleFactor) {
+        return;
+    }
+
+    var width = scaleFactor * that.model.width / oldScaleFactor,
+        height = scaleFactor * that.model.height / oldScaleFactor;
+
+    that.applier.change("width", width);
+    that.applier.change("height", height);
+
+    gpii.app.dialog.setDialogZoom(that.dialog, scaleFactor);
+
+    that.setBounds();
+};
+
+/**
+ * Applies a custom scaling factor to the whole HTML page of the dialog.
+ * @param {BrowserWindow} dialog - The `BrowserWindow` whose content needs
+ * to be scaled up or down.
+ * @param {Number} scaleFactor - The scaling factor to be applied.
+ */
+gpii.app.dialog.setDialogZoom = function (dialog, scaleFactor) {
+    var script = fluid.stringTemplate("jQuery(\"body\").css(\"zoom\", %scaleFactor)", {
+        scaleFactor: scaleFactor
+    });
+
+    if (dialog) {
+        dialog.webContents.executeJavaScript(script);
+    }
+};
+
 /**
  * Listens for a notification from the corresponding BrowserWindow for components' initialization.
  * It uses a shared channel for dialog creation - `onDialogReady` - where every BrowserWindow of a `gpii.app.dialog`
@@ -436,8 +487,8 @@ gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX
     // As default use currently set values
     offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
     offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
-    width    = fluid.isValue(width)   ? width : that.width;
-    height   = fluid.isValue(height)  ? height : that.height;
+    width    = fluid.isValue(width)   ? width : that.model.width;
+    height   = fluid.isValue(height)  ? height : that.model.height;
 
     // apply restrictions
     if (restrictions.minHeight) {
@@ -446,8 +497,10 @@ gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX
 
     var bounds = gpii.browserWindow.computeWindowBounds(width, height, offsetX, offsetY);
 
-    that.width = bounds.width;
-    that.height = bounds.height;
+    // that.width = bounds.width;
+    // that.height = bounds.height;
+    that.applier.change("width", bounds.width);
+    that.applier.change("height", bounds.height);
     that.applier.change("offset", { x: offsetX, y: offsetY });
 
     that.dialog.setBounds(bounds);
@@ -465,8 +518,8 @@ gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height)
     // ensure the whole window is visible
     var offset = that.model.offset;
 
-    width  = width  || that.width;
-    height = height || that.height;
+    width  = width  || that.model.width;
+    height = height || that.model.height;
 
     // apply restrictions
     if (restrictions.minHeight) {
@@ -478,6 +531,8 @@ gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height)
     that.width  = size.width;
     that.height = size.height;
 
+    that.applier.change("width", size.width);
+    that.applier.change("height", size.height);
     that.dialog.setSize(size.width, size.height);
 };
 
