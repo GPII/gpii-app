@@ -18,7 +18,7 @@ var fluid = require("infusion");
 
 fluid.require("node-jqunit", require, "jqUnit");
 
-require("../src/common/messageBundles.js");
+require("../src/shared/messageBundles.js");
 
 fluid.registerNamespace("gpii.tests.messageBundles.testDefs");
 

@@ -1,0 +1,275 @@
+body {
+    background-color: transparent;
+
+    /* override properties */
+    margin: 0;
+    /* uncomment when proper way for content scrolling is found */
+    /* overflow: hidden; */
+}
+
+.fl-qssWidget {
+    font-family: Arial;
+
+    border: 4px solid #2a4986;
+    border-radius: 10px;
+    box-sizing: border-box;
+
+    background-color: #ffffff;
+    height: calc(100% - 45px);
+
+    padding: 0 8px 8px 8px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.fl-titlebar .fl-closeBtn {
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.fl-titlebar .fl-closeBtn:focus,
+.fl-titlebar .fl-closeBtn:active {
+    color: #000000;
+    outline: none;
+}
+
+.fl-qssWidget .fl-focused {
+    outline: none !important;
+}
+
+.fl-qssWidget .fl-highlighted {
+    border: 2px solid #ff0000 !important;
+}
+
+.fl-qssWidget .fl-qssWidget-learnMoreLink {
+    margin: 15px 0;
+    border: 2px solid transparent;
+
+    color: #000000;
+    text-decoration: underline;
+    text-align: center;
+    cursor: pointer;
+}
+
+.fl-qssWidget .fl-qssWidget-learnMoreLink:focus,
+.fl-qssWidget .fl-qssWidget-learnMoreLink:active {
+    outline: none;
+}
+
+.fl-qssWidget .fl-qssWidget-learnMoreLink:before {
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: -35%;
+
+    content: url("../../psp/icons/info.svg");
+}
+
+.fl-qssWidget-footer {
+    position: relative;
+    top: -4px;
+    height: 45px;
+    width: 68px;
+
+    margin: 0 auto;
+    box-sizing: border-box;
+
+    border: 4px solid #2a4986;
+    border-top: none;
+    border-bottom: none;
+
+    background-color: #ffffff;
+}
+
+/*
+ * Stepper Widget
+ */
+
+.fl-qssWidget .fl-qssStepperWidget,
+.fl-qssWidget .fl-qssMenuWidget {
+    margin: 0 5px 0 10px;
+}
+
+.fl-qssWidget-footerTip {
+    color: #21932b;
+}
+
+.fl-qssWidget-tip p {
+    margin: 0;
+}
+
+.fl-qssWidget-tip p:first-of-type {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.fl-qssWidget-tip ul {
+    margin-top: 5px;
+    margin-bottom: 0;
+    padding-left: 15px;
+}
+
+.fl-qssStepperWidget-controls {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 15px;
+}
+
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
+    display: flex;
+    align-items: center;
+
+    box-sizing: border-box;
+    width: 70%;
+    min-height: 42px;
+    margin: 5px;
+    padding-top: 0;
+
+    border: 2px solid transparent;
+    border-radius: 5px;
+
+    background-color: #3a679e;
+    font-size: 1.25em;
+
+    user-select: none;
+    cursor: pointer;
+}
+
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn:focus,
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn:active {
+    border: 2px solid transparent;
+    outline: none;
+}
+
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn .fl-btnLabel {
+    display: block;
+    margin: 0 auto;
+}
+
+/* update existing class */
+.fl-icon {
+    background-color: #ffffff;
+
+    float: left;
+}
+
+
+.fl-qssStepperWidget-controls .fl-icon.fl-increment-icon {
+    width: 30px;
+    height: 30px;
+    margin-left: 5px;
+
+    -webkit-mask-image: url(../../../assets/plus-circle.svg);
+    mask-image: url(../../../assets/plus-circle.svg);
+
+}
+
+.fl-qssStepperWidget-controls .fl-icon.fl-decrement-icon {
+    margin-left: 8px; /* align with the increment icon */
+    -webkit-mask-image: url(../../../assets/minus-circle.svg);
+    mask-image: url(../../../assets/minus-circle.svg);
+}
+
+
+@keyframes stepperActivation {
+    0% {
+        background-color: #ffea00;
+        color: black;
+    }
+}
+
+@keyframes stepperErrorActivation {
+    0% {
+        background-color: #CC0000;
+        color: black;
+    }
+}
+
+.fl-qssStepperWidgetBtn-stepperActivation {
+    animation: stepperActivation 0.5s;
+}
+
+.fl-qssStepperWidgetBtn-stepperErrorActivation {
+    animation: stepperErrorActivation 0.5s;
+}
+
+.fl-arrowUp, .fl-arrowDown {
+    font-size: 1.6em;
+}
+
+.fl-qssStepperWidget-footer {
+    margin-bottom: 15px;
+}
+
+/*
+ * Menu Widget
+ */
+
+.fl-qssMenuWidget  {
+    display: flex;
+    flex-direction: column;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls.disabled {
+    pointer-events: none;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
+    position: relative;
+    width: 80%;
+    margin: 0 5px 5px 5px;
+    padding: 10px 5px;
+    border: 2px solid #0f4797;
+    border-radius: 5px;
+    line-height: 18px;
+
+    background-color: #ffffff;
+    text-align: center;
+    color: #0f4797;
+
+    user-select: none;
+    cursor: pointer;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:after {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 10px);
+    width: 30px;
+    height: 30px;
+    transform: translateY(-50%);
+
+    content: "";
+    background-size: 30px 30px;
+    background-image: url("../../../assets/check-circle.svg");
+    background-repeat: no-repeat;
+
+    cursor: default;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=false]:after {
+    display: none;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:focus {
+    outline: none;
+}
+
+@keyframes menuItemActivation {
+    50% {
+        background: #ffea00;
+        color: #000000;
+    }
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item.active {
+    animation: menuItemActivation 0.25s 2;
+}

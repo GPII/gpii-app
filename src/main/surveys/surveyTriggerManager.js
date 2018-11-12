@@ -35,7 +35,8 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
         registeredTriggerHandlers: {}
     },
     conditionHandlerGrades: {
-        keyedInFor: "gpii.app.keyedInForHandler"
+        keyedInFor: "gpii.app.keyedInForHandler",
+        sessionTimer: "gpii.app.sessionTimerHandler"
     },
     events: {
         onTriggerAdded: null,
@@ -101,9 +102,12 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
  * @param {Object} trigger - The survey trigger which is to be registered.
  */
 gpii.app.surveyTriggerManager.registerTrigger = function (that, trigger) {
+    console.log("SurveyTriggerManager: Register trigger - ", trigger);
+
     that.removeTrigger(trigger);
     that.events.onTriggerAdded.fire(trigger);
 };
+
 
 /**
  * Removes a trigger from the `surveyTriggerManager` by destroying its corresponding trigger handler.
@@ -279,20 +283,198 @@ fluid.defaults("gpii.app.timedConditionHandler", {
  */
 fluid.defaults("gpii.app.keyedInForHandler", {
     gradeNames: ["gpii.app.timedConditionHandler"],
-    listeners: {
-        "onCreate.startTimer": {
-            funcName: "gpii.app.keyedInForHandler.start",
-            args: ["{that}", "{factsManager}.model.keyedInTimestamp"]
+    modelListeners: {
+        "{factsManager}.model.keyedInTimestamp": {
+            func: "{that}.restartTimer",
+            args: "{change}.value"
+        }
+    },
+    invokers: {
+        restartTimer: {
+            funcName: "gpii.app.keyedInForHandler.restartTimer",
+            args: [
+                "{that}",
+                "{arguments}.0" // keyedInTimestamp
+            ]
         }
     }
 });
 
 /**
- * Starts the `keyedInForHandler` timer.
+ * Starts a timer in case there's a keyed in timestamp, meaning that a user is
+ * logged on.
  * @param {Component} that - The `keyedInForHandler` instance.
  * @param {Number} keyedInTimestamp - The timestamp when the user has keyed in.
+ * In case no user is keyed in the its value will be `null`
  */
-gpii.app.keyedInForHandler.start = function (that, keyedInTimestamp) {
-    var offset = Date.now() - keyedInTimestamp;
-    that.start(that.model.condition.value - offset);
+gpii.app.keyedInForHandler.restartTimer = function (that, keyedInTimestamp) {
+    that.clear();
+
+    // We'd like there to be a keyed in user...
+    if (keyedInTimestamp) {
+        var offset = Date.now() - keyedInTimestamp;
+        that.start(that.model.condition.value - offset);
+    }
+};
+
+
+/**
+ * A `gpii.app.timedConditionHandler` which schedules a timer for showing a user survey
+ * only if ALL of the following conditions are fulfilled:
+ * 1. If there is an actually keyed in user (i.e. the current user is not `noUser`), he
+ * should have at least 1 setting in his active preference set.
+ * 2. The current session is the "lucky session", i.e. the value of the `interactionsCount`
+ * fact is divisible by the `sessionModulus` defined in the survey trigger payload. If such
+ * is not defined, the `defaultSessionModulus` option in the component's configuration will
+ * be used.
+ * 3. There is no timer already started.
+ * 4. The user has adjusted a setting's value either using the QSS or the PSP.
+ *
+ * Note that the `isLuckySession` model property of this component cannot be a fact in the
+ * `factsManager` because it depends on the value of the `sessionModulus` which may not be
+ * the same for different user surveys.
+ *
+ * Also, if a timer has been scheduled and due to user interactions the current session is
+ * no longer the "lucky" one, then the timer should be cleared. After that, if all of the
+ * above conditions are met, the timer can be started again.
+ *
+ * When the user keyes out (including the case when the `noUser` is keyed out), this component
+ * will be destroyed and consequently if already started, its timer will also be stopped.
+ */
+fluid.defaults("gpii.app.sessionTimerHandler", {
+    gradeNames: ["gpii.app.timedConditionHandler"],
+
+    defaultSessionModulus: 1,
+
+    modelRelay: {
+        "hasSettings": {
+            target: "hasSettings",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.sessionTimerHandler.hasSettings",
+                args: [
+                    "{app}.model.isKeyedIn",
+                    "{app}.model.preferences.settingGroups"
+                ]
+            }
+        },
+        "isLuckySession": {
+            target: "isLuckySession",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.sessionTimerHandler.getIsLuckySession",
+                args: [
+                    "{that}.model.condition.sessionModulus",
+                    "{that}.options.defaultSessionModulus",
+                    "{factsManager}.model.interactionsCount"
+                ]
+            }
+        }
+    },
+
+    modelListeners: {
+        isLuckySession: {
+            funcName: "gpii.app.sessionTimerHandler.onIsLuckySessionChanged",
+            args: ["{that}", "{change}.value"]
+        }
+    },
+
+    listeners: {
+        "{qssWrapper}.qss.events.onQssSettingAltered": {
+            func: "{that}.startTimerIfPossible"
+        },
+        "{qssWrapper}.qssWidget.events.onQssWidgetSettingAltered": {
+            func: "{that}.startTimerIfPossible"
+        },
+        "{psp}.events.onSettingAltered": {
+            func: "{that}.startTimerIfPossible"
+        },
+        "{qssWrapper}.undoStack.events.onChangeUndone": {
+            funcName: "gpii.app.sessionTimerHandler.onChangeUndone",
+            args: ["{that}", "{qssWrapper}.undoStack"]
+        }
+    },
+
+    invokers: {
+        startTimerIfPossible: {
+            funcName: "gpii.app.sessionTimerHandler.startTimerIfPossible",
+            args: ["{that}"]
+        }
+    }
+});
+
+/**
+ * Returns whether the currently keyed in user has at least one setting in any
+ * of the setting groups for his currently active preference set. If the `noUser`
+ * is keyed in, he is assumed to always have settings.
+ * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user or not.
+ * @param {module:gpiiConnector.SettingGroup[]} settingGroups - An array with
+ * setting group items as per the parsed message in the `gpiiConnector`
+ * @return {Boolean} - `true` if the current user is the `noUser` or has settings
+ * in his active preference set or `false` otherwise.
+ */
+gpii.app.sessionTimerHandler.hasSettings = function (isKeyedIn, settingGroups) {
+    return !isKeyedIn || gpii.app.settingGroups.hasSettings(settingGroups);
+};
+
+/**
+ * Returns whether the current session is "lucky".
+ * @param {Number} sessionModulus - The number which should divide the `interactionsCount`
+ * without a remainder.
+ * @param {Number} defaultSessionModulus - The default `sessionModulus` to be used in
+ * case there is no suched specified in the survey trigger payload.
+ * @param {Number} interactionsCount - The `interactionsCount` fact provided by the
+ * `factsManager`.
+ * @return {Boolean} - `true` if the current session is lucky and `false` otherwise.
+ */
+gpii.app.sessionTimerHandler.getIsLuckySession = function (sessionModulus, defaultSessionModulus, interactionsCount) {
+    // The timer can be started only during the "lucky session", i.e. if the
+    // interactionsCount is a multiple of the sessionModulus.
+    sessionModulus = sessionModulus || defaultSessionModulus;
+    return interactionsCount % sessionModulus === 0;
+};
+
+/**
+ * Invoked whenever the "lucky" status of the current session changes. This happens when
+ * the `interactionsCount` is no longer a multiple of the `sessionModulus`. If the current
+ * session is no longer "lucky", any started timers should be cleared.
+ * @param {Component} that - The `gpii.app.sessionTimerHandler` instance.
+ * @param {Boolean} isLuckySession - Whether the current session is "lucky" or not.
+ */
+gpii.app.sessionTimerHandler.onIsLuckySessionChanged = function (that, isLuckySession) {
+    console.log("SurveyTriggerManager: isLuckySession", isLuckySession);
+    if (!isLuckySession) {
+        that.clear();
+    }
+};
+
+/**
+ * Invoked whenever the user undoes a setting in the QSS. If the user has undone the
+ * last setting change and provided that a survey timer has already been started, the
+ * timer will be cleared.
+ * @param {Component} that - The `gpii.app.sessionTimerHandler` instance.
+ * @param {Component} undoStack - The `gpii.app.undoStack` instance.
+ */
+gpii.app.sessionTimerHandler.onChangeUndone = function (that, undoStack) {
+    if (!undoStack.model.hasChanges) {
+        console.log("SurveyTriggerManager: there are no more changes to undo. Clearing the timer...");
+        that.clear();
+    }
+};
+
+/**
+ * Starts a timer for showing a user survey only if all conditions for that are met.
+ * @param {Component} that - The `gpii.app.sessionTimerHandler` instance.
+ */
+gpii.app.sessionTimerHandler.startTimerIfPossible = function (that) {
+    var hasSettings = that.model.hasSettings,
+        isLuckySession = that.model.isLuckySession,
+        timeoutDuration = that.model.condition.value;
+
+    if (hasSettings && isLuckySession && !that.isActive()) {
+        console.log("SurveyTriggerManager: starting survey timer", timeoutDuration);
+        that.start(timeoutDuration);
+    } else {
+        console.log("SurveyTriggerManager: not starting timer", hasSettings, timeoutDuration, !that.isActive());
+    }
 };

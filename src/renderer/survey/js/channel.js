@@ -28,7 +28,7 @@
         gradeNames: ["fluid.component"],
         events: {
             onSurveyOpen: null,
-            onExecuteCommand: null
+            onExecuteJavaScript: null
         },
         listeners: {
             "onCreate.initChannel": {
@@ -63,8 +63,8 @@
             that.events.onSurveyOpen.fire(surveyParams);
         });
 
-        ipcRenderer.on("onExecuteCommand", function (event, command) {
-            that.events.onExecuteCommand.fire(command);
+        ipcRenderer.on("onExecuteJavaScript", function (event, command) {
+            that.events.onExecuteJavaScript.fire(command);
         });
     };
 })(fluid);

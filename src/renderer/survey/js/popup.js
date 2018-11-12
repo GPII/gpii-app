@@ -47,8 +47,8 @@
                     "{arguments}.0" // options
                 ]
             },
-            executeCommand: {
-                funcName: "gpii.survey.popup.executeCommand",
+            executeJavaScript: {
+                funcName: "gpii.survey.popup.executeJavaScript",
                 args: [
                     "{that}",
                     "{that}.dom.webview",
@@ -101,23 +101,22 @@
     };
 
     /**
-     * Enables execution of commands within the webivew. A command can be thought of as a collection of JavaScript
-     * statements.
+     * Enables execution of JavaScript code in the given `webview`.
      *
      * @param {Component} that - The `gpii.survey.popup` instance.
      * @param {jQuery} webview - The jQuery object corresponding to the webview element.
-     * @param {String} command - The command to execute.
+     * @param {String} code - The JavaScript code to execute.
      */
-    gpii.survey.popup.executeCommand = function (that, webview, command) {
-        // Check if the command can be executed immediately
+    gpii.survey.popup.executeJavaScript = function (that, webview, code) {
+        // Check if the code can be executed immediately
         if (that.loaded) {
-            webview[0].executeJavaScript(command);
+            webview[0].executeJavaScript(code);
             return;
         }
 
         // Or if it needs to wait for the webview first to load.
         webview.one("dom-ready", function () {
-            webview[0].executeJavaScript(command);
+            webview[0].executeJavaScript(code);
         });
     };
 

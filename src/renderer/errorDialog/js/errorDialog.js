@@ -42,20 +42,11 @@
 
         invokers: {
             notify: {
-                funcName: "gpii.psp.errorDialog.channel.notifyChannel"
+                funcName: "gpii.psp.channel.notifyChannel"
             }
         }
     });
 
-
-    /**
-     * Sends a message to the main process.
-     * @param {...Any} The - channel to be notified and the parameters to be passed
-     * with the message.
-     */
-    gpii.psp.errorDialog.channel.notifyChannel = function () {
-        ipcRenderer.send.apply(null, arguments);
-    };
 
     /**
      * Registers for events from the Main process.
@@ -113,11 +104,16 @@
      * grade specified.
      */
     fluid.defaults("gpii.psp.errorDialog", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable"],
+        gradeNames: [
+            "fluid.viewComponent",
+            "gpii.psp.heightObservable",
+            "gpii.psp.selectorsTextRenderer"
+        ],
 
         model: {
             messages: {
-                titlebarAppName: null
+                titlebarAppName: null,
+                errorCode: "Message %errCode"
             },
             title:   null,
             subhead: null,
@@ -132,8 +128,6 @@
             btnLabel3: null
         },
 
-        errorCodeFormat: "Message %errCode",
-
         selectors: {
             btn1:     ".flc-btn-1",
             btn2:     ".flc-btn-2",
@@ -145,7 +139,8 @@
             subhead:  ".flc-contentSubhead",
             details:  ".flc-contentDetails",
 
-            errCode:  ".flc-errCode"
+            // use longer name to avoid the automatic rendering
+            errorCode:  ".flc-errCode"
         },
 
         events: {
@@ -153,27 +148,19 @@
             onButtonClicked: null
         },
 
+        enableRichText: true,
         modelListeners: {
-            title: {
-                this: "{that}.dom.title",
-                method: "text",
-                args: "{that}.model.title"
-            },
-            subhead: {
-                this: "{that}.dom.subhead",
-                method: "text",
-                args: "{that}.model.subhead"
-            },
-            details: {
-                this: "{that}.dom.details",
-                method: "text",
-                args: "{that}.model.details"
+            "*": {
+                funcName: "{that}.renderText",
+                args: [
+                    "{that}.model"
+                ]
             },
 
             errCode: {
-                this: "{that}.dom.errCode",
+                this: "{that}.dom.errorCode",
                 method: "text",
-                args: "@expand:fluid.stringTemplate({that}.options.errorCodeFormat, {that}.model)"
+                args: "@expand:fluid.stringTemplate({that}.model.messages.errorCode, {that}.model)"
             }
         },
 

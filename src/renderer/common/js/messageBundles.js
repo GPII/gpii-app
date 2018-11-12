@@ -40,18 +40,17 @@
             }
         },
 
-        distributeOptions: {
-            distributeMessageBundlesChannel: {
-                record: {
-                    gradeNames: ["gpii.psp.messageBundles.channel"],
+        components: {
+            localeChannel: {
+                type: "gpii.psp.messageBundles.channel",
+                options: {
                     listeners: {
                         "onLocaleChanged.setLocale": {
                             func: "{messageBundles}.updateLocale",
                             args: "{arguments}.0"
                         }
                     }
-                },
-                target: "{that channel}.options"
+                }
             }
         }
     });
@@ -77,7 +76,7 @@
 
     /**
      * Registers a listener for the  `onLocaleChanged` event from the main process.
-     * @param events {Object} A map of all events for the `channel` component.
+     * @param {Object} events - A map of all events for the `channel` component.
      */
     gpii.psp.messageBundles.channel.register = function (events) {
         ipcRenderer.on("onLocaleChanged", function (event, locale) {

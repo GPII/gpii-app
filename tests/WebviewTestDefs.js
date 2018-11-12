@@ -80,6 +80,9 @@ gpii.tests.webview.testDefs = {
         {
             func: "{that}.app.keyIn",
             args: ["snapset_1a"]
+        }, {
+            event: "{that}.app.events.onKeyedIn",
+            listener: "fluid.identity"
         },
         [ // Test closing the survey using the break-out link
             {
@@ -89,7 +92,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [clickBreakOutLink]
             }, {
                 event: "{that}.app.dialogManager.survey.dialog.events.onSurveyClose",
@@ -105,7 +108,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [clickNonBreakOutLink]
             }, {
                 func: "jqUnit.assertTrue",
@@ -123,7 +126,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [clickCloseButton]
             }, {
                 event: "{that}.app.dialogManager.survey.dialog.events.onSurveyClose",
@@ -139,7 +142,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [addEndOfSurveyElement]
             }, {
                 event: "{that}.app.dialogManager.survey.dialog.events.onSurveyClose",
@@ -155,7 +158,7 @@ gpii.tests.webview.testDefs = {
                 event: "{that gpii.app.surveyDialog}.events.onSurveyCreated",
                 listener: "fluid.identity"
             }, {
-                func: "{that}.app.dialogManager.survey.dialog.executeCommand",
+                func: "{that}.app.dialogManager.survey.dialog.executeJavaScript",
                 args: [addEndOfSurveyElement]
             }, {
                 func: "jqUnit.assertTrue",
@@ -167,6 +170,9 @@ gpii.tests.webview.testDefs = {
         ],
         {
             func: "{that}.app.keyOut"
+        }, {
+            event: "{that}.app.events.onKeyedOut",
+            listener: "fluid.identity"
         }
     ]
 };
