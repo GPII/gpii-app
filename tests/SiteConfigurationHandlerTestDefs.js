@@ -43,7 +43,7 @@ gpii.tests.siteConfigurationHandler.testDefs = {
         args: [
             "QSS scale factor have been distributed",
             0.5,
-            "{that}.app.qssWrapper.options.scaleFactor"
+            "{that}.app.qssWrapper.options.model.scaleFactor"
         ]
     }]
 };

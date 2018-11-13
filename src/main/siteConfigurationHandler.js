@@ -49,16 +49,16 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
         },
         distributeQssScaleFactor: {
-            record: "{that}.options.siteConfig.qssScaleFactor",
-            target: "{app qssWrapper}.options.scaleFactor"
+            record: "{app}.configurationHandler.options.siteConfig.qssScaleFactor",
+            target: "{app qssWrapper}.options.model.scaleFactor"
         },
         distributePspScaleFactor: {
-            record: "{that}.options.siteConfig.pspScaleFactor",
-            target: "{app psp}.options.scaleFactor"
+            record: "{app}.configurationHandler.options.siteConfig.pspScaleFactor",
+            target: "{app psp}.options.model.scaleFactor"
         },
         distributeDialogScaleFactor: {
-            record: "{that}.options.siteConfig.pspScaleFactor",
-            target: "{app dialogManager}.options.scaleFactor"
+            record: "{app}.configurationHandler.options.siteConfig.pspScaleFactor",
+            target: "{app dialogManager}.options.model.scaleFactor"            
         },
         distributeQssMorePanelConfig: {
             record: "{that}.options.siteConfig.qssMorePanel",

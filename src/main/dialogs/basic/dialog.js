@@ -51,8 +51,6 @@ fluid.registerNamespace("gpii.app.dialog");
 fluid.defaults("gpii.app.dialog", {
     gradeNames: ["fluid.modelComponent", "gpii.app.resizable"],
 
-    scaleFactor: 1,
-
     model: {
         isShown: false,
         // the positions of the window,
@@ -63,7 +61,7 @@ fluid.defaults("gpii.app.dialog", {
             y: 0
         },
 
-        scaleFactor: null,        // the actual scale factor
+        scaleFactor: 1,                                   // the actual scale factor
         width:       "{that}.options.config.attrs.width", // the actual width of the content
         height:      "{that}.options.config.attrs.height" // the actual height of the content
     },
@@ -193,8 +191,8 @@ fluid.defaults("gpii.app.dialog", {
             args: "{that}"
         },
         "onCreate.applyScaleFactor": {
-            func: "{that}.applier.change",
-            args: ["scaleFactor", "{that}.options.scaleFactor"]
+            funcName: "gpii.app.dialog.rescaleDialog",
+            args: ["{that}", "{that}.model.scaleFactor"]
         },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",

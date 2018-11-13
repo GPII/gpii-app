@@ -169,9 +169,11 @@ fluid.defaults("gpii.app.error", {
         dialog: {
             type: "gpii.app.errorDialog",
             options: {
-                scaleFactor: "{gpii.app.error}.options.scaleFactor",
                 config: {
                     attrs: "{arguments}.0"
+                },
+                model: {
+                    scaleFactor: "{gpii.app.error}.options.scaleFactor"
                 }
             }
         }
