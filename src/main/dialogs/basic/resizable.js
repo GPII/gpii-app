@@ -103,9 +103,9 @@ fluid.defaults("gpii.app.resizable", {
  * @param {Number} height - The new height of the dialog's content.
  */
 gpii.app.resizable.handleContentHeightChange = function (that, height) {
-    var scaleFactor = that.options.scaleFactor || 1;
+    var scaleFactor = that.model.scaleFactor;
     height = Math.ceil(scaleFactor * height);
-    that.setBounds(that.width, height);
+    that.setBounds(that.model.width, height);
 };
 
 /**

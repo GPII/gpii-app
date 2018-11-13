@@ -215,8 +215,8 @@ fluid.defaults("gpii.app.dialog", {
             args: [
                 "{that}",
                 "{that}.options.config.restrictions",
-                "{that}.width",
-                "{that}.height",
+                "{that}.model.width",
+                "{that}.model.height",
                 "{arguments}.0", // offsetX
                 "{arguments}.1"  // offsetY
             ]
@@ -362,15 +362,14 @@ gpii.app.dialog.rescaleDialog = function (that, scaleFactor, oldScaleFactor) {
     scaleFactor = scaleFactor || 1;
     oldScaleFactor = oldScaleFactor || 1;
 
-    if (scaleFactor === oldScaleFactor) {
-        return;
-    }
-
     var width = scaleFactor * that.model.width / oldScaleFactor,
-        height = scaleFactor * that.model.height / oldScaleFactor;
+        height = scaleFactor * that.model.height / oldScaleFactor,
+        offsetX = scaleFactor * that.model.offset.x / oldScaleFactor,
+        offsetY = scaleFactor * that.model.offset.y / oldScaleFactor;
 
     that.applier.change("width", width);
     that.applier.change("height", height);
+    that.applier.change("offset", {x: offsetX, y: offsetY});
 
     gpii.app.dialog.setDialogZoom(that.dialog, scaleFactor);
 
@@ -492,13 +491,12 @@ gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX
 
     // apply restrictions
     if (restrictions.minHeight) {
-        height = Math.max(height, restrictions.minHeight);
+        var scaleFactor = that.model.scaleFactor;
+        height = Math.max(height, scaleFactor * restrictions.minHeight);
     }
 
     var bounds = gpii.browserWindow.computeWindowBounds(width, height, offsetX, offsetY);
 
-    // that.width = bounds.width;
-    // that.height = bounds.height;
     that.applier.change("width", bounds.width);
     that.applier.change("height", bounds.height);
     that.applier.change("offset", { x: offsetX, y: offsetY });
@@ -523,13 +521,11 @@ gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height)
 
     // apply restrictions
     if (restrictions.minHeight) {
-        height = Math.max(height, restrictions.minHeight);
+        var scaleFactor = that.model.scaleFactor;
+        height = Math.max(height, scaleFactor * restrictions.minHeight);
     }
 
     var size = gpii.browserWindow.computeWindowSize(width, height, offset.x, offset.y);
-
-    that.width  = size.width;
-    that.height = size.height;
 
     that.applier.change("width", size.width);
     that.applier.change("height", size.height);

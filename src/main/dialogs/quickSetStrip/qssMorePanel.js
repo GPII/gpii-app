@@ -37,10 +37,6 @@ fluid.defaults("gpii.app.qssMorePanel", {
 
     linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssMorePanel"],
 
-    scaleFactor: 1,
-    defaultWidth: "{that}.options.siteConfig.defaultWidth",
-    defaultHeight: "{that}.options.siteConfig.defaultHeight",
-
     config: {
         attrs: {
             width: "{that}.options.siteConfig.defaultWidth",

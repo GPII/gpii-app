@@ -29,11 +29,7 @@ require("../../../shared/channelUtils.js");
  * changes.
  */
 fluid.defaults("gpii.app.qssWidget", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
-
-    scaleFactor: 1,
-    defaultWidth: 316,
-    defaultHeight: 430,
+    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
     model: {
         setting: {}
@@ -46,24 +42,8 @@ fluid.defaults("gpii.app.qssWidget", {
 
     // Temporary. Should be removed when the widget becomes truly resizable.
     heightMap: {
-        "http://registry\\.gpii\\.net/common/language": {
-            expander: {
-                funcName: "gpii.app.scale",
-                args: [
-                    "{that}.options.scaleFactor",
-                    637
-                ]
-            }
-        },
-        "http://registry\\.gpii\\.net/common/highContrastTheme": {
-            expander: {
-                funcName: "gpii.app.scale",
-                args: [
-                    "{that}.options.scaleFactor",
-                    627
-                ]
-            }
-        }
+        "http://registry\\.gpii\\.net/common/language": 637,
+        "http://registry\\.gpii\\.net/common/highContrastTheme": 627
     },
 
     config: {
@@ -78,6 +58,8 @@ fluid.defaults("gpii.app.qssWidget", {
             }
         },
         attrs: {
+            width: 316,
+            height: 430,
             alwaysOnTop: false
         },
         fileSuffixPath: "qssWidget/index.html"
@@ -208,7 +190,7 @@ gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activation
  */
 gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
     return {
-        x: btnCenterOffset.x - that.width / 2,
+        x: btnCenterOffset.x - that.model.width / 2,
         y: btnCenterOffset.y
     };
 };
@@ -237,8 +219,9 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
     var offset = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics);
     that.applier.change("offset", offset);
 
-    that.height = heightMap[setting.path] || that.options.config.attrs.height;
-    that.setRestrictedSize(that.width, that.height);
+    var scaleFactor = that.model.scaleFactor,
+        height = heightMap[setting.path] || that.options.config.attrs.height;
+    that.setRestrictedSize(that.model.width, scaleFactor * height);
 
     that.shouldShow = true;
 };

@@ -158,7 +158,7 @@ gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) 
     // XXX extract hardcoded value to a better place
     var arrowSize = 44; // px
     return {
-        offsetX: btnCenterOffset.x - that.options.scaleFactor * arrowSize,
+        offsetX: btnCenterOffset.x - that.model.scaleFactor * arrowSize,
         offsetY: btnCenterOffset.y
     };
 };

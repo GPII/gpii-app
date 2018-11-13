@@ -50,8 +50,8 @@ fluid.defaults("gpii.app.dialog.offScreenHidable", {
             args: [
                 "{that}",
                 "{that}.options.config.restrictions",
-                "{that}.width",
-                "{that}.height",
+                "{that}.model.width",
+                "{that}.model.height",
                 "{arguments}.0", // offsetX
                 "{arguments}.1"  // offsetY
             ]

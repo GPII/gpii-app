@@ -18,7 +18,6 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
-require("./dialogs/basic/scaledDialog.js");
 require("./dialogs/quickSetStrip/qssDialog.js");
 require("./dialogs/quickSetStrip/qssTooltipDialog.js");
 require("./dialogs/quickSetStrip/qssWidgetDialog.js");
@@ -451,13 +450,13 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
  * button.
  */
 gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
-    var scaleFactor = qss.options.scaleFactor,
+    var scaleFactor = qss.model.scaleFactor,
         offsetLeft = scaleFactor * buttonElemMetrics.offsetLeft,
         buttonWidth = scaleFactor * buttonElemMetrics.width,
         buttonHeight = scaleFactor * buttonElemMetrics.height;
 
     return {
-        x: qss.width - offsetLeft - buttonWidth / 2,
+        x: qss.model.width - offsetLeft - buttonWidth / 2,
         y: buttonHeight
     };
 };

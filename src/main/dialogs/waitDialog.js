@@ -23,15 +23,14 @@ require("./basic/dialog.js");
 /**
  * Component that contains an Electron Dialog.
  */
-
 fluid.defaults("gpii.app.waitDialog", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
-
-    scaleFactor: 1,
-    defaultWidth: 600,
-    defaultHeight: 450,
+    gradeNames: ["gpii.app.dialog"],
 
     config: {
+        attrs: {
+            width: 600,
+            height: 450
+        },
         destroyOnClose: false,
         fileSuffixPath: "waitDialog/index.html"
     },

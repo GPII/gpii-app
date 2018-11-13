@@ -174,15 +174,7 @@ fluid.defaults("gpii.app.psp", {
         destroyOnClose: false,
 
         restrictions: {
-            minHeight: {
-                expander: {
-                    funcName: "gpii.app.scale",
-                    args: [
-                        "{that}.options.scaleFactor",
-                        600
-                    ]
-                }
-            }
+            minHeight: 600
         },
 
         attrs: {
