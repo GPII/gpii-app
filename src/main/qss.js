@@ -67,8 +67,9 @@ fluid.defaults("gpii.app.qssWrapper", {
     model: {
         isKeyedIn: false,
         settings: "{that}.options.loadedSettings",
+        closeQssOnBlur: false,
 
-        closeQssOnBlur: false
+        scaleFactor: 1
     },
 
     events: {
@@ -244,7 +245,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssNotification",
             options: {
                 model: {
-                    scaleFactor: "{qssWrapper}.model.scaleFactor",
+                    scaleFactor: "{qssWrapper}.model.scaleFactor"
                 }
             }
         },
@@ -252,7 +253,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssMorePanel",
             options: {
                 model: {
-                    scaleFactor: "{qssWrapper}.model.scaleFactor",
+                    scaleFactor: "{qssWrapper}.model.scaleFactor"
                 }
             }
         }

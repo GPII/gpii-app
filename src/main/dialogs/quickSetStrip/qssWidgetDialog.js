@@ -134,6 +134,13 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     },
     invokers: {
+        getScaledHeight: {
+            funcName: "gpii.app.qssWidget.getScaledHeight",
+            args: [
+                "{that}",
+                "{arguments}.0" // scaleFactor
+            ]
+        },
         show: {
             funcName: "gpii.app.qssWidget.show",
             args: [
@@ -155,6 +162,14 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     }
 });
+
+gpii.app.qssWidget.getScaledHeight = function (that, scaleFactor) {
+    var settingPath = fluid.get(that.model.setting, "path"),
+        heightMap = that.options.heightMap,
+        height = heightMap[settingPath] || that.options.config.attrs.height;
+
+    return scaleFactor * height;
+};
 
 /**
  * Called whenever a QSS button is activated. Determines whether the QSS dialog

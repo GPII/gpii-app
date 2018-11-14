@@ -178,6 +178,7 @@ fluid.defaults("gpii.app.dialog", {
                 "{change}.value",
                 "{change}.oldValue"
             ],
+            namespace: "rescaleDialog",
             excludeSource: "init"
         }
     },
@@ -201,6 +202,30 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
+        getScaledWidth: {
+            funcName: "gpii.app.dialog.getScaledWidth",
+            args: [
+                "{that}",
+                "{arguments}.0", // scaleFactor
+                "{arguments}.1"  // oldScaleFactor
+            ]
+        },
+        getScaledHeight: {
+            funcName: "gpii.app.dialog.getScaledHeight",
+            args: [
+                "{that}",
+                "{arguments}.0", // scaleFactor
+                "{arguments}.1"  // oldScaleFactor
+            ]
+        },
+        getScaledOffset: {
+            funcName: "gpii.app.dialog.getScaledOffset",
+            args: [
+                "{that}",
+                "{arguments}.0", // scaleFactor
+                "{arguments}.1"  // oldScaleFactor
+            ]
+        },
         // Changing the position of a BrowserWindow when the scale factor is different than
         // the default one (100%) changes the window's size (either width or height).
         // To ensure its size is correct simply set the size of the window again with the one
@@ -356,18 +381,40 @@ gpii.app.dialog.positionOnInit = function (that) {
     }
 };
 
+gpii.app.dialog.getScaledWidth = function (that, scaleFactor, oldScaleFactor) {
+    return scaleFactor * that.model.width / oldScaleFactor;
+};
+
+gpii.app.dialog.getScaledHeight = function (that, scaleFactor, oldScaleFactor) {
+    return scaleFactor * that.model.height / oldScaleFactor;
+};
+
+gpii.app.dialog.getScaledOffset = function (that, scaleFactor, oldScaleFactor) {
+    return {
+        x: scaleFactor * that.model.offset.x / oldScaleFactor,
+        y: scaleFactor * that.model.offset.y / oldScaleFactor
+    };
+};
+
+/**
+ * When the `scaleFactor` changes, this function takes care of adjusting the
+ * dimensions and position of the dialog as well as of applying the new scale
+ * factor to the contents of the `BrowserWindow`.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @param {Number} oldScaleFactor - The previous scale factor.
+ */
 gpii.app.dialog.rescaleDialog = function (that, scaleFactor, oldScaleFactor) {
     scaleFactor = scaleFactor || 1;
     oldScaleFactor = oldScaleFactor || 1;
 
-    var width = scaleFactor * that.model.width / oldScaleFactor,
-        height = scaleFactor * that.model.height / oldScaleFactor,
-        offsetX = scaleFactor * that.model.offset.x / oldScaleFactor,
-        offsetY = scaleFactor * that.model.offset.y / oldScaleFactor;
+    var width = that.getScaledWidth(scaleFactor, oldScaleFactor),
+        height = that.getScaledHeight(scaleFactor, oldScaleFactor),
+        offset = that.getScaledOffset(scaleFactor, oldScaleFactor);
 
     that.applier.change("width", width);
     that.applier.change("height", height);
-    that.applier.change("offset", {x: offsetX, y: offsetY});
+    that.applier.change("offset", offset);
 
     gpii.app.dialog.setDialogZoom(that.dialog, scaleFactor);
 

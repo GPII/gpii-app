@@ -40,10 +40,7 @@ fluid.defaults("gpii.app.pspInApp", {
         isKeyedIn: "{app}.model.isKeyedIn",
 
         preferences: "{app}.model.preferences",
-        theme: "{app}.model.theme",
-        offset: {
-            y: "{qssWrapper}.qss.options.config.attrs.height"
-        }
+        theme: "{app}.model.theme"
     },
     events: {
         onActivePreferenceSetAltered: "{qssWrapper}.events.onActivePreferenceSetAltered"
@@ -261,6 +258,13 @@ fluid.defaults("gpii.app.psp", {
     },
 
     modelListeners: {
+        "{qssWrapper}.qss.model.height": {
+            func: "{that}.setPosition",
+            args: [
+                "{that}.model.offset.x",
+                "{change}.value"
+            ]
+        },
         "{app}.model.locale": {
             funcName: "gpii.app.notifyWindow",
             args: [
@@ -311,6 +315,12 @@ fluid.defaults("gpii.app.psp", {
                 "{settingsBroker}",
                 "{arguments}.0" // ignoreClosePreference
             ]
+        },
+        getScaledOffset: {
+            funcName: "fluid.identity",
+            args: {
+                y: "{qssWrapper}.qss.model.height"
+            }
         }
     }
 });
