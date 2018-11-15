@@ -89,6 +89,11 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     // avoids overflowing at the top
     desiredY = Math.max(desiredY, 0);
 
+    // Electron has issues positioning a `BrowserWindow` whose x or y coordinate is
+    // -0 (event though +0 === -0). Hence, this safety check.
+    desiredX = desiredX || 0;
+    desiredY = desiredY || 0;
+
     return {
         x: desiredX,
         y: desiredY

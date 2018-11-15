@@ -31,6 +31,10 @@ var gpii  = fluid.registerNamespace("gpii");
  */
 fluid.defaults("gpii.app.resizable", {
     gradeNames: ["fluid.component"],
+    model: {
+        scaleFactor: null,
+        maxScaleFactor: null
+    },
     config: {
         attrs: {
             width: null,
@@ -49,6 +53,14 @@ fluid.defaults("gpii.app.resizable", {
         "onCreate.addDisplayMetricsListener": {
             func: "gpii.app.resizable.addDisplayMetricsListener",
             args: ["{that}"]
+        },
+        "onCreate.setMaxScaleFactor": {
+            changePath: "maxScaleFactor",
+            value: "{that}.model.scaleFactor"
+        },
+        "onCreate.scaleOnCreate": {
+            func: "{that}.fitToScreen",
+            priority: "last"
         },
         "onContentHeightChanged": {
             funcName: "gpii.app.resizable.handleContentHeightChange",
@@ -75,8 +87,7 @@ fluid.defaults("gpii.app.resizable", {
             options: {
                 listeners: {
                     onTimerFinished: {
-                        funcName: "gpii.app.resizable.scaleDialog",
-                        args: ["{gpii.app.resizable}"]
+                        func: "{resizable}.fitToScreen"
                     }
                 }
             }
@@ -87,10 +98,14 @@ fluid.defaults("gpii.app.resizable", {
             funcName: "fluid.notImplemented",
             args: [
                 "{arguments}.0", // width
-                "{arguments}.1",  // height
+                "{arguments}.1", // height
                 "{arguments}.2", // offsetX
                 "{arguments}.3"  // offsetY
             ]
+        },
+        fitToScreen: {
+            funcName: "gpii.app.resizable.fitToScreen",
+            args: ["{that}"]
         }
     }
 });
@@ -118,13 +133,22 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
 };
 
 /**
- * Scales the current dialog as a result of a `display-metrics-changed` event.
- * Note that this function will reset the position and the size of the dialog
- * so that the scale factor can be applied.
+ * Resizes the dialog so that it fits in the available screen size by adjusting
+ * the `scaleFactor`. In any case the new `scaleFactor` cannot be larger than the
+ * originally specified `maxScaleFactor`.
  * @param {Component} that - The `gpii.app.resizable` component.
  */
-gpii.app.resizable.scaleDialog = function (that) {
-    that.setBounds();
+gpii.app.resizable.fitToScreen = function (that) {
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+        scaleFactor = (screenSize.width / that.model.width) * that.model.scaleFactor;
+
+    scaleFactor = Math.min(scaleFactor, that.model.maxScaleFactor);
+
+    if (scaleFactor === that.model.scaleFactor) {
+        that.setBounds();
+    } else {
+        that.applier.change("scaleFactor", scaleFactor);
+    }
 };
 
 /**
