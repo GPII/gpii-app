@@ -1,0 +1,12 @@
+{
+    "type": "gpii.tests.noStorage.config",
+    "options": {
+        "gradeNames": ["fluid.component"],
+        "distributeOptions": {
+            "distributeMockedStorage": {
+                "record": "gpii.tests.storage.mockedStorageWrapper",
+                "target": "{that gpii.app}.options.gradeNames"
+            }
+        }
+    }
+}

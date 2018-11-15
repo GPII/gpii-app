@@ -1,6 +1,7 @@
 {
     "type": "gpii.tests.production.config",
     "mergeConfigs": [
-        "./gpii.tests.all.config.json5"
+        "./gpii.tests.all.config.json5",
+        "./gpii.tests.noStorage.config.json5"
     ]
 }

@@ -275,7 +275,7 @@ gpii.tests.surveyTriggerManager.testDefs = {
     name: "Trigger Engine integration tests",
     expect: 26,
     config: {
-        configName: "gpii.tests.all.config",
+        configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
