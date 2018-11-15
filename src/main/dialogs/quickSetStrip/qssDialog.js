@@ -16,7 +16,8 @@
 
 var fluid = require("infusion");
 
-var gpii = fluid.registerNamespace("gpii");
+var gpii = fluid.registerNamespace("gpii"),
+    electron = require("electron");
 
 require("../basic/dialog.js");
 require("../basic/blurrable.js");
@@ -143,7 +144,7 @@ fluid.defaults("gpii.app.qss", {
         },
         handleBlur: {
             funcName: "gpii.app.qss.handleBlur",
-            args: ["{that}", "{that}.model.closeQssOnBlur"]
+            args: ["{that}", "{tray}", "{that}.model.closeQssOnBlur"]
         },
         updateUndoIndicator: {
             func: "{that}.events.onUndoIndicatorChanged.fire",
@@ -206,13 +207,21 @@ gpii.app.qss.computeQssWidth = function (buttonWidth, sideMargin, qssButtons) {
 
 /**
  * Handles the blur event for the QSS which is fired when the window loses focus. The QSS
- * will be closed only if this is the user's preference.
+ * will be closed only if this is the user's preference AND if the blur event was not the
+ * result of the user clicking the tray icon (i.e. the mouse pointer is not within the
+ * bounds of the tray icon).
  * @param {Component} that - The `gpii.app.qss` instance.
+ * @param {Component} tray - The `gpii.app.tray` instance.
  * @param {Boolean} closeQssOnBlur - If `true`, the QSS will be hidden once the window
  * loses focus. Otherwise, it will stay open.
  */
-gpii.app.qss.handleBlur = function (that, closeQssOnBlur) {
+gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
     if (closeQssOnBlur) {
-        that.hide();
+        var trayBounds = tray.tray.getBounds(),
+            cursorPoint = electron.screen.getCursorScreenPoint();
+
+        if (!gpii.app.isPointInRect(cursorPoint, trayBounds)) {
+            that.hide();
+        }
     }
 };

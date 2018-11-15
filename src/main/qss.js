@@ -66,6 +66,7 @@ fluid.defaults("gpii.app.qssWrapper", {
 
     model: {
         isKeyedIn: false,
+        keyedInUserToken: null,
         settings: "{that}.options.loadedSettings",
         closeQssOnBlur: false,
 
@@ -108,6 +109,10 @@ fluid.defaults("gpii.app.qssWrapper", {
     },
 
     modelListeners: {
+        "keyedInUserToken": {
+            func: "{qssNotification}.hide"
+        },
+
         "{messageBundles}.model.locale": {
             func: "{that}.applySettingsTranslations",
             excludeSource: "init"
@@ -190,7 +195,8 @@ fluid.defaults("gpii.app.qssWrapper", {
                     onQssWidgetNotificationRequired: {
                         func: "{qssNotification}.show",
                         args: [{
-                            description: "{arguments}.0",
+                            description: "{arguments}.0.description",
+                            closeOnBlur: "{arguments}.0.closeOnBlur",
                             focusOnClose: "{that}.dialog"
                         }]
                     }
@@ -275,7 +281,8 @@ gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, 
 
     qssNotification.show({
         description: description,
-        focusOnClose: qss.dialog
+        focusOnClose: qss.dialog,
+        closeOnBlur: true
     });
 };
 
@@ -518,16 +525,14 @@ fluid.defaults("gpii.app.qssInWrapper", {
                 "{arguments}.0" // setting
             ]
         }],
-        "{channelListener}.events.onQssButtonActivated": [{
+        "{channelListener}.events.onQssButtonActivated": {
             func: "{qssWidget}.toggle",
             args: [
                 "{arguments}.0", // setting
                 "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)",  // btnCenterOffset
                 "{arguments}.2"  // activationParams
             ]
-        }, {
-            func: "{qssNotification}.hide"
-        }],
+        },
         onQssSettingAltered: {
             func: "{qssWrapper}.alterSetting",
             args: [
@@ -538,7 +543,8 @@ fluid.defaults("gpii.app.qssInWrapper", {
         "{channelListener}.events.onQssNotificationRequired": {
             func: "{qssNotification}.show",
             args: [{
-                description: "{arguments}.0",
+                description: "{arguments}.0.description",
+                closeOnBlur: "{arguments}.0.closeOnBlur",
                 focusOnClose: "{that}.dialog"
             }] // notificationParams
         },

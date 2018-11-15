@@ -36,7 +36,7 @@ fluid.defaults("gpii.app.factsManager", {
         keyedInTimestamp: null,
         // Number of interactions with the GPII app. Incremented whenever the PSP or QSS is
         // opened, as well as when an actual user (i.e. different from `noUser`) keys in.
-        interactionsCount: 0
+        interactionsCount: null
     },
     modelListeners: {
         interactionsCount: {
@@ -78,6 +78,6 @@ fluid.defaults("gpii.app.factsManager", {
  * @param {Component} that - The `gpii.app.factsManager` instance.
  */
 gpii.app.factsManager.increaseInteractionsCount = function (that) {
-    var interactionsCount = that.model.interactionsCount;
+    var interactionsCount = that.model.interactionsCount || 0;
     that.applier.change("interactionsCount", interactionsCount + 1);
 };
