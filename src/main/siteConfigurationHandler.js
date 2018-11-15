@@ -58,7 +58,7 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         },
         distributeDialogScaleFactor: {
             record: "{app}.configurationHandler.options.siteConfig.pspScaleFactor",
-            target: "{app dialogManager}.options.model.scaleFactor"            
+            target: "{app dialogManager}.options.model.scaleFactor"
         },
         distributeQssMorePanelConfig: {
             record: "{that}.options.siteConfig.qssMorePanel",

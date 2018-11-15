@@ -54,8 +54,7 @@ fluid.defaults("gpii.app.qss", {
             height: 95,
 
             alwaysOnTop: true,
-            transparent: false,
-            enableLargerThanScreen: true
+            transparent: false
         },
         params: {
             settings: null
@@ -151,9 +150,28 @@ fluid.defaults("gpii.app.qss", {
             args: [
                 "{arguments}.0" // state
             ]
+        },
+        getExtendedWidth: {
+            funcName: "gpii.app.qss.getExtendedWidth",
+            args: ["{that}", "{qssWrapper}.qssWidget"]
         }
     }
 });
+
+/**
+ * Returns the total width of the component which must be taken into account when
+ * fitting the window into the available screen space. It is assumed that the first
+ * button in the QSS will have a QSS widget menu and this menu should be fully visible
+ * when displayed. Thus, the extended width of the QSS is its own width together with
+ * the width of the QSS widget menu which stays to the left of the QSS.
+ * @param {Component} that - The `gpii.app.qss` instance.
+ * @param {Component} qssWidget - The `gpii.app.qssWidget` instance.
+ * @return {Number} The total width of the component.
+ */
+gpii.app.qss.getExtendedWidth = function (that, qssWidget) {
+    var scaledButtonWidth = that.model.scaleFactor * that.options.buttonWidth;
+    return that.model.width + (qssWidget.model.width - scaledButtonWidth) / 2;
+};
 
 /**
  * Shows the QSS or focuses it in case it is already shown.

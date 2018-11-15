@@ -163,6 +163,15 @@ fluid.defaults("gpii.app.qssWidget", {
     }
 });
 
+/**
+ * Given the new `scaleFactor` that has to be applied, this function computes the new
+ * height of the component's `BrowserWindow`. Different from the base implementation
+ * because the height of the QSS widget is determined based on the setting which it
+ * represents.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @return {Number} The new height of the `BrowserWindow`.
+ */
 gpii.app.qssWidget.getScaledHeight = function (that, scaleFactor) {
     var settingPath = fluid.get(that.model.setting, "path"),
         heightMap = that.options.heightMap,

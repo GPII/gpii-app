@@ -140,7 +140,8 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
  */
 gpii.app.resizable.fitToScreen = function (that) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-        scaleFactor = (screenSize.width / that.model.width) * that.model.scaleFactor;
+        extendedWidth = that.getExtendedWidth(),
+        scaleFactor = (screenSize.width / extendedWidth) * that.model.scaleFactor;
 
     scaleFactor = Math.min(scaleFactor, that.model.maxScaleFactor);
 

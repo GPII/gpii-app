@@ -226,6 +226,13 @@ fluid.defaults("gpii.app.dialog", {
                 "{arguments}.1"  // oldScaleFactor
             ]
         },
+        // Returns the total width of the component which must be taken into account when
+        // fitting the window into the available screen space. Usually it will be only the
+        // width of the component but in some special cases (such as the QSS) it may differ.
+        getExtendedWidth: {
+            funcName: "fluid.identity",
+            args: ["{that}.model.width"]
+        },
         // Changing the position of a BrowserWindow when the scale factor is different than
         // the default one (100%) changes the window's size (either width or height).
         // To ensure its size is correct simply set the size of the window again with the one
@@ -381,14 +388,48 @@ gpii.app.dialog.positionOnInit = function (that) {
     }
 };
 
+/**
+ * Given the new and the previous `scaleFactor` this function computes the new
+ * width of the component's `BrowserWindow`. In the typical case, the new width
+ * will be obtained by applying the ratio of the new and the previous `scaleFactor`
+ * to the current width but under some circumstances this may differ.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @param {Number} oldScaleFactor - The previous scale factor.
+ * @return {Number} The new width of the `BrowserWindow`.
+ */
 gpii.app.dialog.getScaledWidth = function (that, scaleFactor, oldScaleFactor) {
     return scaleFactor * that.model.width / oldScaleFactor;
 };
 
+/**
+ * Given the new and the previous `scaleFactor` this function computes the new
+ * height of the component's `BrowserWindow`. In the typical case, the new height
+ * will be obtained by applying the ratio of the new and the previous `scaleFactor`
+ * to the current height but under some circumstances this may differ. For example,
+ * the height of the QSS widget is different depending on the setting which is
+ * represented in it.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @param {Number} oldScaleFactor - The previous scale factor.
+ * @return {Number} The new height of the `BrowserWindow`.
+ */
 gpii.app.dialog.getScaledHeight = function (that, scaleFactor, oldScaleFactor) {
     return scaleFactor * that.model.height / oldScaleFactor;
 };
 
+/**
+ * Given the new and the previous `scaleFactor` this function computes the new
+ * offset of the component's `BrowserWindow` with respect to the lower right corner
+ * of the main screen. In the typical case, the new offset will be obtained by
+ * applying the ratio of the new and the previous `scaleFactor` to the current offset
+ * but under some circumstances this may differ. For example, the y-offset of the PSP
+ * should always be equal to the height of the QSS.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @param {Number} oldScaleFactor - The previous scale factor.
+ * @return {Object} The new offset of the `BrowserWindow`.
+ */
 gpii.app.dialog.getScaledOffset = function (that, scaleFactor, oldScaleFactor) {
     return {
         x: scaleFactor * that.model.offset.x / oldScaleFactor,
