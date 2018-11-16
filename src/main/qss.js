@@ -110,7 +110,9 @@ fluid.defaults("gpii.app.qssWrapper", {
 
     modelListeners: {
         "keyedInUserToken": {
-            func: "{qssNotification}.hide"
+            this: "{qssNotification}",
+            method: "hide",
+            excludeSource: "init"
         },
 
         "{messageBundles}.model.locale": {
