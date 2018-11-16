@@ -98,6 +98,7 @@ fluid.defaults("gpii.app.errorDialog", {
 
     config: {
         destroyOnClose: true,
+        awaitWindowReadiness: true,
 
         attrs: {
             title:   null,

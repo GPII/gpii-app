@@ -23,7 +23,12 @@
      * Simple wrapper that enables translations for the `gpii.psp.errorDialog` component.
      */
     fluid.defaults("gpii.psp.translatedErrorDialog", {
-        gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
+        gradeNames: [
+            "gpii.psp.messageBundles",
+            "fluid.viewComponent",
+            "gpii.psp.linksInterceptor",
+            "gpii.psp.baseWindowCmp.signalDialogReady"
+        ],
 
         components: {
             errorDialog: {
