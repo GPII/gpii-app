@@ -76,6 +76,11 @@ fluid.defaults("gpii.tests.app.instrumentedDialog", {
 gpii.tests.app.domStateListener = function (dialog) {
     dialog.domReady = false;
 
+    dialog.webContents.on("did-fail-load", function (e) {
+        fluid.log("RendererCoverage: Problem loading the dialog: ", dialog.grade, e);
+        dialog.loadFail = e;
+    });
+
     dialog.webContents.on("dom-ready", function () {
         dialog.domReady = true;
     });
@@ -110,6 +115,8 @@ gpii.tests.app.instrumentedDialog.disableCleanUpDestruction = function (that) {
  * @param {Component} that - The `gpii.app.dialog` instance
  */
 gpii.tests.app.instrumentedDialog.disableWindowDestruction = function (that) {
+    // XXX used for debugging purposes
+    // If this is to be remove, ensure all `grade` usages are cleared as well
     that.dialog.grade = that.options.gradeNames.slice(-2)[0];
 
     if (that.options.config.destroyOnClose) {
@@ -192,17 +199,20 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
 
         var responseDialog = BrowserWindow.fromWebContents(event.sender);
 
+        /*
+         * Debug loggers
+         */
         if (responseDialog) {
-            fluid.log("Report collected: ", awaitingDialogReports, responseDialog.grade);
+            fluid.log("RendererCoverage: Report collected: ", awaitingDialogReports, responseDialog.grade);
 
             // remove the first occurrence of processed dialogs
             activeDialogs.splice(
                 activeDialogs.findIndex( function (dialog) { return dialog.grade === responseDialog.grade; }),
                 1
             );
-            fluid.log("Still awating: ", activeDialogs.map( function (d) { return d.grade; } ));
+            fluid.log("RendererCoverage: Still awating: ", activeDialogs.map( function (d) { return d.grade; } ));
         } else {
-            fluid.log("Coverage - dialog already destroyed");
+            fluid.log("RendererCoverage: Coverage - dialog already destroyed");
         }
         /*
          * Ensure the "BrowserWindow" is destroyed after its coverage is collected and its wrapping
@@ -221,17 +231,17 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
     }
 
 
-    fluid.log("Collect coverage from active dialogs: ", activeDialogs.length);
+    fluid.log("RendererCoverage: Collect coverage from active dialogs: ", activeDialogs.length);
     fluid.each(activeDialogs, function (dialog) {
         function success() {
-            fluid.log("Coverage collection triggered successfully for dialog: " + dialog.grade);
+            fluid.log("RendererCoverage: Coverage collection triggered successfully for dialog: " + dialog.grade);
         }
         function reject(error) {
             /*
              * There might be some simple error in the reqestCoverage script.
              * This log will be useful for debugging.
              */
-            fluid.log("Coverage collection error for dialog: " + dialog.grade);
+            fluid.log("RendererCoverage: Coverage collection error for dialog: " + dialog.grade);
             // stop program execution
             fluid.fail(error);
         }
@@ -241,7 +251,10 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
          * It might be the case that a test sequence has finished execution before all BrowserWindows have been fully
          * initialized. In that case we should wait for the BrowserWindows to be ready.
          */
-        if (dialog.domReady) {
+        if (dialog.loadFail) {
+            // don't stop because of a single failure
+            progressCoverageReport({});
+        } else if (dialog.domReady) {
             gpii.tests.app.instrumentedDialog.requestDialogCoverage(dialog)
                 .then(success, reject);
         } else {
