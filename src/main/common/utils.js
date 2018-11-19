@@ -57,8 +57,8 @@ gpii.browserWindow.computeWindowSize = function (width, height, offsetX, offsetY
     height = Math.min(height, maxHeight);
 
     return {
-        width:  Math.ceil(width),
-        height: Math.ceil(height)
+        width:  Math.round(width),
+        height: Math.round(height)
     };
 };
 
@@ -83,8 +83,8 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     // position relatively to the bottom right corner
     // note that as offset is positive we're restricting window
     // from being position outside the screen
-    var desiredX = Math.ceil(screenSize.width - (width + offsetX));
-    var desiredY = Math.ceil(screenSize.height - (height + offsetY));
+    var desiredX = Math.round(screenSize.width - (width + offsetX));
+    var desiredY = Math.round(screenSize.height - (height + offsetY));
 
     // avoids overflowing at the top
     desiredY = Math.max(desiredY, 0);
@@ -109,8 +109,8 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
  */
 gpii.browserWindow.computeCentralWindowPosition = function (width, height) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-        desiredX = Math.ceil((screenSize.width - width) / 2),
-        desiredY = Math.ceil((screenSize.height - height) / 2);
+        desiredX = Math.round((screenSize.width - width) / 2),
+        desiredY = Math.round((screenSize.height - height) / 2);
 
     desiredX = Math.max(desiredX, 0);
     desiredY = Math.max(desiredY, 0);
