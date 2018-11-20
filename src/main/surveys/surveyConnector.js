@@ -238,8 +238,9 @@ gpii.app.dynamicSurveyConnector.requestData = function (that, url) {
     var togo = fluid.promise(),
         transformedUrl = gpii.app.surveyConnector.transformDataUrl(that, url),
         pendingRequest = request(transformedUrl, function (error, response, body) {
-            if (error || response.statusCode !== 200) {
-                fluid.log(fluid.logLevel.WARN, "Survey connector: Cannot get data", url, response.statusCode, error);
+            var statusCode = fluid.get(response, "statusCode");
+            if (error || statusCode !== 200) {
+                fluid.log(fluid.logLevel.WARN, "Survey connector: Cannot get data", url, statusCode, error);
                 togo.reject("Survey connector: Cannot get data");
             } else {
                 try {
