@@ -33,15 +33,10 @@ var fluid = require("infusion"),
 fluid.defaults("gpii.app.factsManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {
-        isKeyedIn: "{app}.model.isKeyedIn",
-
         keyedInTimestamp: null,
         // Number of interactions with the GPII app. Incremented whenever the PSP or QSS is
         // opened, as well as when an actual user (i.e. different from `noUser`) keys in.
-        interactionsCount: 0,
-
-        // Whether this is the first time the user has keyed into the GPII app
-        isFirstKeyIn: "{app}.model.preferences.isFirstKeyIn"
+        interactionsCount: 0
     },
     modelListeners: {
         interactionsCount: {

@@ -37,7 +37,7 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
     conditionHandlerGrades: {
         keyedInFor: "gpii.app.keyedInForHandler",
         sessionTimer: "gpii.app.sessionTimerHandler",
-        firstKeyIn: "gpii.app.firstKeyInConditionHandler"
+        firstSave: "gpii.app.firstSaveHandler"
     },
     events: {
         onTriggerAdded: null,
@@ -268,30 +268,38 @@ gpii.app.conditionHandler.handleSuccess = function (that) {
 };
 
 /**
- * A condition handler for the `isFirstKeyIn` fact. Determines whether the value of that
- * fact is the same as the value of the condition. If this is the case, the condition is
- * considered to be fulfilled.
+ * A condition handler which shows a survey when the following conditions are met:
+ * 1. There is an actual keyed in user.
+ * 2. There are no settings in the active preference set for the user.
+ * The survey should be shown when the user presses the "Save" button in the QSS.
  */
-fluid.defaults("gpii.app.firstKeyInConditionHandler", {
+fluid.defaults("gpii.app.firstSaveHandler", {
     gradeNames: ["gpii.app.conditionHandler"],
-    modelListeners: {
-        "{factsManager}.model.isFirstKeyIn": {
-            funcName: "gpii.app.firstKeyInConditionHandler.handleSuccess",
-            args: ["{that}", "{factsManager}.model.isKeyedIn", "{change}.value"]
+
+    listeners: {
+        "{app}.qssWrapper.events.onSaveRequired": {
+            funcName: "gpii.app.firstSaveHandler.onSaveRequired",
+            args: [
+                "{that}",
+                "{app}.model.isKeyedIn",
+                "{app}.model.preferences.settingGroups"
+            ],
+            priority: "first"
         }
     }
 });
 
 /**
- * Checks whether the conditions for the handler have been satisifed. If so, fires the
- * `onConditionSatisfied` event and destroys the condition handler as it is no longer
- * needed.
- * @param {Component} that - The `gpii.app.firstKeyInConditionHandler` instance.
- * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user.
- * @param {Boolean} isFirstKeyIn - Whether this is the first key in of the user.
+ * Invoked when the "Save" button in the QSS is pressed. In this case if there is
+ * an actual keyed in user with no settings in his active preference set, this
+ * `conditionHandler` will be considered fulfilled.
+ * @param {Component} that - The `gpii.app.firstSaveHandler` instance.
+ * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user or not.
+ * @param {module:gpiiConnector.SettingGroup[]} settingGroups - An array with
+ * setting group items as per the parsed message in the `gpiiConnector`
  */
-gpii.app.firstKeyInConditionHandler.handleSuccess = function (that, isKeyedIn, isFirstKeyIn) {
-    if (isKeyedIn && that.model.condition.value === isFirstKeyIn) {
+gpii.app.firstSaveHandler.onSaveRequired = function (that, isKeyedIn, settingGroups) {
+    if (isKeyedIn && !gpii.app.settingGroups.hasSettings(settingGroups)) {
         that.handleSuccess();
     }
 };

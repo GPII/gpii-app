@@ -54,12 +54,11 @@ var keyedInForTrigger = {
     ]
 };
 
-var firstKeyInTrigger = {
-    id: "firstKeyInTrigger_1",
+var firstSaveTrigger = {
+    id: "firstSaveTrigger_1",
     conditions: [
         {
-            type: "firstKeyIn",
-            value: true
+            type: "firstSave"
         }
     ]
 };
@@ -90,20 +89,22 @@ gpii.tests.surveyTriggerManager.satisfyTrigger = function (surveyTriggerManager,
     surveyTriggerManager.registeredTriggerHandlers[triggerFixture.id].events.onConditionSatisfied.fire();
 };
 
-var firstKeyInTriggerHandlerSequence = [
+var firstSaveTriggerHandlerSequence = [
     { // Simulate a key in...
         func: "{that}.app.applier.change",
         args: ["keyedInUserToken", "snapset_1a"]
-    }, { // ... which is the first key in into the GPII app of this user
-        func: "{that}.app.factsManager.applier.change",
-        args: ["isFirstKeyIn", true]
-    }, {
+    }, { // ... with an empty preference set.
+        func: "{that}.app.applier.change",
+        args: ["preferences", {settingGroups: []}]
+    }, { // Register the "firstSave" trigger.
         func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
-        args: [firstKeyInTrigger]
+        args: [firstSaveTrigger]
+    }, { // Then simulate pressing of the "Save" button in the QSS.
+        func: "{that}.app.qssWrapper.events.onSaveRequired.fire"
     }, {
         event: "{that}.app.surveyManager.surveyTriggerManager.events.onTriggerOccurred",
         listener: "jqUnit.assertDeepEq",
-        args: ["The first key in trigger has occurred", firstKeyInTrigger, "{arguments}.0"]
+        args: ["The first key in trigger has occurred", firstSaveTrigger, "{arguments}.0"]
     }
 ];
 
@@ -241,7 +242,7 @@ var sessionTimerTriggerHandlersSequence = [
 var triggerHandlersSequence = [].concat(
     sessionTimerTriggerHandlersSequence,
     keyedInForTriggerHandlersSequence,
-    firstKeyInTriggerHandlerSequence
+    firstSaveTriggerHandlerSequence
 );
 
 var triggersApiSequence = [
