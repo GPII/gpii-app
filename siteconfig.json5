@@ -9,6 +9,15 @@
     // The scaling factor for the PSP
     pspScaleFactor: 0.85,
 
+    // Whether to hide the QSS when a user clicks outside of it
+    closeQssOnClickOutside: true,
+
+    // Whether to hide the PSP when a user clicks outside of it
+    closePspOnClickOutside: true,
+
+    // The shortcut that open the QSS. For posible values refer to: https://electronjs.org/docs/api/accelerator
+    openQssShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
+
     // Configuration options for the QSS More panel
     qssMorePanel: {
     	// These are default values. The actual dimensions of the QSS more panel
@@ -18,5 +27,8 @@
     	movable: true,
     	resizable: true,
     	alwaysOnTop: true
-    }
+    },
+
+    // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
+    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json"
 }

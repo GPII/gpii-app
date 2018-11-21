@@ -25,7 +25,7 @@ gpii.tests.siteConfigurationHandler.testDefs = {
     },
     distributeOptions: {
         useSiteConfigFixture: {
-            record: "%gpii-app/tests/fixtures/siteconfigSaveHidden.json5",
+            record: "%gpii-app/tests/fixtures/siteconfigHandler.json5",
             target: "{that siteConfigurationHandler}.options.siteConfigPath"
         }
     },

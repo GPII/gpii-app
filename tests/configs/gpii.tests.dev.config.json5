@@ -10,6 +10,6 @@
         }
     },
     "mergeConfigs": [
-        "./gpii.tests.all.config.json"
+        "./gpii.tests.all.config.json5"
     ]
 }

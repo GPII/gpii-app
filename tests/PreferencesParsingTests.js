@@ -147,19 +147,23 @@ var keyOutFixture = {
     "type":"DELETE"
 };
 
-var defaultGpiiAppShortcut = "Shift+CmdOrCtrl+Alt+Super+M";
+var defaultPreferences = {
+    gpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
+    closeQssOnBlur: false,
+    closePspOnBlur: true
+};
 
 jqUnit.test("Parse empty message", function () {
     jqUnit.expect(4);
 
-    var preferences = gpii.app.extractPreferencesData(emptyFixture, defaultGpiiAppShortcut);
+    var preferences = gpii.app.extractPreferencesData(emptyFixture, defaultPreferences);
 
     jqUnit.assertDeepEq("There are no preference sets", [], preferences.sets);
     jqUnit.assertFalse("There is no active preference set", preferences.activeSet);
     jqUnit.assertDeepEq("There are no settings", [], preferences.settingGroups);
 
     jqUnit.assertEquals("The global shortcut for opening the GPII app is the default one",
-        defaultGpiiAppShortcut,
+        defaultPreferences.gpiiAppShortcut,
         preferences.gpiiAppShortcut
     );
 });
@@ -167,7 +171,7 @@ jqUnit.test("Parse empty message", function () {
 jqUnit.test("Parse multiple preference sets message", function () {
     jqUnit.expect(17);
 
-    var preferences = gpii.app.extractPreferencesData(multiPrefSetsFixture, defaultGpiiAppShortcut);
+    var preferences = gpii.app.extractPreferencesData(multiPrefSetsFixture, defaultPreferences.gpiiAppShortcut);
 
     jqUnit.assertDeepEq("Preference sets are parsed correctly", [
         {path: "gpii-default", name: "Default preferences"},
@@ -275,14 +279,14 @@ jqUnit.test("Parse multiple preference sets message", function () {
 jqUnit.test("Parse key out message", function () {
     jqUnit.expect(4);
 
-    var preferences = gpii.app.extractPreferencesData(keyOutFixture, defaultGpiiAppShortcut);
+    var preferences = gpii.app.extractPreferencesData(keyOutFixture, defaultPreferences);
 
     jqUnit.assertDeepEq("There are no preference sets", [], preferences.sets);
     jqUnit.assertFalse("There is no active preference set", preferences.activeSet);
     jqUnit.assertDeepEq("There are no settings", [], preferences.settingGroups);
 
     jqUnit.assertEquals("The global shortcut for opening the GPII app is the default one",
-        defaultGpiiAppShortcut,
+        defaultPreferences.gpiiAppShortcut,
         preferences.gpiiAppShortcut
     );
 });

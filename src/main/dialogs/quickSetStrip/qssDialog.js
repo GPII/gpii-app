@@ -29,6 +29,11 @@ require("../../../shared/channelUtils.js");
 fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog", "gpii.app.dialog.offScreenHidable", "gpii.app.scaledDialog", "gpii.app.blurrable"],
 
+    model: {
+        // Whether blurring should be respected by the dialog
+        closeQssOnBlur: null
+    },
+
     scaleFactor: 1,
 
     sideMargin: 5,
@@ -47,7 +52,7 @@ fluid.defaults("gpii.app.qss", {
     },
 
     config: {
-        closable: false,
+        destroyOnClose: false,
         awaitWindowReadiness: true,
 
         attrs: {
@@ -141,7 +146,8 @@ fluid.defaults("gpii.app.qss", {
             ]
         },
         handleBlur: {
-            funcName: "fluid.identity"
+            funcName: "gpii.app.qss.handleBlur",
+            args: ["{that}", "{that}.model.closeQssOnBlur"]
         },
         updateUndoIndicator: {
             func: "{that}.events.onUndoIndicatorChanged.fire",
@@ -181,4 +187,17 @@ gpii.app.qss.computeQssWidth = function (buttonWidth, sideMargin, qssButtons) {
     console.log("QSS Dialog: Computed width - ", qssWidth);
 
     return qssWidth;
+};
+
+/**
+ * Handles the blur event for the QSS which is fired when the window loses focus. The QSS
+ * will be closed only if this is the user's preference.
+ * @param {Component} that - The `gpii.app.qss` instance.
+ * @param {Boolean} closeQssOnBlur - If `true`, the QSS will be hidden once the window
+ * loses focus. Otherwise, it will stay open.
+ */
+gpii.app.qss.handleBlur = function (that, closeQssOnBlur) {
+    if (closeQssOnBlur) {
+        that.hide();
+    }
 };

@@ -16,6 +16,7 @@
 
 var fluid = require("infusion"),
     gpii = fluid.registerNamespace("gpii"),
+    request = require("request"),
     URL = require("url").URL,
     URLSearchParams = require("url").URLSearchParams;
 
@@ -28,35 +29,27 @@ var fluid = require("infusion"),
  * 4. Firing an event (`onSurveyRequired`) if and when a survey needs to be shown by the PSP.
  *
  * This component does not provide an implementation for its invokers, nor does it fire the
- * events mentioned above on its own. This is left to the implementors. Currently, the only
- * implementation of this component is the `gpii.app.staticSurveyConnector` which simply
- * serves static payloads whenever its invokers are called. When the smart survey server is
- * available, there should be an implementor which communicates with it via HTTP(S) and fires
- * the appropriate events according to the server's responses.
+ * events mentioned above on its own. The `gpii.app.dynamicSurveyConnector` is currently the only
+ * implementation - survey and trigger payloads are fetched from a remote location.
  *
- * In the future, when a user keyes in, the `surveyConnector` would request the survey triggers
- * by issuing a request to the corresponding server route with the following JSON parameter:
- *     {
- *         keyedInUserToken: <keyedInUserToken>, // the token of the currently keyed in user
- *         machineId: <machineId> // the installation id of the OS
- *     }
+ * When a user keyes in (including the "noUser"), the `surveyConnector` will request the survey
+ * triggers by issuing an HTTP request to the URL specified in the `siteConfig.json5` file. The
+ * `keyedInUserToken` and the `machineId` will be appended to the query string in the URL.
  *
- * The response of the server would be an array of trigger objects in the following format:
+ * The survey server will return an array of trigger objects in the following format:
  *     {
  *         id: <trigger_id>, // mandatory, used to distinguish the triggers
+ *         surveyUrl: <surveyUrl>, // optional - the URL of the survey if it is in a remote location
  *         conditions: {
  *             // lists all conditions that need to be satisfied for this trigger
  *         }
  *     }
  *
- * When the conditions for a survey trigger have been satisfied, the `surveyConnector`
- * would issue a request to the corresponding server route with the following JSON parameter:
- *     {
- *         trigger: <triggerObject> // the trigger which has occurred
- *     }
+ * When the conditions for a survey trigger have been satisfied, the `surveyConnector` will make an
+ * HTTP request to the `surveyUrl` specified in the trigger payload. Again, the "keyedInUserToken"
+ * and "machineId" will be appended as query string parameters to this URL.
  *
- * Finally, the message that the survey server will send in order for the PSP to show a survey would
- * look like this:
+ * The survey payload will have the following format:
  *    {
  *        url: <the Qualtrics survey's URL>,
  *        closeOnSubmit: <true | false> // whether the survey should close automatically when completed
@@ -76,6 +69,7 @@ var fluid = require("infusion"),
  */
 fluid.defaults("gpii.app.surveyConnector", {
     gradeNames: ["fluid.modelComponent"],
+    qssSettingPrefix: "http://registry\\.gpii\\.net/common/",
 
     model: {
         machineId: null,
@@ -103,61 +97,38 @@ fluid.defaults("gpii.app.surveyConnector", {
     }
 });
 
-fluid.defaults("gpii.app.staticSurveyConnector", {
-    gradeNames: ["gpii.app.surveyConnector"],
-    qssSettingPrefix: "http://registry\\.gpii\\.net/common/",
-    config: {
-        triggersFixture: "@expand:fluid.require({that}.options.paths.triggersFixture)",
-        surveysFixture: "@expand:fluid.require({that}.options.paths.surveysFixture)"
-    },
-    invokers: {
-        requestTriggers: {
-            funcName: "gpii.app.staticSurveyConnector.requestTriggers",
-            args: ["{that}"]
-        },
-        notifyTriggerOccurred: {
-            funcName: "gpii.app.staticSurveyConnector.notifyTriggerOccurred",
-            args: [
-                "{that}",
-                "{arguments}.0" // triggerPayload
-            ]
-        }
-    },
-    paths: {
-        triggersFixture: "%gpii-app/testData/survey/triggers.json5",
-        surveysFixture: "%gpii-app/testData/survey/surveys.json5"
-    }
-});
-
 /**
- * Used to retrieve the survey triggers. For this implementation a static
- * payload will always be served.
- * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
+ * Transforms a URL by appending the key-value pairs in the passed `params` object
+ * to the search string portion of the URL.
+ * @param {String} sourceUrl - the URL which is to be modified.
+ * @param {Object} params - an object containing additional parameters to be added
+ * to the search string of the URL.
+ * @return {String} The modified URL.
  */
-gpii.app.staticSurveyConnector.requestTriggers = function (that) {
-    that.events.onTriggerDataReceived.fire(that.options.config.triggersFixture);
+gpii.app.surveyConnector.transformUrl = function (sourceUrl, params) {
+    var url = new URL(sourceUrl),
+        searchParams = new URLSearchParams(url.searchParams);
+
+    fluid.each(params, function (value, key) {
+        searchParams.set(key, value);
+    });
+
+    url.search = searchParams;
+
+    return url.toString();
 };
 
 /**
- * Should be called when a trigger's conditions are met. As a result, a static
- * payload (with keyedInUserToken and machineId added as query paramenters) for
- * the survey to be displayed will be sent via the `onSurveyRequired` event.
+ * This function produces the URL of the survey triggers payload and the surveys
+ * payload which are to be loaded whenever a new user keys in. The URL is created
+ * by adding the "keyedInUserToken" and the "machineId" to the search part of the URL.
  * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
- * @param {Object} triggerPayload - An object describing the trigger whose
- * conditions have been met.
+ * @param {String} dataUrl - The URL of the resource which is to be loaded.
+ * @return {String} The modified URL of the resource to be loaded.
  */
-gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that, triggerPayload) {
-    var surveyFixture = fluid.copy(that.options.config.surveysFixture)[triggerPayload.id];
-
-    fluid.log("StaticSurveyConnector: Trigger occurred - " + triggerPayload);
-
-    if (surveyFixture) {
-        surveyFixture.url = gpii.app.staticSurveyConnector.getSurveyUrl(that, surveyFixture);
-
-        that.events.onSurveyRequired.fire(surveyFixture);
-    } else {
-        fluid.fail("StaticSurveyConnector: Missing survey for trigger: " + triggerPayload.id);
-    }
+gpii.app.surveyConnector.transformDataUrl = function (that, dataUrl) {
+    var params = fluid.filterKeys(that.model, ["keyedInUserToken", "machineId"]);
+    return gpii.app.surveyConnector.transformUrl(dataUrl, params);
 };
 
 /**
@@ -169,30 +140,174 @@ gpii.app.staticSurveyConnector.notifyTriggerOccurred = function (that, triggerPa
  * 3. All QSS settings whose values have been modified by the user are also added
  * to the search part of the URL.
  * @param {Component} that - The `gpii.app.staticSurveyConnector` instance.
- * @param {Object} fixture - An object describing the survey which is to be shown.
- * @param {String} fixture.url - The URL of the survey to be loaded.
+ * @param {String} surveyUrl - The URL of the survey to be loaded.
  * @return {String} The URL with all additional information of the survey to be shown.
  */
-gpii.app.staticSurveyConnector.getSurveyUrl = function (that, fixture) {
-    var url = new URL(fixture.url),
-        searchParams = new URLSearchParams(),
+gpii.app.surveyConnector.transformSurveyUrl = function (that, surveyUrl) {
+    var params = fluid.filterKeys(that.model, ["keyedInUserToken", "machineId"]),
         qssSettingPrefix = that.options.qssSettingPrefix;
-
-    searchParams.set("keyedInUserToken", that.model.keyedInUserToken);
-    searchParams.set("machineId", that.model.machineId);
 
     fluid.each(that.model.qssSettings, function (setting) {
         var path = setting.path,
             value = setting.value,
             defaultValue = setting.schema["default"];
 
-        if (path.startsWith(qssSettingPrefix) && !fluid.model.diff(value, defaultValue)) {
+        // in case a setting is disabled its path would be null
+        if (path && path.startsWith(qssSettingPrefix) && !fluid.model.diff(value, defaultValue)) {
             var settingKey = path.slice(qssSettingPrefix.length);
-            searchParams.set(settingKey, value);
+            params[settingKey] = value;
         }
     });
 
-    url.search = searchParams;
+    return gpii.app.surveyConnector.transformUrl(surveyUrl, params);
+};
 
-    return url.toString();
+/**
+ * Serves triggers and survey payloads from a remote location using the `request`
+ * module.
+ */
+fluid.defaults("gpii.app.dynamicSurveyConnector", {
+    gradeNames: ["gpii.app.surveyConnector"],
+
+    // Contains pending requests for fetching trigger and survey data. In case the user
+    // keys out, these requests should be aborted.
+    members: {
+        pendingRequests: []
+    },
+
+    config: {
+        surveyTriggersUrl: null // will be distributed from the siteConfig.json5
+    },
+
+    modelListeners: {
+        "{app}.model.keyedInUserToken": {
+            func: "{that}.abortPendingRequests"
+        }
+    },
+
+    invokers: {
+        requestTriggers: {
+            funcName: "gpii.app.dynamicSurveyConnector.requestTriggers",
+            args: [
+                "{that}",
+                "{that}.options.config.surveyTriggersUrl"
+            ]
+        },
+        notifyTriggerOccurred: {
+            funcName: "gpii.app.dynamicSurveyConnector.requestSurvey",
+            args: [
+                "{that}",
+                "{arguments}.0" // triggerPayload
+            ]
+        },
+        abortPendingRequests: {
+            funcName: "gpii.app.dynamicSurveyConnector.abortPendingRequests",
+            args: ["{that}"]
+        },
+        requestData: {
+            funcName: "gpii.app.dynamicSurveyConnector.requestData",
+            args: [
+                "{that}",
+                "{arguments}.0" // url
+            ]
+        }
+    }
+});
+
+/**
+ * Removes a pending request from the array of pending request for the
+ * survey connector.
+ * @param {Component} that - The `gpii.app.dynamicSurveyConnector` instance.
+ * @param {Object} requestToRemove - The HTTP request object to be removed.
+ */
+gpii.app.dynamicSurveyConnector.removePendingRequest = function (that, requestToRemove) {
+    fluid.remove_if(that.pendingRequests, function (pendingRequest) {
+        return pendingRequest === requestToRemove;
+    });
+};
+
+/**
+ * Retrieves data from a remote location. Information about the "keyedInUserToken"
+ * and the "machineId" will be appended to the URL as query string parameters.
+ * @param {Component} that - The `gpii.app.dynamicSurveyConnector` instance.
+ * @param {String} url - The URL of the data to be retrieved.
+ * @return {Promise} - A promise which will be resolved (with the data) or
+ * rejected depending on the outcome of the operation.
+ */
+gpii.app.dynamicSurveyConnector.requestData = function (that, url) {
+    var togo = fluid.promise(),
+        transformedUrl = gpii.app.surveyConnector.transformDataUrl(that, url),
+        pendingRequest = request(transformedUrl, function (error, response, body) {
+            var statusCode = fluid.get(response, "statusCode");
+            if (error || statusCode !== 200) {
+                fluid.log(fluid.logLevel.WARN, "Survey connector: Cannot get data", url, statusCode, error);
+                togo.reject("Survey connector: Cannot get data");
+            } else {
+                try {
+                    var parsedResponse = JSON.parse(body);
+                    togo.resolve(parsedResponse);
+                } catch (parsingError) {
+                    fluid.log(fluid.logLevel.WARN, "Survey connector: Error parsing data", url, parsingError, body);
+                    togo.reject("Survey connector: Error parsing data");
+                }
+            }
+        }),
+        onComplete = gpii.app.dynamicSurveyConnector.removePendingRequest.bind(null, that, pendingRequest);
+
+    that.pendingRequests.push(pendingRequest);
+
+    // Remove the pending request regardless of whether the promise is resolved or rejected
+    togo.then(onComplete, onComplete);
+
+    return togo;
+};
+
+/**
+ * Used to retrieve the survey triggers from a remote location. Note that survey triggers
+ * will always be fetched when a new user keys in (including the "noUser"). This means that
+ * if the payload residing in the remote location changes between two key-ins, then the
+ * surveys will also be different (i.e. survey triggers are not cached).
+ * @param {Component} that - The `gpii.app.dynamicSurveyConnector` instance.
+ * @param {String} surveyTriggersUrl - The URL that leads to the survey triggers data
+ */
+gpii.app.dynamicSurveyConnector.requestTriggers = function (that, surveyTriggersUrl) {
+    if (surveyTriggersUrl) {
+        that.requestData(surveyTriggersUrl).then(function (triggers) {
+            that.events.onTriggerDataReceived.fire(triggers);
+        });
+    } else {
+        fluid.log(fluid.logLevel.WARN, "Survey connector: Missing survey triggers URL");
+    }
+};
+
+/**
+ * Should be called when a trigger's conditions are met. As a result, the payload for the
+ * corresponding survey will be fetched from a remote location (specified in the `surveyUrl`
+ * property of the `triggerPayload`) and afterwards will be sent via the `onSurveyRequired` event.
+ * @param {Component} that - The `gpii.app.dynamicSurveyConnector` instance.
+ * @param {Object} triggerPayload - An object describing the trigger whose
+ * conditions have been met.
+ */
+gpii.app.dynamicSurveyConnector.requestSurvey = function (that, triggerPayload) {
+    if (triggerPayload.surveyUrl) {
+        that.requestData(triggerPayload.surveyUrl).then(function (surveyPayload) {
+            surveyPayload.url = gpii.app.surveyConnector.transformSurveyUrl(that, surveyPayload.url);
+            that.events.onSurveyRequired.fire(surveyPayload);
+        });
+    } else {
+        fluid.log(fluid.logLevel.WARN, "Survey connector: Missing survey URL for trigger - ", triggerPayload);
+    }
+};
+
+/**
+ * Whenever a user keys out, this function takes care of aborting any pending requests
+ * for fetching triggers and/or survey payloads data.
+ * @param {Component} that - The `gpii.app.dynamicSurveyConnector` instance.
+ */
+gpii.app.dynamicSurveyConnector.abortPendingRequests = function (that) {
+    fluid.each(that.pendingRequests, function (pendingRequest) {
+        pendingRequest.abort();
+    });
+
+    that.pendingRequests = [];
 };

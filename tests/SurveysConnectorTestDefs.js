@@ -20,142 +20,147 @@ var fluid = require("infusion"),
 var jqUnit = fluid.require("node-jqunit");
 
 require("../src/main/app.js");
+require("gpii-express");
 
-fluid.registerNamespace("gpii.tests.surveys.testDefs");
+fluid.registerNamespace("gpii.tests.surveys");
 
-
-fluid.registerNamespace("gpii.tests.utils");
-
-/**
- * Simply binds arguments to a function.
- * @param {Function} func - The function that is to be bound
- * @param {...Any} args  - Arguments for binding
- * @return {Function} the binded function
- */
-gpii.tests.utils.funcBinder = function (func /*, ...args */) {
-    var args = [].slice.call(arguments, 1);
-    return func.bind.apply(func, [null].concat(args));
-};
-
-
-
-var triggersFixture = [
-    {
-        id: "trigger_2",
-        conditions: [
-            {
-                type: "keyedInFor",
-                value: 1000
+fluid.defaults("gpii.tests.app.simpleTriggersServer", {
+    gradeNames: ["gpii.express"],
+    port: 8083,
+    components: {
+        contentRouter: {
+            type: "gpii.express.router.serveContentAndIndex",
+            options: {
+                path:    "/surveys",
+                content: "%gpii-app/tests/fixtures/survey/"
             }
-        ]
-    }
-];
-
-var surveysFixture = {
-    "trigger_2": {
-        "url": "https://fluidproject.org",
-        "closeOnSubmit": false,
-        "window": {
-            "width": 300,
-            "height": 200
         }
     }
-};
-
-fluid.defaults("gpii.tests.surveys.surveyConnector", {
-    gradeNames: ["gpii.app.staticSurveyConnector"],
-    config: {
-        triggersFixture: triggersFixture,
-        surveysFixture: surveysFixture
-    },
-    mergePolicy: {
-        config: "replace"
-    }
 });
 
-fluid.defaults("gpii.tests.surveys.negativeSurveyConnector", {
-    gradeNames: ["gpii.app.staticSurveyConnector"],
-    config: {
-        triggersFixture: triggersFixture,
-        surveysFixture: {}
-    },
-    mergePolicy: {
-        config: "replace"
+fluid.defaults("gpii.tests.app.simpleTriggersServerWrapper", {
+    components: {
+        surveyTriggersServer: {
+            type: "gpii.tests.app.simpleTriggersServer"
+        }
     }
 });
-
 
 gpii.tests.surveys.assertSurveyFixture = function (expected, actual) {
     jqUnit.assertTrue("The url of the received survey is correct", actual.url.startsWith(expected.url));
     jqUnit.assertLeftHand("The properties of the survey BrowserWindow are correct", expected.window, actual.window);
 };
 
-/**
- * Because of https://issues.fluidproject.org/browse/FLUID-5502, it is not possible to
- * add separate sequence elements to test the consecutive occurring of the
- * `onTriggerOccurred`, `onSurveyRequired` and the `onSurveyCreated` events.
- */
-gpii.tests.surveys.surveyConnectorTestDefs = {
-    name: "Surveys connector integration tests",
-    expect: 3,
-    config: {
-        configName: "gpii.tests.dev.config",
-        configPath: "tests/configs"
+
+// uses the sessionTimer trigger for the tests
+var noUserTriggersSequence = [
+    { // Survey triggers are received with key in
+        event: "{that}.app.surveyManager.surveyConnector.events.onTriggerDataReceived",
+        listener: "jqUnit.assertDeepEq",
+        args: [
+            "The trigger fixture is correctly received",
+            "@expand:fluid.require(%gpii-app/tests/fixtures/survey/triggers.json)",
+            "{arguments}.0"
+        ]
     },
-    gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        record: "gpii.tests.surveys.surveyConnector",
-        target: "{that surveyConnector}.options.gradeNames"
+    { // ... make it a lucky session
+        func: "{that}.app.qssWrapper.qss.show"
     },
-    sequence: [{
+    { // ... simulate change happening from the QSS
+        func: "{that}.app.qssWrapper.qss.events.onQssSettingAltered.fire",
+        args: [
+            {
+                path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                value: true // change to a new value
+            }
+        ]
+    },
+    { // ... survey for "sessionTimer" should appear
+        event: "{that}.app.surveyManager.surveyConnector.events.onSurveyRequired",
+        // Note that the argument (passed by the event) will have some extra
+        // fields as a side effect of a component creation
+        listener: "gpii.tests.surveys.assertSurveyFixture",
+        args: [
+            "@expand:fluid.require(%gpii-app/tests/fixtures/survey/survey1.json)",
+            "{arguments}.0"
+        ]
+    }
+];
+
+// uses the keyedInFor trigger for the tests
+var keyedInTriggersSequence = [
+    {
         func: "{that}.app.keyIn",
         args: ["snapset_1a"]
     }, { // Survey triggers are received with key in
         event: "{that}.app.surveyManager.surveyConnector.events.onTriggerDataReceived",
         listener: "jqUnit.assertDeepEq",
-        args: ["The trigger fixture is correctly received", triggersFixture, "{arguments}.0"]
-    }, {
+        args: [
+            "The trigger fixture is correctly received",
+            "@expand:fluid.require(%gpii-app/tests/fixtures/survey/triggers.json)",
+            "{arguments}.0"
+        ]
+    }, { // we should get the survey after a second for the "keyedIn" trigger
         event: "{that}.app.surveyManager.surveyConnector.events.onSurveyRequired",
         // Note that the argument (passed by the event) will have some extra
         // fields as a side effect of a component creation
         listener: "gpii.tests.surveys.assertSurveyFixture",
-        args: [surveysFixture[triggersFixture[0].id], "{arguments}.0"]
-    }, {
+        args: [
+            "@expand:fluid.require(%gpii-app/tests/fixtures/survey/survey2.json)",
+            "{arguments}.0"
+        ]
+    },
+    {
         func: "{that}.app.keyOut"
     }, {
         event: "{that}.app.events.onKeyedOut",
         listener: "fluid.identity"
-    }]
-};
+    }
+];
 
-gpii.tests.surveys.surveyConnectorNegativeTestDefs = {
-    name: "Surveys connector negative integration tests",
-    expect: 0,
+var edgeCasesSequence = [
+    {
+        task: "gpii.app.dynamicSurveyConnector.requestData",
+        args: [
+            "{that}.app.surveyManager.surveyConnector",
+            "http://localhost:8083/surveys/invalid_triggers.json"
+        ],
+        reject: "jqUnit.assertEquals",
+        rejectArgs: [
+            "The survey connector cannot load triggers from an invalid URL",
+            "Survey connector: Cannot get data",
+            "{arguments}.0"
+        ]
+    }, {
+        task: "gpii.app.dynamicSurveyConnector.requestData",
+        args: [
+            "{that}.app.surveyManager.surveyConnector",
+            "http://localhost:8083/surveys/malformed_triggers.json"
+        ],
+        reject: "jqUnit.assertEquals",
+        rejectArgs: [
+            "The survey connector cannot parse malformed triggers JSON file",
+            "Survey connector: Error parsing data",
+            "{arguments}.0"
+        ]
+    }
+];
+
+gpii.tests.surveys.dynamicSurveyConnectorTestDefs = {
+    name: "Dynamic survey connector integration tests",
+    expect: 8,
     config: {
-        configName: "gpii.tests.dev.config",
+        configName: "gpii.tests.dynamicSurveyConnector.config",
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
-    distributeOptions: {
-        record: "gpii.tests.surveys.negativeSurveyConnector",
-        target: "{that surveyConnector}.options.gradeNames"
-    },
-    sequence: [{
-        // do more of a Unit test to check fail behaviour...
-        func: "jqUnit.expectFrameworkDiagnostic",
-        args: [
-            "Should log error when missing survey fixture",
-            {
-                expander: {
-                    funcName: "gpii.tests.utils.funcBinder",
-                    args: [
-                        gpii.app.staticSurveyConnector.notifyTriggerOccurred,
-                        "{that}.app.surveyManager.surveyConnector",
-                        triggersFixture[0]
-                    ]
-                }
-            },
-            "Missing survey for trigger: " + triggersFixture[0].id
-        ]
-    }]
+    sequence: [
+        {
+            event: "{that gpii.app.qss}.events.onDialogReady",
+            listener: "fluid.identity"
+        },
+        keyedInTriggersSequence,
+        noUserTriggersSequence,
+        edgeCasesSequence
+    ]
 };

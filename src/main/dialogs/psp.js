@@ -177,7 +177,7 @@ fluid.defaults("gpii.app.psp", {
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
      */
     config: {
-        closable: false,
+        destroyOnClose: false,
 
         restrictions: {
             minHeight: {
@@ -230,7 +230,9 @@ fluid.defaults("gpii.app.psp", {
 
         onClosed: null,
 
-        onContentHeightChanged: null
+        onContentHeightChanged: null,
+
+        onSignInRequested: null
     },
     listeners: {
         "onCreate.initPSPWindowIPC": {
@@ -253,6 +255,12 @@ fluid.defaults("gpii.app.psp", {
         },
         "onClosed.giveToQss": {
             func: "{qssWrapper}.qss.focus"
+        },
+
+        // XXX currently sign in functionality is missing
+        "onSignInRequested.disable": {
+            funcName: "fluid.fail",
+            args: ["Signing is not currently supported."]
         },
 
         "{gpiiConnector}.events.onPreferencesUpdated": {
@@ -338,8 +346,8 @@ gpii.app.psp.onPreferencesUpdated = function (that) {
  */
 gpii.app.psp.handleBlur = function (psp, settingsBroker, ignoreClosePreference) {
     var isShown = psp.model.isShown,
-        closePSPOnBlur = psp.model.preferences.closePSPOnBlur || ignoreClosePreference;
-    if (isShown && closePSPOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
+        closePspOnBlur = psp.model.preferences.closePspOnBlur || ignoreClosePreference;
+    if (isShown && closePspOnBlur && !settingsBroker.hasPendingChange("manualRestart")) {
         psp.events.onClosed.fire();
     }
 };
@@ -388,9 +396,7 @@ gpii.app.initPSPWindowIPC = function (app, psp) {
     });
 
     ipcMain.on("onSignInRequested", function (event, email, password) {
-        // XXX currently sign in functionality is missing
-        fluid.fail("Sign in is not possible with email - ", email,
-            " and password: ", password);
+        psp.events.onSignInRequested.fire(email, password);
     });
 };
 

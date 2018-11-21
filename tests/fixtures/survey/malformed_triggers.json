@@ -13,8 +13,7 @@
         "conditions": [
             {
                 "type": "keyedInFor",
-                "value": 15000
+                "value": 1000
             }
         ]
     }
-]

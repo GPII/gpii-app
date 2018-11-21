@@ -32,7 +32,7 @@ fluid.defaults("gpii.app.waitDialog", {
     defaultHeight: 450,
 
     config: {
-        closable: false,
+        destroyOnClose: false,
         fileSuffixPath: "waitDialog/index.html"
     },
     model: {

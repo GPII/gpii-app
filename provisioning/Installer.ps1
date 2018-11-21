@@ -49,13 +49,6 @@ if (Test-Path $filebeatFile) {
     Copy-Item $filebeatFile $installerDir
 }
 
-# If gpii-hst-tools exists delete it and clone it again
-$hstToolsDir = Join-Path (Join-Path $installerDir "staging") "gpii-hst-tools"
-if (Test-Path -Path $hstToolsDir){
-    rm $hstToolsDir -Recurse -Force
-}
-Invoke-Command $git "clone https://github.com/GPII/gpii-hst-tools $($hstToolsDir)"
-
 # Create staging folder
 $stagingWindowsDir = Join-Path (Join-Path $installerDir "staging") "windows"
 if (Test-Path -Path $stagingWindowsDir) {

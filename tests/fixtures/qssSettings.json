@@ -27,10 +27,28 @@
         },
         "messageKey": "common-language",
         "value": "en-US",
-        "tip": "<p>Changes Language of Windows+</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
+        "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
         "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
         "restartWarning": true,
         "learnMoreLink": "https://morphic.world/help/qsshelp#language"
+    }, {
+        "path": "http://registry\\.gpii\\.net/common/DPIScale",
+        "schema": {
+            "type": "number",
+            "title": "Screen Zoom",
+            "min": -1,
+            "max": 1,
+            "divisibleBy": 1,
+            "default": 0
+        },
+        "messageKey": "common-DPIScale",
+        "value": 0,
+        "tip": "<p>Zooms everything on the screen</p><p>Amount of Zoom up and down differs by computer.</p>",
+        "tooltip": "<p>Change whole screen to make everything larger/smaller.</p><p>Works for everything.</p>",
+        "widget": {
+            "footerTip": ""
+        },
+        "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
     }, {
         "path": "appTextZoom",
         "schema": {
@@ -48,24 +66,6 @@
             "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do App/Text Zoom without using Morphic."
         },
         "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
-    }, {
-        "path": "http://registry\\.gpii\\.net/common/DPIScale",
-        "schema": {
-            "type": "number",
-            "title": "Screen Zoom",
-            "min": -2,
-            "max": 4,
-            "divisibleBy": 1,
-            "default": 0
-        },
-        "messageKey": "common-DPIScale",
-        "value": 0,
-        "tip": "<p>Zooms everything on the screen</p><p>Amount of Zoom up and down differs by computer.</p>",
-        "tooltip": "<p>Change whole screen to make everything larger/smaller.</p><p>Works for everything.</p>",
-        "widget": {
-            "footerTip": ""
-        },
-        "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
     }, {
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
@@ -206,6 +206,6 @@
             "image": "close.svg"
         },
         "messageKey": "close",
-        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/gpii-icon-balloon.png'></img></p>"
+        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/TaskTrayIcon_outline.svg'></img></p>"
     }
 ]
