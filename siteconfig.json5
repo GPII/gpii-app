@@ -6,8 +6,13 @@
     // The scaling factor for the QSS
     qssScaleFactor: 0.85,
 
-    // The scaling factor for the PSP
-    pspScaleFactor: 0.85,
+    // Configuration options for the PSP window
+    psp: {
+        scaleFactor: 0.85,
+        urls: {
+            help: "http://pmt.gpii.org/help"
+        }
+    },
 
     // Whether to hide the QSS when a user clicks outside of it
     closeQssOnClickOutside: true,
