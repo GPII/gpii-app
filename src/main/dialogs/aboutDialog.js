@@ -32,8 +32,8 @@ fluid.defaults("gpii.app.aboutDialog", {
 
     siteConfig: {
         urls: {
-            morphicHome: null,
-            submitSuggestions: null
+            morphicHome: "https://morphic.world",
+            submitSuggestions: "mailto:suggestions@morphic.world"
         }
     },
 

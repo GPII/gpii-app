@@ -155,7 +155,7 @@ fluid.defaults("gpii.app.psp", {
     siteConfig: {
         scaleFactor: 1,
         urls: {
-            help: null
+            help: "http://pmt.gpii.org/help"
         }
     },
 

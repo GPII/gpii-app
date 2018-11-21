@@ -31,7 +31,11 @@
     	defaultHeight: 450,
     	movable: true,
     	resizable: true,
-    	alwaysOnTop: true
+    	alwaysOnTop: true,
+
+        urls: {
+            moreInfo: "http://morphic.world/more"
+        }
     },
 
     // Configuration options for the About dialog

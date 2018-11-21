@@ -25,7 +25,12 @@
         components: {
             qssMorePanel: {
                 type: "gpii.psp.qssMorePanel",
-                container: "{translatedQssMorePanel}.container"
+                container: "{translatedQssMorePanel}.container",
+                options: {
+                    model: {
+                        urls: "{translatedQssMorePanel}.model.urls"
+                    }
+                }
             }
         }
     });
@@ -41,6 +46,22 @@
             messages: {
                 details: null,
                 link: null
+            },
+            urls: {
+                moreInfo: null
+            }
+        },
+
+        modelListeners: {
+            "messages": {
+                funcName: "{that}.renderText",
+                args: [
+                    "{that}.model.messages",
+                    {
+                        moreInfoUrl: "{that}.model.urls.moreInfo"
+                    }
+                ],
+                namespace: "renderText"
             }
         },
 
