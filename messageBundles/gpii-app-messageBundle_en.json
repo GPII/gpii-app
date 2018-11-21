@@ -44,6 +44,8 @@
     "gpii_psp_aboutDialog_update": "Check for updates",
     "gpii_psp_aboutDialog_userListenersText": "Keys that work on this machine: %listeners",
     "gpii_psp_aboutDialog_version": "version %version",
+    "gpii_psp_aboutDialog_morphicHome": "Go to Morphic home",
+    "gpii_psp_aboutDialog_submitSuggestions": "Submit suggestions",
 
     "gpii_psp_footer_help": "Help",
 

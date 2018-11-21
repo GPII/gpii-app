@@ -25,7 +25,7 @@
      * user listeners (keys) and some useful links.
      */
     fluid.defaults("gpii.psp.aboutDialog", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         model: {
             messages: {
@@ -33,49 +33,63 @@
                 titlebarAppName:   null,
                 update:            null,
                 userListenersText: null,
-                version:           null
+                version:           null,
+                morphicHome:       null,
+                submitSuggestions: null
             },
 
             version: null,
-            userListeners: null
+            userListeners: null,
+
+            urls: {
+                morphicHome: null,
+                submitSuggestions: null
+            }
         },
 
         selectors: {
-            titlebar:      ".flc-titlebar",
+            titlebar:          ".flc-titlebar",
 
-            title:         ".flc-contentTitle",
-            version:       ".flc-contentVersion",
-            update:        ".flc-contentCheckUpdates",
-            links:         ".flc-contentLinks",
-            userListeners: ".flc-contentUserListeners"
+            title:             ".flc-contentTitle",
+            version:           ".flc-contentVersion",
+            update:            ".flc-contentCheckUpdates",
+            links:             ".flc-contentLinks",
+            userListeners:     ".flc-contentUserListeners",
+
+            morphicHome:       ".flc-morphicHome",
+            submitSuggestions: ".flc-submitSuggestions"
         },
 
         modelListeners: {
-            // Any change means that the whole view should be re-rendered
-            "": [{
-                this: "{that}.dom.title",
-                method: "text",
-                args: "{that}.model.messages.title"
-            }, {
-                this: "{that}.dom.version",
-                method: "text",
-                args: {
-                    expander: {
-                        func: "fluid.stringTemplate",
-                        args: ["{that}.model.messages.version", {version: "{that}.model.version"}]
+            "messages": {
+                funcName: "{that}.renderText",
+                args: [
+                    "{that}.model.messages",
+                    {
+                        version: "{that}.model.version"
                     }
-                },
-                excludeSource: "init"
-            }, {
-                this: "{that}.dom.update",
-                method: "text",
-                args: "{that}.model.messages.update"
-            }, {
+                ],
+                namespace: "renderText"
+            },
+
+            "messages.userListenersText": {
                 this: "{that}.dom.userListeners",
                 method: "text",
-                args: "@expand:gpii.psp.aboutDialog.getUserListenersText({that}.model.messages.userListenersText, {that}.model.userListeners)",
+                args: "@expand:gpii.psp.aboutDialog.getUserListenersText({change}.value, {that}.model.userListeners)",
                 excludeSource: "init"
-            }]
+            },
+
+            "urls.morphicHome": {
+                this: "{that}.dom.morphicHome",
+                method: "attr",
+                args: ["href", "{change}.value"]
+            },
+
+            "urls.submitSuggestions": {
+                this: "{that}.dom.submitSuggestions",
+                method: "attr",
+                args: ["href", "{change}.value"]
+            }
         },
 
         components: {

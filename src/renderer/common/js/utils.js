@@ -96,7 +96,8 @@
                 funcName: "{that}.renderText",
                 args: [
                     "{that}.model.messages"
-                ]
+                ],
+                namespace: "renderText"
             }
         },
         invokers: {

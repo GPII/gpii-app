@@ -36,7 +36,8 @@
                 options: {
                     model: {
                         version:       "{translatedAboutDialog}.model.version",
-                        userListeners: "{translatedAboutDialog}.model.userListeners"
+                        userListeners: "{translatedAboutDialog}.model.userListeners",
+                        urls:          "{translatedAboutDialog}.model.urls"
                     }
                 }
             }
@@ -48,7 +49,8 @@
         gpii.psp.translatedAboutDialog(".fl-dialog", {
             model: {
                 version:       windowInitialParams.version,
-                userListeners: windowInitialParams.userListeners
+                userListeners: windowInitialParams.userListeners,
+                urls:          windowInitialParams.urls
             }
         });
     });

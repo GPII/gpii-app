@@ -29,6 +29,14 @@
     	alwaysOnTop: true
     },
 
+    // Configuration options for the About dialog
+    aboutDialog: {
+        urls: {
+            morphicHome: "https://morphic.world",
+            submitSuggestions: "mailto:suggestions@morphic.world"
+        }
+    },
+
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
     surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json"
 }
