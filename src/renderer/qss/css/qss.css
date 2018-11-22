@@ -4,18 +4,28 @@ body {
 }
 
 .fl-qss {
+    display: flex;
     height: 100%;
+
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+
     background-color: #ebebeb;
+}
+
+.fl-qss-logo {
+    width: 90px;
+    margin: 0 16px;
+    flex-basis: 100%;
 }
 
 .fl-qss-button {
     position: relative;
-    height: 84px;
-    width:  84px;
-    margin: 5px 0 5px 5px;
-    padding: 0;
-
-    float: left;
+    height: 54px;
+    width:  54px;
+    margin: 5px 0;
+    padding: 5px;
 
     display: flex;
     flex-direction: column;
@@ -23,14 +33,34 @@ body {
     text-align: center;
 
     box-sizing: border-box;
-    border-radius: 8px;
-    border: 4px solid transparent;
-    background-color: #4f8bc3;
+    border-radius: 5px;
+    background-color: #002957;
     color: #ffffff;
 
-    font: bold 14px Arial;
+    font: bold 8px "Open Sans";
     cursor: pointer;
     user-select: none;
+}
+
+.fl-qss-button.fl-qss-smallButton {
+    height: 24px;
+}
+
+.fl-qss-button.fl-qss-smallButton:nth-last-child(2n+1) {
+    margin-bottom: 0;
+}
+
+.fl-qss-button.fl-qss-closeButton {
+    width: 28px;
+    height: 28px;
+    border-radius: 0;
+    background: transparent;
+}
+
+.fl-qss-button.fl-qss-closeButton:hover {
+    width: 28px;
+    height: 28px;
+    background: #ff0000;
 }
 
 .fl-qss-button .fl-qss-btnLabel {
@@ -110,9 +140,9 @@ body {
 
 .fl-qss-button .fl-qss-btnImage {
     display: block;
-    width: 64px;
-    height: 32px;
-    margin: 2px auto;
+    width: 44px;
+    height: 20px;
+    margin-top: -5px;
 
     background-color: #ffffff;
 

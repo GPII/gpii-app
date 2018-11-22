@@ -50,6 +50,8 @@
             "fluid.viewComponent"
         ],
 
+        buttonType: "largeButton",
+
         model: {
             item: {
                 value: null
@@ -99,7 +101,9 @@
         },
 
         styles: {
-            activated: "fl-activated"
+            activated: "fl-activated",
+            smallButton: "fl-qss-smallButton",
+            largeButton: "fl-qss-largeButton"
         },
 
         attrs: {
@@ -128,6 +132,10 @@
             "onCreate.renderImage": {
                 funcName: "gpii.qss.buttonPresenter.renderImage",
                 args: ["{that}", "{that}.dom.image"]
+            },
+            "onCreate.addButtonTypeStyles": {
+                funcName: "gpii.qss.buttonPresenter.addButtonTypeStyles",
+                args: ["{that}", "{that}.container"]
             },
 
             "{focusManager}.events.onElementFocused": {
@@ -221,6 +229,15 @@
             }
         }
     });
+
+    gpii.qss.buttonPresenter.addButtonTypeStyles = function (that, container) {
+        var buttonType = that.options.buttonType,
+            styles = that.options.styles;
+
+        if (styles[buttonType]) {
+            container.addClass(styles[buttonType]);
+        }
+    };
 
     /**
      * Returns the title (label) of the button depending on whether there is a

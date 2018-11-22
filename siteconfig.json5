@@ -4,7 +4,7 @@
     hideQssSaveButton: false,
 
     // The scaling factor for the QSS
-    qssScaleFactor: 0.85,
+    qssScaleFactor: 1,
 
     // The scaling factor for the PSP
     pspScaleFactor: 0.85,

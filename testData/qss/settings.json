@@ -177,8 +177,7 @@
         "path": "undo",
         "schema": {
             "type": "undo",
-            "title": "Undo",
-            "image": "undo.svg"
+            "title": "Undo"
         },
         "messageKey": "undo",
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>"
@@ -208,8 +207,7 @@
         "path": "close",
         "schema": {
             "type": "close",
-            "title": "Close",
-            "image": "close.svg"
+            "title": "X"
         },
         "messageKey": "close",
         "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/TaskTrayIcon_outline.svg'></img></p>"

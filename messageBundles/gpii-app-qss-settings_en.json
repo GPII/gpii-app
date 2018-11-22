@@ -1,7 +1,7 @@
 {
     "gpii_app_qss_settings_close": {
         "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/TaskTrayIcon_outline.svg'></img></p>",
-        "title": "Close"
+        "title": "X"
     },
     "gpii_app_qss_settings_undo": {
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>",
@@ -9,7 +9,7 @@
     },
     "gpii_app_qss_settings_resetAll": {
         "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>",
-        "title": "Reset All to Standard"
+        "title": "Reset to Standard"
     },
     "gpii_app_qss_settings_save": {
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>",
