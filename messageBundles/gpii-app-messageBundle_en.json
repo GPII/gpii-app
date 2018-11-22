@@ -60,7 +60,7 @@
 
     "gpii_qss_buttonPresenter_notification": "To see the %settingTitle change, you may need to restart some applications.",
     "gpii_qss_saveButtonPresenter_notification": {
-        "keyedOut": "To save your settings you need to setup a Morphic Account. Go to <a href=\"http://morphic.world/account\">http://morphic.world/account</a>",
+        "keyedOut": "To save your settings you need to setup a Morphic Account. Go to <a href=\"%accountUrl\">%accountUrl</a>",
         "keyedIn": "Your settings were saved to the Morphic Cloud."
     },
 

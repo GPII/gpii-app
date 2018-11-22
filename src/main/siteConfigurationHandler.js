@@ -49,8 +49,8 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
         },
         distributeQssScaleFactor: {
-            record: "{that}.options.siteConfig.qssScaleFactor",
-            target: "{app qssWrapper}.options.scaleFactor"
+            record: "{that}.options.siteConfig.qss",
+            target: "{app qssWrapper}.options.siteConfig"
         },
         distributePspConfig: {
             record: "{that}.options.siteConfig.psp",

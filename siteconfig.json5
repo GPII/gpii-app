@@ -3,11 +3,18 @@
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
 
-    // The scaling factor for the QSS
-    qssScaleFactor: 0.85,
+    // Configuration options for the QSS window
+    qss: {
+        // The scaling factor for the QSS
+        scaleFactor: 0.85,
+        urls: {
+            account: "http://morphic.world/account"
+        }
+    },
 
     // Configuration options for the PSP window
     psp: {
+        // The scaling factor for the PSP
         scaleFactor: 0.85,
         urls: {
             help: "http://pmt.gpii.org/help"
