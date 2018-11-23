@@ -74,10 +74,10 @@ fluid.defaults("gpii.app.errorDialog", {
                     onErrorDialogButtonClicked: {
                         // Currently only single buttons are available, and
                         // will simply close the dialog
-                        funcName: "{errorDialog}.close"
+                        funcName: "{errorDialog}.hide"
                     },
                     onErrorDialogClosed: {
-                        funcName: "{errorDialog}.close"
+                        funcName: "{errorDialog}.hide"
                     }
                 }
             }
