@@ -21,10 +21,11 @@ require("../common/utils.js");
 
 
 /**
- * TODO singleton; updated through params
  * A component that represent an error dialog and is used to display error messages
  * to the user. In order for an error to be properly displayed it requires the
  * following attributes: title, subheader, details and error code.
+ * These attributes are expected in the `params` section as they will be
+ * directly passed to the renderer scope with dialog creation.
  */
 fluid.defaults("gpii.app.errorDialog", {
     gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
