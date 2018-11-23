@@ -201,7 +201,7 @@
         "path": "close",
         "schema": {
             "type": "close",
-            "title": "X"
+            "title": "×"
         },
         "messageKey": "close",
         "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/TaskTrayIcon_outline.svg'></img></p>"

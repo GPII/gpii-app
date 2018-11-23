@@ -25,7 +25,6 @@
      */
     fluid.defaults("gpii.qss.keyInButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
-        buttonType: "smallButton",
         attrs: {
             "aria-label": "Morphic settings panel"
         },
@@ -60,10 +59,6 @@
      */
     fluid.defaults("gpii.qss.closeButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
-        buttonType: "closeButton",
-        styles: {
-            closeButton: "fl-qss-closeButton"
-        },
         invokers: {
             activate: {
                 funcName: "gpii.qss.closeButtonPresenter.activate",
@@ -95,7 +90,6 @@
      */
     fluid.defaults("gpii.qss.saveButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
-        buttonType: "smallButton",
         model: {
             messages: {
                 notification: {
@@ -185,7 +179,6 @@
      */
     fluid.defaults("gpii.qss.undoButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.changeIndicator"],
-        buttonType: "smallButton",
         applyKeyboardHighlight: true,
         listeners: {
             "{list}.events.onUndoIndicatorChanged": {
@@ -225,7 +218,6 @@
      */
     fluid.defaults("gpii.qss.resetAllButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
-        buttonType: "smallButton",
         invokers: {
             activate: {
                 funcName: "gpii.qss.resetAllButtonPresenter.activate",

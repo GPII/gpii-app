@@ -50,8 +50,6 @@
             "fluid.viewComponent"
         ],
 
-        buttonType: "largeButton",
-
         model: {
             item: {
                 value: null
@@ -103,7 +101,9 @@
         styles: {
             activated: "fl-activated",
             smallButton: "fl-qss-smallButton",
-            largeButton: "fl-qss-largeButton"
+            largeButton: "fl-qss-largeButton",
+            settingButton: "fl-qss-settingButton",
+            closeButton: "fl-qss-closeButton"
         },
 
         attrs: {
@@ -133,8 +133,8 @@
                 funcName: "gpii.qss.buttonPresenter.renderImage",
                 args: ["{that}", "{that}.dom.image"]
             },
-            "onCreate.addButtonTypeStyles": {
-                funcName: "gpii.qss.buttonPresenter.addButtonTypeStyles",
+            "onCreate.addButtonTypesStyles": {
+                funcName: "gpii.qss.buttonPresenter.addButtonTypesStyles",
                 args: ["{that}", "{that}.container"]
             },
 
@@ -230,13 +230,15 @@
         }
     });
 
-    gpii.qss.buttonPresenter.addButtonTypeStyles = function (that, container) {
-        var buttonType = that.options.buttonType,
+    gpii.qss.buttonPresenter.addButtonTypesStyles = function (that, container) {
+        var buttonTypes = that.model.item.buttonTypes,
             styles = that.options.styles;
 
-        if (styles[buttonType]) {
-            container.addClass(styles[buttonType]);
-        }
+        fluid.each(buttonTypes, function (buttonType) {
+            if (styles[buttonType]) {
+                container.addClass(styles[buttonType]);
+            }
+        });
     };
 
     /**
