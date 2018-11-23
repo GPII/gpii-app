@@ -103,7 +103,8 @@
                 args: [
                     "{that}.model.messages",
                     "{that}.model.values"
-                ]
+                ],
+                namespace: "renderText"
             }
         },
         invokers: {

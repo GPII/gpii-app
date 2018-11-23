@@ -23,7 +23,10 @@
         gradeNames: ["fluid.component", "gpii.psp.messageBundles"],
         model: {
             theme: null,
-            sounds: {}
+            sounds: {},
+            urls: {
+                help: null
+            }
         },
         components: {
             channel: {
@@ -58,7 +61,8 @@
                 options: {
                     model: {
                         theme: "{psp}.model.theme",
-                        sounds: "{psp}.model.sounds"
+                        sounds: "{psp}.model.sounds",
+                        urls: "{psp}.model.urls"
                     },
                     listeners: {
                         onPSPClose: "{channel}.close",

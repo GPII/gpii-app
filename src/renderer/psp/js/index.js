@@ -24,7 +24,8 @@
         gpii.psp({
             model: {
                 theme: pspParams.theme,
-                sounds: pspParams.sounds
+                sounds: pspParams.sounds,
+                urls: pspParams.urls
             }
         });
     });

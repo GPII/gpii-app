@@ -100,7 +100,8 @@ var firstSaveTriggerHandlerSequence = [
         func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
         args: [firstSaveTrigger]
     }, { // Then simulate pressing of the "Save" button in the QSS.
-        func: "{that}.app.qssWrapper.events.onSaveRequired.fire"
+        func: "{that}.app.qssWrapper.events.onSaveRequired.fire",
+        args: ["Your settings were saved to the Morphic Cloud."]
     }, {
         event: "{that}.app.surveyManager.surveyTriggerManager.events.onTriggerOccurred",
         listener: "jqUnit.assertDeepEq",

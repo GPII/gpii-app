@@ -49,12 +49,12 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
         },
         distributeQssScaleFactor: {
-            record: "{that}.options.siteConfig.qssScaleFactor",
-            target: "{app qssWrapper}.options.scaleFactor"
+            record: "{that}.options.siteConfig.qss",
+            target: "{app qssWrapper}.options.siteConfig"
         },
-        distributePspScaleFactor: {
-            record: "{that}.options.siteConfig.pspScaleFactor",
-            target: "{app psp}.options.scaleFactor"
+        distributePspConfig: {
+            record: "{that}.options.siteConfig.psp",
+            target: "{app psp}.options.siteConfig"
         },
         distributeDialogScaleFactor: {
             record: "{that}.options.siteConfig.pspScaleFactor",
@@ -79,6 +79,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
             target: "{app surveyConnector}.options.config.surveyTriggersUrl"
+        },
+        distributeAboutDialogConfig: {
+            record: "{that}.options.siteConfig.aboutDialog",
+            target: "{app aboutDialog}.options.siteConfig"
         }
     }
 });
