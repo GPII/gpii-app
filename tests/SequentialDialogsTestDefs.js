@@ -70,6 +70,7 @@ gpii.tests.sequentialDialogs.testDefs = {
         func: "{that}.app.dialogManager.show",
         args: ["error", noInternetErrorFixture]
     }, { // The error dialog is shown automatically as it is the only one.
+        // TODO
         event: "{that gpii.app.errorDialog.channel}.events.onErrorDialogCreated",
         listener: "jqUnit.assertLeftHand",
         args: [
