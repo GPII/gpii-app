@@ -36,7 +36,8 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
     },
     conditionHandlerGrades: {
         keyedInFor: "gpii.app.keyedInForHandler",
-        sessionTimer: "gpii.app.sessionTimerHandler"
+        sessionTimer: "gpii.app.sessionTimerHandler",
+        firstSave: "gpii.app.firstSaveHandler"
     },
     events: {
         onTriggerAdded: null,
@@ -263,6 +264,43 @@ gpii.app.conditionHandler.handleSuccess = function (that) {
     that.events.onConditionSatisfied.fire(that.model.condition);
     if (!fluid.isDestroyed(that)) {
         that.destroy();
+    }
+};
+
+/**
+ * A condition handler which shows a survey when the following conditions are met:
+ * 1. There is an actual keyed in user.
+ * 2. There are no settings in the active preference set for the user.
+ * The survey should be shown when the user presses the "Save" button in the QSS.
+ */
+fluid.defaults("gpii.app.firstSaveHandler", {
+    gradeNames: ["gpii.app.conditionHandler"],
+
+    listeners: {
+        "{app}.qssWrapper.events.onSaveRequired": {
+            funcName: "gpii.app.firstSaveHandler.onSaveRequired",
+            args: [
+                "{that}",
+                "{app}.model.isKeyedIn",
+                "{app}.model.preferences.settingGroups"
+            ],
+            priority: "first"
+        }
+    }
+});
+
+/**
+ * Invoked when the "Save" button in the QSS is pressed. In this case if there is
+ * an actual keyed in user with no settings in his active preference set, this
+ * `conditionHandler` will be considered fulfilled.
+ * @param {Component} that - The `gpii.app.firstSaveHandler` instance.
+ * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user or not.
+ * @param {module:gpiiConnector.SettingGroup[]} settingGroups - An array with
+ * setting group items as per the parsed message in the `gpiiConnector`
+ */
+gpii.app.firstSaveHandler.onSaveRequired = function (that, isKeyedIn, settingGroups) {
+    if (isKeyedIn && !gpii.app.settingGroups.hasSettings(settingGroups)) {
+        that.handleSuccess();
     }
 };
 

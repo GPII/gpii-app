@@ -54,6 +54,15 @@ var keyedInForTrigger = {
     ]
 };
 
+var firstSaveTrigger = {
+    id: "firstSaveTrigger_1",
+    conditions: [
+        {
+            type: "firstSave"
+        }
+    ]
+};
+
 gpii.tests.surveyTriggerManager.testHandlerCreated = function (surveyTriggerManager, triggerFixture) {
     var triggerId = triggerFixture.id,
         triggerHandler = surveyTriggerManager.registeredTriggerHandlers[triggerId],
@@ -80,6 +89,24 @@ gpii.tests.surveyTriggerManager.satisfyTrigger = function (surveyTriggerManager,
     surveyTriggerManager.registeredTriggerHandlers[triggerFixture.id].events.onConditionSatisfied.fire();
 };
 
+var firstSaveTriggerHandlerSequence = [
+    { // Simulate a key in...
+        func: "{that}.app.applier.change",
+        args: ["keyedInUserToken", "snapset_1a"]
+    }, { // ... with an empty preference set.
+        func: "{that}.app.applier.change",
+        args: ["preferences", {settingGroups: []}]
+    }, { // Register the "firstSave" trigger.
+        func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
+        args: [firstSaveTrigger]
+    }, { // Then simulate pressing of the "Save" button in the QSS.
+        func: "{that}.app.qssWrapper.events.onSaveRequired.fire"
+    }, {
+        event: "{that}.app.surveyManager.surveyTriggerManager.events.onTriggerOccurred",
+        listener: "jqUnit.assertDeepEq",
+        args: ["The first key in trigger has occurred", firstSaveTrigger, "{arguments}.0"]
+    }
+];
 
 var keyedInForTriggerHandlersSequence = [
     {
@@ -214,7 +241,8 @@ var sessionTimerTriggerHandlersSequence = [
 
 var triggerHandlersSequence = [].concat(
     sessionTimerTriggerHandlersSequence,
-    keyedInForTriggerHandlersSequence
+    keyedInForTriggerHandlersSequence,
+    firstSaveTriggerHandlerSequence
 );
 
 var triggersApiSequence = [
@@ -273,7 +301,7 @@ var triggersApiSequence = [
 
 gpii.tests.surveyTriggerManager.testDefs = {
     name: "Trigger Engine integration tests",
-    expect: 26,
+    expect: 27,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
