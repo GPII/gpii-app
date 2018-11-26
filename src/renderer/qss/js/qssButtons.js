@@ -394,14 +394,12 @@
      * button's tooltip or the QSS widget.
      * @param {jQuery} target - The DOM element for which positioning
      * metrics are needed.
-     * @return {Object} {{width: Number, height: Number, offsetLeft: Number}}
+     * @return {Object} {{offsetTop: Number, offsetLeft: Number, width: Number}}
      */
     gpii.qss.buttonPresenter.getElementMetrics = function (target) {
-        var borderWidth = target.outerHeight() - target.innerHeight();
-
         return {
+            offsetTop:  target.offset().top,
             offsetLeft: target.offset().left,
-            height:     target.outerHeight() - borderWidth / 2,
             width:      target.outerWidth()
         };
     };

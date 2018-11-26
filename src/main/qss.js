@@ -419,7 +419,9 @@ gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager
                          */
                         type: "disabled",
                         title: ""
-                    }
+                    },
+                    // Preserve the styling of the corresponding QSS button
+                    buttonTypes: loadedSettings[settingToHideIdx].buttonTypes
                 };
             }
         });
@@ -460,12 +462,12 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
 gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
     var scaleFactor = qss.options.scaleFactor,
         offsetLeft = scaleFactor * buttonElemMetrics.offsetLeft,
-        buttonWidth = scaleFactor * buttonElemMetrics.width,
-        buttonHeight = scaleFactor * buttonElemMetrics.height;
+        offsetTop = scaleFactor * buttonElemMetrics.offsetTop,
+        buttonWidth = scaleFactor * buttonElemMetrics.width;
 
     return {
         x: qss.width - offsetLeft - buttonWidth / 2,
-        y: buttonHeight
+        y: qss.height - offsetTop
     };
 };
 

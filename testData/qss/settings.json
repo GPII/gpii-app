@@ -177,7 +177,7 @@
             "type": "save",
             "title": "Save"
         },
-        "buttonTypes": ["smallButton", "saveButton"],
+        "buttonTypes": ["smallButton"],
         "messageKey": "save",
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>"
     }, {

@@ -107,7 +107,7 @@
                 method: "toggleClass",
                 args: [
                     "{that}.options.styles.dimmed",
-                    "@exapnd:fluid.negate({change}.value)" // dim if not keyed in
+                    "@expand:fluid.negate({change}.value)" // dim if not keyed in
                 ]
             }
         },

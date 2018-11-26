@@ -9,7 +9,7 @@ body {
 
     flex-direction: column;
     flex-wrap: wrap;
-    align-items: center;
+    align-content: flex-end;
 
     background-color: #ebebeb;
 }
@@ -20,11 +20,15 @@ body {
     flex-basis: 100%;
 }
 
+.fl-qss-logo + .fl-qss-button {
+    margin-left: 0;
+}
+
 .fl-qss-button {
     position: relative;
     height: 54px;
     width:  54px;
-    margin: 5px 0;
+    margin: 5px 0 0 5px;
     padding: 3px;
 
     display: flex;
@@ -47,8 +51,8 @@ body {
     height: 24px;
 }
 
-.fl-qss-button.fl-qss-smallButton:nth-last-child(2n+1) {
-    margin-bottom: 0;
+.fl-qss-button.fl-qss-smallButton:nth-last-child(2n) {
+    margin-top: 6px;
 }
 
 .fl-qss-button.fl-qss-closeButton {
