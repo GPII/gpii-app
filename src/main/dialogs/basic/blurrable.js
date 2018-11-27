@@ -92,7 +92,7 @@ gpii.app.blurrable.onBlur = function (that) {
         });
 
     if (allowBlur) {
-        that.handleBlur();
+        // that.handleBlur();
     }
 };
 

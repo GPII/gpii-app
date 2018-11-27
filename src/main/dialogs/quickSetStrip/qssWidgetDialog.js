@@ -32,7 +32,7 @@ fluid.defaults("gpii.app.qssWidget", {
     gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
     scaleFactor: 1,
-    defaultWidth: 316,
+    defaultWidth: 165,
     defaultHeight: 430,
 
     model: {
@@ -51,7 +51,7 @@ fluid.defaults("gpii.app.qssWidget", {
                 funcName: "gpii.app.scale",
                 args: [
                     "{that}.options.scaleFactor",
-                    637
+                    500
                 ]
             }
         },
@@ -60,7 +60,7 @@ fluid.defaults("gpii.app.qssWidget", {
                 funcName: "gpii.app.scale",
                 args: [
                     "{that}.options.scaleFactor",
-                    627
+                    400
                 ]
             }
         }
@@ -209,7 +209,7 @@ gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activation
 gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
     return {
         x: btnCenterOffset.x - that.width / 2,
-        y: btnCenterOffset.y
+        y: btnCenterOffset.y + 10
     };
 };
 

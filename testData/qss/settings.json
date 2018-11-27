@@ -129,7 +129,7 @@
             "black-yellow": {
                 "background-color": "#ffff00",
                 "color": "#000000",
-                "border": "2px dashed #6c6c6c"
+                "border": "1px dashed #6c6c6c"
             },
             "grey-black": {
                 "background-color": "#222222",
@@ -203,7 +203,7 @@
         "schema": {
             "type": "psp",
             "title": {
-                "keyedIn": "Morphic Settings Panel",
+                "keyedIn": "Settings Panel",
                 "keyedOut": "Sign In"
             }
         },

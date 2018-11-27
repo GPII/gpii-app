@@ -21,7 +21,7 @@
             "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
         },
         "title": {
-            "keyedIn": "Morphic Settings Panel",
+            "keyedIn": "Settings Panel",
             "keyedOut": "Sign In"
         }
     },

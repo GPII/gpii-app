@@ -26,7 +26,7 @@
     fluid.defaults("gpii.qss.keyInButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         attrs: {
-            "aria-label": "Morphic settings panel"
+            "aria-label": "Settings Panel"
         },
         invokers: {
             activate: {
