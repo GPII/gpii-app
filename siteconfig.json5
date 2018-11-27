@@ -3,11 +3,23 @@
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
 
-    // The scaling factor for the QSS
-    qssScaleFactor: 1,
+    // Configuration options for the QSS window
+    qss: {
+        // The scaling factor for the QSS
+        scaleFactor: 1,
+        urls: {
+            account: "http://morphic.world/account"
+        }
+    },
 
-    // The scaling factor for the PSP
-    pspScaleFactor: 0.85,
+    // Configuration options for the PSP window
+    psp: {
+        // The scaling factor for the PSP
+        scaleFactor: 0.85,
+        urls: {
+            help: "http://pmt.gpii.org/help"
+        }
+    },
 
     // Whether to hide the QSS when a user clicks outside of it
     closeQssOnClickOutside: true,
@@ -26,7 +38,19 @@
     	defaultHeight: 450,
     	movable: true,
     	resizable: true,
-    	alwaysOnTop: true
+    	alwaysOnTop: true,
+
+        urls: {
+            moreInfo: "http://morphic.world/more"
+        }
+    },
+
+    // Configuration options for the About dialog
+    aboutDialog: {
+        urls: {
+            morphicHome: "https://morphic.world",
+            submitSuggestions: "mailto:suggestions@morphic.world"
+        }
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format

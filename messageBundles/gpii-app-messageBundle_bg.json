@@ -44,6 +44,8 @@
     "gpii_psp_aboutDialog_update": "Провери за ъпдейти",
     "gpii_psp_aboutDialog_userListenersText": "Средства за вписване за тази машина: %listeners",
     "gpii_psp_aboutDialog_version": "версия %version",
+    "gpii_psp_aboutDialog_morphicHome": "Отиди на Morphic Home",
+    "gpii_psp_aboutDialog_submitSuggestions": "Изпрати предложения",
 
     "gpii_psp_footer_help": "Помощ",
 

@@ -116,10 +116,9 @@ fluid.defaults("gpii.app.qss", {
                     onQssClosed: {
                         func: "{qss}.hide"
                     },
-                    // XXX DEV
                     onQssSettingAltered: {
                         funcName: "console.log",
-                        args: ["Setting altered QSS:", "{arguments}.0.path", "{arguments}.0.value"]
+                        args: ["QSS Dailog: Setting altered QSS - ", "{arguments}.0.path", "{arguments}.0.value"]
                     }
                 }
             }

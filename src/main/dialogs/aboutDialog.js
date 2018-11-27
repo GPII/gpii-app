@@ -30,10 +30,18 @@ fluid.defaults("gpii.app.aboutDialog", {
     defaultWidth: 400,
     defaultHeight: 250,
 
+    siteConfig: {
+        urls: {
+            morphicHome: "https://morphic.world",
+            submitSuggestions: "mailto:suggestions@morphic.world"
+        }
+    },
+
     config: {
         params: {
             userListeners: ["USB", "NFC", "Fingerprint", "Webcam & Voice"],
-            version: "@expand:gpii.app.getVersion()"
+            version: "@expand:gpii.app.getVersion()",
+            urls: "{that}.options.siteConfig.urls"
         },
         fileSuffixPath: "aboutDialog/index.html"
     },

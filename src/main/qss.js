@@ -65,7 +65,14 @@ fluid.defaults("gpii.app.qssWrapper", {
 
     settingMessagesPrefix: "gpii_app_qss_settings",
 
-    scaleFactor: 1,
+    siteConfig: {
+        scaleFactor: 1,
+        urls: {
+            account: "http://morphic.world/account"
+        }
+    },
+
+    scaleFactor: "{that}.options.siteConfig.scaleFactor",
 
     model: {
         isKeyedIn: false,
@@ -274,6 +281,10 @@ gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, 
     // Instead of sending a request via the pspChannel, the pspChannel is used directly.
     var saveButtonClickCount = pspChannel.model.saveButtonClickCount || 0;
     pspChannel.applier.change("saveButtonClickCount", saveButtonClickCount + 1, null, "PSP");
+
+    description = fluid.stringTemplate(description, {
+        accountUrl: that.options.siteConfig.urls.account
+    });
 
     qssNotification.show({
         description: description,
