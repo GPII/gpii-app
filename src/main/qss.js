@@ -75,11 +75,17 @@ fluid.defaults("gpii.app.qssWrapper", {
     scaleFactor: "{that}.options.siteConfig.scaleFactor",
 
     model: {
+        messages: {
+            restartWarningNotification: null
+        },
+
         isKeyedIn: false,
         keyedInUserToken: null,
         settings: "{that}.options.loadedSettings",
 
-        closeQssOnBlur: false
+        // user preferences
+        closeQssOnBlur: false,
+        disableRestartWarning: false
     },
 
     events: {
@@ -141,6 +147,10 @@ fluid.defaults("gpii.app.qssWrapper", {
                 funcName: "gpii.app.qssWidget.updateIfMatching",
                 args: ["{qssWidget}", "{change}.value"],
                 excludeSource: ["init", "qssWidget"]
+            }, {
+                funcName: "{that}.showRestartWarningNotification",
+                args: ["{change}.value"],
+                excludeSource: ["init"]
             }
         ]
     },
@@ -168,6 +178,15 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{that}",
                 "{arguments}.0", // updatedSetting
                 "{arguments}.1" // source
+            ]
+        },
+        showRestartWarningNotification: {
+            funcName: "gpii.app.qssWrapper.showRestartWarningNotification",
+            args: [
+                "{that}",
+                "{qss}",
+                "{qssNotification}",
+                "{arguments}.0" // updatedSetting
             ]
         },
         applySettingsTranslations: {
@@ -225,7 +244,6 @@ fluid.defaults("gpii.app.qssWrapper", {
                     isKeyedIn: "{qssWrapper}.model.isKeyedIn"
                 },
                 listeners: {
-                    // TODO list events for a method
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": [{
                         func: "{that}.hide"
                     }, {
@@ -268,6 +286,30 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     }
 });
+
+
+/**
+ * Shows a notification to the user in case the changed setting requires applications
+ * to be restarted in order to be fully applied (restartWarning),
+ * and in case the user hasn't disabled such (restartWarning) notificaions.
+ * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+ * @param {Component} qss - The `gpii.app.qssDialog` instance.
+ * @param {Component} qssNotification - The `gpii.app.qssNotification` instance.
+ * @param {Object} updatedSetting - The `gpii.app.qssNotification` instance.
+ */
+gpii.app.qssWrapper.showRestartWarningNotification = function (that, qss, qssNotification, updatedSetting) {
+    if (updatedSetting.restartWarning && !that.model.disableRestartWarning) {
+        var description = fluid.stringTemplate(that.model.messages.restartWarningNotification, {
+            settingTitle: updatedSetting.schema.title
+        });
+
+        qssNotification.show({
+            description: description,
+            closeOnBlur: false,
+            focusOnClose: qss.dialog
+        });
+    }
+};
 
 /**
  * Notifies the `gpii.pspChannel` to trigger preferences save and shows a confirmation message.
@@ -519,6 +561,14 @@ fluid.defaults("gpii.app.qssInWrapper", {
         onDialogReady: {
             funcName: "{qssWrapper}.applySettingsTranslations"
         },
+        onQssSettingAltered: {
+            func: "{qssWrapper}.alterSetting",
+            args: [
+                "{arguments}.0", // updatedSetting
+                "qss"
+            ]
+        },
+
         "{channelListener}.events.onQssButtonFocused": [{
             func: "{qssTooltip}.showIfPossible",
             args: [
@@ -539,13 +589,6 @@ fluid.defaults("gpii.app.qssInWrapper", {
                 "{arguments}.0", // setting
                 "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)",  // btnCenterOffset
                 "{arguments}.2"  // activationParams
-            ]
-        },
-        onQssSettingAltered: {
-            func: "{qssWrapper}.alterSetting",
-            args: [
-                "{arguments}.0", // updatedSetting
-                "qss"
             ]
         },
         "{channelListener}.events.onQssNotificationRequired": {
