@@ -95,7 +95,10 @@ var firstSaveTriggerHandlerSequence = [
         args: ["keyedInUserToken", "snapset_1a"]
     }, { // ... with an empty preference set.
         func: "{that}.app.applier.change",
-        args: ["preferences", {settingGroups: []}]
+        args: [
+            "preferences",
+            {gpiiKey: "snapset_1a", settingGroups: []}
+        ]
     }, { // Register the "firstSave" trigger.
         func: "{that}.app.surveyManager.surveyTriggerManager.registerTrigger",
         args: [firstSaveTrigger]

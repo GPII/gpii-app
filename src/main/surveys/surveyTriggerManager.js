@@ -281,8 +281,7 @@ fluid.defaults("gpii.app.firstSaveHandler", {
             funcName: "gpii.app.firstSaveHandler.onSaveRequired",
             args: [
                 "{that}",
-                "{app}.model.isKeyedIn",
-                "{app}.model.preferences.settingGroups"
+                "{factsManager}.model.isEmptyKey"
             ],
             priority: "first"
         }
@@ -291,15 +290,14 @@ fluid.defaults("gpii.app.firstSaveHandler", {
 
 /**
  * Invoked when the "Save" button in the QSS is pressed. In this case if there is
- * an actual keyed in user with no settings in his active preference set, this
+ * an actual keyed in user with no settings saved in his active preference set, this
  * `conditionHandler` will be considered fulfilled.
  * @param {Component} that - The `gpii.app.firstSaveHandler` instance.
- * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user or not.
- * @param {module:gpiiConnector.SettingGroup[]} settingGroups - An array with
- * setting group items as per the parsed message in the `gpiiConnector`
+ * @param {Boolean} isEmptyKey - Whether there were no preferences in the user's
+ * default preference set when he keyed in.
  */
-gpii.app.firstSaveHandler.onSaveRequired = function (that, isKeyedIn, settingGroups) {
-    if (isKeyedIn && !gpii.app.settingGroups.hasSettings(settingGroups)) {
+gpii.app.firstSaveHandler.onSaveRequired = function (that, isEmptyKey) {
+    if (isEmptyKey) {
         that.handleSuccess();
     }
 };
