@@ -21,6 +21,7 @@ fluid.registerNamespace("gpii.app.messageBundlesCompiler");
 
 var fs = require("fs");
 var path = require("path");
+var shell = require("shelljs");
 
 var DEFAULT_PARSER = {"json": JSON};
 
@@ -247,5 +248,21 @@ gpii.app.messageBundlesCompiler.compileMessageBundles = function (bundlesDirs, d
     return compiledMessageBundle;
 };
 
+/**
+ * This is the entry point to the script. Any configuration must be indicated below.
+*/
+require("gpii-windows");
 
-module.exports.compileMessageBundles = gpii.app.messageBundlesCompiler.compileMessageBundles;
+var messageDirs = ["./messageBundles", "%gpii-user-errors/bundles"];
+var resultFilePath = "./build/gpii-app-messageBundles.json";
+
+// This is a noop when the folder already exists
+shell.mkdir("-p", path.dirname(resultFilePath));
+
+var compileMessageBundles = gpii.app.messageBundlesCompiler.compileMessageBundles;
+var compiledMessageBundles = compileMessageBundles(messageDirs, "en", {"json": JSON, "json5": require("json5")});
+
+fs.writeFileSync(resultFilePath, JSON.stringify(compiledMessageBundles, null, 4));
+
+// We have to manually exit the electron process
+process.exit();
