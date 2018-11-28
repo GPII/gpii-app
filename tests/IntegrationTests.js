@@ -16,9 +16,9 @@
 
 "use strict";
 
-require("gpii-windows/index.js"); // loads path to gpii-universal
+require("gpii-windows/index.js"); // loads gpii-universal as well
 
-var fluid = fluid.require("%gpii-universal"),
+var fluid = require("infusion"),
     kettle = fluid.registerNamespace("kettle"),
     gpii = fluid.registerNamespace("gpii");
 
