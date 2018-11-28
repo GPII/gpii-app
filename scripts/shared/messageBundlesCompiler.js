@@ -21,10 +21,8 @@ fluid.registerNamespace("gpii.app.messageBundlesCompiler");
 
 var fs = require("fs");
 var path = require("path");
-var shell = require("shelljs");
 
 var DEFAULT_PARSER = {"json": JSON};
-
 
 /**
  * Represents a single messages bundle, containing label names and messages for them.
@@ -248,34 +246,4 @@ gpii.app.messageBundlesCompiler.compileMessageBundles = function (bundlesDirs, d
     return compiledMessageBundle;
 };
 
-/**
- * This function generates the messages bundle and writes into a given file.
- * @param {String[]} messageDirs - An array of the directories from which messages
- * files are to be retrieved.
- * @param {String}  resultFilePath - The file where the bundles are going to be written.
- */
-gpii.app.compileMessageBundles = function (messageDirs, resultFilePath) {
-    require("gpii-windows");
-
-    // This is a noop when the folder already exists
-    shell.mkdir("-p", path.dirname(resultFilePath));
-
-    var compileMessageBundles = gpii.app.messageBundlesCompiler.compileMessageBundles;
-    var compiledMessageBundles = compileMessageBundles(messageDirs, "en", {"json": JSON, "json5": require("json5")});
-
-    fs.writeFileSync(resultFilePath, JSON.stringify(compiledMessageBundles, null, 4));
-    fluid.log("Message bundle successfully written to ", resultFilePath);
-
-    // We have to manually exit the electron process
-    process.exit();
-};
-
-/**
- * This is the entry point to the script. Any configuration must be indicated below.
-*/
-gpii.app.compileMessageBundles(
-    // List of dirs to look for message bundles
-    ["./messageBundles", "%gpii-user-errors/bundles"],
-    // The resulting bundle file path
-    "./build/gpii-app-messageBundles.json"
-);
+module.exports.compileMessageBundles = gpii.app.messageBundlesCompiler.compileMessageBundles;
