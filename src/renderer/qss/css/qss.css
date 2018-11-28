@@ -1,6 +1,8 @@
 body {
     margin: 0;
     overflow: hidden;
+
+    background-color: #ffffff;
 }
 
 .fl-qss {
@@ -10,8 +12,6 @@ body {
     flex-direction: column;
     flex-wrap: wrap;
     align-content: flex-end;
-
-    background-color: #ffffff;
 }
 
 .fl-qss-logo {

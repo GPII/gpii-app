@@ -33,7 +33,15 @@ fluid.defaults("gpii.app.qssWidget", {
 
     scaleFactor: 1,
     defaultWidth: 165,
-    defaultHeight: 430,
+    defaultHeight: 270,
+
+    /*
+     * When setting the size of a `BrowserWindow` Electron sometimes changes its position
+     * with a few pixels if the DPI is different than 1. This offset ensures that the dialog's
+     * arrow will not be hidden behind the QSS in case Electron decides to position the window
+     * lower than it actually has to be.
+     */
+    extraVerticalOffset: 7,
 
     model: {
         setting: {}
@@ -51,7 +59,7 @@ fluid.defaults("gpii.app.qssWidget", {
                 funcName: "gpii.app.scale",
                 args: [
                     "{that}.options.scaleFactor",
-                    500
+                    420
                 ]
             }
         },
@@ -60,7 +68,7 @@ fluid.defaults("gpii.app.qssWidget", {
                 funcName: "gpii.app.scale",
                 args: [
                     "{that}.options.scaleFactor",
-                    400
+                    365
                 ]
             }
         }
@@ -207,9 +215,12 @@ gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activation
  * the screen.
  */
 gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
+    var extraVerticalOffset = that.options.extraVerticalOffset,
+        scaleFactor = that.options.scaleFactor;
+
     return {
         x: btnCenterOffset.x - that.width / 2,
-        y: btnCenterOffset.y + 10
+        y: btnCenterOffset.y + scaleFactor * extraVerticalOffset
     };
 };
 

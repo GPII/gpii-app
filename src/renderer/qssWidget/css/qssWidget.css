@@ -7,25 +7,36 @@ body {
     /* overflow: hidden; */
 }
 
-.fl-qssWidget {
-    font: normal 10px "Open Sans";
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 3px;
+}
 
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #19294c;
+    box-shadow: none;
+}
+
+.fl-qssWidget {
+    height: calc(100% - 9px);
+    padding: 10px;
     border-radius: 5px;
     box-sizing: border-box;
 
-    background-color: #ffffff;
-    height: calc(100% - 9px);
-
-    padding: 10px;
-
     display: flex;
     flex-direction: column;
+    
+    background-color: #ffffff;
+    color: #19294c;
+
+    font: normal 10px "Open Sans";
 }
 
 .fl-qssWidget .fl-titlebar .fl-closeBtn {
     position: absolute;
-    top: 0;
-    right: 2px;
+    top: 1px;
+    right: 3px;
     border: 1px solid transparent;
 
     font-size: 10px;
@@ -117,7 +128,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
@@ -126,8 +137,8 @@ body {
 
     box-sizing: border-box;
     width: 70%;
-    min-height: 42px;
-    margin: 5px;
+    min-height: 35px;
+    margin: 0 5px;
     padding-top: 0;
 
     border: 1px solid transparent;
@@ -138,6 +149,10 @@ body {
 
     user-select: none;
     cursor: pointer;
+}
+
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn + .fl-qssStepperWidget-btn {
+    margin-top: 5px;
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn:focus,
@@ -228,10 +243,10 @@ body {
     position: relative;
     width: 120px;
     margin-bottom: 5px;
-    padding: 7px 5px;
+    padding: 5px;
     border: 1px solid #0f4797;
     border-radius: 3px;
-    line-height: 7px;
+    line-height: 11px;
     box-sizing: border-box;
 
     background-color: #ffffff;
@@ -251,23 +266,10 @@ body {
     transform: translateY(-50%);
 
     content: "";
-    background-size: 15px 15px;
-/*    background-image: url("../../../assets/check-circle.svg");*/
-    background-repeat: no-repeat;
-
-    -webkit-mask-image: url("../../../assets/check-circle.svg");
-    mask-image: url("../../../assets/check-circle.svg");
-
     background-color: #008145;
 
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-
-    -webkit-mask-position: 50% 50%;
-    mask-position: 50% 50%;
-
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
+    -webkit-mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
+    mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
 
     cursor: default;
 }
