@@ -22,7 +22,7 @@
     },
 
     // Whether to hide the QSS when a user clicks outside of it
-    closeQssOnClickOutside: true,
+    closeQssOnClickOutside: false,
 
     // Whether to disable the displaying of notifications that suggest some
     // applications may need to be restarted in order for a changed setting to be

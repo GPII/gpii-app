@@ -110,9 +110,15 @@ fluid.defaults("gpii.app.messageBundles", {
     messageBundles: "@expand:gpii.app.messageBundles.loadMessageBundles({that}.options.messageBundlesPath)",
 
     modelListeners: {
-        locale: {
-            func: "{that}.updateMessages"
-        }
+        locale: [
+            { // XXX dev
+                funcName: "console.log",
+                args: ["Locale changed: ", "{change}.value"]
+            },
+            {
+                func: "{that}.updateMessages"
+            }
+        ]
     },
 
     messageDistributorGrade: {
@@ -195,7 +201,12 @@ gpii.app.messageBundles.loadMessageBundles = function (messageBundlesPath) {
  * @param {String} defaultLocale - The default locale.
  */
 gpii.app.messageBundles.updateMessages = function (that, messageBundles, locale, defaultLocale) {
-    var messages = messageBundles[locale];
+    if (!locale) {
+        return;
+    }
+
+    var genericLocale = locale.split("-")[0];
+    var messages = messageBundles[locale.toLowerCase()] || messageBundles[genericLocale];
 
     if (!messages) {
         fluid.log(fluid.logLevel.WARN, "Bundles for locale - " + locale + " - are missing. Using default locale of: " + defaultLocale);

@@ -27,7 +27,7 @@ fluid.logObjectRenderChars = 10240;
 // Monkey-patch the core Infusion "doLog" implementation https://github.com/fluid-project/infusion/blob/master/src/framework/core/js/Fluid.js#L279
 // Already monkey-patched once at https://github.com/fluid-project/infusion/blob/master/src/module/fluid.js#L161
 
-fluid.doLog = function (args) {
-    args = fluid.transform(args, fluid.renderLoggingArg);
-    fs.appendFileSync(logFileName, args.join("") + "\n");
-};
+// fluid.doLog = function (args) {
+//     args = fluid.transform(args, fluid.renderLoggingArg);
+//     fs.appendFileSync(logFileName, args.join("") + "\n");
+// };

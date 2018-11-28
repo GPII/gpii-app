@@ -187,6 +187,12 @@ fluid.defaults("gpii.app", {
             options: {
                 model: {
                     configuredLanguage: "{app}.model.locale"
+                },
+                modelListeners: {
+                    "configuredLanguage": { // XXX dev
+                        funcName: "console.log",
+                        args: ["Locale change incomming: ", "{change}.value"]
+                    }
                 }
             }
         },
@@ -210,6 +216,9 @@ fluid.defaults("gpii.app", {
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated"
                 },
                 modelListeners: {
+                    "{systemLanguageListener}.model.installedLanguages": {
+                        funcName: "{that}.updateLanguageSettingOptions"
+                    },
                     "settings.*": {
                         funcName: "gpii.app.onQssSettingAltered",
                         args: [

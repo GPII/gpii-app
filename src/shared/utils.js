@@ -185,3 +185,4 @@ gpii.app.settingGroups.hasSettings = function (settingGroups) {
 gpii.app.scale = function (scaleFactor, num) {
     return scaleFactor * num;
 };
+

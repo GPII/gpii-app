@@ -79,7 +79,10 @@
      * @param {Object} events - A map of all events for the `channel` component.
      */
     gpii.psp.messageBundles.channel.register = function (events) {
+        // XXX DEV
+        console.log("Registering locale listener");
         ipcRenderer.on("onLocaleChanged", function (event, locale) {
+            console.log("Changed locale: ", locale);
             events.onLocaleChanged.fire(locale);
         });
     };

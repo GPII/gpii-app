@@ -1297,6 +1297,138 @@ var crossQssTranslations = [
     }
 ];
 
+// Language
+
+// FULL check
+// - change language setting
+// - wait for locale to be changed 
+// check displayed languages
+// write unit tests
+//
+//
+var installedLangsFixture = {
+    raw: {
+        "en-US": {
+            "english": "English",
+            "local": "English (United States)",
+            "native": "english (United States)",
+            "code": "en-US"
+        },
+        "es-MX": {
+            "english": "Spanish",
+            "local": "Spanish (Mexico)",
+            "native": "español (México)",
+            "code": "es-MX"
+        },
+        "fr": {
+            "english": "French",
+            "local": "French",
+            "native": "français",
+            "code": "fr"
+        }
+    },
+    lists: {
+        keys: [ "en-US", "es-MX", "fr" ],
+        enum: [ "English (United States)", "Español (México) · Spanish (Mexico)", "Français · French"]
+    }
+};
+
+var installedLangsShrunkFixture = {
+    raw: {
+        "en-US": {
+            "english": "English",
+            "local": "English (United States)",
+            "native": "english (United States)",
+            "code": "en-US"
+        },
+        "es-ES": {
+            "english": "Spanish",
+            "local": "Spanish (Spain)",
+            "native": "Español (España)",
+            "code": "es-ES"
+        }
+    },
+    lists: {
+        keys: ["en-US", "es-ES"],
+        enum: ["English (United States)", "Español (España) · Spanish (Spain)"]
+    }
+};
+
+
+/*
+        "en-GB": {
+            "english": "English",
+            "local": "English (United Kingdom)",
+            "native": "English (United Kingdom)"
+        },
+        "es-ES": {
+            "english": "Spanish",
+            "local": "Spanish (Spain)",
+            "native": "Español (España)"
+        },
+*/
+
+
+fluid.defaults("gpii.tests.qss.systemLanguageListener", {
+    gradeNames: ["fluid.modelComponent"],
+
+    model: {
+        installedLanguages: installedLangsFixture.raw,
+        configuredLanguage: null
+    },
+
+    invokers: {
+        updateLanguages: {
+            funcName: "gpii.app.applier.replace",
+            args: [
+                "{that}.applier",
+                "installedLanguages",
+                "{arguments}.0" // new languages
+            ]
+        }
+    }
+});
+
+gpii.tests.qss.languageSettingValuesMatches = function (qssWrapper, expectedInstalledLanguages) {
+    var languageSetting = qssWrapper.getSetting(qssWrapper.options.settingOptions.settingPaths.language);
+
+    jqUnit.assertDeepEq(
+        "QSS should list correctly installed languages",
+        [
+            expectedInstalledLanguages["enum"],
+            expectedInstalledLanguages.keys
+        ],
+        [
+            languageSetting.schema["enum"],
+            languageSetting.schema.keys
+        ]
+    );
+};
+
+
+var qssInstalledLanguages = [
+    { // once qssWrapper is firstly created it should have proper languages list
+        func: "gpii.tests.qss.languageSettingValuesMatches",
+        args: ["{that}.app.qssWrapper", installedLangsFixture.lists]
+    },
+
+    { // changing the installed languages
+        func: "{that}.app.systemLanguageListener.updateLanguages",
+        args: [installedLangsShrunkFixture.raw]
+    },
+    { // should result in language setting update
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.0.schema.enum", // we want changes only for the language setting
+        listener: "gpii.tests.qss.languageSettingValuesMatches",
+        args: ["{that}.app.qssWrapper", installedLangsShrunkFixture.lists]
+    }
+];
+
+
+// ask  message bundle component for locale update
+
+
+
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
@@ -1325,6 +1457,10 @@ gpii.tests.qss.testDefs = {
         mockedLifecycleManager: {
             record: "gpii.tests.qss.mockedLifecycleManager",
             target: "{that lifecycleManager}.options.gradeNames"
+        },
+        mockedLanguagesListener: {
+            record: "gpii.tests.qss.systemLanguageListener",
+            target: "{that gpii.app}.options.components.systemLanguageListener.type"
         }
     },
 
@@ -1335,6 +1471,7 @@ gpii.tests.qss.testDefs = {
             listener: "jqUnit.assert",
             args: ["QSS has initialized successfully"]
         }],
+        qssInstalledLanguages,
         undoCrossTestSequence,
         undoTestSequence,
         qssCrossTestSequence,
