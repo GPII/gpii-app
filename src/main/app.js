@@ -182,6 +182,14 @@ fluid.defaults("gpii.app", {
             type: "gpii.windows.appZoom",
             createOnEvent: "onPSPPrerequisitesReady"
         },
+        systemLanguageListener: {
+            type: "gpii.windows.language",
+            options: {
+                model: {
+                    configuredLanguage: "{app}.model.locale"
+                }
+            }
+        },
         qssWrapper: {
             type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
