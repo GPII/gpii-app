@@ -22,6 +22,7 @@ var fs = require("fs");
 var path = require("path");
 var shell = require("shelljs");
 
+fluid.setLogging(true);
 require("./shared/messageBundlesCompiler.js");
 
 /**
@@ -31,7 +32,7 @@ require("./shared/messageBundlesCompiler.js");
  * @param {String}  resultFilePath - The file where the bundles are going to be written.
  */
 gpii.app.compileMessageBundles = function (messageDirs, resultFilePath) {
-    require("gpii-windows");
+    require("gpii-windows/index.js");
 
     // This is a noop when the folder already exists
     shell.mkdir("-p", path.dirname(resultFilePath));
