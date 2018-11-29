@@ -31,8 +31,8 @@ fluid.defaults("gpii.app.qssNotification", {
     gradeNames: ["gpii.app.centeredDialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
 
     scaleFactor: 1,
-    defaultWidth: 350,
-    defaultHeight: 200,
+    defaultWidth: 225,
+    defaultHeight: 140,
 
     config: {
         attrs: {

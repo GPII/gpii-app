@@ -1,7 +1,39 @@
+.fl-dialog .fl-dialog-contentWrapper {
+    padding: 5px 5px 0 5px;
+    font-family: "Open Sans", "Sans-Serif";
+    line-height: 12px;
+}
+
+.fl-titlebar .fl-appName {
+    font-size: 10px;
+    line-height: 12px;
+}
+
+.fl-titlebar .fl-closeBtn {
+    font-size: 12px;
+    line-height: 12px;
+}
+
 .fl-dialog .fl-dialog-content {
+    padding: 5px;
+    font-size: 9px;
     text-align: center;
 }
 
 .fl-dialog .fl-dialog-content .fl-dialog-contentText {
     position: relative;
+}
+
+.fl-dialog .fl-dialog-content .fl-dialog-controls button {
+    min-width: 0;
+    min-height: 0;
+    width: 70px;
+    padding: 3px 0;
+
+    font-size: 9px;
+    line-height: 12px;
+}
+
+.fl-dialog .fl-dialog-footer {
+    padding: 5px 0 0 0;
 }

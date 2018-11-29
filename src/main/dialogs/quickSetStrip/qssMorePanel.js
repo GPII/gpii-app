@@ -28,8 +28,8 @@ fluid.defaults("gpii.app.qssMorePanel", {
 
     // Configuration which may differ depending on the machine on which the app is deployed
     siteConfig: {
-        defaultWidth: 600,
-        defaultHeight: 450,
+        defaultWidth: 400,
+        defaultHeight: 300,
         alwaysOnTop: true,
         movable: true,
         resizable: true,
