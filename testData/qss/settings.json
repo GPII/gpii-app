@@ -193,7 +193,7 @@
         "path": "resetAll",
         "schema": {
             "type": "resetAll",
-            "title": "Reset All to Standard"
+            "title": "Reset to Standard"
         },
         "buttonTypes": ["smallButton"],
         "messageKey": "resetAll",
