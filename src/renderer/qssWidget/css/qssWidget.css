@@ -30,7 +30,7 @@ body {
     background-color: #ffffff;
     color: #19294c;
 
-    font: normal 10px "Open Sans";
+    font: normal 9px "Open Sans", "Sans-Serif";
 }
 
 .fl-qssWidget .fl-titlebar .fl-closeBtn {
@@ -137,7 +137,7 @@ body {
 
     box-sizing: border-box;
     width: 70%;
-    min-height: 35px;
+    min-height: 30px;
     margin: 0 5px;
     padding-top: 0;
 
@@ -175,8 +175,8 @@ body {
 
 
 .fl-qssStepperWidget-controls .fl-icon.fl-increment-icon {
-    width: 30px;
-    height: 30px;
+    width: 27px;
+    height: 27px;
     margin-left: 5px;
 
     -webkit-mask-image: url(../../../assets/plus-circle.svg);
@@ -236,7 +236,7 @@ body {
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls {
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: overlay;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {

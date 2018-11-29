@@ -33,7 +33,7 @@ fluid.defaults("gpii.app.qssWidget", {
 
     scaleFactor: 1,
     defaultWidth: 165,
-    defaultHeight: 270,
+    defaultHeight: 255,
 
     /*
      * When setting the size of a `BrowserWindow` Electron sometimes changes its position
@@ -59,7 +59,7 @@ fluid.defaults("gpii.app.qssWidget", {
                 funcName: "gpii.app.scale",
                 args: [
                     "{that}.options.scaleFactor",
-                    420
+                    400
                 ]
             }
         },
@@ -68,7 +68,7 @@ fluid.defaults("gpii.app.qssWidget", {
                 funcName: "gpii.app.scale",
                 args: [
                     "{that}.options.scaleFactor",
-                    365
+                    360
                 ]
             }
         }

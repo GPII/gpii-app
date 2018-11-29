@@ -39,9 +39,11 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
         "gpii.app.dialog.offScreenHidable"
     ],
 
+    arrowWidth: 18,
+
     scaleFactor: 1,
-    defaultWidth: 205,
-    defaultHeight: 300,
+    defaultWidth: 140,
+    defaultHeight: 200,
 
     model: {
         isKeyedIn: false,
@@ -158,10 +160,11 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
  * the screen.
  */
 gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) {
-    // XXX extract hardcoded value to a better place
-    var arrowSize = 44; // px
+    var arrowWidth = that.options.arrowWidth,
+        scaleFactor = that.options.scaleFactor;
+
     return {
-        offsetX: btnCenterOffset.x - that.options.scaleFactor * arrowSize,
+        offsetX: btnCenterOffset.x - scaleFactor * arrowWidth / 2,
         offsetY: btnCenterOffset.y
     };
 };
