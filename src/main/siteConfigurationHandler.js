@@ -79,6 +79,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
             target: "{app surveyConnector}.options.config.surveyTriggersUrl"
+        },
+        distributeTrayType: {
+            record: "{that}.options.siteConfig.trayType",
+            target: "{app tray}.options.trayType"
         }
     }
 });

@@ -61,6 +61,9 @@ If ($mainDir -eq "C:\vagrant") {
     $npmInstallDir = (get-item $originalBuildScriptPath).parent.FullName
 }
 
+# Build the tray button
+../trayButton/build.ps1
+
 Invoke-Command "npm" "install" $npmInstallDir
 
 # Currently required to generate the "mega" messages bundle (similar to Installer.ps1)
