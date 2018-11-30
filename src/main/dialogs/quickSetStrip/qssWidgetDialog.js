@@ -32,7 +32,7 @@ fluid.defaults("gpii.app.qssWidget", {
     gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
     scaleFactor: 1,
-    defaultWidth: 165,
+    defaultWidth: 170,
     defaultHeight: 255,
 
     /*
@@ -68,7 +68,7 @@ fluid.defaults("gpii.app.qssWidget", {
                 funcName: "gpii.app.scale",
                 args: [
                     "{that}.options.scaleFactor",
-                    360
+                    365
                 ]
             }
         }

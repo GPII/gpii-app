@@ -19,8 +19,9 @@ body {
 }
 
 .fl-qssWidget {
-    height: calc(100% - 9px);
+    height: calc(100% - 12px);
     padding: 10px;
+    border: 2px solid #002957;
     border-radius: 5px;
     box-sizing: border-box;
 
@@ -87,15 +88,36 @@ body {
 }
 
 .fl-qssWidget-arrow {
-    box-sizing: border-box;
+    position: relative;
+    height: 12px;
+}
 
+.fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow:after {
+    content: "";
+
+    position: absolute;
+    top: -2px;
+    left: 50%;
     width: 0;
     height: 0;
-    margin: 0 auto;
 
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 9px solid #ffffff;
+    border: solid transparent;
+    border-bottom: none;
+
+    pointer-events: none;
+}
+
+.fl-qssWidget-arrow:before {
+    border-width: 12px;
+    border-top-color: #002957;
+    margin-left: -12px;
+}
+
+.fl-qssWidget-arrow:after {
+    border-width: 9px;
+    border-top-color: #ffffff;
+    margin-left: -9px;
 }
 
 /*
