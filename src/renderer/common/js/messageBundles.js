@@ -18,7 +18,8 @@
 "use strict";
 
 (function (fluid) {
-    var ipcRenderer = require("electron").ipcRenderer;
+    var electron = require("electron"),
+        ipcRenderer = electron.ipcRenderer;
 
     var gpii = fluid.registerNamespace("gpii");
 
@@ -40,6 +41,13 @@
             }
         },
 
+        listeners: {
+            "onCreate.fetchLocale": {
+                funcName: "gpii.psp.fetchCurrentLocale",
+                args: ["{that}"]
+            }
+        },
+
         components: {
             localeChannel: {
                 type: "gpii.psp.messageBundles.channel",
@@ -54,6 +62,12 @@
             }
         }
     });
+
+    gpii.psp.fetchCurrentLocale = function (that) {
+        var locale = electron.remote.getCurrentWindow().locale;
+
+        that.updateLocale(locale);
+    };
 
     /**
      * A simple component that attaches a listener for `onLocaleChanged` IPC message
@@ -79,10 +93,8 @@
      * @param {Object} events - A map of all events for the `channel` component.
      */
     gpii.psp.messageBundles.channel.register = function (events) {
-        // XXX DEV
-        console.log("Registering locale listener");
         ipcRenderer.on("onLocaleChanged", function (event, locale) {
-            console.log("Changed locale: ", locale);
+            console.log("Locale changed: ", locale);
             events.onLocaleChanged.fire(locale);
         });
     };
