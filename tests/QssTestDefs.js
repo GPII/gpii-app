@@ -1297,15 +1297,7 @@ var crossQssTranslations = [
     }
 ];
 
-// Language
 
-// FULL check
-// - change language setting
-// - wait for locale to be changed 
-// check displayed languages
-// write unit tests
-//
-//
 var installedLangsFixture = {
     raw: {
         "en-US": {
@@ -1354,19 +1346,6 @@ var installedLangsShrunkFixture = {
     }
 };
 
-
-/*
-        "en-GB": {
-            "english": "English",
-            "local": "English (United Kingdom)",
-            "native": "English (United Kingdom)"
-        },
-        "es-ES": {
-            "english": "Spanish",
-            "local": "Spanish (Spain)",
-            "native": "Español (España)"
-        },
-*/
 
 
 fluid.defaults("gpii.tests.qss.systemLanguageListener", {
@@ -1425,9 +1404,6 @@ var qssInstalledLanguages = [
 ];
 
 
-// ask  message bundle component for locale update
-
-
 
 
 gpii.tests.qss.testDefs = {
@@ -1440,7 +1416,7 @@ gpii.tests.qss.testDefs = {
     distributeOptions: {
         mockedSettings: {
             record: "%gpii-app/tests/fixtures/qssSettings.json",
-            target: "{that gpii.app.qssWrapper}.options.settingsPath"
+            target: "{that gpii.app.qssWrapper}.options.settingOptions.settingsFixturePath"
         },
         mockedMessages: {
             record: qssSettingMessagesFixture,

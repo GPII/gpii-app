@@ -186,12 +186,12 @@ fluid.defaults("gpii.app", {
             type: "gpii.windows.language",
             options: {
                 model: {
-                    configuredLanguage: "{app}.model.locale"
+                    configuredLanguage: "{messageBundles}.model.locale"
                 },
                 modelListeners: {
-                    "configuredLanguage": { // XXX dev
+                    configuredLanguage: {
                         funcName: "console.log",
-                        args: ["Locale change incomming: ", "{change}.value"]
+                        args: ["Language change: ", "{change}.value"]
                     }
                 }
             }

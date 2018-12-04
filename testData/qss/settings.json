@@ -4,6 +4,8 @@
         "schema": {
             "type": "string",
             "image": "language.svg",
+            "enum": [],
+            "keys": [],
             "default": "en-US"
         },
         "messageKey": "common-language",

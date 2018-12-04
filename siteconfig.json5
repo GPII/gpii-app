@@ -9,7 +9,14 @@
         scaleFactor: 0.85,
         urls: {
             account: "http://morphic.world/account"
-        }
+        },
+
+        // The template that is used for every label of the language setting's options.
+        // The "%" followed by a word specifies a variable and there are three possible variables:
+        // - native - the name of the language in its native form
+        // - local - the name of the language in the currently applied language
+        // - english - the name of the of the language in English
+        languageOptionLabel: "%native · %local"
     },
 
     // Configuration options for the PSP window
@@ -22,7 +29,7 @@
     },
 
     // Whether to hide the QSS when a user clicks outside of it
-    closeQssOnClickOutside: false,
+    closeQssOnClickOutside: true,
 
     // Whether to disable the displaying of notifications that suggest some
     // applications may need to be restarted in order for a changed setting to be

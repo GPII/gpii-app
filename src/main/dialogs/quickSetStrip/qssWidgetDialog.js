@@ -115,10 +115,6 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetCreated: null
                 },
                 listeners: {
-                    // onQssWidgetHeightChanged: { // XXX dev
-                    //     funcName: "console.log",
-                    //     args: ["-- Height changed: ", "{arguments}.0"]
-                    // },
                     onQssWidgetClosed: [{
                         func: "{qssWidget}.hide"
                     }, {

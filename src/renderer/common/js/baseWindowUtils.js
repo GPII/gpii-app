@@ -63,7 +63,8 @@
                     "onDialogReady",
                     // use the main component gradeName as a unique dialog identifier
                     electron.remote.getCurrentWindow().relatedCmpId
-                ]
+                ],
+                priority: "last"
             }
         }
     });
