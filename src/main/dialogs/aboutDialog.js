@@ -26,6 +26,13 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.aboutDialog", {
     gradeNames: ["gpii.app.dialog"],
 
+    siteConfig: {
+        urls: {
+            morphicHome: "https://morphic.world",
+            submitSuggestions: "mailto:suggestions@morphic.world"
+        }
+    },
+
     config: {
         attrs: {
             width: 400,
@@ -33,7 +40,8 @@ fluid.defaults("gpii.app.aboutDialog", {
         },
         params: {
             userListeners: ["USB", "NFC", "Fingerprint", "Webcam & Voice"],
-            version: "@expand:gpii.app.getVersion()"
+            version: "@expand:gpii.app.getVersion()",
+            urls: "{that}.options.siteConfig.urls"
         },
         fileSuffixPath: "aboutDialog/index.html"
     },

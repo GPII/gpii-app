@@ -54,10 +54,7 @@
             item: {
                 value: null
             },
-            value: "{that}.model.item.value",
-            messages: {
-                notification: null
-            }
+            value: "{that}.model.item.value"
         },
 
         modelRelay: {
@@ -75,15 +72,11 @@
         },
 
         modelListeners: {
-            value: [{
+            value: {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model.item", "{change}.value"],
                 excludeSource: ["init", "gpii.psp.repeater.itemUpdate"]
-            }, {
-                funcName: "gpii.qss.buttonPresenter.showNotification",
-                args: ["{that}", "{list}"],
-                excludeSource: "init"
-            }],
+            },
             title: {
                 this: "{that}.dom.title",
                 method: "text",
@@ -99,7 +92,11 @@
         },
 
         styles: {
-            activated: "fl-activated"
+            activated: "fl-activated",
+            smallButton: "fl-qss-smallButton",
+            largeButton: "fl-qss-largeButton",
+            settingButton: "fl-qss-settingButton",
+            closeButton: "fl-qss-closeButton"
         },
 
         attrs: {
@@ -128,6 +125,10 @@
             "onCreate.renderImage": {
                 funcName: "gpii.qss.buttonPresenter.renderImage",
                 args: ["{that}", "{that}.dom.image"]
+            },
+            "onCreate.addButtonTypesStyles": {
+                funcName: "gpii.qss.buttonPresenter.addButtonTypesStyles",
+                args: ["{that}", "{that}.container"]
             },
 
             "{focusManager}.events.onElementFocused": {
@@ -221,6 +222,17 @@
             }
         }
     });
+
+    gpii.qss.buttonPresenter.addButtonTypesStyles = function (that, container) {
+        var buttonTypes = that.model.item.buttonTypes,
+            styles = that.options.styles;
+
+        fluid.each(buttonTypes, function (buttonType) {
+            if (styles[buttonType]) {
+                container.addClass(styles[buttonType]);
+            }
+        });
+    };
 
     /**
      * Returns the title (label) of the button depending on whether there is a
@@ -352,37 +364,16 @@
     };
 
     /**
-     * When the value of the QSS button's setting changes, fires an event that a notification
-     * must be shown to the user.
-     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
-     * @param {Component} qssList - The `gpii.qss.list` instance.
-     */
-    gpii.qss.buttonPresenter.showNotification = function (that, qssList) {
-        if (that.model.item.restartWarning) {
-            var description = fluid.stringTemplate(that.model.messages.notification, {
-                settingTitle: that.model.item.schema.title
-            });
-
-            qssList.events.onNotificationRequired.fire({
-                description: description,
-                closeOnBlur: false
-            });
-        }
-    };
-
-    /**
      * Returns the metrics of a given element. These can be used for positioning the QSS
      * button's tooltip or the QSS widget.
      * @param {jQuery} target - The DOM element for which positioning
      * metrics are needed.
-     * @return {Object} {{width: Number, height: Number, offsetLeft: Number}}
+     * @return {Object} {{offsetTop: Number, offsetLeft: Number, width: Number}}
      */
     gpii.qss.buttonPresenter.getElementMetrics = function (target) {
-        var borderWidth = target.outerHeight() - target.innerHeight();
-
         return {
+            offsetTop:  target.offset().top,
             offsetLeft: target.offset().left,
-            height:     target.outerHeight() - borderWidth / 2,
             width:      target.outerWidth()
         };
     };

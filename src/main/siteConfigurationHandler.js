@@ -48,37 +48,45 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             },
             target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
         },
-        distributeQssScaleFactor: {
-            record: "{app}.configurationHandler.options.siteConfig.qssScaleFactor",
-            target: "{app qssWrapper}.options.model.scaleFactor"
+        distributeQssConfig: {
+            record: "{that}.options.siteConfig.qss",
+            target: "{app qssWrapper}.options.siteConfig"
         },
-        distributePspScaleFactor: {
-            record: "{app}.configurationHandler.options.siteConfig.pspScaleFactor",
-            target: "{app psp}.options.model.scaleFactor"
+        distributePspConfig: {
+            record: "{that}.options.siteConfig.psp",
+            target: "{app psp}.options.siteConfig"
         },
         distributeDialogScaleFactor: {
-            record: "{app}.configurationHandler.options.siteConfig.pspScaleFactor",
+            record: "{app}.configurationHandler.options.siteConfig.psp.scaleFactor",
             target: "{app dialogManager}.options.model.scaleFactor"
         },
         distributeQssMorePanelConfig: {
             record: "{that}.options.siteConfig.qssMorePanel",
             target: "{app qssMorePanel}.options.siteConfig"
         },
-        distributesQssClickOutside: {
+        distributeQssClickOutside: {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
             target: "{app gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
         },
-        distributesPspClickOutside: {
+        distributePspClickOutside: {
             record: "{that}.options.siteConfig.closePspOnClickOutside",
             target: "{app gpiiConnector}.options.defaultPreferences.closePspOnBlur"
         },
-        distributesOpenQssShortcut: {
+        distributeOpenQssShortcut: {
             record: "{that}.options.siteConfig.openQssShortcut",
             target: "{app gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
+        },
+        distributeDisableRestartWarning: {
+            record: "{that}.options.siteConfig.disableRestartWarning",
+            target: "{app gpiiConnector}.options.defaultPreferences.disableRestartWarning"
         },
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
             target: "{app surveyConnector}.options.config.surveyTriggersUrl"
+        },
+        distributeAboutDialogConfig: {
+            record: "{that}.options.siteConfig.aboutDialog",
+            target: "{app aboutDialog}.options.siteConfig"
         }
     }
 });

@@ -3,14 +3,32 @@
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
 
-    // The scaling factor for the QSS
-    qssScaleFactor: 0.85,
+    // Configuration options for the QSS window
+    qss: {
+        // The scaling factor for the QSS
+        scaleFactor: 4,
+        urls: {
+            account: "http://morphic.world/account"
+        }
+    },
 
-    // The scaling factor for the PSP
-    pspScaleFactor: 0.85,
+    // Configuration options for the PSP window
+    psp: {
+        // The scaling factor for the PSP
+        scaleFactor: 2,
+        urls: {
+            help: "http://pmt.gpii.org/help"
+        }
+    },
 
     // Whether to hide the QSS when a user clicks outside of it
     closeQssOnClickOutside: true,
+
+    // Whether to disable the displaying of notifications that suggest some
+    // applications may need to be restarted in order for a changed setting to be
+    // fully applied. An example for such setting is `Language`.
+    // If set to `true`, such notifications will NOT be displayed.
+    disableRestartWarning: false,
 
     // Whether to hide the PSP when a user clicks outside of it
     closePspOnClickOutside: true,
@@ -20,13 +38,25 @@
 
     // Configuration options for the QSS More panel
     qssMorePanel: {
-    	// These are default values. The actual dimensions of the QSS more panel
-    	// are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
-    	defaultWidth: 600,
-    	defaultHeight: 450,
-    	movable: true,
-    	resizable: true,
-    	alwaysOnTop: true
+        // These are default values. The actual dimensions of the QSS more panel
+        // are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
+        defaultWidth: 400,
+        defaultHeight: 300,
+        movable: true,
+        resizable: true,
+        alwaysOnTop: true,
+
+        urls: {
+            moreInfo: "http://morphic.world/more"
+        }
+    },
+
+    // Configuration options for the About dialog
+    aboutDialog: {
+        urls: {
+            morphicHome: "https://morphic.world",
+            submitSuggestions: "mailto:suggestions@morphic.world"
+        }
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format

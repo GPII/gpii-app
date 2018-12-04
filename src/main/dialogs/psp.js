@@ -147,10 +147,18 @@ fluid.defaults("gpii.app.psp", {
         "gpii.app.dialog.offScreenHidable"
     ],
 
+    siteConfig: {
+        scaleFactor: 1,
+        urls: {
+            help: "http://pmt.gpii.org/help"
+        }
+    },
+
     model:  {
         isKeyedIn: false,
         theme: null,
-        preferences: {}
+        preferences: {},
+        scaleFactor: "{that}.options.siteConfig.scaleFactor"
     },
 
     modelRelay: {
@@ -196,7 +204,8 @@ fluid.defaults("gpii.app.psp", {
                         args: ["{that}.options.sounds.activeSetChanged"]
                     }
                 }
-            }
+            },
+            urls: "{that}.options.siteConfig.urls"
         }
     },
 

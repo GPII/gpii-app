@@ -7,29 +7,46 @@ body {
     /* overflow: hidden; */
 }
 
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #19294c;
+    box-shadow: none;
+}
+
 .fl-qssWidget {
-    font-family: Arial;
-
-    border: 4px solid #2a4986;
-    border-radius: 10px;
+    height: calc(100% - 12px);
+    padding: 10px;
+    border: 2px solid #002957;
+    border-radius: 5px;
     box-sizing: border-box;
-
-    background-color: #ffffff;
-    height: calc(100% - 45px);
-
-    padding: 0 8px 8px 8px;
 
     display: flex;
     flex-direction: column;
+    
+    background-color: #ffffff;
+    color: #19294c;
+
+    font: normal 9px "Open Sans", "Sans-Serif";
 }
 
-.fl-titlebar .fl-closeBtn {
-    border: 2px solid transparent;
+.fl-qssWidget .fl-titlebar .fl-closeBtn {
+    position: absolute;
+    top: 1px;
+    right: 3px;
+    border: 1px solid transparent;
+
+    font-size: 10px;
+    line-height: 10px;
     cursor: pointer;
 }
 
-.fl-titlebar .fl-closeBtn:focus,
-.fl-titlebar .fl-closeBtn:active {
+.fl-qssWidget .fl-titlebar .fl-closeBtn:focus,
+.fl-qssWidget .fl-titlebar .fl-closeBtn:active {
     color: #000000;
     outline: none;
 }
@@ -39,12 +56,12 @@ body {
 }
 
 .fl-qssWidget .fl-highlighted {
-    border: 2px solid #ff0000 !important;
+    border: 1px solid #ff0000 !important;
 }
 
 .fl-qssWidget .fl-qssWidget-learnMoreLink {
-    margin: 15px 0;
-    border: 2px solid transparent;
+    margin: 10px 0;
+    border: 1px solid transparent;
 
     color: #000000;
     text-decoration: underline;
@@ -58,37 +75,54 @@ body {
 }
 
 .fl-qssWidget .fl-qssWidget-learnMoreLink:before {
-    display: inline-block;
-    margin-right: 5px;
-    vertical-align: -35%;
+    content: "";
 
-    content: url("../../psp/icons/info.svg");
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    vertical-align: middle;
+
+    background-image: url("../../psp/icons/info.svg");
+    background-size: 15px 15px;
 }
 
-.fl-qssWidget-footer {
+.fl-qssWidget-arrow {
     position: relative;
-    top: -4px;
-    height: 45px;
-    width: 68px;
+    height: 12px;
+}
 
-    margin: 0 auto;
-    box-sizing: border-box;
+.fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow:after {
+    content: "";
 
-    border: 4px solid #2a4986;
-    border-top: none;
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    width: 0;
+    height: 0;
+
+    border: solid transparent;
     border-bottom: none;
 
-    background-color: #ffffff;
+    pointer-events: none;
+}
+
+.fl-qssWidget-arrow:before {
+    border-width: 12px;
+    border-top-color: #002957;
+    margin-left: -12px;
+}
+
+.fl-qssWidget-arrow:after {
+    border-width: 9px;
+    border-top-color: #ffffff;
+    margin-left: -9px;
 }
 
 /*
  * Stepper Widget
  */
-
-.fl-qssWidget .fl-qssStepperWidget,
-.fl-qssWidget .fl-qssMenuWidget {
-    margin: 0 5px 0 10px;
-}
 
 .fl-qssWidget-footerTip {
     color: #21932b;
@@ -96,11 +130,12 @@ body {
 
 .fl-qssWidget-tip p {
     margin: 0;
+    line-height: 12px;
 }
 
 .fl-qssWidget-tip p:first-of-type {
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .fl-qssWidget-tip ul {
@@ -115,7 +150,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
@@ -124,23 +159,27 @@ body {
 
     box-sizing: border-box;
     width: 70%;
-    min-height: 42px;
-    margin: 5px;
+    min-height: 28px;
+    margin: 0 5px;
     padding-top: 0;
 
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     border-radius: 5px;
 
-    background-color: #3a679e;
+    background-color: #002957;
     font-size: 1.25em;
 
     user-select: none;
     cursor: pointer;
 }
 
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-btn + .fl-qssStepperWidget-btn {
+    margin-top: 5px;
+}
+
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn:focus,
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn:active {
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     outline: none;
 }
 
@@ -158,8 +197,8 @@ body {
 
 
 .fl-qssStepperWidget-controls .fl-icon.fl-increment-icon {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     margin-left: 5px;
 
     -webkit-mask-image: url(../../../assets/plus-circle.svg);
@@ -168,7 +207,10 @@ body {
 }
 
 .fl-qssStepperWidget-controls .fl-icon.fl-decrement-icon {
-    margin-left: 8px; /* align with the increment icon */
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+
     -webkit-mask-image: url(../../../assets/minus-circle.svg);
     mask-image: url(../../../assets/minus-circle.svg);
 }
@@ -219,17 +261,18 @@ body {
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls {
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: overlay;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
     position: relative;
-    width: 80%;
-    margin: 0 5px 5px 5px;
-    padding: 10px 5px;
-    border: 2px solid #0f4797;
-    border-radius: 5px;
-    line-height: 18px;
+    width: 120px;
+    margin-bottom: 5px;
+    padding: 5px;
+    border: 1px solid #0f4797;
+    border-radius: 3px;
+    line-height: 11px;
+    box-sizing: border-box;
 
     background-color: #ffffff;
     text-align: center;
@@ -243,14 +286,15 @@ body {
     position: absolute;
     top: 50%;
     left: calc(100% + 10px);
-    width: 30px;
-    height: 30px;
+    width: 15px;
+    height: 15px;
     transform: translateY(-50%);
 
     content: "";
-    background-size: 30px 30px;
-    background-image: url("../../../assets/check-circle.svg");
-    background-repeat: no-repeat;
+    background-color: #008145;
+
+    -webkit-mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
+    mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
 
     cursor: default;
 }

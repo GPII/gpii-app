@@ -31,5 +31,6 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision "shell", path: "provisioning/Build.ps1", args: "-originalBuildScriptPath \"C:\\vagrant\\provisioning\\\""
+  # XXX uncomment once testing in CI concludes
   # config.vm.provision "shell", path: "provisioning/Installer.ps1", args: "-provisioningDir \"C:\\vagrant\\provisioning\\\""
 end

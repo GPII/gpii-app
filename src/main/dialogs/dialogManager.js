@@ -158,7 +158,7 @@ fluid.defaults("gpii.app.dialogManager", {
             type: "gpii.app.waitDialog",
             options: {
                 model: {
-                    scaleFactor: "{dialogManager}.options.scaleFactor"
+                    scaleFactor: "{dialogManager}.model.scaleFactor"
                 }
             }
         },
@@ -166,7 +166,7 @@ fluid.defaults("gpii.app.dialogManager", {
             type: "gpii.app.aboutDialog",
             options: {
                 model: {
-                    scaleFactor: "{dialogManager}.options.scaleFactor"
+                    scaleFactor: "{dialogManager}.model.scaleFactor"
                 }
             }
         },
@@ -177,7 +177,7 @@ fluid.defaults("gpii.app.dialogManager", {
             type: "gpii.app.error",
             options: {
                 model: {
-                    scaleFactor: "{dialogManager}.options.scaleFactor"
+                    scaleFactor: "{dialogManager}.model.scaleFactor"
                 }
             }
         },

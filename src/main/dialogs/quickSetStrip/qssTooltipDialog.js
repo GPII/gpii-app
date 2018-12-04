@@ -38,6 +38,8 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
         "gpii.app.dialog.offScreenHidable"
     ],
 
+    arrowWidth: 18,
+
     model: {
         isKeyedIn: false,
         setting: null,
@@ -65,8 +67,8 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
         destroyOnClose: false,
 
         attrs: {
-            width: 205,
-            height: 300,
+            width: 140,
+            height: 200,
             alwaysOnTop: true
         },
         fileSuffixPath: "qssTooltipPopup/index.html"
@@ -155,10 +157,11 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
  * the screen.
  */
 gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) {
-    // XXX extract hardcoded value to a better place
-    var arrowSize = 44; // px
+    var arrowWidth = that.options.arrowWidth,
+        scaleFactor = that.model.scaleFactor;
+
     return {
-        offsetX: btnCenterOffset.x - that.model.scaleFactor * arrowSize,
+        offsetX: btnCenterOffset.x - scaleFactor * arrowWidth / 2,
         offsetY: btnCenterOffset.y
     };
 };

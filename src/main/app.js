@@ -71,8 +71,11 @@ fluid.defaults("gpii.app", {
             sets: [],
             activeSet: null,
             settingGroups: [],
+
+            // user settings
             closePspOnBlur: null,
-            closeQssOnBlur: null
+            closeQssOnBlur: null,
+            disableRestartWarning: null
         },
         theme: "{that}.options.defaultTheme"
     },
@@ -188,7 +191,8 @@ fluid.defaults("gpii.app", {
                     isKeyedIn: "{app}.model.isKeyedIn",
                     keyedInUserToken: "{app}.model.keyedInUserToken",
 
-                    closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur"
+                    closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur",
+                    disableRestartWarning: "{app}.model.preferences.disableRestartWarning"
                 },
                 listeners: {
                     "{gpiiConnector}.events.onQssSettingsUpdate": {

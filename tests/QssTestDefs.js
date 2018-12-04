@@ -26,27 +26,27 @@ require("./testUtils.js");
  * Scripts for interaction with the renderer
  */
 // QSS related
-var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"mouseenter\")",
-    unhoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").trigger(\"mouseleave\")",
-    focusCloseBtn = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-child\").trigger(event)",
+var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseenter\")",
+    unhoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseleave\")",
+    focusCloseBtn = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-of-type\").trigger(event)",
 
-    clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-child\").click()",
-    hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").trigger('mouseenter')",
-    clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-child\").click()",
-    clickScreenZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(2)\").click()",
-    clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(3)\").click()",
-    clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-child(5)\").click()",
-    clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(6)\").click()",
-    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(5)\").click()",
-    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(4)\").click()",
-    clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(3)\").click()",
-    clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-child(2)\").click()",
+    clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").click()",
+    hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-of-type\").trigger('mouseenter')",
+    clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-of-type\").click()",
+    clickScreenZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(2)\").click()",
+    clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(3)\").click()",
+    clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
+    clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
+    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
+    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
+    clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(3)\").click()",
+    clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(2)\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-child(2)').click()",
+    clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()";
 
@@ -81,97 +81,48 @@ gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
 };
 
 
-var qssCrossTestSequence = [
-    /*
-     * CROSS
-     * Tests QSS and PSP visibility
-     * Test QSS button interactions
-     */
-    { // At first, neither the PSP, nor the QSS is shown.
-        func: "gpii.tests.qss.testPspAndQssVisibility",
-        args: [
-            "{that}.app",
-            {psp: false, qss: false}
-        ]
-    }, { // When the tray icon is clicked...
-        func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, { // ... only the QSS will be shown.
-        func: "gpii.tests.qss.testPspAndQssVisibility",
-        args: [
-            "{that}.app",
-            {psp: false, qss: true}
-        ]
-    }, { // When the tray icon is again...
-        func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, { // ... the QSS will no longer be visible (the tray icon toggles the QSS)
-        func: "gpii.tests.qss.testPspAndQssVisibility",
-        args: [
-            "{that}.app",
-            {psp: false, qss: false}
-        ]
-    }, { // Open the QSS again.
-        func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, { // Open the PSP via the QSS.
-        task: "gpii.test.executeJavaScript",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickPspBtn
-        ],
-        resolve: "fluid.identity"
+var restartWarningSequence = [
+    { // Simulate language change
+        func: "{that}.app.qssWrapper.alterSetting",
+        args: [{
+            path: "http://registry\\.gpii\\.net/common/language",
+            value: "ko-KR"
+        }]
+    }, { // ... the restart warning notification should be shown
+        event: "{that qssNotification}.events.onDialogShown",
+        listener: "jqUnit.assert",
+        args: ["The notification dialog is shown when restartWarning setting is changed."]
     }, {
-        func: "gpii.tests.qss.testPspAndQssVisibility",
+        funcName: "{that}.app.qssWrapper.qssNotification.hide"
+    }, { // Changing the user restartWarning preference
+        event: "{that qssNotification}.events.onDialogHidden",
+        listener: "{that}.app.applier.change",
+        args: ["preferences.disableRestartWarning", true]
+    }, { // and trying to show a restart warning notification
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "disableRestartWarning",
+        listener: "{that}.app.qssWrapper.showRestartWarningNotification",
+        args: [{
+            path: "http://registry\\.gpii\\.net/common/language",
+            restartWarning: true,
+            schema: {},
+            value: "en-US"
+        }]
+    }, { // should have disabled it
+        funcName: "jqUnit.assertFalse",
         args: [
-            "{that}.app",
-            {psp: true, qss: true}
+            "Restart warning notification is not shown when disabled by user setting",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
-    }, { // Clicking on the close button in the QSS...
-        func: "gpii.test.executeJavaScript",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickCloseBtn
-        ]
-    }, { // ... results in both the PSP and the QSS being hidden.
-        event: "{that}.app.qssWrapper.qss.channelListener.events.onQssClosed",
-        listener: "gpii.tests.qss.testPspAndQssVisibility",
-        args: [
-            "{that}.app",
-            {psp: false, qss: false}
-        ]
-    }, { // Simulate opening of the QSS using the global shortcut
-        func: "{that}.app.qssWrapper.qss.show",
-        args: [
-            {shortcut: true}
-        ]
-    }, { // The QSS will be shown but the PSP won't be.
-        func: "gpii.tests.qss.testPspAndQssVisibility",
-        args: [
-            "{that}.app",
-            {psp: false, qss: true}
-        ]
-    }, { // Clicking on the "Sign in" button in the QSS...
-        task: "gpii.test.executeJavaScript",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickPspBtn
-        ],
-        resolve: "fluid.identity"
-    }, { // ... will also bring up the PSP.
-        func: "gpii.tests.qss.testPspAndQssVisibility",
-        args: [
-            "{that}.app",
-            {psp: true, qss: true}
-        ]
-    }, {
-        task: "gpii.test.executeJavaScript",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickCloseBtn
-        ],
-        resolve: "fluid.identity"
     },
-    /*
-     * Tooltip & QSS integration
-     */
+
+    { // bring everything back to normal
+        func: "{that}.app.resetAllToStandard"
+    }
+];
+
+
+var tooltipSequence = [
     { // Open the QSS...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
     }, {
@@ -274,43 +225,10 @@ var qssCrossTestSequence = [
             "The QSS tooltip is closed when Esc is used",
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
-    },
-    // shortcut open === tooltip
-    /*
-     * Notification & QSS integration
-     */
-    { // When the "Save" button is clicked...
-        func: "gpii.test.executeJavaScript",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickSaveBtn
-        ]
-    }, { // ... the QSS notification dialog will show up.
-        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "The QSS notification is shown when the Save button is clicked",
-            "{that}.app.qssWrapper.qssNotification.model.isShown"
-        ]
-    }, { // When the "Close" button in the QSS notification is clicked...
-        func: "gpii.test.executeJavaScript",
-        args: [
-            "{that}.app.qssWrapper.qssNotification.dialog",
-            closeClosableDialog
-        ]
-    }, { // ... the QSS notification dialog will be hidden.
-        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS notification is hidden when its closed button is pressed",
-            "{that}.app.qssWrapper.qssNotification.model.isShown"
-        ]
-    },
-    /*
-     * "More" panel
-     */
+    }
+];
+
+var morePanelSequence = [
     {  // When the "More" button is clicked...
         func: "gpii.test.executeJavaScript",
         args: [
@@ -339,11 +257,10 @@ var qssCrossTestSequence = [
             "The QSS More panel is hidden if the More button in the QSS is clicked while the More panel is open",
             "{that}.app.qssWrapper.qssMorePanel.model.isShown"
         ]
-    },
-    /*
-     * Widget & QSS integration
-     */
-    // QSS widget visibility tests
+    }
+];
+
+var menuInteractionsSequence = [
     { // If the language button in the QSS is clicked...
         func: "gpii.test.executeJavaScript",
         args: [
@@ -410,7 +327,11 @@ var qssCrossTestSequence = [
             "QSS button cannot be activated using the keyboard if the button does not have focus",
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
-    }, { // Click the language button again...
+    }
+];
+
+var widgetClosingBehaviourSequence = [
+    { // Click the language button again...
         func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
@@ -502,7 +423,11 @@ var qssCrossTestSequence = [
             "The QSS widget is hidden when the ArrowRight key is pressed",
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
-    }, { // Click on the "Screen Zoom" button...
+    }
+];
+
+var stepperInteractionsSequence = [
+    { // Click on the "Screen Zoom" button...
         func: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
@@ -632,9 +557,162 @@ var qssCrossTestSequence = [
             "The QSS notification is shown when the DPI setting has reached its lowest value",
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
+    }
+];
+
+var saveButtonSequence = [
+    /*
+     * Notification & QSS integration
+     */
+    { // When the "Save" button is clicked...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickSaveBtn
+        ]
+    }, { // ... the QSS notification dialog will show up.
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS notification is shown when the Save button is clicked",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
+        ]
+    }, { // When the "Close" button in the QSS notification is clicked...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssNotification.dialog",
+            closeClosableDialog
+        ]
+    }, { // ... the QSS notification dialog will be hidden.
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertFalse",
+        args: [
+            "The QSS notification is hidden when its closed button is pressed",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
+        ]
+    }
+];
+
+
+
+var qssCrossTestSequence = [
+    /*
+     * Tests QSS and PSP visibility
+     * Test QSS button interactions
+     */
+    { // At first, neither the PSP, nor the QSS is shown.
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: false, qss: false}
+        ]
+    }, { // When the tray icon is clicked...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // ... only the QSS will be shown.
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: false, qss: true}
+        ]
+    }, { // When the tray icon is again...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // ... the QSS will no longer be visible (the tray icon toggles the QSS)
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: false, qss: false}
+        ]
+    }, { // Open the QSS again.
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // Open the PSP via the QSS.
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickPspBtn
+        ],
+        resolve: "fluid.identity"
+    }, {
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: true, qss: true}
+        ]
+    }, { // Clicking on the close button in the QSS...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ]
+    }, { // ... results in both the PSP and the QSS being hidden.
+        event: "{that}.app.qssWrapper.qss.channelListener.events.onQssClosed",
+        listener: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: false, qss: false}
+        ]
+    }, { // Simulate opening of the QSS using the global shortcut
+        func: "{that}.app.qssWrapper.qss.show",
+        args: [
+            {shortcut: true}
+        ]
+    }, { // The QSS will be shown but the PSP won't be.
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: false, qss: true}
+        ]
+    }, { // Clicking on the "Sign in" button in the QSS...
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickPspBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... will also bring up the PSP.
+        func: "gpii.tests.qss.testPspAndQssVisibility",
+        args: [
+            "{that}.app",
+            {psp: true, qss: true}
+        ]
+    }, {
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
     },
+    /*
+     * Tooltip & QSS integration
+     */
+    tooltipSequence,
     //
-    // CROSS tests
+    // Save button
+    //
+    saveButtonSequence,
+    //
+    // "More" panel
+    //
+    morePanelSequence,
+    /*
+     * Widget & QSS integration
+     */
+    //
+    // Menu widget interactions
+    //
+    menuInteractionsSequence,
+    //
+    // Widget closing behaviour
+    //
+    widgetClosingBehaviourSequence,
+    //
+    // Stepper widget interactions
+    //
+    stepperInteractionsSequence,
+    //
+    // Combined tests
     //
     { // ... open the widget again
         task: "gpii.test.executeJavaScript",
@@ -1222,7 +1300,7 @@ var crossQssTranslations = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 65,
+    expect: 67,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1261,6 +1339,7 @@ gpii.tests.qss.testDefs = {
         undoTestSequence,
         qssCrossTestSequence,
         crossQssTranslations,
-        appZoomTestSequence
+        appZoomTestSequence,
+        restartWarningSequence
     )
 };

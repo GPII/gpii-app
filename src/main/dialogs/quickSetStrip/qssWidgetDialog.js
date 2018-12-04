@@ -31,6 +31,14 @@ require("../../../shared/channelUtils.js");
 fluid.defaults("gpii.app.qssWidget", {
     gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
+    /*
+     * When setting the size of a `BrowserWindow` Electron sometimes changes its position
+     * with a few pixels if the DPI is different than 1. This offset ensures that the dialog's
+     * arrow will not be hidden behind the QSS in case Electron decides to position the window
+     * lower than it actually has to be.
+     */
+    extraVerticalOffset: 7,
+
     model: {
         setting: {}
     },
@@ -42,8 +50,8 @@ fluid.defaults("gpii.app.qssWidget", {
 
     // Temporary. Should be removed when the widget becomes truly resizable.
     heightMap: {
-        "http://registry\\.gpii\\.net/common/language": 637,
-        "http://registry\\.gpii\\.net/common/highContrastTheme": 627
+        "http://registry\\.gpii\\.net/common/language": 400,
+        "http://registry\\.gpii\\.net/common/highContrastTheme": 365
     },
 
     config: {
@@ -58,8 +66,8 @@ fluid.defaults("gpii.app.qssWidget", {
             }
         },
         attrs: {
-            width: 316,
-            height: 430,
+            width: 170,
+            height: 255,
             alwaysOnTop: false
         },
         fileSuffixPath: "qssWidget/index.html"
@@ -213,9 +221,12 @@ gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activation
  * the screen.
  */
 gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
+    var extraVerticalOffset = that.options.extraVerticalOffset,
+        scaleFactor = that.model.scaleFactor;
+
     return {
         x: btnCenterOffset.x - that.model.width / 2,
-        y: btnCenterOffset.y
+        y: btnCenterOffset.y + scaleFactor * extraVerticalOffset
     };
 };
 

@@ -34,25 +34,13 @@ fluid.defaults("gpii.app.qss", {
         closeQssOnBlur: null
     },
 
-    sideMargin: 5,
-    buttonWidth: 89,
-
     config: {
         destroyOnClose: false,
         awaitWindowReadiness: true,
 
         attrs: {
-            width: {
-                expander: {
-                    funcName: "gpii.app.qss.computeQssWidth",
-                    args: [
-                        "{that}.options.buttonWidth",
-                        "{that}.options.sideMargin",
-                        "{that}.options.config.params.settings"
-                    ]
-                }
-            },
-            height: 95,
+            width: 618,
+            height: 64,
 
             alwaysOnTop: true,
             transparent: false
@@ -125,10 +113,9 @@ fluid.defaults("gpii.app.qss", {
                     onQssClosed: {
                         func: "{qss}.hide"
                     },
-                    // XXX DEV
                     onQssSettingAltered: {
                         funcName: "console.log",
-                        args: ["Setting altered QSS:", "{arguments}.0.path", "{arguments}.0.value"]
+                        args: ["QSS Dailog: Setting altered QSS - ", "{arguments}.0.path", "{arguments}.0.value"]
                     }
                 }
             }
@@ -170,8 +157,10 @@ fluid.defaults("gpii.app.qss", {
  * @return {Number} The total width of the component.
  */
 gpii.app.qss.getExtendedWidth = function (that, qssWidget) {
-    var scaledButtonWidth = that.model.scaleFactor * that.options.buttonWidth;
-    return that.model.width + (qssWidget.model.width - scaledButtonWidth) / 2;
+    // var scaledButtonWidth = that.model.scaleFactor * that.options.buttonWidth;
+    // return that.model.width + (qssWidget.model.width - scaledButtonWidth) / 2;
+
+    return that.model.width;
 };
 
 /**
@@ -185,24 +174,6 @@ gpii.app.qss.show = function (that, params) {
     gpii.app.dialog.show(that);
 
     that.events.onQssOpen.fire(params);
-};
-
-/**
- * Computes the desired width of the QSS based on the single button size,
- * the width of the side margin and the number of buttons.
- * @param {Number} buttonWidth - The width of a single QSS button
- * @param {Number} sideMargin - The margin between the last QSS button and the
- * right edge of the QSS.
- * @param {Object} qssButtons - The list of QSS buttons
- * @return {Number} The computed QSS width based on the buttons count
- */
-gpii.app.qss.computeQssWidth = function (buttonWidth, sideMargin, qssButtons) {
-    var buttonsCount = qssButtons.length,
-        qssWidth = buttonsCount * buttonWidth + sideMargin;
-
-    console.log("QSS Dialog: Computed width - ", qssWidth);
-
-    return qssWidth;
 };
 
 /**

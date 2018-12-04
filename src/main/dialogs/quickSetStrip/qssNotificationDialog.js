@@ -32,8 +32,8 @@ fluid.defaults("gpii.app.qssNotification", {
 
     config: {
         attrs: {
-            width: 350,
-            height: 200,
+            width: 225,
+            height: 140,
             alwaysOnTop: true,
             transparent: false
         },
