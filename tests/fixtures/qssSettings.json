@@ -184,15 +184,6 @@
         "messageKey": "undo",
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>"
     }, {
-        "path": "resetAll",
-        "schema": {
-            "type": "resetAll",
-            "title": "Reset to Standard"
-        },
-        "buttonTypes": ["smallButton"],
-        "messageKey": "resetAll",
-        "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>"
-    }, {
         "path": "psp",
         "schema": {
             "type": "psp",
@@ -207,6 +198,15 @@
             "keyedIn": "<p>Opens Morphic Settings Panel</p><p>Where you can quickly adjust often-changed settings of yours.</p>",
             "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
         }
+    }, {
+        "path": "resetAll",
+        "schema": {
+            "type": "resetAll",
+            "title": "Reset to Standard"
+        },
+        "buttonTypes": ["smallButton"],
+        "messageKey": "resetAll",
+        "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>"
     }, {
         "path": "close",
         "schema": {

@@ -39,8 +39,8 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
-    clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(3)\").click()",
-    clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(2)\").click()",
+    clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(3)\").click()",
+    clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(2)\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
 // QSS Widgets related

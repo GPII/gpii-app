@@ -37,7 +37,7 @@ fluid.defaults("gpii.app.qss", {
 
     scaleFactor: 1,
     defaultHeight: 64,
-    defaultWidth: 613,
+    defaultWidth: 618,
 
     config: {
         destroyOnClose: false,

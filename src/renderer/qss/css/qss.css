@@ -43,8 +43,14 @@ body {
     color: #ffffff;
 
     font: bold 8px "Open Sans", "Sans-Serif";
+    line-height: 10px;
     cursor: pointer;
     user-select: none;
+}
+
+.fl-qss-button.fl-qss-largeButton {
+    padding: 3px 0;
+    font-size: 9px;
 }
 
 .fl-qss-button.fl-qss-smallButton {
@@ -58,7 +64,7 @@ body {
 .fl-qss-button.fl-qss-closeButton {
     width: 24px;
     height: 24px;
-    margin: 0;
+    margin: 0 0 0 5px;
     border-radius: 0;
     padding: 0;
 
