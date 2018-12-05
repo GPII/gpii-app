@@ -35,7 +35,7 @@
     "scripts": {
         "start": "electron .",
         "dev": "electron . ./configs app.dev",
-        "build": "grunt compileMessages",
+        "build": "electron ./scripts/compileMessageBundles.js",
         "pretest": "npm run pretest:clean && npm run build && npm run pretest:instrument",
         "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports build && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
         "pretest:instrument": "node tests/lib/instrumentSource.js",

@@ -19,7 +19,7 @@ var gpii = fluid.registerNamespace("gpii");
 
 var jqUnit = fluid.require("node-jqunit", require, "jqUnit");
 
-require("../messageBundlesCompiler.js");
+fluid.require("%gpii-app/scripts/shared/messageBundlesCompiler.js");
 
 fluid.registerNamespace("gpii.tests.messageBundles.testDefs");
 
