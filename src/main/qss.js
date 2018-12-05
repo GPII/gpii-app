@@ -559,11 +559,13 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
     });
 
     // more dynamic loading
-    var languageSetting = loadedSettings.find(function (setting) {
+    var languageSetting = fluid.find_if(loadedSettings, function (setting) {
         return setting.path === settingOptions.settingPaths.language;
     });
     gpii.app.qssWrapper.populateLanguageSettingOptions(settingOptions, locale, installedLanguages, languageSetting);
 
+    // sync the language value as well
+    languageSetting.value = locale;
 
     /*
      * Hide settings
@@ -603,8 +605,14 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
 };
 
 
+/**
+ * Find a QSS setting by its path.
+ * @param {Object[]} settings - The QSS settings list
+ * @param {String} path - The path of the searched setting
+ * @return {Object} The desired QSS setting
+ */
 gpii.app.qssWrapper.getSetting = function (settings, path) {
-    return settings.find(function (setting) {
+    return fluid.find_if(settings, function (setting) {
         return setting.path === path;
     });
 };
