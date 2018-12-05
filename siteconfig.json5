@@ -6,7 +6,7 @@
     // Configuration options for the QSS window
     qss: {
         // The scaling factor for the QSS
-        scaleFactor: 4,
+        scaleFactor: 1.5,
         urls: {
             account: "http://morphic.world/account"
         }
@@ -15,7 +15,7 @@
     // Configuration options for the PSP window
     psp: {
         // The scaling factor for the PSP
-        scaleFactor: 2,
+        scaleFactor: 0.85,
         urls: {
             help: "http://pmt.gpii.org/help"
         }

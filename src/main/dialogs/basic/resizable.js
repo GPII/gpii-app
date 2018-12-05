@@ -103,6 +103,10 @@ fluid.defaults("gpii.app.resizable", {
                 "{arguments}.3"  // offsetY
             ]
         },
+        computeScaleFactor: {
+            funcName: "gpii.app.resizable.computeScaleFactor",
+            args: ["{that}"]
+        },
         fitToScreen: {
             funcName: "gpii.app.resizable.fitToScreen",
             args: ["{that}"]
@@ -133,17 +137,28 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
 };
 
 /**
- * Resizes the dialog so that it fits in the available screen size by adjusting
- * the `scaleFactor`. In any case the new `scaleFactor` cannot be larger than the
- * originally specified `maxScaleFactor`.
+ * Calculates what the scaleFactor should be so that the visual representation of
+ * the current component can completely fit into the available screen space. In any
+ * case the new `scaleFactor` cannot be larger than the originally specified
+ * `maxScaleFactor`.
  * @param {Component} that - The `gpii.app.resizable` component.
+ * @return {Number} - The new scale factor.
  */
-gpii.app.resizable.fitToScreen = function (that) {
+gpii.app.resizable.computeScaleFactor = function (that) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
         extendedWidth = that.getExtendedWidth(),
         scaleFactor = (screenSize.width / extendedWidth) * that.model.scaleFactor;
 
-    scaleFactor = Math.min(scaleFactor, that.model.maxScaleFactor);
+    return Math.min(scaleFactor, that.model.maxScaleFactor);
+};
+
+/**
+ * Resizes the dialog so that it fits in the available screen size by adjusting
+ * the `scaleFactor`.
+ * @param {Component} that - The `gpii.app.resizable` component.
+ */
+gpii.app.resizable.fitToScreen = function (that) {
+    var scaleFactor = that.computeScaleFactor();
 
     if (scaleFactor === that.model.scaleFactor) {
         that.setBounds();

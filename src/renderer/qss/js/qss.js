@@ -134,10 +134,15 @@
             settings: []
         },
 
+        selectors: {
+            logo: ".flc-qss-logo"
+        },
+
         events: {
             onQssOpen: null,
             onQssClosed: null,
-            onQssWidgetToggled: null
+            onQssWidgetToggled: null,
+            onQssLogoToggled: null
         },
 
         defaultFocusButtonType: "psp",
@@ -152,6 +157,12 @@
                     "{that}.options.defaultFocusButtonType",
                     "{arguments}.0" // params
                 ]
+            },
+
+            onQssLogoToggled: {
+                this: "{that}.dom.logo",
+                method: "toggle",
+                args: ["{arguments}.0"]
             }
         },
 
@@ -180,6 +191,7 @@
                         // Add events from the main process to be listened for
                         onQssOpen: "{qss}.events.onQssOpen",
                         onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
+                        onQssLogoToggled: "{qss}.events.onQssLogoToggled",
                         onSettingUpdated: null,
                         onIsKeyedInChanged: null,
 

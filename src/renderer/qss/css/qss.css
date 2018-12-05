@@ -16,12 +16,8 @@ body {
 
 .fl-qss-logo {
     width: 90px;
-    margin: 0 16px;
+    margin: 0 11px 0 16px;
     flex-basis: 100%;
-}
-
-.fl-qss-logo + .fl-qss-button {
-    margin-left: 0;
 }
 
 .fl-qss-button {
