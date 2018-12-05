@@ -1416,7 +1416,7 @@ gpii.tests.qss.testDefs = {
     distributeOptions: {
         mockedSettings: {
             record: "%gpii-app/tests/fixtures/qssSettings.json",
-            target: "{that gpii.app.qssWrapper}.options.settingOptions.settingsFixturePath"
+            target: "{that gpii.app.qssWrapper}.options.settingsFixturePath"
         },
         mockedMessages: {
             record: qssSettingMessagesFixture,

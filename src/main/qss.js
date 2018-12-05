@@ -56,7 +56,10 @@ fluid.defaults("gpii.app.qssWrapper", {
 
         settingMessagesPrefix: "gpii_app_qss_settings",
 
-        languageOptionLabelTemplate: "%native · %local"
+        languageOptionLabelTemplate:  {
+            currentLanguageGroup: "%native",
+            genericLanguage: "%native · %local"
+        }
     },
 
     settingsFixturePath: "%gpii-app/testData/qss/settings.json",
@@ -66,6 +69,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             args: [
                 "{assetsManager}",
                 "{systemLanguageListener}.model.installedLanguages",
+                "{messageBundles}.model.locale",
                 "{messageBundles}.model.messages",
                 "{that}.options.settingOptions",
                 "{that}.options.settingsFixturePath"
@@ -440,28 +444,42 @@ gpii.app.qssWrapper.updateSettings = function (that, settings, notUndoable) {
     });
 };
 
+/**
+ * Returns the primary subtag of a language code e.g. if the locale is "en-US"
+ * the primary part would be "en".
+ * @param {String} locale - A language code in the format: "code-region"
+ * @return {String} The primary language subtag
+ */
+gpii.app.qssWrapper.getPrimaryLanguage = function (locale) {
+    return locale && locale.split("-")[0];
+};
 
 /**
  * Generates a language setting option label out of a provided language metadata.
  * @param {String} languageOptionLabelTemplate - The template for every language label
  * @param {Object} languageMetadata - The language metadata that includes different labels
  * for the language
- * @param {Boolean} isMainLocale - We wouldn't want to display both the native representation
- * and the main language as they are redundant
+ * @param {String} languageMetadata.native - The name of the language in its native form
+ * @param {String} languageMetadata.local - The name of the language in the currently applied language
+ * @param {String} languageMetadata.english - The name of the of the language in English
  * @return {String} The desired language label
  */
-gpii.app.qssWrapper.getLanguageLabel = function (languageOptionLabelTemplate, languageMetadata, isMainLocale) {
-    languageMetadata.local =
-        !languageMetadata.local ?
-            languageMetadata.english :
-            languageMetadata.local;
+gpii.app.qssWrapper.getLanguageLabel = function (languageOptionLabelTemplate, languageMetadata) {
+    languageMetadata.local = languageMetadata.local || languageMetadata.english;
 
     // Native labels might be coming in full lowercase
     languageMetadata["native"] = gpii.flowManager.capitalizeFirstLetter(languageMetadata["native"]);
 
-    return isMainLocale ?
-        languageMetadata.local :
-        fluid.stringTemplate(languageOptionLabelTemplate, languageMetadata);
+    var systemPrimaryLang = gpii.app.qssWrapper.getPrimaryLanguage(languageMetadata.currentLocale),
+        currentPrimaryLang = gpii.app.qssWrapper.getPrimaryLanguage(languageMetadata.code);
+
+    /*
+     * We wouldn't want to display both the native representation
+     * and the main language as they are redundant
+     */
+    return systemPrimaryLang === currentPrimaryLang ?
+        fluid.stringTemplate(languageOptionLabelTemplate.currentLanguageGroup, languageMetadata) :
+        fluid.stringTemplate(languageOptionLabelTemplate.genericLanguage, languageMetadata);
 };
 
 
@@ -469,11 +487,14 @@ gpii.app.qssWrapper.getLanguageLabel = function (languageOptionLabelTemplate, la
  * Generates a list of language labels out of the provided languages metadata.
  * @param {Object} settingOptions - The QSS settings specific options
  * @param {String} settingOptions.languageOptionLabelTemplate - The template for every language label
+ * @param {String} locale - The current OS locale
  * @param {Object[]} installedLanguages - A list of all languages metadata
  * @return {String[]} The list of labels
  */
-gpii.app.qssWrapper.getLanguageLabels = function (settingOptions, installedLanguages) {
+gpii.app.qssWrapper.getLanguageLabels = function (settingOptions, locale, installedLanguages) {
     return installedLanguages.map(function (languageMetadata) {
+        languageMetadata.currentLocale = locale;
+
         return gpii.app.qssWrapper.getLanguageLabel(
             settingOptions.languageOptionLabelTemplate,
             languageMetadata,
@@ -487,17 +508,18 @@ gpii.app.qssWrapper.getLanguageLabels = function (settingOptions, installedLangu
  * Updates the given language setting so that it contains a proper list of options. The list includes
  * only languages that are currently installed on the machine.
  * @param {Object} settingOptions - The QSS settings specific options
- * @param {Object[]} installedLanguages - The languages that are currently installed in the system
+ * @param {Object} locale - The QSS settings specific options
+ * @param {Object[]} installedLanguages - The languages that are currently installed in the OS
  * @param {Object} languageSetting - The language setting that is to be populated with language keys and labels
  */
-gpii.app.qssWrapper.populateLangSettingOptions = function (settingOptions, installedLanguages, languageSetting) {
+gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, locale, installedLanguages, languageSetting) {
     var langCodes = fluid.keys(installedLanguages),
-        langLabels = gpii.app.qssWrapper.getLanguageLabels(settingOptions, fluid.values(installedLanguages));
+        langLabels = gpii.app.qssWrapper.getLanguageLabels(settingOptions, locale, fluid.values(installedLanguages));
 
     languageSetting.schema.keys = langCodes;
     languageSetting.schema["enum"] = langLabels;
 
-    console.log("populateLangSettingOptions - decorate language setting: ", installedLanguages, languageSetting);
+    console.log("populateLanguageSettingOptions - decorate language setting: ", installedLanguages, languageSetting);
 };
 
 /**
@@ -506,14 +528,15 @@ gpii.app.qssWrapper.populateLangSettingOptions = function (settingOptions, insta
  * folder.
  * It also applies any other mutations to the settings, such as hiding and translations.
  * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
- * @param {Object[]} installedLanguages - The languages that are currently installed on the system
+ * @param {Object[]} installedLanguages - The languages that are currently installed on the OS
+ * @param {Object} locale - The current OS language
  * @param {Object} messageBundles - The available message bundles
  * @param {Object} settingOptions - The options for setting mutations
  * @param {String} settingsFixturePath - The path to the file containing the QSS
  * settings with respect to the `gpii-app` folder.
  * @return {Object[]} An array of the loaded settings
  */
-gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, messageBundles, settingOptions, settingsFixturePath) {
+gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath) {
     var loadedSettings = fluid.require(settingsFixturePath);
 
     fluid.each(loadedSettings, function (loadedSetting) {
@@ -540,7 +563,7 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
     var languageSetting = loadedSettings.find(function (setting) {
         return setting.path === settingOptions.settingPaths.language;
     });
-    gpii.app.qssWrapper.populateLangSettingOptions(settingOptions, installedLanguages, languageSetting);
+    gpii.app.qssWrapper.populateLanguageSettingOptions(settingOptions, locale, installedLanguages, languageSetting);
 
 
     /*
@@ -708,12 +731,12 @@ gpii.app.qssWrapper.updateSettingTranslations = function (that, messageBundles, 
  * Updates the language setting options. They can change dynamically as the OS currently
  * installed languages are displayed as options.
  * @param {Component} that - The gpii.app.qssWrapper` instance
- * @param {String} locale - The current locale for the system
+ * @param {String} locale - The current locale for the OS
  * @param {Object[]} installedLanguages - Currently installed languages
  */
 gpii.app.qssWrapper.updateLanguageSettingOptions = function (that, locale, installedLanguages) {
     var languageSetting = fluid.copy(that.getSetting(that.options.settingOptions.settingPaths.language));
-    gpii.app.qssWrapper.populateLangSettingOptions(that.options.settingOptions, installedLanguages, languageSetting);
+    gpii.app.qssWrapper.populateLanguageSettingOptions(that.options.settingOptions, locale, installedLanguages, languageSetting);
 
     console.log("qssWrapper#updateLanguageSettingOptions: ", languageSetting);
 

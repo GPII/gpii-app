@@ -16,7 +16,10 @@
         // - native - the name of the language in its native form
         // - local - the name of the language in the currently applied language
         // - english - the name of the of the language in English
-        languageOptionLabel: "%native · %local"
+        languageOptionLabel: {
+            currentLanguageGroup: "%native",
+            genericLanguage: "%native · %local"
+         }
     },
 
     // Configuration options for the PSP window
