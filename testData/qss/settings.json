@@ -28,7 +28,7 @@
         },
         "messageKey": "common-DPIScale",
         "value": 0,
-         "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
     }, {
         "path": "appTextZoom",
         "schema": {

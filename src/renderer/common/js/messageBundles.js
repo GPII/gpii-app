@@ -43,7 +43,7 @@
 
         listeners: {
             "onCreate.fetchLocale": {
-                funcName: "gpii.psp.fetchCurrentLocale",
+                funcName: "gpii.psp.messageBundles.fetchCurrentLocale",
                 args: ["{that}"]
             }
         },
@@ -63,7 +63,12 @@
         }
     });
 
-    gpii.psp.fetchCurrentLocale = function (that) {
+    /**
+     * Retrieves the current locale from the main process using the current
+     * BrowserWindow object as a global variable holder.
+     * @param {Component} that - The gpii.psp.messageBundles instance
+     */
+    gpii.psp.messageBundles.fetchCurrentLocale = function (that) {
         var locale = electron.remote.getCurrentWindow().locale;
 
         that.updateLocale(locale);

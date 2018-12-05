@@ -196,7 +196,7 @@ gpii.app.messageBundles.loadMessageBundles = function (messageBundlesPath) {
  */
 gpii.app.messageBundles.updateMessages = function (that, messageBundles, locale, defaultLocale) {
     // make sure the locale is in proper state
-    locale = locale ? locale : "";
+    locale = locale || "";
 
     var genericLocale = locale.split("-")[0];
     var messages = messageBundles[locale.toLowerCase()] || messageBundles[genericLocale];

@@ -497,8 +497,7 @@ gpii.app.qssWrapper.getLanguageLabels = function (settingOptions, locale, instal
 
         return gpii.app.qssWrapper.getLanguageLabel(
             settingOptions.languageOptionLabelTemplate,
-            languageMetadata,
-            languageMetadata.current
+            languageMetadata
         );
     });
 };
@@ -623,10 +622,8 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
         return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
     });
 
-    var settingPath = "settings." + settingIndex;
-
     if (settingIndex !== -1) {
-        that.applier.change(settingPath, updatedSetting, null, source);
+        that.applier.change("settings." + settingIndex, updatedSetting, null, source);
     }
 };
 
@@ -866,4 +863,3 @@ fluid.defaults("gpii.app.undoInWrapper", {
         }
     }
 });
-
