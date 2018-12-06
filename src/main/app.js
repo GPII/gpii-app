@@ -182,6 +182,20 @@ fluid.defaults("gpii.app", {
             type: "gpii.windows.appZoom",
             createOnEvent: "onPSPPrerequisitesReady"
         },
+        systemLanguageListener: {
+            type: "gpii.windows.language",
+            options: {
+                model: {
+                    configuredLanguage: "{messageBundles}.model.locale"
+                },
+                modelListeners: {
+                    configuredLanguage: {
+                        funcName: "console.log",
+                        args: ["Language change: ", "{change}.value"]
+                    }
+                }
+            }
+        },
         qssWrapper: {
             type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -202,6 +216,9 @@ fluid.defaults("gpii.app", {
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated"
                 },
                 modelListeners: {
+                    "{systemLanguageListener}.model.installedLanguages": {
+                        funcName: "{that}.updateLanguageSettingOptions"
+                    },
                     "settings.*": {
                         funcName: "gpii.app.onQssSettingAltered",
                         args: [

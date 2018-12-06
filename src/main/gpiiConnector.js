@@ -712,7 +712,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
     // The "original" values of the QSS settings. These are to be provided from the core
     // in the future.
     defaultQssSettingValues: {
-        "http://registry\\.gpii\\.net/common/language": { value: "en-US" },
+        // "http://registry\\.gpii\\.net/common/language": { value: "en-US" }, this is synced directly in qss.js
         "http://registry\\.gpii\\.net/common/DPIScale": { value: 0 },
         "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
         "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false }

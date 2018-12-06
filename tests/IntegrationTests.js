@@ -16,11 +16,12 @@
 
 "use strict";
 
-var fluid = require("gpii-universal"),
+require("gpii-windows/index.js"); // loads gpii-universal as well
+
+var fluid = require("infusion"),
     kettle = fluid.registerNamespace("kettle"),
     gpii = fluid.registerNamespace("gpii");
 
-require("gpii-windows/index.js");
 fluid.require("%gpii-universal/gpii/node_modules/testing");
 
 gpii.loadTestingSupport();
@@ -80,6 +81,18 @@ gpii.tests.app.endSequence = [];
  */
 gpii.tests.app.testsDistributions = {};
 
+
+/**
+ * Used to disable the system language listener and set a fixed language.
+ */
+fluid.defaults("gpii.tests.app.mockedSystemLanguageListener", {
+    gradeNames: ["fluid.modelComponent"],
+
+    model: {
+        installedLanguages: {},
+        configuredLanguage: "en-US"
+    }
+});
 
 /**
  * Attach instances that are needed in test cases.

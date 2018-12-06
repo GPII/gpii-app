@@ -8,3 +8,4 @@ provisioning/Tests.ps1
 instrumented
 reports
 coverage
+package-lock.json

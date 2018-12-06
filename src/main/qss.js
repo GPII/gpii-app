@@ -47,18 +47,33 @@ fluid.defaults("gpii.app.qssWrapper", {
          * The list of hidden settings. These settings are removed from the QSS settings
          * and a placeholder is left at their place.
          */
-        hiddenSettings: []
+        hiddenSettings: [],
+
+        // paths might be needed for some reason
+        settingPaths: {
+            language: "http://registry\\.gpii\\.net/common/language"
+        },
+
+        settingMessagesPrefix: "gpii_app_qss_settings",
+
+        languageOptionLabelTemplate:  {
+            currentLanguageGroup: "%native",
+            genericLanguage: "%native · %local"
+        },
+        defaultLanguage: "en-US"
     },
 
-    settingsPath: "%gpii-app/testData/qss/settings.json",
+    settingsFixturePath: "%gpii-app/testData/qss/settings.json",
     loadedSettings: {
         expander: {
             funcName: "gpii.app.qssWrapper.loadSettings",
             args: [
-                "{that}",
-                "{that}.options.settingOptions",
                 "{assetsManager}",
-                "{that}.options.settingsPath"
+                "{systemLanguageListener}.model.installedLanguages",
+                "{messageBundles}.model.locale",
+                "{messageBundles}.model.messages",
+                "{that}.options.settingOptions",
+                "{that}.options.settingsFixturePath"
             ]
         }
     },
@@ -129,7 +144,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         },
 
         "{messageBundles}.model.locale": {
-            func: "{that}.applySettingsTranslations",
+            func: "{that}.updateSettingTranslations",
             excludeSource: "init"
         },
 
@@ -172,6 +187,13 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{arguments}.1"  // notUndoable
             ]
         },
+        getSetting: {
+            funcName: "gpii.app.qssWrapper.getSetting",
+            args: [
+                "{that}.model.settings",
+                "{arguments}.0" // settingPath
+            ]
+        },
         alterSetting: {
             funcName: "gpii.app.qssWrapper.alterSetting",
             args: [
@@ -189,12 +211,20 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{arguments}.0" // updatedSetting
             ]
         },
-        applySettingsTranslations: {
-            funcName: "gpii.app.qssWrapper.applySettingsTranslations",
+        updateSettingTranslations: {
+            funcName: "gpii.app.qssWrapper.updateSettingTranslations",
             args: [
                 "{that}",
                 "{messageBundles}.model.messages",
                 "{that}.model.settings"
+            ]
+        },
+        updateLanguageSettingOptions: {
+            funcName: "gpii.app.qssWrapper.updateLanguageSettingOptions",
+            args: [
+                "{that}",
+                "{messageBundles}.model.locale",
+                "{systemLanguageListener}.model.installedLanguages"
             ]
         }
     },
@@ -416,19 +446,130 @@ gpii.app.qssWrapper.updateSettings = function (that, settings, notUndoable) {
 };
 
 /**
+ * Returns the primary subtag of a language code e.g. if the locale is "en-US"
+ * the primary part would be "en".
+ * @param {String} locale - A language code in the format: "code-region"
+ * @return {String} The primary language subtag
+ */
+gpii.app.qssWrapper.getPrimaryLanguage = function (locale) {
+    return locale && locale.split("-")[0];
+};
+
+/**
+ * Generates a language setting option label out of a provided language metadata.
+ * @param {String} languageOptionLabelTemplate - The template for every language label
+ * @param {Object} languageMetadata - The language metadata that includes different labels
+ * for the language
+ * @param {String} languageMetadata.native - The name of the language in its native form
+ * @param {String} languageMetadata.local - The name of the language in the currently applied language
+ * @param {String} languageMetadata.english - The name of the of the language in English
+ * @return {String} The desired language label
+ */
+gpii.app.qssWrapper.getLanguageLabel = function (languageOptionLabelTemplate, languageMetadata) {
+    languageMetadata.local = languageMetadata.local || languageMetadata.english;
+
+    // Native labels might be coming in full lowercase
+    languageMetadata["native"] = gpii.flowManager.capitalizeFirstLetter(languageMetadata["native"]);
+
+    var systemPrimaryLang = gpii.app.qssWrapper.getPrimaryLanguage(languageMetadata.currentLocale),
+        currentPrimaryLang = gpii.app.qssWrapper.getPrimaryLanguage(languageMetadata.code);
+
+    /*
+     * We wouldn't want to display both the native representation
+     * and the main language as they are redundant
+     */
+    return systemPrimaryLang === currentPrimaryLang ?
+        fluid.stringTemplate(languageOptionLabelTemplate.currentLanguageGroup, languageMetadata) :
+        fluid.stringTemplate(languageOptionLabelTemplate.genericLanguage, languageMetadata);
+};
+
+
+/**
+ * Generates a list of language labels out of the provided languages metadata.
+ * @param {Object} settingOptions - The QSS settings specific options
+ * @param {String} settingOptions.languageOptionLabelTemplate - The template for every language label
+ * @param {String} locale - The current OS locale
+ * @param {Object[]} installedLanguages - A list of all languages metadata
+ * @return {String[]} The list of labels
+ */
+gpii.app.qssWrapper.buildLanguageLabels = function (settingOptions, locale, installedLanguages) {
+    return installedLanguages.map(function (languageMetadata) {
+        languageMetadata.currentLocale = locale;
+
+        return gpii.app.qssWrapper.getLanguageLabel(
+            settingOptions.languageOptionLabelTemplate,
+            languageMetadata
+        );
+    });
+};
+
+
+
+/**
+ * Applies special order to the languages metadata that is to be used for generating
+ * the language options.
+ * The languages are sorted in ascending order according to their English names;
+ * The current default language is positioned on top of the list.
+ * @param {Object} settingOptions - The options specific to settings
+ * @param {Object[]} languagesMetadata - The list of languages metadata for all installed languages
+ * @return {Object[]} The ordered metadata
+ */
+gpii.app.qssWrapper.orderLanguagesMetadata = function (settingOptions, languagesMetadata) {
+    // sort by their english labels in ascending order
+    languagesMetadata.sort(function (a, b) { return a.english > b.english; });
+
+    // Move the default language at the top
+    var defaultLanguageIdx = languagesMetadata.findIndex(function (lang) { return lang.code === settingOptions.defaultLanguage; });
+    if ( defaultLanguageIdx > -1 ) {
+        var language = languagesMetadata.splice(defaultLanguageIdx, 1);
+        languagesMetadata.unshift(language[0]);
+    }
+
+    return languagesMetadata;
+};
+
+
+/**
+ * Updates the given language setting so that it contains a proper list of options. The list includes
+ * only languages that are currently installed on the machine.
+ * @param {Object} settingOptions - The QSS settings specific options
+ * @param {Object} locale - The QSS settings specific options
+ * @param {Object[]} installedLanguages - The languages that are currently installed in the OS
+ * @param {Object} languageSetting - The language setting that is to be populated with language keys and labels
+ */
+gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, locale, installedLanguages, languageSetting) {
+    // move default language to the top of the list
+    var languagesMetadata = fluid.values(installedLanguages);
+
+    var orderedLanguagesMetadata = gpii.app.qssWrapper.orderLanguagesMetadata(settingOptions, languagesMetadata);
+
+    // keep the order but generate readable labels
+    var orderedLangLabels = gpii.app.qssWrapper.buildLanguageLabels(settingOptions, locale, orderedLanguagesMetadata);
+    var orderedLangCodes = orderedLanguagesMetadata.map(function (language) { return language.code; });
+
+
+    languageSetting.schema.keys = orderedLangCodes;
+    languageSetting.schema["enum"] = orderedLangLabels;
+
+    console.log("populateLanguageSettingOptions - decorate language setting: ", locale, installedLanguages, languageSetting);
+};
+
+/**
  * Retrieves synchronously the QSS settings from a file on the local machine
  * and resolves any assets that they reference with respect to the `gpii-app`
  * folder.
- * It also applies any other mutations to the settings, such as hiding.
- * @param {Component} that - The instance of `gpii.app.qssWrapper` component
- * @param {Object} settingOptions - The options for setting mutations
+ * It also applies any other mutations to the settings, such as hiding and translations.
  * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
- * @param {String} settingsPath - The path to the file containing the QSS
+ * @param {Object[]} installedLanguages - The languages that are currently installed on the OS
+ * @param {Object} locale - The current OS language
+ * @param {Object} messageBundles - The available message bundles
+ * @param {Object} settingOptions - The options for setting mutations
+ * @param {String} settingsFixturePath - The path to the file containing the QSS
  * settings with respect to the `gpii-app` folder.
  * @return {Object[]} An array of the loaded settings
  */
-gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager, settingsPath) {
-    var loadedSettings = fluid.require(settingsPath);
+gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath) {
+    var loadedSettings = fluid.require(settingsFixturePath);
 
     fluid.each(loadedSettings, function (loadedSetting) {
         // Resolve dynamic settings, where the function grade is identified by the 'type' field.
@@ -449,6 +590,15 @@ gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager
             loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);
         }
     });
+
+    // more dynamic loading
+    var languageSetting = fluid.find_if(loadedSettings, function (setting) {
+        return setting.path === settingOptions.settingPaths.language;
+    });
+    gpii.app.qssWrapper.populateLanguageSettingOptions(settingOptions, locale, installedLanguages, languageSetting);
+
+    // sync the language value as well
+    languageSetting.value = locale;
 
     /*
      * Hide settings
@@ -478,7 +628,26 @@ gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager
         });
     }
 
+    /*
+     * Translations
+     */
+    loadedSettings = gpii.app.qssWrapper.applySettingTranslations(settingOptions, messageBundles, loadedSettings);
+
+
     return loadedSettings;
+};
+
+
+/**
+ * Find a QSS setting by its path.
+ * @param {Object[]} settings - The QSS settings list
+ * @param {String} path - The path of the searched setting
+ * @return {Object} The desired QSS setting
+ */
+gpii.app.qssWrapper.getSetting = function (settings, path) {
+    return fluid.find_if(settings, function (setting) {
+        return setting.path === path;
+    });
 };
 
 /**
@@ -523,6 +692,96 @@ gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
 };
 
 /**
+ * Translate the given setting by updating its text properties with the passed messages.
+ * @param {Object} qssSettingMessages - The QSS settings messages. Currently, a qss setting
+ * has the following messages: title, tooltip, [tip], [enum], [footerTip]
+ * @param {Object} setting - The setting to be applied messages to
+ * @return {Object} A translated copy of the QSS setting
+ */
+gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, setting) {
+    var translatedSetting = fluid.copy(setting);
+
+    var message = qssSettingMessages[translatedSetting.messageKey];
+
+    if (message) {
+        translatedSetting.tooltip = message.tooltip;
+        translatedSetting.tip = message.tip;
+        if (translatedSetting.widget) {
+            translatedSetting.widget.footerTip = message.footerTip;
+        }
+
+        translatedSetting.schema.title = message.title;
+        if (message["enum"]) {
+            translatedSetting.schema["enum"] = message["enum"];
+        }
+    }
+
+    return translatedSetting;
+};
+
+
+
+/**
+ * Apply translations to all settings using the existing messages "mega" bundle. A translated QSS setting is a setting
+ * with all its text properties updated with the current locale messages. A translation is notified trough the changeApplier.
+ * N.B. - this function updates given objects in place
+ * @param {Object} settingOptions - Specific options for the QSS settings
+ * @param {Object} messageBundles - Messages for the current locale
+ * @param {Object[]} qssSettingControls - The list of QSS settings to be applied translations to
+ * @return {Object[]} The QSS settings with updated translations
+ */
+gpii.app.qssWrapper.applySettingTranslations = function (settingOptions, messageBundles, qssSettingControls) {
+    var qssSettingMessagesGroup = settingOptions.settingMessagesPrefix,
+        qssSettingMessages = messageBundles[qssSettingMessagesGroup];
+
+    console.log("qssWrapper#applySettingTranslations: ", messageBundles);
+
+    // Straight forward translations
+    var translatedSettings = qssSettingControls.map(function (setting) {
+        return gpii.app.qssWrapper.applySettingTranslation(qssSettingMessages, setting);
+    });
+
+    return translatedSettings;
+};
+
+/**
+ * Updates setting translations corresponding to a change in the locale.
+ * @param {Component} that - The `gpii.app.qssWrapper` instance
+ * @param {Object} messageBundles - Messages for the current locale
+ * @param {Object[]} qssSettingControls - The list of QSS settings to be applied translations to
+ */
+gpii.app.qssWrapper.updateSettingTranslations = function (that, messageBundles, qssSettingControls) {
+    console.log("qssWrapper#updateSettingTranslations: ", messageBundles);
+
+    var translatedSettings = gpii.app.qssWrapper.applySettingTranslations(
+        that.options.settingOptions,
+        messageBundles,
+        qssSettingControls
+    );
+
+    // save settings with translations
+    fluid.each(translatedSettings, function (setting) {
+        that.alterSetting(setting, "gpii.app.undoStack.notUndoable");
+    });
+};
+
+/**
+ * Updates the language setting options. They can change dynamically as the OS currently
+ * installed languages are displayed as options.
+ * @param {Component} that - The gpii.app.qssWrapper` instance
+ * @param {String} locale - The current locale for the OS
+ * @param {Object[]} installedLanguages - Currently installed languages
+ */
+gpii.app.qssWrapper.updateLanguageSettingOptions = function (that, locale, installedLanguages) {
+    var languageSetting = fluid.copy(that.getSetting(that.options.settingOptions.settingPaths.language));
+    gpii.app.qssWrapper.populateLanguageSettingOptions(that.options.settingOptions, locale, installedLanguages, languageSetting);
+
+    console.log("qssWrapper#updateLanguageSettingOptions: ", languageSetting);
+
+    that.alterSetting(languageSetting, "gpii.app.undoStack.notUndoable");
+};
+
+/**
  * Propagates a setting update to the QSS widget only if the setting has the same path
  * as the one which the widget is currently displaying.
  * @param {Component} qssWidget - The `gpii.app.qssWidget` instance.
@@ -558,9 +817,6 @@ fluid.defaults("gpii.app.qssInWrapper", {
         onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
     },
     listeners: {
-        onDialogReady: {
-            funcName: "{qssWrapper}.applySettingsTranslations"
-        },
         onQssSettingAltered: {
             func: "{qssWrapper}.alterSetting",
             args: [
@@ -568,7 +824,6 @@ fluid.defaults("gpii.app.qssInWrapper", {
                 "qss"
             ]
         },
-
         "{channelListener}.events.onQssButtonFocused": [{
             func: "{qssTooltip}.showIfPossible",
             args: [
@@ -649,54 +904,3 @@ fluid.defaults("gpii.app.undoInWrapper", {
         }
     }
 });
-
-/**
- * Translate the given setting by updating its text properties with the passed messages.
- * @param {Component} that  - The instance of `gpii.app.qssWrapper` component
- * @param {Object} qssSettingMessages - The QSS settings messages. Currently, a qss setting
- * has the following messages: title, tooltip, [tip], [enum], [footerTip]
- * @param {Object} setting - The setting to be applied messages to
- * @return {Object} A translated copy of the QSS setting
- */
-gpii.app.qssWrapper.applySettingTranslation = function (that, qssSettingMessages, setting) {
-    var translatedSetting = fluid.copy(setting);
-
-    var message = qssSettingMessages[translatedSetting.messageKey];
-
-    if (message) {
-        translatedSetting.tooltip = message.tooltip;
-        translatedSetting.tip = message.tip;
-        if (translatedSetting.widget) {
-            translatedSetting.widget.footerTip = message.footerTip;
-        }
-
-        translatedSetting.schema.title = message.title;
-        if (message["enum"]) {
-            translatedSetting.schema["enum"] = message["enum"];
-        }
-    }
-
-    return translatedSetting;
-};
-
-/**
- * Apply translations to all settings using the existing messages "mega" bundle. A translated QSS setting is a setting
- * with all its text properties updated with the current locale messages. A translation is notified trough the changeApplier.
- * @param {Component} that - The `gpii.app.qssWrapper` instance
- * @param {Object} messagesBundle - Messages for the current locale
- * @param {Object[]} qssSettingControls - The list of QSS settings to be applied translations to
- */
-gpii.app.qssWrapper.applySettingsTranslations = function (that, messagesBundle, qssSettingControls) {
-    var qssSettingMessagesGroup = that.options.settingMessagesPrefix,
-        qssSettingMessages = messagesBundle[qssSettingMessagesGroup];
-
-    fluid.each(qssSettingControls, function (setting) {
-        var translatedSetting = gpii.app.qssWrapper.applySettingTranslation(
-            that,
-            qssSettingMessages,
-            setting
-        );
-
-        that.alterSetting(translatedSetting, "gpii.app.undoStack.notUndoable");
-    });
-};

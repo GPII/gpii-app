@@ -9,7 +9,17 @@
         scaleFactor: 0.85,
         urls: {
             account: "http://morphic.world/account"
-        }
+        },
+
+        // The template that is used for every label of the language setting's options.
+        // The "%" followed by a word specifies a variable and there are three possible variables:
+        // - native - the name of the language in its native form
+        // - local - the name of the language in the currently applied language
+        // - english - the name of the of the language in English
+        languageOptionLabel: {
+            currentLanguageGroup: "%native",
+            genericLanguage: "%native · %local"
+         }
     },
 
     // Configuration options for the PSP window
