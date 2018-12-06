@@ -59,7 +59,8 @@ fluid.defaults("gpii.app.qssWrapper", {
         languageOptionLabelTemplate:  {
             currentLanguageGroup: "%native",
             genericLanguage: "%native · %local"
-        }
+        },
+        defaultLanguage: "en-US"
     },
 
     settingsFixturePath: "%gpii-app/testData/qss/settings.json",
@@ -491,7 +492,7 @@ gpii.app.qssWrapper.getLanguageLabel = function (languageOptionLabelTemplate, la
  * @param {Object[]} installedLanguages - A list of all languages metadata
  * @return {String[]} The list of labels
  */
-gpii.app.qssWrapper.getLanguageLabels = function (settingOptions, locale, installedLanguages) {
+gpii.app.qssWrapper.buildLanguageLabels = function (settingOptions, locale, installedLanguages) {
     return installedLanguages.map(function (languageMetadata) {
         languageMetadata.currentLocale = locale;
 
@@ -500,6 +501,31 @@ gpii.app.qssWrapper.getLanguageLabels = function (settingOptions, locale, instal
             languageMetadata
         );
     });
+};
+
+
+
+/**
+ * Applies special order to the languages metadata that is to be used for generating
+ * the language options.
+ * The languages are sorted in ascending order according to their English names;
+ * The current default language is positioned on top of the list.
+ * @param {Object} settingOptions - The options specific to settings
+ * @param {Object[]} languagesMetadata - The list of languages metadata for all installed languages
+ * @return {Object[]} The ordered metadata
+ */
+gpii.app.qssWrapper.orderLanguagesMetadata = function (settingOptions, languagesMetadata) {
+    // sort by their english labels in ascending order
+    languagesMetadata.sort(function (a, b) { return a.english > b.english; });
+
+    // Move the default language at the top
+    var defaultLanguageIdx = languagesMetadata.findIndex(function (lang) { return lang.code === settingOptions.defaultLanguage; });
+    if ( defaultLanguageIdx > -1 ) {
+        var language = languagesMetadata.splice(defaultLanguageIdx, 1);
+        languagesMetadata.unshift(language[0]);
+    }
+
+    return languagesMetadata;
 };
 
 
@@ -512,11 +538,18 @@ gpii.app.qssWrapper.getLanguageLabels = function (settingOptions, locale, instal
  * @param {Object} languageSetting - The language setting that is to be populated with language keys and labels
  */
 gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, locale, installedLanguages, languageSetting) {
-    var langCodes = fluid.keys(installedLanguages),
-        langLabels = gpii.app.qssWrapper.getLanguageLabels(settingOptions, locale, fluid.values(installedLanguages));
+    // move default language to the top of the list
+    var languagesMetadata = fluid.values(installedLanguages);
 
-    languageSetting.schema.keys = langCodes;
-    languageSetting.schema["enum"] = langLabels;
+    var orderedLanguagesMetadata = gpii.app.qssWrapper.orderLanguagesMetadata(settingOptions, languagesMetadata);
+
+    // keep the order but generate readable labels
+    var orderedLangLabels = gpii.app.qssWrapper.buildLanguageLabels(settingOptions, locale, orderedLanguagesMetadata);
+    var orderedLangCodes = orderedLanguagesMetadata.map(function (language) { return language.code; });
+
+
+    languageSetting.schema.keys = orderedLangCodes;
+    languageSetting.schema["enum"] = orderedLangLabels;
 
     console.log("populateLanguageSettingOptions - decorate language setting: ", installedLanguages, languageSetting);
 };
