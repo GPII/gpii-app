@@ -83,6 +83,18 @@ gpii.tests.app.testsDistributions = {};
 
 
 /**
+ * Used to disable the system language listener and set a fixed language.
+ */
+fluid.defaults("gpii.tests.app.mockedSystemLanguageListener", {
+    gradeNames: ["fluid.modelComponent"],
+
+    model: {
+        installedLanguages: {},
+        configuredLanguage: "en-US"
+    }
+});
+
+/**
  * Attach instances that are needed in test cases.
  * @param {Component} testCaseHolder - The overall test cases holder
  * @param {Component} flowManager - The `gpii.flowManager`

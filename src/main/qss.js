@@ -551,7 +551,7 @@ gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, l
     languageSetting.schema.keys = orderedLangCodes;
     languageSetting.schema["enum"] = orderedLangLabels;
 
-    console.log("populateLanguageSettingOptions - decorate language setting: ", installedLanguages, languageSetting);
+    console.log("populateLanguageSettingOptions - decorate language setting: ", locale, installedLanguages, languageSetting);
 };
 
 /**

@@ -776,7 +776,7 @@ var qssCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "Change event was fired from QSS widget interaction.",
-            { path: "http://registry\\.gpii\\.net/common/language", value: "hy-AM" },
+            { path: "http://registry\\.gpii\\.net/common/language", value: "es-ES" },
             "{arguments}.0"
         ]
     },
@@ -1298,14 +1298,8 @@ var crossQssTranslations = [
 ];
 
 
-var installedLangsFixture = {
+var unorderedInstalledLangsFixture = {
     raw: {
-        "en-US": {
-            "english": "English",
-            "local": "English (United States)",
-            "native": "english (United States)",
-            "code": "en-US"
-        },
         "es-MX": {
             "english": "Spanish",
             "local": "Spanish (Mexico)",
@@ -1317,11 +1311,17 @@ var installedLangsFixture = {
             "local": "French",
             "native": "français",
             "code": "fr"
+        },
+        "en-US": {
+            "english": "English",
+            "local": "English (United States)",
+            "native": "english (United States)",
+            "code": "en-US"
         }
     },
     lists: {
-        keys: [ "en-US", "es-MX", "fr" ],
-        enum: [ "English (United States)", "Español (México) · Spanish (Mexico)", "Français · French"]
+        keys: [ "en-US", "fr", "es-MX"],
+        enum: [ "English (United States)", "Français · French", "Español (México) · Spanish (Mexico)"]
     }
 };
 
@@ -1352,8 +1352,18 @@ fluid.defaults("gpii.tests.qss.systemLanguageListener", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
-        installedLanguages: installedLangsFixture.raw,
+        installedLanguages: unorderedInstalledLangsFixture.raw,
         configuredLanguage: null
+    },
+
+    listeners: {
+        // use a listener to avoid overriding the
+        // model binding in the `gpii.app`.
+        // There should be a better way
+        "onCreate.setDefaultValue": {
+            changePath: "configuredLanguage",
+            value: "en-US"
+        }
     },
 
     invokers: {
@@ -1388,7 +1398,7 @@ gpii.tests.qss.languageSettingValuesMatches = function (qssWrapper, expectedInst
 var qssInstalledLanguages = [
     { // once qssWrapper is firstly created it should have proper languages list
         func: "gpii.tests.qss.languageSettingValuesMatches",
-        args: ["{that}.app.qssWrapper", installedLangsFixture.lists]
+        args: ["{that}.app.qssWrapper", unorderedInstalledLangsFixture.lists]
     },
 
     { // changing the installed languages
@@ -1408,7 +1418,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 67,
+    expect: 69,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1436,7 +1446,8 @@ gpii.tests.qss.testDefs = {
         },
         mockedLanguagesListener: {
             record: "gpii.tests.qss.systemLanguageListener",
-            target: "{that gpii.app}.options.components.systemLanguageListener.type"
+            target: "{that gpii.app}.options.components.systemLanguageListener.type",
+            priority: "last"
         }
     },
 
