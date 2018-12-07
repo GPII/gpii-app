@@ -253,7 +253,7 @@ BOOL positionTrayWindows(BOOL force)
 
 	if (force || changed) {
 		// shrink the task list
-		SetWindowPos(tasks, 0,
+		SetWindowPos(tasks, HWND_BOTTOM,
 			0, 0,
 			taskRect.right - taskRect.left,
 			taskRect.bottom - taskRect.top,
@@ -270,8 +270,8 @@ BOOL positionTrayWindows(BOOL force)
 	}
 
 	if (force || changed) {
-		SetTimer(buttonWindow, TIMER_RESIZE, 500, NULL);
-		SetTimer(buttonWindow, TIMER_CHECK, 1500, null);
+		SetTimer(buttonWindow, TIMER_RESIZE, 100, NULL);
+		SetTimer(buttonWindow, TIMER_CHECK, 1000, null);
 	} else {
 		KillTimer(buttonWindow, TIMER_RESIZE);
 	}
@@ -686,8 +686,8 @@ LRESULT CALLBACK buttonWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		break;
 
 	case WM_SIZE:
-		// See if anything needs to be changed after a moment.
-		SetTimer(buttonWindow, TIMER_RESIZE, 500, null);
+	case WM_WINDOWPOSCHANGED:
+		positionTrayWindows(true);
 		break;
 
 	case WM_ERASEBKGND:
