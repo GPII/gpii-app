@@ -24,7 +24,6 @@ var path = require("path");
 
 var DEFAULT_PARSER = {"json": JSON};
 
-
 /**
  * Represents a single messages bundle, containing label names and messages for them.
  *
@@ -246,6 +245,5 @@ gpii.app.messageBundlesCompiler.compileMessageBundles = function (bundlesDirs, d
 
     return compiledMessageBundle;
 };
-
 
 module.exports.compileMessageBundles = gpii.app.messageBundlesCompiler.compileMessageBundles;
