@@ -76,6 +76,12 @@
         }
     });
 
+    /**
+     * Invoked whenever the user has activated the "switch" UI element (either
+     * by clicking on it or pressing "Space" or "Enter"). What this function
+     * does is to change the `enabled` model property to its opposite value.
+     * @param {Component} that - The `gpii.psp.widgets.switch` instance.
+     */
     gpii.qssWidget.toggle.toggleModel = function (that) {
         that.applier.change("enabled", !that.model.enabled, null, "settingAlter");
     };

@@ -53,7 +53,7 @@
 
     background-color: var(--main-theme-text-color);
     border-radius: 50%;
-    transition: left 0.1s;
+    transition: left 0.2s;
 }
 
 .fl-switchUI .fl-switchUI-control[aria-checked=true] {
