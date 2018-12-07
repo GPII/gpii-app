@@ -52,7 +52,14 @@
 
         selectors: {
             stepper: ".flc-qssStepperWidget",
-            menu: ".flc-qssMenuWidget"
+            menu: ".flc-qssMenuWidget",
+            toggle: ".flc-qssToggleWidget"
+        },
+
+        widgetGrades: {
+            "number": "gpii.qssWidget.stepper",
+            "string": "gpii.qssWidget.menu",
+            "boolean": "gpii.qssWidget.toggle"
         },
 
         events: {
@@ -85,9 +92,24 @@
                 }
             },
             widget: {
-                type: "@expand:gpii.psp.qssWidget.getWidgetType({arguments}.0)",
+                type: {
+                    expander: {
+                        funcName: "fluid.get",
+                        args: ["{qssWidget}.options.widgetGrades", "{arguments}.0.schema.type"]
+                    }
+                },
                 createOnEvent: "onSettingUpdated",
-                container: "@expand:gpii.psp.qssWidget.getWidgetContainer({arguments}.0, {qssWidget}.dom.stepper, {qssWidget}.dom.menu)",
+                container: {
+                    expander: {
+                        funcName: "gpii.psp.qssWidget.getWidgetContainer",
+                        args: [
+                            "{arguments}.0", // setting
+                            "{qssWidget}.dom.stepper",
+                            "{qssWidget}.dom.menu",
+                            "{qssWidget}.dom.toggle"
+                        ]
+                    }
+                },
                 options: {
                     sounds: "{qssWidget}.options.sounds",
                     activationParams: "{arguments}.1",
@@ -95,6 +117,7 @@
                         setting: "{qssWidget}.model.setting",
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
+                            extendedTip: "{qssWidget}.model.setting.extendedTip",
                             learnMore: "{qssWidget}.model.messages.learnMore"
                         }
                     },
@@ -194,9 +217,10 @@
             }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: [
+                    "{that}.model.setting",
                     "{that}.dom.stepper",
                     "{that}.dom.menu",
-                    "{that}.model.setting"
+                    "{that}.dom.toggle"
                 ]
             }]
         },
@@ -228,44 +252,38 @@
     };
 
     /**
-     * Determines the type of the `widget` subcomponent (either a menu or a stepper)
-     * depending on the type of the setting.
-     * @param {Object} setting - The setting which corresponds to the activated
-     * QSS button.
-     * @return {String} The grade name for the `widget` subcomponent.
-     */
-    gpii.psp.qssWidget.getWidgetType = function (setting) {
-        return setting.schema.type === "number" ? "gpii.qssWidget.stepper" : "gpii.qssWidget.menu";
-    };
-
-    /**
      * Determines the jQuery element which should be the container of the `widget`
      * view subcomponent depending on the type of the setting.
      * @param {Object} setting - The setting which corresponds to the activated
      * QSS button.
      * @param {jQuery} stepperElement - The container for the QSS stepper widget.
      * @param {jQuery} menuElement - The container for the QSS menu widget.
+     * @param {jQuery} toggleElement - The container for the QSS toggle widget.
      * @return {jQuery} The jQuery element representing the container object.
      */
-    gpii.psp.qssWidget.getWidgetContainer = function (setting, stepperElement, menuElement) {
-        return setting.schema.type === "number" ? stepperElement : menuElement;
+    gpii.psp.qssWidget.getWidgetContainer = function (setting, stepperElement, menuElement, toggleElement) {
+        switch (setting.schema.type) {
+        case "number": return stepperElement;
+        case "string": return menuElement;
+        case "boolean": return toggleElement;
+        }
     };
 
     /**
      * Shows the appropriate container depending on the type of the setting.
+     * @param {Object} setting - The setting which corresponds to the activated
      * @param {jQuery} stepperElement - The container for the QSS stepper widget.
      * @param {jQuery} menuElement - The container for the QSS menu widget.
-     * @param {Object} setting - The setting which corresponds to the activated
+     * @param {jQuery} toggleElement - The container for the QSS toggle widget.
      * QSS button.
      */
-    gpii.psp.qssWidget.updateContainerVisibility = function (stepperElement, menuElement, setting) {
-        if (setting.schema.type === "number") {
-            stepperElement.show();
-            menuElement.hide();
-        } else {
-            stepperElement.hide();
-            menuElement.show();
-        }
+    gpii.psp.qssWidget.updateContainerVisibility = function (setting, stepperElement, menuElement, toggleElement) {
+        stepperElement.hide();
+        menuElement.hide();
+        toggleElement.hide();
+
+        var widgetContainer = gpii.psp.qssWidget.getWidgetContainer(setting, stepperElement, menuElement, toggleElement);
+        widgetContainer.show();
     };
 
     /**

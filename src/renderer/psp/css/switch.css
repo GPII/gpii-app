@@ -4,6 +4,10 @@
     margin-top: 5px;
 }
 
+.fl-switchUI * {
+    box-sizing: border-box;
+}
+
 .fl-switchUI .fl-switchUI-control {
     display: inline-block;
 

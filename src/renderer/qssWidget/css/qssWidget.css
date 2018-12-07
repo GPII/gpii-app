@@ -317,3 +317,41 @@ body {
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item.active {
     animation: menuItemActivation 0.25s 2;
 }
+
+.fl-qssToggleWidget-extendedTipContainer {
+    padding: 3px 3px 5px 3px;
+    background-color: #e4e4e4;
+}
+
+.fl-qssToggleWidget-extendedTipContainer p {
+    margin: 0;
+}
+
+.fl-qssToggleWidget-extendedTipContainer ol {
+    margin: 3px 0 0 0;
+    padding-left: 15px;
+}
+
+.fl-qssToggleWidget-extendedTipContainer img {
+    display: block;
+    width: 80%;
+    margin: 5px auto;
+}
+
+.fl-qssToggleWidget-extendedTipContainer .fl-qssWidget-learnMoreLink {
+    margin: 0;
+}
+
+.fl-qssToggleWidget-settingTitle {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.fl-qssToggleWidget .flc-toggleButton {
+    --main-theme-text-color: #000000;
+    --main-theme-background-color: #ffffff;
+}
+
+.fl-qssToggleWidget .fl-switchUI .fl-switchUI-control:focus {
+    outline-color: none;
+}
