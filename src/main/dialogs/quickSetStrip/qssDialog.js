@@ -204,7 +204,7 @@ gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
         var trayBounds = tray.tray.getBounds(),
             cursorPoint = electron.screen.getCursorScreenPoint();
 
-        if (!gpii.app.isPointInRect(cursorPoint, trayBounds)) {
+        if (cursorPoint && trayBounds && !gpii.app.isPointInRect(cursorPoint, trayBounds)) {
             that.hide();
         }
     }
