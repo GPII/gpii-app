@@ -92,7 +92,11 @@
         },
 
         styles: {
-            activated: "fl-activated"
+            activated: "fl-activated",
+            smallButton: "fl-qss-smallButton",
+            largeButton: "fl-qss-largeButton",
+            settingButton: "fl-qss-settingButton",
+            closeButton: "fl-qss-closeButton"
         },
 
         attrs: {
@@ -121,6 +125,10 @@
             "onCreate.renderImage": {
                 funcName: "gpii.qss.buttonPresenter.renderImage",
                 args: ["{that}", "{that}.dom.image"]
+            },
+            "onCreate.addButtonTypesStyles": {
+                funcName: "gpii.qss.buttonPresenter.addButtonTypesStyles",
+                args: ["{that}", "{that}.container"]
             },
 
             "{focusManager}.events.onElementFocused": {
@@ -214,6 +222,17 @@
             }
         }
     });
+
+    gpii.qss.buttonPresenter.addButtonTypesStyles = function (that, container) {
+        var buttonTypes = that.model.item.buttonTypes,
+            styles = that.options.styles;
+
+        fluid.each(buttonTypes, function (buttonType) {
+            if (styles[buttonType]) {
+                container.addClass(styles[buttonType]);
+            }
+        });
+    };
 
     /**
      * Returns the title (label) of the button depending on whether there is a
@@ -349,14 +368,12 @@
      * button's tooltip or the QSS widget.
      * @param {jQuery} target - The DOM element for which positioning
      * metrics are needed.
-     * @return {Object} {{width: Number, height: Number, offsetLeft: Number}}
+     * @return {Object} {{offsetTop: Number, offsetLeft: Number, width: Number}}
      */
     gpii.qss.buttonPresenter.getElementMetrics = function (target) {
-        var borderWidth = target.outerHeight() - target.innerHeight();
-
         return {
+            offsetTop:  target.offset().top,
             offsetLeft: target.offset().left,
-            height:     target.outerHeight() - borderWidth / 2,
             width:      target.outerWidth()
         };
     };

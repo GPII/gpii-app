@@ -25,6 +25,7 @@
             "image": "language.svg",
             "default": "en-US"
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-language",
         "value": "en-US",
         "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
@@ -41,6 +42,7 @@
             "divisibleBy": 1,
             "default": 0
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-DPIScale",
         "value": 0,
         "tip": "<p>Zooms everything on the screen</p><p>Amount of Zoom up and down differs by computer.</p>",
@@ -58,6 +60,7 @@
             "max": null,
             "divisibleBy": 1
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "appTextZoom",
         "value": 0,
         "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting so won't Save.)</p>",
@@ -93,6 +96,7 @@
             ],
             "default": "regular-contrast"
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-highContrastTheme",
         "value": "regular-contrast",
         "styles": {
@@ -119,7 +123,7 @@
             "black-yellow": {
                 "background-color": "#ffff00",
                 "color": "#000000",
-                "border": "2px dashed #6c6c6c"
+                "border": "1px dashed #6c6c6c"
             },
             "grey-black": {
                 "background-color": "#222222",
@@ -148,6 +152,7 @@
             "type": "boolean",
             "default": false
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-selfVoicing-enabled",
         "value": false,
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>"
@@ -157,6 +162,7 @@
             "type": "more",
             "title": "MORE...\n\n(& HELP)"
         },
+        "buttonTypes": ["largeButton"],
         "messageKey": "more",
         "tooltip": "<p>More options for changing the settings on this computer.</p>"
     }, {
@@ -165,47 +171,50 @@
             "type": "save",
             "title": "Save"
         },
+        "buttonTypes": ["smallButton"],
         "messageKey": "save",
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>"
     }, {
         "path": "undo",
         "schema": {
             "type": "undo",
-            "title": "Undo",
-            "image": "undo.svg"
+            "title": "Undo"
         },
+        "buttonTypes": ["smallButton"],
         "messageKey": "undo",
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>"
-    }, {
-        "path": "resetAll",
-        "schema": {
-            "type": "resetAll",
-            "title": "Reset All to Standard"
-        },
-        "messageKey": "resetAll",
-        "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>"
     }, {
         "path": "psp",
         "schema": {
             "type": "psp",
             "title": {
-                "keyedIn": "Morphic Settings Panel",
+                "keyedIn": "Settings Panel",
                 "keyedOut": "Sign In"
             }
         },
+        "buttonTypes": ["smallButton"],
         "messageKey": "psp",
         "tooltip": {
             "keyedIn": "<p>Opens Morphic Settings Panel</p><p>Where you can quickly adjust often-changed settings of yours.</p>",
             "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
         }
     }, {
+        "path": "resetAll",
+        "schema": {
+            "type": "resetAll",
+            "title": "Reset to Standard"
+        },
+        "buttonTypes": ["smallButton"],
+        "messageKey": "resetAll",
+        "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>"
+    }, {
         "path": "close",
         "schema": {
             "type": "close",
-            "title": "Close",
-            "image": "close.svg"
+            "title": "×"
         },
+        "buttonTypes": ["closeButton"],
         "messageKey": "close",
-        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/TaskTrayIcon_outline.svg'></img></p>"
+        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=12 src='../../icons/TaskTrayIcon_outline.svg'></img></p>"
     }
 ]

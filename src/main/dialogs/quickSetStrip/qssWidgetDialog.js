@@ -29,11 +29,15 @@ require("../../../shared/channelUtils.js");
  * changes.
  */
 fluid.defaults("gpii.app.qssWidget", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
-    scaleFactor: 1,
-    defaultWidth: 316,
-    defaultHeight: 430,
+    /*
+     * When setting the size of a `BrowserWindow` Electron sometimes changes its position
+     * with a few pixels if the DPI is different than 1. This offset ensures that the dialog's
+     * arrow will not be hidden behind the QSS in case Electron decides to position the window
+     * lower than it actually has to be.
+     */
+    extraVerticalOffset: 7,
 
     model: {
         setting: {}
@@ -46,24 +50,8 @@ fluid.defaults("gpii.app.qssWidget", {
 
     // Temporary. Should be removed when the widget becomes truly resizable.
     heightMap: {
-        "http://registry\\.gpii\\.net/common/language": {
-            expander: {
-                funcName: "gpii.app.scale",
-                args: [
-                    "{that}.options.scaleFactor",
-                    637
-                ]
-            }
-        },
-        "http://registry\\.gpii\\.net/common/highContrastTheme": {
-            expander: {
-                funcName: "gpii.app.scale",
-                args: [
-                    "{that}.options.scaleFactor",
-                    627
-                ]
-            }
-        }
+        "http://registry\\.gpii\\.net/common/language": 400,
+        "http://registry\\.gpii\\.net/common/highContrastTheme": 365
     },
 
     config: {
@@ -78,6 +66,8 @@ fluid.defaults("gpii.app.qssWidget", {
             }
         },
         attrs: {
+            width: 170,
+            height: 255,
             alwaysOnTop: false
         },
         fileSuffixPath: "qssWidget/index.html"
@@ -152,6 +142,13 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     },
     invokers: {
+        getScaledHeight: {
+            funcName: "gpii.app.qssWidget.getScaledHeight",
+            args: [
+                "{that}",
+                "{arguments}.0" // scaleFactor
+            ]
+        },
         show: {
             funcName: "gpii.app.qssWidget.show",
             args: [
@@ -173,6 +170,23 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     }
 });
+
+/**
+ * Given the new `scaleFactor` that has to be applied, this function computes the new
+ * height of the component's `BrowserWindow`. Different from the base implementation
+ * because the height of the QSS widget is determined based on the setting which it
+ * represents.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @return {Number} The new height of the `BrowserWindow`.
+ */
+gpii.app.qssWidget.getScaledHeight = function (that, scaleFactor) {
+    var settingPath = fluid.get(that.model.setting, "path"),
+        heightMap = that.options.heightMap,
+        height = heightMap[settingPath] || that.options.config.attrs.height;
+
+    return scaleFactor * height;
+};
 
 /**
  * Called whenever a QSS button is activated. Determines whether the QSS dialog
@@ -207,9 +221,12 @@ gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activation
  * the screen.
  */
 gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
+    var extraVerticalOffset = that.options.extraVerticalOffset,
+        scaleFactor = that.model.scaleFactor;
+
     return {
-        x: btnCenterOffset.x - that.width / 2,
-        y: btnCenterOffset.y
+        x: btnCenterOffset.x - that.model.width / 2,
+        y: btnCenterOffset.y + scaleFactor * extraVerticalOffset
     };
 };
 
@@ -237,8 +254,9 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
     var offset = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics);
     that.applier.change("offset", offset);
 
-    that.height = heightMap[setting.path] || that.options.config.attrs.height;
-    that.setRestrictedSize(that.width, that.height);
+    var scaleFactor = that.model.scaleFactor,
+        height = heightMap[setting.path] || that.options.config.attrs.height;
+    that.setRestrictedSize(that.model.width, scaleFactor * height);
 
     that.shouldShow = true;
 };

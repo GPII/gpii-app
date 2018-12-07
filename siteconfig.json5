@@ -6,7 +6,7 @@
     // Configuration options for the QSS window
     qss: {
         // The scaling factor for the QSS
-        scaleFactor: 0.85,
+        scaleFactor: 1.5,
         urls: {
             account: "http://morphic.world/account"
         },
@@ -48,13 +48,13 @@
 
     // Configuration options for the QSS More panel
     qssMorePanel: {
-    	// These are default values. The actual dimensions of the QSS more panel
-    	// are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
-    	defaultWidth: 600,
-    	defaultHeight: 450,
-    	movable: true,
-    	resizable: true,
-    	alwaysOnTop: true,
+        // These are default values. The actual dimensions of the QSS more panel
+        // are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
+        defaultWidth: 400,
+        defaultHeight: 300,
+        movable: true,
+        resizable: true,
+        alwaysOnTop: true,
 
         urls: {
             moreInfo: "http://morphic.world/more"

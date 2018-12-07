@@ -26,7 +26,6 @@ require("../common/utils.js");
 require("./basic/dialog.js");
 require("./basic/blurrable.js");
 require("./basic/resizable.js");
-require("./basic/scaledDialog.js");
 require("./basic/offScreenHidable.js");
 
 
@@ -41,10 +40,7 @@ fluid.defaults("gpii.app.pspInApp", {
         isKeyedIn: "{app}.model.isKeyedIn",
 
         preferences: "{app}.model.preferences",
-        theme: "{app}.model.theme",
-        offset: {
-            y: "{qssWrapper}.qss.options.config.attrs.height"
-        }
+        theme: "{app}.model.theme"
     },
     events: {
         onActivePreferenceSetAltered: "{qssWrapper}.events.onActivePreferenceSetAltered"
@@ -148,8 +144,7 @@ fluid.defaults("gpii.app.psp", {
     gradeNames: [
         "gpii.app.dialog",
         "gpii.app.blurrable",
-        "gpii.app.dialog.offScreenHidable",
-        "gpii.app.scaledDialog"
+        "gpii.app.dialog.offScreenHidable"
     ],
 
     siteConfig: {
@@ -159,14 +154,11 @@ fluid.defaults("gpii.app.psp", {
         }
     },
 
-    scaleFactor: "{that}.options.siteConfig.scaleFactor",
-    defaultWidth: 450,
-    defaultHeight: 600,
-
     model:  {
         isKeyedIn: false,
         theme: null,
-        preferences: {}
+        preferences: {},
+        scaleFactor: "{that}.options.siteConfig.scaleFactor"
     },
 
     modelRelay: {
@@ -187,15 +179,12 @@ fluid.defaults("gpii.app.psp", {
         destroyOnClose: false,
 
         restrictions: {
-            minHeight: {
-                expander: {
-                    funcName: "gpii.app.scale",
-                    args: [
-                        "{that}.options.scaleFactor",
-                        600
-                    ]
-                }
-            }
+            minHeight: 600
+        },
+
+        attrs: {
+            width: 450,
+            height: 600
         },
 
         fileSuffixPath: "psp/index.html",
@@ -278,6 +267,13 @@ fluid.defaults("gpii.app.psp", {
     },
 
     modelListeners: {
+        "{qssWrapper}.qss.model.height": {
+            func: "{that}.setPosition",
+            args: [
+                "{that}.model.offset.x",
+                "{change}.value"
+            ]
+        },
         "{app}.model.locale": {
             funcName: "gpii.app.notifyWindow",
             args: [
@@ -328,6 +324,12 @@ fluid.defaults("gpii.app.psp", {
                 "{settingsBroker}",
                 "{arguments}.0" // ignoreClosePreference
             ]
+        },
+        getScaledOffset: {
+            funcName: "fluid.identity",
+            args: {
+                y: "{qssWrapper}.qss.model.height"
+            }
         }
     }
 });

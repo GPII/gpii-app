@@ -8,6 +8,7 @@
             "keys": [],
             "default": "en-US"
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-language",
         "value": "en-US",
         "restartWarning": true
@@ -26,6 +27,7 @@
             "divisibleBy": 1,
             "default": 0
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-DPIScale",
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
@@ -37,6 +39,7 @@
             "max": null,
             "divisibleBy": 1
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "appTextZoom",
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
@@ -56,6 +59,7 @@
             ],
             "default": "regular-contrast"
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-highContrastTheme",
         "value": "regular-contrast",
         "styles": {
@@ -82,7 +86,7 @@
             "black-yellow": {
                 "background-color": "#ffff00",
                 "color": "#000000",
-                "border": "2px dashed #6c6c6c"
+                "border": "1px dashed #6c6c6c"
             },
             "grey-black": {
                 "background-color": "#222222",
@@ -107,6 +111,7 @@
             "type": "boolean",
             "default": false
         },
+        "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-selfVoicing-enabled",
         "value": false
     }, {
@@ -114,38 +119,42 @@
         "schema": {
             "type": "more"
         },
+        "buttonTypes": ["largeButton"],
         "messageKey": "more"
     }, {
         "path": "save",
         "schema": {
             "type": "save"
         },
+        "buttonTypes": ["smallButton"],
         "messageKey": "save"
     }, {
         "path": "undo",
         "schema": {
-            "type": "undo",
-            "image": "undo.svg"
+            "type": "undo"
         },
+        "buttonTypes": ["smallButton"],
         "messageKey": "undo"
-    }, {
-        "path": "resetAll",
-        "schema": {
-            "type": "resetAll"
-        },
-        "messageKey": "resetAll"
     }, {
         "path": "psp",
         "schema": {
             "type": "psp"
         },
+        "buttonTypes": ["smallButton"],
         "messageKey": "psp"
+    }, {
+        "path": "resetAll",
+        "schema": {
+            "type": "resetAll"
+        },
+        "buttonTypes": ["smallButton"],
+        "messageKey": "resetAll"
     }, {
         "path": "close",
         "schema": {
-            "type": "close",
-            "image": "close.svg"
+            "type": "close"
         },
+        "buttonTypes": ["closeButton"],
         "messageKey": "close"
     }
 ]

@@ -31,8 +31,8 @@ fluid.defaults("gpii.app.centeredDialog", {
             funcName: "gpii.app.centeredDialog.setBounds",
             args: [
                 "{that}",
-                "{that}.width",
-                "{that}.height"
+                "{that}.model.width",
+                "{that}.model.height"
             ]
         },
         setBounds: {
@@ -55,14 +55,14 @@ fluid.defaults("gpii.app.centeredDialog", {
  * @param {Number} height - The height of the `BrowserWindow`.
  */
 gpii.app.centeredDialog.setBounds = function (that, width, height) {
-    width  = width || that.width;
-    height = height || that.height;
+    width  = width || that.model.width;
+    height = height || that.model.height;
 
     var position = gpii.browserWindow.computeCentralWindowPosition(width, height),
         bounds = gpii.browserWindow.computeWindowBounds(width, height, position.x, position.y);
 
-    that.width = bounds.width;
-    that.height = bounds.height;
+    that.applier.change("width", bounds.width);
+    that.applier.change("height", bounds.height);
 
     that.dialog.setBounds(bounds);
 };

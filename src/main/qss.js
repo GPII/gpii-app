@@ -18,7 +18,6 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
-require("./dialogs/basic/scaledDialog.js");
 require("./dialogs/quickSetStrip/qssDialog.js");
 require("./dialogs/quickSetStrip/qssTooltipDialog.js");
 require("./dialogs/quickSetStrip/qssWidgetDialog.js");
@@ -87,8 +86,6 @@ fluid.defaults("gpii.app.qssWrapper", {
         }
     },
 
-    scaleFactor: "{that}.options.siteConfig.scaleFactor",
-
     model: {
         messages: {
             restartWarningNotification: null
@@ -97,6 +94,9 @@ fluid.defaults("gpii.app.qssWrapper", {
         isKeyedIn: false,
         keyedInUserToken: null,
         settings: "{that}.options.loadedSettings",
+
+
+        scaleFactor: "{that}.options.siteConfig.scaleFactor",
 
         // user preferences
         closeQssOnBlur: false,
@@ -140,7 +140,9 @@ fluid.defaults("gpii.app.qssWrapper", {
 
     modelListeners: {
         "keyedInUserToken": {
-            func: "{qssNotification}.hide"
+            this: "{qssNotification}",
+            method: "hide",
+            excludeSource: "init"
         },
 
         "{messageBundles}.model.locale": {
@@ -239,7 +241,9 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssWidget: {
             type: "gpii.app.qssWidget",
             options: {
-                scaleFactor: "{qssWrapper}.options.scaleFactor",
+                model: {
+                    scaleFactor: "{qssWrapper}.model.scaleFactor"
+                },
                 listeners: {
                     onQssWidgetSettingAltered: {
                         func: "{qssWrapper}.alterSetting",
@@ -269,9 +273,9 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssTooltip: {
             type: "gpii.app.qssTooltipDialog",
             options: {
-                scaleFactor: "{qssWrapper}.options.scaleFactor",
                 model: {
-                    isKeyedIn: "{qssWrapper}.model.isKeyedIn"
+                    isKeyedIn: "{qssWrapper}.model.isKeyedIn",
+                    scaleFactor: "{qssWrapper}.model.scaleFactor"
                 },
                 listeners: {
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": [{
@@ -305,13 +309,17 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssNotification: {
             type: "gpii.app.qssNotification",
             options: {
-                scaleFactor: "{qssWrapper}.options.scaleFactor"
+                model: {
+                    scaleFactor: "{qssWrapper}.model.scaleFactor"
+                }
             }
         },
         qssMorePanel: {
             type: "gpii.app.qssMorePanel",
             options: {
-                scaleFactor: "{qssWrapper}.options.scaleFactor"
+                model: {
+                    scaleFactor: "{qssWrapper}.model.scaleFactor"
+                }
             }
         }
     }
@@ -622,7 +630,9 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
                          */
                         type: "disabled",
                         title: ""
-                    }
+                    },
+                    // Preserve the styling of the corresponding QSS button
+                    buttonTypes: loadedSettings[settingToHideIdx].buttonTypes
                 };
             }
         });
@@ -680,14 +690,14 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
  * button.
  */
 gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
-    var scaleFactor = qss.options.scaleFactor,
+    var scaleFactor = qss.model.scaleFactor,
         offsetLeft = scaleFactor * buttonElemMetrics.offsetLeft,
-        buttonWidth = scaleFactor * buttonElemMetrics.width,
-        buttonHeight = scaleFactor * buttonElemMetrics.height;
+        offsetTop = scaleFactor * buttonElemMetrics.offsetTop,
+        buttonWidth = scaleFactor * buttonElemMetrics.width;
 
     return {
-        x: qss.width - offsetLeft - buttonWidth / 2,
-        y: buttonHeight
+        x: qss.model.width - offsetLeft - buttonWidth / 2,
+        y: qss.model.height - offsetTop
     };
 };
 
@@ -800,15 +810,14 @@ fluid.defaults("gpii.app.qssInWrapper", {
     gradeNames: "gpii.app.qss",
     model: {
         isKeyedIn: "{qssWrapper}.model.isKeyedIn",
-
-        closeQssOnBlur: "{qssWrapper}.model.closeQssOnBlur"
+        closeQssOnBlur: "{qssWrapper}.model.closeQssOnBlur",
+        scaleFactor: "{qssWrapper}.model.scaleFactor"
     },
     config: {
         params: {
             settings: "{qssWrapper}.model.settings"
         }
     },
-    scaleFactor: "{qssWrapper}.options.scaleFactor",
     pspButtonPath: "psp",
     events: {
         onQssPspClose: "{qssWrapper}.events.onQssPspClose",

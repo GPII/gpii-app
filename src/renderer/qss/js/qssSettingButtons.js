@@ -35,23 +35,11 @@
             value: "{that}.model.item.value"
         },
 
-        styles: {
-            settingButton: "fl-qss-settingButton"
-        },
-
         modelListeners: {
             value: {
                 funcName: "gpii.qss.settingButtonPresenter.updateChangeIndicator",
                 args: ["{that}", "{that}.model.item", "{change}.value"],
                 namespace: "changeIndicator"
-            }
-        },
-
-        listeners: {
-            "onCreate.styleButton": {
-                this: "{that}.container",
-                method: "addClass",
-                args: ["{that}.options.styles.settingButton"]
             }
         }
     });

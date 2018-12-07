@@ -59,7 +59,11 @@ fluid.defaults("gpii.app.dialog", {
         offset: {
             x: 0,
             y: 0
-        }
+        },
+
+        scaleFactor: 1,                                   // the actual scale factor
+        width:       "{that}.options.config.attrs.width", // the actual width of the content
+        height:      "{that}.options.config.attrs.height" // the actual height of the content
     },
 
     events: {
@@ -138,9 +142,6 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     members: {
-        width:  "{that}.options.config.attrs.width", // the actual width of the content
-        height: "{that}.options.config.attrs.height", // the actual height of the content
-
         /**
          * Blurrable dialogs will have the `gradeNames` property which will hold all gradeNames
          * of the containing component. Useful when performing checks about the component if
@@ -172,6 +173,16 @@ fluid.defaults("gpii.app.dialog", {
             args: ["{that}", "{change}.value", "{that}.options.config.showInactive"],
             namespace: "impl",
             excludeSource: "init"
+        },
+        scaleFactor: {
+            funcName: "gpii.app.dialog.rescaleDialog",
+            args: [
+                "{that}",
+                "{change}.value",
+                "{change}.oldValue"
+            ],
+            namespace: "rescaleDialog",
+            excludeSource: "init"
         }
     },
     listeners: {
@@ -183,6 +194,10 @@ fluid.defaults("gpii.app.dialog", {
             funcName: "gpii.app.dialog.registerDailogReadyListener",
             args: "{that}"
         },
+        "onCreate.applyScaleFactor": {
+            funcName: "gpii.app.dialog.rescaleDialog",
+            args: ["{that}", "{that}.model.scaleFactor"]
+        },
         "onDestroy.cleanupElectron": {
             this: "{that}.dialog",
             method: "destroy",
@@ -190,6 +205,37 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
+        getScaledWidth: {
+            funcName: "gpii.app.dialog.getScaledWidth",
+            args: [
+                "{that}",
+                "{arguments}.0", // scaleFactor
+                "{arguments}.1"  // oldScaleFactor
+            ]
+        },
+        getScaledHeight: {
+            funcName: "gpii.app.dialog.getScaledHeight",
+            args: [
+                "{that}",
+                "{arguments}.0", // scaleFactor
+                "{arguments}.1"  // oldScaleFactor
+            ]
+        },
+        getScaledOffset: {
+            funcName: "gpii.app.dialog.getScaledOffset",
+            args: [
+                "{that}",
+                "{arguments}.0", // scaleFactor
+                "{arguments}.1"  // oldScaleFactor
+            ]
+        },
+        // Returns the total width of the component which must be taken into account when
+        // fitting the window into the available screen space. Usually it will be only the
+        // width of the component but in some special cases (such as the QSS) it may differ.
+        getExtendedWidth: {
+            funcName: "fluid.identity",
+            args: ["{that}.model.width"]
+        },
         // Changing the position of a BrowserWindow when the scale factor is different than
         // the default one (100%) changes the window's size (either width or height).
         // To ensure its size is correct simply set the size of the window again with the one
@@ -202,8 +248,8 @@ fluid.defaults("gpii.app.dialog", {
             args: [
                 "{that}",
                 "{that}.options.config.restrictions",
-                "{that}.width",
-                "{that}.height",
+                "{that}.model.width",
+                "{that}.model.height",
                 "{arguments}.0", // offsetX
                 "{arguments}.1"  // offsetY
             ]
@@ -346,6 +392,96 @@ gpii.app.dialog.positionOnInit = function (that) {
 };
 
 /**
+ * Given the new and the previous `scaleFactor` this function computes the new
+ * width of the component's `BrowserWindow`. In the typical case, the new width
+ * will be obtained by applying the ratio of the new and the previous `scaleFactor`
+ * to the current width but under some circumstances this may differ.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @param {Number} oldScaleFactor - The previous scale factor.
+ * @return {Number} The new width of the `BrowserWindow`.
+ */
+gpii.app.dialog.getScaledWidth = function (that, scaleFactor, oldScaleFactor) {
+    return scaleFactor * that.model.width / oldScaleFactor;
+};
+
+/**
+ * Given the new and the previous `scaleFactor` this function computes the new
+ * height of the component's `BrowserWindow`. In the typical case, the new height
+ * will be obtained by applying the ratio of the new and the previous `scaleFactor`
+ * to the current height but under some circumstances this may differ. For example,
+ * the height of the QSS widget is different depending on the setting which is
+ * represented in it.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @param {Number} oldScaleFactor - The previous scale factor.
+ * @return {Number} The new height of the `BrowserWindow`.
+ */
+gpii.app.dialog.getScaledHeight = function (that, scaleFactor, oldScaleFactor) {
+    return scaleFactor * that.model.height / oldScaleFactor;
+};
+
+/**
+ * Given the new and the previous `scaleFactor` this function computes the new
+ * offset of the component's `BrowserWindow` with respect to the lower right corner
+ * of the main screen. In the typical case, the new offset will be obtained by
+ * applying the ratio of the new and the previous `scaleFactor` to the current offset
+ * but under some circumstances this may differ. For example, the y-offset of the PSP
+ * should always be equal to the height of the QSS.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @param {Number} oldScaleFactor - The previous scale factor.
+ * @return {Object} The new offset of the `BrowserWindow`.
+ */
+gpii.app.dialog.getScaledOffset = function (that, scaleFactor, oldScaleFactor) {
+    return {
+        x: scaleFactor * that.model.offset.x / oldScaleFactor,
+        y: scaleFactor * that.model.offset.y / oldScaleFactor
+    };
+};
+
+/**
+ * When the `scaleFactor` changes, this function takes care of adjusting the
+ * dimensions and position of the dialog as well as of applying the new scale
+ * factor to the contents of the `BrowserWindow`.
+ * @param {Component} that - The `gpii.app.dialog` instance.
+ * @param {Number} scaleFactor - The new scale factor to be applied.
+ * @param {Number} oldScaleFactor - The previous scale factor.
+ */
+gpii.app.dialog.rescaleDialog = function (that, scaleFactor, oldScaleFactor) {
+    scaleFactor = scaleFactor || 1;
+    oldScaleFactor = oldScaleFactor || 1;
+
+    var width = that.getScaledWidth(scaleFactor, oldScaleFactor),
+        height = that.getScaledHeight(scaleFactor, oldScaleFactor),
+        offset = that.getScaledOffset(scaleFactor, oldScaleFactor);
+
+    that.applier.change("width", width);
+    that.applier.change("height", height);
+    that.applier.change("offset", offset);
+
+    gpii.app.dialog.setDialogZoom(that.dialog, scaleFactor);
+
+    that.setBounds();
+};
+
+/**
+ * Applies a custom scaling factor to the whole HTML page of the dialog.
+ * @param {BrowserWindow} dialog - The `BrowserWindow` whose content needs
+ * to be scaled up or down.
+ * @param {Number} scaleFactor - The scaling factor to be applied.
+ */
+gpii.app.dialog.setDialogZoom = function (dialog, scaleFactor) {
+    var script = fluid.stringTemplate("jQuery(\"body\").css(\"zoom\", %scaleFactor)", {
+        scaleFactor: scaleFactor
+    });
+
+    if (dialog) {
+        dialog.webContents.executeJavaScript(script);
+    }
+};
+
+/**
  * Listens for a notification from the corresponding BrowserWindow for components' initialization.
  * It uses a shared channel for dialog creation - `onDialogReady` - where every BrowserWindow of a `gpii.app.dialog`
  * grade may sent a notification for its creation. Messages in this shared channel are distinguished based on
@@ -439,18 +575,19 @@ gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX
     // As default use currently set values
     offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
     offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
-    width    = fluid.isValue(width)   ? width : that.width;
-    height   = fluid.isValue(height)  ? height : that.height;
+    width    = fluid.isValue(width)   ? width : that.model.width;
+    height   = fluid.isValue(height)  ? height : that.model.height;
 
     // apply restrictions
     if (restrictions.minHeight) {
-        height = Math.max(height, restrictions.minHeight);
+        var scaleFactor = that.model.scaleFactor;
+        height = Math.max(height, scaleFactor * restrictions.minHeight);
     }
 
     var bounds = gpii.browserWindow.computeWindowBounds(width, height, offsetX, offsetY);
 
-    that.width = bounds.width;
-    that.height = bounds.height;
+    that.applier.change("width", bounds.width);
+    that.applier.change("height", bounds.height);
     that.applier.change("offset", { x: offsetX, y: offsetY });
 
     that.dialog.setBounds(bounds);
@@ -468,19 +605,19 @@ gpii.app.dialog.setRestrictedSize = function (that, restrictions, width, height)
     // ensure the whole window is visible
     var offset = that.model.offset;
 
-    width  = width  || that.width;
-    height = height || that.height;
+    width  = width  || that.model.width;
+    height = height || that.model.height;
 
     // apply restrictions
     if (restrictions.minHeight) {
-        height = Math.max(height, restrictions.minHeight);
+        var scaleFactor = that.model.scaleFactor;
+        height = Math.max(height, scaleFactor * restrictions.minHeight);
     }
 
     var size = gpii.browserWindow.computeWindowSize(width, height, offset.x, offset.y);
 
-    that.width  = size.width;
-    that.height = size.height;
-
+    that.applier.change("width", size.width);
+    that.applier.change("height", size.height);
     that.dialog.setSize(size.width, size.height);
 };
 
