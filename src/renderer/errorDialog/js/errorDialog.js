@@ -65,7 +65,7 @@
      * multiple dynamic buttons are created and its actions
      * are handled from some distant logic.
      *
-     * This is still an idea, as errors are not yet received from
+     * This is still an idea, as error buttons are not yet received from
      * the API as of GPII-1313. It would probably be better to use
      * a different identifier from `label` in case its uniqueness is not
      * guaranteed.
@@ -78,7 +78,7 @@
 
         invokers: {
             onClick: {
-                func: "{errorDialog}.events.onButtonClicked.fire",
+                func: "{channelNotifier}.events.onErrorDialogButtonClicked.fire",
                 /* Simply identify a button by its label */
                 args: "{that}.model.label"
             }
@@ -113,12 +113,18 @@
         model: {
             messages: {
                 titlebarAppName: null,
-                errorCode: "Message %errCode"
+                errorCode: "Message %errCode",
+
+                // treat these as messages as they are
+                // sent to the error dialog i18ned
+                title:   "{that}.model.title",
+                subhead: "{that}.model.subhead",
+                details: "{that}.model.details"
             },
-            title:   null,
-            subhead: null,
-            details: null,
-            errCode: null,
+
+            values: {
+                errCode: "{that}.model.errCode"
+            },
 
             /*
              * Support at most 3 buttons (optional)
@@ -139,67 +145,22 @@
             subhead:  ".flc-contentSubhead",
             details:  ".flc-contentDetails",
 
-            // use longer name to avoid the automatic rendering
             errorCode:  ".flc-errCode"
         },
 
-        events: {
-            onHeightChanged: null,
-            onButtonClicked: null
-        },
-
         enableRichText: true,
-        modelListeners: {
-            "*": {
-                funcName: "{that}.renderText",
-                args: [
-                    "{that}.model"
-                ]
-            },
-
-            errCode: {
-                this: "{that}.dom.errorCode",
-                method: "text",
-                args: "@expand:fluid.stringTemplate({that}.model.messages.errorCode, {that}.model)"
-            }
-        },
-
-        listeners: {
-            onCreate: {
-                func: "{channel}.notify",
-                args: ["onErrorDialogCreated"]
-            },
-            onHeightChanged: {
-                func: "{channel}.notify",
-                args: ["onErrorDialogHeightChanged", "{arguments}.0"]
-            },
-            onButtonClicked: {
-                func: "{channel}.notify",
-                args: ["onErrorDialogClosed"]
-            }
-        },
-
-        invokers: {
-            // merges with the current model
-            updateConfig: {
-                changePath: "",
-                value: "{arguments}.0"
-            }
-        },
 
         components: {
-            channel: {
-                type: "gpii.psp.errorDialog.channel",
+            channelNotifier: {
+                type: "gpii.psp.channelNotifier",
                 options: {
-                    listeners: {
-                        onConfigReceived: {
-                            func: "{errorDialog}.updateConfig",
-                            args: "{arguments}.0"
-                        }
+                    events: {
+                        onErrorDialogClosed: null,
+                        onErrorDialogButtonClicked: null,
+                        onErrorDialogContentHeightChanged: "{errorDialog}.events.onHeightChanged"
                     }
                 }
             },
-
             titlebar: {
                 type: "gpii.psp.titlebar",
                 container: "{that}.dom.titlebar",
@@ -210,7 +171,7 @@
                         }
                     },
                     listeners: {
-                        "onClose": "{errorDialog}.events.onButtonClicked"
+                        "onClose": "{channelNotifier}.events.onErrorDialogClosed"
                     }
                 }
             },

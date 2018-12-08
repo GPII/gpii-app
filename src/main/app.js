@@ -25,6 +25,7 @@ require("./common/utils.js");
 require("./common/ws.js");
 require("./dialogs/dialogManager.js");
 require("./dialogs/psp.js");
+require("./storage.js");
 require("./factsManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
@@ -70,8 +71,11 @@ fluid.defaults("gpii.app", {
             sets: [],
             activeSet: null,
             settingGroups: [],
+
+            // user settings
             closePspOnBlur: null,
-            closeQssOnBlur: null
+            closeQssOnBlur: null,
+            disableRestartWarning: null
         },
         theme: "{that}.options.defaultTheme"
     },
@@ -131,6 +135,9 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        storage: {
+            type: "gpii.app.storage"
+        },
         gpiiConnector: {
             type: "gpii.app.gpiiConnector",
             createOnEvent: "onGPIIReady",
@@ -175,6 +182,20 @@ fluid.defaults("gpii.app", {
             type: "gpii.windows.appZoom",
             createOnEvent: "onPSPPrerequisitesReady"
         },
+        systemLanguageListener: {
+            type: "gpii.windows.language",
+            options: {
+                model: {
+                    configuredLanguage: "{messageBundles}.model.locale"
+                },
+                modelListeners: {
+                    configuredLanguage: {
+                        funcName: "console.log",
+                        args: ["Language change: ", "{change}.value"]
+                    }
+                }
+            }
+        },
         qssWrapper: {
             type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -184,7 +205,8 @@ fluid.defaults("gpii.app", {
                     isKeyedIn: "{app}.model.isKeyedIn",
                     keyedInUserToken: "{app}.model.keyedInUserToken",
 
-                    closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur"
+                    closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur",
+                    disableRestartWarning: "{app}.model.preferences.disableRestartWarning"
                 },
                 listeners: {
                     "{gpiiConnector}.events.onQssSettingsUpdate": {
@@ -194,6 +216,9 @@ fluid.defaults("gpii.app", {
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated"
                 },
                 modelListeners: {
+                    "{systemLanguageListener}.model.installedLanguages": {
+                        funcName: "{that}.updateLanguageSettingOptions"
+                    },
                     "settings.*": {
                         funcName: "gpii.app.onQssSettingAltered",
                         args: [
@@ -311,7 +336,12 @@ fluid.defaults("gpii.app", {
         },
         factsManager: {
             type: "gpii.app.factsManager",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    interactionsCount: "{storage}.model.interactionsCount"
+                }
+            }
         }
     },
     events: {

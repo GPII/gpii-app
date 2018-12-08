@@ -49,12 +49,16 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
         },
         distributeQssScaleFactor: {
-            record: "{that}.options.siteConfig.qssScaleFactor",
-            target: "{app qssWrapper}.options.scaleFactor"
+            record: "{that}.options.siteConfig.qss",
+            target: "{app qssWrapper}.options.siteConfig"
         },
-        distributePspScaleFactor: {
-            record: "{that}.options.siteConfig.pspScaleFactor",
-            target: "{app psp}.options.scaleFactor"
+        distributeLanguageLabelTemplate: {
+            record: "{that}.options.siteConfig.qss.languageOptionLabel",
+            target: "{app qssWrapper}.options.settingOptions.languageOptionLabelTemplate"
+        },
+        distributePspConfig: {
+            record: "{that}.options.siteConfig.psp",
+            target: "{app psp}.options.siteConfig"
         },
         distributeDialogScaleFactor: {
             record: "{that}.options.siteConfig.pspScaleFactor",
@@ -64,17 +68,21 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.qssMorePanel",
             target: "{app qssMorePanel}.options.siteConfig"
         },
-        distributesQssClickOutside: {
+        distributeQssClickOutside: {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
             target: "{app gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
         },
-        distributesPspClickOutside: {
+        distributePspClickOutside: {
             record: "{that}.options.siteConfig.closePspOnClickOutside",
             target: "{app gpiiConnector}.options.defaultPreferences.closePspOnBlur"
         },
-        distributesOpenQssShortcut: {
+        distributeOpenQssShortcut: {
             record: "{that}.options.siteConfig.openQssShortcut",
             target: "{app gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
+        },
+        distributeDisableRestartWarning: {
+            record: "{that}.options.siteConfig.disableRestartWarning",
+            target: "{app gpiiConnector}.options.defaultPreferences.disableRestartWarning"
         },
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
@@ -83,6 +91,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",
             target: "{app tray}.options.trayType"
+        },
+        distributeAboutDialogConfig: {
+            record: "{that}.options.siteConfig.aboutDialog",
+            target: "{app aboutDialog}.options.siteConfig"
         }
     }
 });

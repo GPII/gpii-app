@@ -143,7 +143,7 @@ gpii.tests.dev.testKeyInList = function (item) {
     jqUnit.assertEquals("Item is 'Key In' List", "Key in ...", item.label);
     var submenu = item.submenu;
     jqUnit.assertValue("Item has submenu", submenu);
-    jqUnit.assertEquals("Key in list has 15 items", 15, submenu.length);
+    jqUnit.assertEquals("Key in list has 16 items", 16, submenu.length);
 
     gpii.tests.app.testItem(submenu[0], "Voice control with Increased Size");
     gpii.tests.app.testItem(submenu[1], "Larger 125%");
@@ -158,8 +158,9 @@ gpii.tests.dev.testKeyInList = function (item) {
     gpii.tests.app.testItem(submenu[10], "Magnifier 200% & Display Scaling 175%");
     gpii.tests.app.testItem(submenu[11], "Dark Magnifier 200%");
     gpii.tests.app.testItem(submenu[12], "Multiple pref sets. Magnifier & Volume Control");
-    gpii.tests.app.testItem(submenu[13], "onKeyInFail");
-    gpii.tests.app.testItem(submenu[14], "onSettingWriteFail");
+    gpii.tests.app.testItem(submenu[13], "Empty Pref Set");
+    gpii.tests.app.testItem(submenu[14], "onKeyInFail");
+    gpii.tests.app.testItem(submenu[15], "onSettingWriteFail");
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
@@ -238,7 +239,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 171,
+    expect: 177,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"

@@ -152,7 +152,14 @@ fluid.defaults("gpii.app.psp", {
         "gpii.app.scaledDialog"
     ],
 
-    scaleFactor: 1,
+    siteConfig: {
+        scaleFactor: 1,
+        urls: {
+            help: "http://pmt.gpii.org/help"
+        }
+    },
+
+    scaleFactor: "{that}.options.siteConfig.scaleFactor",
     defaultWidth: 450,
     defaultHeight: 600,
 
@@ -208,7 +215,8 @@ fluid.defaults("gpii.app.psp", {
                         args: ["{that}.options.sounds.activeSetChanged"]
                     }
                 }
-            }
+            },
+            urls: "{that}.options.siteConfig.urls"
         }
     },
 

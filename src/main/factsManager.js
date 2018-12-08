@@ -36,7 +36,14 @@ fluid.defaults("gpii.app.factsManager", {
         keyedInTimestamp: null,
         // Number of interactions with the GPII app. Incremented whenever the PSP or QSS is
         // opened, as well as when an actual user (i.e. different from `noUser`) keys in.
-        interactionsCount: 0
+        interactionsCount: null,
+
+        /* Whether the default preference set has no setting groups when the user keys in.
+         * Note that this value will NOT change if settings are added to the preference set
+         * subsequently in the same user session. The value of `isEmptyKey` for the "noUser"
+         * will always be `false`.
+         */
+        isEmptyKey: null
     },
     modelListeners: {
         interactionsCount: {
@@ -45,6 +52,23 @@ fluid.defaults("gpii.app.factsManager", {
                 "FactsManager: Changed interactionsCount: ",
                 "{change}.value"
             ]
+        },
+        /* Ensure that the `isEmptyKey` is calculated only when the user has keyed in AND
+         * his preferences are delivered to the GPII app.
+         */
+        "{app}.model.preferences.gpiiKey": {
+            changePath: "isEmptyKey",
+            value: {
+                expander: {
+                    funcName: "gpii.app.factsManager.getIsEmptyKey",
+                    args: [
+                        "{that}",
+                        "{app}.model.isKeyedIn",
+                        "{app}.model.preferences.settingGroups"
+                    ]
+                }
+            },
+            excludeSource: "init"
         }
     },
     listeners: {
@@ -78,6 +102,20 @@ fluid.defaults("gpii.app.factsManager", {
  * @param {Component} that - The `gpii.app.factsManager` instance.
  */
 gpii.app.factsManager.increaseInteractionsCount = function (that) {
-    var interactionsCount = that.model.interactionsCount;
+    var interactionsCount = that.model.interactionsCount || 0;
     that.applier.change("interactionsCount", interactionsCount + 1);
+};
+
+/**
+ * Returns whether the currently used key is empty, i.e. has no setting groups
+ * in its default preference set when the user keys in.
+ * @param {Component} that - The `gpii.app.factsManager` instance.
+ * @param {Boolean} isKeyedIn - Whether there is an actual keyed in user or not.
+ * @param {module:gpiiConnector.SettingGroup[]} settingGroups - An array with
+ * setting group items as per the parsed message in the `gpiiConnector`
+ * @return {Boolean} `true` if the current key has no setting groups or `false`
+ * otherwise.
+ */
+gpii.app.factsManager.getIsEmptyKey = function (that, isKeyedIn, settingGroups) {
+    return isKeyedIn && !gpii.app.settingGroups.hasSettings(settingGroups);
 };

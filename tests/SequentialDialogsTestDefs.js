@@ -70,7 +70,7 @@ gpii.tests.sequentialDialogs.testDefs = {
         func: "{that}.app.dialogManager.show",
         args: ["error", noInternetErrorFixture]
     }, { // The error dialog is shown automatically as it is the only one.
-        event: "{that gpii.app.errorDialog.channel}.events.onErrorDialogCreated",
+        event: "{that gpii.app.errorDialog}.events.onDialogShown",
         listener: "jqUnit.assertLeftHand",
         args: [
             "The no internet error dialog is now shown",
@@ -83,9 +83,9 @@ gpii.tests.sequentialDialogs.testDefs = {
     }, {
         func: "jqUnit.assertLeftHand",
         args: [
-            "The shown dialog is not changed",
+            "The currently displayed dialog is not changed",
             noInternetErrorFixture,
-            "{that}.app.dialogManager.error.dialog.options.config.attrs"
+            "{that}.app.dialogManager.error.dialog.options.config.params"
         ]
     }, { // It will not be shown immediately.
         func: "jqUnit.assertLeftHand",
@@ -95,14 +95,14 @@ gpii.tests.sequentialDialogs.testDefs = {
             "{that}.app.dialogManager.errorQueue.queue.1"
         ]
     }, { // Only after the first error dialog is hidden...
-        func: "{that}.app.dialogManager.hide",
-        args: ["error"]
+        func: "{that}.app.dialogManager.error.dialog.hide"
     }, { // ...will the second be eligible for showing.
-        func: "jqUnit.assertLeftHand",
+        event: "{that gpii.app.error}.events.onDialogCreate",
+        listener: "jqUnit.assertLeftHand",
         args: [
             "The key in error dialog is now the first element in the queue",
             keyInErrorFixture,
-            "{that}.app.dialogManager.errorQueue.queue.0"
+            "{arguments}.0"
         ]
     }, { // Then try to show a survey dialog.
         func: "{that}.app.dialogManager.show",

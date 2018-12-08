@@ -35,6 +35,11 @@ gpii.tests.userErrorsHandler.assertErrorDialogOptions = function (dialogOptions)
         });
 };
 
+function clickCloseBtn() {
+    console.log("Close button: ", jQuery(".flc-closeBtn"));
+    jQuery(".flc-closeBtn").click();
+}
+
 gpii.tests.userErrorsHandler.testDefs = {
     name: "User errors handler integration tests",
     expect: 5,
@@ -53,16 +58,14 @@ gpii.tests.userErrorsHandler.testDefs = {
             "{arguments}.0"
         ]
     }, { // Wait for the error dialog to be shown.
-        event: "{that gpii.app.errorDialog.channel}.events.onErrorDialogCreated",
-        listener: "fluid.identity"
-    }, { // Clicking the close button in the error dialog...
-        func: "gpii.test.executeJavaScript",
+        event: "{that gpii.app.errorDialog}.events.onDialogReady",
+        listener: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.dialogManager.error.dialog.dialog",
-            "jQuery(\".flc-closeBtn\").click()"
+            gpii.test.toIIFEString(clickCloseBtn)
         ]
     }, { // ... results in the error dialog being hidden.
-        event: "{that}.app.dialogManager.error.dialog.dialogChannel.events.onErrorDialogClosed",
+        event: "{that}.app.dialogManager.error.dialog.events.onDialogHidden",
         listener: "jqUnit.assertFalse",
         args: [
             "The error dialog is closed when its close button is clicked",

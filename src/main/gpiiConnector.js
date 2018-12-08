@@ -39,7 +39,8 @@ fluid.defaults("gpii.app.gpiiConnector", {
          * be used instead.
          */
         closeQssOnBlur: false,
-        closePspOnBlur: true
+        closePspOnBlur: true,
+        disableRestartWarning: false
     },
 
     events: {
@@ -270,6 +271,10 @@ gpii.app.extractPreferencesData = function (message, defaultPreferences) {
         // the latter will always be the case in the keyed out payload!
         closePspOnBlur = fluid.isValue(value.closePspOnBlur) ? value.closePspOnBlur : defaultPreferences.closePspOnBlur,
         closeQssOnBlur = fluid.isValue(value.closeQssOnBlur) ? value.closeQssOnBlur : defaultPreferences.closeQssOnBlur,
+        disableRestartWarning =
+            fluid.isValue(value.disableRestartWarning) ?
+                value.disableRestartWarning :
+                defaultPreferences.disableRestartWarning,
         gpiiAppShortcut = value.gpiiAppShortcut || defaultPreferences.gpiiAppShortcut,
         preferences = value.preferences || {},
         contexts = preferences.contexts,
@@ -299,6 +304,7 @@ gpii.app.extractPreferencesData = function (message, defaultPreferences) {
         settingGroups: settingGroups,
         closePspOnBlur: closePspOnBlur,
         closeQssOnBlur: closeQssOnBlur,
+        disableRestartWarning: disableRestartWarning,
         gpiiAppShortcut: gpiiAppShortcut
     };
 };
@@ -706,7 +712,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
     // The "original" values of the QSS settings. These are to be provided from the core
     // in the future.
     defaultQssSettingValues: {
-        "http://registry\\.gpii\\.net/common/language": { value: "en-US" },
+        // "http://registry\\.gpii\\.net/common/language": { value: "en-US" }, this is synced directly in qss.js
         "http://registry\\.gpii\\.net/common/DPIScale": { value: 0 },
         "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
         "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false }

@@ -276,6 +276,12 @@ fluid.defaults("gpii.app.menuInAppDev", {
                 token: "multi_context"
             }
         }, {
+            label: "Empty Pref Set",
+            click: "onKeyIn",
+            args: {
+                token: "empty"
+            }
+        }, {
             label: "onKeyInFail",
             click: "onKeyIn",
             args: {
