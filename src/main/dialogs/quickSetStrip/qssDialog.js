@@ -201,11 +201,15 @@ gpii.app.qss.computeQssWidth = function (buttonWidth, sideMargin, qssButtons) {
  */
 gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
     if (closeQssOnBlur) {
-        var trayBounds = tray.tray.getBounds(),
-            cursorPoint = electron.screen.getCursorScreenPoint();
+        // Reverted this bit from GPII-3517, see:
+        // https://github.com/GPII/gpii-app/pull/67#pullrequestreview-182925140
+        //var trayBounds = tray.tray.getBounds(),
+        //    cursorPoint = electron.screen.getCursorScreenPoint();
 
-        if (!gpii.app.isPointInRect(cursorPoint, trayBounds)) {
-            that.hide();
-        }
+        //if (!gpii.app.isPointInRect(cursorPoint, trayBounds)) {
+        //    that.hide();
+        //}
+        //
+        that.hide();
     }
 };
