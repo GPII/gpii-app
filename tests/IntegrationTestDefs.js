@@ -195,13 +195,14 @@ gpii.tests.dev.testTrayTooltip = function (tray, activePrefSet) {
 
 gpii.tests.dev.testTrayKeyedOut = function (tray) {
     jqUnit.assertValue("Tray is available", tray);
-    jqUnit.assertEquals("No user keyed-in icon", tray.options.icons.keyedOut, tray.model.icon);
+    jqUnit.assertEquals("No user keyed-in icon",
+        fluid.module.resolvePath(tray.options.icons.keyedOut), tray.model.icon);
     gpii.tests.dev.testTrayTooltip(tray);
 };
 
 gpii.tests.dev.testTrayKeyedIn = function (tray, activePrefSet) {
     jqUnit.assertValue("Tray is available", tray);
-    jqUnit.assertEquals("Keyed-in user icon", tray.options.icons.keyedIn, tray.model.icon);
+    jqUnit.assertEquals("Keyed-in user icon", fluid.module.resolvePath(tray.options.icons.keyedIn), tray.model.icon);
     gpii.tests.dev.testTrayTooltip(tray, activePrefSet);
 };
 

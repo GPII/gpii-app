@@ -12,13 +12,12 @@
         "electron": "3.0.2",
         "electron-edge-js": "8.3.8",
         "electron-localshortcut": "3.1.0",
-        "gpii-windows": "0.3.0-dev.20181120T145240Z.c46b4be",
+        "gpii-windows": "stegru/windows#GPII-3540",
         "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
         "node-jqunit": "1.1.8",
         "request": "2.88.0",
         "winstrap": "0.5.12",
-        "ws": "6.1.2"
-    },
+        "ws": "6.1.2"},
     "devDependencies": {
         "electron-packager": "8.5.1",
         "eslint-config-fluid": "1.3.0",
@@ -35,7 +34,8 @@
     "scripts": {
         "start": "electron .",
         "dev": "electron . ./configs app.dev",
-        "build": "electron ./scripts/compileMessageBundles.js",
+        "build": "electron ./scripts/compileMessageBundles.js && .\\trayButton\\build.cmd",
+        "postinstall": "npm run build",
         "pretest": "npm run pretest:clean && npm run build && npm run pretest:instrument",
         "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports build && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
         "pretest:instrument": "node tests/lib/instrumentSource.js",

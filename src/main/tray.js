@@ -16,39 +16,35 @@
 
 var fluid    = require("infusion");
 var electron = require("electron");
+var child_process = require("child_process");
 
 var Tray           = electron.Tray;
 var gpii           = fluid.registerNamespace("gpii");
 
 /**
- * Component that contains an Electron Tray.
+ * Component that controls the tray widgets.
  */
 fluid.defaults("gpii.app.tray", {
-    gradeNames: "fluid.modelComponent",
-    members: {
-        tray: {
-            expander: {
-                funcName: "gpii.app.makeTray",
-                args: ["{that}.options", "{that}.events"]
-            }
-        }
-    },
+    gradeNames: ["fluid.modelComponent", "{that}.options.trayType"],
     icons: {
         keyedIn: "%gpii-app/src/icons/Morphic-tray-icon-green.ico",
-        keyedOut: "%gpii-app/src/icons/Morphic-tray-icon-white.ico"
+        keyedOut: "%gpii-app/src/icons/Morphic-tray-icon-white.ico",
+        highContrast: "%gpii-app/src/icons/Morphic-tray-icon-white.ico"
     },
     components: {
         menu: {
             type: "gpii.app.menuInApp",
             options: {
                 events: {
-                    onActivePreferenceSetAltered: "{tray}.events.onActivePreferenceSetAltered"
+                    onActivePreferenceSetAltered: "{tray}.events.onActivePreferenceSetAltered",
+                    onMenuUpdated: "{tray}.events.onMenuUpdated"
                 }
             }
         }
     },
     events: {
         onActivePreferenceSetAltered: null, // passed from parent
+        onMenuUpdated: null,
         onTrayIconClicked: null
     },
     model: {
@@ -67,7 +63,7 @@ fluid.defaults("gpii.app.tray", {
             singleTransform: {
                 type: "fluid.transforms.free",
                 func: "gpii.app.getTrayIcon",
-                args: ["{that}.model.isKeyedIn", "{that}.options.icons"]
+                args: ["{that}.model.isKeyedIn", "{gpii.app.tray}.options.icons"]
             }
         },
         "tooltip": {
@@ -78,63 +74,8 @@ fluid.defaults("gpii.app.tray", {
                 args: ["{that}.model.isKeyedIn", "{that}.model.preferences", "{that}.model.messages"]
             }
         }
-    },
-    modelListeners: {
-        "icon": {
-            funcName: "gpii.app.tray.setTrayIcon",
-            args: ["{that}.tray", "{change}.value"],
-            excludeSource: "init"
-        },
-        "tooltip": {
-            funcName: "gpii.app.tray.setTrayTooltip",
-            args: ["{that}.tray", "{that}.model.tooltip"],
-            excludeSource: "init"
-        }
-    },
-    listeners: {
-        "onDestroy.cleanupElectron": {
-            this: "{that}.tray",
-            method: "destroy"
-        }
     }
 });
-
-/**
- * Sets the icon for the Electron Tray which represents the GPII application.
- * @param {Object} tray - An instance of an Electron Tray.
- * @param {String} icon - The simple path to the icon file.
- */
-gpii.app.tray.setTrayIcon = function (tray, icon) {
-    var iconPath = fluid.module.resolvePath(icon);
-    tray.setImage(iconPath);
-};
-
-/**
- * Sets the tooltip for the Electron Tray icon. If a falsy value is provided,
- * the current tooltip will be removed.
- * @param {Tray} tray - An instance of an Electron Tray.
- * @param {String} tooltip - The tooltip to be set.
- */
-gpii.app.tray.setTrayTooltip = function (tray, tooltip) {
-    tooltip = tooltip || "";
-    tray.setToolTip(tooltip);
-};
-
-/**
- * Creates the Electron Tray
- * @param {Object} options A configuration object for the tray that will be created.
- * @param {Object} events Object containing component's events.
- * @return {Tray} - The tray object.
- */
-gpii.app.makeTray = function (options, events) {
-    var tray = new Tray(fluid.module.resolvePath(options.icons.keyedOut));
-
-    tray.on("click", function () {
-        events.onTrayIconClicked.fire();
-    });
-
-    return tray;
-};
 
 /**
  * Returns the path to the icon for the Electron Tray based on whether there is a
@@ -144,7 +85,7 @@ gpii.app.makeTray = function (options, events) {
  * @return {String} The path to the icon for the Electron Tray.
  */
 gpii.app.getTrayIcon = function (isKeyedIn, icons) {
-    return isKeyedIn ? icons.keyedIn : icons.keyedOut;
+    return fluid.module.resolvePath(isKeyedIn ? icons.keyedIn : icons.keyedOut);
 };
 
 /**
@@ -173,4 +114,221 @@ gpii.app.getTrayTooltip = function (isKeyedIn, preferences, messages) {
     }
 
     return messages.defaultTooltip;
+};
+
+// Wrapper of the electron Tray
+fluid.defaults("gpii.app.trayIcon", {
+    gradeNames: ["fluid.modelComponent"],
+    modelListeners: {
+        icon: {
+            this: "{that}.trayIcon",
+            method: "setImage",
+            args: [ "{change}.value" ],
+            excludeSource: "init"
+        },
+        tooltip: {
+            this: "{that}.trayIcon",
+            method: "setToolTip",
+            args: [ "{change}.value" ],
+            excludeSource: "init"
+        }
+    },
+    listeners: {
+        "onDestroy.cleanupElectron": {
+            this: "{that}.trayIcon",
+            method: "destroy"
+        },
+        "onMenuUpdated.trayIcon": {
+            this: "{that}.trayIcon",
+            method: "setContextMenu",
+            args: [ "{arguments}.0" ]
+        }
+    },
+    members: {
+        trayIcon: {
+            expander: {
+                funcName: "gpii.app.makeIcon",
+                args: ["{gpii.app.tray}.options", "{that}.events"]
+            }
+        }
+    }
+});
+
+/**
+ * Creates the Electron Tray
+ * @param {Object} options A configuration object for the tray that will be created.
+ * @param {Object} events Object containing component's events.
+ * @return {Tray} - The tray object.
+ */
+gpii.app.makeIcon = function (options, events) {
+    var tray = new Tray(gpii.app.getTrayIcon(false, options.icons));
+
+    tray.on("click", function () {
+        events.onTrayIconClicked.fire();
+    });
+
+    return tray;
+};
+
+// A task bar button.
+fluid.defaults("gpii.app.trayButton", {
+    gradeNames: ["fluid.modelComponent", "fluid.contextAware"],
+    contextAwareness: {
+        platform: {
+            checks: {
+                windows: {
+                    contextValue: "{gpii.contexts.windows}",
+                    gradeNames: "gpii.app.trayButton.windows"
+                }
+            }
+        }
+    },
+    invokers: {
+        startProcess: {
+            funcName: "gpii.app.trayButton.startProcess",
+            args: [ "{that}" ]
+        },
+        remove: {
+            func: "{that}.updateButton",
+            args: [ "{that}.buttonItems.destroy" ]
+        },
+        updateButton: {
+            func: "{that}.sendDataMessage", // command, data
+            args: [ "{that}.trayButtonWindow", "{arguments}.0", "{arguments}.1" ]
+        }
+    },
+    listeners: {
+        "onCreate.init": "{that}.startProcess()",
+        "onDestroy.remove": "{that}.remove()",
+        "onMenuUpdated.trayButton": {
+            funcName: "gpii.app.trayButton.setMenu",
+            args: [ "{that}", "{arguments}.0" ]
+        }
+    },
+    modelListeners: {
+        icon: {
+            func: "{that}.updateButton",
+            args: [ "{that}.buttonItems.icon", "{change}.value" ]
+        },
+        highContrastIcon: {
+            func: "{that}.updateButton",
+            args: [ "{that}.buttonItems.highContrastIcon", "{change}.value" ]
+        },
+        tooltip: {
+            func: "{that}.updateButton",
+            args: [ "{that}.buttonItems.toolTip", "{change}.value" ]
+        },
+        isKeyedIn: {
+            func: "{that}.updateButton",
+            args: [ "{that}.buttonItems.state", "{change}.value" ]
+        }
+    },
+    model: {
+        highContrastIcon: "{that}.options.icons.highContrastIcon"
+    },
+    members: {
+        buttonItems: {
+            // Set the current icon
+            icon: 1,
+            // Set the icon used when high-contrast is on
+            highContrastIcon: 2,
+            // Set the tool tip
+            toolTip: 3,
+            // Remove the icon
+            destroy: 4,
+            // Set whether or not the button should look "on" (for high-contrast)
+            state: 5
+        },
+        // Path to the tray button window.
+        trayButtonWindow: ["Shell_TrayWnd", "GPII-TrayButton"],
+        trayButtonMessage: "GPII-TrayButton-Message",
+        menu: null
+    },
+    trayButtonExe: "%gpii-app/bin/tray-button.exe"
+});
+
+fluid.defaults("gpii.app.trayButton.windows", {
+    invokers: {
+        sendDataMessage: {
+            func: "{gpii.windows.messages}.sendData", // window class, command, data
+            args: ["{arguments}.0", "{arguments}.1", "{arguments}.2"]
+        }
+    },
+    listeners: {
+        "onCreate.messages": "{gpii.windows.messages}.start({that})",
+        "onDestroy.messages": "{gpii.windows.messages}.stop({that})",
+        "{gpii.windows.messages}.events.onMessage": {
+            funcName: "gpii.app.trayButton.windowMessage",
+            // that, hwnd, msg, wParam, lParam
+            args: ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2", "{arguments}.3"]
+        }
+    }
+});
+
+// Notifications sent from the button
+gpii.app.trayButton.notifications = {
+    // Update everything
+    update: 0,
+    // Left button clicked
+    click: 1,
+    // Show the menu (right button clicked)
+    showMenu: 2
+};
+
+/**
+ * Starts the tray button process, and restarts it if it dies.
+ * @param {Component} that The gpii.app.trayButton instance.
+ */
+gpii.app.trayButton.startProcess = function (that) {
+    fluid.log("Starting TrayButton process.");
+    var child = child_process.spawn(fluid.module.resolvePath(that.options.trayButtonExe), []);
+    child.on("exit", function (code) {
+        fluid.log("TrayButton process terminated.");
+        if (code && !fluid.isDestroyed(that)) {
+            that.startProcess();
+        }
+    });
+};
+
+/**
+ * Sets the context menu.
+ * @param {Component} that The gpii.app.trayButton instance.
+ * @param {Electron.Menu} menu The menu object.
+ */
+gpii.app.trayButton.setMenu = function (that, menu) {
+    that.menu = menu;
+};
+
+/**
+ * Handles messages sent from the tray button.
+ * @param {Component} that The gpii.app.trayButton instance.
+ * @param {Number} hwnd The message window.
+ * @param {Number|String} msg The message.
+ * @param {Number} wParam Message data.
+ */
+gpii.app.trayButton.windowMessage = function (that, hwnd, msg, wParam) {
+    if (msg === that.trayButtonMessage) {
+        switch (wParam) {
+        case gpii.app.trayButton.notifications.click:
+            that.events.onTrayIconClicked.fire();
+            break;
+
+        case gpii.app.trayButton.notifications.showMenu:
+            if (that.menu) {
+                that.menu.popup({});
+            }
+            break;
+
+        case gpii.app.trayButton.notifications.update:
+            that.updateButton(that.buttonItems.highContrastIcon,
+                fluid.module.resolvePath(that.options.icons.highContrast));
+            that.updateButton(that.buttonItems.state, that.model.isKeyedIn);
+            that.updateButton(that.buttonItems.icon, that.model.icon);
+            that.updateButton(that.buttonItems.toolTip, that.model.tooltip);
+            break;
+
+        default:
+            break;
+        }
+    }
 };

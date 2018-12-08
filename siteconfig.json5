@@ -30,5 +30,8 @@
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
-    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json"
+    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
+
+    // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
+    trayType: ["gpii.app.trayButton", "gpii.app.trayIcon"]
 }
