@@ -551,7 +551,7 @@ gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, l
     languageSetting.schema.keys = orderedLangCodes;
     languageSetting.schema["enum"] = orderedLangLabels;
 
-    console.log("populateLanguageSettingOptions - decorate language setting: ", locale, installedLanguages, languageSetting);
+    fluid.log("populateLanguageSettingOptions - decorate language setting: ", locale, installedLanguages, languageSetting);
 };
 
 /**
@@ -734,7 +734,7 @@ gpii.app.qssWrapper.applySettingTranslations = function (settingOptions, message
     var qssSettingMessagesGroup = settingOptions.settingMessagesPrefix,
         qssSettingMessages = messageBundles[qssSettingMessagesGroup];
 
-    console.log("qssWrapper#applySettingTranslations: ", messageBundles);
+    fluid.log("qssWrapper#applySettingTranslations: ", messageBundles);
 
     // Straight forward translations
     var translatedSettings = qssSettingControls.map(function (setting) {
@@ -751,7 +751,7 @@ gpii.app.qssWrapper.applySettingTranslations = function (settingOptions, message
  * @param {Object[]} qssSettingControls - The list of QSS settings to be applied translations to
  */
 gpii.app.qssWrapper.updateSettingTranslations = function (that, messageBundles, qssSettingControls) {
-    console.log("qssWrapper#updateSettingTranslations: ", messageBundles);
+    fluid.log("qssWrapper#updateSettingTranslations: ", messageBundles);
 
     var translatedSettings = gpii.app.qssWrapper.applySettingTranslations(
         that.options.settingOptions,
@@ -776,7 +776,7 @@ gpii.app.qssWrapper.updateLanguageSettingOptions = function (that, locale, insta
     var languageSetting = fluid.copy(that.getSetting(that.options.settingOptions.settingPaths.language));
     gpii.app.qssWrapper.populateLanguageSettingOptions(that.options.settingOptions, locale, installedLanguages, languageSetting);
 
-    console.log("qssWrapper#updateLanguageSettingOptions: ", languageSetting);
+    fluid.log("qssWrapper#updateLanguageSettingOptions: ", languageSetting);
 
     that.alterSetting(languageSetting, "gpii.app.undoStack.notUndoable");
 };

@@ -190,7 +190,7 @@ fluid.defaults("gpii.app", {
                 },
                 modelListeners: {
                     configuredLanguage: {
-                        funcName: "console.log",
+                        funcName: "fluid.log",
                         args: ["Language change: ", "{change}.value"]
                     }
                 }
@@ -591,7 +591,7 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
     var currentKeyedInUserToken = that.model.keyedInUserToken;
 
     if (keyedOutUserToken !== currentKeyedInUserToken) {
-        console.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
+        fluid.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
     } else {
         that.updateKeyedInUserToken(null);
     }
@@ -611,7 +611,6 @@ gpii.app.windowMessage = function (that, hwnd, msg, wParam, lParam, result) {
     // https://msdn.microsoft.com/library/aa376889
     var WM_QUERYENDSESSION = 0x11;
     if (msg === WM_QUERYENDSESSION) {
-        console.log("SHUTDOWN");
         fluid.log(fluid.logLevel.FATAL, "System shutdown detected.");
         that.exit();
         result.value = 0;

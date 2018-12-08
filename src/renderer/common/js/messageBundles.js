@@ -99,7 +99,7 @@
      */
     gpii.psp.messageBundles.channel.register = function (events) {
         ipcRenderer.on("onLocaleChanged", function (event, locale) {
-            console.log("Locale changed: ", locale);
+            fluid.log("Locale changed: ", locale);
             events.onLocaleChanged.fire(locale);
         });
     };
