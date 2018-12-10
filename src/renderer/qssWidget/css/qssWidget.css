@@ -388,11 +388,3 @@ body {
     top: 4px;
     font-size: 9px;
 }
-
-.fl-switchUI .fl-switchUILabel.flc-switchUI-off {
-    left: -20px;
-}
-
-.fl-switchUI .fl-switchUILabel.flc-switchUI-on {
-    left: 45px;
-}

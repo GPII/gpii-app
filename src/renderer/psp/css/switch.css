@@ -32,15 +32,18 @@
 .fl-switchUI .fl-switchUILabel {
     position: absolute;
     top: 1px;
-    left: 54px;
 
     color: var(--main-theme-text-color);
     font-size: 15px;
     line-height: 1;
 }
 
+.fl-switchUI .fl-switchUILabel.flc-switchUI-on {
+    left: calc(100% + 10px);
+}
+
 .fl-switchUI .fl-switchUILabel.flc-switchUI-off {
-    left: -35px;
+    right: calc(100% + 10px);
 }
 
 .fl-switchUI .fl-switchUI-controlKnob {
