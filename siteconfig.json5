@@ -19,7 +19,11 @@
         languageOptionLabel: {
             currentLanguageGroup: "%native",
             genericLanguage: "%native · %local"
-         }
+        },
+        // The code of the language that would always stay on top of the "Language" setting's menu list.
+        // The code must be exactly matching one of the installed languages' code (with respect to the region).
+        // In case the selected language code is missing, there simply won't be a special first setting.
+        defaultLanguage: "en-US"
     },
 
     // Configuration options for the PSP window

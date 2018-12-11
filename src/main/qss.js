@@ -519,7 +519,9 @@ gpii.app.qssWrapper.orderLanguagesMetadata = function (settingOptions, languages
     languagesMetadata.sort(function (a, b) { return a.english > b.english; });
 
     // Move the default language at the top
-    var defaultLanguageIdx = languagesMetadata.findIndex(function (lang) { return lang.code === settingOptions.defaultLanguage; });
+    var defaultLanguageIdx = languagesMetadata.findIndex(function (lang) {
+        return lang.code.toLowerCase() === settingOptions.defaultLanguage.toLowerCase();
+    });
     if ( defaultLanguageIdx > -1 ) {
         var language = languagesMetadata.splice(defaultLanguageIdx, 1);
         languagesMetadata.unshift(language[0]);
