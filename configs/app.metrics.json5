@@ -1,6 +1,11 @@
+// Start only the metrics capture (no QSS, flowmanager, etc.)
 {
-    "type": "gpii.appMetrics",
+    "type": "gpii.appMetricsOnly",
     "options": {
-        "gradeNames": ["gpii.eventLog", "gpii.metrics.standalone", "gpii.windowsMetrics"],
-    }
+        "gradeNames": ["gpii.eventLog", "gpii.windowsMetrics", "gpii.metrics.standalone"],
+        "logDestination": "tcp://127.0.0.1:51481"
+    },
+    "mergeConfigs": [
+        "%gpii-app/configs/app.metrics.base.json5"
+    ]
 }
