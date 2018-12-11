@@ -9,6 +9,7 @@
             "default": "en-US"
         },
         "messageKey": "common-language",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#language",
         "value": "en-US",
         "restartWarning": true
     }, {

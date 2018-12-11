@@ -103,7 +103,7 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
  * @param {Object} trigger - The survey trigger which is to be registered.
  */
 gpii.app.surveyTriggerManager.registerTrigger = function (that, trigger) {
-    console.log("SurveyTriggerManager: Register trigger - ", trigger);
+    fluid.log("SurveyTriggerManager: Register trigger - ", trigger);
 
     that.removeTrigger(trigger);
     that.events.onTriggerAdded.fire(trigger);
@@ -478,7 +478,7 @@ gpii.app.sessionTimerHandler.getIsLuckySession = function (sessionModulus, defau
  * @param {Boolean} isLuckySession - Whether the current session is "lucky" or not.
  */
 gpii.app.sessionTimerHandler.onIsLuckySessionChanged = function (that, isLuckySession) {
-    console.log("SurveyTriggerManager: isLuckySession", isLuckySession);
+    fluid.log("SurveyTriggerManager: isLuckySession", isLuckySession);
     if (!isLuckySession) {
         that.clear();
     }
@@ -493,7 +493,7 @@ gpii.app.sessionTimerHandler.onIsLuckySessionChanged = function (that, isLuckySe
  */
 gpii.app.sessionTimerHandler.onChangeUndone = function (that, undoStack) {
     if (!undoStack.model.hasChanges) {
-        console.log("SurveyTriggerManager: there are no more changes to undo. Clearing the timer...");
+        fluid.log("SurveyTriggerManager: there are no more changes to undo. Clearing the timer...");
         that.clear();
     }
 };
@@ -508,9 +508,9 @@ gpii.app.sessionTimerHandler.startTimerIfPossible = function (that) {
         timeoutDuration = that.model.condition.value;
 
     if (hasSettings && isLuckySession && !that.isActive()) {
-        console.log("SurveyTriggerManager: starting survey timer", timeoutDuration);
+        fluid.log("SurveyTriggerManager: starting survey timer", timeoutDuration);
         that.start(timeoutDuration);
     } else {
-        console.log("SurveyTriggerManager: not starting timer", hasSettings, timeoutDuration, !that.isActive());
+        fluid.log("SurveyTriggerManager: not starting timer", hasSettings, timeoutDuration, !that.isActive());
     }
 };

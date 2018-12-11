@@ -56,6 +56,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.qss.languageOptionLabel",
             target: "{app qssWrapper}.options.settingOptions.languageOptionLabelTemplate"
         },
+        distributeDefaultLanguage: {
+            record: "{that}.options.siteConfig.qss.defaultLanguage",
+            target: "{app qssWrapper}.options.settingOptions.defaultLanguage"
+        },
         distributePspConfig: {
             record: "{that}.options.siteConfig.psp",
             target: "{app psp}.options.siteConfig"
