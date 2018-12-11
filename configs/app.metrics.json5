@@ -1,0 +1,6 @@
+{
+    "type": "gpii.appMetrics",
+    "options": {
+        "gradeNames": ["gpii.eventLog", "gpii.metrics.standalone", "gpii.windowsMetrics"],
+    }
+}
