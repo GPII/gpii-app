@@ -187,7 +187,7 @@
 
                         // notify for changes in the handler
                         // down to top binding
-                        item: {
+                        "item.*": {
                             funcName: "gpii.psp.repeater.notifyElementChange",
                             args: [
                                 "{repeater}",

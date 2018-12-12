@@ -244,6 +244,8 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
  * of the QSS dialog (e.g. whether the activation occurred via keyboard)
  */
 gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, activationParams) {
+    that.dialog.webContents.openDevTools();
+
     activationParams = activationParams || {};
 
     gpii.app.applier.replace(that.applier, "setting", setting);

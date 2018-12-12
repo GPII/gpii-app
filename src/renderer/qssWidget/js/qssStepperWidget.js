@@ -53,6 +53,8 @@
         },
 
         selectors: {
+            steps: ".flc-qssStepperWidget-controls-steps",
+
             stepperButton: ".flc-qssStepperWidget-btn",
             incButton: ".flc-qssStepperWidget-incBtn",
             decButton: ".flc-qssStepperWidget-decBtn",
@@ -191,6 +193,15 @@
                         onAddPressed:      "{stepper}.activateIncBtn",
                         onEqualsPressed:   "{stepper}.activateIncBtn",
                         onSubtractPressed: "{stepper}.activateDecBtn"
+                    }
+                }
+            },
+            steps: {
+                type: "gpii.qssWidget.stepper.steps",
+                container: "{that}.dom.steps",
+                options: {
+                    model: {
+                        setting: "{stepper}.model.setting"
                     }
                 }
             }
@@ -346,4 +357,132 @@
             triggerClass,
             [ styles.errorAnimation, styles.warningAnimation ]);
     };
+
+
+    fluid.defaults("gpii.qssWidget.stepper.steps", {
+        gradeNames: "gpii.psp.repeater",
+
+        //
+        // Repeater stuff
+        //
+        dynamicContainerMarkup: {
+            container: "<div role='radio' class='%containerClass fl-qssStepperWidget-step' tabindex='0'></div>",
+            containerClassPrefix: "flc-qssStepperWidget-step-%id"
+        },
+        handlerType: "gpii.qssWidget.stepper.step.presenter",
+        markup: null,
+
+        //
+        // Custom
+        //
+        model: {
+            setting: {}
+        },
+        // Build the repeater items
+        modelRelay: {
+            items: {
+                target: "items",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.qssWidget.stepper.getStepItems",
+                    args: [
+                        "{gpii.qssWidget.stepper.steps}.model.setting",
+                        "{gpii.qssWidget.stepper.steps}.model.setting.value"
+                    ]
+                }
+            }
+        },
+
+        events: {
+            onStepClicked: null
+        },
+
+        listeners: {
+            "onStepClicked.updateValue": {
+                changePath: "setting.value",
+                value: "{arguments}.0",
+                source: "settingAlter"
+            }
+        }
+    });
+
+
+    // XXX works for whole numbers
+    // TODO do not redraw every time the value changes
+    gpii.qssWidget.stepper.getStepItems = function (setting, value) {
+        if (!setting ||
+                !Number.isInteger(setting.schema.min) ||
+                !Number.isInteger(setting.schema.max)) {
+            return [];
+        }
+
+        var schema = setting.schema;
+        var stepsCount = ( schema.max - (schema.min - 1 ) ) / schema.divisibleBy;
+
+        // min: -2, value: 1 -> value: 3
+        // min: 1, value: 5 -> value: 4
+        var normalizedValue = value - schema.min,
+            normalizedDefaultValue = (schema["default"] - schema.min);
+
+        var steps = Array.apply(null, {length: stepsCount})
+            .map(Number.call, Number) // generate array with n elements
+            .reverse()
+            .map(function (step) {
+                var stepValue = step * schema.divisibleBy;
+                return {
+                    stepValue: stepValue, // in case it is selected
+                    isSelected: stepValue === normalizedValue,
+                    isDefault: stepValue === normalizedDefaultValue
+                };
+            });
+
+        console.log("Steps:", steps, setting);
+
+        return steps;
+    };
+
+    fluid.defaults("gpii.qssWidget.stepper.step.presenter", {
+        gradeNames: ["fluid.viewComponent", "gpii.app.clickable"],
+
+        model: {
+            item: {
+                stepValue: null,
+                isSelected: null,
+                isDefault: null
+            }
+        },
+
+        // TODO assets for dots
+        modelListeners: {
+            item: {
+                funcName: "gpii.qssWidget.stepper.step.render",
+                args: [
+                    "{that}.container",
+                    "{that}.model.item"
+                ]
+            }
+        },
+
+        listeners: {
+            onClicked: {
+                func: "{gpii.qssWidget.stepper.steps}.events.onStepClicked.fire",
+                args: "{that}.model.item.stepValue"
+            }
+        }
+    });
+
+    gpii.qssWidget.stepper.step.render = function (container, step) {
+        // when nothing is special leave it empty
+        var type = null;
+
+        if (step.isDefault) {
+            type = "default";
+        }
+        if (step.isSelected) {
+            type = "selected";
+        }
+
+        container.attr("type", type);
+    };
+
 })(fluid);

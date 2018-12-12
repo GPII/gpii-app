@@ -145,23 +145,31 @@ body {
 }
 
 .fl-qssStepperWidget-controls {
-    width: 100%;
+    display: flex;
+
+    /* TODO use variables */
+    width: calc(100% + 2 * 10px);
+    margin: 0 -10px 10px -10px;
+}
+
+.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-buttons {
+    flex-basis: 85%;
+    padding-left: 13%;
 
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin-bottom: 10px;
+    justify-content: space-between;
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
+    padding-top: 0;
+    min-height: 28px;
+    width: 100%;
+
     display: flex;
     align-items: center;
 
     box-sizing: border-box;
-    width: 70%;
-    min-height: 28px;
-    margin: 0 5px;
-    padding-top: 0;
 
     border: 1px solid transparent;
     border-radius: 5px;
@@ -172,6 +180,60 @@ body {
     user-select: none;
     cursor: pointer;
 }
+
+
+.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps {
+    flex-basis: 15%;
+
+    display: flex;
+    flex-direction: column;
+    /* Handles the case when there are just a few items (two or three) */
+    justify-content: space-between;
+}
+
+.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step {
+    /* TODO do not add margin to last element */
+    margin: 6px auto 6px auto;
+    height: 8px;
+    width: 8px;
+    cursor: pointer;
+
+
+    /* Default icon */
+    content: "";
+    background-color: #002957;
+
+    -webkit-mask: url("../../../assets/circle.svg") 0 0/100% 100%;
+    mask: url("../../../assets/circle.svg") 0 0/100% 100%;
+}
+
+.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step:first-child {
+    margin-top: 0px;
+}
+
+.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step:last-child {
+    margin-bottom: 0px;
+}
+
+.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step[type="default"] {
+    -webkit-mask: url("../../../assets/star.svg") 0 0/100% 100%;
+    mask: url("../../../assets/star.svg") 0 0/100% 100%;
+
+    transition: -webkit-mask 0.1s, mask 0.1s;
+}
+
+.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step[type="selected"] {
+    /* It's bigger */
+    height: 15px;
+    width: 15px;
+
+    background-color: #008145;
+    -webkit-mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
+    mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
+
+    transition: -webkit-mask 0.2s, mask 0.2s, background-color 0.2s;
+}
+
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn + .fl-qssStepperWidget-btn {
     margin-top: 5px;
