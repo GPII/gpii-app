@@ -44,7 +44,7 @@
 
         dynamicContainerMarkup: {
             container:
-                "<div class=\"%containerClass fl-focusable\" tabindex=\"0\">" +
+                "<div class=\"%containerClass fl-focusable\">" +
                 "</div>",
             containerClassPrefix: "fl-qss-button"
         },
@@ -181,7 +181,7 @@
                 }
             },
             focusManager: {
-                type: "gpii.qss.horizontalFocusManager",
+                type: "gpii.qss.qssFocusManager",
                 container: "{qss}.container"
             },
             channelListener: {

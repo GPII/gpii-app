@@ -105,11 +105,11 @@
             },
             focusNext: {
                 funcName: "gpii.qss.focusManager.focusNext",
-                args: ["{that}", "{that}.container"]
+                args: ["{that}"]
             },
             focusPrevious: {
                 funcName: "gpii.qss.focusManager.focusPrevious",
-                args: ["{that}", "{that}.container"]
+                args: ["{that}"]
             },
             onTabPressed: {
                 funcName: "gpii.qss.focusManager.onTabPressed",
@@ -156,7 +156,8 @@
 
     /**
      * Returns information about the focusable elements in the page as well as the index of
-     * the currently focused element.
+     * the currently focused element. The focusable elements are returned in the order in which
+     * they appear in the page.
      * @param {jQuery} container - The jQuery element representing the container in which this
      * focus manager handles focus.
      * @param {Object} styles - A styles object containing various classes related to focusing
@@ -266,7 +267,8 @@
             nextIndex = gpii.psp.modulo(focusIndex + 1, focusableElements.length);
         }
 
-        that.focus(nextIndex, true);
+        var elementToFocus = jQuery(focusableElements[nextIndex]);
+        that.focusElement(elementToFocus, true);
     };
 
     /**
@@ -287,7 +289,8 @@
             previousIndex = gpii.psp.modulo(focusIndex - 1, focusableElements.length);
         }
 
-        that.focus(previousIndex, true);
+        var elementToFocus = jQuery(focusableElements[previousIndex]);
+        that.focusElement(elementToFocus, true);
     };
 
     /**
