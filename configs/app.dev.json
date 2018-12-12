@@ -14,6 +14,7 @@
         }
     },
     "mergeConfigs": [
-        "%gpii-app/configs/app.base.json"
+        "%gpii-app/configs/app.base.json",
+        "%gpii-app/configs/app.metrics.base.json5"
     ]
 }
