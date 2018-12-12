@@ -183,8 +183,8 @@ gpii.app.isHashNotEmpty = function (hash) {
  * rectangle and `false` otherwise.
  */
 gpii.app.isPointInRect = function (point, rectangle) {
-    point = point || {};
-    rectangle = rectangle || {};
+    point = point;
+    rectangle = rectangle;
 
     return rectangle.x <= point.x && point.x <= rectangle.x + rectangle.width &&
            rectangle.y <= point.y && point.y <= rectangle.y + rectangle.height;

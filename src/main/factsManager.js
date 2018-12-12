@@ -47,7 +47,7 @@ fluid.defaults("gpii.app.factsManager", {
     },
     modelListeners: {
         interactionsCount: {
-            func: "console.log",
+            func: "fluid.log",
             args: [
                 "FactsManager: Changed interactionsCount: ",
                 "{change}.value"

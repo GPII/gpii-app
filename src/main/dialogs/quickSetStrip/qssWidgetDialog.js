@@ -114,7 +114,7 @@ fluid.defaults("gpii.app.qssWidget", {
                         ]
                     }],
                     onQssWidgetSettingAltered: { // XXX dev
-                        funcName: "console.log",
+                        funcName: "fluid.log",
                         args: ["Settings Altered: ", "{arguments}.0"]
                     },
                     onQssWidgetCreated: {
