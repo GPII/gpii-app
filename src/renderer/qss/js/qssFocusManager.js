@@ -117,16 +117,33 @@
     };
 
     /**
-     * Returns an array of focus groups each of which can contain a different number of QSS
-     * buttons (DOM elements). The rules for grouping QSS buttons is as follows:
-     * 1. The buttons are examined in the order in which they appear in the DOM.
-     * 2. Each group can have no more than `maxElementsPerFocusGroup` elements.
-     * 3. A group can have multiple buttons if and only if they are "small" QSS buttons, i.e. a
-     * large button always appears in its own group.
+     * Represents a group of QSS buttons some (or all) of which can gain focus. The number of
+     * QSS elements in a group cannot exceed `maxElementsPerFocusGroup`. A group can have
+     * multiple buttons if and only if they are "small" QSS buttons, i.e. a large button always
+     * appears in its own group.
+     * @typedef {HTMLElement[]} FocusGroup
+     */
+
+    /**
+     * An object containing useful information about the QSS buttons and the currently focused
+     * QSS button if any.
+     * @typedef {Object} FocusGroupsInfo
+     * @property {FocusGroup[]} focusGroups - An array of `FocusGroup`s which together contain
+     * all QSS buttons.
+     * @property {Number} focusGroupIndex - The index of the focus group in which the currently
+     * focused element resides, or -1 if currently there is no focused element
+     * @property {Number} focusIndex - the index of the focused element within its own group, or
+     * -1 if currently there is no focused element. If the `focusGroupIndex` is -1, this implies
+     * that the `focusIndex` will also be -1.
+     */
+
+    /**
+     * Returns an array of `FocusGroup`s each of which can contain a different number of QSS
+     * buttons. Grouping is performed by examining the buttons in the order in which they appear
+     * in the DOM.
      * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
      * @param {jQuery} container - The jQuery element representing the container of the component.
-     * @param {Object[]} An array of arrays the latter of which contain DOM elements representing
-     * the QSS buttons.
+     * @return {FocusGroup[]} An array of `FocusGroup`s which together contain all QSS buttons.
      */
     gpii.qss.qssFocusManager.getFocusGroups = function (that, container) {
         var focusGroups = [],
@@ -157,12 +174,10 @@
     };
 
     /**
-     * Returns information about the available focusable elements in the QSS, the index of the
-     * focus group in which the currently focused element resides and the index of the focused
-     * element within its own group.
+     * Retrieves information about the focusable elements in the QSS.
      * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
      * @param {jQuery} container - The jQuery element representing the container of the component.
-     * @return {Object} - An object containing information about the focusable elements in the QSS.
+     * @return {FocusGroupsInfo} - A `FocusGroupsInfo` object with the requested information.
      */
     gpii.qss.qssFocusManager.getFocusGroupsInfo = function (that, container) {
         var focusGroups = gpii.qss.qssFocusManager.getFocusGroups(that, container),
@@ -174,7 +189,7 @@
                 if (focusIndex > -1) {
                     return index;
                 }
-            });
+            }, -1);
 
         return {
             focusGroups: focusGroups,
@@ -236,6 +251,44 @@
     /**
      * Focuses the first available button which conforms to all of the following conditions:
      * 1. The button is focusable.
+     * 2. The button is in the first focusable group which comes to the left or to the right
+     * (depending on the value of the `direction` flag) of the current focus group. If there
+     * is no such button in any of the groups to the left or to the right, the groups to the right
+     * or to the left of the current focus group respectively are also examined starting from the
+     * farthest.
+     * 3. The button has the same index in its focus group as the index of the currently focused
+     * button in its group. If the new group has fewer buttons, its last button will be focused.
+     * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
+     * @param {FocusGroupsInfo} focusGroupInfo - An object holding information about the focusable
+     * elements in the QSS.
+     * @param {Number} initialGroupIndex - the index of the focus group from which the examination
+     * should commence
+     * @param {Boolean} direction - If `true` the scanning direction will be from left to right.
+     * Otherwise, it will be from right to left.
+     */
+    gpii.qss.qssFocusManager.focusNearest = function (that, focusGroupInfo, initialGroupIndex, direction) {
+        var focusGroups = focusGroupInfo.focusGroups,
+            focusIndex = focusGroupInfo.focusIndex,
+            delta = direction ? 1 : -1,
+            nextGroupIndex = initialGroupIndex;
+
+        do {
+            var nextFocusGroup = focusGroups[nextGroupIndex],
+                elementIndex = Math.max(0, Math.min(focusIndex, nextFocusGroup.length - 1)),
+                elementToFocus = nextFocusGroup[elementIndex];
+
+            if (that.isFocusable(elementToFocus)) {
+                that.focusElement(elementToFocus, true);
+                break;
+            } else {
+                nextGroupIndex = gpii.psp.modulo(nextGroupIndex + delta, focusGroups.length);
+            }
+        } while (nextGroupIndex !== initialGroupIndex);
+    };
+
+    /**
+     * Focuses the first available button which conforms to all of the following conditions:
+     * 1. The button is focusable.
      * 2. The button is in a focus group which is visually to the left of the current focus group.
      * If there is no such button in any of the groups to the left, the groups to the right of the
      * current focus group are also examined starting from the farthest.
@@ -247,7 +300,6 @@
         var focusGroupInfo = that.getFocusGroupsInfo(),
             focusGroupIndex = focusGroupInfo.focusGroupIndex,
             focusGroups = focusGroupInfo.focusGroups,
-            focusIndex = focusGroupInfo.focusIndex,
             previousGroupIndex;
 
         if (focusGroupIndex < 0) {
@@ -256,20 +308,7 @@
             previousGroupIndex = gpii.psp.modulo(focusGroupIndex - 1, focusGroups.length);
         }
 
-        var initialGroupIndex = previousGroupIndex;
-
-        do {
-            var previousFocusGroup = focusGroups[previousGroupIndex],
-                elementIndex = Math.min(focusIndex, previousFocusGroup.length - 1),
-                elementToFocus = previousFocusGroup[elementIndex];
-
-            if (that.isFocusable(elementToFocus)) {
-                that.focusElement(jQuery(elementToFocus), true);
-                break;
-            } else {
-                previousGroupIndex = gpii.psp.modulo(previousGroupIndex - 1, focusGroups.length);
-            }
-        } while (previousGroupIndex !== initialGroupIndex);
+        gpii.qss.qssFocusManager.focusNearest(that, focusGroupInfo, previousGroupIndex, false);
     };
 
     /**
@@ -286,28 +325,8 @@
         var focusGroupInfo = that.getFocusGroupsInfo(),
             focusGroupIndex = focusGroupInfo.focusGroupIndex,
             focusGroups = focusGroupInfo.focusGroups,
-            focusIndex = focusGroupInfo.focusIndex,
-            nextGroupIndex;
-
-        if (focusGroupIndex < 0) {
-            nextGroupIndex = 0;
-        } else {
             nextGroupIndex = gpii.psp.modulo(focusGroupIndex + 1, focusGroups.length);
-        }
 
-        var initialGroupIndex = nextGroupIndex;
-
-        do {
-            var nextFocusGroup = focusGroups[nextGroupIndex],
-                elementIndex = Math.min(focusIndex, nextFocusGroup.length - 1),
-                elementToFocus = nextFocusGroup[elementIndex];
-
-            if (that.isFocusable(elementToFocus)) {
-                that.focusElement(jQuery(elementToFocus), true);
-                break;
-            } else {
-                nextGroupIndex = gpii.psp.modulo(nextGroupIndex + 1, focusGroups.length);
-            }
-        } while (nextGroupIndex !== initialGroupIndex);
+        gpii.qss.qssFocusManager.focusNearest(that, focusGroupInfo, nextGroupIndex, true);
     };
 })(fluid, jQuery);
