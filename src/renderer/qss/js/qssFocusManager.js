@@ -256,10 +256,20 @@
             previousGroupIndex = gpii.psp.modulo(focusGroupIndex - 1, focusGroups.length);
         }
 
-        var previousFocusGroup = focusGroups[previousGroupIndex],
-            elementIndex = Math.min(focusIndex, previousFocusGroup.length - 1),
-            elementToFocus = previousFocusGroup[elementIndex];
-        that.focusElement(jQuery(elementToFocus), true);
+        var initialGroupIndex = previousGroupIndex;
+
+        do {
+            var previousFocusGroup = focusGroups[previousGroupIndex],
+                elementIndex = Math.min(focusIndex, previousFocusGroup.length - 1),
+                elementToFocus = previousFocusGroup[elementIndex];
+
+            if (that.isFocusable(elementToFocus)) {
+                that.focusElement(jQuery(elementToFocus), true);
+                break;
+            } else {
+                previousGroupIndex = gpii.psp.modulo(previousGroupIndex - 1, focusGroups.length);
+            }
+        } while (previousGroupIndex !== initialGroupIndex);
     };
 
     /**
@@ -285,9 +295,19 @@
             nextGroupIndex = gpii.psp.modulo(focusGroupIndex + 1, focusGroups.length);
         }
 
-        var previousFocusGroup = focusGroups[nextGroupIndex],
-            elementIndex = Math.min(focusIndex, previousFocusGroup.length - 1),
-            elementToFocus = previousFocusGroup[elementIndex];
-        that.focusElement(jQuery(elementToFocus), true);
+        var initialGroupIndex = nextGroupIndex;
+
+        do {
+            var nextFocusGroup = focusGroups[nextGroupIndex],
+                elementIndex = Math.min(focusIndex, nextFocusGroup.length - 1),
+                elementToFocus = nextFocusGroup[elementIndex];
+
+            if (that.isFocusable(elementToFocus)) {
+                that.focusElement(jQuery(elementToFocus), true);
+                break;
+            } else {
+                nextGroupIndex = gpii.psp.modulo(nextGroupIndex + 1, focusGroups.length);
+            }
+        } while (nextGroupIndex !== initialGroupIndex);
     };
 })(fluid, jQuery);
