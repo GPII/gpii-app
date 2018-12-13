@@ -599,6 +599,11 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
         if (imageAsset) {
             loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);
         }
+
+        var helpImageAsset = loadedSetting.schema.helpImage;
+        if (helpImageAsset) {
+            loadedSetting.schema.helpImage = assetsManager.resolveAssetPath(helpImageAsset);
+        }
     });
 
     // more dynamic loading
@@ -718,6 +723,8 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
     if (message) {
         translatedSetting.tooltip = message.tooltip;
         translatedSetting.tip = message.tip;
+        translatedSetting.extendedTip = message.extendedTip;
+
         if (message.footerTip) {
             translatedSetting.widget = translatedSetting.widget || {};
             translatedSetting.widget.footerTip = message.footerTip;

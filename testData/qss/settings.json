@@ -114,6 +114,7 @@
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
         "schema": {
             "type": "boolean",
+            "helpImage": "readAloud.png",
             "default": false
         },
         "buttonTypes": ["largeButton", "settingButton"],
