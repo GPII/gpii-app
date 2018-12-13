@@ -30,6 +30,7 @@
         maxElementsPerFocusGroup: 2,
 
         styles: {
+            button: "fl-qss-button",
             smallButton: "fl-qss-smallButton"
         },
 
@@ -66,7 +67,7 @@
 
     /**
      * Retrieves the tab index of a given DOM or jQuery element as a number.
-     * @param {DOMElement | jQuery} element - A simple DOM element or wrapped in a jQuery
+     * @param {HTMLElement | jQuery} element - A simple DOM element or wrapped in a jQuery
      * object.
      * @return {Number} The tab index of the given element or `undefined` if this property
      * is not specified.
@@ -120,8 +121,8 @@
      * buttons (DOM elements). The rules for grouping QSS buttons is as follows:
      * 1. The buttons are examined in the order in which they appear in the DOM.
      * 2. Each group can have no more than `maxElementsPerFocusGroup` elements.
-     * 3. A group can have multiple buttons if and only if they are "small" QSS buttons.
-     * 4. A group can contain only focusable elements.
+     * 3. A group can have multiple buttons if and only if they are "small" QSS buttons, i.e. a
+     * large button always appears in its own group.
      * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
      * @param {jQuery} container - The jQuery element representing the container of the component.
      * @param {Object[]} An array of arrays the latter of which contain DOM elements representing
@@ -130,12 +131,12 @@
     gpii.qss.qssFocusManager.getFocusGroups = function (that, container) {
         var focusGroups = [],
             styles = that.options.styles,
-            focusableElements = container.find("." + styles.focusable + ":visible"),
+            qssButtons = container.find("." + styles.button + ":visible"),
             currentFocusGroup = [];
 
-        fluid.each(focusableElements, function (focusableElement) {
-            if (jQuery(focusableElement).hasClass(styles.smallButton)) {
-                currentFocusGroup.push(focusableElement);
+        fluid.each(qssButtons, function (qssButton) {
+            if (jQuery(qssButton).hasClass(styles.smallButton)) {
+                currentFocusGroup.push(qssButton);
                 // Mark the group as complete if the max number of elements has been reached.
                 if (currentFocusGroup.length >= that.options.maxElementsPerFocusGroup) {
                     focusGroups.push(currentFocusGroup);
@@ -148,7 +149,7 @@
                     focusGroups.push(currentFocusGroup);
                     currentFocusGroup = [];
                 }
-                focusGroups.push([focusableElement]);
+                focusGroups.push([qssButton]);
             }
         });
 
@@ -182,36 +183,66 @@
         };
     };
 
+    /**
+     * Focuses the first available button which comes before the currently focused button (if any)
+     * in the same focus group. If there is no focused group initially, this function does nothing.
+     * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
+     */
     gpii.qss.qssFocusManager.onArrowUpPressed = function (that) {
         var focusGroupInfo = that.getFocusGroupsInfo(),
             focusGroupIndex = focusGroupInfo.focusGroupIndex,
-            previousElementIndex = focusGroupInfo.focusIndex - 1,
             focusGroups = focusGroupInfo.focusGroups,
             focusGroup = focusGroups[focusGroupIndex];
 
-        // If there is a focused group at all and the currently focused element is not
-        // the first one in the focus group
-        if (focusGroupIndex > -1 && previousElementIndex >= 0) {
-            var elementToFocus = focusGroup[previousElementIndex];
-            that.focusElement(jQuery(elementToFocus), true);
+        if (focusGroupIndex > -1) {
+            var previousElementIndex = focusGroupInfo.focusIndex - 1;
+            while (previousElementIndex >= 0) {
+                var elementToFocus = focusGroup[previousElementIndex];
+                if (that.isFocusable(elementToFocus)) {
+                    that.focusElement(elementToFocus, true);
+                    break;
+                } else {
+                    previousElementIndex--;
+                }
+            }
         }
     };
 
+    /**
+     * Focuses the first available button which comes after the currently focused button (if any)
+     * in the same focus group. If there is no focused group initially, this function does nothing.
+     * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
+     */
     gpii.qss.qssFocusManager.onArrowDownPressed = function (that) {
         var focusGroupInfo = that.getFocusGroupsInfo(),
             focusGroupIndex = focusGroupInfo.focusGroupIndex,
-            nextElementIndex = focusGroupInfo.focusIndex + 1,
             focusGroups = focusGroupInfo.focusGroups,
             focusGroup = focusGroups[focusGroupIndex];
 
-        // If there is a focused group at all and the currently focused element is not
-        // the first one in the focus group
-        if (focusGroupIndex > -1 && nextElementIndex < focusGroup.length) {
-            var elementToFocus = focusGroup[nextElementIndex];
-            that.focusElement(jQuery(elementToFocus), true);
+        if (focusGroupIndex > -1) {
+            var nextElementIndex = focusGroupInfo.focusIndex + 1;
+            while (nextElementIndex < focusGroup.length) {
+                var elementToFocus = focusGroup[nextElementIndex];
+                if (that.isFocusable(elementToFocus)) {
+                    that.focusElement(elementToFocus, true);
+                    break;
+                } else {
+                    nextElementIndex++;
+                }
+            }
         }
     };
 
+    /**
+     * Focuses the first available button which conforms to all of the following conditions:
+     * 1. The button is focusable.
+     * 2. The button is in a focus group which is visually to the left of the current focus group.
+     * If there is no such button in any of the groups to the left, the groups to the right of the
+     * current focus group are also examined starting from the farthest.
+     * 3. The button has the same index in its focus group as the index of the currently focused
+     * button in its group. If the new group has fewer buttons, its last button will be focused.
+     * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
+     */
     gpii.qss.qssFocusManager.onArrowLeftPressed = function (that) {
         var focusGroupInfo = that.getFocusGroupsInfo(),
             focusGroupIndex = focusGroupInfo.focusGroupIndex,
@@ -231,6 +262,16 @@
         that.focusElement(jQuery(elementToFocus), true);
     };
 
+    /**
+     * Focuses the first available button which conforms to all of the following conditions:
+     * 1. The button is focusable.
+     * 2. The button is in a focus group which is visually to the right of the current focus group.
+     * If there is no such button in any of the groups to the right, the groups to the left of the
+     * current focus group are also examined starting from the farthest.
+     * 3. The button has the same index in its focus group as the index of the currently focused
+     * button in its group. If the new group has fewer buttons, its last button will be focused.
+     * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
+     */
     gpii.qss.qssFocusManager.onArrowRightPressed = function (that) {
         var focusGroupInfo = that.getFocusGroupsInfo(),
             focusGroupIndex = focusGroupInfo.focusGroupIndex,
