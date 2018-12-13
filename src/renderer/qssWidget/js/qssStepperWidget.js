@@ -359,6 +359,9 @@
     };
 
 
+    /**
+     * Creates and manages the setting "steps" list.
+     */
     fluid.defaults("gpii.qssWidget.stepper.steps", {
         gradeNames: "gpii.psp.repeater",
 
@@ -386,8 +389,7 @@
                     type: "fluid.transforms.free",
                     func: "gpii.qssWidget.stepper.getStepItems",
                     args: [
-                        "{gpii.qssWidget.stepper.steps}.model.setting",
-                        "{gpii.qssWidget.stepper.steps}.model.setting.value"
+                        "{gpii.qssWidget.stepper.steps}.model.setting"
                     ]
                 }
             }
@@ -407,9 +409,17 @@
     });
 
 
-    // XXX works for whole numbers
-    // TODO do not redraw every time the value changes
-    gpii.qssWidget.stepper.getStepItems = function (setting, value) {
+    /**
+     * Generates the different steps' data based on a setting .
+     * Steps are generated using the setting's `min`, `max` and `divisibleBy` properties.
+     * In case either of those is missing, no steps will be generated.
+     * Note that items will be recomputed every time the setting changes but only items that
+     * need to be re-rendered will do so (changeApplier merges the values).
+     * @param {Object} setting - The setting for which steps must be created
+     * @return {Object[]} - The list of data for each step element. In case no steps
+     * can be generated an empty array is returned
+     */
+    gpii.qssWidget.stepper.getStepItems = function (setting) {
         if (!setting ||
                 !Number.isInteger(setting.schema.min) ||
                 !Number.isInteger(setting.schema.max)) {
@@ -421,7 +431,7 @@
 
         // min: -2, value: 1 -> value: 3
         // min: 1, value: 5 -> value: 4
-        var normalizedValue = value - schema.min,
+        var normalizedValue = setting.value - schema.min,
             normalizedDefaultValue = (schema["default"] - schema.min);
 
         var steps = Array.apply(null, {length: stepsCount})
@@ -441,6 +451,14 @@
         return steps;
     };
 
+    /**
+     * Handler for a single step element.
+     *
+     * Each step element has three states: normal, selected and default.
+     * These three states are indicated ?разграничени using a custom html element
+     * attribute - "data-type". Depending on the state of this attribute, different
+     * styles are applied (refer to the CSS for more info).
+     */
     fluid.defaults("gpii.qssWidget.stepper.step.presenter", {
         gradeNames: ["fluid.viewComponent", "gpii.app.clickable"],
 
@@ -452,12 +470,20 @@
             }
         },
 
-        // TODO assets for dots
+        stateAttribute: {
+            attrName: "data-type",
+            values: {
+                selected: "selected",
+                default: "default"
+            }
+        },
+
         modelListeners: {
             item: {
-                funcName: "gpii.qssWidget.stepper.step.render",
+                funcName: "gpii.qssWidget.stepper.step.updateState",
                 args: [
                     "{that}.container",
+                    "{that}.options.stateAttribute",
                     "{that}.model.item"
                 ]
             }
@@ -471,18 +497,19 @@
         }
     });
 
-    gpii.qssWidget.stepper.step.render = function (container, step) {
-        // when nothing is special leave it empty
-        var type = null;
+    /**
+     * Alters the custom element attribute in order to change the styles applied to it.
+     * @param {jQuery} stepContainer - The container for the step element
+     * @param {Object} stateAttribute - Options for the state defining attribute
+     * @param {Object} stepData - The condition data for the element
+     */
+    gpii.qssWidget.stepper.step.updateState = function (stepContainer, stateAttribute, stepData) {
+        var type =
+            ( stepData.isSelected && stateAttribute.values.selected )  ||
+            ( stepData.isDefault && stateAttribute.values["default"] ) ||
+            null;
 
-        if (step.isDefault) {
-            type = "default";
-        }
-        if (step.isSelected) {
-            type = "selected";
-        }
-
-        container.attr("type", type);
+        stepContainer.attr(stateAttribute.attrName, type);
     };
 
 })(fluid);
