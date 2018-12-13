@@ -199,53 +199,52 @@
     };
 
     /**
-     * Focuses the first available button which comes before the currently focused button (if any)
-     * in the same focus group. If there is no focused group initially, this function does nothing.
+     * Focuses the first available button which conforms to all of the following conditions:
+     * 1. The button is focusable.
+     * 2. The button is in the same focus group as the currently focused button.
+     * 3. The button is the first button before or after the currently focused button (depending
+     * on the `direction` argument) which conforms to the two conditions above.
      * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
+     * @param {Boolean} direction - If `true` the scanning direction will be from top to bottom.
+     * Otherwise, it will be from bottom to top.
      */
-    gpii.qss.qssFocusManager.onArrowUpPressed = function (that) {
+    gpii.qss.qssFocusManager.focusNearestVertically = function (that, direction) {
         var focusGroupInfo = that.getFocusGroupsInfo(),
-            focusGroupIndex = focusGroupInfo.focusGroupIndex,
             focusGroups = focusGroupInfo.focusGroups,
-            focusGroup = focusGroups[focusGroupIndex];
+            focusGroupIndex = focusGroupInfo.focusGroupIndex,
+            focusGroup = focusGroups[focusGroupIndex],
+            delta = direction ? 1 : -1,
+            nextElementIndex = focusGroupInfo.focusIndex + delta;
 
         if (focusGroupIndex > -1) {
-            var previousElementIndex = focusGroupInfo.focusIndex - 1;
-            while (previousElementIndex >= 0) {
-                var elementToFocus = focusGroup[previousElementIndex];
+            while (0 <= nextElementIndex && nextElementIndex < focusGroup.length) {
+                var elementToFocus = focusGroup[nextElementIndex];
                 if (that.isFocusable(elementToFocus)) {
                     that.focusElement(elementToFocus, true);
                     break;
                 } else {
-                    previousElementIndex--;
+                    nextElementIndex += delta;
                 }
             }
         }
     };
 
     /**
-     * Focuses the first available button which comes after the currently focused button (if any)
+     * Focuses the first focusable button which comes before the currently focused button (if any)
+     * in the same focus group. If there is no focused group initially, this function does nothing.
+     * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
+     */
+    gpii.qss.qssFocusManager.onArrowUpPressed = function (that) {
+        gpii.qss.qssFocusManager.focusNearestVertically(that, false);
+    };
+
+    /**
+     * Focuses the first focusable button which comes after the currently focused button (if any)
      * in the same focus group. If there is no focused group initially, this function does nothing.
      * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
      */
     gpii.qss.qssFocusManager.onArrowDownPressed = function (that) {
-        var focusGroupInfo = that.getFocusGroupsInfo(),
-            focusGroupIndex = focusGroupInfo.focusGroupIndex,
-            focusGroups = focusGroupInfo.focusGroups,
-            focusGroup = focusGroups[focusGroupIndex];
-
-        if (focusGroupIndex > -1) {
-            var nextElementIndex = focusGroupInfo.focusIndex + 1;
-            while (nextElementIndex < focusGroup.length) {
-                var elementToFocus = focusGroup[nextElementIndex];
-                if (that.isFocusable(elementToFocus)) {
-                    that.focusElement(elementToFocus, true);
-                    break;
-                } else {
-                    nextElementIndex++;
-                }
-            }
-        }
+        gpii.qss.qssFocusManager.focusNearestVertically(that, true);
     };
 
     /**
@@ -266,7 +265,7 @@
      * @param {Boolean} direction - If `true` the scanning direction will be from left to right.
      * Otherwise, it will be from right to left.
      */
-    gpii.qss.qssFocusManager.focusNearest = function (that, focusGroupInfo, initialGroupIndex, direction) {
+    gpii.qss.qssFocusManager.focusNearestHorizontally = function (that, focusGroupInfo, initialGroupIndex, direction) {
         var focusGroups = focusGroupInfo.focusGroups,
             focusIndex = focusGroupInfo.focusIndex,
             delta = direction ? 1 : -1,
@@ -308,7 +307,7 @@
             previousGroupIndex = gpii.psp.modulo(focusGroupIndex - 1, focusGroups.length);
         }
 
-        gpii.qss.qssFocusManager.focusNearest(that, focusGroupInfo, previousGroupIndex, false);
+        gpii.qss.qssFocusManager.focusNearestHorizontally(that, focusGroupInfo, previousGroupIndex, false);
     };
 
     /**
@@ -327,6 +326,6 @@
             focusGroups = focusGroupInfo.focusGroups,
             nextGroupIndex = gpii.psp.modulo(focusGroupIndex + 1, focusGroups.length);
 
-        gpii.qss.qssFocusManager.focusNearest(that, focusGroupInfo, nextGroupIndex, true);
+        gpii.qss.qssFocusManager.focusNearestHorizontally(that, focusGroupInfo, nextGroupIndex, true);
     };
 })(fluid, jQuery);
