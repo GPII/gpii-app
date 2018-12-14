@@ -36,7 +36,10 @@
 
         model: {
             setting: {},
-            value: "{that}.model.setting.value"
+            value: "{that}.model.setting.value",
+            messages: {
+                settingTitle: "{that}.model.setting.schema.title"
+            }
         },
 
         modelListeners: {
@@ -49,11 +52,6 @@
                 this: "{that}.dom.helpImage",
                 method: "attr",
                 args: ["src", "{change}.value"]
-            },
-            "setting.schema.title": {
-                this: "{that}.dom.settingTitle",
-                method: "text",
-                args: ["{change}.value"]
             }
         },
 

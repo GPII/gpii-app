@@ -56,6 +56,10 @@
             toggle: ".flc-qssToggleWidget"
         },
 
+        /**
+         * The last part of each grade name should be the name of the selector identifying 
+         * the container for the widget.
+         */
         widgetGrades: {
             "number": "gpii.qssWidget.stepper",
             "string": "gpii.qssWidget.menu",
@@ -102,12 +106,7 @@
                 container: {
                     expander: {
                         funcName: "gpii.psp.qssWidget.getWidgetContainer",
-                        args: [
-                            "{arguments}.0", // setting
-                            "{qssWidget}.dom.stepper",
-                            "{qssWidget}.dom.menu",
-                            "{qssWidget}.dom.toggle"
-                        ]
+                        args: ["{gpii.psp.qssWidget}"]
                     }
                 },
                 options: {
@@ -216,12 +215,7 @@
                 ]
             }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
-                args: [
-                    "{that}.model.setting",
-                    "{that}.dom.stepper",
-                    "{that}.dom.menu",
-                    "{that}.dom.toggle"
-                ]
+                args: ["{that}"]
             }]
         },
         invokers: {
@@ -252,38 +246,54 @@
     };
 
     /**
+     * Returns the DOM element (wrapped in a jQuery object) corresponding to the
+     * `widgetGrade` which is provided. The last part of the widget grade name (i.e.
+     * everything after the last dot) is the key of the selector which should be
+     * located in the DOM.
+     * @param {Component} that - The `gpii.psp.qssWidget` instance.
+     * @param {String} widgetGrade - A grade name for the widget component.
+     * @return {jQuery} The jQuery element representing the element in the DOM or
+     * `undefined` if there is no such element.
+     */
+    gpii.psp.qssWidget.locateDomElement = function (that, widgetGrade) {
+        if (widgetGrade) {
+            var lastDotIndex = widgetGrade.lastIndexOf("."),
+                selector = widgetGrade.substring(lastDotIndex + 1);
+            return that.dom.locate(selector);
+        }
+    }
+
+    /**
      * Determines the jQuery element which should be the container of the `widget`
      * view subcomponent depending on the type of the setting.
-     * @param {Object} setting - The setting which corresponds to the activated
-     * QSS button.
-     * @param {jQuery} stepperElement - The container for the QSS stepper widget.
-     * @param {jQuery} menuElement - The container for the QSS menu widget.
-     * @param {jQuery} toggleElement - The container for the QSS toggle widget.
-     * @return {jQuery} The jQuery element representing the container object.
+     * @param {Component} that - The `gpii.psp.qssWidget` instance.
+     * @return {jQuery} The jQuery element representing the container object or
+     * `undefined` if there is no such element.
      */
-    gpii.psp.qssWidget.getWidgetContainer = function (setting, stepperElement, menuElement, toggleElement) {
-        switch (setting.schema.type) {
-        case "number": return stepperElement;
-        case "string": return menuElement;
-        case "boolean": return toggleElement;
-        }
+    gpii.psp.qssWidget.getWidgetContainer = function (that) {
+        var settingType = that.model.setting.schema.type,
+            widgetGrades = that.options.widgetGrades,
+            widgetGrade = widgetGrades[settingType];
+        return gpii.psp.qssWidget.locateDomElement(that, widgetGrade);
     };
 
     /**
      * Shows the appropriate container depending on the type of the setting.
-     * @param {Object} setting - The setting which corresponds to the activated
-     * @param {jQuery} stepperElement - The container for the QSS stepper widget.
-     * @param {jQuery} menuElement - The container for the QSS menu widget.
-     * @param {jQuery} toggleElement - The container for the QSS toggle widget.
-     * QSS button.
+     * @param {Component} that - The `gpii.psp.qssWidget` instance.
      */
-    gpii.psp.qssWidget.updateContainerVisibility = function (setting, stepperElement, menuElement, toggleElement) {
-        stepperElement.hide();
-        menuElement.hide();
-        toggleElement.hide();
+    gpii.psp.qssWidget.updateContainerVisibility = function (that) {
+        var widgetGrades = that.options.widgetGrades;
+        fluid.each(widgetGrades, function (widgetGrade) {
+            var domElement = gpii.psp.qssWidget.locateDomElement(that, widgetGrade);
+            if (domElement) {
+                domElement.hide();
+            }
+        });
 
-        var widgetContainer = gpii.psp.qssWidget.getWidgetContainer(setting, stepperElement, menuElement, toggleElement);
-        widgetContainer.show();
+        var widgetContainer = gpii.psp.qssWidget.getWidgetContainer(that);
+        if (widgetContainer) {
+            widgetContainer.show();
+        }
     };
 
     /**

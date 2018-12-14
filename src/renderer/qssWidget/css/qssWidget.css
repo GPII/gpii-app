@@ -36,8 +36,8 @@ body {
 
 .fl-qssWidget .fl-titlebar .fl-closeBtn {
     position: absolute;
-    top: 1px;
-    right: 3px;
+    top: 3px;
+    right: 4px;
     border: 1px solid transparent;
 
     font-size: 10px;
