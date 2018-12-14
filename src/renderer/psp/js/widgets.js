@@ -361,6 +361,13 @@
             },
             "onCreate.addOffText": {
                 funcName: "fluid.identity"
+            },
+            // Remove the handlers which detect activation of the component using Spacebar and Enter.
+            // Useful when the same DOM element will be used again (e.g. in the QSS toggle menu).
+            "onDestroy.removeElementListeners": {
+                this: "{that}.dom.control",
+                method: "off",
+                args: ["fluid-activate"]
             }
         }
     });

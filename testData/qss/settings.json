@@ -120,7 +120,8 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 5,
         "messageKey": "common-selfVoicing-enabled",
-        "value": false
+        "value": false,
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
     }, {
         "path": "more",
         "schema": {
