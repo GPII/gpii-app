@@ -116,7 +116,7 @@ gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
         return;
     }
 
-    console.log("gpiiConnector: Alter setting - ", setting);
+    fluid.log("gpiiConnector: Alter setting - ", setting);
 
     gpiiConnector.send({
         path: ["settingControls", setting.path, "value"],
@@ -132,7 +132,7 @@ gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
  * @param {Object} updateDetails - The PSP Channel massage's details about the update
  */
 gpii.app.gpiiConnector.handlePreferencesChangeMessage = function (gpiiConnector, updateDetails) {
-    console.log("GpiiConnector: Updated preference set:", updateDetails);
+    fluid.log("GpiiConnector: Updated preference set:", updateDetails);
     var snapsetName = gpii.app.extractSnapsetName(updateDetails);
     gpiiConnector.events.onSnapsetNameUpdated.fire(snapsetName);
 
@@ -150,7 +150,7 @@ gpii.app.gpiiConnector.handleSettingUpdateMessage = function (gpiiConnector, upd
     var settingPath = updateDetails.path[updateDetails.path.length - 2],
         settingValue = updateDetails.value;
 
-    console.log("GpiiConnector: Updated setting:", settingPath, settingValue);
+    fluid.log("GpiiConnector: Updated setting:", settingPath, settingValue);
 
     gpiiConnector.events.onSettingUpdated.fire({
         path: settingPath,
@@ -712,10 +712,11 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
     // The "original" values of the QSS settings. These are to be provided from the core
     // in the future.
     defaultQssSettingValues: {
-        // "http://registry\\.gpii\\.net/common/language": { value: "en-US" }, this is synced directly in qss.js
         "http://registry\\.gpii\\.net/common/DPIScale": { value: 0 },
         "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
-        "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false }
+        "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
+        // use the initial value of the language as default setting
+        "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" }
     }
 });
 
@@ -764,7 +765,7 @@ gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) 
         qssSettingControls = value.qssSettingControls || {};
 
     if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {
-        console.log("gpiiConnector.qss Controls to be sent: ", value.qssSettingControls);
+        fluid.log("gpiiConnector.qss Controls to be sent: ", value.qssSettingControls);
 
         that.events.onQssSettingsUpdate.fire(
             fluid.hashToArray(qssSettingControls, "path"), // set to the expected format
@@ -793,7 +794,7 @@ gpii.app.dev.gpiiConnector.qss.applySettingDefaults = function (that, defaultQss
     // Whether the update is a full preference set update (fired from change in the snapset or active preference set),
     // or a change of a missing in the preference set setting from the QSS
     if (gpii.app.gpiiConnector.isFullPrefSetUpdate(that.previousState, updateDetails)) {
-        console.log("gpiiConnect.qss: Merge QSS default settings");
+        fluid.log("gpiiConnect.qss: Merge QSS default settings");
 
         // add missing QSS settings to the update list (this is needed for triggering reset of the QSS)
         qssSettingControls = fluid.extend(true, {}, defaultQssSettingValues, qssSettingControls);
