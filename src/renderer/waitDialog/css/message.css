@@ -32,7 +32,10 @@
 }
 
 .spinner {
-    background-image: url("../../../icons/Gear_Cloud_spinning_4s_cw.svg");
+    background-image: url("../../../icons/Morphic-Spinner.gif");
     width: 12em;
     height: 12em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
 }
