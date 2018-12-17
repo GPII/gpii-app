@@ -53,7 +53,7 @@
         },
 
         selectors: {
-            steps: ".flc-qssStepperWidget-controls-steps",
+            steps: ".flc-qssStepperWidget-indicators",
 
             stepperButton: ".flc-qssStepperWidget-btn",
             incButton: ".flc-qssStepperWidget-incBtn",
@@ -66,7 +66,6 @@
         },
 
         modelListeners: {
-            // TODO use local event?
             "setting.value": {
                 func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{that}.model.setting"],
@@ -369,8 +368,8 @@
         // Repeater stuff
         //
         dynamicContainerMarkup: {
-            container: "<div role='radio' class='%containerClass fl-qssStepperWidget-step' tabindex='0'></div>",
-            containerClassPrefix: "flc-qssStepperWidget-step-%id"
+            container: "<div role='radio' class='%containerClass fl-qssStepperWidget-indicator' tabindex='0'></div>",
+            containerClassPrefix: "flc-qssStepperWidget-indicator"
         },
         handlerType: "gpii.qssWidget.stepper.step.presenter",
         markup: null,

@@ -60,7 +60,7 @@
 }
 
 
-.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps {
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators {
     flex-basis: 15%;
 
     display: flex;
@@ -69,7 +69,7 @@
     justify-content: space-between;
 }
 
-.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step {
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator {
     margin: 6px auto 6px auto;
     height: 8px;
     width: 8px;
@@ -84,20 +84,20 @@
     mask: url("../../../assets/circle.svg") 0 0/100% 100%;
 }
 
-.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step:first-child {
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator:first-child {
     margin-top: 0px;
 }
 
-.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step:last-child {
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator:last-child {
     margin-bottom: 0px;
 }
 
-.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step[data-type="default"] {
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator[data-type="default"] {
     -webkit-mask: url("../../../assets/star.svg") 0 0/100% 100%;
     mask: url("../../../assets/star.svg") 0 0/100% 100%;
 }
 
-.fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-steps .fl-qssStepperWidget-step[data-type="selected"] {
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator[data-type="selected"] {
     /* It's bigger */
     height: 15px;
     width: 15px;

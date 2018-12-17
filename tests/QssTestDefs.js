@@ -28,12 +28,12 @@ require("./testUtils.js");
  */
 
 function getStepperIndicatorsCount () {
-    console.log("Here already: ", jQuery(".fl-qssStepperWidget-step"));
-    return jQuery(".fl-qssStepperWidget-step").length;
+    console.log("Here already: ", jQuery(".fl-qssStepperWidget-indicator"));
+    return jQuery(".fl-qssStepperWidget-indicator").length;
 }
 
 function clickStepperIndicator () {
-    jQuery(".fl-qssStepperWidget-step").click();
+    jQuery(".fl-qssStepperWidget-indicator").click();
 }
 
 
@@ -477,6 +477,10 @@ var stepperStepsSequence = [
             1,
             "{arguments}.0.value"
         ]
+    },
+
+    { // restore everything
+        func: "{that}.app.resetAllToStandard"
     }
 ];
 
