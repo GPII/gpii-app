@@ -25,9 +25,9 @@
 .fl-qssStepperWidget-controls {
     display: flex;
 
-    /* TODO use variables */
-    width: calc(100% + 2 * 10px);
-    margin: 0 -10px 10px -10px;
+    /* Exclude dialog padding */
+    width: calc(100% + 2 * var(--qssWidget-padding));
+    margin: 0 calc(-1 * var(--qssWidget-padding)) var(--qssWidget-padding) calc(-1 * var(--qssWidget-padding));
 }
 
 .fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-buttons {
