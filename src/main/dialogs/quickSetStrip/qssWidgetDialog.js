@@ -83,7 +83,8 @@ fluid.defaults("gpii.app.qssWidget", {
         onSettingUpdated: null,
         onQssWidgetToggled: null,
         onQssWidgetSettingAltered: null,
-        onQssWidgetNotificationRequired: null
+        onQssWidgetNotificationRequired: null,
+        onQssWidgetRecreated: null
     },
 
     components: {
@@ -102,7 +103,7 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetClosed: null,
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
-                    onQssWidgetCreated: null
+                    onQssWidgetCreated: "{qssWidget}.events.onQssWidgetRecreated"
                 },
                 listeners: {
                     onQssWidgetClosed: [{

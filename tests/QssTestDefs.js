@@ -22,9 +22,22 @@ var fluid = require("infusion"),
 
 require("./testUtils.js");
 
+
 /*
  * Scripts for interaction with the renderer
  */
+
+function getStepperIndicatorsCount () {
+    console.log("Here already: ", jQuery(".fl-qssStepperWidget-step"));
+    return jQuery(".fl-qssStepperWidget-step").length;
+}
+
+function clickStepperIndicator () {
+    jQuery(".fl-qssStepperWidget-step").click();
+}
+
+
+
 // QSS related
 var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseenter\")",
     unhoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseleave\")",
@@ -422,6 +435,47 @@ var widgetClosingBehaviourSequence = [
         args: [
             "The QSS widget is hidden when the ArrowRight key is pressed",
             "{that}.app.qssWrapper.qssWidget.model.isShown"
+        ]
+    }
+];
+
+var stepperStepsSequence = [
+    { // Click on the "Screen Zoom" button...
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickScreenZoomBtn
+        ]
+    }, {
+        event: "{that}.app.qssWrapper.qssWidget.events.onQssWidgetRecreated",
+        listener: "fluid.identity"
+    }, { // ... should display the value indicators
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            gpii.test.toIIFEString(getStepperIndicatorsCount)
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Stepper widget should have proper amount of steps",
+            3, // dependent on the min/max value
+            "{arguments}.0"
+        ]
+    }, { // And clicking one of them
+        task: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            gpii.test.toIIFEString(clickStepperIndicator)
+        ],
+        resolve: "fluid.identity"
+    }, { // ... should apply its value
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "jqUnit.assertEquals",
+        args: [
+            "Clicking a Stepper widget indicator should apply its value",
+            1,
+            "{arguments}.0.value"
         ]
     }
 ];
@@ -1418,7 +1472,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 69,
+    expect: 71,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1462,6 +1516,7 @@ gpii.tests.qss.testDefs = {
         undoCrossTestSequence,
         undoTestSequence,
         qssCrossTestSequence,
+        stepperStepsSequence,
         crossQssTranslations,
         appZoomTestSequence,
         restartWarningSequence

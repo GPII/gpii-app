@@ -438,7 +438,8 @@
             .map(Number.call, Number) // generate array with n elements
             .reverse()
             .map(function (step) {
-                var stepValue = step * schema.divisibleBy;
+                // real value
+                var stepValue = (step * schema.divisibleBy) + setting.schema.min;
                 return {
                     stepValue: stepValue, // in case it is selected
                     isSelected: stepValue === normalizedValue,
