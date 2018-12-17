@@ -155,6 +155,7 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-selfVoicing-enabled",
         "value": false,
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud",
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>"
     }, {
         "path": "more",

@@ -110,11 +110,13 @@
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
         "schema": {
             "type": "boolean",
+            "helpImage": "readAloud.png",
             "default": false
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "messageKey": "common-selfVoicing-enabled",
-        "value": false
+        "value": false,
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
     }, {
         "path": "more",
         "schema": {
