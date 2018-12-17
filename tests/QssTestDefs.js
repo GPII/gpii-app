@@ -446,7 +446,7 @@ var stepperindicatorsSequence = [
             clickScreenZoomBtn
         ]
     }, {
-        event: "{that}.app.qssWrapper.qssWidget.events.onQssWidgetRecreated",
+        event: "{that}.app.qssWrapper.qssWidget.events.onQssWidgetCreated",
         listener: "fluid.identity"
     }, { // ... should display the value indicators
         task: "gpii.test.executeJavaScript",

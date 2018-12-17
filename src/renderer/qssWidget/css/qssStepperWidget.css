@@ -1,7 +1,3 @@
-/*
- * Stepper Widget
- */
-
 .fl-qssWidget-footerTip {
     color: #21932b;
 }
@@ -27,7 +23,8 @@
 
     /* Exclude dialog padding */
     width: calc(100% + 2 * var(--qssWidget-padding));
-    margin: 0 calc(-1 * var(--qssWidget-padding)) var(--qssWidget-padding) calc(-1 * var(--qssWidget-padding));
+    /* Sets the same value as `--qssWidget-padding` but a more clearly */
+    margin: 0 -10px 10px -10px;
 }
 
 .fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-buttons {
@@ -63,9 +60,12 @@
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators {
     flex-basis: 15%;
 
+    /*
+     * In case we don't use this approach, if there are just a few indicators
+     * (two or three), the won't be spread to match with the ends of the button controls.
+     */
     display: flex;
     flex-direction: column;
-    /* Handles the case when there are just a few items (two or three) */
     justify-content: space-between;
 }
 

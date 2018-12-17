@@ -419,40 +419,32 @@
      * can be generated an empty array is returned
      */
     gpii.qssWidget.stepper.getIndicatorsList = function (setting) {
-        if (!setting ||
-                !Number.isInteger(setting.schema.min) ||
-                !Number.isInteger(setting.schema.max)) {
+        if (!Number.isInteger(setting.schema.min) || !Number.isInteger(setting.schema.max)) {
             return [];
         }
 
-        var schema = setting.schema;
-        var indicatorsCount = ( schema.max - (schema.min - 1 ) ) / schema.divisibleBy;
+        var indicators = [];
 
-        // min: -2, value: 1 -> value: 3
-        // min: 1, value: 5 -> value: 4
-        var normalizedValue = setting.value - schema.min,
-            normalizedDefaultValue = (schema["default"] - schema.min);
-
-        var indicators = Array.apply(null, {length: indicatorsCount})
-            .map(Number.call, Number) // generate array with n elements
-            .reverse()
-            .map(function (indicator) {
-                // real value
-                var indicatorValue = (indicator * schema.divisibleBy) + setting.schema.min;
-                return {
-                    indicatorValue: indicatorValue, // in case it is selected
-                    isSelected: indicatorValue === normalizedValue,
-                    isRecommended: indicatorValue === normalizedDefaultValue
-                };
+        for (
+            var indicatorValue = setting.schema.min ;
+            indicatorValue <= setting.schema.max;
+            indicatorValue += setting.schema.divisibleBy
+        ) {
+            indicators.push({
+                indicatorValue: indicatorValue, // what value to be applied when selected
+                isSelected: indicatorValue === setting.value,
+                isRecommended: indicatorValue === setting.schema["default"]
             });
-        return indicators;
+        }
+
+        return indicators.reverse();
     };
 
     /**
      * Handler for a single indicator element.
      *
      * Each indicator element has three states: normal, selected and default.
-     * These three states are indicated ?разграничени using a custom html element
+     * These three states are indicated using a custom html element
      * attribute - "data-type". Depending on the state of this attribute, different
      * styles are applied (refer to the CSS for more info).
      */
