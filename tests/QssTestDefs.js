@@ -60,10 +60,29 @@ var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
-    clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()";
+    clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
+    clickToggleBtn = "jQuery('.flc-switchUI-control').click()";
 
 // Generic
 var closeClosableDialog = "jQuery(\".flc-closeBtn\").click()";
+
+var openReadAloudMenuSeqEl = {
+    task: "gpii.test.executeJavaScript",
+    args: [
+        "{that}.app.qssWrapper.qss.dialog",
+        clickReadAloudBtn
+    ],
+    resolve: "fluid.identity"
+};
+
+var clickToggleButtonSeqEl = {
+    task: "gpii.test.executeJavaScript",
+    args: [
+        "{that}.app.qssWrapper.qssWidget.dialog",
+        clickToggleBtn
+    ],
+    resolve: "fluid.identity"
+};
 
 
 require("../src/main/app.js");
@@ -853,14 +872,11 @@ var qssCrossTestSequence = [
         path: "isShown",
         listener: "fluid.identity"
     },
-    // Toggle
-    { // Activation of toggle button should
-        func: "gpii.test.executeJavaScript",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickReadAloudBtn
-        ]
-    }, { // ... notify the core
+    // Toggle button / menu
+    // Opening the toggle menu and clicking the toggle button...
+    openReadAloudMenuSeqEl,
+    clickToggleButtonSeqEl,
+    { // ... should notify the core
         event: "{that}.app.settingsBroker.events.onSettingApplied",
         listener: "jqUnit.assertLeftHand",
         args: [
@@ -869,14 +885,17 @@ var qssCrossTestSequence = [
             "{arguments}.0"
         ]
     },
-    { // Turn off the read aloud
+    // Turn off the read aloud
+    clickToggleButtonSeqEl,
+    { // And close the QSS widget menu
         task: "gpii.test.executeJavaScript",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            clickReadAloudBtn
+            clickCloseBtn
         ],
         resolve: "fluid.identity"
     },
+
     /*
      * QSS & PSP tests
      */
@@ -900,13 +919,11 @@ var qssCrossTestSequence = [
             "The PSP is shown when the Key in button is pressed",
             "{that}.app.psp.model.isShown"
         ]
-    }, { // ... changing setting from QSS
-        func: "gpii.test.executeJavaScript",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickReadAloudBtn
-        ]
-    }, { // ... should notify the PSP
+    },
+    // Changing a setting from QSS
+    openReadAloudMenuSeqEl,
+    clickToggleButtonSeqEl,
+    { // ... should notify the PSP
         event: "{that}.app.psp.events.onSettingUpdated",
         listener: "jqUnit.assertLeftHand",
         args: [
@@ -922,16 +939,8 @@ var qssCrossTestSequence = [
     }
 ];
 
-var simpleSettingChangeSeqEl = { // Changeing single setting
-    task: "gpii.test.executeJavaScript",
-    args: [
-        "{that}.app.qssWrapper.qss.dialog",
-        clickReadAloudBtn
-    ],
-    resolve: "fluid.identity"
-};
-var clickUndoButtonSeqEl = { // ... and clicking undo button
-    funcName: "gpii.test.executeJavaScript",
+var clickUndoButtonSeqEl = {
+    func: "gpii.test.executeJavaScriptDelayed",
     args: [
         "{that}.app.qssWrapper.qss.dialog",
         clickUndoBtn
@@ -942,7 +951,14 @@ var undoCrossTestSequence = [
     { // When the tray icon is clicked...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
     },
-    simpleSettingChangeSeqEl,
+    // Change the value of the "Read Aloud" setting ...
+    openReadAloudMenuSeqEl,
+    clickToggleButtonSeqEl,
+    {
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "fluid.identity",
+    },
     clickUndoButtonSeqEl, // ... and clicking undo button
     { // ... should revert setting's value
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
@@ -956,8 +972,19 @@ var undoCrossTestSequence = [
     },
     //
     // Multiple setting changes
-    simpleSettingChangeSeqEl, // Changing a setting
-    simpleSettingChangeSeqEl, // Making second setting change
+    openReadAloudMenuSeqEl,
+    clickToggleButtonSeqEl, // Changing a setting
+    {
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "fluid.identity",
+    },
+    clickToggleButtonSeqEl, // Making second setting change
+    {
+        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
+        path: "settings.*",
+        listener: "fluid.identity",
+    },
     clickUndoButtonSeqEl,
     { // ... should restore last setting's state
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
@@ -983,7 +1010,8 @@ var undoCrossTestSequence = [
     ////
     //// Indicator test
     ////
-    simpleSettingChangeSeqEl, // Changing a setting
+    openReadAloudMenuSeqEl,
+    clickToggleButtonSeqEl, // Changing a setting
     { // ... should enable undo indicator
         event: "{that}.app.qssWrapper.qss.events.onUndoIndicatorChanged",
         listener: "jqUnit.assertTrue",

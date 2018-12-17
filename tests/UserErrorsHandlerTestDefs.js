@@ -36,7 +36,6 @@ gpii.tests.userErrorsHandler.assertErrorDialogOptions = function (dialogOptions)
 };
 
 function clickCloseBtn() {
-    console.log("Close button: ", jQuery(".flc-closeBtn"));
     jQuery(".flc-closeBtn").click();
 }
 

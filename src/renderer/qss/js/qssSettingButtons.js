@@ -61,93 +61,6 @@
     };
 
     /**
-     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS toggle
-     * buttons.
-     */
-    fluid.defaults("gpii.qss.toggleButtonPresenter", {
-        gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.settingButtonPresenter"],
-        model: {
-            messages: {
-                caption: null
-            },
-            caption: null
-        },
-        attrs: {
-            role: "switch"
-        },
-        applyKeyboardHighlight: true,
-        modelRelay: {
-            "caption": {
-                target: "caption",
-                singleTransform: {
-                    type: "fluid.transforms.free",
-                    func: "gpii.qss.toggleButtonPresenter.getCaption",
-                    args: ["{that}.model.value", "{that}.model.messages"]
-                }
-            }
-        },
-        modelListeners: {
-            value: {
-                this: "{that}.container",
-                method: "attr",
-                args: ["aria-checked", "{change}.value"]
-            },
-            caption: {
-                this: "{that}.dom.caption",
-                method: "text",
-                args: ["{change}.value"]
-            }
-        },
-        listeners: {
-            "onArrowUpPressed.activate": {
-                func: "{that}.onActivationKeyPressed",
-                args: [
-                    {key: "ArrowUp"}
-                ]
-            },
-            "onArrowDownPressed.activate": {
-                func: "{that}.onActivationKeyPressed",
-                args: [
-                    {key: "ArrowDown"}
-                ]
-            }
-        },
-        invokers: {
-            activate: {
-                funcName: "gpii.qss.toggleButtonPresenter.activate",
-                args: [
-                    "{that}",
-                    "{arguments}.0" // activationParams
-                ]
-            }
-        }
-    });
-
-    /**
-     * Returns the caption of the toggle button that needs to be shown below the button's
-     * title in case the state of the button is "on".
-     * @param {Boolean} value - The state of the button.
-     * @param {Object} messages - An object containing internationalizable messages for
-     * this component.
-     * @return {String} The caption message for the toggle button.
-     */
-    gpii.qss.toggleButtonPresenter.getCaption = function (value, messages) {
-        return value ? messages.caption : "";
-    };
-
-    /**
-     * A custom function for handling activation of QSS toggle buttons. Reuses the generic
-     * `notifyButtonActivated` invoker.
-     * @param {Component} that - The `gpii.qss.toggleButtonPresenter` instance.
-     * @param {Object} activationParams - An object containing parameter's for the activation
-     * of the button (e.g. which key was used to activate the button).
-     */
-    gpii.qss.toggleButtonPresenter.activate = function (that, activationParams) {
-        that.notifyButtonActivated(activationParams);
-        that.applier.change("value", !that.model.value);
-    };
-
-    /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS buttons which
      * can have their values changed via the QSS widget.
      */
@@ -168,4 +81,47 @@
             }
         }
     });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS toggle
+     * buttons.
+     */
+    fluid.defaults("gpii.qss.toggleButtonPresenter", {
+        gradeNames: ["gpii.qss.widgetButtonPresenter"],
+        model: {
+            messages: {
+                caption: null
+            },
+            caption: null
+        },
+        modelRelay: {
+            "caption": {
+                target: "caption",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.qss.toggleButtonPresenter.getCaption",
+                    args: ["{that}.model.value", "{that}.model.messages"]
+                }
+            }
+        },
+        modelListeners: {
+            caption: {
+                this: "{that}.dom.caption",
+                method: "text",
+                args: ["{change}.value"]
+            }
+        }
+    });
+
+    /**
+     * Returns the caption of the toggle button that needs to be shown below the button's
+     * title in case the state of the button is "on".
+     * @param {Boolean} value - The state of the button.
+     * @param {Object} messages - An object containing internationalizable messages for
+     * this component.
+     * @return {String} The caption message for the toggle button.
+     */
+    gpii.qss.toggleButtonPresenter.getCaption = function (value, messages) {
+        return value ? messages.caption : "";
+    };
 })(fluid);

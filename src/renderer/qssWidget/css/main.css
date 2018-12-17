@@ -20,7 +20,7 @@ body {
 
 .fl-qssWidget {
     height: calc(100% - 12px);
-    padding: var(--qssWidget-padding);
+    padding: 10px;
     border: 2px solid #002957;
     border-radius: 5px;
     box-sizing: border-box;
@@ -36,8 +36,8 @@ body {
 
 .fl-qssWidget .fl-titlebar .fl-closeBtn {
     position: absolute;
-    top: 1px;
-    right: 3px;
+    top: 3px;
+    right: 4px;
     border: 1px solid transparent;
 
     font-size: 10px;
@@ -119,3 +119,4 @@ body {
     border-top-color: #ffffff;
     margin-left: -9px;
 }
+

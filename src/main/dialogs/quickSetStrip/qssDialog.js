@@ -93,7 +93,7 @@ fluid.defaults("gpii.app.qss", {
                 },
                 listeners: {
                     onSettingUpdated: {
-                        "funcName": "console.log",
+                        "funcName": "fluid.log",
                         args: ["QssDialog settingUpdate: ", "{arguments}.0"]
                     }
                 },
@@ -132,8 +132,8 @@ fluid.defaults("gpii.app.qss", {
                         func: "{qss}.hide"
                     },
                     onQssSettingAltered: {
-                        funcName: "console.log",
-                        args: ["QSS Dailog: Setting altered QSS - ", "{arguments}.0.path", "{arguments}.0.value"]
+                        funcName: "fluid.log",
+                        args: ["QSS Dialog: Setting altered QSS - ", "{arguments}.0.path", "{arguments}.0.value"]
                     }
                 }
             }
@@ -285,7 +285,7 @@ gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
         var trayBounds = tray.tray.getBounds(),
             cursorPoint = electron.screen.getCursorScreenPoint();
 
-        if (!gpii.app.isPointInRect(cursorPoint, trayBounds)) {
+        if (cursorPoint && trayBounds && !gpii.app.isPointInRect(cursorPoint, trayBounds)) {
             that.hide();
         }
     }

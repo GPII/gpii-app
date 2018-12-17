@@ -39,6 +39,9 @@ fluid.defaults("gpii.app.qssWidget", {
      */
     extraVerticalOffset: 7,
 
+    // A list of QSS setting types for which this widget is applicable.
+    supportedSettings: ["string", "number", "boolean"],
+
     model: {
         setting: {}
     },
@@ -115,7 +118,7 @@ fluid.defaults("gpii.app.qssWidget", {
                         ]
                     }],
                     onQssWidgetSettingAltered: {
-                        funcName: "console.log",
+                        funcName: "fluid.log",
                         args: ["QssWidget - Settings Altered: ", "{arguments}.0"]
                     },
                     onQssWidgetCreated: {
@@ -206,7 +209,7 @@ gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activation
         return;
     }
 
-    if (setting.schema.type === "string" || setting.schema.type === "number") {
+    if (that.options.supportedSettings.includes(setting.schema.type)) {
         that.show(setting, btnCenterOffset, activationParams);
     } else {
         that.hide();
