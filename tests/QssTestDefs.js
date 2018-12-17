@@ -27,12 +27,11 @@ require("./testUtils.js");
  * Scripts for interaction with the renderer
  */
 
-function getStepperIndicatorsCount () {
-    console.log("Here already: ", jQuery(".fl-qssStepperWidget-indicator"));
+function getStepperIndicatorsCount() {
     return jQuery(".fl-qssStepperWidget-indicator").length;
 }
 
-function clickStepperIndicator () {
+function clickStepperIndicator() {
     jQuery(".fl-qssStepperWidget-indicator").click();
 }
 
