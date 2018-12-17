@@ -439,7 +439,7 @@ var widgetClosingBehaviourSequence = [
     }
 ];
 
-var stepperStepsSequence = [
+var stepperindicatorsSequence = [
     { // Click on the "Screen Zoom" button...
         func: "gpii.test.executeJavaScript",
         args: [
@@ -457,7 +457,7 @@ var stepperStepsSequence = [
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
-            "Stepper widget should have proper amount of steps",
+            "Stepper widget should have proper amount of indicators",
             3, // dependent on the min/max value
             "{arguments}.0"
         ]
@@ -1520,7 +1520,7 @@ gpii.tests.qss.testDefs = {
         undoCrossTestSequence,
         undoTestSequence,
         qssCrossTestSequence,
-        stepperStepsSequence,
+        stepperindicatorsSequence,
         crossQssTranslations,
         appZoomTestSequence,
         restartWarningSequence

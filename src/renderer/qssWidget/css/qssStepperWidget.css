@@ -76,12 +76,12 @@
     cursor: pointer;
 
 
-    /* Default icon */
+    /* recommended icon */
     content: "";
     background-color: #002957;
 
-    -webkit-mask: url("../../../assets/circle.svg") 0 0/100% 100%;
-    mask: url("../../../assets/circle.svg") 0 0/100% 100%;
+    -webkit-mask: url("../../../assets/qssStepper/default.svg") 0 0/100% 100%;
+    mask: url("../../../assets/qssStepper/default.svg") 0 0/100% 100%;
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator:first-child {
@@ -92,9 +92,9 @@
     margin-bottom: 0px;
 }
 
-.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator[data-type="default"] {
-    -webkit-mask: url("../../../assets/star.svg") 0 0/100% 100%;
-    mask: url("../../../assets/star.svg") 0 0/100% 100%;
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator[data-type="recommended"] {
+    -webkit-mask: url("../../../assets/qssStepper/recommended.svg") 0 0/100% 100%;
+    mask: url("../../../assets/qssStepper/recommended.svg") 0 0/100% 100%;
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator[data-type="selected"] {
@@ -104,8 +104,8 @@
     margin: 0 auto 0 auto;
 
     background-color: #008145;
-    -webkit-mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
-    mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
+    -webkit-mask: url("../../../assets/qssStepper/selected.svg") 0 0/100% 100%;
+    mask: url("../../../assets/qssStepper/selected.svg") 0 0/100% 100%;
 }
 
 

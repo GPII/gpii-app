@@ -53,7 +53,7 @@
         },
 
         selectors: {
-            steps: ".flc-qssStepperWidget-indicators",
+            indicators: ".flc-qssStepperWidget-indicators",
 
             stepperButton: ".flc-qssStepperWidget-btn",
             incButton: ".flc-qssStepperWidget-incBtn",
@@ -195,9 +195,9 @@
                     }
                 }
             },
-            steps: {
-                type: "gpii.qssWidget.stepper.steps",
-                container: "{that}.dom.steps",
+            indicators: {
+                type: "gpii.qssWidget.stepper.indicators",
+                container: "{that}.dom.indicators",
                 options: {
                     model: {
                         setting: "{stepper}.model.setting"
@@ -359,9 +359,9 @@
 
 
     /**
-     * Creates and manages the setting "steps" list.
+     * Creates and manages the setting "indicators" list.
      */
-    fluid.defaults("gpii.qssWidget.stepper.steps", {
+    fluid.defaults("gpii.qssWidget.stepper.indicators", {
         gradeNames: "gpii.psp.repeater",
 
         //
@@ -371,7 +371,7 @@
             container: "<div role='radio' class='%containerClass fl-qssStepperWidget-indicator' tabindex='0'></div>",
             containerClassPrefix: "flc-qssStepperWidget-indicator"
         },
-        handlerType: "gpii.qssWidget.stepper.step.presenter",
+        handlerType: "gpii.qssWidget.stepper.indicator.presenter",
         markup: null,
 
         //
@@ -386,20 +386,20 @@
                 target: "items",
                 singleTransform: {
                     type: "fluid.transforms.free",
-                    func: "gpii.qssWidget.stepper.getStepItems",
+                    func: "gpii.qssWidget.stepper.getIndicatorsList",
                     args: [
-                        "{gpii.qssWidget.stepper.steps}.model.setting"
+                        "{gpii.qssWidget.stepper.indicators}.model.setting"
                     ]
                 }
             }
         },
 
         events: {
-            onStepClicked: null
+            onIndicatorClicked: null
         },
 
         listeners: {
-            "onStepClicked.updateValue": {
+            "onIndicatorClicked.updateValue": {
                 changePath: "setting.value",
                 value: "{arguments}.0",
                 source: "settingAlter"
@@ -409,16 +409,16 @@
 
 
     /**
-     * Generates the different steps' data based on a setting .
-     * Steps are generated using the setting's `min`, `max` and `divisibleBy` properties.
-     * In case either of those is missing, no steps will be generated.
+     * Generates the different indicators' data based on a setting .
+     * indicators are generated using the setting's `min`, `max` and `divisibleBy` properties.
+     * In case either of those is missing, no indicators will be generated.
      * Note that items will be recomputed every time the setting changes but only items that
      * need to be re-rendered will do so (changeApplier merges the values).
-     * @param {Object} setting - The setting for which steps must be created
-     * @return {Object[]} - The list of data for each step element. In case no steps
+     * @param {Object} setting - The setting for which indicators must be created
+     * @return {Object[]} - The list of data for each indicator element. In case no indicators
      * can be generated an empty array is returned
      */
-    gpii.qssWidget.stepper.getStepItems = function (setting) {
+    gpii.qssWidget.stepper.getIndicatorsList = function (setting) {
         if (!setting ||
                 !Number.isInteger(setting.schema.min) ||
                 !Number.isInteger(setting.schema.max)) {
@@ -426,47 +426,44 @@
         }
 
         var schema = setting.schema;
-        var stepsCount = ( schema.max - (schema.min - 1 ) ) / schema.divisibleBy;
+        var indicatorsCount = ( schema.max - (schema.min - 1 ) ) / schema.divisibleBy;
 
         // min: -2, value: 1 -> value: 3
         // min: 1, value: 5 -> value: 4
         var normalizedValue = setting.value - schema.min,
             normalizedDefaultValue = (schema["default"] - schema.min);
 
-        var steps = Array.apply(null, {length: stepsCount})
+        var indicators = Array.apply(null, {length: indicatorsCount})
             .map(Number.call, Number) // generate array with n elements
             .reverse()
-            .map(function (step) {
+            .map(function (indicator) {
                 // real value
-                var stepValue = (step * schema.divisibleBy) + setting.schema.min;
+                var indicatorValue = (indicator * schema.divisibleBy) + setting.schema.min;
                 return {
-                    stepValue: stepValue, // in case it is selected
-                    isSelected: stepValue === normalizedValue,
-                    isDefault: stepValue === normalizedDefaultValue
+                    indicatorValue: indicatorValue, // in case it is selected
+                    isSelected: indicatorValue === normalizedValue,
+                    isRecommended: indicatorValue === normalizedDefaultValue
                 };
             });
-
-        console.log("Steps:", steps, setting);
-
-        return steps;
+        return indicators;
     };
 
     /**
-     * Handler for a single step element.
+     * Handler for a single indicator element.
      *
-     * Each step element has three states: normal, selected and default.
+     * Each indicator element has three states: normal, selected and default.
      * These three states are indicated ?разграничени using a custom html element
      * attribute - "data-type". Depending on the state of this attribute, different
      * styles are applied (refer to the CSS for more info).
      */
-    fluid.defaults("gpii.qssWidget.stepper.step.presenter", {
+    fluid.defaults("gpii.qssWidget.stepper.indicator.presenter", {
         gradeNames: ["fluid.viewComponent", "gpii.app.clickable"],
 
         model: {
             item: {
-                stepValue: null,
+                indicatorValue: null,
                 isSelected: null,
-                isDefault: null
+                isRecommended: null
             }
         },
 
@@ -474,13 +471,13 @@
             attrName: "data-type",
             values: {
                 selected: "selected",
-                default: "default"
+                recommended: "recommended"
             }
         },
 
         modelListeners: {
             item: {
-                funcName: "gpii.qssWidget.stepper.step.updateState",
+                funcName: "gpii.qssWidget.stepper.indicator.updateState",
                 args: [
                     "{that}.container",
                     "{that}.options.stateAttribute",
@@ -491,25 +488,25 @@
 
         listeners: {
             onClicked: {
-                func: "{gpii.qssWidget.stepper.steps}.events.onStepClicked.fire",
-                args: "{that}.model.item.stepValue"
+                func: "{gpii.qssWidget.stepper.indicators}.events.onIndicatorClicked.fire",
+                args: "{that}.model.item.indicatorValue"
             }
         }
     });
 
     /**
      * Alters the custom element attribute in order to change the styles applied to it.
-     * @param {jQuery} stepContainer - The container for the step element
+     * @param {jQuery} indicatorContainer - The container for the indicator element
      * @param {Object} stateAttribute - Options for the state defining attribute
-     * @param {Object} stepData - The condition data for the element
+     * @param {Object} indicatorData - The condition data for the element
      */
-    gpii.qssWidget.stepper.step.updateState = function (stepContainer, stateAttribute, stepData) {
+    gpii.qssWidget.stepper.indicator.updateState = function (indicatorContainer, stateAttribute, indicatorData) {
         var type =
-            ( stepData.isSelected && stateAttribute.values.selected )  ||
-            ( stepData.isDefault && stateAttribute.values["default"] ) ||
+            ( indicatorData.isSelected && stateAttribute.values.selected )  ||
+            ( indicatorData.isRecommended && stateAttribute.values.recommended ) ||
             null;
 
-        stepContainer.attr(stateAttribute.attrName, type);
+        indicatorContainer.attr(stateAttribute.attrName, type);
     };
 
 })(fluid);
