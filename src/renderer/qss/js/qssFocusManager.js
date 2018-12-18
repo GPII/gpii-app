@@ -94,8 +94,8 @@
         var focusableElements =
             container
                 .find("." + styles.focusable + ":visible")
-                .filter(function () {
-                    var tabindex = gpii.qss.qssFocusManager.getTabIndex(this);
+                .filter(function (index, element) {
+                    var tabindex = gpii.qss.qssFocusManager.getTabIndex(element);
                     return tabindex >= 0;
                 })
                 .sort(function (left, right) {
@@ -203,17 +203,17 @@
      * 1. The button is focusable.
      * 2. The button is in the same focus group as the currently focused button.
      * 3. The button is the first button before or after the currently focused button (depending
-     * on the `direction` argument) which conforms to the two conditions above.
+     * on the `backwards` argument) which conforms to the two conditions above.
      * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
-     * @param {Boolean} direction - If `true` the scanning direction will be from top to bottom.
-     * Otherwise, it will be from bottom to top.
+     * @param {Boolean} backwards - If `true` the scanning direction will be from bottom to top.
+     * Otherwise, it will be from top to bottom.
      */
-    gpii.qss.qssFocusManager.focusNearestVertically = function (that, direction) {
+    gpii.qss.qssFocusManager.focusNearestVertically = function (that, backwards) {
         var focusGroupInfo = that.getFocusGroupsInfo(),
             focusGroups = focusGroupInfo.focusGroups,
             focusGroupIndex = focusGroupInfo.focusGroupIndex,
             focusGroup = focusGroups[focusGroupIndex],
-            delta = direction ? 1 : -1,
+            delta = backwards ? -1 : 1,
             nextElementIndex = focusGroupInfo.focusIndex + delta;
 
         if (focusGroupIndex > -1) {
@@ -235,7 +235,7 @@
      * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
      */
     gpii.qss.qssFocusManager.onArrowUpPressed = function (that) {
-        gpii.qss.qssFocusManager.focusNearestVertically(that, false);
+        gpii.qss.qssFocusManager.focusNearestVertically(that, true);
     };
 
     /**
@@ -244,14 +244,14 @@
      * @param {Component} that - The `gpii.qss.qssFocusManager` instance.
      */
     gpii.qss.qssFocusManager.onArrowDownPressed = function (that) {
-        gpii.qss.qssFocusManager.focusNearestVertically(that, true);
+        gpii.qss.qssFocusManager.focusNearestVertically(that, false);
     };
 
     /**
      * Focuses the first available button which conforms to all of the following conditions:
      * 1. The button is focusable.
      * 2. The button is in the first focusable group which comes to the left or to the right
-     * (depending on the value of the `direction` flag) of the current focus group. If there
+     * (depending on the value of the `backwards` flag) of the current focus group. If there
      * is no such button in any of the groups to the left or to the right, the groups to the right
      * or to the left of the current focus group respectively are also examined starting from the
      * farthest.
@@ -262,15 +262,19 @@
      * elements in the QSS.
      * @param {Number} initialGroupIndex - the index of the focus group from which the examination
      * should commence
-     * @param {Boolean} direction - If `true` the scanning direction will be from left to right.
-     * Otherwise, it will be from right to left.
+     * @param {Boolean} backwards - If `true` the scanning direction will be from right to left
+     * Otherwise, it will be from left to right.
      */
-    gpii.qss.qssFocusManager.focusNearestHorizontally = function (that, focusGroupInfo, initialGroupIndex, direction) {
+    gpii.qss.qssFocusManager.focusNearestHorizontally = function (that, focusGroupInfo, initialGroupIndex, backwards) {
         var focusGroups = focusGroupInfo.focusGroups,
             focusIndex = focusGroupInfo.focusIndex,
-            delta = direction ? 1 : -1,
+            delta = backwards ? -1 : 1,
             nextGroupIndex = initialGroupIndex;
 
+        /* Use a do-while because we are passing the group from which the examination should start,
+         * i.e. no need to check the condition the first time. Useful for handling the case when
+         * there is no focus group initially (see usage in `gpii.qss.qssFocusManager.onArrowRightPressed`).
+         */
         do {
             var nextFocusGroup = focusGroups[nextGroupIndex],
                 elementIndex = Math.max(0, Math.min(focusIndex, nextFocusGroup.length - 1)),
@@ -288,7 +292,8 @@
     /**
      * Focuses the first available button which conforms to all of the following conditions:
      * 1. The button is focusable.
-     * 2. The button is in a focus group which is visually to the left of the current focus group.
+     * 2. The button is in a focus group which is visually to the left of the current focus group
+     * or the rightmost group if there is no focus group initially.
      * If there is no such button in any of the groups to the left, the groups to the right of the
      * current focus group are also examined starting from the farthest.
      * 3. The button has the same index in its focus group as the index of the currently focused
@@ -307,13 +312,14 @@
             previousGroupIndex = gpii.psp.modulo(focusGroupIndex - 1, focusGroups.length);
         }
 
-        gpii.qss.qssFocusManager.focusNearestHorizontally(that, focusGroupInfo, previousGroupIndex, false);
+        gpii.qss.qssFocusManager.focusNearestHorizontally(that, focusGroupInfo, previousGroupIndex, true);
     };
 
     /**
      * Focuses the first available button which conforms to all of the following conditions:
      * 1. The button is focusable.
-     * 2. The button is in a focus group which is visually to the right of the current focus group.
+     * 2. The button is in a focus group which is visually to the right of the current focus group
+     * or the leftmost group if there is no focus group initially.
      * If there is no such button in any of the groups to the right, the groups to the left of the
      * current focus group are also examined starting from the farthest.
      * 3. The button has the same index in its focus group as the index of the currently focused
@@ -324,8 +330,14 @@
         var focusGroupInfo = that.getFocusGroupsInfo(),
             focusGroupIndex = focusGroupInfo.focusGroupIndex,
             focusGroups = focusGroupInfo.focusGroups,
-            nextGroupIndex = gpii.psp.modulo(focusGroupIndex + 1, focusGroups.length);
+            nextGroupIndex;
 
-        gpii.qss.qssFocusManager.focusNearestHorizontally(that, focusGroupInfo, nextGroupIndex, true);
+        if (focusGroupIndex < 0) {
+            nextGroupIndex = 0;
+        } else {
+            nextGroupIndex = gpii.psp.modulo(focusGroupIndex + 1, focusGroups.length);
+        }
+
+        gpii.qss.qssFocusManager.focusNearestHorizontally(that, focusGroupInfo, nextGroupIndex, false);
     };
 })(fluid, jQuery);
