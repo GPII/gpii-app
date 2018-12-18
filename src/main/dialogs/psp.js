@@ -250,8 +250,12 @@ fluid.defaults("gpii.app.psp", {
             funcName: "gpii.app.psp.closePSP",
             args: ["{psp}", "{settingsBroker}"]
         },
-        "onClosed.giveToQss": {
-            func: "{qssWrapper}.qss.focus"
+        "onClosed.giveFocusToQss": {
+            funcName: "gpii.app.psp.giveFocusToQss",
+            args: [
+                "{qssWrapper}",
+                "{arguments}.0" // params
+            ]
         },
 
         // XXX currently sign in functionality is missing
@@ -369,8 +373,8 @@ gpii.app.psp.handleBlur = function (psp, settingsBroker, ignoreClosePreference) 
  * @param {Component} psp - The `gpii.app.psp` instance.
  */
 gpii.app.initPSPWindowIPC = function (app, psp) {
-    ipcMain.on("onPSPClose", function () {
-        psp.events.onClosed.fire();
+    ipcMain.on("onPSPClose", function (event, params) {
+        psp.events.onClosed.fire(params);
     });
 
     ipcMain.on("onKeyOut", function () {
@@ -430,6 +434,27 @@ gpii.app.psp.closePSP = function (psp, settingsBroker) {
     });
 };
 
+/**
+ * Focuses back the QSS when the PSP is closed. Note that if the PSP has been closed
+ * as a result of a keyboard interaction, the "Sign in" button in the QSS should be
+ * highlighted. Thus, this function should internally use `qss.show` instead of
+ * `qss.focus`.
+ * @param {Component} qssWrapper - The `gpii.app.qssWrapper` instance.
+ * @param {Object} params - Parameters specifying how the `onClosed` event was
+ * triggered (e.g. which keyboard key if any resulted in it).
+ */
+gpii.app.psp.giveFocusToQss = function (qssWrapper, params) {
+    var qss = qssWrapper.qss;
+    if (qss.model.isShown) {
+        var settingPath = qssWrapper.options.settingOptions.settingPaths.psp,
+            setting = qssWrapper.getSetting(settingPath);
+
+        params = fluid.extend({}, params, {
+            setting: setting
+        });
+        qss.show(params);
+    }
+};
 
 /**
  * This function takes care of notifying the PSP window whenever the

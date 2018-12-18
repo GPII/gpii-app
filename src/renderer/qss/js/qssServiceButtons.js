@@ -28,6 +28,14 @@
         attrs: {
             "aria-label": "Settings Panel"
         },
+        listeners: {
+            "onArrowUpPressed.activate": {
+                func: "{that}.onActivationKeyPressed",
+                args: [
+                    {key: "ArrowUp"}
+                ]
+            }
+        },
         invokers: {
             activate: {
                 funcName: "gpii.qss.keyInButtonPresenter.activate",

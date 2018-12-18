@@ -50,7 +50,8 @@ fluid.defaults("gpii.app.qssWrapper", {
 
         // paths might be needed for some reason
         settingPaths: {
-            language: "http://registry\\.gpii\\.net/common/language"
+            language: "http://registry\\.gpii\\.net/common/language",
+            psp: "psp"
         },
 
         settingMessagesPrefix: "gpii_app_qss_settings",
