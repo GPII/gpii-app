@@ -72,12 +72,6 @@
                 args: [
                     {key: "ArrowUp"}
                 ]
-            },
-            "onArrowDownPressed.activate": {
-                func: "{that}.onActivationKeyPressed",
-                args: [
-                    {key: "ArrowDown"}
-                ]
             }
         }
     });

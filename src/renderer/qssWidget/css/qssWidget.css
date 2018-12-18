@@ -320,6 +320,7 @@ body {
 
 .fl-qssToggleWidget-extendedTipContainer {
     padding: 3px 3px 5px 3px;
+    font-size: 8px;
     background-color: #e4e4e4;
 }
 
@@ -332,7 +333,12 @@ body {
     padding-left: 15px;
 }
 
-.fl-qssToggleWidget-extendedTipContainer img {
+.fl-qssToggleWidget-extendedTipContainer li img {
+    position: relative;
+    top: 3px;
+}
+
+.fl-qssToggleWidget-extendedTipContainer .fl-qssToggleWidget-helpImage {
     display: block;
     width: 80%;
     margin: 5px auto;
@@ -355,6 +361,7 @@ body {
 
 .fl-qssToggleWidget .fl-switchUI .fl-switchUI-control {
     left: 0;
+    outline: none;
     transition: all 0.2s;
 }
 
