@@ -32,7 +32,7 @@
     "gpii_app_qss_settings_common-selfVoicing-enabled": {
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>",
         "title": "Read Aloud",
-        "tip": "<p>Turns on and adjusts Read Aloud  mode in Chrome</p>",
+        "tip": "<p>Turns on and adjusts Read Aloud  mode in Chrome <img height=12 src='../../icons/chrome.svg'></p>",
         "extendedTip": "<p>To use Read Aloud</p><ol><li>Open web page in Chrome</li><li>Select / highlight text</li><li>Click Play button that pops up</li></ol>"
     },
     "gpii_app_qss_settings_common-highContrastTheme": {

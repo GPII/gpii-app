@@ -50,7 +50,8 @@ fluid.defaults("gpii.app.qssWrapper", {
 
         // paths might be needed for some reason
         settingPaths: {
-            language: "http://registry\\.gpii\\.net/common/language"
+            language: "http://registry\\.gpii\\.net/common/language",
+            psp: "psp"
         },
 
         settingMessagesPrefix: "gpii_app_qss_settings",
@@ -725,7 +726,7 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
         translatedSetting.tip = message.tip;
         translatedSetting.extendedTip = message.extendedTip;
 
-        if (message.footerTip) {
+        if (fluid.isValue(message.footerTip)) {
             translatedSetting.widget = translatedSetting.widget || {};
             translatedSetting.widget.footerTip = message.footerTip;
         }

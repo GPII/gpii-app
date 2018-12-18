@@ -81,6 +81,11 @@
                 this: "{that}.dom.title",
                 method: "text",
                 args: ["{change}.value"]
+            },
+            "item.tabindex": {
+                this: "{that}.container",
+                method: "attr",
+                args: ["tabindex", "{change}.value"]
             }
         },
 

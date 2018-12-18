@@ -57,7 +57,7 @@
         },
 
         /**
-         * The last part of each grade name should be the name of the selector identifying 
+         * The last part of each grade name should be the name of the selector identifying
          * the container for the widget.
          */
         widgetGrades: {
@@ -261,7 +261,7 @@
                 selector = widgetGrade.substring(lastDotIndex + 1);
             return that.dom.locate(selector);
         }
-    }
+    };
 
     /**
      * Determines the jQuery element which should be the container of the `widget`

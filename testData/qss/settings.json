@@ -9,6 +9,7 @@
             "default": "en-US"
         },
         "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 1,
         "messageKey": "common-language",
         "learnMoreLink": "https://morphic.world/help/qsshelp#language",
         "value": "en-US",
@@ -29,6 +30,7 @@
             "default": 0
         },
         "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 2,
         "messageKey": "common-DPIScale",
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
@@ -41,6 +43,7 @@
             "divisibleBy": 1
         },
         "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 3,
         "messageKey": "appTextZoom",
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
@@ -61,6 +64,7 @@
             "default": "regular-contrast"
         },
         "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 4,
         "messageKey": "common-highContrastTheme",
         "value": "regular-contrast",
         "styles": {
@@ -114,6 +118,7 @@
             "default": false
         },
         "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 5,
         "messageKey": "common-selfVoicing-enabled",
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
@@ -123,6 +128,7 @@
             "type": "more"
         },
         "buttonTypes": ["largeButton"],
+        "tabindex": 6,
         "messageKey": "more"
     }, {
         "path": "save",
@@ -130,6 +136,7 @@
             "type": "save"
         },
         "buttonTypes": ["smallButton"],
+        "tabindex": 7,
         "messageKey": "save"
     }, {
         "path": "undo",
@@ -137,6 +144,7 @@
             "type": "undo"
         },
         "buttonTypes": ["smallButton"],
+        "tabindex": 9,
         "messageKey": "undo"
     }, {
         "path": "psp",
@@ -144,6 +152,7 @@
             "type": "psp"
         },
         "buttonTypes": ["smallButton"],
+        "tabindex": 8,
         "messageKey": "psp"
     }, {
         "path": "resetAll",
@@ -151,6 +160,7 @@
             "type": "resetAll"
         },
         "buttonTypes": ["smallButton"],
+        "tabindex": 10,
         "messageKey": "resetAll"
     }, {
         "path": "close",
@@ -158,6 +168,7 @@
             "type": "close"
         },
         "buttonTypes": ["closeButton"],
+        "tabindex": 11,
         "messageKey": "close"
     }
 ]

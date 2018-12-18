@@ -957,7 +957,7 @@ var undoCrossTestSequence = [
     {
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
         path: "settings.*",
-        listener: "fluid.identity",
+        listener: "fluid.identity"
     },
     clickUndoButtonSeqEl, // ... and clicking undo button
     { // ... should revert setting's value
@@ -977,13 +977,13 @@ var undoCrossTestSequence = [
     {
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
         path: "settings.*",
-        listener: "fluid.identity",
+        listener: "fluid.identity"
     },
     clickToggleButtonSeqEl, // Making second setting change
     {
         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
         path: "settings.*",
-        listener: "fluid.identity",
+        listener: "fluid.identity"
     },
     clickUndoButtonSeqEl,
     { // ... should restore last setting's state
