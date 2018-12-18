@@ -22,8 +22,11 @@
     display: flex;
 
     /* Exclude dialog padding */
-    width: calc(100% + 2 * var(--qssWidget-padding));
-    /* Sets the same value as `--qssWidget-padding` but a more clearly */
+    /*
+     *  In order for the indicators to be centered, we use the whole width
+     *  of the container by excluding the parent's container padding.
+     */
+    width: calc(100% + 2 * 10px);
     margin: 0 -10px 10px -10px;
 }
 
