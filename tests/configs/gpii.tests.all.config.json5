@@ -35,6 +35,10 @@
                     "noUserLoggedIn.escalate": "{testEnvironment}.events.noUserLoggedIn"
                 },
                 "target": "{that localConfig flowManager}.options.listeners"
+            },
+            "disableLanguageListener": {
+                "record": "gpii.tests.app.mockedSystemLanguageListener",
+                "target": "{that gpii.app}.options.components.systemLanguageListener.type"
             }
         }
     },

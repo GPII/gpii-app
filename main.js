@@ -47,7 +47,7 @@ var appIsRunning = app.makeSingleInstance(function (commandLine) {
 });
 
 if (appIsRunning) {
-    console.log("Another instance of gpii-app is running!");
+    fluid.log("Another instance of gpii-app is running!");
     app.quit();
     return;
 }

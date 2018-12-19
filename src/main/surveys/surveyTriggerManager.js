@@ -36,7 +36,8 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
     },
     conditionHandlerGrades: {
         keyedInFor: "gpii.app.keyedInForHandler",
-        sessionTimer: "gpii.app.sessionTimerHandler"
+        sessionTimer: "gpii.app.sessionTimerHandler",
+        firstSave: "gpii.app.firstSaveHandler"
     },
     events: {
         onTriggerAdded: null,
@@ -102,7 +103,7 @@ fluid.defaults("gpii.app.surveyTriggerManager", {
  * @param {Object} trigger - The survey trigger which is to be registered.
  */
 gpii.app.surveyTriggerManager.registerTrigger = function (that, trigger) {
-    console.log("SurveyTriggerManager: Register trigger - ", trigger);
+    fluid.log("SurveyTriggerManager: Register trigger - ", trigger);
 
     that.removeTrigger(trigger);
     that.events.onTriggerAdded.fire(trigger);
@@ -263,6 +264,41 @@ gpii.app.conditionHandler.handleSuccess = function (that) {
     that.events.onConditionSatisfied.fire(that.model.condition);
     if (!fluid.isDestroyed(that)) {
         that.destroy();
+    }
+};
+
+/**
+ * A condition handler which shows a survey when the following conditions are met:
+ * 1. There is an actual keyed in user.
+ * 2. There are no settings in the active preference set for the user.
+ * The survey should be shown when the user presses the "Save" button in the QSS.
+ */
+fluid.defaults("gpii.app.firstSaveHandler", {
+    gradeNames: ["gpii.app.conditionHandler"],
+
+    listeners: {
+        "{app}.qssWrapper.events.onSaveRequired": {
+            funcName: "gpii.app.firstSaveHandler.onSaveRequired",
+            args: [
+                "{that}",
+                "{factsManager}.model.isEmptyKey"
+            ],
+            priority: "first"
+        }
+    }
+});
+
+/**
+ * Invoked when the "Save" button in the QSS is pressed. In this case if there is
+ * an actual keyed in user with no settings saved in his active preference set, this
+ * `conditionHandler` will be considered fulfilled.
+ * @param {Component} that - The `gpii.app.firstSaveHandler` instance.
+ * @param {Boolean} isEmptyKey - Whether there were no preferences in the user's
+ * default preference set when he keyed in.
+ */
+gpii.app.firstSaveHandler.onSaveRequired = function (that, isEmptyKey) {
+    if (isEmptyKey) {
+        that.handleSuccess();
     }
 };
 
@@ -442,7 +478,7 @@ gpii.app.sessionTimerHandler.getIsLuckySession = function (sessionModulus, defau
  * @param {Boolean} isLuckySession - Whether the current session is "lucky" or not.
  */
 gpii.app.sessionTimerHandler.onIsLuckySessionChanged = function (that, isLuckySession) {
-    console.log("SurveyTriggerManager: isLuckySession", isLuckySession);
+    fluid.log("SurveyTriggerManager: isLuckySession", isLuckySession);
     if (!isLuckySession) {
         that.clear();
     }
@@ -457,7 +493,7 @@ gpii.app.sessionTimerHandler.onIsLuckySessionChanged = function (that, isLuckySe
  */
 gpii.app.sessionTimerHandler.onChangeUndone = function (that, undoStack) {
     if (!undoStack.model.hasChanges) {
-        console.log("SurveyTriggerManager: there are no more changes to undo. Clearing the timer...");
+        fluid.log("SurveyTriggerManager: there are no more changes to undo. Clearing the timer...");
         that.clear();
     }
 };
@@ -472,9 +508,9 @@ gpii.app.sessionTimerHandler.startTimerIfPossible = function (that) {
         timeoutDuration = that.model.condition.value;
 
     if (hasSettings && isLuckySession && !that.isActive()) {
-        console.log("SurveyTriggerManager: starting survey timer", timeoutDuration);
+        fluid.log("SurveyTriggerManager: starting survey timer", timeoutDuration);
         that.start(timeoutDuration);
     } else {
-        console.log("SurveyTriggerManager: not starting timer", hasSettings, timeoutDuration, !that.isActive());
+        fluid.log("SurveyTriggerManager: not starting timer", hasSettings, timeoutDuration, !that.isActive());
     }
 };

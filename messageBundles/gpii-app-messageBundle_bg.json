@@ -9,6 +9,8 @@
 
     "gpii_psp_mainWindow_titlebarAppName": "Morphic панел с настройки",
 
+    "gpii_app_qssWrapper_restartWarningNotification": "За да видите резултатът от промяната на %settingTitle, може да се наложи да рестартирате някои приложения",
+
     "gpii_psp_signIn_signInHeader": "Никой не е вписан",
 
     "gpii_psp_signIn_subtitleIntro": "Автоматично настройва компютъра ви по начина, по който желаете.",
@@ -44,6 +46,8 @@
     "gpii_psp_aboutDialog_update": "Провери за ъпдейти",
     "gpii_psp_aboutDialog_userListenersText": "Средства за вписване за тази машина: %listeners",
     "gpii_psp_aboutDialog_version": "версия %version",
+    "gpii_psp_aboutDialog_morphicHome": "Отиди на Morphic Home",
+    "gpii_psp_aboutDialog_submitSuggestions": "Изпрати предложения",
 
     "gpii_psp_footer_help": "Помощ",
 
