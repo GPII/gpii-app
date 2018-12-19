@@ -26,7 +26,7 @@
      * to display a new QSS setting with its possible values.
      */
     fluid.defaults("gpii.qssWidget.menu", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
         model: {
             disabled: false,
             setting: {}
@@ -39,6 +39,8 @@
             }
         },
         selectors: {
+            heightListenerContainer: ".flc-qssMenuWidget-controls",
+            menuControlsWrapper: ".flc-qssMenuWidget-controlsWrapper",
             menuControls: ".flc-qssMenuWidget-controls"
         },
         enableRichText: true,
@@ -123,6 +125,14 @@
             }
         },
         invokers: {
+            calculateHeight: {
+                funcName: "gpii.qssWidget.menu.calculateHeight",
+                args: [
+                    "{that}.container",
+                    "{that}.dom.menuControlsWrapper",
+                    "{that}.dom.heightListenerContainer"
+                ]
+            },
             close: {
                 funcName: "gpii.qssWidget.menu.close",
                 args: [
@@ -131,8 +141,16 @@
                     "{arguments}.0" // keyboardEvent
                 ]
             }
+        },
+        events: {
+            onHeightChanged: "{qssWidget}.events.onQssWidgetHeightChanged"
         }
     });
+
+    gpii.qssWidget.menu.calculateHeight = function (container, menuControlsWrapper, heightListenerContainer) {
+        console.log("calculateHeight", $("body").outerHeight(true), menuControlsWrapper.outerHeight(true), heightListenerContainer[0].scrollHeight);
+        return $("body").outerHeight(true) - menuControlsWrapper.outerHeight(true) + heightListenerContainer[0].scrollHeight;
+    };
 
     /**
      * Invoked whenever the user changes the value of the given setting. Schedules that

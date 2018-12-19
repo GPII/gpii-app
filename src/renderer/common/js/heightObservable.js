@@ -36,6 +36,10 @@
                 "this": "@expand:jQuery({that}.container.0.contentWindow)",
                 method: "on",
                 args: ["resize", "{that}.events.onHeightChanged.fire"]
+            },
+            "onCreate.notifyHeightChanged": {
+                this: "{that}.events.onHeightChanged",
+                method: "fire"
             }
         },
         events: {

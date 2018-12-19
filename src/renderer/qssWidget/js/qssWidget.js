@@ -69,6 +69,7 @@
         events: {
             onWidgetClosed: null,
             onSettingUpdated: null,
+            onQssWidgetHeightChanged: null,
             onQssWidgetSettingAltered: null,
             onQssWidgetNotificationRequired: null,
             onQssWidgetCreated: null
@@ -197,6 +198,7 @@
                     events: {
                         // Add events the main process to be notified for
                         onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
+                        onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                         onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated"

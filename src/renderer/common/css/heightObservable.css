@@ -5,6 +5,7 @@ iframe.fl-heightChangeListener {
     bottom: 0;
     width: 0;
     height: 100%;
+    border-width: 0;
 
     visibility: hidden;
     pointer-events: none;

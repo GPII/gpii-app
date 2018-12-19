@@ -250,9 +250,16 @@ body {
  * Menu Widget
  */
 
-.fl-qssMenuWidget  {
+.fl-qssMenuWidget {
     display: flex;
     flex-direction: column;
+    height: 100%;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controlsWrapper {
+    position: relative;
+    flex: 1;
+    overflow: overlay;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls.disabled {
@@ -271,7 +278,7 @@ body {
     padding: 5px;
     border: 1px solid #0f4797;
     border-radius: 3px;
-    line-height: 11px;
+    line-height: 12px;
     box-sizing: border-box;
 
     background-color: #ffffff;
