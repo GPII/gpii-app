@@ -259,7 +259,8 @@ body {
 .fl-qssMenuWidget .fl-qssMenuWidget-controlsWrapper {
     position: relative;
     flex: 1;
-    overflow: overlay;
+    overflow-x: hidden;
+    overflow-y: overlay;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls.disabled {
@@ -267,8 +268,8 @@ body {
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls {
-    overflow-x: hidden;
-    overflow-y: overlay;
+    position: relative;
+    overflow: hidden;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {

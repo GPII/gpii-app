@@ -77,7 +77,8 @@
         modelListeners: {
             height: {
                 func: "{that}.events.onHeightChanged.fire",
-                args: ["{change}.value"]
+                args: ["{change}.value"],
+                excludeSource: "init"
             }
         },
 

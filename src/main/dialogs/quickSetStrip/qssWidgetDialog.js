@@ -67,6 +67,9 @@ fluid.defaults("gpii.app.qssWidget", {
             height: 255,
             alwaysOnTop: false
         },
+        restrictions: {
+            minHeight: 255
+        },
         fileSuffixPath: "qssWidget/index.html"
     },
 
@@ -227,10 +230,7 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
 
     var scaleFactor = that.model.scaleFactor,
         height = that.options.config.attrs.height;
-    that.setRestrictedSize(that.model.width, Math.ceil(scaleFactor * height));
-
-    // that.height = that.options.config.attrs.height;
-    // that.setRestrictedSize(that.width, that.height);
+    that.setRestrictedSize(that.model.width, scaleFactor * height);
 
     that.shouldShow = true;
 };

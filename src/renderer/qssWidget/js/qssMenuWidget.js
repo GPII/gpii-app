@@ -128,7 +128,7 @@
             calculateHeight: {
                 funcName: "gpii.qssWidget.menu.calculateHeight",
                 args: [
-                    "{that}.container",
+                    "{qssWidget}.container",
                     "{that}.dom.menuControlsWrapper",
                     "{that}.dom.heightListenerContainer"
                 ]
@@ -147,9 +147,19 @@
         }
     });
 
+    /**
+     * Calculates the total height of the QSS menu widget assuming that its whole content is fully
+     * displayed and there is no need to scroll (i.e. as if there were enough vertical space for
+     * all the available setting options).
+     * @param {jQuery} container - A jQuery object representing the QSS menu container.
+     * @param {jQuery} menuControlsWrapper - A jQuery object representing the parent container of
+     * container in which the available setting options are placed.
+     * @param {jQuery} heightListenerContainer - A jQuery object representing the container which
+     * houses the height listener element.
+     * @return {Number} - The height of the QSS menu assuming it is fully displayed.
+     */
     gpii.qssWidget.menu.calculateHeight = function (container, menuControlsWrapper, heightListenerContainer) {
-        console.log("calculateHeight", $("body").outerHeight(true), menuControlsWrapper.outerHeight(true), heightListenerContainer[0].scrollHeight);
-        return $("body").outerHeight(true) - menuControlsWrapper.outerHeight(true) + heightListenerContainer[0].scrollHeight;
+        return container.outerHeight(true) - menuControlsWrapper.outerHeight(true) + heightListenerContainer[0].scrollHeight;
     };
 
     /**
