@@ -32,7 +32,11 @@ fluid.defaults("gpii.app.qssMorePanel", {
         defaultHeight: 450,
         alwaysOnTop: true,
         movable: true,
-        resizable: true
+        resizable: true,
+
+        urls: {
+            moreInfo: "http://morphic.world/more"
+        }
     },
 
     linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssMorePanel"],
@@ -61,6 +65,9 @@ fluid.defaults("gpii.app.qssMorePanel", {
             destroyOnClose: true,
             minimizable: false,
             maximizable: false
+        },
+        params: {
+            urls: "{that}.options.siteConfig.urls"
         },
         fileSuffixPath: "qssMorePanel/index.html"
     },

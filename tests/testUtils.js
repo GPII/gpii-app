@@ -135,6 +135,12 @@ gpii.tests.blockTestsElement = function () {
 
 /**
  * Executes a JavaScript snippet in the `BrowserWindow` of the given dialog.
+ *
+ * N.B. In order for this function to behave properly you should ensure that
+ * the BrowserWindow's DOM is fully loaded. This could be achieved in two ways:
+ * - either wait for the dialog's `onDialogReady` event, which should waits both for the js
+ *   and the DOM of the dialog to load in case the dialog code is of the current pattern;
+ * - or listen for the dom-ready event - https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-dom-ready
  * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
  * to be executed.
  * @param {String} command - A string representing the JavaScript code to be
@@ -149,6 +155,8 @@ gpii.test.executeJavaScript = function (dialog, command) {
 /**
  * Executes a JavaScript snippet in the `BrowserWindow` of the given dialog
  * after a certain delay has passed.
+ * There might be the case that waiting for the `onDialogReady` is somehow insufficient. This
+ * function could be used to ensure that the dialog if fully loaded before executing the script.
  * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
  * to be executed.
  * @param {String} command - A string representing the JavaScript code to be
