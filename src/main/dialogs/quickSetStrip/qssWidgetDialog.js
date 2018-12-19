@@ -86,7 +86,8 @@ fluid.defaults("gpii.app.qssWidget", {
         onSettingUpdated: null,
         onQssWidgetToggled: null,
         onQssWidgetSettingAltered: null,
-        onQssWidgetNotificationRequired: null
+        onQssWidgetNotificationRequired: null,
+        onQssWidgetCreated: null
     },
 
     components: {
@@ -105,7 +106,7 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetClosed: null,
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
-                    onQssWidgetCreated: null
+                    onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
                 },
                 listeners: {
                     onQssWidgetClosed: [{
@@ -116,9 +117,9 @@ fluid.defaults("gpii.app.qssWidget", {
                             "{arguments}.0" // params
                         ]
                     }],
-                    onQssWidgetSettingAltered: { // XXX dev
+                    onQssWidgetSettingAltered: {
                         funcName: "fluid.log",
-                        args: ["Settings Altered: ", "{arguments}.0"]
+                        args: ["QssWidget - Settings Altered: ", "{arguments}.0"]
                     },
                     onQssWidgetCreated: {
                         funcName: "gpii.app.qssWidget.showOnInit",
