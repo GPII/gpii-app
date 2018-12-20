@@ -24,6 +24,9 @@
         model: {
             messages: {
                 help: null
+            },
+            urls: {
+                help: null
             }
         },
         components: {
@@ -35,13 +38,10 @@
                         label: "{footer}.model.messages.help"
                     },
                     invokers: {
-                        "onClick": "gpii.psp.openUrlExternally({footer}.options.urls.help)"
+                        "onClick": "gpii.psp.openUrlExternally({footer}.model.urls.help)"
                     }
                 }
             }
-        },
-        urls: {
-            help: "http://pmt.gpii.org/help"
         }
     });
 })(fluid);

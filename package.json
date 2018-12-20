@@ -14,6 +14,7 @@
         "electron-localshortcut": "3.1.0",
         "gpii-windows": "stegru/windows#GPII-3540",
         "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
+        "nan": "2.10.0",
         "node-jqunit": "1.1.8",
         "request": "2.88.0",
         "winstrap": "0.5.12",

@@ -54,10 +54,7 @@
             item: {
                 value: null
             },
-            value: "{that}.model.item.value",
-            messages: {
-                notification: null
-            }
+            value: "{that}.model.item.value"
         },
 
         modelRelay: {
@@ -75,15 +72,11 @@
         },
 
         modelListeners: {
-            value: [{
+            value: {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model.item", "{change}.value"],
                 excludeSource: ["init", "gpii.psp.repeater.itemUpdate"]
-            }, {
-                funcName: "gpii.qss.buttonPresenter.showNotification",
-                args: ["{that}", "{list}"],
-                excludeSource: "init"
-            }],
+            },
             title: {
                 this: "{that}.dom.title",
                 method: "text",
@@ -348,21 +341,6 @@
     gpii.qss.buttonPresenter.focusButton = function (that, focusManager, container, index, applyHighlight, silentFocus) {
         if (that.model.index === index) {
             focusManager.focusElement(container, applyHighlight, silentFocus);
-        }
-    };
-
-    /**
-     * When the value of the QSS button's setting changes, fires an event that a notification
-     * must be shown to the user.
-     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
-     * @param {Component} qssList - The `gpii.qss.list` instance.
-     */
-    gpii.qss.buttonPresenter.showNotification = function (that, qssList) {
-        if (that.model.item.restartWarning) {
-            var notification = fluid.stringTemplate(that.model.messages.notification, {
-                settingTitle: that.model.item.schema.title
-            });
-            qssList.events.onNotificationRequired.fire(notification);
         }
     };
 
