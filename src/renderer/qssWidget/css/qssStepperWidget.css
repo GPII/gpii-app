@@ -73,13 +73,13 @@
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator {
-    margin: 6px auto 6px auto;
+    margin: 6px auto;
     height: 8px;
     width: 8px;
     cursor: pointer;
 
 
-    /* recommended icon */
+    /* default icon */
     content: "";
     background-color: #002957;
 
@@ -104,7 +104,7 @@
     /* It's bigger */
     height: 15px;
     width: 15px;
-    margin: 0 auto 0 auto;
+    margin: 0 auto;
 
     background-color: #008145;
     -webkit-mask: url("../../../assets/qssStepper/selected.svg") 0 0/100% 100%;

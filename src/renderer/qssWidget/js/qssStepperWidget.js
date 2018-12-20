@@ -368,7 +368,7 @@
         // Repeater stuff
         //
         dynamicContainerMarkup: {
-            container: "<div role='radio' class='%containerClass fl-qssStepperWidget-indicator' tabindex='0'></div>",
+            container: "<div role='radio' class='%containerClass fl-qssStepperWidget-indicator' tabindex='-1'></div>",
             containerClassPrefix: "flc-qssStepperWidget-indicator"
         },
         handlerType: "gpii.qssWidget.stepper.indicator.presenter",
