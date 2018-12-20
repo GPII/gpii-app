@@ -47,6 +47,8 @@
 #define GPII_MSG_UPDATE     0
 #define GPII_MSG_CLICK      1
 #define GPII_MSG_SHOWMENU   2
+#define GPII_MSG_MOUSEENTER 3
+#define GPII_MSG_MOUSELEAVE 4
 
 #define true TRUE
 #define false FALSE
@@ -632,6 +634,8 @@ LRESULT CALLBACK buttonWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	case WM_MOUSEMOVE:
 		// Draw the highlight
 		if (!hasState(STATE_HOVER)) {
+			// Inform gpii
+			sendToGpii(gpiiMessage, GPII_MSG_MOUSEENTER, 0);
 			// Detect when the mouse leaves.
 			TRACKMOUSEEVENT tme = { 0 };
 			tme.cbSize = sizeof(tme);
@@ -644,6 +648,7 @@ LRESULT CALLBACK buttonWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	break;
 
 	case WM_MOUSELEAVE:
+		sendToGpii(gpiiMessage, GPII_MSG_MOUSELEAVE, 0);
 		unsetState(STATE_HOVER | STATE_PRESSED);
 		break;
 

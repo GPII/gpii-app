@@ -74,6 +74,12 @@ fluid.defaults("gpii.app.tray", {
                 args: ["{that}.model.isKeyedIn", "{that}.model.preferences", "{that}.model.messages"]
             }
         }
+    },
+    invokers: {
+        isMouseOver: {
+            funcName: "gpii.app.isMouseOverTray",
+            args: ["{that}"]
+        }
     }
 });
 
@@ -86,6 +92,24 @@ fluid.defaults("gpii.app.tray", {
  */
 gpii.app.getTrayIcon = function (isKeyedIn, icons) {
     return fluid.module.resolvePath(isKeyedIn ? icons.keyedIn : icons.keyedOut);
+};
+
+/**
+ * Determines if the mouse cursor is over one of the tray widgets.
+ * @param {Component} that The gpii.app.tray instance.
+ * @return {Boolean} true if the mouse is over the tray button or icon.
+ */
+gpii.app.isMouseOverTray = function (that) {
+    var isOver = that.mouseOver;
+
+    if (!isOver) {
+        var iconBounds = that.getIconBounds && that.getIconBounds(),
+            cursorPoint = electron.screen.getCursorScreenPoint();
+
+        isOver = cursorPoint && iconBounds && gpii.app.isPointInRect(cursorPoint, iconBounds);
+    }
+
+    return isOver;
 };
 
 /**
@@ -119,6 +143,12 @@ gpii.app.getTrayTooltip = function (isKeyedIn, preferences, messages) {
 // Wrapper of the electron Tray
 fluid.defaults("gpii.app.trayIcon", {
     gradeNames: ["fluid.modelComponent"],
+    invokers: {
+        getIconBounds: {
+            this: "{that}.trayIcon",
+            method: "getBounds"
+        }
+    },
     modelListeners: {
         icon: {
             this: "{that}.trayIcon",
@@ -242,7 +272,9 @@ fluid.defaults("gpii.app.trayButton", {
         // Path to the tray button window.
         trayButtonWindow: ["Shell_TrayWnd", "GPII-TrayButton"],
         trayButtonMessage: "GPII-TrayButton-Message",
-        menu: null
+        menu: null,
+        // true if the mouse pointer is currently over the button
+        mouseOver: false
     },
     trayButtonExe: "%gpii-app/bin/tray-button.exe"
 });
@@ -272,7 +304,11 @@ gpii.app.trayButton.notifications = {
     // Left button clicked
     click: 1,
     // Show the menu (right button clicked)
-    showMenu: 2
+    showMenu: 2,
+    // Mouse is over the button
+    mouseEnter: 3,
+    // Mouse is no longer over the button
+    mouseLeave: 4
 };
 
 /**
@@ -325,6 +361,13 @@ gpii.app.trayButton.windowMessage = function (that, hwnd, msg, wParam) {
             that.updateButton(that.buttonItems.state, that.model.isKeyedIn);
             that.updateButton(that.buttonItems.icon, that.model.icon);
             that.updateButton(that.buttonItems.toolTip, that.model.tooltip);
+            break;
+
+        case gpii.app.trayButton.notifications.mouseEnter:
+            that.mouseOver = true;
+            break;
+        case gpii.app.trayButton.notifications.mouseLeave:
+            that.mouseOver = false;
             break;
 
         default:
