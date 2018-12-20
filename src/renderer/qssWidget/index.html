@@ -7,7 +7,10 @@
         <link rel="stylesheet" href="../common/css/heightObservable.css">
         <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="../psp/css/switch.css">
-        <link rel="stylesheet" href="css/qssWidget.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/qssMenuWidget.css">
+        <link rel="stylesheet" href="css/qssStepperWidget.css">
+        <link rel="stylesheet" href="css/qssToggleWidget.css">
 
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
@@ -48,13 +51,19 @@
                 <div class="flc-qssWidget-learnMoreLink fl-qssWidget-learnMoreLink fl-focusable" role="link" tabindex="0"></div>
 
                 <div class="fl-qssStepperWidget-controls">
-                    <div role="button" class="flc-qssStepperWidget-incBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
-                        <div class="fl-icon fl-increment-icon"></div>
-                        <span class="flc-btnLabel fl-btnLabel"></span>
+                    <div class="flc-qssStepperWidget-controls-buttons">
+                        <div role="button" class="flc-qssStepperWidget-incBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
+                            <div class="fl-icon fl-increment-icon"></div>
+                            <span class="flc-btnLabel fl-btnLabel"></span>
+                        </div>
+                        <div role="button" class="flc-qssStepperWidget-decBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
+                            <div class="fl-icon fl-decrement-icon"></div>
+                            <span class="flc-btnLabel fl-btnLabel"></span>
+                        </div>
                     </div>
-                    <div role="button" class="flc-qssStepperWidget-decBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
-                        <div class="fl-icon fl-decrement-icon"></div>
-                        <span class="flc-btnLabel fl-btnLabel"></span>
+
+                    <div class="flc-qssStepperWidget-indicators fl-qssStepperWidget-indicators">
+                        <!-- Steps reside here -->
                     </div>
                 </div>
 
