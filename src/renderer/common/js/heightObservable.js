@@ -27,7 +27,9 @@
      * should be taken based on it.
      *
      * Note that this view component assumes that its corresponding DOM element is
-     * an iframe.
+     * an iframe. After examining possible solutions, we determined that using an
+     * iframe is the best way to listen for changes in the dimensions of the
+     * corresponding DOM element.
      */
     fluid.defaults("gpii.psp.heightChangeListener", {
         gradeNames: ["fluid.viewComponent"],
@@ -36,6 +38,10 @@
                 "this": "@expand:jQuery({that}.container.0.contentWindow)",
                 method: "on",
                 args: ["resize", "{that}.events.onHeightChanged.fire"]
+            },
+            "onCreate.notifyHeightChanged": {
+                this: "{that}.events.onHeightChanged",
+                method: "fire"
             }
         },
         events: {
@@ -73,7 +79,8 @@
         modelListeners: {
             height: {
                 func: "{that}.events.onHeightChanged.fire",
-                args: ["{change}.value"]
+                args: ["{change}.value"],
+                excludeSource: "init"
             }
         },
 

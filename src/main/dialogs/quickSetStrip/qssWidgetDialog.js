@@ -51,12 +51,6 @@ fluid.defaults("gpii.app.qssWidget", {
         shouldShow: false
     },
 
-    // Temporary. Should be removed when the widget becomes truly resizable.
-    heightMap: {
-        "http://registry\\.gpii\\.net/common/language": 400,
-        "http://registry\\.gpii\\.net/common/highContrastTheme": 365
-    },
-
     config: {
         params: {
             sounds: {
@@ -72,6 +66,9 @@ fluid.defaults("gpii.app.qssWidget", {
             width: 170,
             height: 255,
             alwaysOnTop: false
+        },
+        restrictions: {
+            minHeight: 255
         },
         fileSuffixPath: "qssWidget/index.html"
     },
@@ -104,6 +101,7 @@ fluid.defaults("gpii.app.qssWidget", {
             options: {
                 events: {
                     onQssWidgetClosed: null,
+                    onQssWidgetHeightChanged: "{qssWidget}.events.onContentHeightChanged",
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
                     onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
@@ -146,18 +144,10 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     },
     invokers: {
-        getScaledHeight: {
-            funcName: "gpii.app.qssWidget.getScaledHeight",
-            args: [
-                "{that}",
-                "{arguments}.0" // scaleFactor
-            ]
-        },
         show: {
             funcName: "gpii.app.qssWidget.show",
             args: [
                 "{that}",
-                "{that}.options.heightMap",
                 "{arguments}.0", // setting
                 "{arguments}.1",  // elementMetrics
                 "{arguments}.2"// activationParams
@@ -174,23 +164,6 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     }
 });
-
-/**
- * Given the new `scaleFactor` that has to be applied, this function computes the new
- * height of the component's `BrowserWindow`. Different from the base implementation
- * because the height of the QSS widget is determined based on the setting which it
- * represents.
- * @param {Component} that - The `gpii.app.dialog` instance.
- * @param {Number} scaleFactor - The new scale factor to be applied.
- * @return {Number} The new height of the `BrowserWindow`.
- */
-gpii.app.qssWidget.getScaledHeight = function (that, scaleFactor) {
-    var settingPath = fluid.get(that.model.setting, "path"),
-        heightMap = that.options.heightMap,
-        height = heightMap[settingPath] || that.options.config.attrs.height;
-
-    return scaleFactor * height;
-};
 
 /**
  * Called whenever a QSS button is activated. Determines whether the QSS dialog
@@ -238,8 +211,6 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
  * Shows the widget window and position it centered with respect to the
  * corresponding QSS button.
  * @param {Component} that - The `gpii.app.qssWidget` instance
- * @param {Object} heightMap - A hash containing the height the QSS widget must
- * have if the `setting` has a path matching a key in the hash.
  * @param {Object} setting - The setting corresponding to the QSS button that
  * has been activated
  * @param {Object} elementMetrics - An object containing metrics for the QSS
@@ -247,7 +218,7 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
  * @param {Object} [activationParams] - Parameters sent to the renderer portion
  * of the QSS dialog (e.g. whether the activation occurred via keyboard)
  */
-gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, activationParams) {
+gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
     activationParams = activationParams || {};
 
     gpii.app.applier.replace(that.applier, "setting", setting);
@@ -259,7 +230,7 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
     that.applier.change("offset", offset);
 
     var scaleFactor = that.model.scaleFactor,
-        height = heightMap[setting.path] || that.options.config.attrs.height;
+        height = that.options.config.attrs.height;
     that.setRestrictedSize(that.model.width, scaleFactor * height);
 
     that.shouldShow = true;

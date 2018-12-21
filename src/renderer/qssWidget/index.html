@@ -4,9 +4,9 @@
         <link rel="stylesheet" href="../common/css/titlebar.css">
         <link rel="stylesheet" href="../common/css/icons.css">
         <link rel="stylesheet" href="../common/css/fonts.css">
+        <link rel="stylesheet" href="../common/css/heightObservable.css">
         <link rel="stylesheet" href="../psp/css/button.css">
         <link rel="stylesheet" href="../psp/css/switch.css">
-        <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/qssMenuWidget.css">
         <link rel="stylesheet" href="css/qssStepperWidget.css">
@@ -21,6 +21,8 @@
         <script type="text/javascript" src="js/qssWidget.js"></script>
         <script type="text/javascript" src="js/qssWidgetButton.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+
+        <script type="text/javascript" src="../common/js/heightObservable.js"></script>
 
         <script type="text/javascript" src="../common/js/titlebar.js"></script>
         <script type="text/javascript" src="../common/js/utils.js"></script>
@@ -72,7 +74,9 @@
             <div class="flc-qssMenuWidget fl-dialog-content fl-scrollable fl-qssMenuWidget">
                 <div class="flc-qssWidget-tip fl-qssWidget-tip"></div>
                 <div class="flc-qssWidget-learnMoreLink fl-qssWidget-learnMoreLink fl-focusable" role="link" tabindex="0"></div>
-                <div role="radiogroup" class="flc-qssMenuWidget-controls fl-qssMenuWidget-controls"></div>
+                <div class="flc-qssMenuWidget-controlsWrapper fl-qssMenuWidget-controlsWrapper">
+                    <div role="radiogroup" class="flc-qssMenuWidget-controls fl-qssMenuWidget-controls"></div>
+                </div>
             </div>
 
             <!-- the Toggle Widget -->

@@ -1,15 +1,14 @@
 body {
-    background-color: transparent;
-
-    /* override properties */
     margin: 0;
-    /* uncomment when proper way for content scrolling is found */
-    /* overflow: hidden; */
+    overflow: hidden;
+
+    background-color: transparent;
 }
 
 ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 3px;
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -32,12 +31,24 @@ body {
     color: #19294c;
 
     font: normal 9px "Open Sans", "Sans-Serif";
+
+    overflow-x: hidden;
+    overflow-y: overlay;
+}
+
+.fl-qssWidget::-webkit-scrollbar {
+    width: 6px;
+}
+
+.fl-qssWidget::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 .fl-qssWidget .fl-titlebar .fl-closeBtn {
     position: absolute;
     top: 3px;
-    right: 4px;
+    right: 5px;
     border: 1px solid transparent;
 
     font-size: 10px;
