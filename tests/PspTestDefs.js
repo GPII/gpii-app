@@ -67,7 +67,6 @@ var signInCrossSequence = [
             "{that}.app.psp.dialog",
             gpii.test.toIIFEString(gpii.tests.renderer.signIn.triggerSignInError)
         ],
-        // resolve: "jqUnit.assertDeepEq",
         resolve: "jqUnit.assertDeepEq",
         resolveArgs: [
             "Error text should be shown in case of problem with the user credentials",

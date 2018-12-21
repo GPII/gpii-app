@@ -167,7 +167,15 @@ gpii.test.executeJavaScript = function (dialog, command) {
  * executed.
  */
 gpii.test.executeJavaScriptDelayed = function (dialog, command, delay) {
-    return gpii.test.linger(delay).then(function () {
-        return gpii.test.executeJavaScript(dialog, command);
-    });
+    var promise = fluid.promise();
+
+    setTimeout(function () {
+        gpii.test.executeJavaScript(dialog, command).then(function (result) {
+            promise.resolve(result);
+        }, function (error) {
+            promise.reject(error);
+        });
+    }, delay);
+
+    return promise;
 };

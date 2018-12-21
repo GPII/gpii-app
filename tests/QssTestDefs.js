@@ -111,6 +111,111 @@ gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
     );
 };
 
+gpii.tests.qss.getFocusedElementIndex = function () {
+    // Note that the elements will be returned in the order in which they appear in the DOM.
+    var qssButtons = jQuery(".fl-qss-button"),
+        focusedElement = jQuery(".fl-focused")[0];
+    return jQuery.inArray(focusedElement, qssButtons);
+};
+
+gpii.tests.qss.pressKey = function (key, modifiers) {
+    return {
+        funcName: "gpii.tests.qss.simulateShortcut",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            {
+                key: key,
+                modifiers: modifiers
+            }
+        ]
+    };
+};
+
+gpii.tests.qss.assertFocusedElementIndex = function (expectedIndex) {
+    return {
+        task: "gpii.test.executeJavaScriptDelayed",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            gpii.test.toIIFEString(gpii.tests.qss.getFocusedElementIndex),
+            100
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "The correct button in the QSS is focused",
+            expectedIndex,
+            "{arguments}.0"
+        ]
+    };
+};
+
+gpii.tests.qss.clearFocusedElement = function () {
+    jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
+};
+
+var qssSettingsCount = 11;
+
+var navigationSequence = [
+    {
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    },
+    // No focused element at first
+    gpii.tests.qss.assertFocusedElementIndex(-1),
+    // When the right arrow is pressed, the first button in the QSS will be focused.
+    gpii.tests.qss.pressKey("Right"),
+    gpii.tests.qss.assertFocusedElementIndex(0),
+    gpii.tests.qss.pressKey("Tab"),
+    gpii.tests.qss.assertFocusedElementIndex(1),
+    gpii.tests.qss.pressKey("Left"),
+    gpii.tests.qss.assertFocusedElementIndex(0),
+    gpii.tests.qss.pressKey("Tab", ["Shift"]),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 1),
+    gpii.tests.qss.pressKey("Tab", ["Shift"]),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 2),
+    gpii.tests.qss.pressKey("Up"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 3),
+    gpii.tests.qss.pressKey("Down"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 2),
+    gpii.tests.qss.pressKey("Left"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 4),
+    gpii.tests.qss.pressKey("Up"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 5),
+    gpii.tests.qss.pressKey("Right"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 3),
+    // Manually clear the focused state in order to test the Arrow Left behavior when
+    // there is no focused element.
+    {
+        task: "gpii.test.executeJavaScriptDelayed",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            gpii.test.toIIFEString(gpii.tests.qss.clearFocusedElement),
+            100
+        ],
+        resolve: "fluid.identity"
+    },
+    // When there is no focused element and the left arrow is pressed, the last button
+    // in the QSS will be focused.
+    gpii.tests.qss.pressKey("Left"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 1),
+    // Navigate to the "Sign in" button and open it using the Arrow up
+    gpii.tests.qss.pressKey("Left"),
+    gpii.tests.qss.pressKey("Up"),
+    { // The PSP will be shown.
+        changeEvent: "{that}.app.psp.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "When the sign in button is focused and the Arrow up key is pressed, the PSP will open",
+            "{that}.app.psp.model.isShown"
+        ]
+    }, { // Close the QSS and the PSP
+        func: "gpii.test.executeJavaScript",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ]
+    }
+];
+
 
 var restartWarningSequence = [
     { // Simulate language change
@@ -1503,7 +1608,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 71,
+    expect: 84,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1543,6 +1648,7 @@ gpii.tests.qss.testDefs = {
             listener: "jqUnit.assert",
             args: ["QSS has initialized successfully"]
         }],
+        navigationSequence,
         qssInstalledLanguages,
         undoCrossTestSequence,
         undoTestSequence,
