@@ -47,13 +47,15 @@ var appIsRunning = app.makeSingleInstance(function (commandLine) {
 });
 
 if (appIsRunning) {
-    console.log("Another instance of gpii-app is running!");
+    fluid.log("Another instance of gpii-app is running!");
     app.quit();
     return;
 }
 
 // this module is loaded relatively slow
-require("gpii-universal");
+// it also loads gpii-universal
+require("gpii-windows/index.js");
+
 require("./index.js");
 
 // Close the PSP if there is another instance of it already running.
@@ -70,8 +72,6 @@ fluid.onUncaughtException.addListener(function () {
     // The message should have been already logged anyways
 }, "fail");
 
-
-require("gpii-windows/index.js");
 
 kettle.config.loadConfig({
     configName: kettle.config.getConfigName("app.testing"),

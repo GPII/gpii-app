@@ -7,6 +7,8 @@
     "gpii_app_tray_defaultTooltip": "Morphic: Ready",
     "gpii_app_tray_prefSetTooltip": "Morphic: %prefSet",
 
+    "gpii_app_qssWrapper_restartWarningNotification": "To see the %settingTitle change, you may need to restart some applications.",
+
     "gpii_psp_mainWindow_titlebarAppName": "Morphic Settings Panel",
 
     "gpii_psp_signIn_signInHeader": "Nobody keyed in",
@@ -44,6 +46,8 @@
     "gpii_psp_aboutDialog_update": "Check for updates",
     "gpii_psp_aboutDialog_userListenersText": "Keys that work on this machine: %listeners",
     "gpii_psp_aboutDialog_version": "version %version",
+    "gpii_psp_aboutDialog_morphicHome": "Go to Morphic home",
+    "gpii_psp_aboutDialog_submitSuggestions": "Submit suggestions",
 
     "gpii_psp_footer_help": "Help",
 
@@ -51,14 +55,13 @@
 
     "gpii_psp_qssMorePanel_title": "More",
     "gpii_psp_qssMorePanel_details": "Watch this space for more Morphic buttons, as well as additional features to help you tune the computer to your specific needs and preferences",
-    "gpii_psp_qssMorePanel_link": "For more information on Morphic go to <a target=\"_blank\" href=\"http://morphic.world/more\">http://morphic.world/more</a>",
+    "gpii_psp_qssMorePanel_link": "For more information on Morphic go to <a target=\"_blank\" href=\"%moreInfoUrl\">%moreInfoUrl</a>",
 
     "gpii_psp_qssNotification_title": "Morphic Notification",
     "gpii_psp_qssNotification_dismissButtonLabel": "OK",
 
-    "gpii_qss_buttonPresenter_notification": "To see the %settingTitle change, you may need to restart some applications.",
     "gpii_qss_saveButtonPresenter_notification": {
-        "keyedOut": "To save your settings you need to setup a Morphic Account. Go to <a href=\"http://morphic.world/account\">http://morphic.world/account</a>",
+        "keyedOut": "To save your settings you need to setup a Morphic Account. Go to <a href=\"%accountUrl\">%accountUrl</a>",
         "keyedIn": "Your settings were saved to the Morphic Cloud."
     },
 

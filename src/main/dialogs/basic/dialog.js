@@ -101,6 +101,9 @@ fluid.defaults("gpii.app.dialog", {
         // Whether to register a listener for BrowserWindow "readiness". The BrowserWindow is ready
         // once all its components are created. Once a window is ready the `onDialogReady` event will
         // be fired.
+        // N.B. In order this event to be triggered, the corresponding renderer process should
+        // implement the mechanism for notifying readiness that is using
+        // the "gpii.psp.baseWindowCmp.signalDialogReady" grade
         awaitWindowReadiness: false,
 
         restrictions: {
@@ -490,6 +493,20 @@ fluid.defaults("gpii.app.i18n.channel", {
 
     modelListeners: {
         "{app}.model.locale": {
+            func: "{that}.handleLocaleChange"
+        }
+    },
+
+    invokers: {
+        handleLocaleChange: {
+            funcName: "gpii.app.i18n.channel.handleLocaleChange",
+            args: [
+                "{that}",
+                "{dialog}.dialog",
+                "{app}.model.locale"
+            ]
+        },
+        notifyLocaleChange: {
             funcName: "gpii.app.notifyWindow",
             args: [
                 "{dialog}.dialog",
@@ -499,6 +516,22 @@ fluid.defaults("gpii.app.i18n.channel", {
         }
     }
 });
+
+
+/**
+ * Use the dialog instance to share the current locale. This is needed
+ * for the initial loading of the application as the locale might get
+ * updated before the dialog have been fully created.
+ * @param {Component} that - The `gpii.app.i18n.channel` instance
+ * @param {Object} dialog - An Electron BrowserWindow instance
+ * @param {String} locale - The current locale
+ */
+gpii.app.i18n.channel.handleLocaleChange = function (that, dialog, locale) {
+    // Update the locale of the dialog
+    dialog.locale = locale;
+
+    that.notifyLocaleChange();
+};
 
 /**
  * Listens for events from the renderer process (the BrowserWindow).

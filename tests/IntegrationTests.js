@@ -16,11 +16,12 @@
 
 "use strict";
 
-var fluid = require("gpii-universal"),
+require("gpii-windows/index.js"); // loads gpii-universal as well
+
+var fluid = require("infusion"),
     kettle = fluid.registerNamespace("kettle"),
     gpii = fluid.registerNamespace("gpii");
 
-require("gpii-windows/index.js");
 fluid.require("%gpii-universal/gpii/node_modules/testing");
 
 gpii.loadTestingSupport();
@@ -30,6 +31,7 @@ require("./IntegrationTestDefs.js");
 require("./QssTestDefs.js");
 require("./SequentialDialogsTestDefs.js");
 require("./SettingsBrokerTestDefs.js");
+require("./StorageTestDefs.js");
 require("./SurveysConnectorTestDefs.js");
 require("./SurveyTriggerManagerTestsDefs.js");
 require("./ShortcutsManagerTestDefs.js");
@@ -79,6 +81,18 @@ gpii.tests.app.endSequence = [];
  */
 gpii.tests.app.testsDistributions = {};
 
+
+/**
+ * Used to disable the system language listener and set a fixed language.
+ */
+fluid.defaults("gpii.tests.app.mockedSystemLanguageListener", {
+    gradeNames: ["fluid.modelComponent"],
+
+    model: {
+        installedLanguages: {},
+        configuredLanguage: "en-US"
+    }
+});
 
 /**
  * Attach instances that are needed in test cases.
@@ -168,6 +182,7 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.surveys.dynamicSurveyConnectorTestDefs),
     fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
     fluid.copy(gpii.tests.siteConfigurationHandler.testDefs),
+    fluid.copy(gpii.tests.storage.testDefs),
     fluid.copy(gpii.tests.userErrorsHandler.testDefs),
     fluid.copy(gpii.tests.gpiiConnector.testDefs),
     fluid.copy(gpii.tests.webview.testDefs)

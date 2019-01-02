@@ -195,7 +195,11 @@ gpii.app.messageBundles.loadMessageBundles = function (messageBundlesPath) {
  * @param {String} defaultLocale - The default locale.
  */
 gpii.app.messageBundles.updateMessages = function (that, messageBundles, locale, defaultLocale) {
-    var messages = messageBundles[locale];
+    // make sure the locale is in proper state
+    locale = locale || "";
+
+    var genericLocale = locale.split("-")[0];
+    var messages = messageBundles[locale.toLowerCase()] || messageBundles[genericLocale];
 
     if (!messages) {
         fluid.log(fluid.logLevel.WARN, "Bundles for locale - " + locale + " - are missing. Using default locale of: " + defaultLocale);

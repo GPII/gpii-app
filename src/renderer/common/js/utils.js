@@ -88,6 +88,12 @@
      */
     fluid.defaults("gpii.psp.selectorsTextRenderer", {
         enableRichText: false,
+
+        model: {
+            messages: null,
+            // list of values to be used for messages interpolation
+            values: null
+        },
         modelListeners: {
             // Any change means that the whole view should be re-rendered
             // messages are a default option as it is most likely that
@@ -95,8 +101,10 @@
             "messages": {
                 funcName: "{that}.renderText",
                 args: [
-                    "{that}.model.messages"
-                ]
+                    "{that}.model.messages",
+                    "{that}.model.values"
+                ],
+                namespace: "renderText"
             }
         },
         invokers: {
