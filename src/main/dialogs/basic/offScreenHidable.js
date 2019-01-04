@@ -28,9 +28,40 @@ require("./resizable.js");
  * do not occur when a Chromium window is hidden).
  */
 fluid.defaults("gpii.app.dialog.offScreenHidable", {
+    offScreenPosition: {
+        // Use a convenient position when moving it off the Primary display, so that
+        // it doesn't overlap with another display.
+        // It seems less likely to have a display bellow the primary display so position it there.
+        // This would lower the chances of using the "safer" show method.
+        x: 100, // ensure we're in the horizontal bounds of the primary display
+        y: "@expand:Math.pow(2, 20)"
+    },
+
     config: {
         positionOnInit: false,
         hideOffScreen: true
+    },
+
+    components: {
+        differentDisplayShowTimer: {
+            type: "gpii.app.timer",
+            options: {
+                defaultTimeoutDuration: 200, // ms
+                listeners: {
+                    "onTimerFinished.resizeDialogAgain": {
+                        func: "gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay",
+                        args: ["{gpii.app.dialog}", true]
+                    }
+                }
+            }
+        }
+    },
+
+    listeners: {
+        "onCreate.prepareOffScreenWindow": {
+            funcName: "gpii.app.dialog.offScreenHidable.init",
+            args: ["{that}"]
+        }
     },
 
     invokers: {
@@ -43,7 +74,7 @@ fluid.defaults("gpii.app.dialog.offScreenHidable", {
         },
         hideImpl: {
             funcName: "gpii.app.dialog.offScreenHidable.moveOffScreen",
-            args: ["{that}.dialog"]
+            args: ["{that}"]
         },
         setPosition: {
             funcName: "gpii.app.dialog.offScreenHidable.setBounds",
@@ -70,15 +101,78 @@ fluid.defaults("gpii.app.dialog.offScreenHidable", {
     }
 });
 
+
+
+/**
+ * Apply any additional options to the BrowserWindow that are related to the off-screen hiding mechanism.
+ * @param {Component} that - The `gpii.app.dialog` instance
+ */
+gpii.app.dialog.offScreenHidable.init = function (that) {
+    // use the move offscreen approach
+    that.hideImpl();
+    // to avoid flicker on creation, the dialog is hidden at first
+    that.dialog.show();
+};
+
+/**
+ * Shows the BrowserWindow more "safely".
+ * This handles an issue that is related to the approach we are using to hide BrowserWindows offscreen
+ * and is only present in the case when there are more than one displays with different scale factors.
+ * Note that this approach resizes and positions the dialog correctly but results in flicker. On the other
+ * hand it should be used rather rarely.
+ *
+ * In the current Electron version (3.0.2) the low level BrowserWindow
+ * `setBounds` method updates the metrics of the dialog using the scaleFactor of the closest display.
+ * As we're moving the BrowserWindow to some position away from the current display when hiding, it
+ * might be the case that it becomes relative to a display that is different from the primary display (as
+ * it is closer to the other display). In case the closes display is different from the current display
+ * and both displays' scaleFactors differ, the BrowserWindow will be incorrectly resized and repositioned
+ * to the Primary display as it's calculations would be based on the non-primary display.
+ *
+ * In order for the BrowserWindow to use correct scaling factor for resizing and repositioning, we first
+ * move it to the primary display and after that update its bounds.
+ * @param {Component} that - The `gpii.app.dialog` instance
+ * @param {Boolean} isShowCall - Whether the show operation should be triggered
+ */
+gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay = function (that, isShowCall) {
+    if (!isShowCall) {
+        // At first we'd need to move the dialog to the primary display
+        that.dialog.hide();
+        that.setBounds();
+
+        // Show the dialog according to the current display metrics (scale factor)
+        that.differentDisplayShowTimer.start();
+    } else {
+        // as it is on the primary screen we'd simply need to resize it
+        that.setBounds();
+        that.dialog.show();
+    }
+};
+
+
 /**
  * Shows the dialog and focuses it if necessary.
+ * Note that in case the BrowserWindow is related with a display that has a scale factor different from
+ * the one that the Current Display has we need to use a "safer" displaying mechanism.
+ * Refer to "gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay" for further details.
  * @param {Component} that - The `gpii.app.dialog.offScreenHidable` instance.
  * @param {Boolean} showInactive - Whether the window should be shown but
  * without giving focus to it.
  */
 gpii.app.dialog.offScreenHidable.moveToScreen = function (that, showInactive) {
-    // Move to screen
-    that.setPosition();
+    var screen = require("electron").screen;
+    var relativeToPrimaryDisplay =
+        screen.getPrimaryDisplay().scaleFactor === screen.getDisplayMatching(that.dialog.getBounds()).scaleFactor;
+
+    if (relativeToPrimaryDisplay) {
+        // trigger a simple show operation
+        that.setPosition();
+    } else {
+        // Use the safer show mechanism
+        fluid.log("offScreenHidable - using the safer show to primary display");
+        gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay(that, false);
+    }
+
     if (!showInactive) {
         that.dialog.focus();
     }
@@ -88,21 +182,16 @@ gpii.app.dialog.offScreenHidable.moveToScreen = function (that, showInactive) {
  * Moves the `BrowserWindow` to a non-visible part of the screen. This function in
  * conjunction with `gpii.app.dialog.offScreenHidable.moveToScreen` helps avoid the
  * flickering issue when the content of the dialog changes.
- * @param {Object} dialog - An Electron `BrowserWindow`.
+ * @param {Component} that - The `gpii.app.dialog` instance
  */
-gpii.app.dialog.offScreenHidable.moveOffScreen = function (dialog) {
+gpii.app.dialog.offScreenHidable.moveOffScreen = function (that) {
     // Move the BrowserWindow so far away that even if there is an additional screen attached,
     // it will not be visible. It appears that the min value for the `BrowserWindow`
     // position can be -Math.pow(2, 31). Any smaller values lead to an exception.
-    var coordinate = -Math.pow(2, 20);
-    var size = dialog.getSize();
-    // XXX using `setBounds` because of a related Electron issue https://github.com/electron/electron/issues/9477
-    dialog.setBounds({
-        width:  size[0],
-        height: size[1],
-        x:      coordinate,
-        y:      coordinate
-    });
+    var coordinate = that.options.offScreenPosition;
+    // We might use `setBounds` instead to avoid resize of the window but the dialog will
+    // be repositioned using `setBounds` which will restore its correct size
+    that.dialog.setPosition(coordinate.x, coordinate.y);
 };
 
 /**
