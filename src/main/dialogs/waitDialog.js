@@ -127,6 +127,14 @@ gpii.app.waitDialog.hide = function (that) {
     }
 };
 
+/**
+ * Toggles the visibility of the animating gear logo.
+ * This is called when showing or hiding the wait dialog. The animation has been known to cause high CPU usage before
+ * the dialog has been shown, so the image his hidden until needed.
+ *
+ * @param {Component} that The gpii.app instance.
+ * @param {Boolean} animate true to enable the animation.
+ */
 gpii.app.waitDialog.toggleAnimation = function (that, animate) {
     var script = fluid.stringTemplate("jQuery(document.body).toggleClass(\"animate\", %animate)", {
         animate: animate
