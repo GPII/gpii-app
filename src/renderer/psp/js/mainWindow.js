@@ -120,7 +120,8 @@
                 settingGroups: []
             },
             theme: null,
-            sounds: {}
+            sounds: {},
+            urls: {}
         },
         selectors: {
             signIn: ".flc-signIn",
@@ -215,7 +216,12 @@
             },
             footer: {
                 type: "gpii.psp.footer",
-                container: "{that}.dom.footer"
+                container: "{that}.dom.footer",
+                options: {
+                    model: {
+                        urls: "{mainWindow}.model.urls"
+                    }
+                }
             }
         },
         modelListeners: {

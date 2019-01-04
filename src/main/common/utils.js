@@ -162,3 +162,25 @@ gpii.app.notifyWindow = function (browserWindow, messageChannel, message) {
 gpii.app.isHashNotEmpty = function (hash) {
     return hash && fluid.keys(hash).length > 0;
 };
+
+/**
+ * Determines if a point is contained within a rectangle (including whether it
+ * lies on any of the rectangle's sides).
+ * @param {Object} point - The point to check
+ * @param {Number} point.x - The x coordinate of the point.
+ * @param {Number} point.y - The y coordinate of the point.
+ * @param {Object} rectangle - The rectangle which is to be checked.
+ * @param {Number} rectangle.x - The x coordinate of the rectangle.
+ * @param {Number} rectangle.y - The y coordinate of the rectangle.
+ * @param {Number} rectangle.width - The width of the rectangle.
+ * @param {Number} rectangle.height - The height of the rectangle.
+ * @return {Boolean} - `true` if the point is contained within the specified
+ * rectangle and `false` otherwise.
+ */
+gpii.app.isPointInRect = function (point, rectangle) {
+    point = point;
+    rectangle = rectangle;
+
+    return rectangle.x <= point.x && point.x <= rectangle.x + rectangle.width &&
+           rectangle.y <= point.y && point.y <= rectangle.y + rectangle.height;
+};

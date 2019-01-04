@@ -25,6 +25,7 @@ require("./common/utils.js");
 require("./common/ws.js");
 require("./dialogs/dialogManager.js");
 require("./dialogs/psp.js");
+require("./storage.js");
 require("./factsManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
@@ -70,8 +71,11 @@ fluid.defaults("gpii.app", {
             sets: [],
             activeSet: null,
             settingGroups: [],
+
+            // user settings
             closePspOnBlur: null,
-            closeQssOnBlur: null
+            closeQssOnBlur: null,
+            disableRestartWarning: null
         },
         theme: "{that}.options.defaultTheme"
     },
@@ -131,6 +135,9 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        storage: {
+            type: "gpii.app.storage"
+        },
         gpiiConnector: {
             type: "gpii.app.gpiiConnector",
             createOnEvent: "onGPIIReady",
@@ -175,6 +182,20 @@ fluid.defaults("gpii.app", {
             type: "gpii.windows.appZoom",
             createOnEvent: "onPSPPrerequisitesReady"
         },
+        systemLanguageListener: {
+            type: "gpii.windows.language",
+            options: {
+                model: {
+                    configuredLanguage: "{messageBundles}.model.locale"
+                },
+                modelListeners: {
+                    configuredLanguage: {
+                        funcName: "fluid.log",
+                        args: ["Language change: ", "{change}.value"]
+                    }
+                }
+            }
+        },
         qssWrapper: {
             type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -184,7 +205,8 @@ fluid.defaults("gpii.app", {
                     isKeyedIn: "{app}.model.isKeyedIn",
                     keyedInUserToken: "{app}.model.keyedInUserToken",
 
-                    closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur"
+                    closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur",
+                    disableRestartWarning: "{app}.model.preferences.disableRestartWarning"
                 },
                 listeners: {
                     "{gpiiConnector}.events.onQssSettingsUpdate": {
@@ -194,6 +216,9 @@ fluid.defaults("gpii.app", {
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated"
                 },
                 modelListeners: {
+                    "{systemLanguageListener}.model.installedLanguages": {
+                        funcName: "{that}.updateLanguageSettingOptions"
+                    },
                     "settings.*": {
                         funcName: "gpii.app.onQssSettingAltered",
                         args: [
@@ -311,7 +336,12 @@ fluid.defaults("gpii.app", {
         },
         factsManager: {
             type: "gpii.app.factsManager",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    interactionsCount: "{storage}.model.interactionsCount"
+                }
+            }
         }
     },
     events: {
@@ -561,7 +591,7 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
     var currentKeyedInUserToken = that.model.keyedInUserToken;
 
     if (keyedOutUserToken !== currentKeyedInUserToken) {
-        console.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
+        fluid.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
     } else {
         that.updateKeyedInUserToken(null);
     }
@@ -581,7 +611,6 @@ gpii.app.windowMessage = function (that, hwnd, msg, wParam, lParam, result) {
     // https://msdn.microsoft.com/library/aa376889
     var WM_QUERYENDSESSION = 0x11;
     if (msg === WM_QUERYENDSESSION) {
-        console.log("SHUTDOWN");
         fluid.log(fluid.logLevel.FATAL, "System shutdown detected.");
         that.exit();
         result.value = 0;
