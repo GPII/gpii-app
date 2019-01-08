@@ -123,9 +123,9 @@ gpii.app.dialog.offScreenHidable.init = function (that) {
  *
  * In the current Electron version (3.0.2) the low level BrowserWindow
  * `setBounds` method updates the metrics of the dialog using the scaleFactor of the closest display.
- * As we're moving the BrowserWindow to some position away from the current display when hiding, it
+ * As we're moving the BrowserWindow to some position away from the main display when hiding, it
  * might be the case that it becomes relative to a display that is different from the primary display (as
- * it is closer to the other display). In case the closes display is different from the current display
+ * it is closer to the other display). In case the closes display is different from the main display
  * and both displays' scaleFactors differ, the BrowserWindow will be incorrectly resized and repositioned
  * to the Primary display as it's calculations would be based on the non-primary display.
  *
@@ -140,7 +140,7 @@ gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay = function (that, isSh
         that.dialog.hide();
         that.setBounds();
 
-        // Show the dialog according to the current display metrics (scale factor)
+        // Show the dialog according to the main display metrics (scale factor)
         that.differentDisplayShowTimer.start();
     } else {
         // as it is on the primary screen we'd simply need to resize it
@@ -152,8 +152,8 @@ gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay = function (that, isSh
 
 /**
  * Shows the dialog and focuses it if necessary.
- * Note that in case the BrowserWindow is related with a display that has a scale factor different from
- * the one that the Current Display has we need to use a "safer" displaying mechanism.
+ * Note that in case the BrowserWindow is related to a display that has a scale factor different from
+ * the one that the Main Display has, so we need to use a "safer" displaying mechanism.
  * Refer to "gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay" for further details.
  * @param {Component} that - The `gpii.app.dialog.offScreenHidable` instance.
  * @param {Boolean} showInactive - Whether the window should be shown but
