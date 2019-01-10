@@ -95,6 +95,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeAboutDialogConfig: {
             record: "{that}.options.siteConfig.aboutDialog",
             target: "{app aboutDialog}.options.siteConfig"
+        },
+        distributeSaveLogin: {
+            record: "{that}.options.siteConfig.saveLogin",
+            target: "{/ gpii.userListeners.autoLogin}.options.saveLastLogin"
         }
     }
 });
