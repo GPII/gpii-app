@@ -74,5 +74,8 @@
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
-    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json"
+    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
+
+    // Store the last login token, and automatically login when morphic is next started.
+    saveLogin: false
 }
