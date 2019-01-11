@@ -42,21 +42,6 @@ fluid.defaults("gpii.app.dialog.offScreenHidable", {
         hideOffScreen: true
     },
 
-    components: {
-        differentDisplayShowTimer: {
-            type: "gpii.app.timer",
-            options: {
-                defaultTimeoutDuration: 200, // ms
-                listeners: {
-                    "onTimerFinished.resizeDialogAgain": {
-                        func: "gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay",
-                        args: ["{gpii.app.dialog}", true]
-                    }
-                }
-            }
-        }
-    },
-
     listeners: {
         "onCreate.prepareOffScreenWindow": {
             funcName: "gpii.app.dialog.offScreenHidable.init",
@@ -132,21 +117,12 @@ gpii.app.dialog.offScreenHidable.init = function (that) {
  * In order for the BrowserWindow to use correct scaling factor for resizing and repositioning, we first
  * move it to the primary display and after that update its bounds.
  * @param {Component} that - The `gpii.app.dialog` instance
- * @param {Boolean} isShowCall - Whether the show operation should be triggered
  */
-gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay = function (that, isShowCall) {
-    if (!isShowCall) {
-        // At first we'd need to move the dialog to the primary display
-        that.dialog.hide();
-        that.setBounds();
-
-        // Show the dialog according to the main display metrics (scale factor)
-        that.differentDisplayShowTimer.start();
-    } else {
-        // as it is on the primary screen we'd simply need to resize it
-        that.setBounds();
-        that.dialog.show();
-    }
+gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay = function (that) {
+    // At first we'd need to move the dialog to the primary display
+    that.setBounds();
+    // Then resize it according to the Main display scale factor
+    that.setBounds();
 };
 
 
@@ -170,7 +146,7 @@ gpii.app.dialog.offScreenHidable.moveToScreen = function (that, showInactive) {
     } else {
         // Use the safer show mechanism
         fluid.log("offScreenHidable - using the safer show to primary display");
-        gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay(that, false);
+        gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay(that);
     }
 
     if (!showInactive) {
