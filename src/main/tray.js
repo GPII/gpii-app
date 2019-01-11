@@ -220,7 +220,7 @@ fluid.defaults("gpii.app.trayButton", {
         },
         remove: {
             func: "{that}.updateButton",
-            args: [ "{that}.buttonItems.destroy" ]
+            args: [ "{that}.options.buttonItems.destroy" ]
         },
         updateButton: {
             func: "{that}.sendDataMessage", // command, data
@@ -238,43 +238,43 @@ fluid.defaults("gpii.app.trayButton", {
     modelListeners: {
         icon: {
             func: "{that}.updateButton",
-            args: [ "{that}.buttonItems.icon", "{change}.value" ]
+            args: [ "{that}.options.buttonItems.icon", "{change}.value" ]
         },
         highContrastIcon: {
             func: "{that}.updateButton",
-            args: [ "{that}.buttonItems.highContrastIcon", "{change}.value" ]
+            args: [ "{that}.options.buttonItems.highContrastIcon", "{change}.value" ]
         },
         tooltip: {
             func: "{that}.updateButton",
-            args: [ "{that}.buttonItems.toolTip", "{change}.value" ]
+            args: [ "{that}.options.buttonItems.toolTip", "{change}.value" ]
         },
         isKeyedIn: {
             func: "{that}.updateButton",
-            args: [ "{that}.buttonItems.state", "{change}.value" ]
+            args: [ "{that}.options.buttonItems.state", "{change}.value" ]
         }
     },
     model: {
         highContrastIcon: "{that}.options.icons.highContrastIcon"
     },
     members: {
-        buttonItems: {
-            // Set the current icon
-            icon: 1,
-            // Set the icon used when high-contrast is on
-            highContrastIcon: 2,
-            // Set the tool tip
-            toolTip: 3,
-            // Remove the icon
-            destroy: 4,
-            // Set whether or not the button should look "on" (for high-contrast)
-            state: 5
-        },
         // Path to the tray button window.
         trayButtonWindow: ["Shell_TrayWnd", "GPII-TrayButton"],
         trayButtonMessage: "GPII-TrayButton-Message",
         menu: null,
         // true if the mouse pointer is currently over the button
         mouseOver: false
+    },
+    buttonItems: {
+        // Set the current icon
+        icon: 1,
+        // Set the icon used when high-contrast is on
+        highContrastIcon: 2,
+        // Set the tool tip
+        toolTip: 3,
+        // Remove the icon
+        destroy: 4,
+        // Set whether or not the button should look "on" (for high-contrast)
+        state: 5
     },
     trayButtonExe: "%gpii-app/bin/tray-button.exe"
 });
@@ -356,11 +356,11 @@ gpii.app.trayButton.windowMessage = function (that, hwnd, msg, wParam) {
             break;
 
         case gpii.app.trayButton.notifications.update:
-            that.updateButton(that.buttonItems.highContrastIcon,
+            that.updateButton(that.options.buttonItems.highContrastIcon,
                 fluid.module.resolvePath(that.options.icons.highContrast));
-            that.updateButton(that.buttonItems.state, that.model.isKeyedIn);
-            that.updateButton(that.buttonItems.icon, that.model.icon);
-            that.updateButton(that.buttonItems.toolTip, that.model.tooltip);
+            that.updateButton(that.options.buttonItems.state, that.model.isKeyedIn);
+            that.updateButton(that.options.buttonItems.icon, that.model.icon);
+            that.updateButton(that.options.buttonItems.toolTip, that.model.tooltip);
             break;
 
         case gpii.app.trayButton.notifications.mouseEnter:
