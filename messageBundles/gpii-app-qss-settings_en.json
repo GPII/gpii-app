@@ -8,7 +8,7 @@
         "title": "Undo"
     },
     "gpii_app_qss_settings_resetAll": {
-        "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>",
+        "tooltip": "<p>Reset to the standard settings for this computer</p><p>(does not affect personal saved settings)</p>",
         "title": "Reset to Standard"
     },
     "gpii_app_qss_settings_save": {
