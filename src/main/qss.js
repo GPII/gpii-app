@@ -60,7 +60,9 @@ fluid.defaults("gpii.app.qssWrapper", {
             currentLanguageGroup: "%native",
             genericLanguage: "%native · %local"
         },
-        defaultLanguage: "en-US"
+        // This language should always be positioned on top of the
+        // language setting choices
+        systemDefaultLanguage: "en-US"
     },
 
     settingsFixturePath: "%gpii-app/testData/qss/settings.json",
@@ -528,11 +530,11 @@ gpii.app.qssWrapper.orderLanguagesMetadata = function (settingOptions, languages
     languagesMetadata.sort(function (a, b) { return a.english > b.english; });
 
     // Move the default language at the top
-    var defaultLanguageIdx = languagesMetadata.findIndex(function (lang) {
-        return lang.code.toLowerCase() === settingOptions.defaultLanguage.toLowerCase();
+    var systemDefaultLanguageIdx = languagesMetadata.findIndex(function (lang) {
+        return lang.code.toLowerCase() === settingOptions.systemDefaultLanguage.toLowerCase();
     });
-    if ( defaultLanguageIdx > -1 ) {
-        var language = languagesMetadata.splice(defaultLanguageIdx, 1);
+    if ( systemDefaultLanguageIdx > -1 ) {
+        var language = languagesMetadata.splice(systemDefaultLanguageIdx, 1);
         languagesMetadata.unshift(language[0]);
     }
 
