@@ -65,7 +65,7 @@ fluid.defaults("gpii.app.qssWidget", {
         attrs: {
             width: 170,
             height: 255,
-            alwaysOnTop: false
+            alwaysOnTop: true
         },
         restrictions: {
             minHeight: 255
