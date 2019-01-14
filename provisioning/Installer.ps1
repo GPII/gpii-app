@@ -83,6 +83,7 @@ Invoke-Command "robocopy" "..\configs $(Join-Path $preStagingDir "configs") /job
 Invoke-Command "robocopy" "..\src $(Join-Path $preStagingDir "src") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "..\testData $(Join-Path $preStagingDir "testData") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "..\build $(Join-Path $preStagingDir "build") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
+Invoke-Command "robocopy" "..\bin $(Join-Path $preStagingDir "bin") /job:gpii-app.rcj *.*" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir LICENSE.txt" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir main.js" $provisioningDir -errorLevel 3
 Invoke-Command "robocopy" "$projectDir $preStagingDir siteconfig.json5" $provisioningDir -errorLevel 3
