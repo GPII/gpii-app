@@ -1,3 +1,5 @@
 *.obj
 *.*proj.user
 *.pdb
+/Debug/
+/Release/
