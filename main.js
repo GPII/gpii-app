@@ -48,7 +48,10 @@ app.on("second-instance", function (event, commandLine) {
     qssWrapper.qss.show();
     if (commandLine.indexOf("--reset") > -1) {
         setTimeout(function () {
-            // GPII-3455: Call this in the next tick, to allow electron to free some things.
+            // GPII-3455: Call this in another execution stack, to allow electron to free some things, otherwise an
+            // error of a COM object being accessed in the wrong thread is raised - but that doesn't appear to be
+            // the case. Originally, nextTick was used to escape this strange state. However, since upgrading to
+            // Electron 3 it stopped working but a zero timeout does.
             var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
             gpiiApp.resetAllToStandard();
         }, 0);
