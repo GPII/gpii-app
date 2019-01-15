@@ -77,5 +77,5 @@
     surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
 
     // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
-    trayType: ["gpii.app.trayButton", "gpii.app.trayIcon"]
+    trayType: ["gpii.app.trayButton"]
 }
