@@ -1,0 +1,18 @@
+<h1>3. What to keep</h1>
+<form>
+<div class="form-group">
+    {{#each capturedSettings}}
+        <p class="form-group-label"><strong>{{this.numberOfSettings}} settings found for {{this.name}}</strong></p>
+        {{#each this.settings}}
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" />
+                    <span>{{@key}}: {{this}}</span>
+                </label>
+            </div>
+        {{/each}} 
+    {{/each}}
+</div>
+</form>
+<input type="button" class="btn btn-default flc-capture-back" value="Back" />
+<input type="button" class="btn btn-default flc-capture-next" value="Next" />

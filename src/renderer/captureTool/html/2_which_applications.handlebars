@@ -1,0 +1,19 @@
+<h1>2. Choose which applications to capture</h1>
+<p>Below is a list of Morphic-compatible applications found this computer.  
+   Choose the applications whose settings you want to capture.
+</p>
+<div>
+    <div class="form-group">
+    {{#each installedSolutions}}
+        <div class="checkbox">
+                <label>
+                    <input name="fc-choose-app" value="{{@key}}" type="checkbox"></input>
+                    <span>{{this.name}}</span>
+                </label>
+        </div>
+    {{/each}}
+    </div>
+</div>
+
+<input type="button" class="btn btn-default flc-capture-back" value="Back" />
+<input type="button" class="btn btn-default flc-capture-next" value="Next" />

@@ -25,6 +25,7 @@ require("./common/utils.js");
 require("./common/ws.js");
 require("./dialogs/dialogManager.js");
 require("./dialogs/psp.js");
+require("./dialogs/captureToolDialog.js");
 require("./factsManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
@@ -222,6 +223,10 @@ fluid.defaults("gpii.app", {
         },
         psp: {
             type: "gpii.app.pspInApp",
+            createOnEvent: "onPSPPrerequisitesReady"
+        },
+        captureTool: {
+            type: "gpii.app.captureTool",
             createOnEvent: "onPSPPrerequisitesReady"
         },
         shortcutsManager: {
