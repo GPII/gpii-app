@@ -292,7 +292,7 @@
     gpii.qssWidget.stepper.makeRestrictedStep = function (that, value, schema, shouldSubtract) {
         var step = (shouldSubtract ? -schema.divisibleBy : schema.divisibleBy);
 
-        value += step;
+        value = parseFloat( (value + step).toPrecision(2) );
         // Handle not given min and max
         var restrcitedValue = value;
 
@@ -426,9 +426,9 @@
         var indicators = [];
 
         for (
-            var indicatorValue = setting.schema.min ;
-            indicatorValue <= setting.schema.max;
-            indicatorValue += setting.schema.divisibleBy
+            var indicatorValue = setting.schema.max;
+            indicatorValue >= 0;
+            indicatorValue = parseFloat((indicatorValue - setting.schema.divisibleBy).toPrecision(2))
         ) {
             indicators.push({
                 indicatorValue: indicatorValue, // what value to be applied when selected
@@ -437,7 +437,7 @@
             });
         }
 
-        return indicators.reverse();
+        return indicators;
     };
 
     /**
