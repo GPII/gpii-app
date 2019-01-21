@@ -31,7 +31,7 @@
     padding: .5em;
 }
 
-.spinner {
+.animate .spinner {
     background-image: url("../../../icons/Morphic_icon_animated.svg");
     width: 12em;
     height: 12em;
