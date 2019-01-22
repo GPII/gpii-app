@@ -427,7 +427,7 @@
 
         for (
             var indicatorValue = setting.schema.max;
-            indicatorValue >= 0;
+            indicatorValue >= setting.schema.min;
             indicatorValue = parseFloat((indicatorValue - setting.schema.divisibleBy).toPrecision(2))
         ) {
             indicators.push({

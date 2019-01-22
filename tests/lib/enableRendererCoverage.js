@@ -69,7 +69,7 @@ fluid.defaults("gpii.tests.app.instrumentedDialog", {
 
 /**
  * Attach flag to that BrowserWindow object that specify whether the DOM of the
- * window is fully initialized. This is needed as `webContents.executeJavaScript`
+ * window is fully initialized. This is needed as `webContents.executeJavaScriptInWebContents`
  * can only be used in case the DOM is ready.
  * @param {Component} dialog - The BrowserWindows instance
  */
@@ -164,7 +164,7 @@ gpii.tests.app.sendRendererCoverage = function () {
  */
 gpii.tests.app.instrumentedDialog.requestDialogCoverage = function (dialog) {
     var sendCoverageCommand = gpii.test.toIIFEString(gpii.tests.app.sendRendererCoverage);
-    return gpii.test.executeJavaScript(dialog, sendCoverageCommand);
+    return gpii.test.executeJavaScriptInWebContents(dialog, sendCoverageCommand);
 };
 
 /**
@@ -174,7 +174,7 @@ gpii.tests.app.instrumentedDialog.requestDialogCoverage = function (dialog) {
  * the predefined socket - "coverageReportSuccess".
  *
  * NOTE that the coverage data is collected by executing a command sent from the main process - `gpii.tests.app.sendRendererCoverage`.
- * For more details refer to gpii.test.executeJavaScript.
+ * For more details refer to gpii.test.executeJavaScriptInWebContents.
  *
  * @return {Promise} A promise that is resolved once all the BrowserWindows have repoted their coverage back to the
  * coverage server.

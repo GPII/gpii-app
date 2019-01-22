@@ -148,8 +148,46 @@ gpii.tests.blockTestsElement = function () {
  * @return {Promise} - A promise which is resolved when the JavaScript code is
  * executed.
  */
-gpii.test.executeJavaScript = function (dialog, command) {
+gpii.test.executeJavaScriptInWebContents = function (dialog, command) {
     return dialog.webContents.executeJavaScript(command, true);
+};
+
+
+/**
+ * Invokes a JavaScript function in the `BrowserWindow` of the given dialog.
+ * It simply transforms the function and passes it to `gpii.test.executeJavaScriptInWebContents`
+ * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
+ * to be executed.
+ * @param {Function} func - The function that is to be invoked inside the BrowserWindow
+ * @return {Promise} - A promise which is resolved when the JavaScript code is
+ * executed.
+ */
+gpii.test.invokeFunctionInWebContents = function (dialog, func) {
+    return gpii.test.executeJavaScriptInWebContents(dialog, gpii.test.toIIFEString(func));
+};
+
+/**
+ * Invokes a JavaScript function in the `BrowserWindow` of the given dialog.
+ * Similar to `executeJavaScriptInWebContentsDelayed` invokes the function with a delay.
+ * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
+ * to be executed.
+ * @param {Function} func - The function that is to be invoked inside the BrowserWindow
+ * @param {Number} delay - The delay after which the function should be invoked
+ * @return {Promise} - A promise which is resolved when the JavaScript code is
+ * executed.
+ */
+gpii.test.invokeFunctionInWebContentsDelayed = function (dialog, func, delay) {
+    var promise = fluid.promise();
+
+    setTimeout(function () {
+        gpii.test.invokeFunctionInWebContents(dialog, func).then(function (result) {
+            promise.resolve(result);
+        }, function (error) {
+            promise.reject(error);
+        });
+    }, delay);
+
+    return promise;
 };
 
 /**
@@ -166,11 +204,11 @@ gpii.test.executeJavaScript = function (dialog, command) {
  * @return {Promise} - A promise which is resolved when the JavaScript code is
  * executed.
  */
-gpii.test.executeJavaScriptDelayed = function (dialog, command, delay) {
+gpii.test.executeJavaScriptInWebContentsDelayed = function (dialog, command, delay) {
     var promise = fluid.promise();
 
     setTimeout(function () {
-        gpii.test.executeJavaScript(dialog, command).then(function (result) {
+        gpii.test.executeJavaScriptInWebContents(dialog, command).then(function (result) {
             promise.resolve(result);
         }, function (error) {
             promise.reject(error);

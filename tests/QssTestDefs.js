@@ -32,7 +32,7 @@ function getStepperIndicatorsCount() {
 }
 
 function clickStepperIndicator() {
-    jQuery(".fl-qssStepperWidget-indicator").click();
+    jQuery(".fl-qssStepperWidget-indicator:nth-of-type(3)").click();
 }
 
 
@@ -67,7 +67,7 @@ var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
 var closeClosableDialog = "jQuery(\".flc-closeBtn\").click()";
 
 var openReadAloudMenuSeqEl = {
-    task: "gpii.test.executeJavaScript",
+    task: "gpii.test.executeJavaScriptInWebContents",
     args: [
         "{that}.app.qssWrapper.qss.dialog",
         clickReadAloudBtn
@@ -76,7 +76,7 @@ var openReadAloudMenuSeqEl = {
 };
 
 var clickToggleButtonSeqEl = {
-    task: "gpii.test.executeJavaScript",
+    task: "gpii.test.executeJavaScriptInWebContents",
     args: [
         "{that}.app.qssWrapper.qssWidget.dialog",
         clickToggleBtn
@@ -133,10 +133,10 @@ gpii.tests.qss.pressKey = function (key, modifiers) {
 
 gpii.tests.qss.assertFocusedElementIndex = function (expectedIndex) {
     return {
-        task: "gpii.test.executeJavaScriptDelayed",
+        task: "gpii.test.invokeFunctionInWebContentsDelayed",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            gpii.test.toIIFEString(gpii.tests.qss.getFocusedElementIndex),
+            gpii.tests.qss.getFocusedElementIndex,
             100
         ],
         resolve: "jqUnit.assertEquals",
@@ -184,10 +184,10 @@ var navigationSequence = [
     // Manually clear the focused state in order to test the Arrow Left behavior when
     // there is no focused element.
     {
-        task: "gpii.test.executeJavaScriptDelayed",
+        task: "gpii.test.invokeFunctionInWebContentsDelayed",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            gpii.test.toIIFEString(gpii.tests.qss.clearFocusedElement),
+            gpii.tests.qss.clearFocusedElement,
             100
         ],
         resolve: "fluid.identity"
@@ -208,7 +208,7 @@ var navigationSequence = [
             "{that}.app.psp.model.isShown"
         ]
     }, { // Close the QSS and the PSP
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -268,7 +268,7 @@ var tooltipSequence = [
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
     }, { // ... and hover on its close button.
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             hoverCloseBtn
@@ -282,7 +282,7 @@ var tooltipSequence = [
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
     }, { // When the button is no longer hovered...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             unhoverCloseBtn
@@ -298,7 +298,7 @@ var tooltipSequence = [
     },
     // hover & click === close
     { // Hovering the language button
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             hoverLanguageBtn
@@ -312,7 +312,7 @@ var tooltipSequence = [
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
         ]
     }, { // ... and clicking (activating) the button
-        funcName: "gpii.test.executeJavaScript",
+        funcName: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -336,7 +336,7 @@ var tooltipSequence = [
     },
     // hover & esc === close
     { // Focusing the close button
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             focusCloseBtn
@@ -366,7 +366,7 @@ var tooltipSequence = [
 
 var morePanelSequence = [
     {  // When the "More" button is clicked...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickMoreBtn
@@ -380,7 +380,7 @@ var morePanelSequence = [
             "{that}.app.qssWrapper.qssMorePanel.model.isShown"
         ]
     }, { // If the "More" button is clicked once again...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickMoreBtn
@@ -398,7 +398,7 @@ var morePanelSequence = [
 
 var menuInteractionsSequence = [
     { // If the language button in the QSS is clicked...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -412,7 +412,7 @@ var menuInteractionsSequence = [
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
     }, { // If the close button in the QSS is pressed...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             closeClosableDialog
@@ -426,7 +426,7 @@ var menuInteractionsSequence = [
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
     }, { // If the language button in the QSS is clicked once...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -436,7 +436,7 @@ var menuInteractionsSequence = [
         path: "isShown",
         listener: "fluid.identity"
     }, { // ... and is then clicked again...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -468,7 +468,7 @@ var menuInteractionsSequence = [
 
 var widgetClosingBehaviourSequence = [
     { // Click the language button again...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -534,7 +534,7 @@ var widgetClosingBehaviourSequence = [
             "{that}.app.qssWrapper.qssWidget.model.isShown"
         ]
     }, { // Click the language button again...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
@@ -564,7 +564,7 @@ var widgetClosingBehaviourSequence = [
 
 var stepperindicatorsSequence = [
     { // Click on the "Screen Zoom" button...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickScreenZoomBtn
@@ -573,10 +573,10 @@ var stepperindicatorsSequence = [
         event: "{that}.app.qssWrapper.qssWidget.events.onQssWidgetCreated",
         listener: "fluid.identity"
     }, { // ... should display the value indicators
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
-            gpii.test.toIIFEString(getStepperIndicatorsCount)
+            getStepperIndicatorsCount
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
@@ -585,10 +585,10 @@ var stepperindicatorsSequence = [
             "{arguments}.0"
         ]
     }, { // And clicking one of them
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
-            gpii.test.toIIFEString(clickStepperIndicator)
+            clickStepperIndicator
         ],
         resolve: "fluid.identity"
     }, { // ... should apply its value
@@ -597,7 +597,7 @@ var stepperindicatorsSequence = [
         listener: "jqUnit.assertEquals",
         args: [
             "Clicking a Stepper widget indicator should apply its value",
-            1,
+            -1,
             "{arguments}.0.value"
         ]
     },
@@ -609,7 +609,7 @@ var stepperindicatorsSequence = [
 
 var stepperInteractionsSequence = [
     { // Click on the "Screen Zoom" button...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickScreenZoomBtn
@@ -619,7 +619,7 @@ var stepperInteractionsSequence = [
         path: "isShown",
         listener: "fluid.identity"
     }, { // Clicking on the increment button...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickIncreaseBtn
@@ -637,7 +637,7 @@ var stepperInteractionsSequence = [
             "{arguments}.0"
         ]
     }, { // Click on the increment button again...
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickIncreaseBtn
@@ -651,7 +651,7 @@ var stepperInteractionsSequence = [
             "{that}.app.qssWrapper.model.settings.1.value"
         ]
     }, { // Clicking on the increment button once again...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickIncreaseBtn
@@ -665,7 +665,7 @@ var stepperInteractionsSequence = [
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
     }, { // Close the QSS notification
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssNotification.dialog",
             closeClosableDialog
@@ -675,7 +675,7 @@ var stepperInteractionsSequence = [
         path: "isShown",
         listener: "fluid.identity"
     }, { // Clicking on the decrement button...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickDecreaseBtn
@@ -693,7 +693,7 @@ var stepperInteractionsSequence = [
             "{arguments}.0"
         ]
     }, { // Click on the decrement button again...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickDecreaseBtn
@@ -711,7 +711,7 @@ var stepperInteractionsSequence = [
             "{arguments}.0"
         ]
     }, { // Clicking on the decrement button once again...
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickDecreaseBtn
@@ -725,7 +725,7 @@ var stepperInteractionsSequence = [
             "{that}.app.qssWrapper.model.settings.1.value"
         ]
     }, { // Clicking on the decrement button once again...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickDecreaseBtn
@@ -746,7 +746,7 @@ var saveButtonSequence = [
      * Notification & QSS integration
      */
     { // When the "Save" button is clicked...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickSaveBtn
@@ -760,7 +760,7 @@ var saveButtonSequence = [
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
     }, { // When the "Close" button in the QSS notification is clicked...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssNotification.dialog",
             closeClosableDialog
@@ -808,7 +808,7 @@ var qssCrossTestSequence = [
     }, { // Open the QSS again.
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
     }, { // Open the PSP via the QSS.
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickPspBtn
@@ -821,7 +821,7 @@ var qssCrossTestSequence = [
             {psp: true, qss: true}
         ]
     }, { // Clicking on the close button in the QSS...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -845,7 +845,7 @@ var qssCrossTestSequence = [
             {psp: false, qss: true}
         ]
     }, { // Clicking on the "Sign in" button in the QSS...
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickPspBtn
@@ -858,7 +858,7 @@ var qssCrossTestSequence = [
             {psp: true, qss: true}
         ]
     }, {
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -896,14 +896,14 @@ var qssCrossTestSequence = [
     // Combined tests
     //
     { // ... open the widget again
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
         ],
         resolve: "fluid.identity"
     }, { // ... and check whether it is the correct widget
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             checkIfMenuWidget
@@ -911,14 +911,14 @@ var qssCrossTestSequence = [
         resolve: "jqUnit.assertTrue",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     }, { // Open the stepper widget
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickAppTextZoomBtn
         ],
         resolve: "fluid.identity"
     }, { // ... and the menu widget shouldn't be shown
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             checkIfMenuWidget
@@ -926,7 +926,7 @@ var qssCrossTestSequence = [
         resolve: "jqUnit.assertFalse",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     }, { // ... and stepper widget should be
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             checkIfStepperWidget
@@ -940,14 +940,14 @@ var qssCrossTestSequence = [
     // Setting changes tests
     //
     { // Open the menu Widget
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickLanguageBtn
         ],
         resolve: "fluid.identity"
     }, { // ... click on menu item (we know the order from the config we are using)
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickMenuWidgetItem
@@ -993,7 +993,7 @@ var qssCrossTestSequence = [
     // Turn off the read aloud
     clickToggleButtonSeqEl,
     { // And close the QSS widget menu
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -1011,7 +1011,7 @@ var qssCrossTestSequence = [
         event: "{that}.app.events.onKeyedIn",
         listener: "fluid.identity"
     }, { // If the Key in button in the QSS is clicked...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickPspBtn
@@ -1045,7 +1045,7 @@ var qssCrossTestSequence = [
 ];
 
 var clickUndoButtonSeqEl = {
-    func: "gpii.test.executeJavaScriptDelayed",
+    func: "gpii.test.executeJavaScriptInWebContentsDelayed",
     args: [
         "{that}.app.qssWrapper.qss.dialog",
         clickUndoBtn
@@ -1134,7 +1134,7 @@ var undoCrossTestSequence = [
             "{arguments}.0"
         ]
     }, { // close and ensure setting changes have been applied
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -1250,7 +1250,7 @@ var undoTestSequence = [
             "{that}.app.qssWrapper.undoStack.model.hasChanges"
         ]
     }, { // Click the "Reset All to Standard" button
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickResetAllBtn
@@ -1271,7 +1271,7 @@ var appZoomTestSequence = [
     { // Open the QSS...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
     }, { // ... and click on the "App / Text Zoom" button.
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickAppTextZoomBtn
@@ -1281,7 +1281,7 @@ var appZoomTestSequence = [
         path: "isShown",
         listener: "fluid.identity"
     }, { // Click on the increment button
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickIncreaseBtn
@@ -1295,7 +1295,7 @@ var appZoomTestSequence = [
             "{arguments}.0"
         ]
     }, { // Click on the decrement button
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickDecreaseBtn
@@ -1309,7 +1309,7 @@ var appZoomTestSequence = [
             "{arguments}.0"
         ]
     }, { // Close the QSS
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickCloseBtn
@@ -1473,7 +1473,7 @@ var crossQssTranslations = [
             "@expand:gpii.test.objectArrayToHash({that}.app.qssWrapper.model.settings, path)"
         ]
     }, { // ... and in the renderer as well
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             getQssSettingsList
