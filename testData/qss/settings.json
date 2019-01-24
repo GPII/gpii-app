@@ -24,6 +24,22 @@
                     "title": "Swap mouse buttons"
                 },
                 "value": false
+            },
+            "easierDoubleClick": {
+                "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                "schema": {
+                    "type": "boolean",
+                    "title": "Easier Double Click"
+                },
+                "value": false
+            },
+            "largerMousePointer": {
+                "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                "schema": {
+                    "type": "boolean",
+                    "title": "Larger Mouse Pointer"
+                },
+                "value": false
             }
         },
         "buttonTypes": ["largeButton", "settingButton"],

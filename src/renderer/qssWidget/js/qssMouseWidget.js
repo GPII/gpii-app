@@ -31,7 +31,9 @@
             // helpImage: ".flc-qssToggleWidget-helpImage",
             // extendedTip: ".flc-qssWidget-extendedTip",
             mouseSpeed: ".flc-qssMouseWidget-mouseSpeed",
-            swapMouseButtons: ".flc-qssMouseWidget-swapMouseButtons"
+            swapMouseButtons: ".flc-qssMouseWidget-swapMouseButtons",
+            easierDoubleClick: ".flc-qssMouseWidget-easierDoubleClick",
+            largerMousePointer: ".flc-qssMouseWidget-largerMousePointer"
         },
 
         enableRichText: true,
@@ -46,6 +48,18 @@
                         }
                     },
                     swapMouseButtons: {
+                        value: false,
+                        schema: {
+                            title: null
+                        }
+                    },
+                    easierDoubleClick: {
+                        value: false,
+                        schema: {
+                            title: null
+                        }
+                    },
+                    largerMousePointer: {
                         value: false,
                         schema: {
                             title: null
@@ -74,6 +88,24 @@
                 options: {
                     model: {
                         setting: "{gpii.qssWidget.mouse}.model.setting.settings.swapMouseButtons"
+                    }
+                }
+            },
+            easierDoubleClick: {
+                type: "gpii.qssWidget.baseToggle",
+                container: "{that}.dom.easierDoubleClick",
+                options: {
+                    model: {
+                        setting: "{gpii.qssWidget.mouse}.model.setting.settings.easierDoubleClick"
+                    }
+                }
+            },
+            largerMousePointer: {
+                type: "gpii.qssWidget.baseToggle",
+                container: "{that}.dom.largerMousePointer",
+                options: {
+                    model: {
+                        setting: "{gpii.qssWidget.mouse}.model.setting.settings.largerMousePointer"
                     }
                 }
             }
