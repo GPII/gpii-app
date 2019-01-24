@@ -54,7 +54,9 @@
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
             toggle: ".flc-qssToggleWidget",
-            mouse: ".flc-qssMouseWidget"
+            mouse: ".flc-qssMouseWidget",
+            baseStepper: ".flc-qssBaseStepperWidget",
+            bassToggle: ".flc-qssBaseToggleWidget"
         },
 
         /**

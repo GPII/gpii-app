@@ -2,8 +2,7 @@
     {
         "path": "mouse",
         "schema": {
-            "type": "mouse",
-            "title": "Mouse button"
+            "type": "mouse"
         },
         "settings": {
             "mouseSpeed": {
@@ -13,7 +12,8 @@
                     "title": "Mouse speed",
                     "default": 0,
                     "min": 0,
-                    "max": 11
+                    "max": 11,
+                    "divisibleBy": 1
                 },
                 "value": 0
             },
@@ -28,7 +28,7 @@
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 0,
-        "messageKey": null,
+        "messageKey": "common-mouse",
         "tooltip": "<p>Mouse Button</p>"
     }, {
         "path": "http://registry\\.gpii\\.net/common/language",
