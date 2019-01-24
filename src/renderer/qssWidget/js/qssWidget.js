@@ -53,7 +53,8 @@
         selectors: {
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
-            toggle: ".flc-qssToggleWidget"
+            toggle: ".flc-qssToggleWidget",
+            mouse: ".flc-qssMouseWidget"
         },
 
         /**
@@ -63,7 +64,8 @@
         widgetGrades: {
             "number": "gpii.qssWidget.stepper",
             "string": "gpii.qssWidget.menu",
-            "boolean": "gpii.qssWidget.toggle"
+            "boolean": "gpii.qssWidget.toggle",
+            "mouse": "gpii.qssWidget.mouse"
         },
 
         events: {

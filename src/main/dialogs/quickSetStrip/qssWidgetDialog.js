@@ -40,7 +40,7 @@ fluid.defaults("gpii.app.qssWidget", {
     extraVerticalOffset: 7,
 
     // A list of QSS setting types for which this widget is applicable.
-    supportedSettings: ["string", "number", "boolean"],
+    supportedSettings: ["string", "number", "boolean", "mouse"],
 
     model: {
         setting: {}
