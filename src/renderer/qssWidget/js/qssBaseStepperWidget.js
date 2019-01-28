@@ -208,7 +208,7 @@
      * error tone is played. If at least `specialErrorBoundHitTries` number of
      * times this has happened, in addition to the error tone, a notification
      * is shown to the user.
-     * @param {Component} that - The `gpii.qssWidget.stepper` instance.
+     * @param {Component} that - The `gpii.qssWidget.baseStepper` instance.
      * @param {String} errorMessage - The message to be displayed in the QSS
      * notification.
      */
@@ -228,7 +228,7 @@
      * increasing the setting's value with the amount specified in the setting's
      * schema, animating the button appropriately and/or firing an event if
      * an attempt is made to increase value above the maximum allowed value.
-     * @param {Component} that - The `gpii.qssWidget.stepper` instance.
+     * @param {Component} that - The `gpii.qssWidget.baseStepper` instance.
      * @param {jQuery} button - The jQuery object repesenting the increment button
      * in the QSS stepper widget.
      */
@@ -250,7 +250,7 @@
      * decreasing the setting's value with the amount specified in the setting's
      * schema, animating the button appropriately and/or firing an event if
      * an attempt is made to decrease value below the minimum allowed value.
-     * @param {Component} that - The `gpii.qssWidget.stepper` instance.
+     * @param {Component} that - The `gpii.qssWidget.baseStepper` instance.
      * @param {jQuery} button - The jQuery object repesenting the decrement button
      * in the QSS stepper widget.
      */
@@ -273,7 +273,7 @@
      * setting's schema. It also takes care that the new value of the setting does
      * not become bigger/smaller than the maximum/minimum allowed value for the
      * setting.
-     * @param {Component} that - The `gpii.qssWidget.stepper` instance.
+     * @param {Component} that - The `gpii.qssWidget.baseStepper` instance.
      * @param {Number} value - The initial value of the setting before the operation.
      * @param {Object} schema - Describes the schema of the setting.
      * @param {Number} schema.min - The minimum possible value for the setting.

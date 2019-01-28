@@ -117,8 +117,12 @@
                 options: {
                     sounds: "{qssWidget}.options.sounds",
                     activationParams: "{arguments}.1",
+                    // keep it temporary in the options block
+                    // as passing it directly to the `model` currently
+                    // is not supported by the Infusion
+                    setting: "{arguments}.0",
                     model: {
-                        setting: "{qssWidget}.model.setting",
+                        setting: "{that}.options.setting",
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
                             extendedTip: "{qssWidget}.model.setting.extendedTip",
