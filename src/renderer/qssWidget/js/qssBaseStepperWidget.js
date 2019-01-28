@@ -53,16 +53,11 @@
         },
 
         selectors: {
-            indicators: ".flc-qssStepperWidget-indicators",
+            indicators: ".flc-qssBaseStepperWidget-indicators",
 
-            stepperButton: ".flc-qssStepperWidget-btn",
-            incButton: ".flc-qssStepperWidget-incBtn",
-            decButton: ".flc-qssStepperWidget-decBtn",
-
-            tipTitle: ".flc-tipTitle",
-            tipSubtitle: ".flc-tipSubtitle",
-
-            footerTip: ".flc-qssStepperWidget-footerTip"
+            stepperButton: ".flc-qssBaseStepperWidget-btn",
+            incButton: ".flc-qssBaseStepperWidget-incBtn",
+            decButton: ".flc-qssBaseStepperWidget-decBtn"
         },
 
         modelListeners: {
@@ -369,7 +364,7 @@
         //
         dynamicContainerMarkup: {
             container: "<div role='radio' class='%containerClass fl-qssStepperWidget-indicator' tabindex='-1'></div>",
-            containerClassPrefix: "flc-qssStepperWidget-indicator"
+            containerClassPrefix: "flc-qssBaseStepperWidget-indicator"
         },
         handlerType: "gpii.qssWidget.baseStepper.indicator.presenter",
         markup: null,
@@ -436,7 +431,6 @@
                 isRecommended: indicatorValue === setting.schema["default"]
             });
         }
-        console.log(indicators);
         return indicators;
     };
 

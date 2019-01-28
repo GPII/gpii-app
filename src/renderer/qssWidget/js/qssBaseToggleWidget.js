@@ -27,9 +27,7 @@
 
         selectors: {
             toggleButton: ".flc-toggleButton",
-            helpImage: ".flc-qssToggleWidget-helpImage",
-            extendedTip: ".flc-qssWidget-extendedTip",
-            settingTitle: ".flc-qssToggleWidget-settingTitle"
+            settingTitle: ".flc-qssBaseToggleWidget-settingTitle"
         },
 
         enableRichText: true,
@@ -47,11 +45,6 @@
                 func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{that}.model.setting"],
                 includeSource: "settingAlter"
-            },
-            "setting.schema.helpImage": {
-                this: "{that}.dom.helpImage",
-                method: "attr",
-                args: ["src", "{change}.value"]
             }
         },
 
