@@ -36,6 +36,11 @@
             largerMousePointer: ".flc-qssMouseWidget-largerMousePointer"
         },
 
+        events: {
+            onQssWidgetNotificationRequired: null,
+            onQssWidgetSettingAltered: null
+        },
+
         enableRichText: true,
 
         model: {
@@ -72,14 +77,19 @@
             }
         },
 
+        sounds: {},
+
         components: {
             mouseSpeed: {
                 type: "gpii.qssWidget.baseStepper",
                 container: "{that}.dom.mouseSpeed",
                 options: {
-                    sounds: "{qssWidget}.options.sounds",
+                    sounds: "{mouse}.options.sounds",
                     model: {
                         setting: "{gpii.qssWidget.mouse}.model.setting.settings.mouseSpeed"
+                    },
+                    events: {
+                        onNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired"
                     }
                 }
             },
@@ -107,6 +117,16 @@
                 options: {
                     model: {
                         setting: "{gpii.qssWidget.mouse}.model.setting.settings.largerMousePointer"
+                    }
+                }
+            },
+            channelNotifier: {
+                type: "gpii.psp.channelNotifier",
+                options: {
+                    events: {
+                        // Add events the main process to be notified for
+                        onQssWidgetSettingAltered:       "{mouse}.events.onQssWidgetSettingAltered",
+                        onQssWidgetNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired"
                     }
                 }
             }
