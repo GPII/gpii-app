@@ -60,6 +60,11 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
             target: "{app qssWrapper}.options.settingOptions.systemDefaultLanguage"
         },
+        distributeTooltipShowDelay: {
+            record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
+            target: "{app qssTooltipDialog}.options.showDelay"
+        },
+
         distributePspConfig: {
             record: "{that}.options.siteConfig.psp",
             target: "{app psp}.options.siteConfig"

@@ -5,6 +5,9 @@
 
     // Configuration options for the QSS window
     qss: {
+        // Defines the delay in milliseconds before the tooltip is shown after a QSS button is selected
+        tooltipDisplayDelay: 500, // ms
+
         // The scaling factor for the QSS
         scaleFactor: 1.5,
         urls: {
