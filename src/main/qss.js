@@ -112,7 +112,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         onUndoRequired: null,
         onResetAllRequired: null,
         onSaveRequired: null,
-        onQssPspOpen: null,
+        onQssPspToggled: null,
         onQssPspClose: null
     },
 
@@ -882,7 +882,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
         "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",
         "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
-        "{channelListener}.events.onQssPspOpen": "{qssWrapper}.events.onQssPspOpen"
+        "{channelListener}.events.onQssPspToggled": "{qssWrapper}.events.onQssPspToggled"
     }
 });
 

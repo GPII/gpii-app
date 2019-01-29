@@ -124,7 +124,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssUndoRequired: null,
                     onQssResetAllRequired: null,
                     onQssSaveRequired: null,
-                    onQssPspOpen: null
+                    onQssPspToggled: null
                 },
 
                 listeners: {
