@@ -69,7 +69,7 @@
     },
     "gpii_app_qss_settings_common-mouse": {
         "tooltip": "<p>Change Windows Mouse setting.</p><p>Works in all applications.</p>",
-        "title": "Mouse Settings",
-        "tip": "<p>Changes Mouse settings of Windows</p><p>Works in all applications.</li></ul>"
+        "title": "Adjust Mouse",
+        "tip": "<p>Adjust Mouse</p>"
     }
 }

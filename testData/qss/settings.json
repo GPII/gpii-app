@@ -2,7 +2,8 @@
     {
         "path": "mouse",
         "schema": {
-            "type": "mouse"
+            "type": "mouse",
+            "image": "mouse.svg"
         },
         "settings": {
             "mouseSpeed": {
@@ -45,7 +46,7 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 0,
         "messageKey": "common-mouse",
-        "tooltip": "<p>Mouse Button</p>"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#mouse"
     }, {
         "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {
