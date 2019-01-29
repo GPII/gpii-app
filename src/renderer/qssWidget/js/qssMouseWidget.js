@@ -77,6 +77,7 @@
                 type: "gpii.qssWidget.baseStepper",
                 container: "{that}.dom.mouseSpeed",
                 options: {
+                    sounds: "{qssWidget}.options.sounds",
                     model: {
                         setting: "{gpii.qssWidget.mouse}.model.setting.settings.mouseSpeed"
                     }

@@ -37,8 +37,6 @@
                 incrementButton: "Larger",
                 decrementButton: "Smaller",
 
-                footerTip: "{that}.model.setting.widget.footerTip",
-
                 upperBoundError: "This is highest setting",
                 lowerBoundError: "This is lowest setting"
             },
