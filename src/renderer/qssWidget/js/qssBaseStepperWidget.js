@@ -34,9 +34,9 @@
 
         model: {
             messages: {
+                settingTitle: "{that}.model.setting.schema.title",
                 incrementButton: "Larger",
                 decrementButton: "Smaller",
-
                 upperBoundError: "This is highest setting",
                 lowerBoundError: "This is lowest setting"
             },
@@ -51,8 +51,8 @@
         },
 
         selectors: {
+            settingTitle: ".flc-qssBaseStepperWidget-settingTitle",
             indicators: ".flc-qssBaseStepperWidget-indicators",
-
             stepperButton: ".flc-qssBaseStepperWidget-btn",
             incButton: ".flc-qssBaseStepperWidget-incBtn",
             decButton: ".flc-qssBaseStepperWidget-decBtn"
