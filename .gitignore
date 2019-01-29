@@ -9,3 +9,4 @@ instrumented
 reports
 coverage
 package-lock.json
+.idea

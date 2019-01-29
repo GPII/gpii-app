@@ -79,3 +79,29 @@
     top: 4px;
     font-size: 9px;
 }
+
+/* baseToggle Widget specific alterations */
+.fl-qssBaseToggleWidget {
+    margin-bottom: 10px;
+}
+.fl-qssBaseToggleWidget .fl-qssToggleWidget-settingTitle {
+    margin: 0 !important;
+    width: 50%;
+    float: left;
+    text-align: left;
+    font-weight: bold;
+    line-height: 110%;
+    font-size: 8.5px;
+}
+
+.fl-qssBaseToggleWidget .fl-switchUI-control {
+    width: 34px;
+}
+
+.fl-qssBaseToggleWidget .fl-switchUI-control .fl-switchUILabel {
+    font-size: 8.5px;
+}
+
+.fl-qssBaseToggleWidget .fl-switchUI .fl-switchUI-control[aria-checked=true] .fl-switchUI-controlKnob {
+    left: 14px;
+}

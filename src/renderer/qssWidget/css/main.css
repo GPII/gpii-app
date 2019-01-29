@@ -80,6 +80,10 @@ body {
     cursor: pointer;
 }
 
+.fl-qssWidget .fl-qssWidget-learnMoreLink.noBottomMargin {
+    margin: 10px 0 0 0;
+}
+
 .fl-qssWidget .fl-qssWidget-learnMoreLink:focus,
 .fl-qssWidget .fl-qssWidget-learnMoreLink:active {
     outline: none;
