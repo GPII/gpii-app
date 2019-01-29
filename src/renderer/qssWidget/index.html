@@ -104,19 +104,12 @@
 
             <!-- the Mouse Widget -->
             <div class="flc-qssMouseWidget fl-dialog-content fl-scrollable fl-qssMouseWidget">
+                <!-- Widget's tip and title -->
                 <div class="flc-qssWidget-tip fl-qssWidget-tip"></div>
-
-                <div class="fl-qssToggleWidget-extendedTipContainer">
-                    <div class="flc-qssWidget-extendedTip"></div>
-                    <img class="flc-qssToggleWidget-helpImage fl-qssToggleWidget-helpImage">
-                    <div class="flc-qssWidget-learnMoreLink fl-qssWidget-learnMoreLink fl-focusable" role="link" tabindex="0"></div>
-                </div>
-
                 <div class="flc-qssToggleWidget-settingTitle fl-qssToggleWidget-settingTitle"></div>
 
                 <!-- Base Toggle: Swap Mouse Buttons -->
-                <div class="flc-qssMouseWidget-swapMouseButtons fl-dialog-content fl-scrollable fl-qssToggleWidget">
-
+                <div class="flc-qssMouseWidget-swapMouseButtons fl-dialog-content fl-scrollable fl-qssToggleWidget fl-qssBaseToggleWidget">
                     <div class="flc-qssBaseToggleWidget-settingTitle fl-qssToggleWidget-settingTitle"></div>
 
                     <div class="flc-toggleButton fl-switchUI">
@@ -129,8 +122,7 @@
                 </div>
 
                 <!-- Base Toggle: Easier double-click -->
-                <div class="flc-qssMouseWidget-easierDoubleClick fl-dialog-content fl-scrollable fl-qssToggleWidget">
-
+                <div class="flc-qssMouseWidget-easierDoubleClick fl-dialog-content fl-scrollable fl-qssToggleWidget fl-qssBaseToggleWidget">
                     <div class="flc-qssBaseToggleWidget-settingTitle fl-qssToggleWidget-settingTitle"></div>
 
                     <div class="flc-toggleButton fl-switchUI">
@@ -143,8 +135,7 @@
                 </div>
 
                 <!-- Base Toggle: Larger Mouse Pointer -->
-                <div class="flc-qssMouseWidget-largerMousePointer fl-dialog-content fl-scrollable fl-qssToggleWidget">
-
+                <div class="flc-qssMouseWidget-largerMousePointer fl-dialog-content fl-scrollable fl-qssToggleWidget fl-qssBaseToggleWidget">
                     <div class="flc-qssBaseToggleWidget-settingTitle fl-qssToggleWidget-settingTitle"></div>
 
                     <div class="flc-toggleButton fl-switchUI">
@@ -157,9 +148,10 @@
                 </div>
 
                 <!-- Base Stepper: Mouse Speed -->
-                <div class="flc-qssMouseWidget-mouseSpeed fl-scrollable fl-qssStepperWidget">
+                <div class="flc-qssMouseWidget-mouseSpeed fl-scrollable fl-qssStepperWidget fl-qssBaseStepperWidget">
+                    <div class="flc-qssBaseStepperWidget-settingTitle fl-qssStepperWidget-settingTitle">Mouse speed</div>
                     <div class="fl-qssStepperWidget-controls">
-                        <div class="flc-qssBaseStepperWidget-controls-buttons">
+                        <div class="flc-qssBaseStepperWidget-controls-buttons fl-qssBaseStepperWidget-controls-buttons">
                             <div role="button" class="flc-qssBaseStepperWidget-incBtn flc-qssBaseStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
                                 <div class="fl-icon fl-increment-icon"></div>
                                 <span class="flc-btnLabel fl-btnLabel"></span>
@@ -175,6 +167,9 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Widget's Learn More link -->
+                <div class="flc-qssWidget-learnMoreLink fl-qssWidget-learnMoreLink noBottomMargin fl-focusable" role="link" tabindex="0"></div>
             </div>
         </div>
         <div class="fl-qssWidget-arrow"></div>
