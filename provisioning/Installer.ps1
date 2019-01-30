@@ -109,9 +109,18 @@ Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
 
 # Build the Windows Service
 $serviceDir = $(Join-Path $preStagingDir "node_modules\gpii-windows\service")
+$serviceModules = (Join-Path $serviceDir "node_modules")
+
+# Perform a clean production build of the service.
+if (Test-Path -Path $serviceModules) {
+    rm $serviceModules -Recurse -Force
+}
 Invoke-Command "npm" "install --production" $serviceDir
 Invoke-Command "npm" "install pkg -g" $serviceDir
-Invoke-Command "pkg" "package.json --output $(Join-Path $stagingWindowsDir "gpii-service.exe")" $serviceDir
+
+# Compile the service into a single executable
+Invoke-Command "pkg" "package.json --output $(Join-Path $stagingWindowsDir "morphic-service.exe")" $serviceDir
+# The service's dependencies get packaged and installed like everything else.
 Get-ChildItem "$serviceDir\*.node" -Recurse | Move-Item -Destination $stagingWindowsDir
 
 md (Join-Path $installerDir "output")
