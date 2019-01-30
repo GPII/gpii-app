@@ -102,6 +102,29 @@
     font-size: 8.5px;
 }
 
+.fl-qssBaseToggleWidget .fl-switchUI {
+    margin-top: 0;
+}
+
 .fl-qssBaseToggleWidget .fl-switchUI .fl-switchUI-control[aria-checked=true] .fl-switchUI-controlKnob {
     left: 14px;
+}
+
+.fl-qssBaseToggleWidget-toggleImage {
+    text-align: right;
+    padding-right: 25px;
+}
+
+.fl-mouseLeftButton-icon, .fl-mouseRightButton-icon {
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    margin-bottom: 5px;
+
+    background: url(../../../assets/mouse-swap-left.svg);
+}
+
+.fl-mouseRightButton-icon {
+    background: url(../../../assets/mouse-swap-right.svg);
 }

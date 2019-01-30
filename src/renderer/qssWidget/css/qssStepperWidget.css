@@ -186,10 +186,6 @@
 }
 
 /* baseStepper Widget specific alterations */
-.fl-qssBaseStepperWidget {
-    margin-top: 20px;
-}
-
 .fl-qssBaseStepperWidget .fl-qssStepperWidget-settingTitle {
     font-weight: bold;
     line-height: 110%;
@@ -199,7 +195,7 @@
 .fl-qssBaseStepperWidget .fl-qssStepperWidget-controls {
     display: block;
     width: auto;
-    margin: 0 0 10px 0;
+    margin: 0 0 5px 0;
 }
 
 .fl-qssBaseStepperWidget .fl-qssStepperWidget-controls .fl-qssBaseStepperWidget-controls-buttons {
@@ -215,6 +211,7 @@
     font-size: 8.5px;
     width: 49%;
     min-width: auto;
+    min-height: 24px;
 }
 
 .fl-qssBaseStepperWidget .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn + .fl-qssStepperWidget-btn {

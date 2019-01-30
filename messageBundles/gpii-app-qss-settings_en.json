@@ -71,5 +71,18 @@
         "tooltip": "<p>Change Windows Mouse setting.</p><p>Works in all applications.</p>",
         "title": "Adjust Mouse",
         "tip": "<p>Adjust Mouse</p>"
+    },
+
+    "gpii_app_qss_settings_windows-swapMouseButtons": {
+        "title": "Swap mouse buttons"
+    },
+    "gpii_app_qss_settings_windows-easierDoubleClick": {
+        "title": "Easier Double Click"
+    },
+    "gpii_app_qss_settings_windows-largerMousePointer": {
+        "title": "Larger Mouse Pointer"
+    },
+    "gpii_app_qss_settings_windows-mouseSpeed": {
+        "title": "Mouse speed"
     }
 }
