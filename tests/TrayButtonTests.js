@@ -214,4 +214,3 @@ jqUnit.asyncTest("Testing tray button", function () {
 
     fluid.promise.sequence(work).then(jqUnit.start, jqUnit.fail);
 });
-
