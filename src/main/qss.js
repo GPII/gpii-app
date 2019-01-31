@@ -679,11 +679,37 @@ gpii.app.qssWrapper.getSetting = function (settings, path) {
  * @param {String} [source] - The source of the update.
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
+    // trying to find the primary setting's index (anything that is not secondary setting)
     var settingIndex = that.model.settings.findIndex(function (setting) {
         return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
     });
 
-    if (settingIndex !== -1) {
+    // there is no result, looking for secondary settings
+    if (settingIndex === -1) {
+        var primarySettingIndex = false, // store primary setting's index (ie. 0; 1; etc.)
+            secondarySettingKey = false, // store secondary setting's key (ie. "mouseSpeed"; "swapMouseButtons"; etc.)
+            secondarySettingData = false; // store secondary index object data
+        fluid.each(that.model.settings, function(el, index) {
+            if (fluid.isValue(el.settings)) {
+                primarySettingIndex = index;
+                secondarySettingData = fluid.find_if(el.settings, function(setting, key) {
+                    //console.log('============ SETTING: '+key);
+                    //console.log(setting);
+                    secondarySettingKey = key;
+                    return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
+                });
+            }
+        });
+        if (secondarySettingData) {
+            // we found a secondary setting that matches
+            //console.log('============ inSetting path');
+            //console.log("settings."+primarySettingIndex+".settings."+secondarySettingKey);
+            // applying the secondary setting's change
+            that.applier.change("settings."+primarySettingIndex+".settings."+secondarySettingKey, updatedSetting, null, source);
+        }
+    } else {
+        // we do have result, applying primary setting's change
+        //console.log('============ SETTINGS APPLIED! ');
         that.applier.change("settings." + settingIndex, updatedSetting, null, source);
     }
 };
