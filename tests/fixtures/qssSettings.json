@@ -164,13 +164,61 @@
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud",
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>"
     }, {
+        "path": "mouse",
+        "schema": {
+            "type": "mouse",
+            "image": "mouse.svg"
+        },
+        "settings": {
+            "mouseSpeed": {
+                "path": "http://registry\\.gpii\\.net/common/DPIScale",
+                "schema": {
+                    "type": "number",
+                    "title": "Mouse speed",
+                    "default": 0,
+                    "min": 0,
+                    "max": 11,
+                    "divisibleBy": 1
+                },
+                "value": 0
+            },
+            "swapMouseButtons": {
+                "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                "schema": {
+                    "type": "boolean",
+                    "title": "Swap mouse buttons"
+                },
+                "value": false
+            },
+            "easierDoubleClick": {
+                "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                "schema": {
+                    "type": "boolean",
+                    "title": "Easier Double Click"
+                },
+                "value": false
+            },
+            "largerMousePointer": {
+                "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                "schema": {
+                    "type": "boolean",
+                    "title": "Larger Mouse Pointer"
+                },
+                "value": false
+            }
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 5,
+        "messageKey": "common-mouse",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#mouse"
+    }, {
         "path": "more",
         "schema": {
             "type": "more",
             "title": "MORE...\n\n(& HELP)"
         },
         "buttonTypes": ["largeButton"],
-        "tabindex": 6,
+        "tabindex": 7,
         "messageKey": "more",
         "tooltip": "<p>More options for changing the settings on this computer.</p>"
     }, {
@@ -180,7 +228,7 @@
             "title": "Save"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 7,
+        "tabindex": 8,
         "messageKey": "save",
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>"
     }, {
@@ -190,7 +238,7 @@
             "title": "Undo"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 9,
+        "tabindex": 10,
         "messageKey": "undo",
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>"
     }, {
@@ -203,7 +251,7 @@
             }
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 8,
+        "tabindex": 9,
         "messageKey": "psp",
         "tooltip": {
             "keyedIn": "<p>Opens Morphic Settings Panel</p><p>Where you can quickly adjust often-changed settings of yours.</p>",
@@ -216,7 +264,7 @@
             "title": "Reset to Standard"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 10,
+        "tabindex": 11,
         "messageKey": "resetAll",
         "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>"
     }, {
@@ -226,7 +274,7 @@
             "title": "×"
         },
         "buttonTypes": ["closeButton"],
-        "tabindex": 11,
+        "tabindex": 13,
         "messageKey": "close",
         "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=12 src='../../icons/TaskTrayIcon_outline.svg'></img></p>"
     }
