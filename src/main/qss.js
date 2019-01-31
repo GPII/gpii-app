@@ -284,12 +284,23 @@ fluid.defaults("gpii.app.qssWrapper", {
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": [{
                         func: "{that}.hide"
                     }, {
-                        func: "{that}.showIfPossible",
+                        func: "gpii.app.qssWrapper.showTooltipIfPossible",
                         args: [
+                            "{qssWrapper}",
+                            "{that}",
                             "{arguments}.0", // setting
                             "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
                         ]
                     }],
+                    "{gpii.app.qss}.channelListener.events.onQssButtonFocused": {
+                        func: "gpii.app.qssWrapper.showTooltipIfPossible",
+                        args: [
+                            "{qssWrapper}",
+                            "{that}",
+                            "{arguments}.0", // setting
+                            "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
+                        ]
+                    },
 
                     "{gpii.app.qss}.events.onDialogHidden": {
                         func: "{that}.hide"
@@ -817,6 +828,20 @@ gpii.app.qssWidget.updateIfMatching = function (qssWidget, updatedSetting) {
 };
 
 /**
+ * Shows the tooltip in case all constrains for displaying are met.
+ * @param {Component} qssWrapper - The `gpii.app.qssWrapper` instance
+ * @param {Component} qssTooltip - The `gpii.app.qssTooltip` instance
+ * @param {Object} setting - The setting for whose button a tooltip needs to be shown.
+ * @param {Object} btnOffset - An object containing metrics for the QSS button.
+ */
+gpii.app.qssWrapper.showTooltipIfPossible = function (qssWrapper, qssTooltip, setting, btnOffset) {
+    if (!qssWrapper.qssWidget.model.isShown) {
+        qssTooltip.showIfPossible(setting, btnOffset);
+    }
+};
+
+
+/**
  * Configuration for using the `gpii.app.qss` in the QSS wrapper component.
  */
 fluid.defaults("gpii.app.qssInWrapper", {
@@ -846,20 +871,14 @@ fluid.defaults("gpii.app.qssInWrapper", {
                 "qss"
             ]
         },
-        "{channelListener}.events.onQssButtonFocused": [{
-            func: "{qssTooltip}.showIfPossible",
-            args: [
-                "{arguments}.0", // setting
-                "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
-            ]
-        }, {
+        "{channelListener}.events.onQssButtonFocused": {
             funcName: "gpii.app.qss.hideQssMenus",
             args: [
                 "{that}",
                 "{qssWidget}",
                 "{arguments}.0" // setting
             ]
-        }],
+        },
         "{channelListener}.events.onQssButtonActivated": {
             func: "{qssWidget}.toggle",
             args: [
