@@ -9,7 +9,6 @@
                 "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed",
                 "schema": {
                     "type": "number",
-                    "title": "Mouse speed",
                     "default": 10,
                     "min": 1,
                     "max": 20,
@@ -22,8 +21,7 @@
                 "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons",
                 "schema": {
                     "type": "boolean",
-                    "default": false,
-                    "title": "Swap mouse buttons"
+                    "default": false
                 },
                 "value": false,
                 "messageKey": "windows-swapMouseButtons"
@@ -32,8 +30,7 @@
                 "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
                 "schema": {
                     "type": "boolean",
-                    "default": false,
-                    "title": "Easier Double Click"
+                    "default": false
                 },
                 "value": false,
                 "messageKey": "windows-easierDoubleClick"
@@ -42,8 +39,7 @@
                 "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
                 "schema": {
                     "type": "boolean",
-                    "default": false,
-                    "title": "Larger Mouse Pointer"
+                    "default": false
                 },
                 "value": false,
                 "messageKey": "windows-largerMousePointer"

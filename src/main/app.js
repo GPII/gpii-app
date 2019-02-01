@@ -484,12 +484,9 @@ gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, oldVa
     fluid.extend(true, setting, {
         oldValue: oldValue.value
     });
-    //console.log('============ app.js setting');
-    //console.log(setting);
+
     if (setting.path === "mouse") { // TODO move to component options like the appTextZoomPath
         setting = getChangeSubSetting(setting, oldValue);
-        //console.log('============ app.js getChangeSubSetting');
-        //console.log(setting);
     }
 
     if (setting.path === appTextZoomPath) { // Special handling of the "App / Text Zoom" setting
