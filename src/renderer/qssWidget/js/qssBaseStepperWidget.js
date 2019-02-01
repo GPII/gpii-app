@@ -35,8 +35,8 @@
         model: {
             messages: {
                 settingTitle: "{that}.model.setting.schema.title",
-                incrementButton: "Larger",
-                decrementButton: "Smaller",
+                incrementButton: "Slower",
+                decrementButton: "Faster",
                 upperBoundError: "This is highest setting",
                 lowerBoundError: "This is lowest setting"
             },
