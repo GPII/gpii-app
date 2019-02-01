@@ -140,8 +140,9 @@
                         }
                     },
                     events: {
-                        onNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
-                        onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
+                        onNotificationRequired:   "{qssWidget}.events.onQssWidgetNotificationRequired",
+                        onQssWidgetCreated:       "{qssWidget}.events.onQssWidgetCreated",
+                        onHeightChanged:          "{qssWidget}.events.onQssWidgetHeightChanged"
                     },
                     listeners: {
                         "onCreate.processParams": {
@@ -318,6 +319,23 @@
             // Otherwise there will be no focused element and any remaining highlight will be removed.
             focusManager.removeHighlight(true);
         }
+    };
+
+    /**
+     * Calculates the total height of the QSS widget assuming that its whole content is fully
+     * displayed and there is no need to scroll (i.e. as if there were enough vertical space for
+     * all the available setting options).
+     * It uses the height of the heightListener iframe that is placed in the component which is expected
+     * to increase in size.
+     * @param {jQuery} container - A jQuery object representing the QSS menu container.
+     * @param {jQuery} parentContainer - A jQuery object representing the parent container of
+     * container in which the available setting options are placed.
+     * @param {jQuery} heightListenerContainer - A jQuery object representing the container which
+     * houses the height listener element.
+     * @return {Number} - The height of the QSS menu assuming it is fully displayed.
+     */
+    gpii.qssWidget.calculateHeight = function (container, parentContainer, heightListenerContainer) {
+        return container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight;
     };
 
     /**
