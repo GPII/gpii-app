@@ -95,6 +95,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeAboutDialogConfig: {
             record: "{that}.options.siteConfig.aboutDialog",
             target: "{app aboutDialog}.options.siteConfig"
+        },
+        distributeTrayType: {
+            record: "{that}.options.siteConfig.trayType",
+            target: "{app tray}.options.trayType"
         }
     }
 });
