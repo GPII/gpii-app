@@ -849,7 +849,8 @@ fluid.defaults("gpii.app.qssInWrapper", {
     model: {
         isKeyedIn: "{qssWrapper}.model.isKeyedIn",
         closeQssOnBlur: "{qssWrapper}.model.closeQssOnBlur",
-        scaleFactor: "{qssWrapper}.model.scaleFactor"
+        scaleFactor: "{qssWrapper}.model.scaleFactor",
+        settings: "{qssWrapper}.model.settings"
     },
     config: {
         params: {
