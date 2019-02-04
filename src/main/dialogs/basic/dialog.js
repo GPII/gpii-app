@@ -114,6 +114,9 @@ fluid.defaults("gpii.app.dialog", {
             minHeight: null
         },
 
+        // Forbids the user from changing the zoom level in a BrowserWindow
+        disablePinchZoom: true,
+
         // params for the BrowserWindow instance
         params: null,
 
@@ -364,6 +367,15 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
         dialog.on("close", function (e) {
             that.hide();
             e.preventDefault();
+        });
+    }
+
+    if (that.options.config.disablePinchZoom) {
+        // Followed this approach https://github.com/electron/electron/issues/8793#issuecomment-334971232
+        dialog.webContents.on("did-finish-load", function () {
+            dialog.webContents.setZoomFactor(1);
+            dialog.webContents.setVisualZoomLevelLimits(1, 1);
+            dialog.webContents.setLayoutZoomLevelLimits(0, 0);
         });
     }
 
