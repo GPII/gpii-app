@@ -39,7 +39,7 @@ fluid.defaults("gpii.app.menuInApp", {
         "menuTemplate": {
             namespace: "updateMenu",
             funcName: "gpii.app.updateMenu",
-            args: ["{tray}.tray", "{that}.model.menuTemplate", "{that}.events"]
+            args: ["{that}.model.menuTemplate", "{that}.events"]
         }
     },
     listeners: {
@@ -60,21 +60,22 @@ fluid.defaults("gpii.app.menuInApp", {
         "onKeyOut.performKeyOut": {
             listener: "{app}.resetAllToStandard"
         }
+    },
+    events: {
+        onMenuUpdated: null
     }
 });
 
 /**
  * Refreshes the task tray menu for the GPII Application using the menu in the model.
- * @param {Object} tray - An Electron 'Tray' object.
  * @param {Array} menuTemplate - A nested array that is the menu template for the GPII Application.
  * @param {Object} events - An object containing the events that may be fired by items in the menu.
  */
-gpii.app.updateMenu = function (tray, menuTemplate, events) {
+gpii.app.updateMenu = function (menuTemplate, events) {
     menuTemplate = gpii.app.menu.expandMenuTemplate(menuTemplate, events);
 
-    tray.setContextMenu(Menu.buildFromTemplate(menuTemplate));
+    events.onMenuUpdated.fire(Menu.buildFromTemplate(menuTemplate));
 };
-
 
 /**
  * Extended menu version to support Dev functionality:

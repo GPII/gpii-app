@@ -16,8 +16,7 @@
 
 var fluid = require("infusion");
 
-var gpii = fluid.registerNamespace("gpii"),
-    electron = require("electron");
+var gpii = fluid.registerNamespace("gpii");
 
 require("../basic/dialog.js");
 require("../basic/blurrable.js");
@@ -114,7 +113,7 @@ fluid.defaults("gpii.app.qss", {
                 },
                 modelListeners: {
                     "{qss}.model.isKeyedIn": {
-                        this: "{that}.events.onIsKeyedInChanged",
+                        "this": "{that}.events.onIsKeyedInChanged",
                         method: "fire",
                         args: ["{change}.value"],
                         excludeSource: "init"
@@ -300,12 +299,7 @@ gpii.app.qss.show = function (that, params) {
  * loses focus. Otherwise, it will stay open.
  */
 gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
-    if (closeQssOnBlur) {
-        var trayBounds = tray.tray.getBounds(),
-            cursorPoint = electron.screen.getCursorScreenPoint();
-
-        if (cursorPoint && trayBounds && !gpii.app.isPointInRect(cursorPoint, trayBounds)) {
-            that.hide();
-        }
+    if (closeQssOnBlur && tray.isMouseOver()) {
+        that.hide();
     }
 };

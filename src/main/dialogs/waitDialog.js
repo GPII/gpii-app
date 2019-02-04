@@ -79,6 +79,7 @@ gpii.app.waitDialog.toggle = function (that, isShown) {
  * @param {Component} that - the gpii.app instance
  */
 gpii.app.waitDialog.show = function (that) {
+    gpii.app.waitDialog.toggleAnimation(that, true);
     that.setPosition(0, 0);
     that.dialog.show();
     // Hack to ensure it stays on top, even as the GPII autoconfiguration starts applications, etc., that might
@@ -117,8 +118,25 @@ gpii.app.waitDialog.hide = function (that) {
     if (remainingDisplayTime > 0) {
         that.dismissWaitTimeout = setTimeout(function () {
             that.dialog.hide();
+            gpii.app.waitDialog.toggleAnimation(that, false);
         }, remainingDisplayTime);
     } else {
         that.dialog.hide();
+        gpii.app.waitDialog.toggleAnimation(that, false);
     }
+};
+
+/**
+ * Toggles the visibility of the animating gear logo.
+ * This is called when showing or hiding the wait dialog. The animation has been known to cause high CPU usage before
+ * the dialog has been shown, so the image his hidden until needed.
+ *
+ * @param {Component} that The gpii.app instance.
+ * @param {Boolean} animate true to enable the animation.
+ */
+gpii.app.waitDialog.toggleAnimation = function (that, animate) {
+    var script = fluid.stringTemplate("jQuery(document.body).toggleClass(\"animate\", %animate)", {
+        animate: animate
+    });
+    that.dialog.webContents.executeJavaScript(script);
 };
