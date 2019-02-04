@@ -324,7 +324,9 @@ gpii.app.extractSnapsetName = function (message) {
 
 
 /**
- * Extension of `gpiiController` used for dev purposes. Applies changes to specific settings.
+ * Extension of `gpiiController` used for dev purposes. Note that the "dev" connector has been temporarily
+ * repurposed to apply changes to specific settings in production, as a result of the limitations described
+ * in GPII-3634.
  */
 fluid.defaults("gpii.app.dev.gpiiConnector", {
     gradeNames: ["gpii.app.gpiiConnector", "gpii.app.dev.gpiiConnector.qss"],
@@ -411,7 +413,8 @@ gpii.app.dev.gpiiConnector.applyPrefSetImages = function (prefSets) {
 
 /**
  * Updates the schemas of specific settings.
- * This is a temporary measure and settings should be provided properly by the gpii-universal.
+ * This is a temporary measure and settings should be provided properly by gpii-universal.
+ * This work is described in GPII-3608 and the fixes required in gpii-universal are described in GPII-3634.
  * @param {Component} systemLanguageListener - The `gpii.windows.language` instance
  * @param {Object} qssSettingMessages - The messages bundle. This is needed to provide correct (and synced with the QS)
  * names for different settings

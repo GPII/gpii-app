@@ -16,8 +16,7 @@
 
 var fluid = require("infusion");
 
-var gpii = fluid.registerNamespace("gpii"),
-    electron = require("electron");
+var gpii = fluid.registerNamespace("gpii");
 
 require("../basic/dialog.js");
 require("../basic/blurrable.js");
@@ -99,7 +98,7 @@ fluid.defaults("gpii.app.qss", {
                 },
                 modelListeners: {
                     "{qss}.model.isKeyedIn": {
-                        this: "{that}.events.onIsKeyedInChanged",
+                        "this": "{that}.events.onIsKeyedInChanged",
                         method: "fire",
                         args: ["{change}.value"],
                         excludeSource: "init"
