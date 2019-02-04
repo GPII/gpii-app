@@ -35,6 +35,20 @@ fluid.defaults("gpii.app.resizable", {
         scaleFactor: null,
         maxScaleFactor: null
     },
+    members: {
+        beforeRescale: {
+            wasFocused: null,
+            awaitingRescale: null
+        }
+    },
+
+    /*
+     * A delay in ms after a `displayMetricsChanged` event has occurred and
+     * before the dialog corresponding dialog gets its position and size "refreshed".
+     * Refer to `gpii.app.resizable.handleDisplayMetricsChange` for more details.
+     */
+    refreshTimeout: 1800,
+
     config: {
         attrs: {
             width: null,
@@ -82,12 +96,13 @@ fluid.defaults("gpii.app.resizable", {
     },
 
     components: {
-        rescaleDialogTimer: {
+        refreshDialogTimeout: {
             type: "gpii.app.timer",
             options: {
                 listeners: {
                     onTimerFinished: {
-                        func: "{resizable}.fitToScreen"
+                        func: "gpii.app.resizable.refreshDialog",
+                        args: "{resizable}"
                     }
                 }
             }
@@ -168,6 +183,32 @@ gpii.app.resizable.fitToScreen = function (that) {
 };
 
 /**
+ * Positions and sizes the hidden dialogs correctly. Also shows them back up.
+ * @param {Component} that - The `gpii.app.resizable` instance
+ */
+gpii.app.resizable.refreshDialog = function (that) {
+    // Ensure the dialog is in correct state.
+    // There was a problem with changing the position of a dialog when rescaling is about
+    // to take place, thus, in case it is offScreenHidable, its state might get corrupted
+    if (!that.model.isShown) {
+        // access lowlevel hide implementation
+        that.hideImpl();
+    }
+
+    if (that.options.config.hideOffScreen) {
+        // As we're using a normal BrowserWindow hide, we'd always need to
+        // apply the normal BrowserWindow show to offScreen hidden windows.
+        gpii.app.dialog.showImpl(that, !that.beforeRescale.wasFocused);
+    } else if (that.model.isShown) {
+        that.showImpl(that, !that.beforeRescale.wasFocused);
+    }
+
+    that.beforeRescale.awaitingRescale = false;
+
+    that.fitToScreen();
+};
+
+/**
  * Handle electron's `display-metrics-changed` event by resizing the component if
  * necessary.
  * @param {Component} that - The `gpii.app.resizable` component.
@@ -189,7 +230,17 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that) {
      * be resized/repositioned and shown again.
      */
 
-    that.rescaleDialogTimer.start(1500);
+    if (!that.beforeRescale.awaitingRescale) {
+        that.beforeRescale = {
+            wasFocused: electron.BrowserWindow.getFocusedWindow() === that.dialog,
+            awaitingRescale: true
+        };
+
+        that.dialog.hide();
+    }
+
+    // it would restart the timer
+    that.refreshDialogTimeout.start(that.options.refreshTimeout);
 };
 
 /**
