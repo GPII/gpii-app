@@ -14,7 +14,8 @@
  */
 "use strict";
 
-var fluid = require("infusion");
+var fluid = require("infusion"),
+    electron = require("electron");
 
 var gpii = fluid.registerNamespace("gpii");
 
