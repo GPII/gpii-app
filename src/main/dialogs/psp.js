@@ -61,8 +61,8 @@ fluid.defaults("gpii.app.pspInApp", {
             func: "{that}.hide"
         },
 
-        "{qssWrapper}.events.onQssPspOpen": {
-            func: "{that}.show"
+        "{qssWrapper}.events.onQssPspToggled": {
+            func: "{that}.toggle"
         },
         "{qssWrapper}.events.onQssPspClose": {
             func: "{that}.handleBlur",

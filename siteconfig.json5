@@ -5,6 +5,9 @@
 
     // Configuration options for the QSS window
     qss: {
+        // Defines the delay in milliseconds before the tooltip is shown after a QSS button is selected
+        tooltipDisplayDelay: 500, // ms
+
         // The scaling factor for the QSS
         scaleFactor: 1.5,
         urls: {
@@ -76,5 +79,8 @@
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
-    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json"
+    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
+
+    // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
+    trayType: ["gpii.app.trayButton"]
 }

@@ -58,7 +58,7 @@
      */
     gpii.qss.keyInButtonPresenter.activate = function (that, qssList, activationParams) {
         that.notifyButtonActivated(activationParams);
-        qssList.events.onPSPOpen.fire();
+        qssList.events.onPspToggled.fire();
     };
 
     /**

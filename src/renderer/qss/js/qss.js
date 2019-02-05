@@ -68,7 +68,7 @@
             onUndoRequired: null,
             onResetAllRequired: null,
             onSaveRequired: null,
-            onPSPOpen: null
+            onPspToggled: null
         },
 
         invokers: {
@@ -229,7 +229,7 @@
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
-                        onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
+                        onQssPspToggled: "{quickSetStripList}.events.onPspToggled"
                     }
                 }
             }

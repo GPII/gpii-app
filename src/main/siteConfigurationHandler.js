@@ -60,6 +60,11 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
             target: "{app qssWrapper}.options.settingOptions.systemDefaultLanguage"
         },
+        distributeTooltipShowDelay: {
+            record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
+            target: "{app qssTooltipDialog}.options.showDelay"
+        },
+
         distributePspConfig: {
             record: "{that}.options.siteConfig.psp",
             target: "{app psp}.options.siteConfig"
@@ -95,6 +100,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeAboutDialogConfig: {
             record: "{that}.options.siteConfig.aboutDialog",
             target: "{app aboutDialog}.options.siteConfig"
+        },
+        distributeTrayType: {
+            record: "{that}.options.siteConfig.trayType",
+            target: "{app tray}.options.trayType"
         }
     }
 });

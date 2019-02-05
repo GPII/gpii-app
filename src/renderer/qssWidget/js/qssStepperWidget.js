@@ -23,7 +23,7 @@
      * Represents the QSS stepper widget.
      */
     fluid.defaults("gpii.qssWidget.stepper", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable"],
 
         members: {
             boundReachedHits: 0
@@ -53,6 +53,8 @@
         },
 
         selectors: {
+            heightListenerContainer: ".flc-qssStepperWidget-indicators",
+
             indicators: ".flc-qssStepperWidget-indicators",
 
             stepperButton: ".flc-qssStepperWidget-btn",
@@ -75,7 +77,8 @@
 
         events: {
             onLowerBoundReached: null,
-            onUpperBoundReached: null
+            onUpperBoundReached: null,
+            onHeightChanged: null
         },
 
         listeners: {
@@ -143,6 +146,14 @@
                     "{that}.options.styles",
                     "{arguments}.0",
                     "{arguments}.1"
+                ]
+            },
+            calculateHeight: {
+                funcName: "gpii.qssWidget.calculateHeight",
+                args: [
+                    "{that}.container",
+                    "{that}.dom.indicators",
+                    "{that}.dom.heightListenerContainer"
                 ]
             }
         },

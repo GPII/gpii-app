@@ -114,6 +114,9 @@ fluid.defaults("gpii.app.dialog", {
             minHeight: null
         },
 
+        // Forbids the user from changing the zoom level in a BrowserWindow
+        disablePinchZoom: true,
+
         // params for the BrowserWindow instance
         params: null,
 
@@ -367,6 +370,15 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
         });
     }
 
+    if (that.options.config.disablePinchZoom) {
+        // Followed this approach https://github.com/electron/electron/issues/8793#issuecomment-334971232
+        dialog.webContents.on("did-finish-load", function () {
+            dialog.webContents.setZoomFactor(1);
+            dialog.webContents.setVisualZoomLevelLimits(1, 1);
+            dialog.webContents.setLayoutZoomLevelLimits(0, 0);
+        });
+    }
+
     return dialog;
 };
 
@@ -456,12 +468,13 @@ gpii.app.dialog.rescaleDialog = function (that, scaleFactor, oldScaleFactor) {
         height = that.getScaledHeight(scaleFactor, oldScaleFactor),
         offset = that.getScaledOffset(scaleFactor, oldScaleFactor);
 
-    that.applier.change("width", width);
-    that.applier.change("height", height);
-    that.applier.change("offset", offset);
+    that.applier.change("", {
+        width: width,
+        height: height,
+        offset: offset
+    });
 
     gpii.app.dialog.setDialogZoom(that.dialog, scaleFactor);
-
     that.setBounds();
 };
 
@@ -473,7 +486,9 @@ gpii.app.dialog.rescaleDialog = function (that, scaleFactor, oldScaleFactor) {
  */
 gpii.app.dialog.setDialogZoom = function (dialog, scaleFactor) {
     var script = fluid.stringTemplate("jQuery(\"body\").css(\"zoom\", %scaleFactor)", {
-        scaleFactor: scaleFactor
+        // give a slightly smaller scaleFactor to the renderer process to ensure
+        // there's a sufficient margin on the left
+        scaleFactor: Math.floor(scaleFactor * 100) / 100
     });
 
     if (dialog) {

@@ -14,10 +14,10 @@
  */
 "use strict";
 
-var fluid = require("infusion");
-
-var gpii = fluid.registerNamespace("gpii"),
+var fluid = require("infusion"),
     electron = require("electron");
+
+var gpii = fluid.registerNamespace("gpii");
 
 require("../basic/dialog.js");
 require("../basic/blurrable.js");
@@ -29,13 +29,22 @@ require("../../../shared/channelUtils.js");
 fluid.defaults("gpii.app.qss", {
     gradeNames: ["gpii.app.dialog", "gpii.app.dialog.offScreenHidable", "gpii.app.blurrable"],
 
-    // The width of the logo together with its left and right margins
-    logoWidth: 117,
 
-    // The width of a single button together with its left margin
-    buttonWidth: 59,
+    dialogContentMetrics: {
+        // metrics are in px
+        // The width of the logo together with its left and right margins
+        logoWidth: 117,
+        // The width of a single button together with its left margin
+        buttonWidth: 59,
+        closeButtonWidth: 24
+    },
+    qssButtonTypes: {
+        smallButton: "smallButton",
+        closeButton: "close"
+    },
 
     model: {
+        settings: [],
         // Whether the Morphic logo is currently shown
         isLogoShown: true,
         // Whether blurring should be respected by the dialog
@@ -43,9 +52,15 @@ fluid.defaults("gpii.app.qss", {
     },
 
     modelListeners: {
+        settings: {
+            funcName: "{that}.fitToScreen",
+            args: ["{that}"],
+            excludeSource: "init"
+        },
         isLogoShown: {
-            funcName: "gpii.app.qss.toggleLogo",
-            args: ["{that}", "{change}.value"],
+            funcName: "{that}.events.onQssLogoToggled.fire",
+            args: ["{change}.value"],
+            // it is shown at first
             excludeSource: "init"
         }
     },
@@ -55,14 +70,14 @@ fluid.defaults("gpii.app.qss", {
         awaitWindowReadiness: true,
 
         attrs: {
-            width: 618,
+            // the width will be computed once component loads up
             height: 64,
 
             alwaysOnTop: true,
             transparent: false
         },
         params: {
-            settings: null
+            settings: "{that}.model.settings"
         },
         fileSuffixPath: "qss/index.html"
     },
@@ -99,7 +114,7 @@ fluid.defaults("gpii.app.qss", {
                 },
                 modelListeners: {
                     "{qss}.model.isKeyedIn": {
-                        this: "{that}.events.onIsKeyedInChanged",
+                        "this": "{that}.events.onIsKeyedInChanged",
                         method: "fire",
                         args: ["{change}.value"],
                         excludeSource: "init"
@@ -124,7 +139,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssUndoRequired: null,
                     onQssResetAllRequired: null,
                     onQssSaveRequired: null,
-                    onQssPspOpen: null
+                    onQssPspToggled: null
                 },
 
                 listeners: {
@@ -157,9 +172,13 @@ fluid.defaults("gpii.app.qss", {
                 "{arguments}.0" // state
             ]
         },
+        getQssHorizontalMargin: {
+            funcName: "gpii.app.qss.getQssHorizontalMargin",
+            args: ["{that}", "{qssWrapper}.qssWidget"]
+        },
         getExtendedWidth: {
             funcName: "gpii.app.qss.getExtendedWidth",
-            args: ["{that}", "{qssWrapper}.qssWidget"]
+            args: ["{that}"]
         },
         fitToScreen: {
             funcName: "gpii.app.qss.fitToScreen",
@@ -168,25 +187,36 @@ fluid.defaults("gpii.app.qss", {
     }
 });
 
-/**
- * Shows or hides the QSS logo depending on the `isLogoShown` model value and adjusts
- * the width of the QSS accordingly.
- * @param {Component} that - The `gpii.app.qss` component.
- * @param {Boolean} isLogoShown - Whether the logo should be shown or not.
- */
-gpii.app.qss.toggleLogo = function (that, isLogoShown) {
-    var width = that.model.width,
-        scaleFactor = that.model.scaleFactor,
-        logoWidth = scaleFactor * that.options.logoWidth;
 
-    if (isLogoShown) {
-        width += logoWidth;
-    } else {
-        width -= logoWidth;
+
+/**
+ * Computes the total width of all of the QSS buttons, based on their sizes inside
+ * the BrowserWindow.
+ * @param {Component} that - The `gpii.app.qss` instance
+ * @param {Object[]} buttons - The list of QSS buttons
+ * @return {Number} - The total scaled size of the QSS's buttons
+ */
+gpii.app.qss.computeQssButtonsWidth = function (that, buttons) {
+    var qssButtonTypes   = that.options.qssButtonTypes,
+        buttonWidth      = that.options.dialogContentMetrics.buttonWidth,
+        closeButtonWidth = that.options.dialogContentMetrics.closeButtonWidth;
+
+    var scaleFactor = that.model.scaleFactor;
+
+    // start off with the first button size and the constant close button
+    var buttonsWidth = closeButtonWidth + buttonWidth;
+    // check the type of the previous button, if the current is small
+    // in the future, we might have the case that there aren't two small sequential buttons
+    for (var i = 1; i < buttons.length; i++) {
+        if (!buttons[i].buttonTypes.includes(qssButtonTypes.smallButton) ||
+            !buttons[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
+            buttons[i].path !== qssButtonTypes.closeButton
+        ) {
+            buttonsWidth += buttonWidth;
+        }
     }
 
-    that.applier.change("width", width);
-    that.events.onQssLogoToggled.fire(isLogoShown);
+    return buttonsWidth * scaleFactor;
 };
 
 /**
@@ -198,63 +228,52 @@ gpii.app.qss.toggleLogo = function (that, isLogoShown) {
  */
 gpii.app.qss.fitToScreen = function (that) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-        extendedWidth = that.getExtendedWidth(),
-        scaleFactor = that.model.scaleFactor;
+        qssButtonsWidth = gpii.app.qss.computeQssButtonsWidth(that, that.model.settings),
+        qssLogoWidth = that.options.dialogContentMetrics.logoWidth * that.model.scaleFactor;
 
-    if (screenSize.width < extendedWidth) {
-        // QSS needs to shrink
-        if (that.model.isLogoShown) {
-            // Hide the logo first
-            that.applier.change("isLogoShown", false);
-            extendedWidth = that.getExtendedWidth();
-        }
+    var canFitOnScreenFullSized = screenSize.width > qssButtonsWidth + qssLogoWidth;
 
-        // If the QSS still does not fit, scale it down
-        if (screenSize.width < extendedWidth) {
-            scaleFactor = that.computeScaleFactor();
-        }
-    } else {
-        // QSS needs to expand
-        // Scale up the QSS as far as possible
-        scaleFactor = that.computeScaleFactor();
+    // We would need to hide the logo if there's insufficient space
+    that.applier.change("", {
+        width: qssButtonsWidth + (canFitOnScreenFullSized && qssLogoWidth),
+        isLogoShown: canFitOnScreenFullSized
+    });
 
-        // Show the logo if there is enough space for it
-        if (!that.model.isLogoShown) {
-            var logoWidth = scaleFactor * that.options.logoWidth;
+    gpii.app.resizable.fitToScreen(that);
+};
 
-            if (that.model.width + logoWidth < screenSize.width) {
-                that.applier.change("isLogoShown", true);
-            }
-        }
-    }
-
-    // Simply reposition the QSS if the scaleFactor does not need to change
-    if (scaleFactor === that.model.scaleFactor) {
-        that.setBounds();
-    } else {
-        that.applier.change("scaleFactor", scaleFactor);
-    }
+/**
+ * Returns the width needed for the button menu to be displayed.
+ * As a button menu usually exceeds the bounds of the button, and
+ * given the case that the button is at the very edge the QSS (the logo is hidden)
+ * we need to know the additional space needed for the proper displaying of
+ * the QS as a whole.
+ * @param {Component} that - The `gpii.app.qss` instance.
+ * @param {Component} qssWidget - The `gpii.app.qssWidget` instance.
+ * @return {Number} The total width of the component.
+ */
+gpii.app.qss.getQssHorizontalMargin = function (that, qssWidget) {
+    var scaledButtonWidth = that.model.scaleFactor * that.options.dialogContentMetrics.buttonWidth;
+    return (qssWidget.model.width - scaledButtonWidth) / 2;
 };
 
 /**
  * Returns the total width of the component which must be taken into account when
  * fitting the window into the available screen space.
- * If the QSS logo is shown, then the width of the QSS itself is used.
- * Otherwise, it is assumed that the first button in the QSS will have a QSS widget
- * menu and this menu should be fully visible when displayed. Thus, the extended
- * width of the QSS is its own width together with the width of the QSS widget menu
- * which stays to the left of the QSS.
+ * It is assumed that the first button in the QSS will have a QSS widget
+ * menu and it ensures that this menu will be fully visible when displayed.
  * @param {Component} that - The `gpii.app.qss` instance.
  * @param {Component} qssWidget - The `gpii.app.qssWidget` instance.
  * @return {Number} The total width of the component.
  */
-gpii.app.qss.getExtendedWidth = function (that, qssWidget) {
-    if (that.model.isLogoShown) {
+gpii.app.qss.getExtendedWidth = function (that) {
+    var scaledLogoWidth = that.options.dialogContentMetrics.logoWidth * that.model.scaleFactor,
+        qssDesiredMargin = that.getQssHorizontalMargin();
+    if (that.model.isLogoShown && scaledLogoWidth > qssDesiredMargin) {
         return that.model.width;
     }
 
-    var scaledButtonWidth = that.model.scaleFactor * that.options.buttonWidth;
-    return that.model.width + (qssWidget.model.width - scaledButtonWidth) / 2;
+    return that.model.width + that.getQssHorizontalMargin();
 };
 
 /**
@@ -281,12 +300,7 @@ gpii.app.qss.show = function (that, params) {
  * loses focus. Otherwise, it will stay open.
  */
 gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
-    if (closeQssOnBlur) {
-        var trayBounds = tray.tray.getBounds(),
-            cursorPoint = electron.screen.getCursorScreenPoint();
-
-        if (cursorPoint && trayBounds && !gpii.app.isPointInRect(cursorPoint, trayBounds)) {
-            that.hide();
-        }
+    if (closeQssOnBlur && tray.isMouseOver()) {
+        that.hide();
     }
 };
