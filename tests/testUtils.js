@@ -155,7 +155,11 @@ gpii.test.executeJavaScriptInWebContents = function (dialog, command) {
 
 /**
  * Invokes a JavaScript function in the `BrowserWindow` of the given dialog.
- * It simply transforms the function and passes it to `gpii.test.executeJavaScriptInWebContents`
+ * As the Electron BrowserWindow's API for executing code inside the window expects
+ * a code string to be passed, the provided function is transformed to such a string.
+ * The `Function.toString` method of the function is used and then the function is wrapped inside a
+ * IIFE block with the help of `gpii.test.toIIFEString`.
+ * This generate IIFE string is then passed to `gpii.test.executeJavaScriptInWebContents`
  * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
  * to be executed.
  * @param {Function} func - The function that is to be invoked inside the BrowserWindow
@@ -172,7 +176,7 @@ gpii.test.invokeFunctionInWebContents = function (dialog, func) {
  * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
  * to be executed.
  * @param {Function} func - The function that is to be invoked inside the BrowserWindow
- * @param {Number} delay - The delay after which the function should be invoked
+ * @param {Number} delay - The delay after which the function should be invoked in milliseconds
  * @return {Promise} - A promise which is resolved when the JavaScript code is
  * executed.
  */
@@ -199,8 +203,7 @@ gpii.test.invokeFunctionInWebContentsDelayed = function (dialog, func, delay) {
  * to be executed.
  * @param {String} command - A string representing the JavaScript code to be
  * executed.
- * @param {Number} delay - The delay after which the JavaScript code should be
- * executed.
+ * @param {Number} delay - The delay after which the JavaScript code should be invoked in milliseconds
  * @return {Promise} - A promise which is resolved when the JavaScript code is
  * executed.
  */
