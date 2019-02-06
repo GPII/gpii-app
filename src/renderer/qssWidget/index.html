@@ -18,6 +18,9 @@
         <script type="text/javascript" src="js/qssMenuWidget.js"></script>
         <script type="text/javascript" src="js/qssStepperWidget.js"></script>
         <script type="text/javascript" src="js/qssToggleWidget.js"></script>
+        <script type="text/javascript" src="js/qssMouseWidget.js"></script>
+        <script type="text/javascript" src="js/qssBaseStepperWidget.js"></script>
+        <script type="text/javascript" src="js/qssBaseToggleWidget.js"></script>
         <script type="text/javascript" src="js/qssWidget.js"></script>
         <script type="text/javascript" src="js/qssWidgetButton.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
@@ -46,17 +49,17 @@
             </div>
 
             <!-- the Stepper Widget -->
-            <div class="flc-qssStepperWidget fl-scrollable fl-qssStepperWidget">
+            <div class="flc-qssStepperWidget fl-qssStepper fl-scrollable fl-qssStepperWidget">
                 <div class="flc-qssWidget-tip fl-qssWidget-tip"></div>
                 <div class="flc-qssWidget-learnMoreLink fl-qssWidget-learnMoreLink fl-focusable" role="link" tabindex="0"></div>
 
                 <div class="flc-qssStepperWidget-controls fl-qssStepperWidget-controls">
                     <div class="flc-qssStepperWidget-controls-buttons">
-                        <div role="button" class="flc-qssStepperWidget-incBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
+                        <div role="button" class="flc-qssStepperWidget-incBtn flc-qssStepperWidget-btn fl-qssStepper-incBtn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
                             <div class="fl-icon fl-increment-icon"></div>
                             <span class="flc-btnLabel fl-btnLabel"></span>
                         </div>
-                        <div role="button" class="flc-qssStepperWidget-decBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
+                        <div role="button" class="flc-qssStepperWidget-decBtn flc-qssStepperWidget-btn fl-qssStepper-decBtn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
                             <div class="fl-icon fl-decrement-icon"></div>
                             <span class="flc-btnLabel fl-btnLabel"></span>
                         </div>
@@ -101,47 +104,73 @@
 
             <!-- the Mouse Widget -->
             <div class="flc-qssMouseWidget fl-dialog-content fl-scrollable fl-qssMouseWidget">
+                <!-- Widget's tip and title -->
                 <div class="flc-qssWidget-tip fl-qssWidget-tip"></div>
 
-                <div class="fl-qssToggleWidget-extendedTipContainer">
-                    <div class="flc-qssWidget-extendedTip"></div>
-                    <img class="flc-qssToggleWidget-helpImage fl-qssToggleWidget-helpImage">
-                    <div class="flc-qssWidget-learnMoreLink fl-qssWidget-learnMoreLink fl-focusable" role="link" tabindex="0"></div>
+                <!-- Base Toggle: Swap Mouse Buttons -->
+                <div class="flc-qssMouseWidget-swapMouseButtons fl-dialog-content fl-scrollable fl-qssToggleWidget fl-qssBaseToggleWidget fl-qssBaseToggleWidget-icon-offset">
+                    <div class="flc-qssBaseToggleWidget-settingTitle fl-qssToggleWidget-settingTitle"></div>
+
+                    <div class="flc-toggleButton fl-switchUI">
+                        <div class="flc-switchUI-control fl-switchUI-control fl-focusable">
+                            <div class="fl-switchUI-icon fl-mouseButton-icon"></div>
+                            <span class="flc-switchUI-off fl-switchUILabel"></span>
+                            <span class="fl-switchUI-controlKnob"></span>
+                            <span class="flc-switchUI-on fl-switchUILabel"></span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flc-qssToggleWidget-settingTitle fl-qssToggleWidget-settingTitle"></div>
+                <!-- Base Toggle: Easier double-click -->
+                <div class="flc-qssMouseWidget-easierDoubleClick fl-dialog-content fl-scrollable fl-qssToggleWidget fl-qssBaseToggleWidget">
+                    <div class="flc-qssBaseToggleWidget-settingTitle fl-qssToggleWidget-settingTitle"></div>
 
+                    <div class="flc-toggleButton fl-switchUI">
+                        <div class="flc-switchUI-control fl-switchUI-control fl-focusable">
+                            <span class="flc-switchUI-off fl-switchUILabel"></span>
+                            <span class="fl-switchUI-controlKnob"></span>
+                            <span class="flc-switchUI-on fl-switchUILabel"></span>
+                        </div>
+                    </div>
+                </div>
 
-                <div class="flc-qssMouseWidget-mouseSpeed">
+                <!-- Base Toggle: Larger Mouse Pointer -->
+                <div class="flc-qssMouseWidget-largerMousePointer fl-dialog-content fl-scrollable fl-qssToggleWidget fl-qssBaseToggleWidget">
+                    <div class="flc-qssBaseToggleWidget-settingTitle fl-qssToggleWidget-settingTitle"></div>
+
+                    <div class="flc-toggleButton fl-switchUI">
+                        <div class="flc-switchUI-control fl-switchUI-control fl-focusable">
+                            <span class="flc-switchUI-off fl-switchUILabel"></span>
+                            <span class="fl-switchUI-controlKnob"></span>
+                            <span class="flc-switchUI-on fl-switchUILabel"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Base Stepper: Mouse Speed -->
+                <div class="flc-qssMouseWidget-mouseSpeed fl-qssStepper fl-scrollable fl-qssStepperWidget fl-qssBaseStepperWidget">
+                    <div class="flc-qssBaseStepperWidget-settingTitle fl-qssStepperWidget-settingTitle"></div>
                     <div class="fl-qssStepperWidget-controls">
-                        <div class="flc-qssStepperWidget-controls-buttons">
-                            <div role="button" class="flc-qssStepperWidget-incBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
+                        <div class="flc-qssBaseStepperWidget-controls-buttons fl-qssBaseStepperWidget-controls-buttons">
+                            <div role="button" class="flc-qssBaseStepperWidget-incBtn flc-qssBaseStepperWidget-btn fl-qssStepper-incBtn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
                                 <div class="fl-icon fl-increment-icon"></div>
                                 <span class="flc-btnLabel fl-btnLabel"></span>
                             </div>
-                            <div role="button" class="flc-qssStepperWidget-decBtn flc-qssStepperWidget-btn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
+                            <div role="button" class="flc-qssBaseStepperWidget-decBtn flc-qssBaseStepperWidget-btn fl-qssStepper-decBtn fl-qssStepperWidget-btn btn fl-btn fl-focusable" tabindex="0">
                                 <div class="fl-icon fl-decrement-icon"></div>
                                 <span class="flc-btnLabel fl-btnLabel"></span>
                             </div>
                         </div>
 
-                        <div class="flc-qssStepperWidget-indicators fl-qssStepperWidget-indicators">
+                        <div class="flc-qssBaseStepperWidget-indicators fl-qssStepperWidget-indicators">
                             <!-- Steps reside here -->
                         </div>
                     </div>
                 </div>
 
-
-                <!-- TODO add wrap container -->
-                <div class="flc-toggleButton fl-switchUI">
-                    <div class="flc-switchUI-control fl-switchUI-control fl-focusable">
-                        <span class="flc-switchUI-off fl-switchUILabel"></span>
-                        <span class="fl-switchUI-controlKnob"></span>
-                        <span class="flc-switchUI-on fl-switchUILabel"></span>
-                    </div>
-                </div>
+                <!-- Widget's Learn More link -->
+                <div class="flc-qssWidget-learnMoreLink fl-qssWidget-learnMoreLink noMargin fl-focusable" role="link" tabindex="0"></div>
             </div>
-
         </div>
         <div class="fl-qssWidget-arrow"></div>
     </body>

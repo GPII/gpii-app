@@ -2,34 +2,53 @@
     {
         "path": "mouse",
         "schema": {
-            "type": "mouse",
-            "title": "Mouse button"
+            "type": "mouse"
         },
         "settings": {
             "mouseSpeed": {
-                "path": "http://registry\\.gpii\\.net/common/DPIScale",
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed",
                 "schema": {
                     "type": "number",
-                    "title": "Mouse speed",
-                    "default": 0,
-                    "min": 0,
-                    "max": 11
+                    "default": 10,
+                    "min": 1,
+                    "max": 20,
+                    "divisibleBy": 2
                 },
-                "value": 0
+                "value": 10,
+                "messageKey": "windows-mouseSpeed"
             },
             "swapMouseButtons": {
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons",
+                "schema": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "value": false,
+                "messageKey": "windows-swapMouseButtons"
+            },
+            "easierDoubleClick": {
                 "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
                 "schema": {
                     "type": "boolean",
-                    "title": "Swap mouse buttons"
+                    "default": false
                 },
-                "value": false
+                "value": false,
+                "messageKey": "windows-easierDoubleClick"
+            },
+            "largerMousePointer": {
+                "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                "schema": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "value": false,
+                "messageKey": "windows-largerMousePointer"
             }
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 0,
-        "messageKey": null,
-        "tooltip": "<p>Mouse Button</p>"
+        "messageKey": "common-mouse",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#mouse"
     }, {
         "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {

@@ -690,11 +690,34 @@ gpii.app.qssWrapper.getSetting = function (settings, path) {
  * @param {String} [source] - The source of the update.
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
+    // trying to find the primary setting's index (anything that is not secondary setting)
     var settingIndex = that.model.settings.findIndex(function (setting) {
         return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
     });
 
-    if (settingIndex !== -1) {
+    // there is no result, looking for secondary settings
+    if (settingIndex === -1) {
+        var primarySettingIndex = false, // store primary setting's index (ie. 0; 1; etc.)
+            secondarySettingKey = false, // store secondary setting's key (ie. "mouseSpeed"; "swapMouseButtons"; etc.)
+            secondarySettingData = false; // store secondary index object data
+
+        fluid.each(that.model.settings, function(el, index) {
+            if (fluid.isValue(el.settings)) {
+                primarySettingIndex = index;
+                secondarySettingData = fluid.find_if(el.settings, function(setting, key) {
+                    secondarySettingKey = key;
+                    return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
+                });
+            }
+        });
+
+        if (secondarySettingData) {
+            // we found a secondary setting that matches
+            // applying the secondary setting's change
+            that.applier.change("settings."+primarySettingIndex+".settings."+secondarySettingKey, updatedSetting, null, source);
+        }
+    } else {
+        // we do have result, applying primary setting's change
         that.applier.change("settings." + settingIndex, updatedSetting, null, source);
     }
 };
@@ -730,10 +753,11 @@ gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
  * @return {Object} A translated copy of the QSS setting
  */
 gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, setting) {
-    var translatedSetting = fluid.copy(setting);
 
-    var message = qssSettingMessages[translatedSetting.messageKey];
+    var translatedSetting = fluid.copy(setting),
+        message = qssSettingMessages[translatedSetting.messageKey];
 
+    // translation of the main settings
     if (message) {
         translatedSetting.tooltip = message.tooltip;
         translatedSetting.tip = message.tip;
@@ -748,6 +772,17 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
         if (message["enum"]) {
             translatedSetting.schema["enum"] = message["enum"];
         }
+    }
+    // checking if we have secondary settings (looking for a `settings` node
+    if (fluid.isValue(translatedSetting.settings)) {
+        fluid.each(translatedSetting.settings, function(secondarySetting, index) {
+            var secondaryMessage = qssSettingMessages[secondarySetting.messageKey];
+            if (secondaryMessage && fluid.isValue(secondaryMessage.title)) {
+                // applying the title of the setting
+                // the secondary settings don't have any other translation part, only titles
+                secondarySetting.schema.title = secondaryMessage.title;
+            }
+        });
     }
 
     return translatedSetting;

@@ -209,3 +209,56 @@
     margin-bottom: 15px;
 }
 
+/* baseStepper Widget specific alterations */
+.fl-qssBaseStepperWidget .fl-qssStepperWidget-settingTitle {
+    font-weight: bold;
+    line-height: 110%;
+    font-size: 8.5px;
+}
+
+.fl-qssBaseStepperWidget .fl-qssStepperWidget-controls {
+    display: block;
+    width: auto;
+    margin: 0 0 5px 0;
+}
+
+.fl-qssBaseStepperWidget .fl-qssStepperWidget-controls .fl-qssBaseStepperWidget-controls-buttons {
+    display: flex;
+    flex-basis: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 5px;
+    padding: 0;
+}
+
+.fl-qssBaseStepperWidget .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
+    font-size: 8.5px;
+    width: 49%;
+    min-width: auto;
+    min-height: 24px;
+}
+
+.fl-qssBaseStepperWidget .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn + .fl-qssStepperWidget-btn {
+    margin-top: 0;
+}
+
+.fl-qssBaseStepperWidget .fl-qssStepperWidget-indicators {
+    flex-basis: auto;
+    flex-direction: row;
+}
+
+.fl-qssBaseStepperWidget .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator:first-child {
+    margin: 6px auto;
+}
+
+.fl-qssBaseStepperWidget .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator[data-type="selected"] {
+    margin: 3px 0 0 0;
+}
+
+.fl-qssBaseStepperWidget .fl-icon {
+    display: none;
+}
+
+.fl-qssBaseToggleWidget .fl-btnLabel {
+    font-size: 8.5px;
+}

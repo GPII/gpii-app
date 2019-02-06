@@ -326,7 +326,7 @@ gpii.app.extractSnapsetName = function (message) {
 /**
  * Extension of `gpiiController` used for dev purposes. Note that the "dev" connector has been temporarily
  * repurposed to apply changes to specific settings in production, as a result of the limitations described
- * in GPII-3634 .
+ * in GPII-3634.
  */
 fluid.defaults("gpii.app.dev.gpiiConnector", {
     gradeNames: ["gpii.app.gpiiConnector", "gpii.app.dev.gpiiConnector.qss"],
@@ -770,7 +770,10 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
         "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
         // use the initial value of the language as default setting
-        "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" }
+        "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" },
+        // mouse specific settings
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons": { value: false },
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed": { value: 10 }
     }
 });
 

@@ -1,8 +1,8 @@
 /**
- * The QSS toggle widget
+ * The QSS Mouse widget
  *
- * Represents the quick set strip toggle widget. It is used for adjusting the
- * values of "boolean" settings.
+ * Represents the QSS menu widget which is used for adjust mouse settings that have a list
+ * of predefined values.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -20,7 +20,7 @@
     var gpii = fluid.registerNamespace("gpii");
 
     /**
-     * Represents the QSS toggle widget.
+     * Represents the QSS mouse widget.
      */
     fluid.defaults("gpii.qssWidget.mouse", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
@@ -31,8 +31,14 @@
             // helpImage: ".flc-qssToggleWidget-helpImage",
             // extendedTip: ".flc-qssWidget-extendedTip",
             mouseSpeed: ".flc-qssMouseWidget-mouseSpeed",
-            // TODO
-            swapMouseButtons: ".flc-qssMouseWidget-mouseSpeed"
+            swapMouseButtons: ".flc-qssMouseWidget-swapMouseButtons",
+            easierDoubleClick: ".flc-qssMouseWidget-easierDoubleClick",
+            largerMousePointer: ".flc-qssMouseWidget-largerMousePointer"
+        },
+
+        events: {
+            onQssWidgetNotificationRequired: null,
+            onQssWidgetSettingAltered: null
         },
 
         enableRichText: true,
@@ -51,6 +57,18 @@
                         schema: {
                             title: null
                         }
+                    },
+                    easierDoubleClick: {
+                        value: false,
+                        schema: {
+                            title: null
+                        }
+                    },
+                    largerMousePointer: {
+                        value: false,
+                        schema: {
+                            title: null
+                        }
                     }
                 }
             },
@@ -59,22 +77,56 @@
             }
         },
 
+        sounds: {},
+
         components: {
             mouseSpeed: {
                 type: "gpii.qssWidget.baseStepper",
                 container: "{that}.dom.mouseSpeed",
                 options: {
+                    sounds: "{mouse}.options.sounds",
                     model: {
                         setting: "{gpii.qssWidget.mouse}.model.setting.settings.mouseSpeed"
+                    },
+                    events: {
+                        onNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired"
                     }
                 }
             },
             swapMouseButtons: {
                 type: "gpii.qssWidget.baseToggle",
-                container: "{that}.dom.swapMouseButton",
+                container: "{that}.dom.swapMouseButtons",
                 options: {
                     model: {
                         setting: "{gpii.qssWidget.mouse}.model.setting.settings.swapMouseButtons"
+                    }
+                }
+            },
+            easierDoubleClick: {
+                type: "gpii.qssWidget.baseToggle",
+                container: "{that}.dom.easierDoubleClick",
+                options: {
+                    model: {
+                        setting: "{gpii.qssWidget.mouse}.model.setting.settings.easierDoubleClick"
+                    }
+                }
+            },
+            largerMousePointer: {
+                type: "gpii.qssWidget.baseToggle",
+                container: "{that}.dom.largerMousePointer",
+                options: {
+                    model: {
+                        setting: "{gpii.qssWidget.mouse}.model.setting.settings.largerMousePointer"
+                    }
+                }
+            },
+            channelNotifier: {
+                type: "gpii.psp.channelNotifier",
+                options: {
+                    events: {
+                        // Add events the main process to be notified for
+                        onQssWidgetSettingAltered:       "{mouse}.events.onQssWidgetSettingAltered",
+                        onQssWidgetNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired"
                     }
                 }
             }

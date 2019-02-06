@@ -73,5 +73,10 @@
     "gpii_qssWidget_stepper_incrementButton": "Larger",
     "gpii_qssWidget_stepper_decrementButton": "Smaller",
     "gpii_qssWidget_stepper_upperBoundError": "This is highest setting",
-    "gpii_qssWidget_stepper_lowerBoundError": "This is lowest setting"
+    "gpii_qssWidget_stepper_lowerBoundError": "This is lowest setting",
+
+    "gpii_qssWidget_baseStepper_incrementButton": "Slower",
+    "gpii_qssWidget_baseStepper_decrementButton": "Faster",
+    "gpii_qssWidget_baseStepper_upperBoundError": "This is slowest speed",
+    "gpii_qssWidget_baseStepper_lowerBoundError": "This is fastest speed"
 }
