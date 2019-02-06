@@ -263,6 +263,10 @@
                 funcName: "gpii.qssWidget.menu.presenter.applyStyles",
                 args: ["{that}", "{that}.container", "{repeater}.model.styles"]
             },
+            "onCreate.defaultValue": {
+                funcName: "gpii.qssWidget.menu.presenter.defaultValue",
+                args: ["{that}.model.item.key", "{menu}.model.setting.schema.default", "{that}.container"]
+            },
             onItemFocus: {
                 funcName: "gpii.qssWidget.menu.presenter.focusItem",
                 args: [
@@ -329,6 +333,12 @@
         var elementStyles = fluid.get(styles, that.model.item.key);
         if (elementStyles) {
             container.css(elementStyles);
+        }
+    };
+
+    gpii.qssWidget.menu.presenter.defaultValue = function (key, item, container) {
+        if (key === item) {
+            container.attr("data-default", true);
         }
     };
 })(fluid);
