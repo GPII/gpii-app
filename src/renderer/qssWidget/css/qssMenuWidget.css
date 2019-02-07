@@ -38,25 +38,38 @@
     cursor: pointer;
 }
 
-.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:after {
+/* default and checked states are created here */
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:after,
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[data-default=true]:after {
     position: absolute;
     top: 50%;
-    left: calc(100% + 10px);
-    width: 15px;
-    height: 15px;
     transform: translateY(-50%);
 
     content: "";
-    background-color: #008145;
-
-    -webkit-mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
-    mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
-
     cursor: default;
 }
 
-.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=false]:after {
-    display: none;
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=false]:after,
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[data-default=false]:after  {
+    background: none;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[data-default=true]:after {
+    left: calc(100% + 12px);
+    width: 10px;
+    height: 10px;
+    background-color: #002957;
+    -webkit-mask: url("../../../assets/qssStepper/recommended.svg") 0 0/100% 100%;
+    mask: url("../../../assets/qssStepper/recommended.svg") 0 0/100% 100%;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:after {
+    left: calc(100% + 10px);
+    width: 15px;
+    height: 15px;
+    background-color: #008145;
+    -webkit-mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
+    mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:focus {
