@@ -187,21 +187,24 @@ fluid.defaults("gpii.app.qss", {
     }
 });
 
-
+/**
+ * Represents a group of setting data from which we using only the buttonTypes array
+ * @typedef {Object} ButtonList
+ * @property {Array} [buttonTypes] Array from diffent button types
+ */
 
 /**
  * Computes the total width of all of the QSS buttons, based on their sizes inside
  * the BrowserWindow.
- * @param {Component} that - The `gpii.app.qss` instance
- * @param {Object[]} buttons - The list of QSS buttons
+ * @param {Component} options - Object containing information for buttons
+ * @param {ButtonList[]} buttons - The list of QSS buttons
+ * @param {Number} - modelScaleFactor - Predefined scale factor setting in siteconfig
  * @return {Number} - The total scaled size of the QSS's buttons
  */
-gpii.app.qss.computeQssButtonsWidth = function (that, buttons) {
-    var qssButtonTypes   = that.options.qssButtonTypes,
-        buttonWidth      = that.options.dialogContentMetrics.buttonWidth,
-        closeButtonWidth = that.options.dialogContentMetrics.closeButtonWidth;
-
-    var scaleFactor = that.model.scaleFactor;
+gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, buttons) {
+    var qssButtonTypes   = options.qssButtonTypes,
+        buttonWidth      = options.dialogContentMetrics.buttonWidth,
+        closeButtonWidth = options.dialogContentMetrics.closeButtonWidth;
 
     // start off with the first button size and the constant close button
     var buttonsWidth = closeButtonWidth + buttonWidth;
@@ -216,7 +219,7 @@ gpii.app.qss.computeQssButtonsWidth = function (that, buttons) {
         }
     }
 
-    return buttonsWidth * scaleFactor;
+    return buttonsWidth * modelScaleFactor;
 };
 
 /**
@@ -228,7 +231,7 @@ gpii.app.qss.computeQssButtonsWidth = function (that, buttons) {
  */
 gpii.app.qss.fitToScreen = function (that) {
     var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
-        qssButtonsWidth = gpii.app.qss.computeQssButtonsWidth(that, that.model.settings),
+        qssButtonsWidth = gpii.app.qss.computeQssButtonsWidth(that.options, that.model.scaleFactor, that.model.settings),
         qssLogoWidth = that.options.dialogContentMetrics.logoWidth * that.model.scaleFactor;
 
     var canFitOnScreenFullSized = screenSize.width > qssButtonsWidth + qssLogoWidth;

@@ -65,6 +65,24 @@
     };
 
     /**
+     * Returns the DOM element (wrapped in a jQuery object) corresponding to the
+     * `widgetGrade` which is provided. The last part of the widget grade name (i.e.
+     * everything after the last dot) is the key of the selector which should be
+     * located in the DOM.
+     * @param {jQuery} domElement - jQuery DOM element.
+     * @param {String} widgetGrade - A grade name for the widget component.
+     * @return {jQuery} The jQuery element representing the element in the DOM or
+     * `undefined` if there is no such element.
+     */
+    gpii.psp.widgetGradeToSelectorName = function (domElement, widgetGrade) {
+        if (widgetGrade) {
+            var lastDotIndex = widgetGrade.lastIndexOf("."),
+                selector = widgetGrade.substring(lastDotIndex + 1);
+            return domElement.locate(selector);
+        }
+    };
+
+    /**
      * A wrapper that adds the replacing of the normal behaviour
      * of all anchor tags to open the specified link in an external
      * (default) browser.
