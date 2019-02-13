@@ -188,23 +188,6 @@ fluid.defaults("gpii.app.qss", {
 });
 
 /**
- * An object containing information about the type of the setting and its possible
- * values, as well as some additional meta information.
- * @typedef {Object} SettingSchema
- * @property {String} title The name of the setting which is displayed to the user.
- * @property {String} description Contains additional information about the setting.
- * @property {String} type The type of the setting which will later on determine the
- * widget which will be used to visually represent the setting. Possible values are
- * "boolean", "string", "array", "number".
- * @property {Number} [min] The minimal value a setting with a type "number" can have.
- * @property {Number} [max] The maximal value a setting with a type "number" can have.
- * @property {Number} [divisibleBy] The setting's value must be a multiple of this
- * number.
- * @property {String[]} [enum] An array of the values which a "string" type setting
- * can have.
- */
-
-/**
  * Represents a group of setting data from which we using only the buttonTypes array
  * @typedef {Object} ButtonList
  * @property {String} [path] the path of the prefererence set.
