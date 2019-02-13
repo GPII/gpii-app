@@ -28,7 +28,7 @@
         // The code must be exactly matching one of the installed languages' code (with respect to the region).
         // In case the selected language code is missing, there simply won't be a special first setting.
         // NOTE: this is not related to the default language value defined for the language setting
-        systemDefaultLanguage: "bg-BG"
+        systemDefaultLanguage: "en-US"
     },
 
     // Configuration options for the PSP window

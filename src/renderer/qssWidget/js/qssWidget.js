@@ -259,11 +259,7 @@
      * `undefined` if there is no such element.
      */
     gpii.psp.qssWidget.locateDomElement = function (that, widgetGrade) {
-        if (widgetGrade) {
-            var lastDotIndex = widgetGrade.lastIndexOf("."),
-                selector = widgetGrade.substring(lastDotIndex + 1);
-            return that.dom.locate(selector);
-        }
+        return gpii.psp.widgetGradeToSelectorName(that.dom, widgetGrade);
     };
 
     /**
