@@ -27,7 +27,7 @@
                 "messageKey": "windows-swapMouseButtons"
             },
             "easierDoubleClick": {
-                "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.easierDoubleClick",
                 "schema": {
                     "type": "boolean",
                     "default": false
@@ -36,7 +36,7 @@
                 "messageKey": "windows-easierDoubleClick"
             },
             "largerMousePointer": {
-                "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.largerMousePointer",
                 "schema": {
                     "type": "boolean",
                     "default": false
