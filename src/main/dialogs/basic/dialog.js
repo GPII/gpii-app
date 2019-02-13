@@ -208,8 +208,10 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     invokers: {
-        getScaledData: {
-            funcName: "gpii.app.dialog.getScaledData",
+        // Returns object with the pre-calculated scaled width, height, and offset
+        // of the buttons. Takes the old and the new scale factors as arguments
+        getScaledMetrics: {
+            funcName: "gpii.app.dialog.getScaledMetrics",
             args: [
                 "{that}",
                 "{arguments}.0", // scaleFactor
@@ -228,7 +230,7 @@ fluid.defaults("gpii.app.dialog", {
         // To ensure its size is correct simply set the size of the window again with the one
         // that has already been stored.
         // Related Electron issue: https://github.com/electron/electron/issues/9477
-        // Once fixed we can move back to uising the native `setPosition` method of the
+        // Once fixed we can move back to using the native `setPosition` method of the
         // `BrowserWindow` instead of `setBounds`.
         setPosition: {
             funcName: "gpii.app.dialog.setBounds",
@@ -399,7 +401,7 @@ gpii.app.dialog.positionOnInit = function (that) {
  * @param {Number} oldScaleFactor - The previous scale factor.
  * @return {Object} The new width, height, and offset of the `BrowserWindow`.
  */
-gpii.app.dialog.getScaledData = function (model, scaleFactor, oldScaleFactor) {
+gpii.app.dialog.getScaledMetrics = function (model, scaleFactor, oldScaleFactor) {
     return {
         width: scaleFactor * model.width / oldScaleFactor,
         height: scaleFactor * model.height / oldScaleFactor,
@@ -422,7 +424,7 @@ gpii.app.dialog.rescaleDialog = function (that, scaleFactor, oldScaleFactor) {
     scaleFactor = scaleFactor || 1;
     oldScaleFactor = oldScaleFactor || 1;
 
-    that.applier.change("", gpii.app.dialog.getScaledData(that.model, scaleFactor, oldScaleFactor));
+    that.applier.change("", gpii.app.dialog.getScaledMetrics(that.model, scaleFactor, oldScaleFactor));
 
     gpii.app.dialog.setDialogZoom(that.dialog, scaleFactor);
     that.setBounds();
