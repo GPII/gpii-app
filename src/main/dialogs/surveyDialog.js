@@ -39,6 +39,8 @@ require("./basic/dialogWrapper.js");
 fluid.defaults("gpii.app.surveyDialog", {
     gradeNames: ["gpii.app.dialog"],
     config: {
+        showInactive: true, // not focused when shown
+
         attrs: {
             icon: {
                 expander: {
@@ -60,7 +62,9 @@ fluid.defaults("gpii.app.surveyDialog", {
             resizable: true,
             closable: true,
             minimizable: false,
-            maximizable: false
+            maximizable: false,
+
+            alwaysOnTop: false
         },
         fileSuffixPath: "survey/index.html"
     },

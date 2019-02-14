@@ -26,7 +26,15 @@
     fluid.defaults("gpii.qss.keyInButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         attrs: {
-            "aria-label": "Morphic settings panel"
+            "aria-label": "Settings Panel"
+        },
+        listeners: {
+            "onArrowUpPressed.activate": {
+                func: "{that}.onActivationKeyPressed",
+                args: [
+                    {key: "ArrowUp"}
+                ]
+            }
         },
         invokers: {
             activate: {
@@ -50,7 +58,7 @@
      */
     gpii.qss.keyInButtonPresenter.activate = function (that, qssList, activationParams) {
         that.notifyButtonActivated(activationParams);
-        qssList.events.onPSPOpen.fire();
+        qssList.events.onPspToggled.fire();
     };
 
     /**
@@ -107,7 +115,7 @@
                 method: "toggleClass",
                 args: [
                     "{that}.options.styles.dimmed",
-                    "@exapnd:fluid.negate({change}.value)" // dim if not keyed in
+                    "@expand:fluid.negate({change}.value)" // dim if not keyed in
                 ]
             }
         },

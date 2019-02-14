@@ -52,12 +52,24 @@
 
         selectors: {
             stepper: ".flc-qssStepperWidget",
-            menu: ".flc-qssMenuWidget"
+            menu: ".flc-qssMenuWidget",
+            toggle: ".flc-qssToggleWidget"
+        },
+
+        /**
+         * The last part of each grade name should be the name of the selector identifying
+         * the container for the widget.
+         */
+        widgetGrades: {
+            "number": "gpii.qssWidget.stepper",
+            "string": "gpii.qssWidget.menu",
+            "boolean": "gpii.qssWidget.toggle"
         },
 
         events: {
             onWidgetClosed: null,
             onSettingUpdated: null,
+            onQssWidgetHeightChanged: null,
             onQssWidgetSettingAltered: null,
             onQssWidgetNotificationRequired: null,
             onQssWidgetCreated: null
@@ -85,9 +97,19 @@
                 }
             },
             widget: {
-                type: "@expand:gpii.psp.qssWidget.getWidgetType({arguments}.0)",
+                type: {
+                    expander: {
+                        funcName: "fluid.get",
+                        args: ["{qssWidget}.options.widgetGrades", "{arguments}.0.schema.type"]
+                    }
+                },
                 createOnEvent: "onSettingUpdated",
-                container: "@expand:gpii.psp.qssWidget.getWidgetContainer({arguments}.0, {qssWidget}.dom.stepper, {qssWidget}.dom.menu)",
+                container: {
+                    expander: {
+                        funcName: "gpii.psp.qssWidget.getWidgetContainer",
+                        args: ["{gpii.psp.qssWidget}"]
+                    }
+                },
                 options: {
                     sounds: "{qssWidget}.options.sounds",
                     activationParams: "{arguments}.1",
@@ -95,6 +117,7 @@
                         setting: "{qssWidget}.model.setting",
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
+                            extendedTip: "{qssWidget}.model.setting.extendedTip",
                             learnMore: "{qssWidget}.model.messages.learnMore"
                         }
                     },
@@ -117,8 +140,9 @@
                         }
                     },
                     events: {
-                        onNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
-                        onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
+                        onNotificationRequired:   "{qssWidget}.events.onQssWidgetNotificationRequired",
+                        onQssWidgetCreated:       "{qssWidget}.events.onQssWidgetCreated",
+                        onHeightChanged:          "{qssWidget}.events.onQssWidgetHeightChanged"
                     },
                     listeners: {
                         "onCreate.processParams": {
@@ -175,6 +199,7 @@
                     events: {
                         // Add events the main process to be notified for
                         onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
+                        onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                         onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated"
@@ -193,11 +218,7 @@
                 ]
             }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
-                args: [
-                    "{that}.dom.stepper",
-                    "{that}.dom.menu",
-                    "{that}.model.setting"
-                ]
+                args: ["{that}"]
             }]
         },
         invokers: {
@@ -228,43 +249,49 @@
     };
 
     /**
-     * Determines the type of the `widget` subcomponent (either a menu or a stepper)
-     * depending on the type of the setting.
-     * @param {Object} setting - The setting which corresponds to the activated
-     * QSS button.
-     * @return {String} The grade name for the `widget` subcomponent.
+     * Returns the DOM element (wrapped in a jQuery object) corresponding to the
+     * `widgetGrade` which is provided. The last part of the widget grade name (i.e.
+     * everything after the last dot) is the key of the selector which should be
+     * located in the DOM.
+     * @param {Component} that - The `gpii.psp.qssWidget` instance.
+     * @param {String} widgetGrade - A grade name for the widget component.
+     * @return {jQuery} The jQuery element representing the element in the DOM or
+     * `undefined` if there is no such element.
      */
-    gpii.psp.qssWidget.getWidgetType = function (setting) {
-        return setting.schema.type === "number" ? "gpii.qssWidget.stepper" : "gpii.qssWidget.menu";
+    gpii.psp.qssWidget.locateDomElement = function (that, widgetGrade) {
+        return gpii.psp.widgetGradeToSelectorName(that.dom, widgetGrade);
     };
 
     /**
      * Determines the jQuery element which should be the container of the `widget`
      * view subcomponent depending on the type of the setting.
-     * @param {Object} setting - The setting which corresponds to the activated
-     * QSS button.
-     * @param {jQuery} stepperElement - The container for the QSS stepper widget.
-     * @param {jQuery} menuElement - The container for the QSS menu widget.
-     * @return {jQuery} The jQuery element representing the container object.
+     * @param {Component} that - The `gpii.psp.qssWidget` instance.
+     * @return {jQuery} The jQuery element representing the container object or
+     * `undefined` if there is no such element.
      */
-    gpii.psp.qssWidget.getWidgetContainer = function (setting, stepperElement, menuElement) {
-        return setting.schema.type === "number" ? stepperElement : menuElement;
+    gpii.psp.qssWidget.getWidgetContainer = function (that) {
+        var settingType = that.model.setting.schema.type,
+            widgetGrades = that.options.widgetGrades,
+            widgetGrade = widgetGrades[settingType];
+        return gpii.psp.qssWidget.locateDomElement(that, widgetGrade);
     };
 
     /**
      * Shows the appropriate container depending on the type of the setting.
-     * @param {jQuery} stepperElement - The container for the QSS stepper widget.
-     * @param {jQuery} menuElement - The container for the QSS menu widget.
-     * @param {Object} setting - The setting which corresponds to the activated
-     * QSS button.
+     * @param {Component} that - The `gpii.psp.qssWidget` instance.
      */
-    gpii.psp.qssWidget.updateContainerVisibility = function (stepperElement, menuElement, setting) {
-        if (setting.schema.type === "number") {
-            stepperElement.show();
-            menuElement.hide();
-        } else {
-            stepperElement.hide();
-            menuElement.show();
+    gpii.psp.qssWidget.updateContainerVisibility = function (that) {
+        var widgetGrades = that.options.widgetGrades;
+        fluid.each(widgetGrades, function (widgetGrade) {
+            var domElement = gpii.psp.qssWidget.locateDomElement(that, widgetGrade);
+            if (domElement) {
+                domElement.hide();
+            }
+        });
+
+        var widgetContainer = gpii.psp.qssWidget.getWidgetContainer(that);
+        if (widgetContainer) {
+            widgetContainer.show();
         }
     };
 
@@ -288,6 +315,23 @@
             // Otherwise there will be no focused element and any remaining highlight will be removed.
             focusManager.removeHighlight(true);
         }
+    };
+
+    /**
+     * Calculates the total height of the QSS widget assuming that its whole content is fully
+     * displayed and there is no need to scroll (i.e. as if there were enough vertical space for
+     * all the available setting options).
+     * It uses the height of the heightListener iframe that is placed in the component which is expected
+     * to increase in size.
+     * @param {jQuery} container - A jQuery object representing the QSS menu container.
+     * @param {jQuery} parentContainer - A jQuery object representing the parent container of
+     * container in which the available setting options are placed.
+     * @param {jQuery} heightListenerContainer - A jQuery object representing the container which
+     * houses the height listener element.
+     * @return {Number} - The height of the QSS menu assuming it is fully displayed.
+     */
+    gpii.qssWidget.calculateHeight = function (container, parentContainer, heightListenerContainer) {
+        return container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight;
     };
 
     /**

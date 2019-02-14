@@ -1,0 +1,75 @@
+.fl-qssMenuWidget {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controlsWrapper {
+    position: relative;
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: overlay;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls.disabled {
+    pointer-events: none;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls {
+    position: relative;
+    overflow: hidden;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
+    position: relative;
+    width: 120px;
+    margin-bottom: 5px;
+    padding: 5px;
+    border: 1px solid #0f4797;
+    border-radius: 3px;
+    line-height: 12px;
+    box-sizing: border-box;
+
+    background-color: #ffffff;
+    text-align: center;
+    color: #0f4797;
+
+    user-select: none;
+    cursor: pointer;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:after {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 10px);
+    width: 15px;
+    height: 15px;
+    transform: translateY(-50%);
+
+    content: "";
+    background-color: #008145;
+
+    -webkit-mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
+    mask: url("../../../assets/check-circle.svg") 0 0/100% 100%;
+
+    cursor: default;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=false]:after {
+    display: none;
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:focus {
+    outline: none;
+}
+
+@keyframes menuItemActivation {
+    50% {
+        background: #ffea00;
+        color: #000000;
+    }
+}
+
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item.active {
+    animation: menuItemActivation 0.25s 2;
+}

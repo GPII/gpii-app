@@ -31,6 +31,24 @@ var gpii  = fluid.registerNamespace("gpii");
  */
 fluid.defaults("gpii.app.resizable", {
     gradeNames: ["fluid.component"],
+    model: {
+        scaleFactor: null,
+        maxScaleFactor: null
+    },
+    members: {
+        beforeRescale: {
+            wasFocused: null,
+            awaitingRescale: null
+        }
+    },
+
+    /*
+     * A delay in ms after a `displayMetricsChanged` event has occurred and
+     * before the dialog corresponding dialog gets its position and size "refreshed".
+     * Refer to `gpii.app.resizable.handleDisplayMetricsChange` for more details.
+     */
+    refreshTimeout: 1800,
+
     config: {
         attrs: {
             width: null,
@@ -49,6 +67,14 @@ fluid.defaults("gpii.app.resizable", {
         "onCreate.addDisplayMetricsListener": {
             func: "gpii.app.resizable.addDisplayMetricsListener",
             args: ["{that}"]
+        },
+        "onCreate.setMaxScaleFactor": {
+            changePath: "maxScaleFactor",
+            value: "{that}.model.scaleFactor"
+        },
+        "onCreate.scaleOnCreate": {
+            func: "{that}.fitToScreen",
+            priority: "last"
         },
         "onContentHeightChanged": {
             funcName: "gpii.app.resizable.handleContentHeightChange",
@@ -70,13 +96,13 @@ fluid.defaults("gpii.app.resizable", {
     },
 
     components: {
-        rescaleDialogTimer: {
+        refreshDialogTimeout: {
             type: "gpii.app.timer",
             options: {
                 listeners: {
                     onTimerFinished: {
-                        funcName: "gpii.app.resizable.scaleDialog",
-                        args: ["{gpii.app.resizable}"]
+                        func: "gpii.app.resizable.refreshDialog",
+                        args: "{resizable}"
                     }
                 }
             }
@@ -87,10 +113,18 @@ fluid.defaults("gpii.app.resizable", {
             funcName: "fluid.notImplemented",
             args: [
                 "{arguments}.0", // width
-                "{arguments}.1",  // height
+                "{arguments}.1", // height
                 "{arguments}.2", // offsetX
                 "{arguments}.3"  // offsetY
             ]
+        },
+        computeScaleFactor: {
+            funcName: "gpii.app.resizable.computeScaleFactor",
+            args: ["{that}"]
+        },
+        fitToScreen: {
+            funcName: "gpii.app.resizable.fitToScreen",
+            args: ["{that}"]
         }
     }
 });
@@ -103,9 +137,9 @@ fluid.defaults("gpii.app.resizable", {
  * @param {Number} height - The new height of the dialog's content.
  */
 gpii.app.resizable.handleContentHeightChange = function (that, height) {
-    var scaleFactor = that.options.scaleFactor || 1;
+    var scaleFactor = that.model.scaleFactor;
     height = Math.ceil(scaleFactor * height);
-    that.setBounds(that.width, height);
+    that.setBounds(that.model.width, height);
 };
 
 /**
@@ -118,13 +152,60 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
 };
 
 /**
- * Scales the current dialog as a result of a `display-metrics-changed` event.
- * Note that this function will reset the position and the size of the dialog
- * so that the scale factor can be applied.
+ * Calculates what the scaleFactor should be so that the visual representation of
+ * the current component can completely fit into the available screen space. In any
+ * case the new `scaleFactor` cannot be larger than the originally specified
+ * `maxScaleFactor`.
+ * @param {Component} that - The `gpii.app.resizable` component.
+ * @return {Number} - The new scale factor.
+ */
+gpii.app.resizable.computeScaleFactor = function (that) {
+    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+        extendedWidth = that.getExtendedWidth(),
+        scaleFactor = (screenSize.width / extendedWidth) * that.model.scaleFactor;
+
+    return Math.min(scaleFactor, that.model.maxScaleFactor);
+};
+
+/**
+ * Resizes the dialog so that it fits in the available screen size by adjusting
+ * the `scaleFactor`.
  * @param {Component} that - The `gpii.app.resizable` component.
  */
-gpii.app.resizable.scaleDialog = function (that) {
-    that.setBounds();
+gpii.app.resizable.fitToScreen = function (that) {
+    var scaleFactor = that.computeScaleFactor();
+
+    if (scaleFactor === that.model.scaleFactor) {
+        that.setBounds();
+    } else {
+        that.applier.change("scaleFactor", scaleFactor);
+    }
+};
+
+/**
+ * Positions and sizes the hidden dialogs correctly. Also shows them back up.
+ * @param {Component} that - The `gpii.app.resizable` instance
+ */
+gpii.app.resizable.refreshDialog = function (that) {
+    // Ensure the dialog is in correct state.
+    // There was a problem with changing the position of a dialog when rescaling is about
+    // to take place, thus, in case it is offScreenHidable, its state might get corrupted
+    if (!that.model.isShown) {
+        // access lowlevel hide implementation
+        that.hideImpl();
+    }
+
+    if (that.options.config.hideOffScreen) {
+        // As we're using a normal BrowserWindow hide, we'd always need to
+        // apply the normal BrowserWindow show to offScreen hidden windows.
+        gpii.app.dialog.showImpl(that, !that.beforeRescale.wasFocused);
+    } else if (that.model.isShown) {
+        that.showImpl(that, !that.beforeRescale.wasFocused);
+    }
+
+    that.beforeRescale.awaitingRescale = false;
+
+    that.fitToScreen();
 };
 
 /**
@@ -149,7 +230,17 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that) {
      * be resized/repositioned and shown again.
      */
 
-    that.rescaleDialogTimer.start(1500);
+    if (!that.beforeRescale.awaitingRescale) {
+        that.beforeRescale = {
+            wasFocused: electron.BrowserWindow.getFocusedWindow() === that.dialog,
+            awaitingRescale: true
+        };
+
+        that.dialog.hide();
+    }
+
+    // it would restart the timer
+    that.refreshDialogTimeout.start(that.options.refreshTimeout);
 };
 
 /**

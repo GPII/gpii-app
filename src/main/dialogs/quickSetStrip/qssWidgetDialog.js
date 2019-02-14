@@ -29,11 +29,18 @@ require("../../../shared/channelUtils.js");
  * changes.
  */
 fluid.defaults("gpii.app.qssWidget", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
+    gradeNames: ["gpii.app.dialog", "gpii.app.blurrable", "gpii.app.dialog.offScreenHidable"],
 
-    scaleFactor: 1,
-    defaultWidth: 316,
-    defaultHeight: 430,
+    /*
+     * When setting the size of a `BrowserWindow` Electron sometimes changes its position
+     * with a few pixels if the DPI is different than 1. This offset ensures that the dialog's
+     * arrow will not be hidden behind the QSS in case Electron decides to position the window
+     * lower than it actually has to be.
+     */
+    extraVerticalOffset: 7,
+
+    // A list of QSS setting types for which this widget is applicable.
+    supportedSettings: ["string", "number", "boolean"],
 
     model: {
         setting: {}
@@ -42,28 +49,6 @@ fluid.defaults("gpii.app.qssWidget", {
     members: {
         // Used for postponed showing of the dialog (based on an event)
         shouldShow: false
-    },
-
-    // Temporary. Should be removed when the widget becomes truly resizable.
-    heightMap: {
-        "http://registry\\.gpii\\.net/common/language": {
-            expander: {
-                funcName: "gpii.app.scale",
-                args: [
-                    "{that}.options.scaleFactor",
-                    637
-                ]
-            }
-        },
-        "http://registry\\.gpii\\.net/common/highContrastTheme": {
-            expander: {
-                funcName: "gpii.app.scale",
-                args: [
-                    "{that}.options.scaleFactor",
-                    627
-                ]
-            }
-        }
     },
 
     config: {
@@ -78,7 +63,12 @@ fluid.defaults("gpii.app.qssWidget", {
             }
         },
         attrs: {
-            alwaysOnTop: false
+            width: 170,
+            height: 255,
+            alwaysOnTop: true
+        },
+        restrictions: {
+            minHeight: 255
         },
         fileSuffixPath: "qssWidget/index.html"
     },
@@ -93,7 +83,8 @@ fluid.defaults("gpii.app.qssWidget", {
         onSettingUpdated: null,
         onQssWidgetToggled: null,
         onQssWidgetSettingAltered: null,
-        onQssWidgetNotificationRequired: null
+        onQssWidgetNotificationRequired: null,
+        onQssWidgetCreated: null
     },
 
     components: {
@@ -110,9 +101,10 @@ fluid.defaults("gpii.app.qssWidget", {
             options: {
                 events: {
                     onQssWidgetClosed: null,
+                    onQssWidgetHeightChanged: "{qssWidget}.events.onContentHeightChanged",
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
-                    onQssWidgetCreated: null
+                    onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
                 },
                 listeners: {
                     onQssWidgetClosed: [{
@@ -123,9 +115,9 @@ fluid.defaults("gpii.app.qssWidget", {
                             "{arguments}.0" // params
                         ]
                     }],
-                    onQssWidgetSettingAltered: { // XXX dev
+                    onQssWidgetSettingAltered: {
                         funcName: "fluid.log",
-                        args: ["Settings Altered: ", "{arguments}.0"]
+                        args: ["QssWidget - Settings Altered: ", "{arguments}.0"]
                     },
                     onQssWidgetCreated: {
                         funcName: "gpii.app.qssWidget.showOnInit",
@@ -156,7 +148,6 @@ fluid.defaults("gpii.app.qssWidget", {
             funcName: "gpii.app.qssWidget.show",
             args: [
                 "{that}",
-                "{that}.options.heightMap",
                 "{arguments}.0", // setting
                 "{arguments}.1",  // elementMetrics
                 "{arguments}.2"// activationParams
@@ -191,7 +182,7 @@ gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activation
         return;
     }
 
-    if (setting.schema.type === "string" || setting.schema.type === "number") {
+    if (that.options.supportedSettings.includes(setting.schema.type)) {
         that.show(setting, btnCenterOffset, activationParams);
     } else {
         that.hide();
@@ -207,9 +198,12 @@ gpii.app.qssWidget.toggle = function (that, setting, btnCenterOffset, activation
  * the screen.
  */
 gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
+    var extraVerticalOffset = that.options.extraVerticalOffset,
+        scaleFactor = that.model.scaleFactor;
+
     return {
-        x: btnCenterOffset.x - that.width / 2,
-        y: btnCenterOffset.y
+        x: btnCenterOffset.x - that.model.width / 2,
+        y: btnCenterOffset.y + scaleFactor * extraVerticalOffset
     };
 };
 
@@ -217,8 +211,6 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
  * Shows the widget window and position it centered with respect to the
  * corresponding QSS button.
  * @param {Component} that - The `gpii.app.qssWidget` instance
- * @param {Object} heightMap - A hash containing the height the QSS widget must
- * have if the `setting` has a path matching a key in the hash.
  * @param {Object} setting - The setting corresponding to the QSS button that
  * has been activated
  * @param {Object} elementMetrics - An object containing metrics for the QSS
@@ -226,7 +218,7 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
  * @param {Object} [activationParams] - Parameters sent to the renderer portion
  * of the QSS dialog (e.g. whether the activation occurred via keyboard)
  */
-gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, activationParams) {
+gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
     activationParams = activationParams || {};
 
     gpii.app.applier.replace(that.applier, "setting", setting);
@@ -237,8 +229,9 @@ gpii.app.qssWidget.show = function (that, heightMap, setting, elementMetrics, ac
     var offset = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics);
     that.applier.change("offset", offset);
 
-    that.height = heightMap[setting.path] || that.options.config.attrs.height;
-    that.setRestrictedSize(that.width, that.height);
+    var scaleFactor = that.model.scaleFactor,
+        height = that.options.config.attrs.height;
+    that.setRestrictedSize(that.model.width, scaleFactor * height);
 
     that.shouldShow = true;
 };
