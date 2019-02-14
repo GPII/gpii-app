@@ -203,10 +203,10 @@ fluid.defaults("gpii.app.qss", {
 /**
  * Computes the total width of all of the QSS buttons, based on their sizes inside
  * the BrowserWindow.
- * @param {Component} options - Object containing information for buttons
+ * @param {Object} options - Component options object containing information for buttons
+ * @param {Number} modelScaleFactor - Predefined scale factor setting in siteconfig
  * @param {ButtonList[]} buttons - The list of QSS buttons
- * @param {Number} - modelScaleFactor - Predefined scale factor setting in siteconfig
- * @return {Number} - The total scaled size of the QSS's buttons
+ * @return {Number} - The total scaled size of the QSS's button
  */
 gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, buttons) {
     var qssButtonTypes   = options.qssButtonTypes,
