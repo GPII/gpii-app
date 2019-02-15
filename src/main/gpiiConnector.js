@@ -772,8 +772,10 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         // use the initial value of the language as default setting
         "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" },
         // mouse specific settings
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed": { value: 10 },
         "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons": { value: false },
-        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed": { value: 10 }
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.easierDoubleClick": { value: false },
+        "http://registry\\.gpii\\.net/common/cursorSize": { value: 0 }
     }
 });
 
