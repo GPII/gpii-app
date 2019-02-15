@@ -263,6 +263,11 @@
                 funcName: "gpii.qssWidget.menu.presenter.applyStyles",
                 args: ["{that}", "{that}.container", "{repeater}.model.styles"]
             },
+            // Call function that set an attribute which is used for styling purporses.
+            "onCreate.defaultValue": {
+                funcName: "gpii.qssWidget.menu.presenter.defaultValue",
+                args: ["{that}.model.item.key", "{menu}.model.setting.schema.default", "{that}.container"]
+            },
             onItemFocus: {
                 funcName: "gpii.qssWidget.menu.presenter.focusItem",
                 args: [
@@ -329,6 +334,17 @@
         var elementStyles = fluid.get(styles, that.model.item.key);
         if (elementStyles) {
             container.css(elementStyles);
+        }
+    };
+    /**
+     * Adds an attribute property for the default setting value.
+     * @param {String} key - The `key` of the setting option.
+     * @param {Object} item - The default value from the settings.
+     * @param {jQuery} container - A jQuery object representing the setting option's container.
+     */
+    gpii.qssWidget.menu.presenter.defaultValue = function (key, item, container) {
+        if (key === item) {
+            container.attr("data-default", true);
         }
     };
 })(fluid);
