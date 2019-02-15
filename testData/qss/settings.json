@@ -36,7 +36,7 @@
                 "messageKey": "windows-easierDoubleClick"
             },
             "largerMousePointer": {
-                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.largerMousePointer",
+                "path": "http://registry\\.gpii\\.net/common/cursorSize",
                 "schema": {
                     "type": "boolean",
                     "default": false
