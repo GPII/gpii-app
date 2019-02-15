@@ -188,11 +188,26 @@ fluid.defaults("gpii.app.qss", {
 });
 
 /**
+ * QSS's basic dialog metrics
+ * @typedef {dialogContentMetrics} optionsComponent
+ * @property {Number} [logoWidth] Morphic logo width
+ * @property {Number} [buttonWidth] standard button width
+ * @property {Number} [closeButtonWidth] close button width
+ */
+
+/**
+ * Component options object containing information for buttons
+ * @typedef {Object} optionsComponent
+ * @property {Object} [qssButtonTypes] associative list of the available button types
+ * @property {dialogContentMetrics} [dialogContentMetrics]
+ */
+
+/**
  * Represents a group of setting data from which we using only the buttonTypes array
  * @typedef {Object} ButtonList
- * @property {String} [path] the path of the prefererence set.
+ * @property {String} [path] the path of the preference set.
  * @property {SettingSchema} schema.
- * @property {Array} [buttonTypes] array from diffent button types.
+ * @property {Array} [buttonTypes] array from different button types.
  * @property {Number} [tabindex] order of which the buttons will act on keyboard interaction.
  * @property {String} [messageKey] message bundle key used to translate the button's
  * data (like title, hints, etc.).
@@ -203,7 +218,7 @@ fluid.defaults("gpii.app.qss", {
 /**
  * Computes the total width of all of the QSS buttons, based on their sizes inside
  * the BrowserWindow.
- * @param {Object} options - Component options object containing information for buttons
+ * @param {optionsComponent} options
  * @param {Number} modelScaleFactor - Predefined scale factor setting in siteconfig
  * @param {ButtonList[]} buttons - The list of QSS buttons
  * @return {Number} - The total scaled size of the QSS's button
