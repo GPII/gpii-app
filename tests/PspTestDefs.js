@@ -62,12 +62,11 @@ var signInCrossSequence = [
         func: "{that}.app.psp.show"
     },
     {
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.psp.dialog",
-            gpii.test.toIIFEString(gpii.tests.renderer.signIn.triggerSignInError)
+            gpii.tests.renderer.signIn.triggerSignInError
         ],
-        // resolve: "jqUnit.assertDeepEq",
         resolve: "jqUnit.assertDeepEq",
         resolveArgs: [
             "Error text should be shown in case of problem with the user credentials",
@@ -80,10 +79,10 @@ var signInCrossSequence = [
     },
 
     { // Clicking the close button in the PSP...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.psp.dialog",
-            gpii.test.toIIFEString(gpii.tests.renderer.signIn.triggerSignIn)
+            gpii.tests.renderer.signIn.triggerSignIn
         ]
     }, {
         event: "{that}.app.psp.events.onSignInRequested",
@@ -101,7 +100,7 @@ var basicPspInteractionsCrossSequence = [
     {
         func: "{that}.app.psp.show"
     }, { // Clicking the close button in the PSP...
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.psp.dialog",
             closePSP
@@ -120,7 +119,7 @@ var basicPspInteractionsCrossSequence = [
         args: ["multi_context"],
         resolve: "fluid.identity"
     }, { // Delay the tests a bit so that the UI can initialize properly.
-        task: "gpii.test.executeJavaScriptDelayed",
+        task: "gpii.test.executeJavaScriptInWebContentsDelayed",
         args: [
             "{that}.app.psp.dialog",
             decreaseVolume,
@@ -139,14 +138,14 @@ var basicPspInteractionsCrossSequence = [
             "{arguments}.0"
         ]
     }, { // Change a setting which shows a restart warning
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.psp.dialog",
             decreaseMangification
         ],
         resolve: "fluid.identity"
     }, { // ...and click the "undo" button
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.psp.dialog",
             undo
@@ -164,14 +163,14 @@ var basicPspInteractionsCrossSequence = [
             "{arguments}.0"
         ]
     }, { // Change a setting which shows a restart warning
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.psp.dialog",
             decreaseMangification
         ],
         resolve: "fluid.identity"
     }, { // ...and click the "restart" button.
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.psp.dialog",
             resetNow
@@ -189,7 +188,7 @@ var basicPspInteractionsCrossSequence = [
             "{arguments}.0"
         ]
     }, {
-        task: "gpii.test.executeJavaScript",
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.psp.dialog",
             selectBrightPrefSet
@@ -204,7 +203,7 @@ var basicPspInteractionsCrossSequence = [
             "{arguments}.0"
         ]
     }, {
-        func: "gpii.test.executeJavaScript",
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.psp.dialog",
             keyOut

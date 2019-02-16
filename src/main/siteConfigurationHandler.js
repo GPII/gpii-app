@@ -48,7 +48,7 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             },
             target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
         },
-        distributeQssScaleFactor: {
+        distributeQssConfig: {
             record: "{that}.options.siteConfig.qss",
             target: "{app qssWrapper}.options.siteConfig"
         },
@@ -57,16 +57,21 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             target: "{app qssWrapper}.options.settingOptions.languageOptionLabelTemplate"
         },
         distributeDefaultLanguage: {
-            record: "{that}.options.siteConfig.qss.defaultLanguage",
-            target: "{app qssWrapper}.options.settingOptions.defaultLanguage"
+            record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
+            target: "{app qssWrapper}.options.settingOptions.systemDefaultLanguage"
         },
+        distributeTooltipShowDelay: {
+            record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
+            target: "{app qssTooltipDialog}.options.showDelay"
+        },
+
         distributePspConfig: {
             record: "{that}.options.siteConfig.psp",
             target: "{app psp}.options.siteConfig"
         },
         distributeDialogScaleFactor: {
-            record: "{that}.options.siteConfig.pspScaleFactor",
-            target: "{app dialogManager}.options.scaleFactor"
+            record: "{app}.configurationHandler.options.siteConfig.psp.scaleFactor",
+            target: "{app dialogManager}.options.model.scaleFactor"
         },
         distributeQssMorePanelConfig: {
             record: "{that}.options.siteConfig.qssMorePanel",
@@ -95,6 +100,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeAboutDialogConfig: {
             record: "{that}.options.siteConfig.aboutDialog",
             target: "{app aboutDialog}.options.siteConfig"
+        },
+        distributeTrayType: {
+            record: "{that}.options.siteConfig.trayType",
+            target: "{app tray}.options.trayType"
         }
     }
 });

@@ -24,6 +24,9 @@
     "gpii_psp_signIn_signUpButton": "Създай акаунт",
     "gpii_psp_signIn_forgotPasswordButton": "Забравена парола?",
 
+    "gpii_psp_widgets_switch_on": "Вкл",
+    "gpii_psp_widgets_switch_off": "Изкл",
+
     "gpii_psp_header_autosaveText": "Автоматично запазване е включено",
     "gpii_psp_header_keyOut":"Отпиши се",
 

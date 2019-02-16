@@ -28,14 +28,12 @@ require("../basic/centeredDialog.js");
  * changes) or the status of the "Save" operation.
  */
 fluid.defaults("gpii.app.qssNotification", {
-    gradeNames: ["gpii.app.centeredDialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
-
-    scaleFactor: 1,
-    defaultWidth: 350,
-    defaultHeight: 200,
+    gradeNames: ["gpii.app.centeredDialog", "gpii.app.blurrable"],
 
     config: {
         attrs: {
+            width: 225,
+            height: 140,
             alwaysOnTop: true,
             transparent: false
         },

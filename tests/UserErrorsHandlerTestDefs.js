@@ -58,10 +58,10 @@ gpii.tests.userErrorsHandler.testDefs = {
         ]
     }, { // Wait for the error dialog to be shown.
         event: "{that gpii.app.errorDialog}.events.onDialogReady",
-        listener: "gpii.test.executeJavaScript",
+        listener: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.dialogManager.error.dialog.dialog",
-            gpii.test.toIIFEString(clickCloseBtn)
+            clickCloseBtn
         ]
     }, { // ... results in the error dialog being hidden.
         event: "{that}.app.dialogManager.error.dialog.events.onDialogHidden",

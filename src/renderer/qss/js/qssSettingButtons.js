@@ -35,23 +35,11 @@
             value: "{that}.model.item.value"
         },
 
-        styles: {
-            settingButton: "fl-qss-settingButton"
-        },
-
         modelListeners: {
             value: {
                 funcName: "gpii.qss.settingButtonPresenter.updateChangeIndicator",
                 args: ["{that}", "{that}.model.item", "{change}.value"],
                 namespace: "changeIndicator"
-            }
-        },
-
-        listeners: {
-            "onCreate.styleButton": {
-                this: "{that}.container",
-                method: "addClass",
-                args: ["{that}.options.styles.settingButton"]
             }
         }
     });
@@ -73,21 +61,33 @@
     };
 
     /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS buttons which
+     * can have their values changed via the QSS widget.
+     */
+    fluid.defaults("gpii.qss.widgetButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.settingButtonPresenter"],
+        listeners: {
+            "onArrowUpPressed.activate": {
+                func: "{that}.onActivationKeyPressed",
+                args: [
+                    {key: "ArrowUp"}
+                ]
+            }
+        }
+    });
+
+    /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS toggle
      * buttons.
      */
     fluid.defaults("gpii.qss.toggleButtonPresenter", {
-        gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.settingButtonPresenter"],
+        gradeNames: ["gpii.qss.widgetButtonPresenter"],
         model: {
             messages: {
                 caption: null
             },
             caption: null
         },
-        attrs: {
-            role: "switch"
-        },
-        applyKeyboardHighlight: true,
         modelRelay: {
             "caption": {
                 target: "caption",
@@ -99,38 +99,10 @@
             }
         },
         modelListeners: {
-            value: {
-                this: "{that}.container",
-                method: "attr",
-                args: ["aria-checked", "{change}.value"]
-            },
             caption: {
                 this: "{that}.dom.caption",
                 method: "text",
                 args: ["{change}.value"]
-            }
-        },
-        listeners: {
-            "onArrowUpPressed.activate": {
-                func: "{that}.onActivationKeyPressed",
-                args: [
-                    {key: "ArrowUp"}
-                ]
-            },
-            "onArrowDownPressed.activate": {
-                func: "{that}.onActivationKeyPressed",
-                args: [
-                    {key: "ArrowDown"}
-                ]
-            }
-        },
-        invokers: {
-            activate: {
-                funcName: "gpii.qss.toggleButtonPresenter.activate",
-                args: [
-                    "{that}",
-                    "{arguments}.0" // activationParams
-                ]
             }
         }
     });
@@ -146,38 +118,4 @@
     gpii.qss.toggleButtonPresenter.getCaption = function (value, messages) {
         return value ? messages.caption : "";
     };
-
-    /**
-     * A custom function for handling activation of QSS toggle buttons. Reuses the generic
-     * `notifyButtonActivated` invoker.
-     * @param {Component} that - The `gpii.qss.toggleButtonPresenter` instance.
-     * @param {Object} activationParams - An object containing parameter's for the activation
-     * of the button (e.g. which key was used to activate the button).
-     */
-    gpii.qss.toggleButtonPresenter.activate = function (that, activationParams) {
-        that.notifyButtonActivated(activationParams);
-        that.applier.change("value", !that.model.value);
-    };
-
-    /**
-     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS buttons which
-     * can have their values changed via the QSS widget.
-     */
-    fluid.defaults("gpii.qss.widgetButtonPresenter", {
-        gradeNames: ["gpii.qss.buttonPresenter", "gpii.qss.settingButtonPresenter"],
-        listeners: {
-            "onArrowUpPressed.activate": {
-                func: "{that}.onActivationKeyPressed",
-                args: [
-                    {key: "ArrowUp"}
-                ]
-            },
-            "onArrowDownPressed.activate": {
-                func: "{that}.onActivationKeyPressed",
-                args: [
-                    {key: "ArrowDown"}
-                ]
-            }
-        }
-    });
 })(fluid);

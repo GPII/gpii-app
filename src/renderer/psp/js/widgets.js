@@ -344,13 +344,31 @@
     });
 
     fluid.defaults("gpii.psp.widgets.switch", {
-        gradeNames: ["fluid.switchUI", "gpii.psp.widgets.attrsExpander"],
+        gradeNames: ["fluid.switchUI", "gpii.psp.widgets.attrsExpander", "gpii.psp.selectorsTextRenderer"],
         attrs: {
             // "aria-labelledby": null
         },
-        strings: {
-            on: "On",
-            off: "Off"
+        model: {
+            messages: {
+                on: null,
+                off: null
+            }
+        },
+        listeners: {
+            // Override the mechanism of switchUI for setting the On/Off labels
+            "onCreate.addOnText": {
+                funcName: "fluid.identity"
+            },
+            "onCreate.addOffText": {
+                funcName: "fluid.identity"
+            },
+            // Remove the handlers which detect activation of the component using Spacebar and Enter.
+            // Useful when the same DOM element will be used again (e.g. in the QSS toggle menu).
+            "onDestroy.removeElementListeners": {
+                this: "{that}.dom.control",
+                method: "off",
+                args: ["fluid-activate"]
+            }
         }
     });
 

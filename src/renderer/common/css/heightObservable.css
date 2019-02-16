@@ -1,3 +1,8 @@
+/**
+ * Styles for an invisible iframe which is as high as its parent element.
+ * Even though the iframe is not visible, when its content window changes
+ * its dimensions, a "resize" event will be fired.
+ */
 iframe.fl-heightChangeListener {
     position: absolute;
     top: 0;
@@ -5,6 +10,7 @@ iframe.fl-heightChangeListener {
     bottom: 0;
     width: 0;
     height: 100%;
+    border-width: 0;
 
     visibility: hidden;
     pointer-events: none;

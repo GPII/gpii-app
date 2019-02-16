@@ -21,7 +21,7 @@
         windowInitialParams = electron.remote.getCurrentWindow().params;
 
     jQuery(function () {
-        gpii.psp.translatedQss(".flc-quicksetstrip", {
+        gpii.psp.translatedQss(".flc-quickSetStrip", {
             model: {
                 settings: windowInitialParams.settings
             }

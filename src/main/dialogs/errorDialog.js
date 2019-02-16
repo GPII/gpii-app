@@ -28,15 +28,16 @@ require("../common/utils.js");
  * directly passed to the renderer scope with dialog creation.
  */
 fluid.defaults("gpii.app.errorDialog", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
-
-    scaleFactor: 1,
-    defaultWidth: 400,
-    defaultHeight: 250,
+    gradeNames: ["gpii.app.dialog"],
 
     config: {
         destroyOnClose: true,
         awaitWindowReadiness: true,
+
+        attrs: {
+            width: 400,
+            height: 250
+        },
 
         params: {
             title:   null,
@@ -97,9 +98,11 @@ fluid.defaults("gpii.app.error", {
         dialog: {
             type: "gpii.app.errorDialog",
             options: {
-                scaleFactor: "{gpii.app.error}.options.scaleFactor",
                 config: {
                     params: "{arguments}.0"
+                },
+                model: {
+                    scaleFactor: "{gpii.app.error}.model.scaleFactor"
                 }
             }
         }

@@ -26,7 +26,7 @@
      * to display a new QSS setting with its possible values.
      */
     fluid.defaults("gpii.qssWidget.menu", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
         model: {
             disabled: false,
             setting: {}
@@ -39,6 +39,8 @@
             }
         },
         selectors: {
+            heightListenerContainer: ".flc-qssMenuWidget-controls",
+            menuControlsWrapper: ".flc-qssMenuWidget-controlsWrapper",
             menuControls: ".flc-qssMenuWidget-controls"
         },
         enableRichText: true,
@@ -123,6 +125,14 @@
             }
         },
         invokers: {
+            calculateHeight: {
+                funcName: "gpii.qssWidget.calculateHeight",
+                args: [
+                    "{qssWidget}.container",
+                    "{that}.dom.menuControlsWrapper",
+                    "{that}.dom.heightListenerContainer"
+                ]
+            },
             close: {
                 funcName: "gpii.qssWidget.menu.close",
                 args: [
@@ -131,6 +141,9 @@
                     "{arguments}.0" // keyboardEvent
                 ]
             }
+        },
+        events: {
+            onHeightChanged: null
         }
     });
 
