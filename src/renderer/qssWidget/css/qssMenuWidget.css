@@ -40,7 +40,7 @@
 
 /* default and checked states are created here */
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:after,
-.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[data-default=true]:after {
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item.fl-default:after {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -49,12 +49,11 @@
     cursor: default;
 }
 
-.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=false]:after,
-.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[data-default=false]:after  {
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:after {
     background: none;
 }
 
-.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[data-default=true]:after {
+.fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item.fl-default:after {
     left: calc(100% + 12px);
     width: 10px;
     height: 10px;
