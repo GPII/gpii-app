@@ -238,7 +238,8 @@
             item: null
         },
         styles: {
-            active: "active"
+            active: "fl-qssWidgetMenu-active",
+            default: "fl-qssWidgetMenu-default"
         },
         modelListeners: {
             item: {
@@ -266,7 +267,7 @@
             // Call function that set an attribute which is used for styling purporses.
             "onCreate.defaultValue": {
                 funcName: "gpii.qssWidget.menu.presenter.defaultValue",
-                args: ["{that}.model.item.key", "{menu}.model.setting.schema.default", "{that}.container"]
+                args: ["{that}.model.item.key", "{menu}.model.setting.schema.default", "{that}.container", "{that}.options.styles"]
             },
             onItemFocus: {
                 funcName: "gpii.qssWidget.menu.presenter.focusItem",
@@ -341,10 +342,11 @@
      * @param {String} key - The `key` of the setting option.
      * @param {Object} item - The default value from the settings.
      * @param {jQuery} container - A jQuery object representing the setting option's container.
+     * @param {Object} styles - An object containing useful predefined CSS classes.
      */
-    gpii.qssWidget.menu.presenter.defaultValue = function (key, item, container) {
+    gpii.qssWidget.menu.presenter.defaultValue = function (key, item, container, styles) {
         if (key === item) {
-            container.addClass("fl-default");
+            container.addClass(styles.default);
         }
     };
 })(fluid);
