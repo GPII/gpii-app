@@ -5,8 +5,11 @@
 
     // Configuration options for the QSS window
     qss: {
+        // Defines the delay in milliseconds before the tooltip is shown after a QSS button is selected
+        tooltipDisplayDelay: 500, // ms
+
         // The scaling factor for the QSS
-        scaleFactor: 0.85,
+        scaleFactor: 1.5,
         urls: {
             account: "http://morphic.world/account"
         },
@@ -20,10 +23,12 @@
             currentLanguageGroup: "%native",
             genericLanguage: "%native · %local"
         },
-        // The code of the language that would always stay on top of the "Language" setting's menu list.
+        // The code of OS default language `gpii-app` (it might be the one with which the system was installed with).
+        // This language should always stay on top of the "Language" setting's menu list.
         // The code must be exactly matching one of the installed languages' code (with respect to the region).
         // In case the selected language code is missing, there simply won't be a special first setting.
-        defaultLanguage: "en-US"
+        // NOTE: this is not related to the default language value defined for the language setting
+        systemDefaultLanguage: "en-US"
     },
 
     // Configuration options for the PSP window
@@ -52,13 +57,13 @@
 
     // Configuration options for the QSS More panel
     qssMorePanel: {
-    	// These are default values. The actual dimensions of the QSS more panel
-    	// are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
-    	defaultWidth: 600,
-    	defaultHeight: 450,
-    	movable: true,
-    	resizable: true,
-    	alwaysOnTop: true,
+        // These are default values. The actual dimensions of the QSS more panel
+        // are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
+        defaultWidth: 400,
+        defaultHeight: 300,
+        movable: true,
+        resizable: true,
+        alwaysOnTop: true,
 
         urls: {
             moreInfo: "http://morphic.world/more"

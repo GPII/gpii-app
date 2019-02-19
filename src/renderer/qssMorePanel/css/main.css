@@ -2,14 +2,23 @@ body {
     user-select: none;
 }
 
+.fl-dialog .fl-dialog-contentWrapper {
+	padding: 5px 5px 0 5px;
+}
+
 .fl-dialog .fl-dialog-content {
     display: flex;
     flex-direction: column;
     justify-content: center;
 
+    font: normal 9px "Open Sans", "Sans-Serif";
     text-align: center;
 }
 
 .fl-dialog .fl-dialog-content .fl-subtitle + .fl-subtitle {
     margin-top: 20px;
+}
+
+.fl-dialog .fl-dialog-footer {
+    padding: 5px 0 0 0;
 }

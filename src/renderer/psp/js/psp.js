@@ -94,7 +94,12 @@
                         onEscapePressed: null
                     },
                     listeners: {
-                        onEscapePressed: "{channel}.close"
+                        onEscapePressed: {
+                            func: "{channel}.close",
+                            args: [{
+                                key: "{arguments}.0.key"
+                            }]
+                        }
                     }
                 }
             }

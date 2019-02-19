@@ -85,6 +85,13 @@
                     "{arguments}.0" // clearFocus
                 ]
             },
+            isFocusable: {
+                funcName: "gpii.qss.focusManager.isFocusable",
+                args: [
+                    "{arguments}.0", // element
+                    "{that}.options.styles"
+                ]
+            },
             focus: {
                 funcName: "gpii.qss.focusManager.focus",
                 args: [
@@ -105,11 +112,11 @@
             },
             focusNext: {
                 funcName: "gpii.qss.focusManager.focusNext",
-                args: ["{that}", "{that}.container"]
+                args: ["{that}"]
             },
             focusPrevious: {
                 funcName: "gpii.qss.focusManager.focusPrevious",
-                args: ["{that}", "{that}.container"]
+                args: ["{that}"]
             },
             onTabPressed: {
                 funcName: "gpii.qss.focusManager.onTabPressed",
@@ -156,7 +163,8 @@
 
     /**
      * Returns information about the focusable elements in the page as well as the index of
-     * the currently focused element.
+     * the currently focused element. The focusable elements are returned in the order in which
+     * they appear in the page.
      * @param {jQuery} container - The jQuery element representing the container in which this
      * focus manager handles focus.
      * @param {Object} styles - A styles object containing various classes related to focusing
@@ -200,6 +208,19 @@
     };
 
     /**
+     * Returns whether the provided `element` is focusable or not.
+     * @param {HTMLElement | jQuery} element - A simple DOM element or wrapped in a jQuery
+     * object.
+     * @param {Object} styles - A styles object containing various classes related to focusing
+     * of elements
+     * @return {Boolean} `true` if the specified element is focusable and `false` otherwise.
+     */
+    gpii.qss.focusManager.isFocusable = function (element, styles) {
+        element = jQuery(element);
+        return element.hasClass(styles.focusable);
+    };
+
+    /**
      * Focuses a focusable and visible element with a given index in the container and optionally applies
      * the keyboard navigation highlight (the "fl-highlighted" class).
      * @param {Component} that - The `gpii.qss.focusManager` instance.
@@ -231,6 +252,8 @@
      * changes are made.
      */
     gpii.qss.focusManager.focusElement = function (that, element, applyHighlight, silentFocus) {
+        element = jQuery(element);
+
         var styles = that.options.styles;
         if (!element.hasClass(styles.focusable)) {
             return;
@@ -266,7 +289,8 @@
             nextIndex = gpii.psp.modulo(focusIndex + 1, focusableElements.length);
         }
 
-        that.focus(nextIndex, true);
+        var elementToFocus = focusableElements[nextIndex];
+        that.focusElement(elementToFocus, true);
     };
 
     /**
@@ -287,7 +311,8 @@
             previousIndex = gpii.psp.modulo(focusIndex - 1, focusableElements.length);
         }
 
-        that.focus(previousIndex, true);
+        var elementToFocus = focusableElements[previousIndex];
+        that.focusElement(elementToFocus, true);
     };
 
     /**

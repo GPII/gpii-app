@@ -94,7 +94,10 @@
             },
             close: {
                 func: "{that}.sendMessage",
-                args: ["onPSPClose"]
+                args: [
+                    "onPSPClose",
+                    "{arguments}.0" // params
+                ]
             },
             keyOut: {
                 func: "{that}.sendMessage",
