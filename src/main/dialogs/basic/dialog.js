@@ -342,12 +342,6 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
     // proposed in: https://github.com/electron/electron/issues/1095
     dialog.params = params || {};
 
-    // ensure the window is hidden properly
-    if (that.options.config.hideOffScreen && !windowOptions.show) {
-        gpii.app.dialog.offScreenHidable.moveOffScreen(dialog);
-        dialog.show();
-    }
-
     if (!that.options.config.destroyOnClose) {
         // As proposed in https://github.com/electron/electron/issues/6702
         dialog.on("close", function (e) {
