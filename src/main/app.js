@@ -472,27 +472,20 @@ gpii.app.changeGpiiAppShortcut = function (shortcutsManager, shortcut, oldShortc
  */
 
 gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, oldValue, appTextZoomPath) {
-
-    function getChangeSubSetting(value, oldValue) {
-        return fluid.find_if(value.settings, function (setting, key) {
-            return !fluid.model.diff(setting, oldValue.settings[key]);
-        });
-    }
-
     // Adds the previous value to the setting in order to enable reverting back to
     // it when needed.
     fluid.extend(true, setting, {
         oldValue: oldValue.value
     });
 
-    if (setting.path === "mouse") { // TODO move to component options like the appTextZoomPath
-        setting = getChangeSubSetting(setting, oldValue);
-    }
-
     if (setting.path === appTextZoomPath) { // Special handling of the "App / Text Zoom" setting
         var direction = setting.value > setting.oldValue ? "increase" : "decrease";
         appZoom.sendZoom(direction);
     } else {
+        if (fluid.isValue(setting.settings)) {
+            // this setting has secondary values, getting the proper one
+            setting = gpii.app.getSecondarySettingsChanges(setting, oldValue);
+        }
         settingsBroker.applySetting(setting);
     }
 };

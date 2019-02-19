@@ -189,3 +189,17 @@ gpii.app.isPointInRect = function (point, rectangle) {
     return rectangle.x <= point.x && point.x <= rectangle.x + rectangle.width &&
            rectangle.y <= point.y && point.y <= rectangle.y + rectangle.height;
 };
+
+/**
+ * Looks into secondary data's `settings` value and compare the values with the
+ * provided old value
+ * @param {Object} setting - The setting which has been altered via the QSS or
+ * its widget.
+ * @param {Object} oldValue - The previous value of the altered setting.
+ */
+
+gpii.app.getSecondarySettingsChanges = function(value, oldValue) {
+    return fluid.find_if(value.settings, function (setting, key) {
+        return !fluid.model.diff(setting, oldValue.settings[key]);
+    });
+}
