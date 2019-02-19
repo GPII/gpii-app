@@ -377,7 +377,8 @@ gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, 
     pspChannel.applier.change("saveButtonClickCount", saveButtonClickCount + 1, null, "PSP");
 
     description = fluid.stringTemplate(description, {
-        accountUrl: that.options.siteConfig.urls.account
+        accountUrl: that.options.siteConfig.urls.account,
+        messageKeyedOut: that.options.siteConfig.messages.keyedOut
     });
 
     qssNotification.show({
