@@ -108,7 +108,7 @@ $packagedAppDir = (Join-Path $packagerDir "morphic-app-win32-ia32")
 Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
 
 # Build the Windows Service
-$serviceDir = $(Join-Path $preStagingDir "node_modules\gpii-windows\service")
+$serviceDir = $(Join-Path $preStagingDir "node_modules\gpii-windows\gpii-service")
 $serviceModules = (Join-Path $serviceDir "node_modules")
 
 # Perform a clean production build of the service.
