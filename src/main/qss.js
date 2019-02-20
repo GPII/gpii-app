@@ -428,10 +428,22 @@ gpii.app.qssWrapper.registerUndoableChange = function (that, oldValue) {
  * @param {Object} change - The change to be reverted.
  */
 gpii.app.undoStack.revertChange = function (qssWrapper, change) {
-    qssWrapper.alterSetting({
-        path:  change.path,
-        value: change.value
-    }, "gpii.app.undoStack.undo");
+    if (gpii.app.hasSecondarySettings(change)) {
+        // this change has secondary settings
+        fluid.each(change.settings, function(secondaryChange) {
+            // applying the secondary settings
+            qssWrapper.alterSetting({
+                path:  secondaryChange.path,
+                value: secondaryChange.value
+            }, "gpii.app.undoStack.undo");
+        });
+    } else {
+        // applying the primary settings
+        qssWrapper.alterSetting({
+            path:  change.path,
+            value: change.value
+        }, "gpii.app.undoStack.undo");
+    }
 };
 
 /**
@@ -702,7 +714,7 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
             secondarySettingData = false; // store secondary index object data
 
         fluid.each(that.model.settings, function(el, index) {
-            if (fluid.isValue(el.settings)) {
+            if (gpii.app.hasSecondarySettings(el)) {
                 primarySettingIndex = index;
                 secondarySettingData = fluid.find_if(el.settings, function(setting, key) {
                     secondarySettingKey = key;
