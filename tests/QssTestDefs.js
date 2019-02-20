@@ -1280,7 +1280,7 @@ var qssCrossTestSequence = [
         listener: "jqUnit.assertLeftHand",
         args: [
             "Change event was fired from QSS widget interaction.",
-            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
+            { path: "http://registry\\.gpii\\.net/common/cursorSize", value: true },
             "{arguments}.0"
         ]
     },
