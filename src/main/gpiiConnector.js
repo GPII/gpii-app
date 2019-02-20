@@ -775,7 +775,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed": { value: 10 },
         "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons": { value: false },
         "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.easierDoubleClick": { value: false },
-        "http://registry\\.gpii\\.net/common/cursorSize": { value: 0 }
+        "http://registry\\.gpii\\.net/common/cursorSize": { value: false }
     }
 });
 
