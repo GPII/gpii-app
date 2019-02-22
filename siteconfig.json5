@@ -28,7 +28,11 @@
         // The code must be exactly matching one of the installed languages' code (with respect to the region).
         // In case the selected language code is missing, there simply won't be a special first setting.
         // NOTE: this is not related to the default language value defined for the language setting
-        systemDefaultLanguage: "en-US"
+        systemDefaultLanguage: "en-US",
+        messages: {
+            keyedOut: "To save your settings you need to setup a Morphic Account. Go to <a href=\"http://morphic.world/account\">http://morphic.world/account</a>."
+        }
+
     },
 
     // Configuration options for the PSP window
