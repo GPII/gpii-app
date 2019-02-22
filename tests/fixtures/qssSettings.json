@@ -170,16 +170,16 @@
         },
         "settings": {
             "mouseSpeed": {
-                "path": "http://registry\\.gpii\\.net/common/DPIScale",
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed",
                 "schema": {
                     "type": "number",
-                    "title": "Mouse speed",
-                    "default": 0,
-                    "min": 0,
-                    "max": 11,
-                    "divisibleBy": 1
+                    "default": 10,
+                    "min": 1,
+                    "max": 20,
+                    "divisibleBy": 2,
+                    "title": "Mouse Speed"
                 },
-                "value": 0
+                "value": 10
             },
             "swapMouseButtons": {
                 "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons",
@@ -192,7 +192,7 @@
                 "messageKey": "windows-swapMouseButtons"
             },
             "easierDoubleClick": {
-                "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.easierDoubleClick",
                 "schema": {
                     "type": "boolean",
                     "default": false,
