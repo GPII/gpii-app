@@ -123,12 +123,20 @@
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
     }, {
+        "path": "usb-open",
+        "schema": {
+            "type": "usb-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 6,
+        "messageKey": "usb-open"
+    }, {
         "path": "more",
         "schema": {
             "type": "more"
         },
         "buttonTypes": ["largeButton"],
-        "tabindex": 6,
+        "tabindex": 201,
         "messageKey": "more"
     }, {
         "path": "save",
@@ -136,7 +144,7 @@
             "type": "save"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 7,
+        "tabindex": 202,
         "messageKey": "save"
     }, {
         "path": "undo",
@@ -144,7 +152,7 @@
             "type": "undo"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 9,
+        "tabindex": 204,
         "messageKey": "undo"
     }, {
         "path": "psp",
@@ -152,7 +160,7 @@
             "type": "psp"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 8,
+        "tabindex": 203,
         "messageKey": "psp"
     }, {
         "path": "resetAll",
@@ -160,7 +168,7 @@
             "type": "resetAll"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 10,
+        "tabindex": 205,
         "messageKey": "resetAll"
     }, {
         "path": "close",
@@ -168,7 +176,7 @@
             "type": "close"
         },
         "buttonTypes": ["closeButton"],
-        "tabindex": 11,
+        "tabindex": 206,
         "messageKey": "close"
     }
 ]

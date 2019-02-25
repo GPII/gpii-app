@@ -39,6 +39,7 @@
             "undo":     "gpii.qss.undoButtonPresenter",
             "resetAll": "gpii.qss.resetAllButtonPresenter",
             "more":     "gpii.qss.moreButtonPresenter",
+            "usb-open": "gpii.qss.openUSBButtonPresenter",
             "disabled": "gpii.qss.disabledButtonPresenter"
         },
 

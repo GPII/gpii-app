@@ -17,7 +17,9 @@
 
 "use strict";
 (function (fluid) {
-    var gpii = fluid.registerNamespace("gpii");
+    var gpii = fluid.registerNamespace("gpii"),
+        // TODO: openUSB - remove this when the proper function is used
+        child_process = require("child_process");
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Key in"
@@ -179,6 +181,28 @@
     gpii.qss.moreButtonPresenter.activate = function (that, qssList, activationParams) {
         that.notifyButtonActivated(activationParams);
         qssList.events.onMorePanelRequired.fire();
+    };
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Open USB Button"
+     * QSS button.
+     */
+    fluid.defaults("gpii.qss.openUSBButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.openUSBButtonPresenter.activate",
+                args: []
+            }
+        }
+    });
+
+    /**
+     * A custom function for handling activation of the "Open USB" QSS button.
+     */
+    gpii.qss.openUSBButtonPresenter.activate = function () {
+        // TODO: openUSB - Change this to the proper function when Steve's ready with it and re-check the params then
+        child_process.exec("explorer.exe");
     };
 
     /**
