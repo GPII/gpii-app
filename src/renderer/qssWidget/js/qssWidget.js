@@ -53,7 +53,9 @@
         selectors: {
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
-            toggle: ".flc-qssToggleWidget"
+            toggle: ".flc-qssToggleWidget",
+            quickFolders: ".flc-qssQuickFoldersWidget",
+            search: ".flc-qssSearchWidget"
         },
 
         /**
@@ -63,7 +65,9 @@
         widgetGrades: {
             "number": "gpii.qssWidget.stepper",
             "string": "gpii.qssWidget.menu",
-            "boolean": "gpii.qssWidget.toggle"
+            "boolean": "gpii.qssWidget.toggle",
+            "text": "gpii.qssWidget.search",
+            "quickFolders": "gpii.qssWidget.quickFolders"
         },
 
         events: {

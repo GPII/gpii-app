@@ -86,7 +86,8 @@ fluid.defaults("gpii.app.qssWrapper", {
         scaleFactor: 1,
         urls: {
             account: "http://morphic.world/account"
-        }
+        },
+        morphicQuickFolderPath: "c:\\"
     },
 
     model: {
@@ -100,6 +101,7 @@ fluid.defaults("gpii.app.qssWrapper", {
 
 
         scaleFactor: "{that}.options.siteConfig.scaleFactor",
+        morphicQuickFolderPath: "{that}.options.siteConfig.morphicQuickFolderPath",
 
         // user preferences
         closeQssOnBlur: false,
@@ -245,7 +247,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssWidget",
             options: {
                 model: {
-                    scaleFactor: "{qssWrapper}.model.scaleFactor"
+                    scaleFactor: "{qssWrapper}.model.scaleFactor",
+                    morphicQuickFolderPath: "{qssWrapper}.model.morphicQuickFolderPath"
                 },
                 listeners: {
                     onQssWidgetSettingAltered: {

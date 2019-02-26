@@ -17,6 +17,8 @@
 "use strict";
 (function (fluid, jQuery) {
     var gpii = fluid.registerNamespace("gpii"),
+        child_process = require("child_process"),
+        fs = require("fs"),
         shell = require("electron").shell;
 
 
@@ -79,6 +81,36 @@
             var lastDotIndex = widgetGrade.lastIndexOf("."),
                 selector = widgetGrade.substring(lastDotIndex + 1);
             return domElement.locate(selector);
+        }
+    };
+
+    /**
+    * Check if a directory exists.
+    * @param {String} directory - The directory to check.
+    */
+    gpii.psp.checkIfdirectoryExists = function (directory) {
+        try {
+            fs.statSync(directory);
+            return true;
+        }
+        catch (err) {
+          if (err.code === "ENOENT") {
+            return false;
+          }
+        }
+    };
+
+    /**
+    * Opens the passed directory externally using the default file explorer
+    * @param {String} directory - The directory to check.
+    */
+    gpii.psp.openFileExplorer = function (directory) {
+        var fileExplorerExe = "explorer.exe";
+        try {
+            child_process.exec(fileExplorerExe + " " + directory);
+        }
+        catch (err) {
+            console.log(err);
         }
     };
 

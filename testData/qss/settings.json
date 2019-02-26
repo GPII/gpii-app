@@ -1,5 +1,25 @@
 [
     {
+        "path": "quickFolders",
+        "schema": {
+            "type": "quickFolders"
+        },
+        "settings": {
+            "folderSearch": {
+                "path": "appTextZoom",
+                "schema": {
+                    "type": "text",
+                    "default": ""
+                },
+                "value": "Value from settings",
+                "messageKey": "windows-folderSearch"
+            }
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 0,
+        "messageKey": "common-quickFolders",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#quick-folders"
+    }, {
         "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {
             "type": "string",
