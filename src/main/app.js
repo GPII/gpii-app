@@ -482,6 +482,7 @@ gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, oldVa
         var direction = setting.value > setting.oldValue ? "increase" : "decrease";
         appZoom.sendZoom(direction);
     } else {
+        // TODO: onQssSettingAltered() this part should be reworked according to https://issues.gpii.net/browse/GPII-3751
         if (fluid.isValue(setting.settings)) {
             // this setting has secondary values, getting the proper one
             setting = gpii.app.getSecondarySettingsChanges(setting, oldValue);
