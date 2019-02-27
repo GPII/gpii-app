@@ -43,7 +43,19 @@
                     }
                 }
             },
-            morphicFolder: null
+            morphicQuickFolderPath: null
+        },
+
+        listeners: {
+            onCreate: {
+                func: "{that}.log"
+            }
+        },
+        invokers: {
+            log: {
+                funcName: "gpii.qssWidget.quickFolders.log",
+                args: ["{that}"]
+            }
         },
 
         components: {
@@ -54,10 +66,14 @@
                     model: {
                         setting: "{gpii.qssWidget.quickFolders}.model.setting.settings.folderSearch",
                         // setting: "{gpii.qssWidget.quickFolders}.model",
-                        morphicFolder: "{gpii.qssWidget.quickFolders}.model.morphicFolder"
+                        morphicQuickFolderPath: "{gpii.qssWidget.quickFolders}.model.morphicQuickFolderPath"
                     }
                 }
             }
         }
     });
+
+    gpii.qssWidget.quickFolders.log = function (that) {
+        // console.log(that);
+    };
 })(fluid);

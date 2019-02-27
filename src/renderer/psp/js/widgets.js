@@ -323,6 +323,36 @@
         }
     });
 
+    fluid.defaults("gpii.psp.widgets.alert", {
+        gradeNames: ["fluid.viewComponent"],
+
+        model: {
+            label: null // Expected from implementor
+        },
+
+        selectors: {
+            label: ".flc-alertLabel"
+        },
+        attrs: {
+        //     "aria-label": "{alert}.model.label"
+        //     // user provided attributes
+        },
+        listeners: {
+            "onCreate.addAttrs": {
+                "this": "{that}.container",
+                method: "attr",
+                args: ["{that}.options.attrs"]
+            }
+        },
+        modelListeners: {
+            label: {
+                "this": "{that}.dom.label",
+                method: "text",
+                args: ["{that}.model.label"]
+            }
+        }
+    });
+
     fluid.defaults("gpii.psp.widgets.textfield", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.widgets.attrsExpander"],
         selectors: {

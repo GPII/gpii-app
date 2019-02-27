@@ -28,7 +28,8 @@
         selectors: {
             searchField: ".flc-search",
             searchButton: ".flc-searchButton",
-            settingTitle: ".flc-qssSearchWidget-settingTitle"
+            settingTitle: ".flc-qssSearchWidget-settingTitle",
+            errorMessage: ".flc-qssSearchWidget-errorMessage"
         },
 
         enableRichText: true,
@@ -37,10 +38,11 @@
             setting: {},
             value: "{that}.model.setting.value",
             messages: {
-                settingTitle: "{that}.model.setting.schema.title",
-                searchButtonLabel: "search label"
+                searchButtonLabel: "{that}.model.setting.schema.searchButtonLabel",
+                alertLabel: "{that}.model.setting.schema.alertLabel"
             },
-            morphicFolder: "{that}.model.morphicFolder"
+            errorMessageSelector: "{that}.options.selectors.errorMessage",
+            morphicFolder: null
         },
 
         components: {
@@ -55,7 +57,7 @@
                     invokers: {
                         onSearch: {
                             funcName: "gpii.qssWidget.search.onSearch",
-                            args: ["{that}"]
+                            args: ["{that}", "{gpii.qssWidget.search}.errorMessage"]
                         }
                     }
                 }
@@ -71,6 +73,25 @@
                         onClick: "{gpii.qssWidget.search}.searchField.onSearch"
                     }
                 }
+            },
+            errorMessage: {
+                type: "gpii.psp.widgets.alert",
+                container: "{that}.dom.errorMessage",
+                options: {
+                    model: {
+                        label: "{gpii.qssWidget.search}.model.messages.alertLabel"
+                    },
+                    invokers: {
+                        onError: {
+                            funcName: "gpii.qssWidget.search.onError",
+                            args: ["{that}.container"]
+                        },
+                        onSuccess: {
+                            funcName: "gpii.qssWidget.search.onSuccess",
+                            args: ["{that}.container"]
+                        }
+                    }
+                }
             }
         }
     });
@@ -83,14 +104,23 @@
      */
 
      // TODO navigation through tab and enter
-    gpii.qssWidget.search.onSearch = function (that) {
-        console.log(that.model);
+    gpii.qssWidget.search.onSearch = function (that, errorMessage) {
         var directory = "c:\\Morphic QuickFolders\\" + that.model.value;
 
         if (gpii.psp.checkIfdirectoryExists(directory)) {
+            errorMessage.onSuccess();
             gpii.psp.openFileExplorer(directory);
         } else {
-            console.log("Directory does not exist");
+            errorMessage.onError();
         }
     };
+
+    gpii.qssWidget.search.onError = function (element) {
+        element.removeClass("fl-alert-hidden");
+    };
+
+    gpii.qssWidget.search.onSuccess = function (element) {
+        element.addClass("fl-alert-hidden");
+    };
+
 })(fluid);
