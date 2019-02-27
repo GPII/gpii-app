@@ -12,7 +12,7 @@
                     "alertLabel": "No quick folder found. Try a different name/code.",
                     "searchButtonLabel": "Open"
                 },
-                "value": "Value from settings",
+                "value": "",
                 "messageKey": "windows-folderSearch"
             }
         },

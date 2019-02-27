@@ -88,15 +88,13 @@
     * Check if a directory exists.
     * @param {String} directory - The directory to check.
     */
-    gpii.psp.checkIfdirectoryExists = function (directory) {
+    gpii.psp.checkIfDirectoryExists = function (directory) {
         try {
-            fs.statSync(directory);
-            return true;
-        }
-        catch (err) {
-          if (err.code === "ENOENT") {
+            if (fs.existsSync(directory)) {
+                return true;
+            }
+        } catch(err) {
             return false;
-          }
         }
     };
 
@@ -105,12 +103,13 @@
     * @param {String} directory - The directory to check.
     */
     gpii.psp.openFileExplorer = function (directory) {
-        var fileExplorerExe = "explorer.exe";
+        let fileExplorerExe = "explorer.exe",
+            path = fileExplorerExe + " \"" + directory + "\"";
+
         try {
-            child_process.exec(fileExplorerExe + " " + directory);
-        }
-        catch (err) {
-            console.log(err);
+            child_process.exec(path);
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "=============  openFileExplorer: File/directory NOT found - " + directory);
         }
     };
 

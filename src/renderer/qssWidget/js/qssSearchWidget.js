@@ -81,14 +81,23 @@
                     model: {
                         label: "{gpii.qssWidget.search}.model.messages.alertLabel"
                     },
+                    styles: {
+                        alertHidden: "fl-qssSearchWidget-alert-hidden"
+                    },
                     invokers: {
                         onError: {
                             funcName: "gpii.qssWidget.search.onError",
-                            args: ["{that}.container"]
+                            args: [
+                                "{that}.container",
+                                "{that}.options.styles"
+                            ]
                         },
                         onSuccess: {
                             funcName: "gpii.qssWidget.search.onSuccess",
-                            args: ["{that}.container"]
+                            args: [
+                                "{that}.container",
+                                "{that}.options.styles"
+                            ]
                         }
                     }
                 }
@@ -105,9 +114,9 @@
 
      // TODO navigation through tab and enter
     gpii.qssWidget.search.onSearch = function (that, errorMessage) {
-        var directory = "c:\\Morphic QuickFolders\\" + that.model.value;
+        let directory = "C:\\Morphic QuickFolders\\" + that.model.value;
 
-        if (gpii.psp.checkIfdirectoryExists(directory)) {
+        if (gpii.psp.checkIfDirectoryExists(directory)) {
             errorMessage.onSuccess();
             gpii.psp.openFileExplorer(directory);
         } else {
@@ -115,12 +124,14 @@
         }
     };
 
-    gpii.qssWidget.search.onError = function (element) {
-        element.removeClass("fl-alert-hidden");
+    gpii.qssWidget.search.onError = function (element, styles) {
+        console.log('============= onError');
+        element.removeClass(styles.alertHidden);
     };
 
-    gpii.qssWidget.search.onSuccess = function (element) {
-        element.addClass("fl-alert-hidden");
+    gpii.qssWidget.search.onSuccess = function (element, styles) {
+        console.log('============= onSuccess');
+        element.addClass(styles.alertHidden);
     };
 
 })(fluid);
