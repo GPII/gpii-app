@@ -100,7 +100,7 @@
 
     /**
     * Opens the passed directory externally using the default file explorer
-    * @param {String} directory - The directory to check.
+    * @param {String} directory - The directory to open with explorer.
     */
     gpii.psp.openFileExplorer = function (directory) {
         let fileExplorerExe = "explorer.exe",

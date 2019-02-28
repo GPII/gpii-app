@@ -56,5 +56,14 @@
 
     "gpii_qss_toggleButtonPresenter_caption": "[ВКЛ.]",
 
-    "gpii_psp_qssWidget_learnMore": "Научи повече..."
+    "gpii_psp_qssWidget_learnMore": "Научи повече...",
+
+    "gpii_qssWidget_stepper_incrementButton": "По-голям",
+    "gpii_qssWidget_stepper_decrementButton": "По-малък",
+    "gpii_qssWidget_stepper_upperBoundError": "Максимална настройка",
+    "gpii_qssWidget_stepper_lowerBoundError": "Минимална настройка",
+
+    "gpii_qssWidget_quickFolders_label": "Име/код на папката",
+    "gpii_qssWidget_quickFolders_alertLabel": "Папка с подобно име/код НЕ съществува.",
+    "gpii_qssWidget_quickFolders_searchButtonLabel": "Отвори"
 }

@@ -73,5 +73,9 @@
     "gpii_qssWidget_stepper_incrementButton": "Larger",
     "gpii_qssWidget_stepper_decrementButton": "Smaller",
     "gpii_qssWidget_stepper_upperBoundError": "This is highest setting",
-    "gpii_qssWidget_stepper_lowerBoundError": "This is lowest setting"
+    "gpii_qssWidget_stepper_lowerBoundError": "This is lowest setting",
+
+    "gpii_qssWidget_quickFolders_label": "Quick folder name/code",
+    "gpii_qssWidget_quickFolders_alertLabel": "No quick folder found. Try a different name/code.",
+    "gpii_qssWidget_quickFolders_searchButtonLabel": "Open"
 }

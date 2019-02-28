@@ -2,24 +2,14 @@
     {
         "path": "quickFolders",
         "schema": {
-            "type": "quickFolders"
-        },
-        "settings": {
-            "folderSearch": {
-                "path": "appTextZoom",
-                "schema": {
-                    "type": "text",
-                    "alertLabel": "No quick folder found. Try a different name/code.",
-                    "searchButtonLabel": "Open"
-                },
-                "value": "",
-                "messageKey": "windows-folderSearch"
-            }
+            "type": "quickFolders",
+            "default": ""
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 0,
         "messageKey": "common-quickFolders",
-        "learnMoreLink": "https://morphic.world/help/qsshelp#quick-folders"
+        "learnMoreLink": "https://morphic.world/help/qsshelp#quick-folders",
+        "value": ""
     }, {
         "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {

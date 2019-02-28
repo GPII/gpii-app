@@ -30,7 +30,8 @@
         // NOTE: this is not related to the default language value defined for the language setting
         systemDefaultLanguage: "en-US",
 
-        morphicQuickFolderPath: "c:\\Morphic QuickFolders"
+        // Defines where the base folder for the Quick Folder is
+        morphicQuickFolderPath: "C:\\Morphic QuickFolders\\"
     },
 
     // Configuration options for the PSP window
