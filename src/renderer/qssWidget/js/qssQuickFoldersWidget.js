@@ -1,8 +1,11 @@
 /**
  * The QSS Quick folders widget
  *
- * Represents the QSS menu widget ... TODO add description
- * Copyright 2017 Raising the Floor - International
+ * Represents the QSS Quick folders widget. Shows input and button and on
+ * submit tries to find if there is a folder with that name (contained in
+ * siteconfig's morphicQuickFolderPath folder) and if there is one opens it.
+ *
+ * Copyright 2019 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
  * compliance with this License.
@@ -19,9 +22,7 @@
     var gpii = fluid.registerNamespace("gpii");
 
     /**
-     * Represents the QSS Quick folders widget. Shows input and button and on
-     * submit tries to find if there is a folder with that name (contained in
-     * siteconfig's morphicQuickFolderPath folder) and if there is one opens it.
+     * QSS Quick folders widget
      */
     fluid.defaults("gpii.qssWidget.quickFolders", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],

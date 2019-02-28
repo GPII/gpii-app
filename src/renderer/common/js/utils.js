@@ -109,7 +109,7 @@
         try {
             child_process.exec(path);
         } catch (err) {
-            fluid.log(fluid.logLevel.WARN, "=============  openFileExplorer: File/directory NOT found - " + directory);
+            fluid.log(fluid.logLevel.WARN, "openFileExplorer: File/directory NOT found - " + directory);
         }
     };
 
