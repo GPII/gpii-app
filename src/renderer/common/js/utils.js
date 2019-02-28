@@ -46,19 +46,21 @@
 
 
     /**
-     * TODO
-     * @param {command}
+     * Executes the file from the shareXPath with the combination of the command
+     * @param command {String} - shareX command, example: "Morphic: Capture entire screen to desktop"
+     * @param shareXPath {String} - the path and executable name, example: "C:\\sharex-portable\\sharex.exe"
      */
-    gpii.psp.executeShellCommand = function (command) {
-        var commandPrefix = "\"C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe\" -workflow ";
-        console.log(commandPrefix + command);
+    gpii.psp.execShareXCommand = function (command, shareXPath) {
+        // creates the command line, it should looks something like:
+        // "C:\\sharex-portable\\sharex.exe" -workflow "Morphic: Capture entire screen to desktop"
+        let commandToExecute = "\""+shareXPath+"\" -workflow \""+command+"\"";
+
         try {
-            child_process.exec(commandPrefix + command);
+            child_process.exec(commandToExecute);
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "execShareXCommand: Cannot execute - " + commandToExecute);
         }
-        catch (err) {
-            console.log(err);
-        }
-    }
+    };
 
     /**
      * Plays a sound identified by an absolute path or a URL to it.

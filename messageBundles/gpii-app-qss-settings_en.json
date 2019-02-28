@@ -70,6 +70,12 @@
     "gpii_app_qss_settings_screenCapture": {
         "tooltip": "<p>Screen Capture.</p><p>Take pictures or record videos of the screen.</p>",
         "title": "Screen Capture",
-        "tip": "<p>Screen Capture</p><p>Take pictures or record videos of the screen. Do not violate Copyright or other laws!</p><ul><li>Move the mouse and then click to capture the highlighted area.</li><li>Clicking and dragging captures a custom part of the screen.</li></ul>"
+        "tip": "<p>Screen Capture</p><p>Take pictures or record videos of the screen. Do not violate Copyright or other laws!</p><ul><li>Move the mouse and then click to capture the highlighted area.</li><li>Clicking and dragging captures a custom part of the screen.</li></ul>",
+        "enum": [
+            "Capture image\n to clipboard for pasting",
+            "Capture image\n to file on desktop",
+            "Record video\n with computer audio",
+            "Record video\n with comp. audio + mic"
+        ]
     }
 }

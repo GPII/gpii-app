@@ -114,6 +114,7 @@
                 },
                 options: {
                     sounds: "{qssWidget}.options.sounds",
+                    siteConfig: "{qssWidget}.options.siteConfig",
                     activationParams: "{arguments}.1",
                     model: {
                         setting: "{qssWidget}.model.setting",

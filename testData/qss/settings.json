@@ -3,17 +3,11 @@
         "path": "screenCapture",
         "schema": {
             "type": "screenCapture",
-            "enum": [
-                "Capture image to clipboard for pasting",
-                "Capture image to file on desktop",
-                "Record video with computer audio",
-                "Record video with comp. audio + mic"
-            ],
             "keys": [
-                "\"Morphic: Capture entire screen to clipboard\"",
-                "\"Morphic: Capture entire screen to desktop\"",
-                "\"Morphic: Record region to desktop with computer audio\"",
-                "\"Morphic: Record region to desktop with computer and mic audio\""
+                "Morphic: Capture entire screen to clipboard",
+                "Morphic: Capture entire screen to desktop",
+                "Morphic: Record region to desktop with computer audio",
+                "Morphic: Record region to desktop with computer and mic audio"
             ],
             "default": ""
         },

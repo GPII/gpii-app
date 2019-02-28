@@ -31,8 +31,10 @@
         systemDefaultLanguage: "en-US",
         messages: {
             keyedOut: "To save your settings you need to setup a Morphic Account. Go to <a href=\"http://morphic.world/account\">http://morphic.world/account</a>."
-        }
+        },
 
+        // the path to the ShareX's executable file, used in the screenCaptureWidget
+        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe"
     },
 
     // Configuration options for the PSP window

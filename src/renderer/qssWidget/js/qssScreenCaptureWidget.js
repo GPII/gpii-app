@@ -21,6 +21,12 @@
     /**
      * Represents the QSS Screen Capture widget. TODO
      */
+
+    /**
+     * Represents the QSS Screen Capture widget. Shows a list of buttons
+     * that do a screen or video capture using the shareX command, its using
+     * siteconfig's shareXPath folder and the provided command from the button
+     */
     fluid.defaults("gpii.qssWidget.screenCapture", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
         model: {
@@ -73,13 +79,14 @@
                     },
                     invokers: {
                         updateValue: {
-                            funcName: "gpii.qssWidget.screenCapture.updateValue",
+                            funcName: "gpii.qssWidget.screenCapture.executeShareX",
                             args: [
                                 "{that}",
                                 "{screenCapture}",
                                 "{that}.container",
                                 "{arguments}.0", // value
-                                "{arguments}.1" // keyboardEvent
+                                "{arguments}.1", // keyboardEvent
+                                "{gpii.qssWidget.screenCapture}.options.siteConfig.shareXPath" // the path to the shareX executable
                             ]
                         }
                     },
@@ -175,8 +182,7 @@
     };
 
     /**
-     * Updates the value in the model of the widget's repeater. Ensures that interaction
-     * with the QSS menu widget is disabled as it is about to close.
+     * Executes the shareX command with the command from the button
      * @param {Component} that - The `gpii.psp.repeater` instance.
      * @param {Component} menu - The `gpii.qssWidget.menu` instance.
      * @param {jQuery} container - The jQuery object representing the container of the
@@ -184,11 +190,10 @@
      * @param {Any} value - The new value of the setting in the QSS menu.
      * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
      * change in the setting's value.
+     * @param {String} shareXPath - the path to the shareX executable
      */
-    gpii.qssWidget.screenCapture.updateValue = function (that, menu, container, value, keyboardEvent) {
-        console.log("gpii.qssWidget.screenCapture.updateValue");
-        console.log(value);
-        gpii.psp.executeShellCommand(value);
+    gpii.qssWidget.screenCapture.executeShareX = function (that, menu, container, value, keyboardEvent, shareXPath) {
+        gpii.psp.execShareXCommand(value, shareXPath);
 
         if (!that.model.disabled && that.model.value !== value) {
             that.applier.change("value", value, null, "settingAlter");
@@ -307,9 +312,10 @@
      * @param {Object} styles - The styles for the current QSS menu setting.
      */
     gpii.qssWidget.screenCapture.presenter.applyStyles = function (that, container, styles) {
-        var elementStyles = fluid.get(styles, that.model.item.key);
+        let elementStyles = fluid.get(styles, that.model.item.key);
         if (elementStyles) {
             container.css(elementStyles);
         }
     };
+
 })(fluid);
