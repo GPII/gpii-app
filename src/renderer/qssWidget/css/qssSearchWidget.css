@@ -1,0 +1,35 @@
+.fl-qssSearchWidget-alert {
+    margin-top: 5px;
+    padding: 10px 5px;
+    background: #ffcfdd;
+    border-left: 3px solid #bb0000;
+    font-size: 9px;
+}
+
+.fl-qssSearchWidget-alert-hidden { display: none; }
+
+.fl-qssSearchWidget-inputGroup {
+    margin-top: 20px;
+}
+
+.fl-qssSearchWidget-label {
+    font-size: 9px;
+}
+
+.fl-qssSearchWidget-input {
+    padding: 3px 5px;
+    width: 100%;
+    font-size: 9px;
+}
+
+.fl-qssSearchWidget-button {
+    float: right;
+    margin-top: 10px;
+    border-radius: 5px;
+    background-color: #002957;
+    font-size: 9px;
+    color: white;
+    border: 0;
+    cursor: pointer;
+    padding: 7px 20px;
+}

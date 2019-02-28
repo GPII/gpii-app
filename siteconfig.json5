@@ -29,10 +29,14 @@
         // In case the selected language code is missing, there simply won't be a special first setting.
         // NOTE: this is not related to the default language value defined for the language setting
         systemDefaultLanguage: "en-US",
+
+        // Defines the message used in the keyedOut save message
         messages: {
             keyedOut: "To save your settings you need to setup a Morphic Account. Go to <a href=\"http://morphic.world/account\">http://morphic.world/account</a>."
-        }
+        },
 
+        // Defines where the base folder for the Quick Folder is
+        morphicQuickFolderPath: "C:\\Morphic QuickFolders\\"
     },
 
     // Configuration options for the PSP window

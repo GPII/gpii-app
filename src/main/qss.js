@@ -101,7 +101,6 @@ fluid.defaults("gpii.app.qssWrapper", {
         keyedInUserToken: null,
         settings: "{that}.options.loadedSettings",
 
-
         scaleFactor: "{that}.options.siteConfig.scaleFactor",
 
         // user preferences
@@ -861,6 +860,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
             settings: "{qssWrapper}.model.settings"
         }
     },
+    siteConfig: "{qssWrapper}.options.siteConfig",
     pspButtonPath: "psp",
     events: {
         onQssPspClose: "{qssWrapper}.events.onQssPspClose",
