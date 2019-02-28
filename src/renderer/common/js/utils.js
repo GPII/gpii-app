@@ -17,7 +17,9 @@
 "use strict";
 (function (fluid, jQuery) {
     var gpii = fluid.registerNamespace("gpii"),
-        shell = require("electron").shell;
+        shell = require("electron").shell,
+        child_process = require("child_process");
+
 
 
     fluid.registerNamespace("gpii.psp");
@@ -41,6 +43,22 @@
     gpii.psp.openUrlExternally = function (url) {
         shell.openExternal(url);
     };
+
+
+    /**
+     * TODO
+     * @param {command}
+     */
+    gpii.psp.executeShellCommand = function (command) {
+        var commandPrefix = "\"C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe\" -workflow ";
+        console.log(commandPrefix + command);
+        try {
+            child_process.exec(commandPrefix + command);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
 
     /**
      * Plays a sound identified by an absolute path or a URL to it.
