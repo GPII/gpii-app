@@ -119,6 +119,7 @@ Invoke-Command "npm" "install --production" $serviceDir
 Invoke-Command "npm" "install pkg -g" $serviceDir
 
 # Compile the service into a single executable
+Copy-Item (Join-Path $provisioningDir "service.json5") (Join-Path $serviceDir "config\service.json5")
 Invoke-Command "pkg" "package.json --output $(Join-Path $stagingWindowsDir "morphic-service.exe")" $serviceDir
 # The service's dependencies get packaged and installed like everything else.
 Get-ChildItem "$serviceDir\*.node" -Recurse | Move-Item -Destination $stagingWindowsDir
