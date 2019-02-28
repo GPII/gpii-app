@@ -329,14 +329,10 @@
         model: {
             label: null // Expected from implementor
         },
-
         selectors: {
             label: ".flc-alertLabel"
         },
-        attrs: {
-        //     "aria-label": "{alert}.model.label"
-        //     // user provided attributes
-        },
+        attrs: { },
         listeners: {
             "onCreate.addAttrs": {
                 "this": "{that}.container",
