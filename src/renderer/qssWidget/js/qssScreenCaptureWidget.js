@@ -19,10 +19,6 @@
     var gpii = fluid.registerNamespace("gpii");
 
     /**
-     * Represents the QSS Screen Capture widget. TODO
-     */
-
-    /**
      * Represents the QSS Screen Capture widget. Shows a list of buttons
      * that do a screen or video capture using the shareX command, its using
      * siteconfig's shareXPath folder and the provided command from the button
