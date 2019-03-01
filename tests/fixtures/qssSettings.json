@@ -26,7 +26,7 @@
             "default": "en-US"
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 1,
+        "tabindex": 10,
         "messageKey": "common-language",
         "learnMoreLink": "https://morphic.world/help/qsshelp#language",
         "value": "en-US",
@@ -44,7 +44,7 @@
             "default": 0
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 2,
+        "tabindex": 20,
         "messageKey": "common-DPIScale",
         "value": 0,
         "tip": "<p>Zooms everything on the screen</p><p>Amount of Zoom up and down differs by computer.</p>",
@@ -63,7 +63,7 @@
             "divisibleBy": 1
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 3,
+        "tabindex": 30,
         "messageKey": "appTextZoom",
         "value": 0,
         "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting so won't Save.)</p>",
@@ -100,7 +100,7 @@
             "default": "regular-contrast"
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 4,
+        "tabindex": 40,
         "messageKey": "common-highContrastTheme",
         "value": "regular-contrast",
         "styles": {
@@ -158,7 +158,7 @@
             "default": false
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 5,
+        "tabindex": 50,
         "messageKey": "common-selfVoicing-enabled",
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud",
@@ -170,7 +170,7 @@
             "title": "MORE...\n\n(& HELP)"
         },
         "buttonTypes": ["largeButton"],
-        "tabindex": 6,
+        "tabindex": 200,
         "messageKey": "more",
         "tooltip": "<p>More options for changing the settings on this computer.</p>"
     }, {
@@ -180,7 +180,7 @@
             "title": "Save"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 7,
+        "tabindex": 210,
         "messageKey": "save",
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>"
     }, {
@@ -190,7 +190,7 @@
             "title": "Undo"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 9,
+        "tabindex": 220,
         "messageKey": "undo",
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>"
     }, {
@@ -203,7 +203,7 @@
             }
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 8,
+        "tabindex": 230,
         "messageKey": "psp",
         "tooltip": {
             "keyedIn": "<p>Opens Morphic Settings Panel</p><p>Where you can quickly adjust often-changed settings of yours.</p>",
@@ -216,7 +216,7 @@
             "title": "Reset to Standard"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 10,
+        "tabindex": 240,
         "messageKey": "resetAll",
         "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>"
     }, {
@@ -226,7 +226,7 @@
             "title": "×"
         },
         "buttonTypes": ["closeButton"],
-        "tabindex": 11,
+        "tabindex": 250,
         "messageKey": "close",
         "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=12 src='../../icons/TaskTrayIcon_outline.svg'></img></p>"
     }
