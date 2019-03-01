@@ -50,14 +50,9 @@
         },
 
         listeners: {
-            onCreate: {
-                func: "{that}.onCreate"
-            }
-        },
-        invokers: {
-            onCreate: {
-                funcName: "gpii.qssWidget.quickFolders.onCreate",
-                args: ["{gpii.qssWidget.quickFolders}.errorMessage"] // sending the errorMessage component
+            // Invoked on create of the component; by default hides the alert
+            "onCreate.hideErrorMessage": {
+                func: "{gpii.qssWidget.quickFolders}.errorMessage.events.onSuccess.fire"
             }
         },
 
@@ -69,8 +64,11 @@
                     model: {
                         value: "{gpii.qssWidget.quickFolders}.model.value"
                     },
-                    invokers: {
-                        onSearch: {
+                    events: {
+                        onSearch: null
+                    },
+                    listeners: {
+                        "onSearch.impl": {
                             funcName: "gpii.qssWidget.quickFolders.onSearch",
                             args: [
                                 "{that}.model.value", // search field value
@@ -89,7 +87,7 @@
                         label: "{gpii.qssWidget.quickFolders}.model.messages.searchButtonLabel"
                     },
                     invokers: {
-                        onClick: "{gpii.qssWidget.quickFolders}.searchField.onSearch"
+                        onClick: "{gpii.qssWidget.quickFolders}.searchField.events.onSearch.fire"
                     }
                 }
             },
@@ -103,20 +101,22 @@
                     styles: {
                         alertHidden: "fl-qssSearchWidget-alert-hidden"
                     },
-                    invokers: {
-                        onError: {
-                            funcName: "gpii.qssWidget.quickFolders.onError",
-                            args: [
-                                "{that}.container", // errorMessage element
-                                "{that}.options.styles" // styles list
-                            ]
+                    events: {
+                        onError: null,
+                        onSuccess: null
+                    },
+                    listeners: {
+                        // Shows the alert on error
+                        "onError": {
+                            "this": "{that}.container",
+                            method: "removeClass",
+                            args: "{that}.options.styles.alertHidden"
                         },
-                        onSuccess: {
-                            funcName: "gpii.qssWidget.quickFolders.onSuccess",
-                            args: [
-                                "{that}.container", // errorMessage element
-                                "{that}.options.styles" // styles list
-                            ]
+                        // Hides the alert on success
+                        "onSuccess": {
+                            "this": "{that}.container",
+                            method: "addClass",
+                            args: "{that}.options.styles.alertHidden"
                         }
                     }
                 }
@@ -125,15 +125,7 @@
     });
 
     /**
-     * Invoked on create of the component; by default hides the alert
-     * @param {Component} errorMessage
-     */
-    gpii.qssWidget.quickFolders.onCreate = function (errorMessage) {
-        errorMessage.onSuccess();
-    };
-
-    /**
-     * Invoked on the submit button, looks if the folder exists and open it
+     * Event for the submit button, looks if the folder exists and open it
      * @param {String} folderValue
      * @param {Component} errorMessage
      * @param {String} morphicQuickFolderPath
@@ -143,31 +135,13 @@
 
         if (gpii.psp.checkIfDirectoryExists(directory)) {
             // hides the alert (if shown before)
-            errorMessage.onSuccess();
+            errorMessage.events.onSuccess.fire();
             // tries to open explorer on this folder
             gpii.psp.openFileExplorer(directory);
         } else {
             // shows the alert
-            errorMessage.onError();
+            errorMessage.events.onError.fire();
         }
-    };
-
-    /**
-     * Shows the alert on error
-     * @param {jQuery} element - DOM element of the alert
-     * @param {Object} styles - A hash containing mapping between CSS class
-     */
-    gpii.qssWidget.quickFolders.onError = function (element, styles) {
-        element.removeClass(styles.alertHidden);
-    };
-
-    /**
-     * Shows the alert on error
-     * @param {jQuery} element - DOM element of the alert
-     * @param {Object} styles - A hash containing mapping between CSS class
-     */
-    gpii.qssWidget.quickFolders.onSuccess = function (element, styles) {
-        element.addClass(styles.alertHidden);
     };
 
 })(fluid);
