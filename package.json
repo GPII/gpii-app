@@ -42,10 +42,10 @@
         "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports build && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
         "pretest:instrument": "node tests/lib/instrumentSource.js",
         "test": "npm run test:psp && npm run test:gpiiWindows",
-        "test:psp": "./node_modules/.bin/electron ./instrumented/tests.js",
-        "test:gpiiWindows": "./node_modules/.bin/electron testsGpiiWindows.js",
+        "test:psp": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron ./instrumented/tests.js",
+        "test:gpiiWindows": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron testsGpiiWindows.js",
         "posttest": "node node_modules/nyc/bin/nyc.js report --temp-directory coverage",
-        "test:psp:noCoverage": "./node_modules/.bin/electron tests.js",
+        "test:psp:noCoverage": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron tests.js",
         "test:noCoverage": "npm run build && npm run test:psp:noCoverage"
     }
 }
