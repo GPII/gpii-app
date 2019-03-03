@@ -164,6 +164,17 @@
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud",
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>"
     }, {
+        "path": "quickFolders",
+        "schema": {
+            "type": "quickFolders",
+            "default": ""
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 60,
+        "messageKey": "common-quickFolders",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#quick-folders",
+        "value": "non-existent-directory"
+    }, {
         "path": "more",
         "schema": {
             "type": "more",
