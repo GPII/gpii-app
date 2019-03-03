@@ -7,7 +7,7 @@
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 0,
-        "messageKey": "common-quickFolders",
+        "messageKey": "quickFolders",
         "learnMoreLink": "https://morphic.world/help/qsshelp#quick-folders",
         "value": ""
     }, {
