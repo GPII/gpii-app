@@ -82,7 +82,8 @@
                                 "{that}.container",
                                 "{arguments}.0", // value
                                 "{arguments}.1", // keyboardEvent
-                                "{gpii.qssWidget.screenCapture}.options.siteConfig.shareXPath" // the path to the shareX executable
+                                "{gpii.qssWidget.screenCapture}.options.siteConfig.shareXPath", // the path to the shareX executable
+                                "{channelNotifier}.events.onQssWidgetHideQssRequested"
                             ]
                         }
                     },
@@ -188,7 +189,7 @@
      * change in the setting's value.
      * @param {String} shareXPath - the path to the shareX executable
      */
-    gpii.qssWidget.screenCapture.executeShareX = function (that, menu, container, value, keyboardEvent, shareXPath) {
+    gpii.qssWidget.screenCapture.executeShareX = function (that, menu, container, value, keyboardEvent, shareXPath, hideQss) {
         gpii.psp.execShareXCommand(value, shareXPath);
 
         if (!that.model.disabled && that.model.value !== value) {
@@ -200,6 +201,7 @@
 
             menu.close(keyboardEvent);
         }
+        hideQss.fire();
     };
 
     /**
