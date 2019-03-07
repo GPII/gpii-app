@@ -24,10 +24,10 @@
      * QSS button.
      */
     fluid.defaults("gpii.qss.keyInButtonPresenter", {
-        gradeNames: ["gpii.qss.buttonPresenter"],
+        gradeNames: ["gpii.qss.disabledButtonPresenter"],
         attrs: {
             "aria-label": "Settings Panel"
-        },
+        }/*,
         listeners: {
             "onArrowUpPressed.activate": {
                 func: "{that}.onActivationKeyPressed",
@@ -45,7 +45,7 @@
                     "{arguments}.0" // activationParams
                 ]
             }
-        }
+        }*/
     });
 
     /**
