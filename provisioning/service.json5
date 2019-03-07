@@ -8,6 +8,7 @@
             "disabled": false,
             env: {
                 //NODE_ENV: "app.testing"
+                GPII_CLOUD_URL: "https://flowmanager.stg.gcp.gpii.net"
             }
         }
     },
