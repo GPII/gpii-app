@@ -3,7 +3,7 @@
  *
  * Shows a list of buttons that do a screen or video capture using the shareX command,
  * its using siteconfig's shareXPath folder and the provided command from the button
- * 
+ *
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -13,8 +13,6 @@
  * You may obtain a copy of the License at
  * https://github.com/GPII/universal/blob/master/LICENSE.txt
  */
-
-/* global fluid */
 
 "use strict";
 (function (fluid) {
@@ -39,7 +37,6 @@
         closeDelay: 1200,
         components: {
             repeater: {
-                // TODO Perhaps add "createOnEvent" so that the component can be recreated
                 // whenever the setting changes (e.g. if the change is made via the PSP)
                 type: "gpii.psp.repeater",
                 container: "{screenCapture}.dom.menuControls",
