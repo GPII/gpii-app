@@ -1,7 +1,9 @@
 /**
  * The QSS Screen Capture widget
  *
- * TODO
+ * Shows a list of buttons that do a screen or video capture using the shareX command,
+ * its using siteconfig's shareXPath folder and the provided command from the button
+ * 
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -19,9 +21,7 @@
     var gpii = fluid.registerNamespace("gpii");
 
     /**
-     * Represents the QSS Screen Capture widget. Shows a list of buttons
-     * that do a screen or video capture using the shareX command, its using
-     * siteconfig's shareXPath folder and the provided command from the button
+     * Represents the QSS Screen Capture widget.
      */
     fluid.defaults("gpii.qssWidget.screenCapture", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
