@@ -77,11 +77,7 @@
                         updateValue: {
                             funcName: "gpii.qssWidget.screenCapture.executeShareX",
                             args: [
-                                "{that}",
-                                "{screenCapture}",
-                                "{that}.container",
                                 "{arguments}.0", // value
-                                "{arguments}.1", // keyboardEvent
                                 "{gpii.qssWidget.screenCapture}.options.siteConfig.shareXPath", // the path to the shareX executable
                                 "{channelNotifier}.events.onQssWidgetHideQssRequested"
                             ]
@@ -180,28 +176,16 @@
 
     /**
      * Executes the shareX command with the command from the button
-     * @param {Component} that - The `gpii.psp.repeater` instance.
-     * @param {Component} menu - The `gpii.qssWidget.menu` instance.
-     * @param {jQuery} container - The jQuery object representing the container of the
-     * QSS menu widget.
-     * @param {Any} value - The new value of the setting in the QSS menu.
-     * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
-     * change in the setting's value.
+     * @param {String} value - The new value of the setting in the QSS menu.
      * @param {String} shareXPath - the path to the shareX executable
+     * @param {EventListener} hideQss - the handle to the hideQSS's event listener
      */
-    gpii.qssWidget.screenCapture.executeShareX = function (that, menu, container, value, keyboardEvent, shareXPath, hideQss) {
+    gpii.qssWidget.screenCapture.executeShareX = function (value, shareXPath, hideQss) {
+        // hiding QSS
+        hideQss.fire();
+        // taking the screenshot
         gpii.psp.execShareXCommand(value, shareXPath);
 
-        if (!that.model.disabled && that.model.value !== value) {
-            that.applier.change("value", value, null, "settingAlter");
-
-            // Disable interactions with the window as it is about to close
-            that.applier.change("disabled", true);
-            container.addClass(that.options.styles.disabled);
-
-            menu.close(keyboardEvent);
-        }
-        hideQss.fire();
     };
 
     /**
