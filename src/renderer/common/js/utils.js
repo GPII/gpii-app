@@ -49,6 +49,7 @@
      * Executes the file from the shareXPath with the combination of the command
      * @param command {String} - shareX command, example: "Morphic: Capture entire screen to desktop"
      * @param shareXPath {String} - the path and executable name, example: "C:\\sharex-portable\\sharex.exe"
+     * @return {Boolean} - returns true on successful command execution
      */
     gpii.psp.execShareXCommand = function (command, shareXPath) {
         // creates the command line, it should looks something like:
@@ -57,9 +58,11 @@
 
         try {
             child_process.exec(commandToExecute);
+            return true;
         } catch (err) {
             fluid.log(fluid.logLevel.WARN, "execShareXCommand: Cannot execute - " + commandToExecute);
         }
+        return false;
     };
 
     /**

@@ -27,6 +27,10 @@
             disabled: false,
             setting: {}
         },
+        members: {
+            // Holds the last keyboard event received during the "close" operation
+            closingKeyboardEvent: null
+        },
         selectors: {
             heightListenerContainer: ".flc-qssScreenCaptureWidget-controls",
             menuControlsWrapper: ".flc-qssScreenCaptureWidget-controlsWrapper",
@@ -106,7 +110,7 @@
                 funcName: "gpii.qssWidget.screenCapture.addVisibilityChangeListener",
                 args: ["{closeTimer}"]
             },
-            "onDestroy.visibilitychange": {
+            "onDestroy.visibilityChange": {
                 funcName: "gpii.qssWidget.screenCapture.removeVisibilityChangeListener"
             }
         },
@@ -156,7 +160,7 @@
      * the widget with a delay.
      */
     gpii.qssWidget.screenCapture.addVisibilityChangeListener = function (closeTimer) {
-        $(document).on("visibilitychange.qssScreenCaptureWidget", function () {
+        $(document).on("visibilityChange.qssScreenCaptureWidget", function () {
             if (document.visibilityState === "hidden") {
                 closeTimer.clear();
             }
@@ -168,7 +172,7 @@
      * destroyed.
      */
     gpii.qssWidget.screenCapture.removeVisibilityChangeListener = function () {
-        $(document).off("visibilitychange.qssScreenCaptureWidget");
+        $(document).off("visibilityChange.qssScreenCaptureWidget");
     };
 
     /**
