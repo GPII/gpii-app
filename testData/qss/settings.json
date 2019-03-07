@@ -1,5 +1,14 @@
 [
     {
+        "path": "cloud-folder-open",
+        "schema": {
+            "type": "cloud-folder-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 0,
+        "messageKey": "cloud-folder-open"
+    },
+    {
         "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {
             "type": "string",

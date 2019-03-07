@@ -250,4 +250,30 @@
         that.notifyButtonActivated(activationParams);
         qssList.events.onResetAllRequired.fire();
     };
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Open USB Button"
+     * QSS button.
+     */
+    fluid.defaults("gpii.qss.openCloudFolderPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.openCloudFolderPresenter.activate",
+                args: []
+            }
+        }
+    });
+
+    /**
+     * A custom function for handling activation of the "Quick Folders" QSS button.
+     */
+    gpii.qss.openCloudFolderPresenter.activate = function () {
+        const {shell} = require('electron');
+        let url = 'https://github.com';
+
+        console.log('==== openCloudFolderPresenter: '+url);
+        shell.openExternal(url);
+    };
+
 })(fluid);
