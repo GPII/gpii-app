@@ -858,7 +858,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
     },
     config: {
         params: {
-            settings: "{qssWrapper}.model.settings",
+            settings: "{qssWrapper}.model.settings"
         }
     },
     siteConfig: "{qssWrapper}.options.siteConfig",
