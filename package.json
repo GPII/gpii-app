@@ -18,7 +18,8 @@
         "node-jqunit": "1.1.8",
         "request": "2.88.0",
         "winstrap": "0.5.12",
-        "ws": "6.1.2"
+        "ws": "6.1.2",
+        "gpii-express": "1.0.15"
     },
     "devDependencies": {
         "electron-packager": "8.5.1",
