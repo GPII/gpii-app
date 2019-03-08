@@ -55,16 +55,7 @@ gpii.tests.app.startSequence = [
         func: "{testEnvironment}.events.constructServer.fire"
     },
     {
-        task:        "{harness}.startup",
-        resolve:     "fluid.log",
-        resolveArgs: ["Harness startup successful."]
-    },
-    { // Before the actual tests commence, the PSP application must be fully functional. The `onPSPReady` event guarantees that.
-        event: "{that gpii.app}.events.onPSPReady",
-        listener: "fluid.identity"
-    },
-    {
-        event: "{testEnvironment}.events.noUserLoggedIn",
+        event: "{testEnvironment}.events.startupComplete",
         listener: "fluid.identity"
     }
 ];
@@ -72,11 +63,7 @@ gpii.tests.app.startSequence = [
 /*
  * Items added after every test sequence.
  */
-gpii.tests.app.endSequence = [{
-    task:        "{harness}.shutdown",
-    resolve:     "fluid.log",
-    resolveArgs: ["Harness shutdown successful."]
-}];
+gpii.tests.app.endSequence = [];
 
 /*
  * We might need to conditionally make some options distributions that should affect all test sequences.
@@ -151,7 +138,30 @@ gpii.tests.app.testDefToServerEnvironment = function (testDef) {
             },
             distributeOptions: gpii.tests.app.testsDistributions,
             events: {
-                noUserLoggedIn: null
+                couchStarted:   null,
+                pspStarted:     null,
+                noUserLoggedIn: null,
+                startupComplete: {
+                    events: {
+                        couchStarted:   "couchStarted",
+                        pspStarted:     "pspStarted",
+                        noUserLoggedIn: "noUserLoggedIn"
+                    }
+                }
+            },
+            listeners: {
+                couchStarted: {
+                    funcName: "fluid.log",
+                    args: ["Couch Started"]
+                },
+                pspStarted: {
+                    funcName: "fluid.log",
+                    args: ["PSP Started"]
+                },
+                noUserLoggedIn: {
+                    funcName: "fluid.log",
+                    args: ["No User Logged in"]
+                }
             }
         }
     };
@@ -180,19 +190,19 @@ if (gpii.tests.app.isInstrumented) {
 
 gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.app.testDefs),
-    fluid.copy(gpii.tests.dev.testDefs),
-    fluid.copy(gpii.tests.psp.testDefs),
-    fluid.copy(gpii.tests.timer.testDefs),
-    fluid.copy(gpii.tests.dialogManager.testDefs),
-    fluid.copy(gpii.tests.qss.testDefs),
-    fluid.copy(gpii.tests.sequentialDialogs.testDefs),
-    fluid.copy(gpii.tests.shortcutsManager.testDefs),
-    fluid.copy(gpii.tests.settingsBroker.testDefs),
-    fluid.copy(gpii.tests.surveys.dynamicSurveyConnectorTestDefs),
-    fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
-    fluid.copy(gpii.tests.siteConfigurationHandler.testDefs),
-    fluid.copy(gpii.tests.storage.testDefs),
-    fluid.copy(gpii.tests.userErrorsHandler.testDefs),
-    fluid.copy(gpii.tests.gpiiConnector.testDefs),
-    fluid.copy(gpii.tests.webview.testDefs)
+    //fluid.copy(gpii.tests.dev.testDefs),
+    //fluid.copy(gpii.tests.psp.testDefs),
+    //fluid.copy(gpii.tests.timer.testDefs),
+    //fluid.copy(gpii.tests.dialogManager.testDefs),
+    //fluid.copy(gpii.tests.qss.testDefs),
+    //fluid.copy(gpii.tests.sequentialDialogs.testDefs),
+    //fluid.copy(gpii.tests.shortcutsManager.testDefs),
+    //fluid.copy(gpii.tests.settingsBroker.testDefs),
+    //fluid.copy(gpii.tests.surveys.dynamicSurveyConnectorTestDefs),
+    //fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
+    //fluid.copy(gpii.tests.siteConfigurationHandler.testDefs),
+    //fluid.copy(gpii.tests.storage.testDefs),
+    //fluid.copy(gpii.tests.userErrorsHandler.testDefs),
+    //fluid.copy(gpii.tests.gpiiConnector.testDefs),
+    //fluid.copy(gpii.tests.webview.testDefs)
 ]);

@@ -143,6 +143,9 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onGPIIReady",
             options: {
                 listeners: {
+                    "onCreate.notifyParent": {
+                        func: "{gpii.app}.events.gpiiConnectorCreated"
+                    },
                     "onSnapsetNameUpdated.updateSnapsetName": "{app}.updateSnapsetName",
                     "onPreferencesUpdated.updateSets": "{app}.updatePreferences",
 
@@ -161,6 +164,11 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.dialogManager",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
+                listeners: {
+                    "onCreate.notifyParent": {
+                        func: "{gpii.app}.events.dialogManagerCreated"
+                    }
+                },
                 model: {
                     isKeyedIn: "{app}.model.isKeyedIn"
                 },
@@ -180,7 +188,14 @@ fluid.defaults("gpii.app", {
          */
         appZoomHandler: {
             type: "gpii.windows.appZoom",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                listeners: {
+                    "onCreate.notifyParent": {
+                        func: "{gpii.app}.events.appZoomHandlerCreated"
+                    }
+                }
+            }
         },
         systemLanguageListener: {
             type: "gpii.windows.language",
@@ -209,6 +224,9 @@ fluid.defaults("gpii.app", {
                     disableRestartWarning: "{app}.model.preferences.disableRestartWarning"
                 },
                 listeners: {
+                    "onCreate.notifyParent": {
+                        func: "{gpii.app}.events.qssWrapperCreated"
+                    },
                     "{gpiiConnector}.events.onQssSettingsUpdate": {
                         funcName: "{that}.updateSettings"
                     },
@@ -238,6 +256,9 @@ fluid.defaults("gpii.app", {
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 listeners: {
+                    "onCreate.notifyParent": {
+                        func: "{gpii.app}.events.surveyManagerCreated"
+                    },
                     onSurveyRequired: {
                         func: "{dialogManager}.show",
                         args: ["survey", "{arguments}.0"]
@@ -247,7 +268,14 @@ fluid.defaults("gpii.app", {
         },
         psp: {
             type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                listeners: {
+                    "onCreate.notifyParent": {
+                        func: "{gpii.app}.events.onPspInAppCreated"
+                    }
+                }
+            }
         },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
@@ -274,6 +302,9 @@ fluid.defaults("gpii.app", {
                     }
                 },
                 listeners: {
+                    "onCreate.notifyParent": {
+                        func: "{gpii.app}.events.shortcutsManagerCreated"
+                    },
                     "onCreate.registerQssUndoShortcut": {
                         func: "{that}.registerLocalShortcut",
                         args: [
@@ -328,6 +359,9 @@ fluid.defaults("gpii.app", {
                     onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
                 },
                 listeners: {
+                    "onCreate.notifyParent": {
+                        func: "{gpii.app}.events.trayCreated"
+                    },
                     onTrayIconClicked: {
                         func: "{qssWrapper}.qss.toggle"
                     }
@@ -340,6 +374,11 @@ fluid.defaults("gpii.app", {
             options: {
                 model: {
                     interactionsCount: "{storage}.model.interactionsCount"
+                },
+                listeners: {
+                    "onCreate.notifyParent": {
+                        func: "{gpii.app}.events.factsManagerCreated"
+                    }
                 }
             }
         }
@@ -353,9 +392,38 @@ fluid.defaults("gpii.app", {
             }
         },
         onGPIIReady: null,
+
         onAppReady: null,
+
+        // "onCreate" child component events that feed into onAppReady.
+        appZoomHandlerCreated: null,
+        dialogManagerCreated: null,
+        factsManagerCreated: null,
+        gpiiConnectorCreated: null,
+        onPspInAppCreated: null,
+        qssWrapperCreated: null,
+        shortcutsManagerCreated: null,
+        surveyManagerCreated: null,
+        trayCreated: null,
+
+        // combined "on child components ready" event that indicates that all sub-components have also been created.
+        onChildComponentsReady: {
+            events: {
+                appZoomHandlerCreated: "appZoomHandlerCreated",
+                dialogManagerCreated: "dialogManagerCreated",
+                factsManagerCreated: "factsManagerCreated",
+                gpiiConnectorCreated: "gpiiConnectorCreated",
+                onPspInAppCreated: "onPspInAppCreated",
+                qssWrapperCreated: "qssWrapperCreated",
+                shortcutsManagerCreated: "shortcutsManagerCreated",
+                surveyManagerCreated: "surveyManagerCreated",
+                trayCreated: "trayCreated"
+            }
+        },
+
         onPSPChannelConnected: null,
         onPSPReady: null,
+
 
         onKeyedIn: null,
         onKeyedOut: null,
