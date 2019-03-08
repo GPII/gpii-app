@@ -99,7 +99,7 @@
                     listeners: {
                         "onTimerFinished.closeWidget": {
                             func: "{qssWidget}.close",
-                            args: ["{screenCapture}.keyboardEvent"]
+                            args: ["{screenCapture}.closingKeyboardEvent"]
                         }
                     }
                 }
@@ -147,7 +147,7 @@
      * change in the setting's value.
      */
     gpii.qssWidget.screenCapture.close = function (that, closeTimer, keyboardEvent) {
-        that.keyboardEvent = keyboardEvent;
+        that.closingKeyboardEvent = keyboardEvent;
         closeTimer.start(that.options.closeDelay);
     };
 
