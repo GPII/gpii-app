@@ -117,7 +117,8 @@
                 options: {
                     model: {
                         settings: "{translatedQss}.model.settings"
-                    }
+                    },
+                    siteConfig: "{translatedQss}.options.siteConfig"
                 }
             }
         }

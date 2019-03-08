@@ -260,20 +260,26 @@
         invokers: {
             activate: {
                 funcName: "gpii.qss.openCloudFolderPresenter.activate",
-                args: []
+                args: ["{gpii.qss}.options.siteConfig.urls.cloudFolder"] // siteConfig's cloud folder url
             }
         }
     });
 
     /**
      * A custom function for handling activation of the "Quick Folders" QSS button.
+     * opens a provided url in the default browser using electron's shell
+     * @param {String} cloudFolderUrl - cloud folder's url
      */
-    gpii.qss.openCloudFolderPresenter.activate = function () {
+    gpii.qss.openCloudFolderPresenter.activate = function (cloudFolderUrl) {
         const {shell} = require('electron');
-        let url = 'https://github.com';
 
-        console.log('==== openCloudFolderPresenter: '+url);
-        shell.openExternal(url);
+        if (fluid.isValue(cloudFolderUrl)) {
+            // we have the url, opening it in the default browser
+            shell.openExternal(cloudFolderUrl);
+        } else {
+            // there is no value in the config, sending the warning
+            fluid.log(fluid.logLevel.WARN, "Service Buttons (openCloudFolderPresenter): Cannot find a proper url path [siteConfig.qss.urlscloudFolder]");
+        }
     };
 
 })(fluid);
