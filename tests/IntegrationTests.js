@@ -54,6 +54,11 @@ gpii.tests.app.startSequence = [
     { // This sequence point is required because of a QUnit bug - it defers the start of sequence by 13ms "to avoid any current callbacks" in its words
         func: "{testEnvironment}.events.constructServer.fire"
     },
+    {
+        task:        "{harness}.startup",
+        resolve:     "fluid.log",
+        resolveArgs: ["Harness startup successful."]
+    },
     { // Before the actual tests commence, the PSP application must be fully functional. The `onPSPReady` event guarantees that.
         event: "{that gpii.app}.events.onPSPReady",
         listener: "fluid.identity"
@@ -67,7 +72,11 @@ gpii.tests.app.startSequence = [
 /*
  * Items added after every test sequence.
  */
-gpii.tests.app.endSequence = [];
+gpii.tests.app.endSequence = [{
+    task:        "{harness}.shutdown",
+    resolve:     "fluid.log",
+    resolveArgs: ["Harness shutdown successful."]
+}];
 
 /*
  * We might need to conditionally make some options distributions that should affect all test sequences.
