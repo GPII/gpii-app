@@ -51,7 +51,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
-    // clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(3)\").click()",
+    // clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(3)\").click()", // the button is disabled temporary (GPII-3773)
     clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(2)\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
@@ -96,6 +96,9 @@ gpii.tests.qss.simulateShortcut = function (dialog, shortcut) {
         modifiers: shortcut.modifiers || []
     });
 };
+
+// This tests are commented because of changes in GPII-3773 request.
+// Some tests may be removed or parts of them re-used in the future.
 
 // gpii.tests.qss.testPspAndQssVisibility = function (app, params) {
 //     jqUnit.assertEquals(
@@ -171,6 +174,8 @@ var navigationSequence = [
     gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 1),
     gpii.tests.qss.pressKey("Tab", ["Shift"]),
     gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 2),
+    // This part of the test is commented because the button is disabled temporary (GPII-3773) and cannot be focused.
+    // Some tests may be removed or parts of them re-used in the future.
     // gpii.tests.qss.pressKey("Up"),
     // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 3),
     // gpii.tests.qss.pressKey("Down"),
@@ -179,6 +184,8 @@ var navigationSequence = [
     gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 4),
     gpii.tests.qss.pressKey("Up"),
     gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 5),
+    // This part of the test is commented because the button is disabled temporary (GPII-3773) and cannot be focused.
+    // Some tests may be removed or parts of them re-used in the future.
     // gpii.tests.qss.pressKey("Right"),
     // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 3),
     // Manually clear the focused state in order to test the Arrow Left behavior when
@@ -192,11 +199,15 @@ var navigationSequence = [
         ],
         resolve: "fluid.identity"
     },
+    // This tests are commented because of changes in GPII-3773 request.
+    // Some tests may be removed or parts of them re-used in the future.
+
     // When there is no focused element and the left arrow is pressed, the last button
     // in the QSS will be focused.
     // gpii.tests.qss.pressKey("Left"),
     // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 1)
     // Navigate to the "Sign in" button and open it using the Arrow up
+
     /*gpii.tests.qss.pressKey("Left"),
     gpii.tests.qss.pressKey("Up"),
     { // The PSP will be shown.
@@ -779,6 +790,8 @@ var saveButtonSequence = [
 
 
 var qssCrossTestSequence = [
+    // This tests are commented because of changes in GPII-3773 request.
+    // Some tests may be removed or parts of them re-used in the future.
     /*
      * Tests QSS and PSP visibility
      * Test QSS button interactions
@@ -991,7 +1004,7 @@ var qssCrossTestSequence = [
         ]
     },
     // Turn off the read aloud
-    clickToggleButtonSeqEl/*,
+    clickToggleButtonSeqEl,
     { // And close the QSS widget menu
         task: "gpii.test.executeJavaScriptInWebContents",
         args: [
@@ -999,8 +1012,10 @@ var qssCrossTestSequence = [
             clickCloseBtn
         ],
         resolve: "fluid.identity"
-    }*/
+    }
 
+    // This tests are commented because of changes in GPII-3773 request.
+    // Some tests may be removed or parts of them re-used in the future.
     /*
      * QSS & PSP tests
      */
@@ -1648,6 +1663,7 @@ gpii.tests.qss.testDefs = {
             listener: "jqUnit.assert",
             args: ["QSS has initialized successfully"]
         }],
+        // For no particular reason the tests work properly in this sequence
         navigationSequence,
         qssInstalledLanguages,
         undoCrossTestSequence,
