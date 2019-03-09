@@ -861,6 +861,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
             settings: "{qssWrapper}.model.settings"
         }
     },
+    siteConfig: "{qssWrapper}.options.siteConfig",
     pspButtonPath: "psp",
     events: {
         onQssPspClose: "{qssWrapper}.events.onQssPspClose",
