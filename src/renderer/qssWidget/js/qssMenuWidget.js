@@ -346,7 +346,7 @@
      */
     gpii.qssWidget.menu.presenter.defaultValue = function (key, item, container, styles) {
         if (key === item) {
-            container.addClass(styles.default);
+            container.addClass(styles["default"]);
         }
     };
 })(fluid);

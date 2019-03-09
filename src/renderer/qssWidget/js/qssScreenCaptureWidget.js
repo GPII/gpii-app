@@ -14,6 +14,8 @@
  * https://github.com/GPII/universal/blob/master/LICENSE.txt
  */
 
+/* global fluid */
+
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
@@ -295,7 +297,7 @@
      * @param {Object} styles - The styles for the current QSS menu setting.
      */
     gpii.qssWidget.screenCapture.presenter.applyStyles = function (that, container, styles) {
-        let elementStyles = fluid.get(styles, that.model.item.key);
+        var elementStyles = fluid.get(styles, that.model.item.key);
         if (elementStyles) {
             container.css(elementStyles);
         }

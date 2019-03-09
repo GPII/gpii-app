@@ -54,7 +54,7 @@
     gpii.psp.execShareXCommand = function (command, shareXPath) {
         // creates the command line, it should looks something like:
         // "C:\\sharex-portable\\sharex.exe" -workflow "Morphic: Capture entire screen to desktop"
-        let commandToExecute = "\""+shareXPath+"\" -workflow \""+command+"\"";
+        var commandToExecute = "\"" + shareXPath + "\" -workflow \"" + command + "\"";
 
         try {
             child_process.exec(commandToExecute);
