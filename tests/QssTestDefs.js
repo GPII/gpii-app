@@ -35,6 +35,9 @@ function clickStepperIndicator() {
     jQuery(".fl-qssStepperWidget-indicator:nth-of-type(1)").click();
 }
 
+function getQuickFolderWIdgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
+}
 
 
 // QSS related
@@ -59,6 +62,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
+    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(7)').is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
@@ -156,7 +160,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 12;
+var qssSettingsCount = 13;
 
 var navigationSequence = [
     {
@@ -1347,6 +1351,39 @@ var appZoomTestSequence = [
     }
 ];
 
+var quickFoldersTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // ... and quick folders button should be visible
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            checkIfQuickFoldersWidget
+        ],
+        resolve: "jqUnit.assertTrue",
+        resolveArgs: ["The quick folder button is displayed: ", "{arguments}.0"]
+    }, { // Text of the button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getQuickFolderWIdgetBtnText
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Text of the button should be",
+            "Quick Folders",
+            "{arguments}.0"
+        ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
 fluid.defaults("gpii.tests.qss.mockedAppZoom", {
     gradeNames: "fluid.component",
 
@@ -1637,7 +1674,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 64,
+    expect: 66,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1682,6 +1719,7 @@ gpii.tests.qss.testDefs = {
         qssInstalledLanguages,
         undoCrossTestSequence,
         undoTestSequence,
+        quickFoldersTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
         restartWarningSequence,

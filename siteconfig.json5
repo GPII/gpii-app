@@ -11,7 +11,8 @@
         // The scaling factor for the QSS
         scaleFactor: 1.5,
         urls: {
-            account: "http://morphic.world/account"
+            account: "http://morphic.world/account",
+            cloudFolder: "https://1drv.ms/f/s!AgsFNSfCYeO3glLjXGakJRG3irEc"
         },
 
         // The template that is used for every label of the language setting's options.

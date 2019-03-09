@@ -77,5 +77,9 @@
             "Record video\n with computer audio",
             "Record video\n with comp. audio + mic"
         ]
+    },
+    "gpii_app_qss_settings_cloud-folder-open": {
+        "tooltip": "<p>A quick way to find a common packages of documents, web pages, or other resources.</p>",
+        "title": "Quick Folders"
     }
 }

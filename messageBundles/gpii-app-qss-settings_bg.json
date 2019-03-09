@@ -67,5 +67,9 @@
             "Запиши видео и аудио",
             "Запиши видео + микрофон"
         ]
+    },
+    "gpii_app_qss_settings_cloud-folder-open": {
+        "tooltip": "<p>Отваря cloud базирана публична папка.</p>",
+        "title": "Quick Folders"
     }
 }
