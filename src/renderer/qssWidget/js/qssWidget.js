@@ -53,7 +53,8 @@
         selectors: {
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
-            toggle: ".flc-qssToggleWidget"
+            toggle: ".flc-qssToggleWidget",
+            screenCapture: ".flc-qssScreenCaptureWidget"
         },
 
         /**
@@ -63,11 +64,13 @@
         widgetGrades: {
             "number": "gpii.qssWidget.stepper",
             "string": "gpii.qssWidget.menu",
-            "boolean": "gpii.qssWidget.toggle"
+            "boolean": "gpii.qssWidget.toggle",
+            "screenCapture": "gpii.qssWidget.screenCapture"
         },
 
         events: {
             onWidgetClosed: null,
+            onQssWidgetHideQssRequested: null,
             onSettingUpdated: null,
             onQssWidgetHeightChanged: null,
             onQssWidgetSettingAltered: null,
@@ -200,6 +203,7 @@
                     events: {
                         // Add events the main process to be notified for
                         onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
+                        onQssWidgetHideQssRequested:     "{qssWidget}.events.onQssWidgetHideQssRequested",
                         onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
