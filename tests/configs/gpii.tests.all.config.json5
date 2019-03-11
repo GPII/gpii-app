@@ -3,6 +3,15 @@
     "options": {
         "gradeNames": ["fluid.component"],
         "distributeOptions": {
+            "untrusted.development.port": {
+                "record": 8084,
+                "target": "{that cloudBasedConfig}.options.mainServerPort"
+            },
+            "untrusted.development.prefs": {
+                "record": "http://localhost:8084",
+                "target": "{that cloudBasedConfig flowManager prefsServerDataSource}.options.prefsServerURL",
+                "priority": "after:flowManager.prefsServerDataSource.default"
+            },
             "distributeTaskTray": {
                 "record": "gpii.appWrapper",
                 "target": "{that gpii.flowManager.untrusted}.options.gradeNames"
@@ -55,6 +64,7 @@
         },
         "components": {
             harness: {
+                "type": "gpii.test.couchdb.harness",
                 options: {
                     listeners: {
                         "onCreate.start": {
@@ -63,10 +73,12 @@
                     }
                 }
             }
+            // TODO: Use one of the new grades here once it's merged:
+            // https://github.com/GPII/universal/pull/751
         }
     },
     "mergeConfigs": [
-        "%gpii-universal/gpii/configs/shared/gpii.config.untrusted.development.json5",
+        "%gpii-universal/gpii/configs/shared/gpii.config.untrusted.development.dynamicDR.local.json5",
         "%gpii-universal/gpii/configs/shared/gpii.config.couch.development.base.json5"
     ]
 }

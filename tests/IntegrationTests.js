@@ -189,20 +189,25 @@ if (gpii.tests.app.isInstrumented) {
 
 
 gpii.tests.app.bootstrapServer([
-    fluid.copy(gpii.tests.app.testDefs),
-    //fluid.copy(gpii.tests.dev.testDefs),
-    //fluid.copy(gpii.tests.psp.testDefs),
-    //fluid.copy(gpii.tests.timer.testDefs),
-    //fluid.copy(gpii.tests.dialogManager.testDefs),
-    //fluid.copy(gpii.tests.qss.testDefs),
-    //fluid.copy(gpii.tests.sequentialDialogs.testDefs),
-    //fluid.copy(gpii.tests.shortcutsManager.testDefs),
-    //fluid.copy(gpii.tests.settingsBroker.testDefs),
-    //fluid.copy(gpii.tests.surveys.dynamicSurveyConnectorTestDefs),
-    //fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
-    //fluid.copy(gpii.tests.siteConfigurationHandler.testDefs),
-    //fluid.copy(gpii.tests.storage.testDefs),
-    //fluid.copy(gpii.tests.userErrorsHandler.testDefs),
-    //fluid.copy(gpii.tests.gpiiConnector.testDefs),
-    //fluid.copy(gpii.tests.webview.testDefs)
+    //fluid.copy(gpii.tests.app.testDefs), // OK
+    //fluid.copy(gpii.tests.dev.testDefs), // OK
+    //fluid.copy(gpii.tests.psp.testDefs), // OK
+    //fluid.copy(gpii.tests.timer.testDefs), // OK
+    //fluid.copy(gpii.tests.dialogManager.testDefs), // OK
+    //fluid.copy(gpii.tests.qss.testDefs), // OK
+    //fluid.copy(gpii.tests.sequentialDialogs.testDefs), // OK
+    //fluid.copy(gpii.tests.shortcutsManager.testDefs), // OK
+    //fluid.copy(gpii.tests.settingsBroker.testDefs), // OK
+    /*
+
+        06:51:52.863:  jq: FAIL: Module "gpii.tests.dynamicSurveyConnector.config tests" Test name "Dynamic survey connector integration tests" - Message: Unexpected failure in test case (see following log for more details): Cannot read property 'supportedSettings' of undefined
+
+     */
+    //fluid.copy(gpii.tests.surveys.dynamicSurveyConnectorTestDefs), // NOT OK: Seems to hang. See error above.
+    //fluid.copy(gpii.tests.surveyTriggerManager.testDefs), // OK
+    //fluid.copy(gpii.tests.siteConfigurationHandler.testDefs), // OK
+    //fluid.copy(gpii.tests.storage.testDefs), // OK
+    fluid.copy(gpii.tests.userErrorsHandler.testDefs), // NOT OK: Seems to hang.
+    //fluid.copy(gpii.tests.gpiiConnector.testDefs), // OK
+    //fluid.copy(gpii.tests.webview.testDefs) // OK
 ]);
