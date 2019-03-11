@@ -11,6 +11,31 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#quick-folders",
         "value": ""
     }, {
+        "path": "screenCapture",
+        "schema": {
+            "type": "screenCapture",
+            "keys": [
+                "Morphic: Capture entire screen to clipboard",
+                "Morphic: Capture entire screen to desktop",
+                "Morphic: Record region to desktop with computer audio",
+                "Morphic: Record region to desktop with computer and mic audio"
+            ],
+            "default": ""
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 0,
+        "messageKey": "screenCapture",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
+        "value": ""
+    }, {
+        "path": "cloud-folder-open",
+        "schema": {
+            "type": "cloud-folder-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 0,
+        "messageKey": "cloud-folder-open"
+    }, {
         "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {
             "type": "string",

@@ -54,7 +54,8 @@
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
             toggle: ".flc-qssToggleWidget",
-            quickFolders: ".flc-qssQuickFoldersWidget"
+            quickFolders: ".flc-qssQuickFoldersWidget",
+            screenCapture: ".flc-qssScreenCaptureWidget"
         },
 
         /**
@@ -65,11 +66,13 @@
             "number": "gpii.qssWidget.stepper",
             "string": "gpii.qssWidget.menu",
             "boolean": "gpii.qssWidget.toggle",
-            "quickFolders": "gpii.qssWidget.quickFolders"
+            "quickFolders": "gpii.qssWidget.quickFolders",
+            "screenCapture": "gpii.qssWidget.screenCapture"
         },
 
         events: {
             onWidgetClosed: null,
+            onQssWidgetHideQssRequested: null,
             onSettingUpdated: null,
             onQssWidgetHeightChanged: null,
             onQssWidgetSettingAltered: null,
@@ -202,6 +205,7 @@
                     events: {
                         // Add events the main process to be notified for
                         onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
+                        onQssWidgetHideQssRequested:     "{qssWidget}.events.onQssWidgetHideQssRequested",
                         onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",

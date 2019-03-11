@@ -40,7 +40,7 @@ fluid.defaults("gpii.app.qssWidget", {
     extraVerticalOffset: 7,
 
     // A list of QSS setting types for which this widget is applicable.
-    supportedSettings: ["string", "number", "boolean", "quickFolders"],
+    supportedSettings: ["string", "number", "boolean", "quickFolders", "screenCapture"],
 
     model: {
         setting: {}
@@ -101,6 +101,7 @@ fluid.defaults("gpii.app.qssWidget", {
             options: {
                 events: {
                     onQssWidgetClosed: null,
+                    onQssWidgetHideQssRequested: null,
                     onQssWidgetHeightChanged: "{qssWidget}.events.onContentHeightChanged",
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
@@ -115,6 +116,12 @@ fluid.defaults("gpii.app.qssWidget", {
                             "{arguments}.0" // params
                         ]
                     }],
+                    onQssWidgetHideQssRequested: {
+                      func: "{gpii.app.qss}.hide",
+                      args: [
+                          "{arguments}.0" // params
+                      ]
+                    },
                     onQssWidgetSettingAltered: {
                         funcName: "fluid.log",
                         args: ["QssWidget - Settings Altered: ", "{arguments}.0"]
