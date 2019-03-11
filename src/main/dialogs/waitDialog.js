@@ -93,7 +93,7 @@ gpii.app.waitDialog.show = function (that) {
     that.displayWaitInterval = setInterval(function () {
         if (!that.dialog.isVisible()) {
             clearInterval(that.displayWaitInterval);
-        };
+        }
         that.dialog.setAlwaysOnTop(true);
     }, 100);
 

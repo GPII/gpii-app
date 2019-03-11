@@ -274,7 +274,7 @@
      * @param {String} cloudFolderUrl - cloud folder's url
      */
     gpii.qss.openCloudFolderPresenter.activate = function (cloudFolderUrl) {
-        const {shell} = require('electron');
+        var shell = require("electron").shell;
 
         if (fluid.isValue(cloudFolderUrl)) {
             // we have the url, opening it in the default browser
