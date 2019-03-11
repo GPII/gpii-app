@@ -113,7 +113,7 @@
             if (fs.existsSync(directory)) {
                 return true;
             }
-        } catch(err) {
+        } catch (err) {
             return false;
         }
     };
@@ -123,7 +123,7 @@
     * @param {String} directory - The directory to open with explorer.
     */
     gpii.psp.openFileExplorer = function (directory) {
-        let fileExplorerExe = "explorer.exe",
+        var fileExplorerExe = "explorer.exe",
             path = fileExplorerExe + " \"" + directory + "\"";
 
         try {

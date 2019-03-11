@@ -46,7 +46,7 @@
                 searchButtonLabel: "{quickFolders}.model.messages.searchButtonLabel",
                 alertLabel: "{quickFolders}.model.messages.alertLabel"
             },
-            errorMessageSelector: "{that}.options.selectors.errorMessage",
+            errorMessageSelector: "{that}.options.selectors.errorMessage"
         },
 
         listeners: {
@@ -131,7 +131,7 @@
      * @param {String} morphicQuickFolderPath
      */
     gpii.qssWidget.quickFolders.onSearch = function (folderValue, errorMessage, morphicQuickFolderPath) {
-        let directory = morphicQuickFolderPath + folderValue;
+        var directory = morphicQuickFolderPath + folderValue;
 
         if (gpii.psp.checkIfDirectoryExists(directory)) {
             // hides the alert (if shown before)
