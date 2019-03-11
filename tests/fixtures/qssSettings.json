@@ -181,14 +181,14 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
     }, {
-        "path": "quickFolders",
+        "path": "quickLocalFolders",
         "schema": {
-            "type": "quickFolders",
+            "type": "quickLocalFolders",
             "default": ""
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 70,
-        "messageKey": "quickFolders",
+        "messageKey": "quickLocalFolders",
         "learnMoreLink": "https://morphic.world/help/qsshelp#quick-folders",
         "value": "non-existent-directory"
     }, {

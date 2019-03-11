@@ -54,7 +54,7 @@
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
             toggle: ".flc-qssToggleWidget",
-            quickFolders: ".flc-qssQuickFoldersWidget",
+            quickLocalFolders: ".flc-qssQuickLocalFoldersWidget",
             screenCapture: ".flc-qssScreenCaptureWidget"
         },
 
@@ -66,7 +66,7 @@
             "number": "gpii.qssWidget.stepper",
             "string": "gpii.qssWidget.menu",
             "boolean": "gpii.qssWidget.toggle",
-            "quickFolders": "gpii.qssWidget.quickFolders",
+            "quickLocalFolders": "gpii.qssWidget.quickLocalFolders",
             "screenCapture": "gpii.qssWidget.screenCapture"
         },
 

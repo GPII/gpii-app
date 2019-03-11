@@ -67,9 +67,9 @@
         "title": "Language",
         "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>"
     },
-    "gpii_app_qss_settings_quickFolders": {
+    "gpii_app_qss_settings_quickLocalFolders": {
         "tooltip": "<p>Opens a quick folder</p><p>Opens explore window with the desired quick folder.</p>",
-        "title": "Quick Folders",
+        "title": "Quick Local Folders",
         "tip": "<p>Quick Folders</p><p>Enter the name/code given to you to open the quick folder.</p>"
     },
     "gpii_app_qss_settings_screenCapture": {

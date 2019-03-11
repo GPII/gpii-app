@@ -1443,7 +1443,7 @@ var quickCloudFoldersTestSequence = [
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of the button should be",
-            "Quick Folders",
+            "Quick Local Folders",
             "{arguments}.0"
         ]
     }, { // Close the QSS

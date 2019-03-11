@@ -68,7 +68,7 @@
         "keyedIn": "Вашите настройки са запазени в Morphic Cloud."
     },
 
-    "gpii_qssWidget_quickFolders_label": "Име/код на папката",
-    "gpii_qssWidget_quickFolders_alertLabel": "Папка с подобно име/код НЕ съществува.",
-    "gpii_qssWidget_quickFolders_searchButtonLabel": "Отвори"
+    "gpii_qssWidget_quickLocalFolders_label": "Име/код на папката",
+    "gpii_qssWidget_quickLocalFolders_alertLabel": "Папка с подобно име/код НЕ съществува.",
+    "gpii_qssWidget_quickLocalFolders_searchButtonLabel": "Отвори"
 }

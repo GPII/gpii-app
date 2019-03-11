@@ -24,11 +24,11 @@
     /**
      * QSS Quick folders widget
      */
-    fluid.defaults("gpii.qssWidget.quickFolders", {
+    fluid.defaults("gpii.qssWidget.quickLocalFolders", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         selectors: {
-            folderSearch: ".flc-qssQuickFoldersWidget-folderSearch",
+            folderSearch: ".flc-qssQuickLocalFoldersWidget-folderSearch",
             settingTitle: ".flc-qssSearchWidget-settingTitle",
             searchField: ".flc-search",
             searchButton: ".flc-searchButton",
@@ -42,9 +42,9 @@
             setting: {},
             value: "{that}.model.setting.value",
             messages: {
-                labelTitle: "{quickFolders}.model.messages.label",
-                searchButtonLabel: "{quickFolders}.model.messages.searchButtonLabel",
-                alertLabel: "{quickFolders}.model.messages.alertLabel"
+                labelTitle: "{quickLocalFolders}.model.messages.label",
+                searchButtonLabel: "{quickLocalFolders}.model.messages.searchButtonLabel",
+                alertLabel: "{quickLocalFolders}.model.messages.alertLabel"
             },
             errorMessageSelector: "{that}.options.selectors.errorMessage"
         },
@@ -52,7 +52,7 @@
         listeners: {
             // Invoked on create of the component; by default hides the alert
             "onCreate.hideErrorMessage": {
-                func: "{gpii.qssWidget.quickFolders}.errorMessage.events.onSuccess.fire"
+                func: "{gpii.qssWidget.quickLocalFolders}.errorMessage.events.onSuccess.fire"
             }
         },
 
@@ -62,18 +62,18 @@
                 container: "{that}.dom.searchField",
                 options: {
                     model: {
-                        value: "{gpii.qssWidget.quickFolders}.model.value"
+                        value: "{gpii.qssWidget.quickLocalFolders}.model.value"
                     },
                     events: {
                         onSearch: null
                     },
                     listeners: {
                         "onSearch.impl": {
-                            funcName: "gpii.qssWidget.quickFolders.onSearch",
+                            funcName: "gpii.qssWidget.quickLocalFolders.onSearch",
                             args: [
                                 "{that}.model.value", // search field value
-                                "{gpii.qssWidget.quickFolders}.errorMessage", //errorMessage component
-                                "{gpii.qssWidget.quickFolders}.options.siteConfig.morphicQuickFolderPath" // siteConfig's base folder
+                                "{gpii.qssWidget.quickLocalFolders}.errorMessage", //errorMessage component
+                                "{gpii.qssWidget.quickLocalFolders}.options.siteConfig.morphicQuickFolderPath" // siteConfig's base folder
                             ]
                         }
                     }
@@ -84,10 +84,10 @@
                 container: "{that}.dom.searchButton",
                 options: {
                     model: {
-                        label: "{gpii.qssWidget.quickFolders}.model.messages.searchButtonLabel"
+                        label: "{gpii.qssWidget.quickLocalFolders}.model.messages.searchButtonLabel"
                     },
                     invokers: {
-                        onClick: "{gpii.qssWidget.quickFolders}.searchField.events.onSearch.fire"
+                        onClick: "{gpii.qssWidget.quickLocalFolders}.searchField.events.onSearch.fire"
                     }
                 }
             },
@@ -96,7 +96,7 @@
                 container: "{that}.dom.errorMessage",
                 options: {
                     model: {
-                        label: "{gpii.qssWidget.quickFolders}.model.messages.alertLabel"
+                        label: "{gpii.qssWidget.quickLocalFolders}.model.messages.alertLabel"
                     },
                     styles: {
                         alertHidden: "fl-qssSearchWidget-alert-hidden"
@@ -130,7 +130,7 @@
      * @param {Component} errorMessage
      * @param {String} morphicQuickFolderPath
      */
-    gpii.qssWidget.quickFolders.onSearch = function (folderValue, errorMessage, morphicQuickFolderPath) {
+    gpii.qssWidget.quickLocalFolders.onSearch = function (folderValue, errorMessage, morphicQuickFolderPath) {
         var directory = morphicQuickFolderPath + folderValue;
 
         if (gpii.psp.checkIfDirectoryExists(directory)) {
