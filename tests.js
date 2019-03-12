@@ -41,9 +41,9 @@ jqUnit.onAllTestsDone.addListener(function () {
 });
 
 // Run the electron app tests with code coverage if possible.
-//require("./tests/AppTests.js"); // OK
-//require("./tests/MessageBundlesTests.js"); // OK
-//require("./tests/MessageBundlesCompilerTests.js"); // OK
-//require("./tests/PreferencesGroupingTests.js"); // OK
-//require("./tests/PreferencesParsingTests.js"); // OK
-require("./tests/IntegrationTests.js"); // A few failures
+require("./tests/AppTests.js"); // OK
+require("./tests/MessageBundlesTests.js"); // OK
+require("./tests/MessageBundlesCompilerTests.js"); // OK
+require("./tests/PreferencesGroupingTests.js"); // OK
+require("./tests/PreferencesParsingTests.js"); // OK
+require("./tests/IntegrationTests.js"); // Still one failure.
