@@ -16,8 +16,8 @@ Import-Module (Join-Path $provisioningDir 'Provisioning.psm1') -Force
 
 #$installerRepo = "https://github.com/GPII/gpii-wix-installer"
 #$installerBranch = "HST"
-$installerRepo = "https://github.com/stegru/gpii-wix-installer"
-$installerBranch = "GPII-2338"
+$installerRepo = "https://github.com/javihernandez/gpii-wix-installer"
+$installerBranch = "GPII-3789"
 
 # Obtaining useful tools location.
 $installerDir = Join-Path $env:SystemDrive "installer" # a.k.a. C:\installer\
@@ -49,6 +49,12 @@ Invoke-Command $git "clone --branch $($installerBranch) $($installerRepo) $($ins
 $filebeatFile = (Join-Path $provisioningDir 'filebeat.msm')
 if (Test-Path $filebeatFile) {
     Copy-Item $filebeatFile $installerDir
+}
+
+# Place sharex inside the installer directory, if it's here.
+$sharexFile = (Join-Path $provisioningDir 'sharex.msm')
+if (Test-Path $sharexFile) {
+    Copy-Item $sharexFile $installerDir
 }
 
 # Create staging folder
