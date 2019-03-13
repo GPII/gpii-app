@@ -53,7 +53,7 @@
             },
             "pspStarted.escalate": {
                 "record": {
-                    "onChildComponentsReady.escalate": "{testEnvironment}.events.pspStarted"
+                    "onPSPReady.escalate": "{testEnvironment}.events.pspStarted"
                 },
                 "target": "{that gpii.app}.options.listeners"
             },
