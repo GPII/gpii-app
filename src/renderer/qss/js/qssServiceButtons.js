@@ -18,7 +18,6 @@
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii"),
-        // TODO: openUSB - remove this when the proper function is used
         child_process = require("child_process");
 
     /**
@@ -199,10 +198,16 @@
 
     /**
      * A custom function for handling activation of the "Open USB" QSS button.
+     *
+     * In most cases, there's only a single USB drive. But if there's more than one USB drive,
+     * then those that do not contain the token file are shown.
      */
     gpii.qss.openUSBButtonPresenter.activate = function () {
-        // TODO: openUSB - Change this to the proper function when Steve's ready with it and re-check the params then
-        child_process.exec("explorer.exe");
+        gpii.windows.getUserUsbDrives().then(function (paths) {
+            fluid.each(paths, function (path) {
+                child_process.exec("explorer.exe \"" + path + "\"");
+            });
+        });
     };
 
     /**
