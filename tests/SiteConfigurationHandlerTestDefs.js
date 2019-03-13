@@ -46,6 +46,9 @@ gpii.tests.siteConfigurationHandler.testDefs = {
                 scaleFactor: 0.5,
                 urls: {
                     account: "http://morphic.world/account"
+                },
+                messages: {
+                    keyedOut: "To save your settings you need to setup a Morphic Account."
                 }
             },
             "{that}.app.qssWrapper.options.siteConfig"

@@ -56,5 +56,10 @@
 
     "gpii_qss_toggleButtonPresenter_caption": "[ВКЛ.]",
 
-    "gpii_psp_qssWidget_learnMore": "Научи повече..."
+    "gpii_psp_qssWidget_learnMore": "Научи повече...",
+
+    "gpii_qss_saveButtonPresenter_notification": {
+        "keyedOut": "За да запазите вашите настройки трябва да си създадете Morphic акаунт. Отидете на <a href=\"%accountUrl\">%accountUrl</a>.",
+        "keyedIn": "Вашите настройки са запазени в Morphic Cloud."
+    }
 }

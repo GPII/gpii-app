@@ -40,6 +40,7 @@
             "resetAll": "gpii.qss.resetAllButtonPresenter",
             "more":     "gpii.qss.moreButtonPresenter",
             "usb-open": "gpii.qss.openUSBButtonPresenter",
+            "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "disabled": "gpii.qss.disabledButtonPresenter"
         },
 
@@ -117,7 +118,8 @@
                 options: {
                     model: {
                         settings: "{translatedQss}.model.settings"
-                    }
+                    },
+                    siteConfig: "{translatedQss}.options.siteConfig"
                 }
             }
         }

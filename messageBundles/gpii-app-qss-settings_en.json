@@ -21,8 +21,8 @@
             "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
         },
         "title": {
-            "keyedIn": "Settings Panel",
-            "keyedOut": "Sign In"
+            "keyedIn": " ",
+            "keyedOut": " "
         }
     },
     "gpii_app_qss_settings_more": {
@@ -57,7 +57,7 @@
         "footerTip": ""
     },
     "gpii_app_qss_settings_appTextZoom": {
-        "tooltip": "<p>Change text size.</p><p>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</p>",
+        "tooltip": "<p>Change text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
         "title": "App / Text Zoom",
         "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting so won't Save.)</p>",
         "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do App/Text Zoom without using Morphic."
@@ -70,5 +70,20 @@
     "gpii_app_qss_settings_usb-open": {
         "tooltip": "<p>Opens up any USB Flash Drives plugged into computer.</p>",
         "title": "Open USB Drive"
+    },
+    "gpii_app_qss_settings_screenCapture": {
+        "tooltip": "<p>Screen Capture.</p><p>Take pictures or record videos of the screen.</p>",
+        "title": "Screen Capture",
+        "tip": "<p>Screen Capture</p><p>Take pictures or record videos of the screen. Do not violate Copyright or other laws!</p><ul><li>Move the mouse and then click to capture the highlighted area.</li><li>Clicking and dragging captures a custom part of the screen.</li></ul>",
+        "enum": [
+            "Capture image\n to clipboard for pasting",
+            "Capture image\n to file on desktop",
+            "Record video\n with computer audio",
+            "Record video\n with comp. audio + mic"
+        ]
+    },
+    "gpii_app_qss_settings_cloud-folder-open": {
+        "tooltip": "<p>A quick way to find a common packages of documents, web pages, or other resources.</p>",
+        "title": "Quick Folders"
     }
 }
