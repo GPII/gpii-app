@@ -212,6 +212,11 @@ var basicPspInteractionsCrossSequence = [
         event: "{that}.app.events.onKeyedOut",
         listener: "gpii.tests.psp.testKeyedOut",
         args: ["{that}.app.psp"]
+    },
+    {
+        task: "gpii.test.linger",
+        args: [1000],
+        resolve: "fluid.identity"
     }
 ];
 
