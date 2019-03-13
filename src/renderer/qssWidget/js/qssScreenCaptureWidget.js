@@ -1,8 +1,9 @@
 /**
- * The QSS menu widget
+ * The QSS Screen Capture widget
  *
- * Represents the QSS menu widget which is used for settings that have a list
- * of predefined values.
+ * Shows a list of buttons that do a screen or video capture using the shareX command,
+ * its using siteconfig's shareXPath folder and the provided command from the button
+ *
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -20,52 +21,45 @@
     var gpii = fluid.registerNamespace("gpii");
 
     /**
-     * Represents the QSS menu widget. Responsible for initializing the DOM and
-     * for handling user interactions. Note that this component is reused, i.e.
-     * there is a single instance of it which is modified appropriately in order
-     * to display a new QSS setting with its possible values.
+     * Represents the QSS Screen Capture widget.
      */
-    fluid.defaults("gpii.qssWidget.menu", {
+    fluid.defaults("gpii.qssWidget.screenCapture", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
         model: {
             disabled: false,
             setting: {}
         },
-        modelListeners: {
-            setting: {
-                func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
-                args: ["{change}.value"],
-                includeSource: "settingAlter"
-            }
+        members: {
+            // Holds the last keyboard event received during the "close" operation
+            closingKeyboardEvent: null
         },
         selectors: {
-            heightListenerContainer: ".flc-qssMenuWidget-controls",
-            menuControlsWrapper: ".flc-qssMenuWidget-controlsWrapper",
-            menuControls: ".flc-qssMenuWidget-controls"
+            heightListenerContainer: ".flc-qssScreenCaptureWidget-controls",
+            menuControlsWrapper: ".flc-qssScreenCaptureWidget-controlsWrapper",
+            menuControls: ".flc-qssScreenCaptureWidget-controls"
         },
         enableRichText: true,
         activationParams: {},
         closeDelay: 1200,
         components: {
             repeater: {
-                // TODO Perhaps add "createOnEvent" so that the component can be recreated
                 // whenever the setting changes (e.g. if the change is made via the PSP)
                 type: "gpii.psp.repeater",
-                container: "{menu}.dom.menuControls",
+                container: "{screenCapture}.dom.menuControls",
                 options: {
                     model: {
-                        disabled: "{menu}.model.disabled",
-                        value: "{menu}.model.setting.value",
-                        styles: "{menu}.model.setting.styles"
+                        disabled: "{screenCapture}.model.disabled",
+                        value: "{screenCapture}.model.setting.value",
+                        styles: "{screenCapture}.model.setting.styles"
                     },
                     modelRelay: {
                         items: {
                             target: "items",
                             singleTransform: {
                                 type: "fluid.transforms.free",
-                                func: "gpii.qssWidget.menu.getRepeaterItems",
+                                func: "gpii.qssWidget.screenCapture.getRepeaterItems",
                                 args: [
-                                    "{menu}.model.setting"
+                                    "{screenCapture}.model.setting"
                                 ]
                             }
                         }
@@ -74,7 +68,7 @@
                         container: "<div role=\"radio\" class=\"%containerClass fl-qssWidgetMenu-item fl-focusable\" tabindex=\"0\"></div>",
                         containerClassPrefix: "flc-qssWidgetMenu-item"
                     },
-                    handlerType: "gpii.qssWidget.menu.presenter",
+                    handlerType: "gpii.qssWidget.screenCapture.presenter",
                     markup: null,
                     styles: {
                         disabled: "disabled"
@@ -84,13 +78,11 @@
                     },
                     invokers: {
                         updateValue: {
-                            funcName: "gpii.qssWidget.menu.updateValue",
+                            funcName: "gpii.qssWidget.screenCapture.executeShareX",
                             args: [
-                                "{that}",
-                                "{menu}",
-                                "{that}.container",
                                 "{arguments}.0", // value
-                                "{arguments}.1" // keyboardEvent
+                                "{gpii.qssWidget.screenCapture}.options.siteConfig.shareXPath", // the path to the shareX executable
+                                "{channelNotifier}.events.onQssWidgetHideQssRequested"
                             ]
                         }
                     },
@@ -109,7 +101,7 @@
                     listeners: {
                         "onTimerFinished.closeWidget": {
                             func: "{qssWidget}.close",
-                            args: ["{menu}.keyboardEvent"]
+                            args: ["{screenCapture}.closingKeyboardEvent"]
                         }
                     }
                 }
@@ -117,11 +109,11 @@
         },
         listeners: {
             "onCreate.visibilityChange": {
-                funcName: "gpii.qssWidget.menu.addVisibilityChangeListener",
+                funcName: "gpii.qssWidget.screenCapture.addVisibilityChangeListener",
                 args: ["{closeTimer}"]
             },
-            "onDestroy.visibilitychange": {
-                funcName: "gpii.qssWidget.menu.removeVisibilityChangeListener"
+            "onDestroy.visibilityChange": {
+                funcName: "gpii.qssWidget.screenCapture.removeVisibilityChangeListener"
             }
         },
         invokers: {
@@ -134,7 +126,7 @@
                 ]
             },
             close: {
-                funcName: "gpii.qssWidget.menu.close",
+                funcName: "gpii.qssWidget.screenCapture.close",
                 args: [
                     "{that}",
                     "{closeTimer}",
@@ -156,8 +148,8 @@
      * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
      * change in the setting's value.
      */
-    gpii.qssWidget.menu.close = function (that, closeTimer, keyboardEvent) {
-        that.keyboardEvent = keyboardEvent;
+    gpii.qssWidget.screenCapture.close = function (that, closeTimer, keyboardEvent) {
+        that.closingKeyboardEvent = keyboardEvent;
         closeTimer.start(that.options.closeDelay);
     };
 
@@ -169,8 +161,8 @@
      * @param {Component} closeTimer - An instance of `gpii.app.timer` used for closing
      * the widget with a delay.
      */
-    gpii.qssWidget.menu.addVisibilityChangeListener = function (closeTimer) {
-        $(document).on("visibilitychange.qssMenuWidget", function () {
+    gpii.qssWidget.screenCapture.addVisibilityChangeListener = function (closeTimer) {
+        $(document).on("visibilityChange.qssScreenCaptureWidget", function () {
             if (document.visibilityState === "hidden") {
                 closeTimer.clear();
             }
@@ -181,31 +173,22 @@
      * Removes the listener for clearing the `closeTimer`. Useful when the component is
      * destroyed.
      */
-    gpii.qssWidget.menu.removeVisibilityChangeListener = function () {
-        $(document).off("visibilitychange.qssMenuWidget");
+    gpii.qssWidget.screenCapture.removeVisibilityChangeListener = function () {
+        $(document).off("visibilityChange.qssScreenCaptureWidget");
     };
 
     /**
-     * Updates the value in the model of the widget's repeater. Ensures that interaction
-     * with the QSS menu widget is disabled as it is about to close.
-     * @param {Component} that - The `gpii.psp.repeater` instance.
-     * @param {Component} menu - The `gpii.qssWidget.menu` instance.
-     * @param {jQuery} container - The jQuery object representing the container of the
-     * QSS menu widget.
-     * @param {Any} value - The new value of the setting in the QSS menu.
-     * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
-     * change in the setting's value.
+     * Executes the shareX command with the command from the button
+     * @param {String} value - The new value of the setting in the QSS menu.
+     * @param {String} shareXPath - the path to the shareX executable
+     * @param {EventListener} hideQss - the handle to the hideQSS's event listener
      */
-    gpii.qssWidget.menu.updateValue = function (that, menu, container, value, keyboardEvent) {
-        if (!that.model.disabled && that.model.value !== value) {
-            that.applier.change("value", value, null, "settingAlter");
+    gpii.qssWidget.screenCapture.executeShareX = function (value, shareXPath, hideQss) {
+        // hiding QSS
+        hideQss.fire();
+        // taking the screenshot
+        gpii.psp.execShareXCommand(value, shareXPath);
 
-            // Disable interactions with the window as it is about to close
-            that.applier.change("disabled", true);
-            container.addClass(that.options.styles.disabled);
-
-            menu.close(keyboardEvent);
-        }
     };
 
     /**
@@ -215,7 +198,7 @@
      * @return {Object[]} - An array of key-value pairs describing the key and the value
      * (the visible name) of the setting.
      */
-    gpii.qssWidget.menu.getRepeaterItems = function (setting) {
+    gpii.qssWidget.screenCapture.getRepeaterItems = function (setting) {
         var schema = setting.schema || {},
             values = schema["enum"],
             keys = schema.keys || values;
@@ -232,7 +215,7 @@
      * A handler for the `repeater` instance in the QSS widget menu. Takes care of rendering
      * a particular setting option and handling user interaction.
      */
-    fluid.defaults("gpii.qssWidget.menu.presenter", {
+    fluid.defaults("gpii.qssWidget.screenCapture.presenter", {
         gradeNames: ["fluid.viewComponent", "gpii.qssWidget.button"],
         model: {
             item: null
@@ -248,10 +231,7 @@
                 args: ["{that}.model.item.value"]
             },
             "{repeater}.model.value": [{
-                funcName: "gpii.qssWidget.menu.presenter.toggleCheckmark",
-                args: ["{change}.value", "{that}.model.item", "{that}.container"]
-            }, {
-                funcName: "gpii.qssWidget.menu.presenter.animateActivation",
+                funcName: "gpii.qssWidget.screenCapture.presenter.animateActivation",
                 args: ["{change}.value", "{that}.model.item", "{that}.container", "{that}.options.styles"],
                 includeSource: "settingAlter"
             }]
@@ -261,16 +241,11 @@
         },
         listeners: {
             "onCreate.applyStyles": {
-                funcName: "gpii.qssWidget.menu.presenter.applyStyles",
+                funcName: "gpii.qssWidget.screenCapture.presenter.applyStyles",
                 args: ["{that}", "{that}.container", "{repeater}.model.styles"]
             },
-            // Call function that set an attribute which is used for styling purporses.
-            "onCreate.defaultValue": {
-                funcName: "gpii.qssWidget.menu.presenter.defaultValue",
-                args: ["{that}.model.item.key", "{menu}.model.setting.schema.default", "{that}.container", "{that}.options.styles"]
-            },
             onItemFocus: {
-                funcName: "gpii.qssWidget.menu.presenter.focusItem",
+                funcName: "gpii.qssWidget.screenCapture.presenter.focusItem",
                 args: [
                     "{that}",
                     "{focusManager}",
@@ -297,20 +272,10 @@
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      * @param {Number} index - The index of the setting option to be focused.
      */
-    gpii.qssWidget.menu.presenter.focusItem = function (that, focusManager, container, index) {
+    gpii.qssWidget.screenCapture.presenter.focusItem = function (that, focusManager, container, index) {
         if (that.model.index === index) {
             focusManager.focusElement(container, true);
         }
-    };
-
-    /**
-     * Adds a checkmark next to a setting option if it is the currently selected one for the setting.
-     * @param {String} key - The `key` of the selected setting option.
-     * @param {Object} item - The current setting option.
-     * @param {jQuery} container - A jQuery object representing the setting option's container.
-     */
-    gpii.qssWidget.menu.presenter.toggleCheckmark = function (key, item, container) {
-        container.attr("aria-checked", item.key === key);
     };
 
     /**
@@ -321,7 +286,7 @@
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      * @param {Object} styles - An object containing useful predefined CSS classes.
      */
-    gpii.qssWidget.menu.presenter.animateActivation = function (key, item, container, styles) {
+    gpii.qssWidget.screenCapture.presenter.animateActivation = function (key, item, container, styles) {
         container.toggleClass(styles.active, item.key === key);
     };
 
@@ -331,22 +296,11 @@
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      * @param {Object} styles - The styles for the current QSS menu setting.
      */
-    gpii.qssWidget.menu.presenter.applyStyles = function (that, container, styles) {
+    gpii.qssWidget.screenCapture.presenter.applyStyles = function (that, container, styles) {
         var elementStyles = fluid.get(styles, that.model.item.key);
         if (elementStyles) {
             container.css(elementStyles);
         }
     };
-    /**
-     * Adds an attribute property for the default setting value.
-     * @param {String} key - The `key` of the setting option.
-     * @param {Object} item - The default value from the settings.
-     * @param {jQuery} container - A jQuery object representing the setting option's container.
-     * @param {Object} styles - An object containing useful predefined CSS classes.
-     */
-    gpii.qssWidget.menu.presenter.defaultValue = function (key, item, container, styles) {
-        if (key === item) {
-            container.addClass(styles["default"]);
-        }
-    };
+
 })(fluid);

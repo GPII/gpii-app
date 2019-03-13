@@ -64,7 +64,7 @@
     "gpii_psp_qssNotification_dismissButtonLabel": "OK",
 
     "gpii_qss_saveButtonPresenter_notification": {
-        "keyedOut": "To save your settings you need to setup a Morphic Account. Go to <a href=\"%accountUrl\">%accountUrl</a>",
+        "keyedOut": "%messageKeyedOut",
         "keyedIn": "Your settings were saved to the Morphic Cloud."
     },
 

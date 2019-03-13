@@ -36,7 +36,7 @@ fluid.defaults("gpii.app.qss", {
         logoWidth: 117,
         // The width of a single button together with its left margin
         buttonWidth: 59,
-        closeButtonWidth: 24
+        closeButtonWidth: 29
     },
     qssButtonTypes: {
         smallButton: "smallButton",
@@ -77,7 +77,8 @@ fluid.defaults("gpii.app.qss", {
             transparent: false
         },
         params: {
-            settings: "{that}.model.settings"
+            settings: "{that}.model.settings",
+            siteConfig: "{that}.options.siteConfig"
         },
         fileSuffixPath: "qss/index.html"
     },

@@ -26,10 +26,13 @@
      * QSS button.
      */
     fluid.defaults("gpii.qss.keyInButtonPresenter", {
-        gradeNames: ["gpii.qss.buttonPresenter"],
+        gradeNames: ["gpii.qss.disabledButtonPresenter"],
         attrs: {
             "aria-label": "Settings Panel"
-        },
+        }
+        // This code is commented because of changes in GPII-3773 request.
+        // Some or all code may be removed or parts of it re-used in the future.
+        /*,
         listeners: {
             "onArrowUpPressed.activate": {
                 func: "{that}.onActivationKeyPressed",
@@ -47,7 +50,7 @@
                     "{arguments}.0" // activationParams
                 ]
             }
-        }
+        }*/
     });
 
     /**
@@ -274,4 +277,36 @@
         that.notifyButtonActivated(activationParams);
         qssList.events.onResetAllRequired.fire();
     };
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Open USB Button"
+     * QSS button.
+     */
+    fluid.defaults("gpii.qss.openCloudFolderPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.openCloudFolderPresenter.activate",
+                args: ["{gpii.qss}.options.siteConfig.urls.cloudFolder"] // siteConfig's cloud folder url
+            }
+        }
+    });
+
+    /**
+     * A custom function for handling activation of the "Quick Folders" QSS button.
+     * opens a provided url in the default browser using electron's shell
+     * @param {String} cloudFolderUrl - cloud folder's url
+     */
+    gpii.qss.openCloudFolderPresenter.activate = function (cloudFolderUrl) {
+        var shell = require("electron").shell;
+
+        if (fluid.isValue(cloudFolderUrl)) {
+            // we have the url, opening it in the default browser
+            shell.openExternal(cloudFolderUrl);
+        } else {
+            // there is no value in the config, sending the warning
+            fluid.log(fluid.logLevel.WARN, "Service Buttons (openCloudFolderPresenter): Cannot find a proper url path [siteConfig.qss.urlscloudFolder]");
+        }
+    };
+
 })(fluid);
