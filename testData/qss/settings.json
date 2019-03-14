@@ -1,30 +1,5 @@
 [
     {
-        "path": "screenCapture",
-        "schema": {
-            "type": "screenCapture",
-            "keys": [
-                "Morphic: Capture entire screen to clipboard",
-                "Morphic: Capture entire screen to desktop",
-                "Morphic: Record region to desktop with computer audio",
-                "Morphic: Record region to desktop with computer and mic audio"
-            ],
-            "default": ""
-        },
-        "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 0,
-        "messageKey": "screenCapture",
-        "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
-        "value": ""
-    }, {
-        "path": "cloud-folder-open",
-        "schema": {
-            "type": "cloud-folder-open"
-        },
-        "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 0,
-        "messageKey": "cloud-folder-open"
-    }, {
         "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {
             "type": "string",
@@ -34,7 +9,7 @@
             "default": "en-US"
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 1,
+        "tabindex": 100,
         "messageKey": "common-language",
         "learnMoreLink": "https://morphic.world/help/qsshelp#language",
         "value": "en-US",
@@ -55,7 +30,7 @@
             "default": 0
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 2,
+        "tabindex": 110,
         "messageKey": "common-DPIScale",
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
@@ -68,10 +43,27 @@
             "divisibleBy": 1
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 3,
+        "tabindex": 120,
         "messageKey": "appTextZoom",
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
+    }, {
+        "path": "screenCapture",
+        "schema": {
+            "type": "screenCapture",
+            "keys": [
+                "Morphic: Capture entire screen to clipboard",
+                "Morphic: Capture entire screen to desktop",
+                "Morphic: Record region to desktop with computer audio",
+                "Morphic: Record region to desktop with computer and mic audio"
+            ],
+            "default": ""
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 130,
+        "messageKey": "screenCapture",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
+        "value": ""
     }, {
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
@@ -89,7 +81,7 @@
             "default": "regular-contrast"
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 4,
+        "tabindex": 140,
         "messageKey": "common-highContrastTheme",
         "value": "regular-contrast",
         "styles": {
@@ -143,17 +135,25 @@
             "default": false
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 5,
+        "tabindex": 150,
         "messageKey": "common-selfVoicing-enabled",
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
-    }, {
+    },{
+        "path": "cloud-folder-open",
+        "schema": {
+            "type": "cloud-folder-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 200,
+        "messageKey": "cloud-folder-open"
+    },  {
         "path": "more",
         "schema": {
             "type": "more"
         },
         "buttonTypes": ["largeButton"],
-        "tabindex": 6,
+        "tabindex": 230,
         "messageKey": "more"
     }, {
         "path": "save",
@@ -161,7 +161,7 @@
             "type": "save"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 7,
+        "tabindex": 300,
         "messageKey": "save"
     }, {
         "path": "undo",
@@ -169,7 +169,7 @@
             "type": "undo"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 9,
+        "tabindex": 320,
         "messageKey": "undo"
     }, {
         "path": "psp",
@@ -177,7 +177,7 @@
             "type": "psp"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 8,
+        "tabindex": 310,
         "messageKey": "psp"
     }, {
         "path": "resetAll",
@@ -185,7 +185,7 @@
             "type": "resetAll"
         },
         "buttonTypes": ["smallButton"],
-        "tabindex": 10,
+        "tabindex": 330,
         "messageKey": "resetAll"
     }, {
         "path": "close",
@@ -193,7 +193,7 @@
             "type": "close"
         },
         "buttonTypes": ["closeButton"],
-        "tabindex": 11,
+        "tabindex": 340,
         "messageKey": "close"
     }
 ]
