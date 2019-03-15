@@ -3,38 +3,38 @@ body {
 }
 
 .fl-qssTooltip {
-    /* DPI related problem with missing border */
-    margin-right: 1px;
-
-    flex-direction: column;
-
     position: absolute;
     bottom: 0;
+
+    /* DPI related problem with missing border */
+    margin-right: 1px;
 }
 
 .fl-qssTooltip-content {
-    flex: 1;
-
     border: 1px solid #000000;
-    border-radius: 15px;
-    padding: 10px;
+    border-radius: 10px 10px 3px 10px;
+    padding: 5px;
     background-color: #FFFFFF;
 
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+
+    font: normal 9px "Open Sans", "Sans-Serif";
+    line-height: 12px;
 }
 
 .fl-qssTooltip-content > p {
     margin: 0;
     padding: 0;
-
-    line-height: inherit;
-    font-size: 15px;
 }
 
 .fl-qssTooltip-content > p:first-of-type {
     font-weight: bold;
+}
+
+.fl-qssTooltip-content > p img {
+    vertical-align: middle;
 }
 
 .fl-footer-arrow {
@@ -44,19 +44,21 @@ body {
 .fl-footer-arrow .fl-arrow,
 .fl-footer-arrow .fl-arrow-border {
     float: right;
-    border: 22px solid transparent;
-    border-bottom: 0;
-    width: 5%;
+    box-sizing: border-box;
+    width: 0;
+    height: 0;
+
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 9px solid #ffffff;
 }
 
 .fl-footer-arrow .fl-arrow {
     /* overlay with tooltip border */
-    margin-top: -1px;
-    margin-right: -44px;
-    border-top-color: #FFFFFF;
+    margin: -2px -16px 0 0;
 }
 
 .fl-footer-arrow .fl-arrow-border {
-    margin-right: 21px;
+    margin: -1px 1px 0 0;
     border-top-color: #000000;
 }

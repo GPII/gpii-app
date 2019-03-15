@@ -1,7 +1,7 @@
 {
     "gpii_app_qss_settings_close": {
-        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/TaskTrayIcon_outline.svg'></img></p>",
-        "title": "Затвори"
+        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=12 src='../../icons/TaskTrayIcon_outline.svg'></img></p>",
+        "title": "×"
     },
     "gpii_app_qss_settings_undo": {
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>",
@@ -9,7 +9,7 @@
     },
     "gpii_app_qss_settings_resetAll": {
         "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>",
-        "title": "Reset All to Standard"
+        "title": "Reset to Standard"
     },
     "gpii_app_qss_settings_save": {
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>",
@@ -21,26 +21,28 @@
             "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
         },
         "title": {
-            "keyedIn": "Morphic Settings Panel",
-            "keyedOut": "Sign In"
+            "keyedIn": " ",
+            "keyedOut": " "
         }
     },
     "gpii_app_qss_settings_more": {
         "tooltip": "<p>More options for changing the settings on this computer.</p>",
-        "title": "ORE...\n\n(& HELP)"
+        "title": "MORE...\n\n(& HELP)"
     },
     "gpii_app_qss_settings_common-selfVoicing-enabled": {
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>",
-        "title": "ead Aloud"
+        "title": "Read Aloud",
+        "tip": "<p>Turns on and adjusts Read Aloud  mode in Chrome <img height=12 src='../../icons/chrome.svg'></p>",
+        "extendedTip": "<p>To use Read Aloud</p><ol><li>Open web page in Chrome</li><li>Select / highlight text</li><li>Click Play button that pops up</li></ol>"
     },
     "gpii_app_qss_settings_common-highContrastTheme": {
         "tooltip": "<p>Change the contrast between the text and background color, so text is easier to read.</p><p>Contrast changes will affect Windows, Edge, Chrome, and some other applications.</p>",
-        "title": "igh / Low Contrast",
+        "title": "High / Low Contrast",
         "tip": "<p>Changes contrast & colors</p><p>Works in Chrome, Windows and apps that support Windows contrast themes.  (May need to restart some programs)</p>"
     },
     "gpii_app_qss_settings_common-DPIScale": {
         "tooltip": "<p>Change whole screen to make everything larger/smaller.</p><p>Works for everything.</p>",
-        "title": "creen Zoom",
+        "title": "Screen Zoom",
         "tip": "<p>Zooms everything on the screen</p><p>Amount of Zoom up and down differs by computer.</p>",
         "footerTip": ""
     },
@@ -52,16 +54,22 @@
     },
     "gpii_app_qss_settings_common-language": {
         "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
-        "title": "anguage",
-        "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
+        "title": "Език",
+        "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>"
+    },
+    "gpii_app_qss_settings_screenCapture": {
+        "tooltip": "<p>Направи Снимка.</p><p>Вземи снимка или видео от екрана си.</p>",
+        "title": "Направи Снимка",
+        "tip": "<p>Направи Снимка</p><p>Използвайте бутоните по-долу да направите снимка, или видео на екрана си. Моля спазвайте Закона за авторските права!</p><ul><li>Изполвайте мишката, за да избере зона и цъкнете, за да направите снимката.</li><li>Кликнете и влачете по екрана за избиране на зона.</li></ul>",
         "enum": [
-                "Английски",
-                "Հայերէն · Арменски",
-                "汉语 · Chinese (Simplified)",
-                "漢語 · Chinese (Traditional - Taiwan)",
-                "한국어 · Korean",
-                "Ру́сский · Russian",
-                "Español · Spanish"
-            ]
+            "Направи снимка в клипбоарда",
+            "Направи снимка на десктопа",
+            "Запиши видео и аудио",
+            "Запиши видео + микрофон"
+        ]
+    },
+    "gpii_app_qss_settings_cloud-folder-open": {
+        "tooltip": "<p>Отваря cloud базирана публична папка.</p>",
+        "title": "Quick Folders"
     }
 }

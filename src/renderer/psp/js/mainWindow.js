@@ -120,7 +120,8 @@
                 settingGroups: []
             },
             theme: null,
-            sounds: {}
+            sounds: {},
+            urls: {}
         },
         selectors: {
             signIn: ".flc-signIn",
@@ -148,7 +149,13 @@
                         }
                     },
                     listeners: {
-                        "onClose": "{mainWindow}.events.onPSPClose"
+                        onClose: {
+                            funcName: "gpii.psp.mainWindow.close",
+                            args: [
+                                "{mainWindow}",
+                                "{arguments}.0" // KeyboardEvent
+                            ]
+                        }
                     }
                 }
             },
@@ -215,7 +222,12 @@
             },
             footer: {
                 type: "gpii.psp.footer",
-                container: "{that}.dom.footer"
+                container: "{that}.dom.footer",
+                options: {
+                    model: {
+                        urls: "{mainWindow}.model.urls"
+                    }
+                }
             }
         },
         modelListeners: {
@@ -351,5 +363,20 @@
         });
 
         return headerPreferences;
+    };
+
+    /**
+     * Fires the appropriate event which is communicated to the main process to
+     * indicate that the PSP should be closed.
+     * @param {Component} that - The `gpii.psp.mainWindow` instance.
+     * @param {KeyboardEvent} KeyboardEvent - The keyboard event (if any) which
+     * led to the triggering of this function.
+     */
+    gpii.psp.mainWindow.close = function (that, KeyboardEvent) {
+        KeyboardEvent = KeyboardEvent || {};
+
+        that.events.onPSPClose.fire({
+            key: KeyboardEvent.key
+        });
     };
 })(fluid);

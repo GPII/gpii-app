@@ -48,37 +48,66 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             },
             target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
         },
-        distributeQssScaleFactor: {
-            record: "{that}.options.siteConfig.qssScaleFactor",
-            target: "{app qssWrapper}.options.scaleFactor"
+        distributeQssConfig: {
+            record: "{that}.options.siteConfig.qss",
+            target: "{app qssWrapper}.options.siteConfig"
         },
-        distributePspScaleFactor: {
-            record: "{that}.options.siteConfig.pspScaleFactor",
-            target: "{app psp}.options.scaleFactor"
+        distributeQssWidgetConfig: {
+            record: "{that}.options.siteConfig.qss",
+            target: "{app qssWidget}.options.config.params.siteConfig"
+        },
+        distributeLanguageLabelTemplate: {
+            record: "{that}.options.siteConfig.qss.languageOptionLabel",
+            target: "{app qssWrapper}.options.settingOptions.languageOptionLabelTemplate"
+        },
+        distributeDefaultLanguage: {
+            record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
+            target: "{app qssWrapper}.options.settingOptions.systemDefaultLanguage"
+        },
+        distributeTooltipShowDelay: {
+            record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
+            target: "{app qssTooltipDialog}.options.showDelay"
+        },
+
+        distributePspConfig: {
+            record: "{that}.options.siteConfig.psp",
+            target: "{app psp}.options.siteConfig"
         },
         distributeDialogScaleFactor: {
-            record: "{that}.options.siteConfig.pspScaleFactor",
-            target: "{app dialogManager}.options.scaleFactor"
+            record: "{app}.configurationHandler.options.siteConfig.psp.scaleFactor",
+            target: "{app dialogManager}.options.model.scaleFactor"
         },
         distributeQssMorePanelConfig: {
             record: "{that}.options.siteConfig.qssMorePanel",
             target: "{app qssMorePanel}.options.siteConfig"
         },
-        distributesQssClickOutside: {
+        distributeQssClickOutside: {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
             target: "{app gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
         },
-        distributesPspClickOutside: {
+        distributePspClickOutside: {
             record: "{that}.options.siteConfig.closePspOnClickOutside",
             target: "{app gpiiConnector}.options.defaultPreferences.closePspOnBlur"
         },
-        distributesOpenQssShortcut: {
+        distributeOpenQssShortcut: {
             record: "{that}.options.siteConfig.openQssShortcut",
             target: "{app gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
+        },
+        distributeDisableRestartWarning: {
+            record: "{that}.options.siteConfig.disableRestartWarning",
+            target: "{app gpiiConnector}.options.defaultPreferences.disableRestartWarning"
         },
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
             target: "{app surveyConnector}.options.config.surveyTriggersUrl"
+        },
+        distributeAboutDialogConfig: {
+            record: "{that}.options.siteConfig.aboutDialog",
+            target: "{app aboutDialog}.options.siteConfig"
+        },
+        distributeTrayType: {
+            record: "{that}.options.siteConfig.trayType",
+            target: "{app tray}.options.trayType"
         }
     }
 });

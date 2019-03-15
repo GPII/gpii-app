@@ -1,4 +1,12 @@
 {
     hideQssSaveButton: true,
-    qssScaleFactor: 0.5
+    qss: {
+        scaleFactor: 0.5,
+        urls: {
+            account: "http://morphic.world/account"
+        },
+        messages: {
+            keyedOut: "To save your settings you need to setup a Morphic Account."
+        }
+    }
 }

@@ -11,6 +11,17 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 /* eslint-env node */
 "use strict";
 
+var app = require("electron").app;
+
+// Perform this check early, do avoid any delay.
+var singleInstance = app.requestSingleInstanceLock();
+if (!singleInstance) {
+    // The event handler of second-instance (below) will be called in the original instance.
+    console.log("Another instance of Morphic is running");
+    app.quit();
+    return;
+}
+
 var dns = require("dns");
 var lookupReal = dns.lookup;
 dns.lookup = function lookup(hostname, options, callback) {
@@ -21,7 +32,6 @@ dns.lookup = function lookup(hostname, options, callback) {
 };
 
 var fluid = require("infusion"),
-    app = require("electron").app,
     gpii = fluid.registerNamespace("gpii"),
     kettle = fluid.registerNamespace("kettle");
 
@@ -33,24 +43,20 @@ app.disableHardwareAcceleration();
 // The PSP will have a single instance. If an attempt to start a second instance is made,
 // the second one will be closed and the callback provided to `app.makeSingleInstance`
 // in the first instance will be triggered enabling it to show the PSP `BrowserWindow`.
-var appIsRunning = app.makeSingleInstance(function (commandLine) {
+app.on("second-instance", function (event, commandLine) {
     var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
     qssWrapper.qss.show();
-
     if (commandLine.indexOf("--reset") > -1) {
-        process.nextTick(function () {
-            // GPII-3455: Call this in the next tick, to allow electron to free some things.
+        setTimeout(function () {
+            // GPII-3455: Call this in another execution stack, to allow electron to free some things, otherwise an
+            // error of a COM object being accessed in the wrong thread is raised - but that doesn't appear to be
+            // the case. Originally, nextTick was used to escape this strange state. However, since upgrading to
+            // Electron 3 it stopped working but a zero timeout does.
             var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
             gpiiApp.resetAllToStandard();
-        });
+        }, 0);
     }
 });
-
-if (appIsRunning) {
-    console.log("Another instance of gpii-app is running!");
-    app.quit();
-    return;
-}
 
 // this module is loaded relatively slow
 // it also loads gpii-universal

@@ -41,9 +41,17 @@ gpii.tests.siteConfigurationHandler.testDefs = {
     }, { // once everything is created, check for options distribution
         funcName: "jqUnit.assertDeepEq",
         args: [
-            "QSS scale factor have been distributed",
-            0.5,
-            "{that}.app.qssWrapper.options.scaleFactor"
+            "QSS site config has been distributed",
+            {
+                scaleFactor: 0.5,
+                urls: {
+                    account: "http://morphic.world/account"
+                },
+                messages: {
+                    keyedOut: "To save your settings you need to setup a Morphic Account."
+                }
+            },
+            "{that}.app.qssWrapper.options.siteConfig"
         ]
     }]
 };

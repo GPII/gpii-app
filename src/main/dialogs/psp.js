@@ -26,7 +26,6 @@ require("../common/utils.js");
 require("./basic/dialog.js");
 require("./basic/blurrable.js");
 require("./basic/resizable.js");
-require("./basic/scaledDialog.js");
 require("./basic/offScreenHidable.js");
 
 
@@ -41,10 +40,7 @@ fluid.defaults("gpii.app.pspInApp", {
         isKeyedIn: "{app}.model.isKeyedIn",
 
         preferences: "{app}.model.preferences",
-        theme: "{app}.model.theme",
-        offset: {
-            y: "{qssWrapper}.qss.options.config.attrs.height"
-        }
+        theme: "{app}.model.theme"
     },
     events: {
         onActivePreferenceSetAltered: "{qssWrapper}.events.onActivePreferenceSetAltered"
@@ -65,8 +61,8 @@ fluid.defaults("gpii.app.pspInApp", {
             func: "{that}.hide"
         },
 
-        "{qssWrapper}.events.onQssPspOpen": {
-            func: "{that}.show"
+        "{qssWrapper}.events.onQssPspToggled": {
+            func: "{that}.toggle"
         },
         "{qssWrapper}.events.onQssPspClose": {
             func: "{that}.handleBlur",
@@ -148,18 +144,21 @@ fluid.defaults("gpii.app.psp", {
     gradeNames: [
         "gpii.app.dialog",
         "gpii.app.blurrable",
-        "gpii.app.dialog.offScreenHidable",
-        "gpii.app.scaledDialog"
+        "gpii.app.dialog.offScreenHidable"
     ],
 
-    scaleFactor: 1,
-    defaultWidth: 450,
-    defaultHeight: 600,
+    siteConfig: {
+        scaleFactor: 1,
+        urls: {
+            help: "http://pmt.gpii.org/help"
+        }
+    },
 
     model:  {
         isKeyedIn: false,
         theme: null,
-        preferences: {}
+        preferences: {},
+        scaleFactor: "{that}.options.siteConfig.scaleFactor"
     },
 
     modelRelay: {
@@ -180,15 +179,12 @@ fluid.defaults("gpii.app.psp", {
         destroyOnClose: false,
 
         restrictions: {
-            minHeight: {
-                expander: {
-                    funcName: "gpii.app.scale",
-                    args: [
-                        "{that}.options.scaleFactor",
-                        600
-                    ]
-                }
-            }
+            minHeight: 600
+        },
+
+        attrs: {
+            width: 450,
+            height: 600
         },
 
         fileSuffixPath: "psp/index.html",
@@ -208,7 +204,8 @@ fluid.defaults("gpii.app.psp", {
                         args: ["{that}.options.sounds.activeSetChanged"]
                     }
                 }
-            }
+            },
+            urls: "{that}.options.siteConfig.urls"
         }
     },
 
@@ -253,8 +250,12 @@ fluid.defaults("gpii.app.psp", {
             funcName: "gpii.app.psp.closePSP",
             args: ["{psp}", "{settingsBroker}"]
         },
-        "onClosed.giveToQss": {
-            func: "{qssWrapper}.qss.focus"
+        "onClosed.giveFocusToQss": {
+            funcName: "gpii.app.psp.giveFocusToQss",
+            args: [
+                "{qssWrapper}",
+                "{arguments}.0" // params
+            ]
         },
 
         // XXX currently sign in functionality is missing
@@ -270,6 +271,13 @@ fluid.defaults("gpii.app.psp", {
     },
 
     modelListeners: {
+        "{qssWrapper}.qss.model.height": {
+            func: "{that}.setPosition",
+            args: [
+                "{that}.model.offset.x",
+                "{change}.value"
+            ]
+        },
         "{app}.model.locale": {
             funcName: "gpii.app.notifyWindow",
             args: [
@@ -320,6 +328,12 @@ fluid.defaults("gpii.app.psp", {
                 "{settingsBroker}",
                 "{arguments}.0" // ignoreClosePreference
             ]
+        },
+        getScaledOffset: {
+            funcName: "fluid.identity",
+            args: {
+                y: "{qssWrapper}.qss.model.height"
+            }
         }
     }
 });
@@ -359,8 +373,8 @@ gpii.app.psp.handleBlur = function (psp, settingsBroker, ignoreClosePreference) 
  * @param {Component} psp - The `gpii.app.psp` instance.
  */
 gpii.app.initPSPWindowIPC = function (app, psp) {
-    ipcMain.on("onPSPClose", function () {
-        psp.events.onClosed.fire();
+    ipcMain.on("onPSPClose", function (event, params) {
+        psp.events.onClosed.fire(params);
     });
 
     ipcMain.on("onKeyOut", function () {
@@ -420,6 +434,27 @@ gpii.app.psp.closePSP = function (psp, settingsBroker) {
     });
 };
 
+/**
+ * Focuses back the QSS when the PSP is closed. Note that if the PSP has been closed
+ * as a result of a keyboard interaction, the "Sign in" button in the QSS should be
+ * highlighted. Thus, this function should internally use `qss.show` instead of
+ * `qss.focus`.
+ * @param {Component} qssWrapper - The `gpii.app.qssWrapper` instance.
+ * @param {Object} params - Parameters specifying how the `onClosed` event was
+ * triggered (e.g. which keyboard key if any resulted in it).
+ */
+gpii.app.psp.giveFocusToQss = function (qssWrapper, params) {
+    var qss = qssWrapper.qss;
+    if (qss.model.isShown) {
+        var settingPath = qssWrapper.options.settingOptions.settingPaths.psp,
+            setting = qssWrapper.getSetting(settingPath);
+
+        params = fluid.extend({}, params, {
+            setting: setting
+        });
+        qss.show(params);
+    }
+};
 
 /**
  * This function takes care of notifying the PSP window whenever the

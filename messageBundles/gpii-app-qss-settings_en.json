@@ -1,15 +1,15 @@
 {
     "gpii_app_qss_settings_close": {
-        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/TaskTrayIcon_outline.svg'></img></p>",
-        "title": "Close"
+        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=12 src='../../icons/TaskTrayIcon_outline.svg'></img></p>",
+        "title": "×"
     },
     "gpii_app_qss_settings_undo": {
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>",
         "title": "Undo"
     },
     "gpii_app_qss_settings_resetAll": {
-        "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>",
-        "title": "Reset All to Standard"
+        "tooltip": "<p>Reset to the standard settings for this computer</p><p>(does not affect personal saved settings)</p>",
+        "title": "Reset to Standard"
     },
     "gpii_app_qss_settings_save": {
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>",
@@ -21,8 +21,8 @@
             "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
         },
         "title": {
-            "keyedIn": "Morphic Settings Panel",
-            "keyedOut": "Sign In"
+            "keyedIn": " ",
+            "keyedOut": " "
         }
     },
     "gpii_app_qss_settings_more": {
@@ -31,12 +31,24 @@
     },
     "gpii_app_qss_settings_common-selfVoicing-enabled": {
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>",
-        "title": "Read Aloud"
+        "title": "Read Aloud",
+        "tip": "<p>Turns on and adjusts Read Aloud  mode in Chrome</p>",
+        "extendedTip": "<p>To use Read Aloud</p><ol><li>Open web page in Chrome <img height=12 src='../../icons/chrome.svg'></li><li>Select / highlight text</li><li>Click Play button that pops up</li></ol>"
     },
     "gpii_app_qss_settings_common-highContrastTheme": {
         "tooltip": "<p>Change the contrast between the text and background color, so text is easier to read.</p><p>Contrast changes will affect Windows, Edge, Chrome, and some other applications.</p>",
         "title": "High / Low Contrast",
-        "tip": "<p>Changes contrast & colors</p><p>Works in Chrome, Windows and apps that support Windows contrast themes. (May need to restart some programs)</p>"
+        "tip": "<p>Changes contrast & colors</p><p>Works in Chrome, Windows and apps that support Windows contrast themes. (May need to restart some programs)</p>",
+        "enum": [
+            "Regular contrast",
+            "Black on white",
+            "White on black",
+            "Yellow on black",
+            "Black on yellow",
+            "Light on dark grey",
+            "Grey on white",
+            "Black on brown"
+        ]
     },
     "gpii_app_qss_settings_common-DPIScale": {
         "tooltip": "<p>Change whole screen to make everything larger/smaller.</p><p>Works for everything.</p>",
@@ -45,7 +57,7 @@
         "footerTip": ""
     },
     "gpii_app_qss_settings_appTextZoom": {
-        "tooltip": "<p>Change text size.</p><p>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</p>",
+        "tooltip": "<p>Change text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
         "title": "App / Text Zoom",
         "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting so won't Save.)</p>",
         "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do App/Text Zoom without using Morphic."
@@ -54,5 +66,20 @@
         "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
         "title": "Language",
         "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>"
+    },
+    "gpii_app_qss_settings_screenCapture": {
+        "tooltip": "<p>Screen Capture.</p><p>Take pictures or record videos of the screen.</p>",
+        "title": "Screen Capture",
+        "tip": "<p>Screen Capture</p><p>Take pictures or record videos of the screen. Do not violate Copyright or other laws!</p><ul><li>Move the mouse and then click to capture the highlighted area.</li><li>Clicking and dragging captures a custom part of the screen.</li></ul>",
+        "enum": [
+            "Capture image\n to clipboard for pasting",
+            "Capture image\n to file on desktop",
+            "Record video\n with computer audio",
+            "Record video\n with comp. audio + mic"
+        ]
+    },
+    "gpii_app_qss_settings_cloud-folder-open": {
+        "tooltip": "<p>A quick way to find a common packages of documents, web pages, or other resources.</p>",
+        "title": "Quick Folders"
     }
 }

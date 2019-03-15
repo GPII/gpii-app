@@ -135,6 +135,12 @@ gpii.tests.blockTestsElement = function () {
 
 /**
  * Executes a JavaScript snippet in the `BrowserWindow` of the given dialog.
+ *
+ * N.B. In order for this function to behave properly you should ensure that
+ * the BrowserWindow's DOM is fully loaded. This could be achieved in two ways:
+ * - either wait for the dialog's `onDialogReady` event, which should waits both for the js
+ *   and the DOM of the dialog to load in case the dialog code is of the current pattern;
+ * - or listen for the dom-ready event - https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-dom-ready
  * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
  * to be executed.
  * @param {String} command - A string representing the JavaScript code to be
@@ -142,24 +148,75 @@ gpii.tests.blockTestsElement = function () {
  * @return {Promise} - A promise which is resolved when the JavaScript code is
  * executed.
  */
-gpii.test.executeJavaScript = function (dialog, command) {
+gpii.test.executeJavaScriptInWebContents = function (dialog, command) {
     return dialog.webContents.executeJavaScript(command, true);
+};
+
+
+/**
+ * Invokes a JavaScript function in the `BrowserWindow` of the given dialog.
+ * As the Electron BrowserWindow's API for executing code inside the window expects
+ * a code string to be passed, the provided function is transformed to such a string.
+ * The `Function.toString` method of the function is used and then the function is wrapped inside a
+ * IIFE block with the help of `gpii.test.toIIFEString`.
+ * This generate IIFE string is then passed to `gpii.test.executeJavaScriptInWebContents`
+ * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
+ * to be executed.
+ * @param {Function} func - The function that is to be invoked inside the BrowserWindow
+ * @return {Promise} - A promise which is resolved when the JavaScript code is
+ * executed.
+ */
+gpii.test.invokeFunctionInWebContents = function (dialog, func) {
+    return gpii.test.executeJavaScriptInWebContents(dialog, gpii.test.toIIFEString(func));
+};
+
+/**
+ * Invokes a JavaScript function in the `BrowserWindow` of the given dialog.
+ * Similar to `executeJavaScriptInWebContentsDelayed` invokes the function with a delay.
+ * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
+ * to be executed.
+ * @param {Function} func - The function that is to be invoked inside the BrowserWindow
+ * @param {Number} delay - The delay after which the function should be invoked in milliseconds
+ * @return {Promise} - A promise which is resolved when the JavaScript code is
+ * executed.
+ */
+gpii.test.invokeFunctionInWebContentsDelayed = function (dialog, func, delay) {
+    var promise = fluid.promise();
+
+    setTimeout(function () {
+        gpii.test.invokeFunctionInWebContents(dialog, func).then(function (result) {
+            promise.resolve(result);
+        }, function (error) {
+            promise.reject(error);
+        });
+    }, delay);
+
+    return promise;
 };
 
 /**
  * Executes a JavaScript snippet in the `BrowserWindow` of the given dialog
  * after a certain delay has passed.
+ * There might be the case that waiting for the `onDialogReady` is somehow insufficient. This
+ * function could be used to ensure that the dialog if fully loaded before executing the script.
  * @param {BrowserWindow} dialog - The `BrowserWindow` in which the script is
  * to be executed.
  * @param {String} command - A string representing the JavaScript code to be
  * executed.
- * @param {Number} delay - The delay after which the JavaScript code should be
- * executed.
+ * @param {Number} delay - The delay after which the JavaScript code should be invoked in milliseconds
  * @return {Promise} - A promise which is resolved when the JavaScript code is
  * executed.
  */
-gpii.test.executeJavaScriptDelayed = function (dialog, command, delay) {
-    return gpii.test.linger(delay).then(function () {
-        return gpii.test.executeJavaScript(dialog, command);
-    });
+gpii.test.executeJavaScriptInWebContentsDelayed = function (dialog, command, delay) {
+    var promise = fluid.promise();
+
+    setTimeout(function () {
+        gpii.test.executeJavaScriptInWebContents(dialog, command).then(function (result) {
+            promise.resolve(result);
+        }, function (error) {
+            promise.reject(error);
+        });
+    }, delay);
+
+    return promise;
 };

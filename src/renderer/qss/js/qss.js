@@ -39,12 +39,13 @@
             "undo":     "gpii.qss.undoButtonPresenter",
             "resetAll": "gpii.qss.resetAllButtonPresenter",
             "more":     "gpii.qss.moreButtonPresenter",
+            "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "disabled": "gpii.qss.disabledButtonPresenter"
         },
 
         dynamicContainerMarkup: {
             container:
-                "<div class=\"%containerClass fl-focusable\" tabindex=\"0\">" +
+                "<div class=\"%containerClass fl-focusable\">" +
                 "</div>",
             containerClassPrefix: "fl-qss-button"
         },
@@ -68,7 +69,7 @@
             onUndoRequired: null,
             onResetAllRequired: null,
             onSaveRequired: null,
-            onPSPOpen: null
+            onPspToggled: null
         },
 
         invokers: {
@@ -116,7 +117,8 @@
                 options: {
                     model: {
                         settings: "{translatedQss}.model.settings"
-                    }
+                    },
+                    siteConfig: "{translatedQss}.options.siteConfig"
                 }
             }
         }
@@ -134,10 +136,15 @@
             settings: []
         },
 
+        selectors: {
+            logo: ".flc-qss-logo"
+        },
+
         events: {
             onQssOpen: null,
             onQssClosed: null,
-            onQssWidgetToggled: null
+            onQssWidgetToggled: null,
+            onQssLogoToggled: null
         },
 
         defaultFocusButtonType: "psp",
@@ -152,6 +159,12 @@
                     "{that}.options.defaultFocusButtonType",
                     "{arguments}.0" // params
                 ]
+            },
+
+            onQssLogoToggled: {
+                this: "{that}.dom.logo",
+                method: "toggle",
+                args: ["{arguments}.0"]
             }
         },
 
@@ -170,7 +183,7 @@
                 }
             },
             focusManager: {
-                type: "gpii.qss.horizontalFocusManager",
+                type: "gpii.qss.qssFocusManager",
                 container: "{qss}.container"
             },
             channelListener: {
@@ -180,6 +193,7 @@
                         // Add events from the main process to be listened for
                         onQssOpen: "{qss}.events.onQssOpen",
                         onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
+                        onQssLogoToggled: "{qss}.events.onQssLogoToggled",
                         onSettingUpdated: null,
                         onIsKeyedInChanged: null,
 
@@ -217,7 +231,7 @@
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
-                        onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
+                        onQssPspToggled: "{quickSetStripList}.events.onPspToggled"
                     }
                 }
             }

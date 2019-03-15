@@ -128,10 +128,10 @@ fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
 
     model: {
-        isKeyedIn: false
+        isKeyedIn: false,
+        scaleFactor: 1
     },
 
-    scaleFactor: 1,
     sequentialDialogsGrade: "gpii.app.error",
 
     distributeOptions: {
@@ -157,13 +157,17 @@ fluid.defaults("gpii.app.dialogManager", {
         waitDialog: {
             type: "gpii.app.waitDialog",
             options: {
-                scaleFactor: "{dialogManager}.options.scaleFactor"
+                model: {
+                    scaleFactor: "{dialogManager}.model.scaleFactor"
+                }
             }
         },
         aboutDialog: {
             type: "gpii.app.aboutDialog",
             options: {
-                scaleFactor: "{dialogManager}.options.scaleFactor"
+                model: {
+                    scaleFactor: "{dialogManager}.model.scaleFactor"
+                }
             }
         },
         survey: {
@@ -172,7 +176,9 @@ fluid.defaults("gpii.app.dialogManager", {
         error: {
             type: "gpii.app.error",
             options: {
-                scaleFactor: "{dialogManager}.options.scaleFactor"
+                model: {
+                    scaleFactor: "{dialogManager}.model.scaleFactor"
+                }
             }
         },
 

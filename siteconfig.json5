@@ -3,14 +3,58 @@
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
 
-    // The scaling factor for the QSS
-    qssScaleFactor: 0.85,
+    // Configuration options for the QSS window
+    qss: {
+        // Defines the delay in milliseconds before the tooltip is shown after a QSS button is selected
+        tooltipDisplayDelay: 500, // ms
 
-    // The scaling factor for the PSP
-    pspScaleFactor: 0.85,
+        // The scaling factor for the QSS
+        scaleFactor: 1.5,
+        urls: {
+            account: "http://morphic.world/account",
+            cloudFolder: "https://1drv.ms/f/s!AgsFNSfCYeO3glLjXGakJRG3irEc"
+        },
+
+        // The template that is used for every label of the language setting's options.
+        // The "%" followed by a word specifies a variable and there are three possible variables:
+        // - native - the name of the language in its native form
+        // - local - the name of the language in the currently applied language
+        // - english - the name of the of the language in English
+        languageOptionLabel: {
+            currentLanguageGroup: "%native",
+            genericLanguage: "%native · %local"
+        },
+        // The code of OS default language `gpii-app` (it might be the one with which the system was installed with).
+        // This language should always stay on top of the "Language" setting's menu list.
+        // The code must be exactly matching one of the installed languages' code (with respect to the region).
+        // In case the selected language code is missing, there simply won't be a special first setting.
+        // NOTE: this is not related to the default language value defined for the language setting
+        systemDefaultLanguage: "en-US",
+        messages: {
+            keyedOut: "To save your settings you need to setup a Morphic Account. Go to <a href=\"http://morphic.world/account\">http://morphic.world/account</a>."
+        },
+
+        // the path to the ShareX's executable file, used in the screenCaptureWidget
+        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe"
+    },
+
+    // Configuration options for the PSP window
+    psp: {
+        // The scaling factor for the PSP
+        scaleFactor: 0.85,
+        urls: {
+            help: "http://pmt.gpii.org/help"
+        }
+    },
 
     // Whether to hide the QSS when a user clicks outside of it
     closeQssOnClickOutside: true,
+
+    // Whether to disable the displaying of notifications that suggest some
+    // applications may need to be restarted in order for a changed setting to be
+    // fully applied. An example for such setting is `Language`.
+    // If set to `true`, such notifications will NOT be displayed.
+    disableRestartWarning: false,
 
     // Whether to hide the PSP when a user clicks outside of it
     closePspOnClickOutside: true,
@@ -20,15 +64,30 @@
 
     // Configuration options for the QSS More panel
     qssMorePanel: {
-    	// These are default values. The actual dimensions of the QSS more panel
-    	// are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
-    	defaultWidth: 600,
-    	defaultHeight: 450,
-    	movable: true,
-    	resizable: true,
-    	alwaysOnTop: true
+        // These are default values. The actual dimensions of the QSS more panel
+        // are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
+        defaultWidth: 400,
+        defaultHeight: 300,
+        movable: true,
+        resizable: true,
+        alwaysOnTop: true,
+
+        urls: {
+            moreInfo: "http://morphic.world/more"
+        }
+    },
+
+    // Configuration options for the About dialog
+    aboutDialog: {
+        urls: {
+            morphicHome: "https://morphic.world",
+            submitSuggestions: "mailto:suggestions@morphic.world"
+        }
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
-    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json"
+    surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
+
+    // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
+    trayType: ["gpii.app.trayButton"]
 }

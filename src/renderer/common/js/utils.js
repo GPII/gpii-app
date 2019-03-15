@@ -17,7 +17,9 @@
 "use strict";
 (function (fluid, jQuery) {
     var gpii = fluid.registerNamespace("gpii"),
-        shell = require("electron").shell;
+        shell = require("electron").shell,
+        child_process = require("child_process");
+
 
 
     fluid.registerNamespace("gpii.psp");
@@ -42,6 +44,27 @@
         shell.openExternal(url);
     };
 
+
+    /**
+     * Executes the file from the shareXPath with the combination of the command
+     * @param {String} command - shareX command, example: "Morphic: Capture entire screen to desktop"
+     * @param {String} shareXPath - the path and executable name, example: "C:\\sharex-portable\\sharex.exe"
+     * @return {Boolean} - returns true on successful command execution
+     */
+    gpii.psp.execShareXCommand = function (command, shareXPath) {
+        // creates the command line, it should looks something like:
+        // "C:\\sharex-portable\\sharex.exe" -workflow "Morphic: Capture entire screen to desktop"
+        var commandToExecute = "\"" + shareXPath + "\" -workflow \"" + command + "\"";
+
+        try {
+            child_process.exec(commandToExecute);
+            return true;
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "execShareXCommand: Cannot execute - " + commandToExecute);
+        }
+        return false;
+    };
+
     /**
      * Plays a sound identified by an absolute path or a URL to it.
      * @param {String} soundPath - The path or URL of the sound to play.
@@ -62,6 +85,24 @@
             event.preventDefault();
             gpii.psp.openUrlExternally(this.href);
         });
+    };
+
+    /**
+     * Returns the DOM element (wrapped in a jQuery object) corresponding to the
+     * `widgetGrade` which is provided. The last part of the widget grade name (i.e.
+     * everything after the last dot) is the key of the selector which should be
+     * located in the DOM.
+     * @param {jQuery} domElement - jQuery DOM element.
+     * @param {String} widgetGrade - A grade name for the widget component.
+     * @return {jQuery} The jQuery element representing the element in the DOM or
+     * `undefined` if there is no such element.
+     */
+    gpii.psp.widgetGradeToSelectorName = function (domElement, widgetGrade) {
+        if (widgetGrade) {
+            var lastDotIndex = widgetGrade.lastIndexOf("."),
+                selector = widgetGrade.substring(lastDotIndex + 1);
+            return domElement.locate(selector);
+        }
     };
 
     /**
@@ -88,6 +129,12 @@
      */
     fluid.defaults("gpii.psp.selectorsTextRenderer", {
         enableRichText: false,
+
+        model: {
+            messages: null,
+            // list of values to be used for messages interpolation
+            values: null
+        },
         modelListeners: {
             // Any change means that the whole view should be re-rendered
             // messages are a default option as it is most likely that
@@ -95,8 +142,10 @@
             "messages": {
                 funcName: "{that}.renderText",
                 args: [
-                    "{that}.model.messages"
-                ]
+                    "{that}.model.messages",
+                    "{that}.model.values"
+                ],
+                namespace: "renderText"
             }
         },
         invokers: {

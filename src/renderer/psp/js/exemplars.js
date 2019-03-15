@@ -128,6 +128,16 @@
         resourceName: "stepper.html",
         grade: "gpii.psp.widgets.stepper",
         schemaType: "number",
+        modelRelay: {
+            value: {
+                transform: {
+                    type: "fluid.transforms.round",
+                    inputPath: "value",
+                    outputPath: "value",
+                    scale: 2
+                }
+            }
+        },
         widgetOptions: {
             model: {
                 value: "{settingPresenter}.model.value",
