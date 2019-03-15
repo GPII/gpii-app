@@ -99,6 +99,7 @@ fluid.defaults("gpii.app.qssWrapper", {
 
         isKeyedIn: false,
         keyedInUserToken: null,
+        notificationShown: false,
         settings: "{that}.options.loadedSettings",
 
 
@@ -353,16 +354,20 @@ fluid.defaults("gpii.app.qssWrapper", {
  * @param {Object} updatedSetting - The `gpii.app.qssNotification` instance.
  */
 gpii.app.qssWrapper.showRestartWarningNotification = function (that, qss, qssNotification, updatedSetting) {
-    if (updatedSetting.restartWarning && !that.model.disableRestartWarning) {
-        var description = fluid.stringTemplate(that.model.messages.restartWarningNotification, {
-            settingTitle: updatedSetting.schema.title
-        });
+    if (!that.model.notificationShown && !that.model.isKeyedIn) {
 
-        qssNotification.show({
-            description: description,
-            closeOnBlur: false,
-            focusOnClose: qss.dialog
-        });
+        that.model.notificationShown = true;
+        if (updatedSetting.restartWarning && !that.model.disableRestartWarning) {
+            var description = fluid.stringTemplate(that.model.messages.restartWarningNotification, {
+                settingTitle: updatedSetting.schema.title
+            });
+
+            qssNotification.show({
+                description: description,
+                closeOnBlur: false,
+                focusOnClose: qss.dialog
+            });
+        }
     }
 };
 
