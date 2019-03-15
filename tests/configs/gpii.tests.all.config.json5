@@ -45,12 +45,6 @@
                 },
                 "target": "{that gpii.flowManager.untrusted}.options.listeners"
             },
-            "couchHarness.escalate": {
-                "record": {
-                    "onStartupComplete.escalate": "{testEnvironment}.events.couchStarted"
-                },
-                "target": "{that harness}.options.listeners"
-            },
             "pspStarted.escalate": {
                 "record": {
                     "onPSPReady.escalate": "{testEnvironment}.events.pspStarted"
@@ -62,20 +56,22 @@
                 "target": "{that gpii.app}.options.components.systemLanguageListener.type"
             }
         },
-        "components": {
-            harness: {
-                "type": "gpii.test.couchdb.harness",
-                options: {
-                    listeners: {
-                        "onCreate.start": {
-                            func: "{that}.startup"
-                        }
-                    }
-                }
-            }
+        // TODO: Remove this once we have everything working with out.
+        // This cannot be done safely here if we expect to be able to run tests predictably once couch is available.
+//        "components": {
+//            harness: {
+//                "type": "gpii.test.couchdb.harness",
+//                options: {
+//                    listeners: {
+//                        "onCreate.start": {
+//                            func: "{that}.startup"
+//                        }
+//                    }
+//                }
+//            }
             // TODO: Use one of the new grades here once it's merged:
             // https://github.com/GPII/universal/pull/751
-        }
+//        }
     },
     "mergeConfigs": [
         "%gpii-universal/gpii/configs/shared/gpii.config.untrusted.development.dynamicDR.local.json5",
