@@ -74,8 +74,7 @@
         "enum": [
             "Capture image\n to clipboard for pasting",
             "Capture image\n to file on desktop",
-            "Record video\n with computer audio",
-            "Record video\n with comp. audio + mic"
+            "Record video\n with computer audio"
         ]
     },
     "gpii_app_qss_settings_cloud-folder-open": {
