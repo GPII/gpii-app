@@ -77,7 +77,8 @@ fluid.defaults("gpii.app.qss", {
             transparent: false
         },
         params: {
-            settings: "{that}.model.settings"
+            settings: "{that}.model.settings",
+            siteConfig: "{that}.options.siteConfig"
         },
         fileSuffixPath: "qss/index.html"
     },

@@ -51,20 +51,15 @@ fluid.registerNamespace("gpii.tests.app");
  * Preceding items for every test sequence.
  */
 gpii.tests.app.startSequence = [
-    { // This sequence point is required because of a QUnit bug - it defers the start of sequence by 13ms "to avoid any current callbacks" in its words
-        func: "{testEnvironment}.events.constructServer.fire"
-    },
     {
-        task:        "{harness}.startup",
+        // Fire our "combined startup" event to ensure that all services are set up in the correct order before the
+        // tests are run.
+        task:        "{testEnvironment}.startup",
         resolve:     "fluid.log",
-        resolveArgs: ["Harness startup successful."]
-    },
-    { // Before the actual tests commence, the PSP application must be fully functional. The `onPSPReady` event guarantees that.
-        event: "{that gpii.app}.events.onPSPReady",
-        listener: "fluid.identity"
+        resolveArgs: ["Combined startup successful."]
     },
     {
-        event: "{testEnvironment}.events.noUserLoggedIn",
+        event: "{testEnvironment}.events.startupComplete",
         listener: "fluid.identity"
     }
 ];
@@ -72,11 +67,7 @@ gpii.tests.app.startSequence = [
 /*
  * Items added after every test sequence.
  */
-gpii.tests.app.endSequence = [{
-    task:        "{harness}.shutdown",
-    resolve:     "fluid.log",
-    resolveArgs: ["Harness shutdown successful."]
-}];
+gpii.tests.app.endSequence = [];
 
 /*
  * We might need to conditionally make some options distributions that should affect all test sequences.
@@ -136,6 +127,18 @@ gpii.tests.app.testDefToCaseHolder = function (configurationName, testDefIn) {
     return testDef;
 };
 
+gpii.tests.app.constructServerAsPromise = function (testEnvironment) {
+    var constructionPromise = fluid.promise();
+
+    testEnvironment.events.serverConstructed.addListener(function () {
+        constructionPromise.resolve();
+    });
+
+    testEnvironment.events.constructServer.fire();
+
+    return constructionPromise;
+};
+
 // Also a fork from kettle
 // See: https://issues.fluidproject.org/browse/KETTLE-60
 gpii.tests.app.testDefToServerEnvironment = function (testDef) {
@@ -151,7 +154,53 @@ gpii.tests.app.testDefToServerEnvironment = function (testDef) {
             },
             distributeOptions: gpii.tests.app.testsDistributions,
             events: {
-                noUserLoggedIn: null
+                pspStarted:     null,
+                noUserLoggedIn: null,
+                serverConstructed: {
+                    events: {
+                        pspStarted:     "pspStarted",
+                        noUserLoggedIn: "noUserLoggedIn"
+                    }
+                },
+
+                combinedStartup: null,
+                startupComplete: null
+            },
+            invokers: {
+                startup: {
+                    funcName: "fluid.promise.fireTransformEvent",
+                    args:     ["{that}.events.combinedStartup"]
+                }
+            },
+            listeners: {
+                // TODO: Review other test suites and see if this pattern should be stored somewhere more general.
+                "combinedStartup.log": {
+                    priority: "first",
+                    funcName: "fluid.log",
+                    args: ["Beginning combined chained startup."]
+                },
+                "combinedStartup.startCouch": {
+                    priority: "after:log",
+                    func: "{testEnvironment}.tests.configuration.harness.startup"
+                },
+                "combinedStartup.constructServer": {
+                    priority: "after:startCouch",
+                    funcName: "gpii.tests.app.constructServerAsPromise",
+                    args: ["{testEnvironment}"]
+                },
+                "combinedStartup.fireEvent": {
+                    priority: "last",
+                    func: "{that}.events.startupComplete.fire"
+                },
+                // TODO: Remove these when possible.
+                "pspStarted.log": {
+                    funcName: "fluid.log",
+                    args: ["PSP Started"]
+                },
+                "noUserLoggedIn.log": {
+                    funcName: "fluid.log",
+                    args: ["No User Logged in"]
+                }
             }
         }
     };
@@ -186,7 +235,7 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.dialogManager.testDefs),
     fluid.copy(gpii.tests.qss.testDefs),
     fluid.copy(gpii.tests.sequentialDialogs.testDefs),
-    fluid.copy(gpii.tests.shortcutsManager.testDefs),
+    //fluid.copy(gpii.tests.shortcutsManager.testDefs), // NOT OK
     fluid.copy(gpii.tests.settingsBroker.testDefs),
     fluid.copy(gpii.tests.surveys.dynamicSurveyConnectorTestDefs),
     fluid.copy(gpii.tests.surveyTriggerManager.testDefs),

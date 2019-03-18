@@ -21,8 +21,8 @@
             "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
         },
         "title": {
-            "keyedIn": "Settings Panel",
-            "keyedOut": "Sign In"
+            "keyedIn": " ",
+            "keyedOut": " "
         }
     },
     "gpii_app_qss_settings_more": {
@@ -56,5 +56,20 @@
         "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
         "title": "Език",
         "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>"
+    },
+    "gpii_app_qss_settings_screenCapture": {
+        "tooltip": "<p>Направи Снимка.</p><p>Вземи снимка или видео от екрана си.</p>",
+        "title": "Направи Снимка",
+        "tip": "<p>Направи Снимка</p><p>Използвайте бутоните по-долу да направите снимка, или видео на екрана си. Моля спазвайте Закона за авторските права!</p><ul><li>Изполвайте мишката, за да избере зона и цъкнете, за да направите снимката.</li><li>Кликнете и влачете по екрана за избиране на зона.</li></ul>",
+        "enum": [
+            "Направи снимка в клипбоарда",
+            "Направи снимка на десктопа",
+            "Запиши видео и аудио",
+            "Запиши видео + микрофон"
+        ]
+    },
+    "gpii_app_qss_settings_cloud-folder-open": {
+        "tooltip": "<p>Отваря cloud базирана публична папка.</p>",
+        "title": "Quick Folders"
     }
 }

@@ -24,7 +24,8 @@
         gpii.psp.translatedQss(".flc-quickSetStrip", {
             model: {
                 settings: windowInitialParams.settings
-            }
+            },
+            siteConfig: windowInitialParams.siteConfig
         });
     });
 })(fluid);
