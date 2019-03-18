@@ -194,7 +194,7 @@
         invokers: {
             activate: {
                 funcName: "gpii.qss.openUSBButtonPresenter.activate",
-                args: []
+                args: ["{channelNotifier}.events.onQssOpenUsbRequested"]
             }
         }
     });
@@ -205,7 +205,8 @@
      * In most cases, there's only a single USB drive. But if there's more than one USB drive,
      * then those that do not contain the token file are shown.
      */
-    gpii.qss.openUSBButtonPresenter.activate = function () {
+    gpii.qss.openUSBButtonPresenter.activate = function (openUSB) {
+        openUSB.fire();
         /*
         gpii.windows.getUserUsbDrives().then(function (paths) {
             fluid.each(paths, function (path) {
