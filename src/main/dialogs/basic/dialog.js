@@ -353,9 +353,13 @@ gpii.app.dialog.makeDialog = function (that, windowOptions, url, params) {
     if (that.options.config.disablePinchZoom) {
         // Followed this approach https://github.com/electron/electron/issues/8793#issuecomment-334971232
         dialog.webContents.on("did-finish-load", function () {
-            dialog.webContents.setZoomFactor(1);
-            dialog.webContents.setVisualZoomLevelLimits(1, 1);
-            dialog.webContents.setLayoutZoomLevelLimits(0, 0);
+            // These calls must only happen if the dialog and its contents have not been destroyed, which might
+            // occur in test runs.
+            if (!dialog.isDestroyed() && !dialog.webContents.isDestroyed()) {
+                dialog.webContents.setZoomFactor(1);
+                dialog.webContents.setVisualZoomLevelLimits(1, 1);
+                dialog.webContents.setLayoutZoomLevelLimits(0, 0);
+            }
         });
     }
 
