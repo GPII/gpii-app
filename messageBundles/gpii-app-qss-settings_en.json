@@ -59,7 +59,7 @@
     "gpii_app_qss_settings_appTextZoom": {
         "tooltip": "<p>Change text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
         "title": "App / Text Zoom",
-        "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting so won't Save.)</p>",
+        "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting, so will not save/undo.)</p>",
         "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do App/Text Zoom without using Morphic."
     },
     "gpii_app_qss_settings_common-language": {
@@ -83,7 +83,7 @@
         ]
     },
     "gpii_app_qss_settings_cloud-folder-open": {
-        "tooltip": "<p>A quick way to find a common packages of documents, web pages, or other resources.</p>",
+        "tooltip": "<p>A quick way to find common packages of documents, web pages, or other resources.</p>",
         "title": "Quick Folders"
     }
 }
