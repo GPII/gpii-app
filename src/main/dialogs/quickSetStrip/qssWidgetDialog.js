@@ -102,6 +102,7 @@ fluid.defaults("gpii.app.qssWidget", {
                 events: {
                     onQssWidgetClosed: null,
                     onQssWidgetHideQssRequested: null,
+                    onQssOpenUsbRequested: null,
                     onQssWidgetHeightChanged: "{qssWidget}.events.onContentHeightChanged",
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
@@ -121,6 +122,10 @@ fluid.defaults("gpii.app.qssWidget", {
                         args: [
                             "{arguments}.0" // params
                         ]
+                    },
+                    onQssOpenUsbRequested: {
+                        funcName: "gpii.app.qssWidget.onQssOpenUsbRequested",
+                        args: ["{qssWidget}"]
                     },
                     onQssWidgetSettingAltered: {
                         funcName: "fluid.log",
@@ -255,4 +260,15 @@ gpii.app.qssWidget.showOnInit = function (qssWidget) {
             qssWidget.applier.change("isShown", true);
         }, 100);
     }
+};
+
+
+gpii.app.qssWidget.onQssOpenUsbRequested = function(qssWidget) {
+    console.log('==== onQssOpenUsbRequested');
+    gpii.windows.getUserUsbDrives().then(function (paths) {
+        fluid.each(paths, function (path) {
+            //child_process.exec("explorer.exe \"" + path + "\"");
+            console.log(path);
+        });
+    });
 };

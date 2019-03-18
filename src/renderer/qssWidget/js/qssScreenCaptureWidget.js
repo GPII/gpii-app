@@ -82,7 +82,7 @@
                             args: [
                                 "{arguments}.0", // value
                                 "{gpii.qssWidget.screenCapture}.options.siteConfig.shareXPath", // the path to the shareX executable
-                                "{channelNotifier}.events.onQssWidgetHideQssRequested"
+                                "{channelNotifier}.events.onQssOpenUsbRequested"
                             ]
                         }
                     },
