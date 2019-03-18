@@ -232,7 +232,9 @@
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
-                        onQssPspToggled: "{quickSetStripList}.events.onPspToggled"
+                        onQssPspToggled: "{quickSetStripList}.events.onPspToggled",
+
+                        onQssOpenUsbRequested: null
                     }
                 }
             }

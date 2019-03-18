@@ -201,19 +201,10 @@
 
     /**
      * A custom function for handling activation of the "Open USB" QSS button.
-     *
-     * In most cases, there's only a single USB drive. But if there's more than one USB drive,
-     * then those that do not contain the token file are shown.
+     * @param {EventListener} openUSB - the handle to the openUSB's event listener
      */
     gpii.qss.openUSBButtonPresenter.activate = function (openUSB) {
         openUSB.fire();
-        /*
-        gpii.windows.getUserUsbDrives().then(function (paths) {
-            fluid.each(paths, function (path) {
-                child_process.exec("explorer.exe \"" + path + "\"");
-            });
-        });
-        */
     };
 
     /**
