@@ -71,7 +71,6 @@
         events: {
             onWidgetClosed: null,
             onQssWidgetHideQssRequested: null,
-            onQssOpenUsbRequested: null,
             onSettingUpdated: null,
             onQssWidgetHeightChanged: null,
             onQssWidgetSettingAltered: null,
@@ -205,7 +204,6 @@
                         // Add events the main process to be notified for
                         onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
                         onQssWidgetHideQssRequested:     "{qssWidget}.events.onQssWidgetHideQssRequested",
-                        onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
                         onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
