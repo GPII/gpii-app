@@ -183,7 +183,7 @@ var basicPspInteractionsCrossSequence = [
             "The magnifier setting has been correctly applied",
             {
                 path: "http://registry\\.gpii\\.net/common/magnification",
-                value: 1.4
+                value: 0.5
             },
             "{arguments}.0"
         ]
@@ -212,6 +212,11 @@ var basicPspInteractionsCrossSequence = [
         event: "{that}.app.events.onKeyedOut",
         listener: "gpii.tests.psp.testKeyedOut",
         args: ["{that}.app.psp"]
+    },
+    {
+        task: "gpii.test.linger",
+        args: [1000],
+        resolve: "fluid.identity"
     }
 ];
 
