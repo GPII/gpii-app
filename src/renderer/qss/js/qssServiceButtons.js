@@ -17,8 +17,7 @@
 
 "use strict";
 (function (fluid) {
-    var gpii = fluid.registerNamespace("gpii"),
-        child_process = require("child_process");
+    var gpii = fluid.registerNamespace("gpii");
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Key in"
