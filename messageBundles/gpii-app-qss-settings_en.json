@@ -38,7 +38,7 @@
     "gpii_app_qss_settings_common-highContrastTheme": {
         "tooltip": "<p>Change the contrast between the text and background color, so text is easier to read.</p><p>Contrast changes will affect Windows, Edge, Chrome, and some other applications.</p>",
         "title": "High / Low Contrast",
-        "tip": "<p>Changes contrast & colors</p><p>Works in Chrome, Windows and apps that support Windows contrast themes. (May need to restart some programs)</p>",
+        "tip": "<p>Changes contrast & colors</p><p>Works in Chrome, Edge, and apps that support Windows contrast themes. (May need to restart some apps.)</p>",
         "enum": [
             "Regular contrast",
             "Black on white",
@@ -65,7 +65,7 @@
     "gpii_app_qss_settings_common-language": {
         "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
         "title": "Language",
-        "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>"
+        "tip": "<p>Changes Language of Windows</p><p>Also works for apps that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>You may need to restart some apps to see change.</li></ul>"
     },
     "gpii_app_qss_settings_screenCapture": {
         "tooltip": "<p>Screen Capture.</p><p>Take pictures or record videos of the screen.</p>",
@@ -79,7 +79,7 @@
         ]
     },
     "gpii_app_qss_settings_cloud-folder-open": {
-        "tooltip": "<p>A quick way to find common packages of documents, web pages, or other resources.</p>",
-        "title": "Quick Folders"
+        "tooltip": "<p>The Quick Folder has commonly requested documents, web pages, and other resources.</p>",
+        "title": "Open Quick Folder"
     }
 }

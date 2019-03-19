@@ -1373,7 +1373,7 @@ var quickFoldersTestSequence = [
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of the button should be",
-            "Quick Folders",
+            "Open Quick Folder",
             "{arguments}.0"
         ]
     }, { // Close the QSS
