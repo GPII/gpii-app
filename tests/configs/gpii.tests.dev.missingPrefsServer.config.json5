@@ -1,0 +1,17 @@
+// The standard dev config with a broken prefs server, to simulate connection errors.
+{
+    "type": "gpii.tests.dev.missingPrefsServer.config",
+    "options": {
+        "gradeNames": ["fluid.component"],
+        "distributeOptions": {
+            "untrusted.development.prefs": {
+                "record": "http://localhost:8484",
+                "target": "{that cloudBasedConfig flowManager prefsServerDataSource}.options.prefsServerURL",
+                "priority": "after:flowManager.prefsServerDataSource.default"
+            }
+        }
+    },
+    "mergeConfigs": [
+        "./gpii.tests.dev.config.json5"
+    ]
+}

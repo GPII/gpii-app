@@ -117,10 +117,10 @@ fluid.defaults("gpii.app.qssWidget", {
                         ]
                     }],
                     onQssWidgetHideQssRequested: {
-                      func: "{gpii.app.qss}.hide",
-                      args: [
-                          "{arguments}.0" // params
-                      ]
+                        func: "{gpii.app.qss}.hide",
+                        args: [
+                            "{arguments}.0" // params
+                        ]
                     },
                     onQssWidgetSettingAltered: {
                         funcName: "fluid.log",
