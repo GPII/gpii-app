@@ -1400,12 +1400,6 @@ var quickFoldersTestSequence = [
         ],
         resolve: "jqUnit.assertTrue",
         resolveArgs: ["The quick folder button is displayed: ", "{arguments}.0"]
-    }, {   // XXX we need some minor timeout for the QSS to get
-        // in normal state. In case this is not present,
-        // the next item doesn't take effect
-        task: "gpii.test.linger",
-        args: [90000],
-        resolve: "fluid.identity"
     }, { // Text of the button should be
         task: "gpii.test.invokeFunctionInWebContents",
         args: [
