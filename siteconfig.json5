@@ -11,7 +11,8 @@
         // The scaling factor for the QSS
         scaleFactor: 1.5,
         urls: {
-            account: "http://morphic.world/account"
+            account: "http://morphic.world/account",
+            cloudFolder: "https://docs.google.com/document/d/1gOi5JXw30lyD5DGbwe6tme_MfEyaiDz95AQSrzPNfZU/"
         },
 
         // The template that is used for every label of the language setting's options.
@@ -30,9 +31,11 @@
         // NOTE: this is not related to the default language value defined for the language setting
         systemDefaultLanguage: "en-US",
         messages: {
-            keyedOut: "To save your settings you need to setup a Morphic Account. Go to <a href=\"http://morphic.world/account\">http://morphic.world/account</a>."
-        }
+            keyedOut: "To save you must insert a Morphic Key. Please ask for one at the Front Desk."
+        },
 
+        // the path to the ShareX's executable file, used in the screenCaptureWidget
+        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe"
     },
 
     // Configuration options for the PSP window

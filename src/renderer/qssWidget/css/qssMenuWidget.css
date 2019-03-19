@@ -85,3 +85,17 @@
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item.fl-qssWidgetMenu-active {
     animation: menuItemActivation 0.25s 2;
 }
+
+/* Specific version for the Screen Capture's widget: BEGIN */
+.fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
+    width: auto;
+    color: white;
+    background: #002957;
+    border-color: #002957;
+}
+
+    /* this creates the space between the screen capture and video capture */
+    .fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:nth-child(4) {
+        margin-top: 20px;
+    }
+/* Specific version for the Screen Capture's widget: END */
