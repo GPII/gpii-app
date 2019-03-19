@@ -12,7 +12,7 @@
         scaleFactor: 1.5,
         urls: {
             account: "http://morphic.world/account",
-            cloudFolder: "https://1drv.ms/f/s!AgsFNSfCYeO3glLjXGakJRG3irEc"
+            cloudFolder: "https://docs.google.com/document/d/1gOi5JXw30lyD5DGbwe6tme_MfEyaiDz95AQSrzPNfZU/"
         },
 
         // The template that is used for every label of the language setting's options.
@@ -33,7 +33,7 @@
 
         // Defines the message used in the keyedOut save message
         messages: {
-            keyedOut: "To save your settings you need to setup a Morphic Account. Go to <a href=\"http://morphic.world/account\">http://morphic.world/account</a>."
+            keyedOut: "To save you must insert a Morphic Key. Please ask for one at the Front Desk."
         },
 
         // Defines where the base folder for the Quick Folder is

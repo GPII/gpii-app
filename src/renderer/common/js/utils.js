@@ -46,8 +46,8 @@
 
     /**
      * Executes the file from the shareXPath with the combination of the command
-     * @param command {String} - shareX command, example: "Morphic: Capture entire screen to desktop"
-     * @param shareXPath {String} - the path and executable name, example: "C:\\sharex-portable\\sharex.exe"
+     * @param {String} command - shareX command, example: "Morphic: Capture entire screen to desktop"
+     * @param {String} shareXPath - the path and executable name, example: "C:\\sharex-portable\\sharex.exe"
      * @return {Boolean} - returns true on successful command execution
      */
     gpii.psp.execShareXCommand = function (command, shareXPath) {

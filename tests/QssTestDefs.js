@@ -40,7 +40,7 @@ function getSearchInputValue() {
 }
 
 function getQuickCloudFolderWIdgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-of-type(8) > span").text();
 }
 
 
@@ -1443,7 +1443,7 @@ var quickCloudFoldersTestSequence = [
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of the button should be",
-            "Quick Local Folders",
+            "Open Quick Folder",
             "{arguments}.0"
         ]
     }, { // Close the QSS
