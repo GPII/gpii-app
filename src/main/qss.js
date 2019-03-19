@@ -99,7 +99,7 @@ fluid.defaults("gpii.app.qssWrapper", {
 
         isKeyedIn: false,
         keyedInUserToken: null,
-        notificationShown: false,
+        notificationShown: false, // used to check if the notification is already shown
         settings: "{that}.options.loadedSettings",
 
 
@@ -354,6 +354,7 @@ fluid.defaults("gpii.app.qssWrapper", {
  * @param {Object} updatedSetting - The `gpii.app.qssNotification` instance.
  */
 gpii.app.qssWrapper.showRestartWarningNotification = function (that, qss, qssNotification, updatedSetting) {
+    // The notification is shown only once, and only if its not a keyIn even
     if (!that.model.notificationShown && !that.model.isKeyedIn) {
 
         that.model.notificationShown = true;
