@@ -18,6 +18,10 @@
             "distributeSurveyConnector": {
                 "record": "gpii.app.dynamicSurveyConnector",
                 "target": "{that surveyConnector}.options.gradeNames"
+            },
+            "metrics": {
+                "record": "gpii.app.metrics",
+                "target": "{/ gpii.metrics}.options.gradeNames"
             }
         }
     },
