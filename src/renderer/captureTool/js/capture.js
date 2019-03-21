@@ -27,13 +27,19 @@
                     "4_save_name": "@expand:gpii.captureTool.loadTemplate(4_save_name)",
                     "5_confirmation": "@expand:gpii.captureTool.loadTemplate(5_confirmation)"
                 },
-                partials: {}
+                partials: {
+                    footer_location_partial: "@expand:gpii.captureTool.loadTemplate(footer_location_partial)"
+                }
             },
             capturedSettings: [
                 {
                     title: "Checkbook Balancer",
                 }
-            ]
+            ],
+
+            // These should be model relays to the main app
+            isKeyedIn: true,
+            keyedInUserToken: "alice"
         },
         bindings: {
             whatToCaptureRadio: "whatToCapture",
@@ -154,7 +160,7 @@
     /**
      * Annotates the merged capture with data for rendering the list including
      * solution names and the number of settings captured for each solutions.
-     * 
+     *
      * Edits the mergedCapture in place, and also re-returns it.
      */
     gpii.captureTool.annotateSettingsCapture = function(that, mergedCapture) {
@@ -240,7 +246,7 @@
     gpii.captureTool.backButton = function (that, currentPage) {
         if (currentPage === "2_which_applications") {
             that.applier.change("currentPage", "2_what_to_capture");
-            that.render("2_what_to_capture"); 
+            that.render("2_what_to_capture");
         }
         else if (currentPage === "3_what_to_keep") {
             that.applier.change("currentPage", "2_what_to_capture");

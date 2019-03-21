@@ -34,6 +34,7 @@ require("./settingsBroker.js");
 require("./shortcutsManager.js");
 require("./siteConfigurationHandler.js");
 require("./surveys/surveyManager.js");
+require("./storage.js");
 require("./tray.js");
 require("./userErrorsHandler.js");
 
@@ -251,7 +252,11 @@ fluid.defaults("gpii.app", {
         },
         captureTool: {
             type: "gpii.app.captureTool",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                isKeyedIn: "{app}.model.isKeyedIn",
+                keyedInUserToken: "{app}.model.keyedInUserToken"
+            }
         },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",

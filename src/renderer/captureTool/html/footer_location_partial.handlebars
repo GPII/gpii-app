@@ -1,0 +1,26 @@
+<ol class="breadcrumb">
+    {{#if activeSignIn}}
+        <li><span class="fl-capture-current-page">1. Sign in</span></li>
+    {{else}}
+        <li><span>1. Sign in</span></li>
+    {{/if}}
+
+    {{#if activeWhatToCapture}}
+        <li><span class="fl-capture-current-page">2. What to Capture</span></li>
+    {{else}}
+        <li><span>2. What to Capture</span</li>
+    {{/if}}
+
+    {{#if activeWhatToKeep}}
+        <li><span class="fl-capture-current-page">3. What to Keep</span></li>
+    {{else}}
+        <li><span>3. What to Keep</span></li>
+    {{/if}}
+
+    {{#if activeSave}}
+        <li><span class="fl-capture-current-page">4. Save</span></li>
+    {{else}}
+        <li><span>4. Save</span></li>
+    {{/if}}
+</ol>
+<span>Status: {{isKeyedIn}} - {{keyedInUserToken}}</span>

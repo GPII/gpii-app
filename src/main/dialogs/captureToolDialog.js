@@ -25,7 +25,6 @@ require("./basic/dialog.js");
 require("./basic/blurrable.js");
 require("./basic/centeredDialog.js");
 require("./basic/resizable.js");
-require("./basic/scaledDialog.js");
 require("./basic/offScreenHidable.js");
 
 fluid.defaults("gpii.app.captureTool", {
@@ -35,7 +34,8 @@ fluid.defaults("gpii.app.captureTool", {
         "fluid.modelComponent"
     ],
     model: {
-
+        isKeyedIn: false,
+        keyedInUserToken: null
     },
     /*
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
@@ -66,7 +66,12 @@ fluid.defaults("gpii.app.captureTool", {
             titleBarStyle: "hidden"
         },
     },
-
+    invokers: {
+        updateRenderModel: {
+            funcName: "gpii.app.captureTool.updateRenderModel",
+            args: ["{that}"]
+        }
+    },
     listeners: {
         onCreate: [
             {
@@ -77,6 +82,11 @@ fluid.defaults("gpii.app.captureTool", {
                 args: ["{that}", "{flowManager}", "{gpii.processReporter}"]
             }
         ]
+    },
+    modelListeners: {
+        "*": {
+            func: "{that}.updateRenderModel"
+        }
     }
 });
 
@@ -96,10 +106,10 @@ gpii.app.captureTool.init = function (that, flowManager, processReporter) {
                         console.log("Exception trying to look up", solutionEntry.isRunning);
                     }
                 })
-                event.sender.send('sendingRunningSolutions', runningSolutions);  
+                event.sender.send('sendingRunningSolutions', runningSolutions);
             },
             function (err) {
-                event.sender.send('sendingInstalledSolutions', "Damn, it didn't work");
+                event.sender.send('sendingInstalledSolutions', {isError: true, message: err});
             }
         );
     })
@@ -114,7 +124,7 @@ gpii.app.captureTool.init = function (that, flowManager, processReporter) {
                 event.sender.send('sendingAllSolutionsCapture', data);
             },
             function (err) {
-                event.sender.send('sendingAllSolutionsCapture', "Damn, it didn't work");
+                event.sender.send('sendingAllSolutionsCapture', {isError: true, message: err});
             }
         );
     });
@@ -122,4 +132,8 @@ gpii.app.captureTool.init = function (that, flowManager, processReporter) {
     ipcMain.on("captureDoneButton", (event, arg) => {
         that.close();
     });
+};
+
+gpii.app.captureTool.updateRenderModel = function (that) {
+    //ip
 };

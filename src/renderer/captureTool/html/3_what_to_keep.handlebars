@@ -10,9 +10,11 @@
                     <span>{{@key}}: {{this}}</span>
                 </label>
             </div>
-        {{/each}} 
+        {{/each}}
     {{/each}}
 </div>
 </form>
 <input type="button" class="btn btn-default flc-capture-back" value="Back" />
 <input type="button" class="btn btn-default flc-capture-next" value="Next" />
+
+{{> footer_location_partial activeWhatToKeep="true"}}
