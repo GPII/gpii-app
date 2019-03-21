@@ -137,7 +137,7 @@
         "messageKey": "common-selfVoicing-enabled",
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
-    },{
+    }, {
         "path": "cloud-folder-open",
         "schema": {
             "type": "cloud-folder-open"
@@ -145,7 +145,15 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 200,
         "messageKey": "cloud-folder-open"
-    },  {
+    }, {
+        "path": "usb-open",
+        "schema": {
+            "type": "usb-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 210,
+        "messageKey": "usb-open"
+    }, {
         "path": "more",
         "schema": {
             "type": "more"
