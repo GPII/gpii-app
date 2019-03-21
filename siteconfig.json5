@@ -35,7 +35,19 @@
         },
 
         // the path to the ShareX's executable file, used in the screenCaptureWidget
-        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe"
+        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe",
+
+        // list of the desired list of buttons shown in QSS
+        // it uses the `id` attribute found in settings.json items
+        buttonList: [
+            "language",
+            "screen-zoom",
+            "text-zoom",
+            "screen-capture",
+            "high-contrast",
+            "read-aloud",
+            "cloud-folder-open"
+        ]
     },
 
     // Configuration options for the PSP window

@@ -186,3 +186,36 @@ gpii.app.isPointInRect = function (point, rectangle) {
     return rectangle.x <= point.x && point.x <= rectangle.x + rectangle.width &&
            rectangle.y <= point.y && point.y <= rectangle.y + rectangle.height;
 };
+
+/**
+ * Checks if the buttonList attribute exists in the siteConfig object
+ * @param {Object} siteConfig - instance of the siteConfig object
+ * @returns {Boolean}
+ */
+gpii.app.isButtonList = function(siteConfig) {
+    return fluid.isValue(siteConfig.buttonList);
+};
+
+/**
+ * Filters the full button list based on the provided array of `id` attributes
+ * @param {Array} siteConfigButtonList - basic array of strings
+ * @param {Object[]} availableButtons - all available buttons found in settings.json
+ * @returns {Object[]} - filtered version of available buttons (same structure)
+ */
+gpii.app.filterButtonList = function(siteConfigButtonList, availableButtons) {
+    var buttonList = [];
+    fluid.each(availableButtons, function(button) {
+        // in order to filter it the item must have the `id` attribute
+        if (fluid.isValue(button.id)) {
+            // attribute must be in the siteConfig > qss > buttonList
+            if (siteConfigButtonList.includes(button.id)) {
+                buttonList.push(button);
+            }
+        } else {
+            // the setting's without attribute `id` are auto-included
+            buttonList.push(button);
+        }
+    });
+
+    return buttonList;
+};
