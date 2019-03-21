@@ -53,9 +53,7 @@
             "type": "screenCapture",
             "keys": [
                 "Morphic: Capture region to clipboard",
-                "Morphic: Capture region to desktop",
-                "Morphic: Record region to desktop with computer audio",
-                "Morphic: Record region to desktop with computer and mic audio"
+                "Morphic: Capture region to desktop"
             ],
             "default": ""
         },

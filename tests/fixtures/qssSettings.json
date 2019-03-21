@@ -170,8 +170,7 @@
             "keys": [
                 "Morphic: Capture entire screen to clipboard",
                 "Morphic: Capture entire screen to desktop",
-                "Morphic: Record region to desktop with computer audio",
-                "Morphic: Record region to desktop with computer and mic audio"
+                "Morphic: Record region to desktop with computer audio"
             ],
             "default": ""
         },
