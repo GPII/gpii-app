@@ -46,7 +46,8 @@
             "screen-capture",
             "high-contrast",
             "read-aloud",
-            "cloud-folder-open"
+            "cloud-folder-open",
+            "usb-open"
         ]
     },
 

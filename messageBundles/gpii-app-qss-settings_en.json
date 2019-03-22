@@ -67,6 +67,10 @@
         "title": "Language",
         "tip": "<p>Changes Language of Windows</p><p>Also works for apps that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>You may need to restart some apps to see change.</li></ul>"
     },
+    "gpii_app_qss_settings_usb-open": {
+        "tooltip": "<p>Opens up any USB Flash Drives plugged into computer.</p>",
+        "title": "Open USB Drive"
+    },
     "gpii_app_qss_settings_screenCapture": {
         "tooltip": "<p>Screen Capture.</p><p>Take pictures or record videos of the screen.</p>",
         "title": "Screen Capture",

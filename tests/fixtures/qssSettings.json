@@ -188,6 +188,14 @@
         "tabindex": 180,
         "messageKey": "cloud-folder-open"
     }, {
+        "path": "usb-open",
+        "schema": {
+            "type": "usb-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 190,
+        "messageKey": "usb-open"
+    }, {
         "path": "more",
         "schema": {
             "type": "more",

@@ -15,6 +15,10 @@
                 },
                 "target": "{that gpiiConnector}.options.config"
             },
+            "distributeDevPcpChannelConnector": {
+                "record": "gpii.app.dev.gpiiConnector",
+                "target": "{that gpiiConnector}.options.gradeNames"
+            },
             "distributeSurveyConnector": {
                 "record": "gpii.app.dynamicSurveyConnector",
                 "target": "{that surveyConnector}.options.gradeNames"
@@ -24,8 +28,5 @@
                 "target": "{/ gpii.metrics}.options.gradeNames"
             }
         }
-    },
-    "mergeConfigs": [
-        "%gpii-universal/gpii/configs/shared/gpii.config.untrusted.dynamicDR.json5"
-    ]
+    }
 }
