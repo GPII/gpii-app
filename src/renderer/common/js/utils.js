@@ -20,8 +20,6 @@
         shell = require("electron").shell,
         child_process = require("child_process");
 
-
-
     fluid.registerNamespace("gpii.psp");
 
     /**

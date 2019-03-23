@@ -53,9 +53,7 @@
             "type": "screenCapture",
             "keys": [
                 "Morphic: Capture region to clipboard",
-                "Morphic: Capture region to desktop",
-                "Morphic: Record region to desktop with computer audio",
-                "Morphic: Record region to desktop with computer and mic audio"
+                "Morphic: Capture region to desktop"
             ],
             "default": ""
         },
@@ -139,7 +137,7 @@
         "messageKey": "common-selfVoicing-enabled",
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
-    },{
+    }, {
         "path": "cloud-folder-open",
         "schema": {
             "type": "cloud-folder-open"
@@ -147,7 +145,15 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 200,
         "messageKey": "cloud-folder-open"
-    },  {
+    }, {
+        "path": "usb-open",
+        "schema": {
+            "type": "usb-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 210,
+        "messageKey": "usb-open"
+    }, {
         "path": "more",
         "schema": {
             "type": "more"

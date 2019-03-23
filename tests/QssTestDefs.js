@@ -36,7 +36,11 @@ function clickStepperIndicator() {
 }
 
 function getQuickFolderWIdgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-of-type(7) > span").text();
+}
+
+function getUsbWIdgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-of-type(8) > span").text();
 }
 
 
@@ -62,7 +66,8 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(7)').is(':visible')",
+    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-of-type(7)').is(':visible')",
+    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-of-type(8)').is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
@@ -160,7 +165,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 13;
+var qssSettingsCount = 14;
 
 var navigationSequence = [
     {
@@ -1353,6 +1358,39 @@ var appZoomTestSequence = [
     }
 ];
 
+var openUsbTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // ... and open USB button should be visible
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            checkIfUSBWidget
+        ],
+        resolve: "jqUnit.assertTrue",
+        resolveArgs: ["The Open USB button is displayed: ", "{arguments}.0"]
+    }, { // Text of button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getUsbWIdgetBtnText
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Text of button should be",
+            "Open USB Drive",
+            "{arguments}.0"
+        ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
 var quickFoldersTestSequence = [
     { // Open the QSS...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
@@ -1676,7 +1714,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 64,
+    expect: 66,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1721,6 +1759,7 @@ gpii.tests.qss.testDefs = {
         qssInstalledLanguages,
         undoCrossTestSequence,
         undoTestSequence,
+        openUsbTestSequence,
         quickFoldersTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
