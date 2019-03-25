@@ -770,6 +770,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
         "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
         // use the initial value of the language as default setting
+        // This is temporary solution related to GPII-3819 issue. After finding permanent solution the value should be taken from the core.
         "http://registry\\.gpii\\.net/common/language": { value: "{that}.options.defaultPreferences.systemDefaultLanguage" }
     }
 });
