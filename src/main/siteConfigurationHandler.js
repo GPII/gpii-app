@@ -97,6 +97,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.disableRestartWarning",
             target: "{app gpiiConnector}.options.defaultPreferences.disableRestartWarning"
         },
+        distributeDefaultLanguageGpiiConnector: {
+            record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
+            target: "{app gpiiConnector}.options.defaultPreferences.systemDefaultLanguage"
+        },
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
             target: "{app surveyConnector}.options.config.surveyTriggersUrl"
