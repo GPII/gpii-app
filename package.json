@@ -36,8 +36,8 @@
         "shelljs": "0.8.2"
     },
     "scripts": {
-        "start": "electron .",
-        "dev": "electron . ./configs app.dev",
+        "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
+        "dev": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron . ./configs app.dev",
         "build": "electron ./scripts/compileMessageBundles.js && .\\trayButton\\build.cmd",
         "postinstall": "npm run build",
         "pretest": "npm run pretest:clean && npm run build && npm run pretest:instrument",

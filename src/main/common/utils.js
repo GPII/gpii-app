@@ -17,6 +17,7 @@
 var os            = require("os");
 var fluid         = require("infusion");
 var electron      = require("electron");
+var child_process = require("child_process");
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -185,4 +186,18 @@ gpii.app.isHashNotEmpty = function (hash) {
 gpii.app.isPointInRect = function (point, rectangle) {
     return rectangle.x <= point.x && point.x <= rectangle.x + rectangle.width &&
            rectangle.y <= point.y && point.y <= rectangle.y + rectangle.height;
+};
+
+/**
+ * A custom function for handling activation of the "Open USB" QSS button.
+ *
+ * In most cases, there's only a single USB drive. But if there's more than one USB drive,
+ * then those that do not contain the token file are shown.
+ */
+gpii.app.openUSB = function() {
+    gpii.windows.getUserUsbDrives().then(function (paths) {
+        fluid.each(paths, function (path) {
+            child_process.exec("explorer.exe \"" + path + "\"");
+        });
+    });
 };

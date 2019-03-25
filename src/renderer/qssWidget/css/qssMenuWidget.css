@@ -98,4 +98,15 @@
     .fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:nth-child(4) {
         margin-top: 20px;
     }
+.fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssWidget-tip {
+    font-size: 8.5px;
+    line-height: 110%;
+}
+.fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssWidget-tip p {
+    margin-bottom: 5px;
+}
+.fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssWidget-tip p:last-of-type {
+    margin: 0;
+}
+
 /* Specific version for the Screen Capture's widget: END */

@@ -6,14 +6,11 @@
             "distributeMenuDisplay": {
                 "record": "gpii.app.menuInAppDev",
                 "target": "{that menu}.options.gradeNames"
-            },
-            "distributeDevPcpChannelConnector": {
-                "record": "gpii.app.dev.gpiiConnector",
-                "target": "{that gpiiConnector}.options.gradeNames"
             }
         }
     },
     "mergeConfigs": [
-        "%gpii-app/configs/app.base.json"
+        "%gpii-app/configs/app.base.json",
+        "%gpii-universal/gpii/configs/gpii.config.untrusted.development.dynamicDR.manualTesting.json5"
     ]
 }
