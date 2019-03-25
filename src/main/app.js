@@ -104,7 +104,7 @@ fluid.defaults("gpii.app", {
     // prerequisites
     members: {
         machineId: "@expand:{that}.installID.getMachineID()",
-        onPSPPrerequisitesReady: "@expand:fluid.promise()"
+        onPSPReadyForKeyIn: "@expand:fluid.promise()"
     },
     components: {
         configurationHandler: {
@@ -354,6 +354,12 @@ fluid.defaults("gpii.app", {
                 onPSPChannelConnected: "onPSPChannelConnected"
             }
         },
+        onPSPReadyForKeyIn: {
+            events: {
+                onPSPPrerequisitesReady: "onPSPPrerequisitesReady",
+                resetAtStartSuccess: "{flowManager}.events.resetAtStartSuccess"
+            }
+        },
         onGPIIReady: null,
 
         onAppReady: null,
@@ -397,8 +403,8 @@ fluid.defaults("gpii.app", {
             func: "{that}.events.onPSPReady.fire",
             priority: "last"
         },
-        "onPSPPrerequisitesReady.resolvePromise": {
-            func: "{that}.onPSPPrerequisitesReady.resolve",
+        "onPSPReadyForKeyIn.resolvePromise": {
+            func: "{that}.onPSPReadyForKeyIn.resolve",
             priority: "after:notifyPSPReady"
         }
 
@@ -447,10 +453,10 @@ gpii.app.updateKeyedInUserToken = function (that, userToken) {
     var updateFunc = function () {
         that.applier.change("keyedInUserToken", userToken);
     };
-    if (that.onPSPPrerequisitesReady.disposition) {
+    if (that.onPSPReadyForKeyIn.disposition) {
         updateFunc();
     } else {
-        that.onPSPPrerequisitesReady.then(updateFunc);
+        that.onPSPReadyForKeyIn.then(updateFunc);
     }
 };
 
