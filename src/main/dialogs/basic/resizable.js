@@ -173,12 +173,14 @@ gpii.app.resizable.computeScaleFactor = function (that) {
  * @param {Component} that - The `gpii.app.resizable` component.
  */
 gpii.app.resizable.fitToScreen = function (that) {
-    var scaleFactor = that.computeScaleFactor();
+    if (that.typeName === "gpii.app.qssInWrapper") {
+        var scaleFactor = that.computeScaleFactor();
 
-    if (scaleFactor === that.model.scaleFactor) {
-        that.setBounds();
-    } else {
-        that.applier.change("scaleFactor", scaleFactor);
+        if (scaleFactor === that.model.scaleFactor) {
+            that.setBounds();
+        } else {
+            that.applier.change("scaleFactor", scaleFactor);
+        }
     }
 };
 
