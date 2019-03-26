@@ -462,11 +462,14 @@ fluid.defaults("gpii.app", {
 // Indicative fix for GPII-3818
 gpii.app.updateKeyedInUserToken = function (that, userToken) {
     var updateFunc = function () {
+        fluid.log("Main app firing unbottled user token update to ", userToken);
         that.applier.change("keyedInUserToken", userToken);
     };
     if (that.onPSPReadyForKeyIn.disposition) {
+        fluid.log("Main app received userToken update in live state, firing now");
         updateFunc();
     } else {
+        fluid.log("Main app received userToken update before renderer process is ready, deferring for " + userToken);
         that.onPSPReadyForKeyIn.then(updateFunc);
     }
 };
