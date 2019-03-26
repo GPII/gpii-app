@@ -173,9 +173,12 @@ gpii.app.resizable.computeScaleFactor = function (that) {
  * @param {Component} that - The `gpii.app.resizable` component.
  */
 gpii.app.resizable.fitToScreen = function (that) {
+    // resizing the QSS only if its called from the QSS wrapper
+    // in any other case there is no need to resize it
     if (that.typeName === "gpii.app.qssInWrapper") {
+        // getting the scale factor
         var scaleFactor = that.computeScaleFactor();
-
+        // changing the scale factor only if its different in the current one
         if (scaleFactor === that.model.scaleFactor) {
             that.setBounds();
         } else {
