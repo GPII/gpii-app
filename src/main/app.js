@@ -346,6 +346,16 @@ fluid.defaults("gpii.app", {
             }
         }
     },
+    distributeOptions: {
+        relayQssDialogReady: {
+            target: "{that gpii.app.qss}.options.listeners",
+            record: {
+                "onDialogReady.relayToApp": {
+                    func: "{gpii.app}.events.onQSSDialogReady.fire"
+                }
+            }
+        }
+    },
     events: {
         onPSPPrerequisitesReady: {
             events: {
@@ -356,10 +366,11 @@ fluid.defaults("gpii.app", {
         },
         onPSPReadyForKeyIn: {
             events: {
-                onPSPPrerequisitesReady: "onPSPPrerequisitesReady",
-                resetAtStartSuccess: "{flowManager}.events.resetAtStartSuccess"
+                resetAtStartSuccess: "{flowManager}.events.resetAtStartSuccess",
+                onQSSDialogReady: "onQSSDialogReady"
             }
         },
+        onQSSDialogReady: null,
         onGPIIReady: null,
 
         onAppReady: null,

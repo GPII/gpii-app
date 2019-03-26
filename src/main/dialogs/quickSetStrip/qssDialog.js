@@ -88,9 +88,19 @@ fluid.defaults("gpii.app.qss", {
         onQssWidgetToggled: null,
         onQssSettingAltered: null,
         onQssLogoToggled: null,
+        // This is the incoming event by which the rest of the system and gpiiConnector
         onSettingUpdated: null,
+        // This is the event which is relayed across to the renderer process via IPC. We make sure not to do this
+        // until it has signalled readiness via onDialogReady (GPII-3818)
+        onSettingUpdatedUnbottled: null,
 
         onUndoIndicatorChanged: null
+    },
+    listeners: {
+        "onSettingUpdated.bottle": {
+            funcName: "gpii.app.qss.bottleSettingUpdated",
+            args: ["{that}", "{arguments}.0"]
+        }
     },
 
     linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
@@ -102,7 +112,7 @@ fluid.defaults("gpii.app.qss", {
                 events: {
                     onQssOpen: "{qss}.events.onQssOpen",
                     onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
-                    onSettingUpdated: "{qss}.events.onSettingUpdated",
+                    onSettingUpdated: "{qss}.events.onSettingUpdatedUnbottled",
                     onQssLogoToggled: "{qss}.events.onQssLogoToggled",
                     onUndoIndicatorChanged: "{qss}.events.onUndoIndicatorChanged",
                     onIsKeyedInChanged: null
@@ -193,6 +203,20 @@ fluid.defaults("gpii.app.qss", {
         }
     }
 });
+
+gpii.app.qss.bottleSettingUpdated = function (that, newSettings) {
+    var fireIt = function () {
+        fluid.log("QSS Dialog firing unbottled settings update ", newSettings);
+        that.events.onSettingUpdatedUnbottled.fire(newSettings);
+    };
+    if (that.onDialogReady.disposition) {
+        fluid.log("QSS Dialog received settings update in live state, firing now");
+        fireIt();
+    } else {
+        fluid.log("QSS Dialog received settings update before renderer process is ready, bottling: ", newSettings);
+        that.onDialogReady.then(fireIt);
+    }
+};
 
 /**
  * Represents a group of setting data from which we using only the buttonTypes array
