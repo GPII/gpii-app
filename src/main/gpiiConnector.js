@@ -860,7 +860,6 @@ gpii.app.dev.gpiiConnector.qss.applySettingDefaults = function (that, defaultQss
         fluid.log("gpiiConnect.qss: Merge QSS default settings");
 
         // add missing QSS settings to the update list (this is needed for triggering reset of the QSS)
-        // console.log("applySettingDefaults: ", defaultQssSettingValues, qssSettingControls);
         qssSettingControls = fluid.extend(true, {}, defaultQssSettingValues, qssSettingControls);
     }
 
