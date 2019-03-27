@@ -40,7 +40,8 @@ fluid.defaults("gpii.app.gpiiConnector", {
          */
         closeQssOnBlur: false,
         closePspOnBlur: true,
-        disableRestartWarning: false
+        disableRestartWarning: false,
+        defaultSettingsPath: null
     },
 
     events: {
@@ -743,7 +744,6 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
                     funcName: "gpii.app.dev.gpiiConnector.qss.prepareMessageForQss",
                     args: [
                         "{that}",
-                        "{that}.options.defaultQssSettingValues",
                         "{arguments}.0" // message
                     ]
                 }
@@ -761,19 +761,28 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
                 "{arguments}.0"
             ]
         }
-    },
-
-    // The "original" values of the QSS settings. These are to be provided from the core
-    // in the future.
-    defaultQssSettingValues: {
-        "http://registry\\.gpii\\.net/common/DPIScale": { value: 0 },
-        "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
-        "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
-        // use the initial value of the language as default setting
-        // This is temporary solution related to GPII-3819 issue. After finding permanent solution the value should be taken from the core.
-        "http://registry\\.gpii\\.net/common/language": { value: "{that}.options.defaultPreferences.systemDefaultLanguage" }
     }
 });
+
+/**
+ * Retrieves synchronously the default QSS settings from a file on the local machine
+ * folder. These are to be provided from the core in the future.
+ * @param {String} defaultSettingsPath - The path to the file containing the QSS
+ * @return {Object[]} An array of the loaded settings
+ */
+gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function(defaultSettingsPath) {
+    var loadedSettings = fluid.require(defaultSettingsPath),
+        result = {};
+
+    fluid.each(loadedSettings.contexts["gpii-default"].preferences, function(value, path) {
+        var fixedPath = path.replace(/\./g, "\\."),
+            fixedValue = value;
+
+        result[fixedPath] = { "value": fixedValue };
+    });
+
+    return result;
+};
 
 /**
  * Decorate the PSP channel message with QSS specific property so that it looks similar
@@ -783,12 +792,12 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
  * In case it is needed (it's a full preference set update after a snapset or active set change), it
  * also populates with QSS settings that are missing using a predefined set of default values.
  * @param {Component} that - The instance of `gpii.app.dev.gpiiComponent` component
- * @param {Object} defaultQssSettingValues - The default QSS settings in the format - <path>: <value>
  * @param {Object} message - The raw PSP channel message
  * @return {Object} The decorated PSP channel message
  */
-gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQssSettingValues, message) {
-    var payload = message.payload || {};
+gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, message) {
+    var loadedSettings = gpii.app.dev.gpiiConnector.qss.loadDefaultSettings(that.options.defaultPreferences.defaultSettingsPath),
+        payload = message.payload || {};
 
     if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {
         var value = payload.value || {},
@@ -796,11 +805,10 @@ gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQss
 
         // leave only QSS settings
         // Note that settings that doesn't have specific values such as "App / Text Zoom" will not receive setting updates
-        var qssSettingControls = fluid.filterKeys(channelSettingControls, fluid.keys(defaultQssSettingValues));
+        var qssSettingControls = fluid.filterKeys(channelSettingControls, fluid.keys(loadedSettings));
 
         // add missing setting values if needed
-        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, that.options.defaultQssSettingValues, qssSettingControls, value);
-
+        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, loadedSettings, qssSettingControls, value);
         value.qssSettingControls = qssSettingControls;
     }
 
@@ -852,6 +860,7 @@ gpii.app.dev.gpiiConnector.qss.applySettingDefaults = function (that, defaultQss
         fluid.log("gpiiConnect.qss: Merge QSS default settings");
 
         // add missing QSS settings to the update list (this is needed for triggering reset of the QSS)
+        // console.log("applySettingDefaults: ", defaultQssSettingValues, qssSettingControls);
         qssSettingControls = fluid.extend(true, {}, defaultQssSettingValues, qssSettingControls);
     }
 

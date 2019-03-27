@@ -3,6 +3,9 @@
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
 
+    // File containing default values which are used after resetting user settings
+    defaultValues: "C:\\Users\\vagrant\\AppData\\Roaming\\gpii\\defaultSettings.json5",
+
     // Configuration options for the QSS window
     qss: {
         // Defines the delay in milliseconds before the tooltip is shown after a QSS button is selected
