@@ -15,6 +15,7 @@
 "use strict";
 
 var os            = require("os");
+var fs            = require("fs");
 var fluid         = require("infusion");
 var electron      = require("electron");
 var child_process = require("child_process");
@@ -200,4 +201,13 @@ gpii.app.openUSB = function() {
             child_process.exec("explorer.exe \"" + path + "\"");
         });
     });
+};
+
+/**
+ * Check if a file exists.
+ * @param {String} path to the file.
+ * @return {Boolean} `true` if the file exists.
+ */
+gpii.app.checkIfFileExists = function(file) {
+    return fs.existsSync(file);
 };

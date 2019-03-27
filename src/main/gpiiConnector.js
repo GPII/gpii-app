@@ -771,17 +771,22 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
  * @return {Object[]} An array of the loaded settings
  */
 gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function(defaultSettingsPath) {
-    var loadedSettings = fluid.require(defaultSettingsPath),
-        result = {};
+    if (gpii.app.checkIfFileExists(defaultSettingsPath)) {
 
-    fluid.each(loadedSettings.contexts["gpii-default"].preferences, function(value, path) {
-        var fixedPath = path.replace(/\./g, "\\."),
-            fixedValue = value;
+        var loadedSettings = fluid.require(defaultSettingsPath),
+            result = {};
 
-        result[fixedPath] = { "value": fixedValue };
-    });
+        fluid.each(loadedSettings.contexts["gpii-default"].preferences, function(value, path) {
+            var fixedPath = path.replace(/\./g, "\\."),
+                fixedValue = value;
 
-    return result;
+            result[fixedPath] = { "value": fixedValue };
+        });
+
+        return result;
+    } else {
+        return [];
+    }
 };
 
 /**
