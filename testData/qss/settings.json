@@ -146,13 +146,19 @@
         "tabindex": 200,
         "messageKey": "cloud-folder-open"
     }, {
-        "path": "usb-open",
+        "path": "openUSB",
         "schema": {
-            "type": "usb-open"
+            "type": "openUSB",
+            "keys": [
+                "Mount",
+                "Unmount"
+            ]
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 210,
-        "messageKey": "usb-open"
+        "messageKey": "usb-open",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#usb-open",
+        "value": ""
     }, {
         "path": "more",
         "schema": {

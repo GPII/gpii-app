@@ -54,7 +54,8 @@
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
             toggle: ".flc-qssToggleWidget",
-            screenCapture: ".flc-qssScreenCaptureWidget"
+            screenCapture: ".flc-qssScreenCaptureWidget",
+            openUSB: ".flc-qssOpenUSBWidget"
         },
 
         /**
@@ -65,7 +66,8 @@
             "number": "gpii.qssWidget.stepper",
             "string": "gpii.qssWidget.menu",
             "boolean": "gpii.qssWidget.toggle",
-            "screenCapture": "gpii.qssWidget.screenCapture"
+            "screenCapture": "gpii.qssWidget.screenCapture",
+            "openUSB": "gpii.qssWidget.openUSB"
         },
 
         events: {
