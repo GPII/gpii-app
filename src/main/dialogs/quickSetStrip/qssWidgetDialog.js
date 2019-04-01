@@ -108,7 +108,7 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated",
                     // USB related events
                     onQssOpenUsbRequested: null,
-                    onQssUnmountUsbRequested: null,
+                    onQssUnmountUsbRequested: null
                 },
                 listeners: {
                     onQssWidgetClosed: [{

@@ -261,13 +261,16 @@
     gpii.qssWidget.openUSB.handleOpenUSB = function(value, mountUsbEvent, unmountUsbEvent) {
         if (fluid.isValue(value)) {
             switch (value) {
-                case 'Mount':
+                case "Mount":
                     // fires the event that mounts and open the USB drive
                     mountUsbEvent.fire();
                     break;
-                case 'Unmount':
+                case "Unmount":
                     // fires the event that unmounts any attached USB drive
                     unmountUsbEvent.fire();
+                    break;
+                default:
+                    // do nothing in every other case
                     break;
             }
         }
