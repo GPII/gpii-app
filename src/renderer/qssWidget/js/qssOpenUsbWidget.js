@@ -77,9 +77,11 @@
                     },
                     invokers: {
                         updateValue: {
-                            funcName: "fluid.log",
+                            funcName: "gpii.qssWidget.openUSB.handleOpenUSB",
                             args: [
-                                "{arguments}.0" // value
+                                "{arguments}.0", // value
+                                "{channelNotifier}.events.onQssOpenUsbRequested", // Mount USB event
+                                "{channelNotifier}.events.onQssUnmountUsbRequested" // Unmount USB event
                             ]
                         }
                     },
@@ -247,6 +249,29 @@
             }
         }
     });
+
+    /**
+     * Gets the value the pressed button from the menu and determines which even to fire
+     * in case of no valid button type is pressed does nothing
+     *
+     * @param {String} value - accepts only "Mount" and "Unmount"
+     * @param {EventListener} mountUsbEvent - handle to the onQssOpenUsbRequested event
+     * @param {EventListener} unmountUsbEvent - handle to the onQssUnmountUsbRequested event
+     */
+    gpii.qssWidget.openUSB.handleOpenUSB = function(value, mountUsbEvent, unmountUsbEvent) {
+        if (fluid.isValue(value)) {
+            switch (value) {
+                case 'Mount':
+                    // fires the event that mounts and open the USB drive
+                    mountUsbEvent.fire();
+                    break;
+                case 'Unmount':
+                    // fires the event that unmounts any attached USB drive
+                    unmountUsbEvent.fire();
+                    break;
+            }
+        }
+    };
 
     /**
      * Focuses the current QSS menu option if its index matches the specified `index` parameter.

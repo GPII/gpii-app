@@ -201,3 +201,12 @@ gpii.app.openUSB = function() {
         });
     });
 };
+
+/**
+ * A custom function for handling activation of the "Open USB" QSS button.
+ *
+ * Call the function that safely unmounts any USB devices attached
+ */
+gpii.app.unmountUSB = function() {
+    console.log("USB Unmount requested... calling Steve's function here!");
+};

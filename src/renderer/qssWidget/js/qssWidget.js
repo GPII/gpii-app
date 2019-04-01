@@ -71,13 +71,22 @@
         },
 
         events: {
+            // Important information
+            // These events are available in the all of the widgets
+            // It can be used to access the main events and utils from them
+            // Usage: {channelNotifier}.events.onQssWidgetHideQssRequested
+
             onWidgetClosed: null,
             onQssWidgetHideQssRequested: null,
             onSettingUpdated: null,
             onQssWidgetHeightChanged: null,
             onQssWidgetSettingAltered: null,
             onQssWidgetNotificationRequired: null,
-            onQssWidgetCreated: null
+            onQssWidgetCreated: null,
+
+            // USB related events
+            onQssOpenUsbRequested: null,
+            onQssUnmountUsbRequested: null
         },
 
         sounds: {},
@@ -209,7 +218,10 @@
                         onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
-                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated"
+                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated",
+                        // USB buttons
+                        onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
+                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested"
                     }
                 }
             }

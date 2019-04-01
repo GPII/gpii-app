@@ -105,7 +105,10 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetHeightChanged: "{qssWidget}.events.onContentHeightChanged",
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
-                    onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
+                    onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated",
+                    // USB related events
+                    onQssOpenUsbRequested: null,
+                    onQssUnmountUsbRequested: null,
                 },
                 listeners: {
                     onQssWidgetClosed: [{
@@ -129,6 +132,14 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetCreated: {
                         funcName: "gpii.app.qssWidget.showOnInit",
                         args: ["{qssWidget}"]
+                    },
+                    onQssOpenUsbRequested: {
+                        funcName: "gpii.app.openUSB",
+                        args: []
+                    },
+                    onQssUnmountUsbRequested: {
+                        funcName: "gpii.app.unmountUSB",
+                        args: []
                     }
                 }
             }

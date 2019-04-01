@@ -127,6 +127,11 @@ fluid.defaults("gpii.app.qss", {
             type: "gpii.app.channelListener",
             options: {
                 events: {
+                    // Important information
+                    // These events are available in the service buttons as well
+                    // It can be used to access the main events and utils from them
+                    // Usage: "{channelNotifier}.events.onQssResetAllRequired"
+
                     onQssClosed: null,
                     onQssButtonFocused: null,
                     onQssButtonsFocusLost: null,
@@ -140,9 +145,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssUndoRequired: null,
                     onQssResetAllRequired: null,
                     onQssSaveRequired: null,
-                    onQssPspToggled: null,
-
-                    onQssOpenUsbRequested: null
+                    onQssPspToggled: null
                 },
 
                 listeners: {
@@ -152,11 +155,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssSettingAltered: {
                         funcName: "fluid.log",
                         args: ["QSS Dialog: Setting altered QSS - ", "{arguments}.0.path", "{arguments}.0.value"]
-                    },
-                    onQssOpenUsbRequested: {
-                        funcName: "gpii.app.openUSB",
-                        args: []
-                    },
+                    }
                 }
             }
         }
