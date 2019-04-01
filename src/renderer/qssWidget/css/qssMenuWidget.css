@@ -108,5 +108,19 @@
 .fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssWidget-tip p:last-of-type {
     margin: 0;
 }
-
 /* Specific version for the Screen Capture's widget: END */
+
+/* Specific version for the Open USB's widget: BEGIN */
+.fl-qssMenuWidget.fl-qssOpenUSBWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
+    width: auto;
+    color: white;
+    background: #002957;
+    border-color: #002957;
+}
+.fl-qssMenuWidget.fl-qssOpenUSBWidget .fl-qssWidget-tip p {
+    margin-bottom: 5px;
+}
+.fl-qssMenuWidget.fl-qssOpenUSBWidget .fl-qssWidget-tip p:last-of-type {
+    margin: 0;
+}
+/* Specific version for the Open USB's widget: END */
