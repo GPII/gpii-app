@@ -1,7 +1,9 @@
 /**
  * The QSS Open USB widget
  *
- * TODO
+ * A custom widget for the Mount and Unmount USB functionality
+ * used the menuWidget as a base and fires the onQssOpenUsbRequested and
+ * onQssUnmountUsbRequested events on the button clicks
  *
  * Copyright 2017 Raising the Floor - International
  *
