@@ -51,7 +51,7 @@
      *  of the container by excluding the parent's container padding.
      */
     width: calc(100% + 2 * 10px);
-    margin: 0 -10px 10px -10px;
+    margin: 0 -10px 7px -10px;
 }
 
 .fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-buttons {
@@ -97,7 +97,7 @@
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator {
-    margin: 6px auto;
+    margin: 4px auto;
     height: 8px;
     width: 8px;
     cursor: pointer;
