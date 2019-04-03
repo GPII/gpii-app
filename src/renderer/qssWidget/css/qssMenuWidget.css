@@ -120,7 +120,28 @@
 .fl-qssMenuWidget.fl-qssOpenUSBWidget .fl-qssWidget-tip p {
     margin-bottom: 5px;
 }
+.fl-qssWidget-tip p img {
+    float: left;
+    padding: 0 5px 0 0;
+    margin-top: 10px;
+    transform: scale(1, -1) rotate(-90deg);
+}
 .fl-qssMenuWidget.fl-qssOpenUSBWidget .fl-qssWidget-tip p:last-of-type {
     margin: 0;
 }
+.fl-qssOpenUSBWidget-tip {
+    margin-bottom: 10px;
+}
+.fl-qssOpenUSBWidget-footerTip p img {
+    float: left;
+    padding: 0 5px 0 0;
+    margin-bottom: 20px;
+    transform: rotate(-90deg);
+}
+.fl-qssOpenUSBWidget-footerTip ul, .fl-qssOpenUSBWidget-footerTip ol {
+    margin-top: 5px;
+    margin-bottom: 0;
+    padding-left: 15px;
+}
+
 /* Specific version for the Open USB's widget: END */

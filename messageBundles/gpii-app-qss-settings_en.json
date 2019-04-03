@@ -70,7 +70,8 @@
     "gpii_app_qss_settings_usb-open": {
         "tooltip": "<p>Opens up any USB Flash Drives plugged into computer.</p>",
         "title": "Open USB Drive",
-        "tip": "<p>Your USB Drive</p><p>Insert a USB drive and open it with the button below.</p><p>When you are done, prevent data loss by ejecting USB drives Safely.</p><ol><li>Close all documents opened from the USB drive and</li><li>Then use the button below to safely eject the USB drives</li></ol>",
+        "tip": "<p>Your USB Drive</p><p><img height=12 src='../../assets/arrow-up.svg'>Insert a USB drive and open it with the button below.</p>",
+        "footerTip": "<p><img height=12 src='../../assets/arrow-up.svg'>When you are done, prevent data loss by ejecting USB drives Safely.</p><ol><li>Close all documents opened from the USB drive and</li><li>Then use the button below to safely eject the USB drives</li></ol>",
         "enum": [
             "Open all USB drives",
             "Safely eject all USB drives"

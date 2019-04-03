@@ -28,7 +28,10 @@
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
         model: {
             disabled: false,
-            setting: {}
+            setting: {},
+            messages: {
+                footerTip: "{that}.model.setting.widget.footerTip",
+            }
         },
         members: {
             // Holds the last keyboard event received during the "close" operation
@@ -37,7 +40,8 @@
         selectors: {
             heightListenerContainer: ".flc-qssOpenUSBWidget-controls",
             menuControlsWrapper: ".flc-qssOpenUSBWidget-controlsWrapper",
-            menuControls: ".flc-qssOpenUSBWidget-controls"
+            menuControls: ".flc-qssOpenUSBWidget-controls",
+            footerTip: ".flc-qssOpenUSBWidget-footerTip"
         },
         enableRichText: true,
         activationParams: {},
