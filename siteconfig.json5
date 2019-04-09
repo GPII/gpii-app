@@ -4,7 +4,7 @@
     hideQssSaveButton: false,
 
     // File containing default values which are used after resetting user settings
-    defaultValues: "C:\\Users\\vagrant\\AppData\\Roaming\\gpii\\defaultSettings.json5",
+    defaultValues: "gpii\\defaultSettings.json5",
 
     // Configuration options for the QSS window
     qss: {

@@ -211,3 +211,14 @@ gpii.app.openUSB = function() {
 gpii.app.checkIfFileExists = function(file) {
     return fs.existsSync(file);
 };
+
+/**
+ * Uses environment's %appdata% variable and combines it with the data from the site config
+ * the result should be something like:
+ * C:\Users\vagrant\AppData\Roaming\gpii\defaultSettings.json5
+ * @param {String} defaultSettingsPath
+ * @returns {String}
+ */
+gpii.app.compileAppDataPath = function(defaultSettingsPath) {
+    return process.env.appdata + "\\" + defaultSettingsPath;
+};
