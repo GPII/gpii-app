@@ -788,6 +788,7 @@ gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function(defaultSettingsPat
         }
         return result;
     } else {
+        fluid.log(fluid.logLevel.WARN, "loadDefaultSettings: Cannot find the settings file - " + compiledPath);
         return [];
     }
 };

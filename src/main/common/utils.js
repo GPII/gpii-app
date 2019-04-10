@@ -220,5 +220,6 @@ gpii.app.checkIfFileExists = function(file) {
  * @returns {String}
  */
 gpii.app.compileAppDataPath = function(defaultSettingsPath) {
-    return process.env.appdata + "\\" + defaultSettingsPath;
+    const path = require('path');
+    return path.join(process.env.appdata, defaultSettingsPath);
 };
