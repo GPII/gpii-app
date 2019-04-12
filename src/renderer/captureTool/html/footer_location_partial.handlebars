@@ -1,6 +1,7 @@
+<div class="fl-capture-footer">
 <ol class="breadcrumb">
     {{#if activeSignIn}}
-        <li><span class="fl-capture-current-page">1. Sign in</span></li>
+        <li><span class="fl-capture-current-page .color-fill-accent-neutral-mid">1. Sign in</span></li>
     {{else}}
         <li><span>1. Sign in</span></li>
     {{/if}}
@@ -22,5 +23,8 @@
     {{else}}
         <li><span>4. Save</span></li>
     {{/if}}
+
+    <span style="padding-left: 200px">Dev Status: {{isKeyedIn}} - {{keyedInUserToken}}</span>
+
 </ol>
-<span>Status: {{isKeyedIn}} - {{keyedInUserToken}}</span>
+</div>

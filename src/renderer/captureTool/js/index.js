@@ -15,9 +15,9 @@
 
 "use strict";
 (function (fluid) {
-    var gpii = fluid.registerNamespace("gpii"),
-        electron = require("electron"),
-        pspParams = electron.remote.getCurrentWindow().params;
+    var gpii = fluid.registerNamespace("gpii");
+        // electron = require("electron");
+        // pspParams = electron.remote.getCurrentWindow().params;
 
 
     $(function () {

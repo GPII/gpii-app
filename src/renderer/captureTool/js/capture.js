@@ -8,14 +8,16 @@
     fluid.defaults("gpii.captureTool", {
         gradeNames: ["gpii.handlebars.templateAware.standalone", "gpii.binder.bindMarkupEvents"],
         model: {
+            installedSolutions: null, // Populated during initialiation, using the local device reporter
             currentPage: "1_sign_in",
             // Possible values for this are:
             // "everything", "running", "chooseapps"
             whatToCapture: "everything",
             runningSolutions: {},
             solutionsToCapture: [],
+            settingsToKeep: [],
             // Prefs Set Name to Save the captured settings to
-            prefsSetName: "",
+            prefsSetName: "MyCapture",
             templates: {
                 pages: {
                     capturePage: "<p>This is a capture page 8!</p>",
@@ -28,23 +30,30 @@
                     "5_confirmation": "@expand:gpii.captureTool.loadTemplate(5_confirmation)"
                 },
                 partials: {
-                    footer_location_partial: "@expand:gpii.captureTool.loadTemplate(footer_location_partial)"
+                    footer_location_partial: "@expand:gpii.captureTool.loadTemplate(footer_location_partial)",
+                    page_header_partial: "@expand:gpii.captureTool.loadTemplate(page_header_partial)"
                 }
             },
-            capturedSettings: [
-                {
-                    title: "Checkbook Balancer",
+            capturedSettings: {
+                "checkbook": {
+                    title: "Checkbook Balancer"
                 }
-            ],
+            },
+            capturedSettingsToRender: {},
+            // The capturedPreferences will be generated from the capturedSettings. These will
+            // be the preferences ready to be attached to a prefset/context to be sent up.
+            capturedPreferences: null,
+            preferencesToKeep: null,
 
             // These should be model relays to the main app
-            isKeyedIn: true,
-            keyedInUserToken: "alice"
+            isKeyedIn: null,
+            keyedInUserToken: null
         },
         bindings: {
             whatToCaptureRadio: "whatToCapture",
             prefsSetNameInput: "prefsSetName",
-            solutionsToCaptureCheckbox: "solutionsToCapture"
+            solutionsToCaptureCheckbox: "solutionsToCapture",
+            settingsToKeepCheckbox: "settingsToKeep"
         },
         templates: {
             initial: "capturePage"
@@ -53,18 +62,38 @@
             "hello-message-key": "Hello, %mood world."
         },
         modelListeners: {
-            "whatToCapture": {
+            "whatToCapture": [{
                 funcName: "console.log",
                 args: ["What To Capture: ", "{that}.model.whatToCapture"]
-            },
-            "solutionsToCapture": {
+            }
+            ],
+            "solutionsToCapture": [{
                 funcName: "console.log",
                 args: ["Specific solutions to capture: ", "{that}.model.solutionsToCapture"]
-            },
+            }, {
+                func: "{that}.updateNumAppsSelected"
+            }],
             "prefsSetName": {
                 funcName: "console.log",
                 args: ["PrefSet Name: ", "{that}.model.prefsSetName"]
-            }
+            },
+            "isKeyedIn": {
+                funcName: "{that}.render",
+                args: ["{that}.model.currentPage"]
+            },
+            "capturedSettings": [
+                {
+                    func: "{that}.updateCapturedPreferences"
+                },
+                {
+                    func: "{that}.updateCapturedSettingsToRender"
+                }
+            ],
+            "settingsToKeep": [{
+                func: "{that}.updatePreferencesToKeep"
+            }, {
+                func: "{that}.updateNumSettingsSelected"
+            }]
         },
         invokers: {
             renderInitialMarkup: {
@@ -87,8 +116,52 @@
                 funcName: "gpii.captureTool.doneButton",
                 args: ["{that}"]
             },
+            selectAllSolutionsButton: {
+                funcName: "gpii.captureTool.selectAllSolutionsButton",
+                args: ["{that}"]
+            },
+            clearAllSolutionsButton: {
+                funcName: "gpii.captureTool.clearAllSolutionsButton",
+                args: ["{that}"]
+            },
+            selectAllSettingsToKeepButton: {
+                funcName: "gpii.captureTool.selectAllSettingsToKeepButton",
+                args: ["{that}"]
+            },
+            clearAllSettingsToKeepButton: {
+                funcName: "gpii.captureTool.clearAllSettingsToKeepButton",
+                args: ["{that}"]
+            },
             startCapture: {
                 funcName: "gpii.captureTool.startCapture",
+                args: ["{that}"]
+            },
+            saveCapturedPreferences: {
+                funcName: "gpii.captureTool.saveCapturedPreferences",
+                args: ["{that}"]
+            },
+            updateCapturedPreferences: {
+                funcName: "gpii.captureTool.updateCapturedPreferences",
+                args: ["{that}"]
+            },
+            updatePreferencesToKeep: {
+                funcName: "gpii.captureTool.updatePreferencesToKeep",
+                args: ["{that}"]
+            },
+            updateCapturedSettingsToRender: {
+                funcName: "gpii.captureTool.updateCapturedSettingsToRender",
+                args: ["{that}"]
+            },
+            fullChange: {
+                funcName: "gpii.captureTool.fullChange",
+                args: ["{that}.applier", "{arguments}.0", "{arguments}.1"]
+            },
+            updateNumAppsSelected: {
+                funcName: "gpii.captureTool.updateNumAppsSelected",
+                args: ["{that}"]
+            },
+            updateNumSettingsSelected: {
+                funcName: "gpii.captureTool.updateNumSettingsSelected",
                 args: ["{that}"]
             }
         },
@@ -99,7 +172,16 @@
             doneButton: ".flc-capture-done",
             whatToCaptureRadio: "[name='fl-capture-whattocapture']",
             prefsSetNameInput: "[name='fl-capture-prefsetname']",
-            solutionsToCaptureCheckbox: "[name='fc-choose-app']"
+            solutionsToCaptureCheckbox: "[name='fc-choose-app']",
+            settingsToKeepCheckbox: "[name='fc-settings-to-keep']",
+            // These 2 select/clear all selectors are used on the "Which applications to Capture",
+            // and "Which settings to keep" pages
+            selectAllSolutionsButton: ".flc-select-all",
+            clearAllSolutionsButton: ".flc-clear-all",
+            selectAllSettingsToKeepButton: ".flc-select-all-settings",
+            clearAllSettingsToKeepButton: ".flc-clear-all-settings",
+            numAppsSelectedDisplay: ".flc-num-apps-selected",
+            numSettingsSelectedDisplay: ".flc-num-settings-selected"
         },
         markupEventBindings: {
             nextButton: {
@@ -113,6 +195,22 @@
             doneButton: {
                 method: "click",
                 args: "{that}.doneButton"
+            },
+            selectAllSolutionsButton: {
+                method: "click",
+                args: "{that}.selectAllSolutionsButton"
+            },
+            clearAllSolutionsButton: {
+                method: "click",
+                args: "{that}.clearAllSolutionsButton"
+            },
+            selectAllSettingsToKeepButton: {
+                method: "click",
+                args: "{that}.selectAllSettingsToKeepButton"
+            },
+            clearAllSettingsToKeepButton: {
+                method: "click",
+                args: "{that}.clearAllSettingsToKeepButton"
             }
         },
         listeners: {
@@ -127,6 +225,13 @@
             }
         }
     });
+
+    gpii.captureTool.fullChange = function (applier, path, value) {
+        var transaction = applier.initiate();
+        transaction.fireChangeRequest({ path: path, value: {}, type: "DELETE"});
+        transaction.fireChangeRequest({ path: path, value: value});
+        transaction.commit();
+    };
 
     gpii.captureTool.mergeSettingsCapture = function (rawCapture) {
         var capture = {};
@@ -157,41 +262,51 @@
         return capture;
     };
 
-    /**
+    /*
      * Annotates the merged capture with data for rendering the list including
      * solution names and the number of settings captured for each solutions.
      *
      * Edits the mergedCapture in place, and also re-returns it.
      */
-    gpii.captureTool.annotateSettingsCapture = function(that, mergedCapture) {
+    gpii.captureTool.annotateSettingsCapture = function (that, mergedCapture) {
         var togo = mergedCapture;
-        fluid.each(togo, function(capturedSolution, solutionID) {
+        fluid.each(togo, function (capturedSolution, solutionID) {
             capturedSolution.name = that.model.installedSolutions[solutionID].name;
             capturedSolution.numberOfSettings = Object.keys(capturedSolution.settings).length;
         });
         return togo;
-    }
+    };
 
     gpii.captureTool.setupIPC = function (that) {
-        ipcRenderer.on('sendingInstalledSolutions', (event, arg) => {
-            that.applier.change("installedSolutions", arg);
+        ipcRenderer.on("sendingInstalledSolutions", function (event, arg) {
+            that.fullChange("installedSolutions", arg);
         });
 
-        ipcRenderer.on('sendingRunningSolutions', (event, arg) => {
-            that.applier.change("runningSolutions", arg);
+        ipcRenderer.on("sendingRunningSolutions", function (event, arg) {
+            that.fullChange("runningSolutions", arg);
         });
 
-        ipcRenderer.on('sendingAllSolutionsCapture', (event, arg) => {
+        ipcRenderer.on("sendingAllSolutionsCapture", function (event, arg) {
             var finalSettings = gpii.captureTool.annotateSettingsCapture(that, gpii.captureTool.mergeSettingsCapture(arg));
-            that.applier.change("capturedSettings", finalSettings);
-            that.applier.change("currentPage", "3_what_to_keep");
+            that.fullChange("capturedSettings", finalSettings);
+            that.fullChange("currentPage", "3_what_to_keep");
             that.render("3_what_to_keep");
         });
+
+        ipcRenderer.on("modelUpdate", function (event, arg) {
+            var transaction = that.applier.initiate();
+            transaction.fireChangeRequest({ path: "isKeyedIn", value: arg.isKeyedIn});
+            transaction.fireChangeRequest({ path: "keyedInUserToken", value: arg.keyedInUserToken});
+            transaction.commit();
+        });
+
+        // Get initial keyin state
+        ipcRenderer.send("modelUpdate");
     };
 
     gpii.captureTool.loadTemplate = function (templateName) {
         var resolvedPath = require("path").join(__dirname, "html", templateName + ".handlebars");
-        var finalTemplate = require('electron').remote.require("fs").readFileSync(resolvedPath) + "";    //require(resolvedPath);
+        var finalTemplate = require("electron").remote.require("fs").readFileSync(resolvedPath) + "";    //require(resolvedPath);
         return finalTemplate;
     };
 
@@ -199,23 +314,23 @@
         that.applier.change("currentPage", "3_capturing_settings");
         that.render("3_capturing_settings");
         var options = {};
-        if (that.model.whatToCapture === 'running') {
+        if (that.model.whatToCapture === "running") {
             options.solutionsList = Object.keys(that.model.runningSolutions);
         }
-        else if (that.model.whatToCapture === 'chooseapps') {
+        else if (that.model.whatToCapture === "chooseapps") {
             options.solutionsList = that.model.solutionsToCapture;
         }
 
         // Clear any previous capture
-        that.applier.change("capturedSettings", {}, 'DELETE');
+        that.applier.change("capturedSettings", {}, "DELETE");
 
-        ipcRenderer.send('getAllSolutionsCapture', options);
+        ipcRenderer.send("getAllSolutionsCapture", options);
     };
 
     gpii.captureTool.nextButton = function (that, currentPage) {
         if (currentPage === "1_sign_in") {
             that.applier.change("currentPage", "2_what_to_capture");
-            ipcRenderer.send('getInstalledSolutions', 'Please please!');
+            ipcRenderer.send("getInstalledSolutions", "Please please!");
             that.render("2_what_to_capture");
         }
         else if (currentPage === "2_what_to_capture") {
@@ -237,6 +352,8 @@
         else if (currentPage === "4_save_name") {
             that.applier.change("currentPage", "5_confirmation");
             that.render("5_confirmation");
+            console.log("These should be saved:", that.model.capturedSettings);
+            that.saveCapturedPreferences();
         }
         else {
             console.log("Not sure what the next page is...");
@@ -261,7 +378,98 @@
         }
     };
 
-    gpii.captureTool.doneButton = function (that) {
-        ipcRenderer.send('captureDoneButton', 'Done button clicked!');
+    gpii.captureTool.doneButton = function (/* that */) {
+        ipcRenderer.send("captureDoneButton", "Done button clicked!");
+    };
+
+    gpii.captureTool.selectAllSolutionsButton = function (that) {
+        that.fullChange("solutionsToCapture", Object.keys(that.model.installedSolutions));
+    };
+
+    gpii.captureTool.clearAllSolutionsButton = function (that) {
+        that.applier.change("solutionsToCapture", []);
+    };
+
+    gpii.captureTool.selectAllSettingsToKeepButton = function (that) {
+        console.log("SGITHENS: Select all settings");
+        var settings = [];
+        fluid.each(that.model.capturedSettingsToRender, function (app, appId) {
+            fluid.each(app.settings, function (setting, settingId) {
+                settings.push(appId + ":" + settingId);
+            });
+        });
+        that.applier.change("settingsToKeep", settings);
+    };
+
+    gpii.captureTool.clearAllSettingsToKeepButton = function (that) {
+        console.log("SGITHENS: Clear all settings");
+        that.applier.change("settingsToKeep", []);
+    };
+
+    gpii.captureTool.saveCapturedPreferences = function (that) {
+        var prefSetPayload = {
+            name: that.model.prefsSetName,
+            preferences: that.model.preferencesToKeep
+        };
+        ipcRenderer.send("saveCapturedPreferences", {
+            prefSetId: that.model.prefsSetName, //needs to be simplified... nospaces etc.
+            prefSetPayload: prefSetPayload
+        });
+    };
+
+    gpii.captureTool.updateCapturedPreferences = function (that) {
+        console.log("SGITHENS updateCapturedPreferences");
+        var prefs = {};
+        fluid.each(that.model.capturedSettings, function (appData, appId) {
+            if (appData.numberOfSettings > 0) {
+                var appUri = "http://registry.gpii.net/applications/" + appId;
+                prefs[appUri] = {};
+                fluid.each(appData.settings, function (settingVal, settingId) {
+                    prefs[appUri][settingId] = settingVal;
+                });
+            }
+        });
+        that.fullChange("capturedPreferences", prefs);
+    };
+
+    gpii.captureTool.updatePreferencesToKeep = function (that) {
+        var togo = {};
+        fluid.each(that.model.settingsToKeep, function (unparsedSetting) {
+            var appSettingPair = unparsedSetting.split(":");
+            var appId = appSettingPair[0];
+            var appUri = "http://registry.gpii.net/applications/" + appId;
+            var settingId = appSettingPair[1];
+            var settingValue = that.model.capturedPreferences[appUri][settingId];
+            if (!togo[appUri]) {
+                togo[appUri] = {};
+            }
+            togo[appUri][settingId] = settingValue;
+        });
+        that.fullChange("preferencesToKeep", togo);
+    };
+
+    gpii.captureTool.updateCapturedSettingsToRender = function (that) {
+        var togo = {};
+        fluid.each(that.model.capturedSettings, function (appData, appId) {
+            if (appData.numberOfSettings >= 0) { // sgithens DEMO_TOGGLE
+                togo[appId] = appData;
+            }
+        });
+        that.fullChange("capturedSettingsToRender", togo);
+    };
+
+    gpii.captureTool.updateNumAppsSelected = function (that) {
+        console.log("Updated from 0");
+        var el = that.locate("numAppsSelectedDisplay");
+        if (el && el.html) {
+            el.html(that.model.solutionsToCapture.length);
+        }
+    };
+
+    gpii.captureTool.updateNumSettingsSelected = function (that) {
+        var el = that.locate("numSettingsSelectedDisplay");
+        if (el && el.html) {
+            el.html(that.model.settingsToKeep.length);
+        }
     };
 })(fluid);

@@ -1,9 +1,16 @@
-<h1>2. Choose which applications to capture</h1>
+{{> page_header_partial pageHeader="2. Choose which applications to capture"}}
+
 <p>Below is a list of Morphic-compatible applications found this computer.
    Choose the applications whose settings you want to capture.
 </p>
+<hr/>
 <div>
-    <div class="form-group">
+    <span><span class="flc-num-apps-selected">0</span> applications selected</span>
+    <a href="#" class="flc-select-all">Select All</a>
+    <a href="#" class="flc-clear-all">Clear All</a>
+</div>
+<form>
+    <div class="form-group fl-capture-scrolled">
     {{#each installedSolutions}}
         <div class="checkbox">
                 <label>
@@ -13,7 +20,7 @@
         </div>
     {{/each}}
     </div>
-</div>
+</form>
 
 <input type="button" class="btn btn-default flc-capture-back" value="Back" />
 <input type="button" class="btn btn-default flc-capture-next" value="Next" />

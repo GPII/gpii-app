@@ -1,4 +1,27 @@
 .fl-capture-current-page {
-    color: orange;
     font-weight: bold;
+    background: rgb(179, 211, 241);
 }
+
+.fl-capture-footer {
+    position: absolute;
+    bottom: 0;
+    /* width: 100%; */
+    /* height: 2.5rem; */
+}
+
+.fl-capture-scrolled {
+    overflow: auto;
+    height: 40%;
+    border: thin black solid;
+    padding: 10px;
+}
+
+.fl-capture-footer .breadcrumb {
+    margin: 0 0 0 0;
+}
+
+/* .fl-capture-footer li { */
+    /* vertical-align: bottom; */
+    /* background: orange; */
+/* } */

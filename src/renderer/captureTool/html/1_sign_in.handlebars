@@ -1,16 +1,50 @@
-<h1>1. Capture Tool Sign-in</h1>
-<form>
-        <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-        </div>
+{{> page_header_partial pageHeader="Sign into MyMorphic"}}
 
-        <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-        </div>
-</form>
-<input type="button" class="btn btn-default flc-capture-next" value="Sign In" />
+<table>
+<tr>
+    <td width="50%" style="border-right: thin solid gray">
+    <p>
+        Sign into the MyMorphic account where you want to save your settings.
+    </p>
+    <p>
+        Or <a href="#">create a new account.</a>
+    </p>
+    <div>
+    <form>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Username or email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+            </div>
 
+            <div class="form-group">
+                <label for="exampleInputPassword1">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+    </form>
+    </div>
+    <input type="button" class="btn btn-default flc-capture-next" value="Sign In" />
+    <p>
+        <a href="#">Forgot password?</a>
+    </p>
+    </td>
+    <td style="padding-left: 20px; vertical-align: top">
+        <p>
+            <span class="type-t5">Work In Progress Capture Tool</span>, with
+            <a href="https://docs.google.com/document/d/1mAP3sZYVV1extBQ3f3HwEPgb3K-S7PFn5BNBBH2aFRo">specs.</a>
+        </p>
+        <p style="text-align: justify">
+            <em>Notes:</em><br/>
+            Username/password is currently ignored, settings can be saved to the cloud by keying
+            in with a user in the same fashion as the Morphic Quickstrip save.
+        </p>
+        <p>
+            On screen "4. Save",
+            the supplied preferences set id/name will be used to save them in the cloud. If the preferences
+            set already exists, the captured preferences will be merged into the existing set in
+            the cloud.
+        </p>
+    </td>
+</tr>
+</table>
 
 {{> footer_location_partial activeSignIn="true"}}

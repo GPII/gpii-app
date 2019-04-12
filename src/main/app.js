@@ -254,8 +254,10 @@ fluid.defaults("gpii.app", {
             type: "gpii.app.captureTool",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
-                isKeyedIn: "{app}.model.isKeyedIn",
-                keyedInUserToken: "{app}.model.keyedInUserToken"
+                model: {
+                    isKeyedIn: "{app}.model.isKeyedIn",
+                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                }
             }
         },
         shortcutsManager: {
