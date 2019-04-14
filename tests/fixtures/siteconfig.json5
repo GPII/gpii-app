@@ -13,5 +13,5 @@
     	alwaysOnTop: true
     },
     surveyTriggersUrl: "http://localhost:8083/surveys/triggers.json",
-    defaultValues: "C:\\Users\\vagrant\\AppData\\Roaming\\gpii\\defaultSettings.json5"
+    defaultValues: "gpii\\defaultSettings.json5"
 }

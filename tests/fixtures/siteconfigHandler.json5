@@ -9,5 +9,5 @@
             keyedOut: "To save your settings you need to setup a Morphic Account."
         }
     },
-    defaultValues: "C:\\Users\\vagrant\\AppData\\Roaming\\gpii\\defaultSettings.json5"
+    defaultValues: "gpii\\defaultSettings.json5"
 }
