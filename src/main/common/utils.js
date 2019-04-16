@@ -198,27 +198,66 @@ gpii.app.isButtonList = function(siteConfig) {
 };
 
 /**
+ * Looks for a `id` and matches it to the provided string
+ * return empty array when there is no button found
+ * @param {String} buttonId - the `id` of the button
+ * @param {Array} availableButtons - the full settings list
+ * @returns {Array}
+ */
+gpii.app.findButtonId = function(buttonId, availableButtons) {
+    var returnData = [];  // returning empty array by default
+
+    if (fluid.isValue(buttonId) && fluid.isValue(availableButtons)) {
+        fluid.each(availableButtons, function(button) {
+            if (fluid.isValue(button.id)) {
+                if (button.id === buttonId) {
+                    returnData = button; // returning the button data
+                }
+            }
+        });
+    }
+    return returnData;
+};
+
+/**
  * Filters the full button list based on the provided array of `id` attributes
  * @param {Array} siteConfigButtonList - basic array of strings
  * @param {Object[]} availableButtons - all available buttons found in settings.json
  * @returns {Object[]} - filtered version of available buttons (same structure)
  */
 gpii.app.filterButtonList = function(siteConfigButtonList, availableButtons) {
-    var buttonList = [];
-    fluid.each(availableButtons, function (button) {
-        // in order to filter it the item must have the `id` attribute
-        if (fluid.isValue(button.id)) {
-            // attribute must be in the siteConfig > qss > buttonList
-            if (siteConfigButtonList.includes(button.id)) {
-                buttonList.push(button);
-            }
-        } else {
-            // the setting's without attribute `id` are auto-included
-            buttonList.push(button);
+    var matchedList = [], // these buttons are explicitly selected in the
+                          // siteConfig, added in the same order
+        afterList = [],   // all the buttons that don't have `id` at all,
+                          // they are added at the end of the list
+        tabindex = 100;   // starting tabindex, adding +10 of each new item
+
+    // creating the matchedList
+    // looking for `id` and if matches adding it
+    fluid.each(siteConfigButtonList, function(buttonId) {
+        var matchedButton = gpii.app.findButtonId(buttonId, availableButtons);
+        if (matchedButton !== []) {
+            // adding the proper tabindex
+            matchedButton.tabindex = tabindex;
+            tabindex += 10; // increasing the tabindex
+            // adding button to the matched ones
+            matchedList.push(matchedButton);
         }
     });
 
-    return buttonList;
+    // creating the afterList
+    // looking for all of other buttons that don't have `id` at all
+    fluid.each(availableButtons, function(afterButton) {
+        if (!fluid.isValue(afterButton.id)) { // there is no `id`, adding it
+            // adding the proper index
+            afterButton.tabindex = tabindex;
+            tabindex += 10; // increasing the tabindex
+            // adding button to the matched ones
+            afterList.push(afterButton);
+        }
+    });
+
+    return matchedList.concat(afterList);
 };
 
 /**
