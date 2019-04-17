@@ -141,6 +141,10 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{gpii.app.qss}",
                 "{arguments}.0"
             ]
+        },
+        "onCreate": {
+            funcName: "gpii.app.qssWrapper.showQssOnStart",
+            args: ["{that}.options.siteConfig.showQssOnStart", "{gpii.app.qss}"]
         }
     },
 
@@ -844,6 +848,18 @@ gpii.app.qssWrapper.showTooltipIfPossible = function (qssWrapper, qssTooltip, se
     }
 };
 
+/**
+ * Shows the QSS if the flag is set to true
+ * @param {Boolean} showQssOnStart - true/false flag
+ * @param {Component} qss - The `gpii.app.qssDialog` instance
+ */
+gpii.app.qssWrapper.showQssOnStart = function (showQssOnStart, qss) {
+    // auto-show the QSS only if the flag is set to true
+    if (showQssOnStart) {
+        // showing it
+        qss.show();
+    }
+};
 
 /**
  * Configuration for using the `gpii.app.qss` in the QSS wrapper component.
