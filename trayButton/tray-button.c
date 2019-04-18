@@ -89,7 +89,13 @@ HANDLE gpiiWindow = null;
 /** true if the button destruction is intentional */
 BOOL die = false;
 
-
+#define log(FMT, ...) {wprintf(L ## FMT L"\n", __VA_ARGS__); fflush(stdout);}
+#define fail(FMT, ...) {wprintf(L ## FMT, __VA_ARGS__); wprintf(L" (win32:%u)\n", GetLastError()); fflush(stdout);}
+#ifdef _DEBUG
+# define debug(FMT, ...) log(FMT, __VA_ARGS__)
+#else
+# define debug(FMT, ...)
+#endif
 
 /**
  * Convert the value based on 96dpi to the current dpi.
@@ -182,6 +188,8 @@ UINT getDpi(HWND window)
  */
 BOOL positionTrayWindows(BOOL force)
 {
+	debug("positionTrayWindows");
+
 	if (!buttonWindow) {
 		return false;
 	}
@@ -198,6 +206,8 @@ BOOL positionTrayWindows(BOOL force)
 	HWND tasks = FindWindowEx(tray, null, L"ReBarWindow32", null);
 	// The notification icons
 	HWND notify = FindWindowEx(tray, null, L"TrayNotifyWnd", null);
+
+	debug("tray:%u tasks:%u notify:%u", tray, tasks, notify);
 
 	// Current DPI
 	UINT dpi = getDpi(tray);
@@ -316,7 +326,11 @@ BOOL checkHighContrast()
  */
 HANDLE findGpiiWindow()
 {
-	return gpiiWindow = FindWindow(GPII_CLASS, NULL);
+	gpiiWindow = FindWindow(GPII_CLASS, NULL);
+	if (!gpiiWindow) {
+		fail("Can't find gpii window");
+	}
+	return gpiiWindow;
 }
 
 /**
@@ -325,6 +339,8 @@ HANDLE findGpiiWindow()
  */
 BOOL sendToGpii(UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	log("sendToGpii(%u,%u,%u)", msg, wParam, lParam);
+
 	if (!IsWindow(gpiiWindow)) {
 		findGpiiWindow();
 	}
@@ -523,7 +539,7 @@ void setImage(WCHAR *file)
 	if (iconSize && f) {
 		hIcon = LoadImage(null, f, IMAGE_ICON, iconSize, iconSize, LR_LOADFROMFILE);
 		if (!hIcon) {
-			wprintf(L"Bad icon %p win32:%lu\n", f, GetLastError());
+			fail("LoadImage %p", f);
 		}
 	}
 
@@ -563,6 +579,8 @@ void setToolTip(WCHAR *tooltip)
  */
 void gotGpiiMessage(DWORD id, WCHAR* data)
 {
+	log("gotGpiiMessage(%u,%s)", id, data);
+
 	if (!gpiiWindow || !IsWindow(gpiiWindow)) {
 		findGpiiWindow();
 	}
@@ -611,6 +629,7 @@ LRESULT CALLBACK buttonWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 	switch (msg) {
 	case WM_CREATE:
+		log("WM_CREATE");
 		if (!buttonWindow) {
 			buttonWindow = hwnd;
 		}
@@ -628,6 +647,8 @@ LRESULT CALLBACK buttonWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 				memset((char*)copyData->lpData + copyData->cbData - 2, 0, 2);
 			}
 			gotGpiiMessage(copyData->dwData, copyData->lpData);
+		} else {
+			fail("Got WM_COPYDATA with no data");
 		}
 		break;
 
@@ -672,10 +693,12 @@ LRESULT CALLBACK buttonWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		return 0;
 
 	case WM_TIMER:
+		debug("timer %u", wp);
 		switch (wp) {
 		case TIMER_CHECK:
 			// Periodic checks that GPII still exists.
 			if (gpiiWindow && !IsWindow(gpiiWindow)) {
+				log("gpiiWindow no longer exists");
 				PostQuitMessage(0);
 				break;
 			}
@@ -744,15 +767,16 @@ int main(int argc, char **argv)
 int CALLBACK WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmd, int show)
 #endif
 {
+	log("Started");
+
 	// Used to communicate with GPII
 	gpiiMessage = RegisterWindowMessage(BUTTON_MESSAGE);
 
 	// See if there's already an instance
 	HANDLE existing = FindWindowEx(getTaskbarWindow(), null, BUTTON_CLASS, null);
 	if (existing) {
-#ifdef _DEBUG
-		return 0;
-#endif
+		log("Existing tray button found");
+
 		// Tell it to die
 		COPYDATASTRUCT copyData = { 0 };
 		copyData.dwData = GPII_COMMAND_DESTROY;
@@ -764,21 +788,32 @@ int CALLBACK WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmd, int show)
 	cls.lpfnWndProc = buttonWndProc;
 	cls.lpszClassName = BUTTON_CLASS;
 	cls.hCursor = LoadCursor(NULL, IDC_ARROW);
-	RegisterClass(&cls);
+	if (!RegisterClass(&cls)) {
+		fail("RegisterClass");
+	}
 
-	BufferedPaintInit();
+	if (BufferedPaintInit() != S_OK) {
+		fail("BufferedPaintInit");
+	}
 
 	RegisterShellHookWindow(buttonWindow);
 	shellMessage = RegisterWindowMessage(L"SHELLHOOK");
+
+	log("Initialised");
 
 	MSG msg = { 0 };
 	do {
 		// Wait for explorer to start
 		HWND taskbar;
-
+		int seconds = 0;
 		while (!(taskbar = getTaskbarWindow())) {
+			if (seconds++ == 100) {
+				fail("No taskbar after %u seconds", seconds);
+			}
 			Sleep(1000);
 		}
+
+		log("Found taskbar");
 
 		currentDpi = getDpi(taskbar);
 		checkHighContrast();
@@ -790,10 +825,14 @@ int CALLBACK WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmd, int show)
 			BUTTON_CLASS,
 			WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS | WS_TABSTOP,
 			0, 0, BUTTON_WIDTH, 40,
-			getTaskbarWindow(),
+			taskbar,
 			null,
 			0,
 			null);
+
+		if (!buttonWindow) {
+			fail("CreateWindowEx");
+		}
 
 		SetTimer(buttonWindow, TIMER_CHECK, TIMER_CHECK_DELAY, null);
 
@@ -802,10 +841,15 @@ int CALLBACK WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmd, int show)
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+
+		log("Window closed");
 		// Re-create the window if it closes unexpectedly.
 	} while (!die);
 
 	hideButton();
+	BufferedPaintUnInit();
+
+	log("Stopped")
 
 	return msg.wParam;
 }
