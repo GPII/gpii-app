@@ -25,7 +25,6 @@
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
         model: {
             disabled: false,
-            states: {},
             setting: {}
         },
         selectors: {
@@ -97,10 +96,6 @@
             "onCreate.visibilityChange": {
                 funcName: "gpii.qssWidget.office.addVisibilityChangeListener",
                 args: ["{closeTimer}"]
-            },
-            "onCreate.loadState" : {
-                funcName: "gpii.qssWidget.office.loadState",
-                args: ["{that}"]
             },
             "onDestroy.visibilitychange": {
                 funcName: "gpii.qssWidget.office.removeVisibilityChangeListener"
@@ -187,15 +182,6 @@
         });
     };
 
-    /**
-     * TODO
-     */
-    gpii.qssWidget.office.loadState = function (that) {
-        fluid.each(that.model.setting.schema.keys, function (key) {
-            console.log(key);
-            that.model.states[key] = false;
-        });
-    };
 
     /**
      * A handler for the `repeater` instance in the QSS widget menu. Takes care of rendering
@@ -204,7 +190,8 @@
     fluid.defaults("gpii.qssWidget.office.presenter", {
         gradeNames: ["fluid.viewComponent", "gpii.qssWidget.button"],
         model: {
-            item: null
+            item: null,
+            states: {}
         },
         styles: {
             active: "fl-qssWidgetMenu-active",
@@ -225,9 +212,9 @@
                 funcName: "gpii.qssWidget.office.presenter.applyStyles",
                 args: ["{that}", "{that}.container", "{repeater}.model.styles"]
             },
-            "onCreate.applyCheckmark": {
-                funcName: "gpii.qssWidget.office.presenter.applyCheckmark",
-                args: ["{that}.model.item.key", "{that}.model.item", "{that}.container", "{office}"]
+            "onCreate.loadState" : {
+                funcName: "gpii.qssWidget.office.presenter.loadState",
+                args: ["{that}", "{office}"]
             },
             onItemFocus: {
                 funcName: "gpii.qssWidget.office.presenter.focusItem",
@@ -242,10 +229,20 @@
         invokers: {
             activate: {
                 funcName: "gpii.qssWidget.office.presenter.toggleCheckmark",
-                args: ["{that}.model.item.key", "{that}.model.item", "{that}.container", "{office}"]
+                args: ["{that}.model.item.key", "{that}.model.item", "{that}.container", "{that}"]
             }
         }
     });
+
+    /**
+     * TODO
+     */
+    gpii.qssWidget.office.presenter.loadState = function (that, office) {
+        fluid.each(office.model.setting.schema.keys, function (key) {
+            that.model.states[key] = true;
+        });
+        gpii.qssWidget.office.presenter.applyCheckmark(that);
+    };
 
     /**
      * Focuses the current QSS menu option if its index matches the specified `index` parameter.
@@ -276,7 +273,7 @@
             }
             allStates++;
         });
-        console.log("length: ", stateNames.length, allStates);
+
         if (stateNames.length === 0) {
             return allFalse;
         } else if (stateNames.length === allStates) {
@@ -294,13 +291,9 @@
      * @param {Object} item - The current setting option.
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      */
-    gpii.qssWidget.office.presenter.applyCheckmark = function (key, item, container, that) {
-
-        console.log("key: ", key);
-        console.log("item: ", item);
-        console.log("that.model.states: ", that.model.setting.schema.keys);
-        if (that.model.states[key] === true) {
-            container.attr("aria-checked", item.key === key);
+    gpii.qssWidget.office.presenter.applyCheckmark = function (that) {
+        if (that.model.states[that.model.item.key] === true) {
+            that.container.attr("aria-checked", true);
         }
     };
 
@@ -311,12 +304,9 @@
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      */
     gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container, that) {
-
         that.model.states[key] = !that.model.states[key];
 
-        // console.log("key: ", key);
-        // console.log("item: ", item);
-        // console.log("that: ", that.model.states);
+        console.log("states: ", that.model.states);
         if (that.model.states[key] === true) {
             container.attr("aria-checked", item.key === key);
         } else {
