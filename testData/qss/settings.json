@@ -63,6 +63,21 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
     }, {
+        "path": "officeSimplification",
+        "schema": {
+            "type": "office",
+            "keys": [
+                "simple",
+                "essentials"
+            ],
+            "default": ""
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 135,
+        "messageKey": "officeSimplification",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#office-simplification",
+        "value": ""
+    }, {
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
             "type": "string",

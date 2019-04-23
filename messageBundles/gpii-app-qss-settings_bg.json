@@ -70,6 +70,15 @@
             "Направи снимка на десктопа"
         ]
     },
+    "gpii_app_qss_settings_officeSimplification": {
+        "tooltip": "<p>Опростяване на Microsoft Office.</p><p>Take pictures or record videos of the screen.</p>",
+        "title": "Опрости MS Word",
+        "tip": "<p>Опростяване на Microsoft Office</p><p>Morphic може да добави по-прости ribbons (лентите с икони в горната част на Word) за да улесни хората, които не използват всички опции.\n- Изберете една или двете за да ги добавите към Word</p>",
+        "enum": [
+            "Simple (Morphic)",
+            "Essentials (Morphic)"
+        ]
+    },
     "gpii_app_qss_settings_cloud-folder-open": {
         "tooltip": "<p>Отваря cloud базирана публична папка.</p>",
         "title": "Quick Folders"

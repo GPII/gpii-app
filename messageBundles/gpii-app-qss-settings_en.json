@@ -82,5 +82,14 @@
     "gpii_app_qss_settings_cloud-folder-open": {
         "tooltip": "<p>The Quick Folder has commonly requested documents, web pages, and other resources.</p>",
         "title": "Open Quick Folder"
+    },
+    "gpii_app_qss_settings_officeSimplification": {
+        "tooltip": "<p>Microsoft Office simplification.</p><p>Take pictures or record videos of the screen.</p>",
+        "title": "MS Word Simplify",
+        "tip": "<p>Microsoft Office simplification</p><p>Morphic can add simpler ribbons (the strips with incons at the top of the Word) to make it easier for people who don't use all the options.\n-Chose one or both to add them to Word</p>",
+        "enum": [
+            "Simple (Morphic)",
+            "Essentials (Morphic)"
+        ]
     }
 }
