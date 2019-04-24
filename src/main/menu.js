@@ -53,8 +53,7 @@ fluid.defaults("gpii.app.menuInApp", {
         },
 
         "onCaptureTool.showAbout": {
-            listener: "{dialogManager}.show",
-            args: ["captureTool"]
+            listener: "{gpii.app}.events.onOpenCaptureTool.fire"
         },
 
         // onKeyOut event is fired when a keyed-in user keys out through the task tray.

@@ -54,7 +54,7 @@ fluid.defaults("gpii.app.captureTool", {
                     args: ["%gpii-app/src/icons/Morphic-Desktop-Icon.ico"]
                 }
             },
-
+            alwaysOnTop: false,
             frame: true,
             resizable: true,
             transparent: false, // needs to be false to enable resizing and maximizing
@@ -62,7 +62,8 @@ fluid.defaults("gpii.app.captureTool", {
             minimizable: true,
             maximizable: true,
             autoHideMenuBar: true,
-            titleBarStyle: "hidden"
+            // titleBarStyle: "hidden"
+            titleBarStyle: "default"
         }
     },
     invokers: {

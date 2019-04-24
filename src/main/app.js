@@ -252,7 +252,7 @@ fluid.defaults("gpii.app", {
         },
         captureTool: {
             type: "gpii.app.captureTool",
-            createOnEvent: "onPSPPrerequisitesReady",
+            createOnEvent: "onOpenCaptureTool",
             options: {
                 model: {
                     isKeyedIn: "{app}.model.isKeyedIn",
@@ -367,6 +367,8 @@ fluid.defaults("gpii.app", {
         onAppReady: null,
         onPSPChannelConnected: null,
         onPSPReady: null,
+
+        onOpenCaptureTool: null,
 
         onKeyedIn: null,
         onKeyedOut: null,

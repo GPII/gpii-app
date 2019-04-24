@@ -290,7 +290,11 @@
             var finalSettings = gpii.captureTool.annotateSettingsCapture(that, gpii.captureTool.mergeSettingsCapture(arg));
             that.fullChange("capturedSettings", finalSettings);
             that.fullChange("currentPage", "3_what_to_keep");
+            that.selectAllSettingsToKeepButton();
             that.render("3_what_to_keep");
+            // This needs to happen again, because the page hasn't rendered yet,
+            // and therefore the html element doens't exist yet.
+            that.updateNumSettingsSelected();
         });
 
         ipcRenderer.on("modelUpdate", function (event, arg) {
@@ -459,7 +463,6 @@
     };
 
     gpii.captureTool.updateNumAppsSelected = function (that) {
-        console.log("Updated from 0");
         var el = that.locate("numAppsSelectedDisplay");
         if (el && el.html) {
             el.html(that.model.solutionsToCapture.length);
