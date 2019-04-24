@@ -84,9 +84,10 @@
         "title": "Open Quick Folder"
     },
     "gpii_app_qss_settings_officeSimplification": {
-        "tooltip": "<p>Microsoft Office simplification.</p><p>Take pictures or record videos of the screen.</p>",
+        "tooltip": "<p>Microsoft Office simplification.</p><p>Provides simpler menus for Microsoft Word</p>",
         "title": "MS Word Simplify",
-        "tip": "<p>Microsoft Office simplification</p><p>Morphic can add simpler ribbons (the strips with incons at the top of the Word) to make it easier for people who don't use all the options.\n-Chose one or both to add them to Word</p>",
+        "tip": "<p>Microsoft Office simplification</p><p>Morphic can add simpler ribbons (the menu bars with icons at the top of Word) to make it easier for people who don't use all the options.</p><ul><li>Choose one or both to add them to Word</li></ul>",
+        "footerTip": "Restart Word and look for these new ribbon names at the top left of the menus.",
         "enum": [
             "Simple (Morphic)",
             "Essentials (Morphic)"

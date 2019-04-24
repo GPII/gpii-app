@@ -1,7 +1,9 @@
 /**
  * The QSS Office Simplification widget
  *
- * TO DO
+ * Represents the QSS menu widget which is used for adjust MS Office Ribbons that have a list
+ * of predefined values.
+ *
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -25,20 +27,28 @@
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
         model: {
             disabled: false,
-            setting: {}
+            states: {},
+            availableCommands: {
+                defaultCommand: "standard",
+                allTrueCommand: "both",
+                allFalseCommand: "standard"
+            },
+            setting: {},
+            messages: {
+                footerTip: "{that}.model.setting.widget.footerTip",
+            }
         },
         selectors: {
             heightListenerContainer: ".flc-qssOfficeWidget-controls",
             menuControlsWrapper: ".flc-qssOfficeWidget-controlsWrapper",
-            menuControls: ".flc-qssOfficeWidget-controls"
+            menuControls: ".flc-qssOfficeWidget-controls",
+            footerTip: ".flc-qssMenuWidget-footerTip"
         },
         enableRichText: true,
         activationParams: {},
         closeDelay: 1200,
         components: {
             repeater: {
-                // TODO Perhaps add "createOnEvent" so that the component can be recreated
-                // whenever the setting changes (e.g. if the change is made via the PSP)
                 type: "gpii.psp.repeater",
                 container: "{office}.dom.menuControls",
                 options: {
@@ -190,8 +200,7 @@
     fluid.defaults("gpii.qssWidget.office.presenter", {
         gradeNames: ["fluid.viewComponent", "gpii.qssWidget.button"],
         model: {
-            item: null,
-            states: {}
+            item: null
         },
         styles: {
             active: "fl-qssWidgetMenu-active",
@@ -229,19 +238,24 @@
         invokers: {
             activate: {
                 funcName: "gpii.qssWidget.office.presenter.toggleCheckmark",
-                args: ["{that}.model.item.key", "{that}.model.item", "{that}.container", "{that}"]
+                args: ["{that}.model.item.key", "{that}.model.item", "{that}.container", "{office}"]
             }
         }
     });
 
     /**
-     * TODO
+     * Pre-loads the data in the office.model.states array
+     * TODO: loadState - this should use an event to get the real values from JJ's function (when we have it)
+     * @param {Component} that - The `gpii.qssWidget.office.presenter` instance.
+     * @param {Component} office- The `gpii.qssWidget.office` instance.
      */
     gpii.qssWidget.office.presenter.loadState = function (that, office) {
+        // pre-fills the states of all available schema keys
         fluid.each(office.model.setting.schema.keys, function (key) {
-            that.model.states[key] = true;
+            office.model.states[key] = false;
         });
-        gpii.qssWidget.office.presenter.applyCheckmark(that);
+        // checks the checkboxes if needed
+        gpii.qssWidget.office.presenter.applyCheckmarks(that, office);
     };
 
     /**
@@ -258,13 +272,15 @@
     };
 
     /**
-     * TODO
+     * TODO: getCommand: remove TODO when ready
+     * {Object} states - simple true/false object with the current states
+     * {Object} availableCommands - a simple list of available commands defined in the model
      */
-    gpii.qssWidget.office.getCommand = function (states) {
+    gpii.qssWidget.office.getCommand = function (states, availableCommands) {
         var stateNames = [],
-            defaultCase = "standard",
-            allTrue = "both",
-            allFalse = "standard",
+            defaultCommand = availableCommands.defaultCommand,
+            allTrue = availableCommands.allTrueCommand,
+            allFalse = availableCommands.allFalseCommand,
             allStates = 0;
 
         fluid.each(states, function (state, name) {
@@ -275,45 +291,56 @@
         });
 
         if (stateNames.length === 0) {
+            // no option is selected
             return allFalse;
         } else if (stateNames.length === allStates) {
+            // all of the options are selected
             return allTrue;
         } else if (stateNames.length === 1) {
+            // only one of the options is selected
+            // IMPORTANT: returning the name of the option as command
             return stateNames.pop();
         } else {
-            return defaultCase;
+            // IMPORTANT: we should never got to here
+            // but just in case, returning the default command
+            return defaultCommand;
         }
     };
 
-    /** TODO
-     * Adds a checkmark next to a setting option if it is the currently selected one for the setting.
-     * @param {String} key - The `key` of the selected setting option.
-     * @param {Object} item - The current setting option.
-     * @param {jQuery} container - A jQuery object representing the setting option's container.
+    /** TODO: applyCheckmarks: remove TODO when ready
+     * Adds a checked icon next to a setting option if it is the currently selected one for the setting.
+     * @param {Component} that - The `gpii.qssWidget.office.presenter` instance.
+     * @param {Component} office- The `gpii.qssWidget.office` instance.
      */
-    gpii.qssWidget.office.presenter.applyCheckmark = function (that) {
-        if (that.model.states[that.model.item.key] === true) {
+    gpii.qssWidget.office.presenter.applyCheckmarks = function (that, office) {
+        if (office.model.states[that.model.item.key] === true) {
             that.container.attr("aria-checked", true);
         }
     };
 
-    /** TODO
+    /** TODO: toggleCheckmark: delete the debugs when ready
      * Adds a checkmark next to a setting option if it is the currently selected one for the setting.
      * @param {String} key - The `key` of the selected setting option.
      * @param {Object} item - The current setting option.
      * @param {jQuery} container - A jQuery object representing the setting option's container.
+     * @param {Component} office- The `gpii.qssWidget.office` instance.
      */
-    gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container, that) {
-        that.model.states[key] = !that.model.states[key];
+    gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container, office) {
+        // toggle the current state
+        office.model.states[key] = !office.model.states[key];
 
-        console.log("states: ", that.model.states);
-        if (that.model.states[key] === true) {
+        // visually checks the selected option
+        if (office.model.states[key] === true) {
             container.attr("aria-checked", item.key === key);
         } else {
             container.removeAttr("aria-checked");
         }
 
-        console.log("getCommand: ", gpii.qssWidget.office.getCommand(that.model.states));
+        var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
+
+        // debug
+        console.log("office.model.states: ", office.model.states);
+        console.log("commandToUse: ", commandToUse);
     };
 
     /**

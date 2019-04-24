@@ -110,3 +110,14 @@
 }
 
 /* Specific version for the Screen Capture's widget: END */
+
+/* Specific version for the Office Simplification's widget: BEGIN */
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
+    color: white;
+    background: #002957;
+    border-color: #002957;
+}
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-footerTip {
+    margin-top: 10px;
+}
+/* Specific version for the Office Simplification's widget: END */
