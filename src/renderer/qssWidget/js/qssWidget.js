@@ -77,7 +77,8 @@
             onQssWidgetHeightChanged: null,
             onQssWidgetSettingAltered: null,
             onQssWidgetNotificationRequired: null,
-            onQssWidgetCreated: null
+            onQssWidgetCreated: null,
+            onQssOfficeSimplificationRequest: null
         },
 
         sounds: {},
@@ -204,12 +205,13 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
-                        onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
-                        onQssWidgetHideQssRequested:     "{qssWidget}.events.onQssWidgetHideQssRequested",
-                        onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
-                        onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
-                        onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
-                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated"
+                        onQssWidgetClosed:                "{qssWidget}.events.onWidgetClosed",
+                        onQssWidgetHideQssRequested:      "{qssWidget}.events.onQssWidgetHideQssRequested",
+                        onQssWidgetHeightChanged:         "{qssWidget}.events.onQssWidgetHeightChanged",
+                        onQssWidgetSettingAltered:        "{qssWidget}.events.onQssWidgetSettingAltered",
+                        onQssWidgetNotificationRequired:  "{qssWidget}.events.onQssWidgetNotificationRequired",
+                        onQssWidgetCreated:               "{qssWidget}.events.onQssWidgetCreated",
+                        onQssOfficeSimplificationRequest: "{qssWidget}.events.onQssOfficeSimplificationRequest"
                     }
                 }
             }

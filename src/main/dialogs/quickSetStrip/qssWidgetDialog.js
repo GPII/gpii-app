@@ -105,7 +105,8 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetHeightChanged: "{qssWidget}.events.onContentHeightChanged",
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
-                    onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated"
+                    onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated",
+                    onQssOfficeSimplificationRequest: null
                 },
                 listeners: {
                     onQssWidgetClosed: [{
@@ -129,6 +130,10 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetCreated: {
                         funcName: "gpii.app.qssWidget.showOnInit",
                         args: ["{qssWidget}"]
+                    },
+                    onQssOfficeSimplificationRequest: {
+                        funcName: "gpii.app.officeSimplificationCommand",
+                        args: ["{arguments}.0"]
                     }
                 }
             }

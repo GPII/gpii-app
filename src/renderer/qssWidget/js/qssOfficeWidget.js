@@ -238,7 +238,7 @@
         invokers: {
             activate: {
                 funcName: "gpii.qssWidget.office.presenter.toggleCheckmark",
-                args: ["{that}.model.item.key", "{that}.model.item", "{that}.container", "{office}"]
+                args: ["{that}.model.item.key", "{that}.model.item", "{that}.container", "{office}", "{channelNotifier}.events.onQssOfficeSimplificationRequest"]
             }
         }
     });
@@ -324,8 +324,10 @@
      * @param {Object} item - The current setting option.
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      * @param {Component} office- The `gpii.qssWidget.office` instance.
+     * @param {EventListener} event - handle to the onQssOfficeSimplificationRequest event
+
      */
-    gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container, office) {
+    gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container, office, event) {
         // toggle the current state
         office.model.states[key] = !office.model.states[key];
 
@@ -341,6 +343,7 @@
         // debug
         console.log("office.model.states: ", office.model.states);
         console.log("commandToUse: ", commandToUse);
+        event.fire(commandToUse);
     };
 
     /**
