@@ -78,7 +78,8 @@
             onQssWidgetSettingAltered: null,
             onQssWidgetNotificationRequired: null,
             onQssWidgetCreated: null,
-            onQssOfficeSimplificationRequest: null
+            onQssOfficeSimplificationRequest: null,
+            onQssLoadInitialOfficeRibbonsState: null
         },
 
         sounds: {},
@@ -205,13 +206,14 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
-                        onQssWidgetClosed:                "{qssWidget}.events.onWidgetClosed",
-                        onQssWidgetHideQssRequested:      "{qssWidget}.events.onQssWidgetHideQssRequested",
-                        onQssWidgetHeightChanged:         "{qssWidget}.events.onQssWidgetHeightChanged",
-                        onQssWidgetSettingAltered:        "{qssWidget}.events.onQssWidgetSettingAltered",
-                        onQssWidgetNotificationRequired:  "{qssWidget}.events.onQssWidgetNotificationRequired",
-                        onQssWidgetCreated:               "{qssWidget}.events.onQssWidgetCreated",
-                        onQssOfficeSimplificationRequest: "{qssWidget}.events.onQssOfficeSimplificationRequest"
+                        onQssWidgetClosed:                  "{qssWidget}.events.onWidgetClosed",
+                        onQssWidgetHideQssRequested:        "{qssWidget}.events.onQssWidgetHideQssRequested",
+                        onQssWidgetHeightChanged:           "{qssWidget}.events.onQssWidgetHeightChanged",
+                        onQssWidgetSettingAltered:          "{qssWidget}.events.onQssWidgetSettingAltered",
+                        onQssWidgetNotificationRequired:    "{qssWidget}.events.onQssWidgetNotificationRequired",
+                        onQssWidgetCreated:                 "{qssWidget}.events.onQssWidgetCreated",
+                        onQssOfficeSimplificationRequest:   "{qssWidget}.events.onQssOfficeSimplificationRequest",
+                        onQssLoadInitialOfficeRibbonsState: "{qssWidget}.events.onQssLoadInitialOfficeRibbonsState"
                     }
                 }
             }

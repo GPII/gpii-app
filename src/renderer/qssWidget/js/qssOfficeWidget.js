@@ -223,7 +223,7 @@
             },
             "onCreate.loadState" : {
                 funcName: "gpii.qssWidget.office.presenter.loadState",
-                args: ["{that}", "{office}"]
+                args: ["{that}", "{office}", "{channelNotifier}.events.onQssLoadInitialOfficeRibbonsState"]
             },
             onItemFocus: {
                 funcName: "gpii.qssWidget.office.presenter.focusItem",
@@ -247,13 +247,28 @@
      * Pre-loads the data in the office.model.states array
      * TODO: loadState - this should use an event to get the real values from JJ's function (when we have it)
      * @param {Component} that - The `gpii.qssWidget.office.presenter` instance.
-     * @param {Component} office- The `gpii.qssWidget.office` instance.
+     * @param {Component} office - The `gpii.qssWidget.office` instance.
+     * @param {EventListener} event - handle to the onQssLoadInitialOfficeRibbonsState event
      */
-    gpii.qssWidget.office.presenter.loadState = function (that, office) {
+    gpii.qssWidget.office.presenter.loadState = function (that, office, event) {
+        var loadState = "simple"; // will be populated with data from JJ's function
+
         // pre-fills the states of all available schema keys
-        fluid.each(office.model.setting.schema.keys, function (key) {
-            office.model.states[key] = false;
-        });
+        if (loadState === office.model.availableCommands.allTrueCommand) {
+            fluid.each(office.model.setting.schema.keys, function (key) {
+                office.model.states[key] = true;
+            });
+        } else if (loadState === office.model.availableCommands.allFalseCommand) {
+            fluid.each(office.model.setting.schema.keys, function (key) {
+                office.model.states[key] = false;
+            });
+        } else {
+            fluid.each(office.model.setting.schema.keys, function (key) {
+                if (key === loadState) {
+                    office.model.states[key] = true;
+                }
+            });
+        }
         // checks the checkboxes if needed
         gpii.qssWidget.office.presenter.applyCheckmarks(that, office);
     };
@@ -310,7 +325,7 @@
     /** TODO: applyCheckmarks: remove TODO when ready
      * Adds a checked icon next to a setting option if it is the currently selected one for the setting.
      * @param {Component} that - The `gpii.qssWidget.office.presenter` instance.
-     * @param {Component} office- The `gpii.qssWidget.office` instance.
+     * @param {Component} office - The `gpii.qssWidget.office` instance.
      */
     gpii.qssWidget.office.presenter.applyCheckmarks = function (that, office) {
         if (office.model.states[that.model.item.key] === true) {
@@ -323,7 +338,7 @@
      * @param {String} key - The `key` of the selected setting option.
      * @param {Object} item - The current setting option.
      * @param {jQuery} container - A jQuery object representing the setting option's container.
-     * @param {Component} office- The `gpii.qssWidget.office` instance.
+     * @param {Component} office - The `gpii.qssWidget.office` instance.
      * @param {EventListener} event - handle to the onQssOfficeSimplificationRequest event
 
      */

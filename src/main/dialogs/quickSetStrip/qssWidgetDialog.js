@@ -106,7 +106,8 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
                     onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated",
-                    onQssOfficeSimplificationRequest: null
+                    onQssOfficeSimplificationRequest: null,
+                    onQssLoadInitialOfficeRibbonsState: null
                 },
                 listeners: {
                     onQssWidgetClosed: [{
@@ -134,7 +135,8 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssOfficeSimplificationRequest: {
                         funcName: "gpii.app.officeSimplificationCommand",
                         args: ["{arguments}.0"]
-                    }
+                    },
+                    onQssLoadInitialOfficeRibbonsState: "gpii.app.getOfficeRibbons"
                 }
             }
         }

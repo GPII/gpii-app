@@ -209,3 +209,13 @@ gpii.app.openUSB = function () {
 gpii.app.officeSimplificationCommand = function (command) {
     console.log("gpii.app.officeSimplificationCommand: ", command);
 };
+
+/**
+ * A custom function TODO.
+ * @return {String} - TODO
+ */
+gpii.app.getOfficeRibbons = function () {
+    var result = "both";
+
+    return result;
+};
