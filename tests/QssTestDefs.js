@@ -35,12 +35,12 @@ function clickStepperIndicator() {
     jQuery(".fl-qssStepperWidget-indicator:nth-of-type(1)").click();
 }
 
-function getQuickFolderWIdgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-of-type(7) > span").text();
+function getQuickFolderWidgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
 }
 
-function getUsbWIdgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-of-type(8) > span").text();
+function getUsbWidgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
 }
 
 
@@ -56,6 +56,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(3)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
     clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
+    clickOfficeSimplifyBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
@@ -66,8 +67,8 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-of-type(7)').is(':visible')",
-    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-of-type(8)').is(':visible')",
+    checkIfQuickFoldersWidget = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(8)\").is(':visible')",
+    checkIfUSBWidget = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(7)\").is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
@@ -165,7 +166,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 14;
+var qssSettingsCount = 15;
 
 var navigationSequence = [
     {
@@ -971,6 +972,21 @@ var qssCrossTestSequence = [
         ],
         resolve: "jqUnit.assertFalse",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
+    }, { // Open the MS Office Simplify widget
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickOfficeSimplifyBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... and the menu widget shouldn't be shown
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            checkIfMenuWidget
+        ],
+        resolve: "jqUnit.assertFalse",
+        resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     },
     //
     // Setting changes tests
@@ -1371,7 +1387,7 @@ var openUsbTestSequence = [
         task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            getUsbWIdgetBtnText
+            getUsbWidgetBtnText
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
@@ -1404,7 +1420,7 @@ var quickFoldersTestSequence = [
         task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            getQuickFolderWIdgetBtnText
+            getQuickFolderWidgetBtnText
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
@@ -1712,7 +1728,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 68,
+    expect: 69,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
