@@ -15,11 +15,15 @@
 <div class="form-group fl-capture-scrolled">
     {{#each capturedSettingsToRender}}
         <p class="form-group-label"><strong>{{this.numberOfSettings}} settings found for {{this.name}}</strong></p>
-        {{#each this.settings}}
+        {{#each this.renderSettings}}
+            <div class="pull-right" style="color: gray"><em>Debug Info: {{this.debugInfo}}</em></div>
             <div class="checkbox">
                 <label>
-                    <input name="fc-settings-to-keep" value="{{@../key}}:{{@key}}" type="checkbox" />
-                    <span>{{@key}}: {{this}}</span>
+                    <input name="fc-settings-to-keep" value="{{@../key}}:{{this.settingId}}" type="checkbox" />
+                    <span>{{this.settingLabel}}: {{this.settingVal}}</span>
+                    <img src="./u128.png" data-toggle="tooltip" title="{{this.settingDesc}}"
+                        aria-hidden="true" />
+
                 </label>
             </div>
         {{/each}}

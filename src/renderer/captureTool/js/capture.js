@@ -9,6 +9,9 @@
         gradeNames: ["gpii.handlebars.templateAware.standalone", "gpii.binder.bindMarkupEvents"],
         model: {
             installedSolutions: null, // Populated during initialiation, using the local device reporter
+            // Populated based off the installed Solutions, will have the settings schemas keyed by:
+            // appId -> settingId -> schema
+            installedSolutionsSchemas: null,
             currentPage: "1_sign_in",
             // Possible values for this are:
             // "everything", "running", "chooseapps"
@@ -93,7 +96,10 @@
                 func: "{that}.updatePreferencesToKeep"
             }, {
                 func: "{that}.updateNumSettingsSelected"
-            }]
+            }],
+            "installedSolutions": {
+                func: "{that}.updateInstalledSolutionsSchemas"
+            }
         },
         invokers: {
             renderInitialMarkup: {
@@ -162,6 +168,10 @@
             },
             updateNumSettingsSelected: {
                 funcName: "gpii.captureTool.updateNumSettingsSelected",
+                args: ["{that}"]
+            },
+            updateInstalledSolutionsSchemas: {
+                funcName: "gpii.captureTool.updateInstalledSolutionsSchemas",
                 args: ["{that}"]
             }
         },
@@ -240,16 +250,13 @@
                 fluid.each(settings, function (outerSettingBlock) {
                     fluid.each(outerSettingBlock, function (oofSettingBlock) {
                         if (Object.keys(oofSettingBlock).length === 0) {
-                            console.log("THERE ARE ZERO SETTINGS HERE!!!");
                             capture[name] = { settings: {} };
                         }
                         fluid.each(oofSettingBlock, function (settingBlock, settingName) {
                             if (capture[name]) {
-                                console.log("Existing: ", name, settingName, settingBlock);
                                 capture[name].settings[settingName] = settingBlock;
                             }
                             else {
-                                console.log("New: ", name, settingName, settingBlock);
                                 capture[name] = { settings: {} };
                                 capture[name].settings[settingName] = settingBlock;
                             }
@@ -356,7 +363,6 @@
         else if (currentPage === "4_save_name") {
             that.applier.change("currentPage", "5_confirmation");
             that.render("5_confirmation");
-            console.log("These should be saved:", that.model.capturedSettings);
             that.saveCapturedPreferences();
         }
         else {
@@ -395,7 +401,6 @@
     };
 
     gpii.captureTool.selectAllSettingsToKeepButton = function (that) {
-        console.log("SGITHENS: Select all settings");
         var settings = [];
         fluid.each(that.model.capturedSettingsToRender, function (app, appId) {
             fluid.each(app.settings, function (setting, settingId) {
@@ -406,7 +411,6 @@
     };
 
     gpii.captureTool.clearAllSettingsToKeepButton = function (that) {
-        console.log("SGITHENS: Clear all settings");
         that.applier.change("settingsToKeep", []);
     };
 
@@ -422,7 +426,6 @@
     };
 
     gpii.captureTool.updateCapturedPreferences = function (that) {
-        console.log("SGITHENS updateCapturedPreferences");
         var prefs = {};
         fluid.each(that.model.capturedSettings, function (appData, appId) {
             if (appData.numberOfSettings > 0) {
@@ -457,6 +460,36 @@
         fluid.each(that.model.capturedSettings, function (appData, appId) {
             if (appData.numberOfSettings >= 0) { // sgithens DEMO_TOGGLE
                 togo[appId] = appData;
+                togo[appId].renderSettings = {};
+                fluid.each(togo[appId].settings, function (settingVal, settingKey) {
+                    togo[appId].renderSettings[settingKey] = {};
+                    var curRenderSetting = togo[appId].renderSettings[settingKey];
+                    curRenderSetting.settingId = settingKey;
+                    if (that.model.installedSolutionsSchemas[appId][settingKey] &&
+                        that.model.installedSolutionsSchemas[appId][settingKey].title) {
+                        var curSchema = that.model.installedSolutionsSchemas[appId][settingKey];
+                        curRenderSetting.settingLabel = curSchema.title;
+                        curRenderSetting.settingDesc = curSchema.description;
+                        curRenderSetting.debugInfo = "Val: " + settingVal + " Default: " + curSchema.default;
+
+                        if (curSchema.enumLabels && curSchema.enum && curSchema.enum[settingVal]) {
+                            curRenderSetting.settingVal = curSchema.enumLabels[settingVal];
+                        }
+                        else if (fluid.isPrimitive(settingVal)) {
+                            curRenderSetting.settingVal = settingVal;
+                        }
+                        else if (fluid.isPlainObject(settingVal)) {
+                            curRenderSetting.settingVal = JSON.stringify(settingVal);
+                        }
+                        else {
+                            curRenderSetting.settingVal = settingVal;
+                        }
+                    }
+                    else {
+                        curRenderSetting.settingLabel = settingKey;
+                        curRenderSetting.settingVal = settingVal;
+                    }
+                });
             }
         });
         that.fullChange("capturedSettingsToRender", togo);
@@ -474,5 +507,20 @@
         if (el && el.html) {
             el.html(that.model.settingsToKeep.length);
         }
+    };
+
+    gpii.captureTool.updateInstalledSolutionsSchemas = function (that) {
+        var togo = {};
+        fluid.each(that.model.installedSolutions, function (solution, appId) {
+            fluid.each(solution.settingsHandlers, function (config, configId) {
+                fluid.each(config.supportedSettings, function (settingSchema, settingId) {
+                    if (!togo[appId]) {
+                        togo[appId] = {};
+                    }
+                    togo[appId][settingId] = settingSchema.schema;
+                });
+            });
+        });
+        that.fullChange("installedSolutionsSchemas", togo);
     };
 })(fluid);

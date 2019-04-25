@@ -415,6 +415,7 @@ fluid.defaults("gpii.app.menu", {
                 func: "gpii.app.menu.generateMenuTemplate",
                 args: [
                     "{that}.model.showQSS",
+                    "{that}.model.showCaptureTool",
                     "{that}.model.keyedInSnapset",
                     "{that}.model.preferenceSetsMenuItems",
                     "{that}.model.showAbout",
