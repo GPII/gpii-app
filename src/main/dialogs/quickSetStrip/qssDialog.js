@@ -142,7 +142,8 @@ fluid.defaults("gpii.app.qss", {
                     onQssSaveRequired: null,
                     onQssPspToggled: null,
 
-                    onQssOpenUsbRequested: null
+                    onQssOpenUsbRequested: null,
+                    onQssLaunchExecutable: null
                 },
 
                 listeners: {
@@ -157,6 +158,10 @@ fluid.defaults("gpii.app.qss", {
                         funcName: "gpii.app.openUSB",
                         args: []
                     },
+                    onQssLaunchExecutable: {
+                        funcName: "gpii.app.launchExecutable",
+                        args: ["{arguments}.0"]
+                    }
                 }
             }
         }

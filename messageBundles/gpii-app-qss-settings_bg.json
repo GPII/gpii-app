@@ -73,5 +73,9 @@
     "gpii_app_qss_settings_cloud-folder-open": {
         "tooltip": "<p>Отваря cloud базирана публична папка.</p>",
         "title": "Quick Folders"
+    },
+    "gpii_app_qss_settings_launch-documorph": {
+        "tooltip": "<p>Launch DocuMorph.exe.</p>",
+        "title": "Launch DocuMorph.exe"
     }
 }

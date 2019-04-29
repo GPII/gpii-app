@@ -35,7 +35,10 @@
         },
 
         // the path to the ShareX's executable file, used in the screenCaptureWidget
-        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe"
+        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe",
+
+        // the path to the DocuMorph's executable file, used in the service buttons
+        docuMorphExecutable: "C:\\Windows\\explorer.exe"
     },
 
     // Configuration options for the PSP window

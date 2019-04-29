@@ -207,6 +207,29 @@
     };
 
     /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "launch .exe file"
+     * QSS button.
+     */
+    fluid.defaults("gpii.qss.launchExePresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.launchExePresenter.activate",
+                args: ["{channelNotifier}.events.onQssLaunchExecutable", "{gpii.qss}.options.siteConfig.docuMorphExecutable"]
+            }
+        }
+    });
+
+    /**
+     * A custom function for handling activation of the "Open USB" QSS button.
+     * @param {EventListener} launchExecutable - the handle to the launchExecutable's event listener
+     * @param {String} file - path to executable file
+     */
+    gpii.qss.launchExePresenter.activate = function (launchExecutable, file) {
+        launchExecutable.fire(file);
+    };
+
+    /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Undo"
      * QSS button.
      */
