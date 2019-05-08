@@ -195,7 +195,7 @@ gpii.app.isPointInRect = function (point, rectangle) {
  * In most cases, there's only a single USB drive. But if there's more than one USB drive,
  * then those that do not contain the token file are shown.
  */
-gpii.app.openUSB = function() {
+gpii.app.openUSB = function () {
     gpii.windows.getUserUsbDrives().then(function (paths) {
         fluid.each(paths, function (path) {
             child_process.exec("explorer.exe \"" + path + "\"");
@@ -204,16 +204,15 @@ gpii.app.openUSB = function() {
 };
 
 /**
- * TODO
  * A custom function for handling opening of an .exe file.
  * @param {String} exe - path to executable file
  */
-gpii.app.launchExecutable = function(exe) {
+gpii.app.launchExecutable = function (exe) {
     var fileProperties = fs.statSync(exe);
 
-    // TODO
+    // Check that the file is executable
     if (fileProperties.mode === 33206) {
-        console.log("gpii.app.launchExecutable", exe);
+        child_process.exec(exe);
     } else {
         fluid.log(fluid.logLevel.WARN, "launchExecutable: File is not executable - " + exe);
     }

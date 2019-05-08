@@ -38,7 +38,7 @@
         shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe",
 
         // the path to the DocuMorph's executable file, used in the service buttons
-        docuMorphExecutable: "C:\\Windows\\explorer.exe"
+        docuMorphExecutable: "C:\\Windows\\system32\\notepad.exe"
     },
 
     // Configuration options for the PSP window
