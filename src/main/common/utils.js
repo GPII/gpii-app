@@ -205,15 +205,21 @@ gpii.app.openUSB = function () {
 
 /**
  * A custom function for handling opening of an .exe file.
- * @param {String} exe - path to executable file
+ * @param {String} executablePath - path to executable file
  */
-gpii.app.launchExecutable = function (exe) {
-    var fileProperties = fs.statSync(exe);
+gpii.app.launchExecutable = function (executablePath) {
+    var fileProperties = fs.statSync(executablePath);
 
     // Check that the file is executable
     if (fileProperties.mode === 33206) {
-        child_process.exec(exe);
+        try {
+            child_process.exec(executablePath);
+            return true;
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "launchExecutable: Cannot execute - " + executablePath);
+        }
     } else {
-        fluid.log(fluid.logLevel.WARN, "launchExecutable: File is not executable - " + exe);
+        fluid.log(fluid.logLevel.WARN, "launchExecutable: File is not executable - " + executablePath);
     }
+    return false;
 };

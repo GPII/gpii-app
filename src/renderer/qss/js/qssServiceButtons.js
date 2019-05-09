@@ -221,7 +221,7 @@
     });
 
     /**
-     * A custom function for handling activation of the "Launch Documorph.exe" QSS button.
+     * A custom function for handling activation of the "Launch Docu Morph" QSS button.
      * @param {EventListener} launchExecutable - the handle to the launchExecutable's event listener
      * @param {String} file - path to executable file
      */

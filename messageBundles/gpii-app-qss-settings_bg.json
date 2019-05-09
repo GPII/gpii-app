@@ -75,7 +75,7 @@
         "title": "Quick Folders"
     },
     "gpii_app_qss_settings_launch-documorph": {
-        "tooltip": "<p>Launch DocuMorph.exe.</p>",
-        "title": "Launch DocuMorph.exe"
+        "tooltip": "<p>Стартирай апликацията DocuMorph.</p>",
+        "title": "Стартирай Docu Morph"
     }
 }

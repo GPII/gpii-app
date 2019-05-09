@@ -84,7 +84,7 @@
         "title": "Open Quick Folder"
     },
     "gpii_app_qss_settings_launch-documorph": {
-        "tooltip": "<p>Launch DocuMorph.exe.</p>",
-        "title": "Launch DocuMorph.exe"
+        "tooltip": "<p>Launch the DocuMorph Application.</p>",
+        "title": "Launch Docu Morph"
     }
 }
