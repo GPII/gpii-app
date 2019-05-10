@@ -1438,7 +1438,7 @@ var docuMorphTestSequence = [
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of the button should be",
-            "Launch DocuMorph.exe",
+            "Launch Docu Morph",
             "{arguments}.0"
         ]
     }, { // Close the QSS
