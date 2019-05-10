@@ -98,7 +98,6 @@ fluid.defaults("gpii.app.menuInAppDev", {
                     "{that}.options.locales",
                     "{that}.options.themes",
                     "{that}.options.snapsets",
-                    // "{that}.model.preferenceSetsMenuItems", // This section is hidden per request of GPII-3826 and at some point may reused
                     "{that}.model.showAbout",
                     "@expand:gpii.app.menu.getSeparatorItem()",
                     "{that}.model.keyOut",
@@ -399,7 +398,6 @@ fluid.defaults("gpii.app.menu", {
                 args: [
                     "{that}.model.showQSS",
                     "{that}.model.keyedInSnapset",
-                    // "{that}.model.preferenceSetsMenuItems", // This section is hidden per request of GPII-3826 and at some point may reused
                     "{that}.model.showAbout",
                     "@expand:gpii.app.menu.getSeparatorItem()",
                     "{that}.model.keyOut"

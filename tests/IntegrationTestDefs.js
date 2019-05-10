@@ -210,8 +210,6 @@ gpii.tests.dev.testTrayKeyedIn = function (tray, activePrefSet) {
 gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 9);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
-    // the default pref set should be set
-    // gpii.tests.dev.testMultiContextKeyedIn(tray, menuTemplate, /*activeSetIdx=*/prefSetsInDevStartIdx); // Commented after GPII-3826
     gpii.tests.app.testItem(menuTemplate[7], "Reset Morphic");
     gpii.tests.app.testItem(menuTemplate[8], "Exit GPII");
 };
@@ -283,21 +281,7 @@ gpii.tests.dev.testDefs = {
         listener: "gpii.tests.dev.testMultiPrefSetMenu"
     }, { // simulate choosing different pref set
         func: "{that}.app.tray.menu.model.menuTemplate.7.click"
-    },
-    // Commented after GPII-3826. Need to be changed to meet the new requirements
-    // test Active Pref Set changed
-    // {
-    //     changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-    //     path: "menuTemplate",
-    //     args: [
-    //         "{that}.app.tray",
-    //         "{that}.app.tray.menu.model.menuTemplate",
-    //         /*prefSetItemClickedIdx=*/7,
-    //         "{that}.app.model.preferences"
-    //     ],
-    //     listener: "gpii.tests.dev.testActiveSetChanged"
-    // },
-    {
+    }, {
         func: "{that}.app.keyOut"
     }, {
         event: "{that}.app.events.onKeyedOut",
