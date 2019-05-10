@@ -82,5 +82,11 @@
     "gpii_app_qss_settings_cloud-folder-open": {
         "tooltip": "<p>The Quick Folder has commonly requested documents, web pages, and other resources.</p>",
         "title": "Open Quick Folder"
+    },
+    "gpii_app_qss_settings_common-brightness": {
+        "tooltip": "<p>Adjusts Display Brightness.</p>",
+        "title": "Brightness",
+        "tip": "<p>Increase or decrease Brightness of the Screen</p><p>If your screen allows brightness to be controlled remotely, these buttons will change screen brightness</p>",
+        "footerTip": ""
     }
 }
