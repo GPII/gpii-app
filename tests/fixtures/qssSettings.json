@@ -178,6 +178,20 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
     }, {
+        "path": "http://registry\\.gpii\\.net/applications/com.microsoft.windows.brightness.BrightnessVal",
+        "schema": {
+            "type": "brightness",
+            "min": "0",
+            "max": "100",
+            "divisibleBy": 10,
+            "default": 75
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 80,
+        "messageKey": "common-brightness",
+        "value": 90,
+        "learnMoreLink": "https://morphic.world/help/qsshelp#brightness"
+    }, {
         "path": "cloud-folder-open",
         "schema": {
             "type": "cloud-folder-open"

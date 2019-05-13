@@ -35,12 +35,16 @@ function clickStepperIndicator() {
     jQuery(".fl-qssStepperWidget-indicator:nth-of-type(1)").click();
 }
 
-function getQuickFolderWIdgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-of-type(7) > span").text();
+function getQuickFolderWidgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
 }
 
-function getUsbWIdgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-of-type(8) > span").text();
+function getUsbWidgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
+}
+
+function getBrightnessWidgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-of-type(7) > span").text();
 }
 
 
@@ -56,6 +60,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(3)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
     clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
+    clickBrightnessBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
@@ -66,11 +71,11 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-of-type(7)').is(':visible')",
-    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-of-type(8)').is(':visible')",
+    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(8)').is(':visible')",
+    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(7)').is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
-    clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
-    clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
+    clickIncreaseBtn = "jQuery('.fl-qssStepper-incBtn').click()",
+    clickDecreaseBtn = "jQuery('.fl-qssStepper-decBtn').click()",
     clickToggleBtn = "jQuery('.flc-switchUI-control').click()";
 
 // Generic
@@ -165,7 +170,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 14;
+var qssSettingsCount = 15;
 
 var navigationSequence = [
     {
@@ -762,6 +767,73 @@ var stepperInteractionsSequence = [
     }
 ];
 
+var brightnessStepperInteractionsSequence = [
+    { // Click on the "Brightness" button...
+        func: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickBrightnessBtn
+        ]
+    }, { // ... and wait for the QSS widget menu to be shown.
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, {
+        task: "gpii.test.linger",
+        args: [100],
+        resolve: "fluid.identity"
+    }, { // Clicking on the increment button...
+        func: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn
+        ]
+    }, { // Click on the increment button again...
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn
+        ],
+        resolve: "fluid.identity"
+    }, {
+        task: "gpii.test.linger",
+        args: [100],
+        resolve: "fluid.identity"
+    }, /* {
+        // ... will not change the Brightness setting's value because it is already reached at its highest value
+        func: "jqUnit.assertEquals",
+        args: [
+            "The Brightness setting value is not changed once its highest value has been reached",
+            1,
+            "{that}.app.qssWrapper.model.settings.1.value"
+        ]
+    },*/ { // Clicking on the increment button once again...
+        func: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickIncreaseBtn
+        ]
+    }, { // ... will make the QSS warning notification show up.
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "jqUnit.assertTrue",
+        args: [
+            "The QSS notification is shown when the Brightness setting has reached its highest value",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
+        ]
+    }, { // Close the QSS notification
+        func: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssNotification.dialog",
+            closeClosableDialog
+        ]
+    }, {
+        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }
+];
+
 var saveButtonSequence = [
     /*
      * Notification & QSS integration
@@ -915,6 +987,7 @@ var qssCrossTestSequence = [
     // Stepper widget interactions
     //
     stepperInteractionsSequence,
+    brightnessStepperInteractionsSequence,
     //
     // Combined tests
     //
@@ -1371,7 +1444,7 @@ var openUsbTestSequence = [
         task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            getUsbWIdgetBtnText
+            getUsbWidgetBtnText
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
@@ -1404,12 +1477,37 @@ var quickFoldersTestSequence = [
         task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            getQuickFolderWIdgetBtnText
+            getQuickFolderWidgetBtnText
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of the button should be",
             "Open Quick Folder",
+            "{arguments}.0"
+        ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
+var brightnessWidgetTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // Text of button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getBrightnessWidgetBtnText
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Text of button should be",
+            "Brightness",
             "{arguments}.0"
         ]
     }, { // Close the QSS
@@ -1712,7 +1810,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 68,
+    expect: 70,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1759,6 +1857,7 @@ gpii.tests.qss.testDefs = {
         undoTestSequence,
         openUsbTestSequence,
         quickFoldersTestSequence,
+        brightnessWidgetTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
         restartWarningSequence,
