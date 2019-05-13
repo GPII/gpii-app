@@ -77,7 +77,6 @@
     "gpii_app_qss_settings_common-brightness": {
         "tooltip": "<p>Adjusts Display Brightness.</p>",
         "title": "Brightness",
-        "tip": "<p>Increase or decrease Brightness of the Screen</p><p>If your screen allows brightness to be controlled remotely, these buttons will change screen brightness</p>",
-        "footerTip": ""
+        "tip": "<p>Increase or decrease Brightness of the Screen</p><p>If your screen allows brightness to be controlled remotely, these buttons will change screen brightness</p>"
     }
 }
