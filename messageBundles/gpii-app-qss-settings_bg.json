@@ -78,10 +78,10 @@
         "tooltip": "<p>Опростяване на Microsoft Word.</p><p>Предоставя опростени менюта за Microsoft Word.</p>",
         "title": "Опрости MS Word",
         "tip": "<p>Опростяване на Microsoft Word</p><p>Morphic може да опрости менютата в (групите менюта горе-вляво в Word), с цел да направи прогрмата по-лека за хора, които не са свикнали.</p><ul><li>Избери един или повече профила, за да добавиш в Word</li></ul>",
-        "footerTip": "Рестартирай Word и погледни за тези имена горе-ляво в менюто.",
         "enum": [
             "Simple (Morphic)",
-            "Essentials (Morphic)"
+            "Essentials (Morphic)",
+            "Рестартирай Word"
         ]
     }
 }

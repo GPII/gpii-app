@@ -68,7 +68,8 @@
             "type": "office",
             "keys": [
                 "simple",
-                "essentials"
+                "essentials",
+                "restart-word"
             ],
             "default": ""
         },

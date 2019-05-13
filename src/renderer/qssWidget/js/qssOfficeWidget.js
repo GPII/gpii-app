@@ -31,7 +31,8 @@
             availableCommands: {
                 defaultCommand: "standard",
                 allTrueCommand: "both",
-                allFalseCommand: "standard"
+                allFalseCommand: "standard",
+                resetCommand: "restart-word"
             },
             setting: {},
             messages: {
@@ -238,7 +239,14 @@
         invokers: {
             activate: {
                 funcName: "gpii.qssWidget.office.presenter.toggleCheckmark",
-                args: ["{that}.model.item.key", "{that}.model.item", "{that}.container", "{office}", "{channelNotifier}.events.onQssOfficeSimplificationRequest"]
+                args: [
+                    "{that}.model.item.key",
+                    "{that}.model.item",
+                    "{that}.container",
+                    "{office}",
+                    "{channelNotifier}.events.onQssOfficeSimplificationRequest", // sends the office request
+                    "{channelNotifier}.events.onQssResetWord" // resets the Word application
+                ]
             }
         }
     });
@@ -250,21 +258,25 @@
      * @param {Component} office - The `gpii.qssWidget.office` instance.
      * @param {EventListener} event - handle to the onQssLoadInitialOfficeRibbonsState event
      */
-    gpii.qssWidget.office.presenter.loadState = function (that, office, event) {
-        var loadState = "simple"; // will be populated with data from JJ's function
+    gpii.qssWidget.office.presenter.loadState = function (that, office, officeRibbonStateEvent) {
+        var loadState = "standard"; // will be populated with data from officeRibbonStateEvent
 
         // pre-fills the states of all available schema keys
         if (loadState === office.model.availableCommands.allTrueCommand) {
             fluid.each(office.model.setting.schema.keys, function (key) {
-                office.model.states[key] = true;
+                if (key !== office.model.availableCommands.resetCommand) {
+                    office.model.states[key] = true;
+                }
             });
         } else if (loadState === office.model.availableCommands.allFalseCommand) {
             fluid.each(office.model.setting.schema.keys, function (key) {
-                office.model.states[key] = false;
+                if (key !== office.model.availableCommands.resetCommand) {
+                    office.model.states[key] = false;
+                }
             });
         } else {
             fluid.each(office.model.setting.schema.keys, function (key) {
-                if (key === loadState) {
+                if (key === loadState && key !== office.model.availableCommands.resetCommand) {
                     office.model.states[key] = true;
                 }
             });
@@ -294,15 +306,18 @@
     gpii.qssWidget.office.getCommand = function (states, availableCommands) {
         var stateNames = [],
             defaultCommand = availableCommands.defaultCommand,
+            resetCommand = availableCommands.resetCommand,
             allTrue = availableCommands.allTrueCommand,
             allFalse = availableCommands.allFalseCommand,
             allStates = 0;
 
         fluid.each(states, function (state, name) {
-            if (state === true) {
-                stateNames.push(name);
+            if (name !== resetCommand) {
+                if (state === true) {
+                    stateNames.push(name);
+                }
+                allStates++;
             }
-            allStates++;
         });
 
         if (stateNames.length === 0) {
@@ -339,26 +354,33 @@
      * @param {Object} item - The current setting option.
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      * @param {Component} office - The `gpii.qssWidget.office` instance.
-     * @param {EventListener} event - handle to the onQssOfficeSimplificationRequest event
-
+     * @param {EventListener} commandEvent - handle to the onQssOfficeSimplificationRequest event
+     * @param {EventListener} resetWordEvent - handle to the onQssResetWord event
      */
-    gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container, office, event) {
-        // toggle the current state
-        office.model.states[key] = !office.model.states[key];
-
-        // visually checks the selected option
-        if (office.model.states[key] === true) {
-            container.attr("aria-checked", item.key === key);
+    gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container, office, commandEvent, resetWordEvent) {
+        if (key === office.model.availableCommands.resetCommand) {
+            // we have the reset command in place
+            resetWordEvent.fire();
         } else {
-            container.removeAttr("aria-checked");
+            // this is just a ribbon command
+
+            // toggle the current state
+            office.model.states[key] = !office.model.states[key];
+
+            // visually checks the selected option
+            if (office.model.states[key] === true) {
+                container.attr("aria-checked", item.key === key);
+            } else {
+                container.removeAttr("aria-checked");
+            }
+
+            var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
+
+            // debug
+            console.log("office.model.states: ", office.model.states);
+            console.log("commandToUse: ", commandToUse);
+            commandEvent.fire(commandToUse);
         }
-
-        var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
-
-        // debug
-        console.log("office.model.states: ", office.model.states);
-        console.log("commandToUse: ", commandToUse);
-        event.fire(commandToUse);
     };
 
     /**

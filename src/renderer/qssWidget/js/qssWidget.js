@@ -79,7 +79,8 @@
             onQssWidgetNotificationRequired: null,
             onQssWidgetCreated: null,
             onQssOfficeSimplificationRequest: null,
-            onQssLoadInitialOfficeRibbonsState: null
+            onQssLoadInitialOfficeRibbonsState: null,
+            onQssResetWord: null
         },
 
         sounds: {},
@@ -213,7 +214,8 @@
                         onQssWidgetNotificationRequired:    "{qssWidget}.events.onQssWidgetNotificationRequired",
                         onQssWidgetCreated:                 "{qssWidget}.events.onQssWidgetCreated",
                         onQssOfficeSimplificationRequest:   "{qssWidget}.events.onQssOfficeSimplificationRequest",
-                        onQssLoadInitialOfficeRibbonsState: "{qssWidget}.events.onQssLoadInitialOfficeRibbonsState"
+                        onQssLoadInitialOfficeRibbonsState: "{qssWidget}.events.onQssLoadInitialOfficeRibbonsState",
+                        onQssResetWord:                     "{qssWidget}.events.onQssResetWord",
                     }
                 }
             }

@@ -203,19 +203,28 @@ gpii.app.openUSB = function () {
 };
 
 /**
- * A custom function TODO.
- * @param {String} command - TODO
+ * TODO: officeSimplificationCommand needs a proper description
+ * @param {String} command - this is the name of the UI preset for the MS Word
  */
 gpii.app.officeSimplificationCommand = function (command) {
     console.log("gpii.app.officeSimplificationCommand: ", command);
 };
 
 /**
- * A custom function TODO.
- * @return {String} - TODO
+ * TODO: getOfficeRibbons needs a proper description
+ * @return {String} - returns the current state of the MS Word's UI preset
  */
 gpii.app.getOfficeRibbons = function () {
+    // we should have a proper call to JJ's function to determine which preset is pre-loaded
     var result = "both";
 
     return result;
 };
+
+/**
+ * TODO: resetWord needs a proper description
+ */
+gpii.app.resetWord = function () {
+    console.log("gpii.app.resetWord: RESET");
+};
+

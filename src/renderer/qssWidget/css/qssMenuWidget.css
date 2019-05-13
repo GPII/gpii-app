@@ -112,7 +112,7 @@
 /* Specific version for the Screen Capture's widget: END */
 
 /* Specific version for the Office Simplification's widget: BEGIN */
-.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:not(:last-child) {
     border-color: white;
     text-align: left;
     margin-left: 15px;
@@ -139,6 +139,22 @@
     -webkit-mask: url("../../../assets/checkbox-checked.svg") 0 0/100% 100%;
     mask: url("../../../assets/checkbox-checked.svg") 0 0/100% 100%;
 }
+
+    /* this creates the space between the options and reset button and re-designs the reset button */
+    .fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:last-child {
+        width: 100px;
+        float: right;
+        margin-top: 10px;
+
+        color: white;
+        background: #002957;
+        border-color: #002957;
+    }
+    /* removes the check mark on to the reset button */
+    .fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:last-child:after {
+        display: none;
+    }
+
 .fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-footerTip {
     margin-top: 5px;
 }
