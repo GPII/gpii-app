@@ -1,7 +1,7 @@
 {
     "gpii_app_menu_about": "About...",
     "gpii_app_menu_openQss": "Open Morphic",
-    "gpii_app_menu_keyedIn": "Keyed in with %snapsetName",
+    "gpii_app_menu_keyedIn": "User Signed In",
     "gpii_app_menu_keyOut": "Reset Morphic",
 
     "gpii_app_tray_defaultTooltip": "Morphic: Ready",
