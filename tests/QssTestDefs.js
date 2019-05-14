@@ -799,15 +799,15 @@ var brightnessStepperInteractionsSequence = [
         task: "gpii.test.linger",
         args: [100],
         resolve: "fluid.identity"
-    }, /* {
+    },  {
         // ... will not change the Brightness setting's value because it is already reached at its highest value
         func: "jqUnit.assertEquals",
         args: [
             "The Brightness setting value is not changed once its highest value has been reached",
-            1,
-            "{that}.app.qssWrapper.model.settings.1.value"
+            100,
+            "{that}.app.qssWrapper.model.settings.6.value"
         ]
-    },*/ { // Clicking on the increment button once again...
+    }, { // Clicking on the increment button once again...
         func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
@@ -1810,7 +1810,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 70,
+    expect: 71,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
