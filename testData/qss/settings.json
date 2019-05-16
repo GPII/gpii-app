@@ -48,6 +48,22 @@
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
     }, {
+        "path": "http://registry\\.gpii\\.net/applications/com.microsoft.windows.volumeControl.Volume",
+        "schema": {
+            "type": "volume",
+            "min": 0,
+            "max": 1,
+            "divisibleBy": 0.1,
+            "default": 0.5,
+            "switchTitle": "Mute all audio"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 125,
+        "messageKey": "common-volume",
+        "value": 0.5,
+        "learnMoreLink": "https://morphic.world/help/qsshelp#volume"
+
+    }, {
         "path": "screenCapture",
         "schema": {
             "type": "screenCapture",

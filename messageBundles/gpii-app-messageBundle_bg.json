@@ -61,5 +61,10 @@
     "gpii_qss_saveButtonPresenter_notification": {
         "keyedOut": "За да запазите вашите настройки трябва да си създадете Morphic акаунт. Отидете на <a href=\"%accountUrl\">%accountUrl</a>.",
         "keyedIn": "Вашите настройки са запазени в Morphic Cloud."
-    }
+    },
+
+    "gpii_qssWidget_volumeStepper_incrementButton": "По-силно",
+    "gpii_qssWidget_volumeStepper_decrementButton": "По-тихо",
+    "gpii_qssWidget_volumeStepper_upperBoundError": "Това е най-високата настройка",
+    "gpii_qssWidget_volumeStepper_lowerBoundError": "Това е най-ниската настройка"
 }
