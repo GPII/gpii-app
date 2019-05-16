@@ -209,3 +209,10 @@
     margin-bottom: 15px;
 }
 
+/* Custom CSS just for the Volume and Brightness Widget's steppers: BEGIN */
+.fl-qssStepperWidget .fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-buttons {
+    flex-basis: 74%;
+    padding-left: 13%;
+    padding-right: 13%;
+}
+/* Custom CSS just for the Volume and Brightness Widget's steppers: END */
