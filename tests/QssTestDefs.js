@@ -237,48 +237,23 @@ var navigationSequence = [
     }
 ];
 
-// This test are commented because of changes in GPII-3796 request.
-// This test may be removed or part of it re-used in the future.
-
-// var restartWarningSequence = [
-//     { // Simulate language change
-//         func: "{that}.app.qssWrapper.alterSetting",
-//         args: [{
-//             path: "http://registry\\.gpii\\.net/common/language",
-//             value: "ko-KR"
-//         }]
-//     }, { // ... the restart warning notification should be shown
-//         event: "{that qssNotification}.events.onDialogShown",
-//         listener: "jqUnit.assert",
-//         args: ["The notification dialog is shown when restartWarning setting is changed."]
-//     }, {
-//         funcName: "{that}.app.qssWrapper.qssNotification.hide"
-//     }, { // Changing the user restartWarning preference
-//         event: "{that qssNotification}.events.onDialogHidden",
-//         listener: "{that}.app.applier.change",
-//         args: ["preferences.disableRestartWarning", true]
-//     }, { // and trying to show a restart warning notification
-//         changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-//         path: "disableRestartWarning",
-//         listener: "{that}.app.qssWrapper.showRestartWarningNotification",
-//         args: [{
-//             path: "http://registry\\.gpii\\.net/common/language",
-//             restartWarning: true,
-//             schema: {},
-//             value: "en-US"
-//         }]
-//     }, { // should have disabled it
-//         funcName: "jqUnit.assertFalse",
-//         args: [
-//             "Restart warning notification is not shown when disabled by user setting",
-//             "{that}.app.qssWrapper.qssNotification.model.isShown"
-//         ]
-//     },
-
-//     { // bring everything back to normal
-//         func: "{that}.app.resetAllToStandard"
-//     }
-// ];
+var restartWarningSequence = [
+    { // Simulate language change
+        func: "{that}.app.qssWrapper.alterSetting",
+        args: [{
+            path: "http://registry\\.gpii\\.net/common/language",
+            value: "ko-KR"
+        }]
+    }, { // restart warning is not shown
+        funcName: "jqUnit.assertFalse",
+        args: [
+            "Restart warning notification is shown only one time per session",
+            "{that}.app.qssWrapper.qssNotification.model.isShown"
+        ]
+    }, { // bring everything back to normal
+        func: "{that}.app.resetAllToStandard"
+    }
+];
 
 
 var tooltipSequence = [
@@ -1714,7 +1689,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 66,
+    expect: 67,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1763,7 +1738,7 @@ gpii.tests.qss.testDefs = {
         quickFoldersTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
-        // restartWarningSequence, // commented because of changes in GPII-3796 request
+        restartWarningSequence,
         crossQssTranslations,
         appZoomTestSequence
     )
