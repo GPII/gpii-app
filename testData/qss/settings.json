@@ -38,15 +38,15 @@
         "path": "http://registry\\.gpii\\.net/applications/com.microsoft.windows.brightness.BrightnessVal",
         "schema": {
             "type": "brightness",
-            "min": "0",
-            "max": "100",
+            "min": 0,
+            "max": 100,
             "divisibleBy": 10,
-            "default": 75
+            "default": 70
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 115,
         "messageKey": "common-brightness",
-        "value": 0,
+        "value": 70,
         "learnMoreLink": "https://morphic.world/help/qsshelp#brightness"
     }, {
         "path": "appTextZoom",
