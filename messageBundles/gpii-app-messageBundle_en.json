@@ -24,8 +24,10 @@
     "gpii_psp_signIn_signUpButton": "Create an Account",
     "gpii_psp_signIn_forgotPasswordButton": "Forgot Password?",
 
-    "gpii_psp_widgets_switch_on": "On",
-    "gpii_psp_widgets_switch_off": "Off",
+    "gpii_qssWidget_toggle_on": "On",
+    "gpii_qssWidget_toggle_off": "Off",
+    "gpii_qssWidget_volume_on": "Muted",
+    "gpii_qssWidget_volume_off": "Audio on",
 
     "gpii_psp_header_autosaveText": "Auto-save is on",
     "gpii_psp_header_keyOut":"Sign out",

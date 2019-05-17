@@ -38,7 +38,9 @@
             setting: {},
             value: "{that}.model.setting.value",
             messages: {
-                settingTitle: "{that}.model.setting.schema.title"
+                settingTitle: "{that}.model.setting.schema.title",
+                on: null,
+                off: null
             }
         },
 
@@ -61,7 +63,11 @@
                 container: "{that}.dom.toggleButton",
                 options: {
                     model: {
-                        enabled: "{gpii.qssWidget.toggle}.model.value"
+                        enabled: "{gpii.qssWidget.toggle}.model.value",
+                        messages: {
+                            on: "{gpii.qssWidget.toggle}.model.messages.on",
+                            off: "{gpii.qssWidget.toggle}.model.messages.off"
+                        }
                     },
                     invokers: {
                         toggleModel: {

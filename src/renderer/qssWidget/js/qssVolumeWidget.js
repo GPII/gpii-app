@@ -58,7 +58,11 @@
                 options: {
                     model: {
                         setting: "{gpii.qssWidget.volume}.model.setting",
-                        value: "{gpii.qssWidget.volume}.model.value"
+                        value: "{gpii.qssWidget.volume}.model.value",
+                        messages: {
+                            on: null,
+                            off: null
+                        }
                     }
                 }
             },
@@ -67,7 +71,11 @@
                 container: "{that}.dom.switch",
                 options: {
                     model: {
-                        enabled: "{gpii.qssWidget.volume}.model.switch.value"
+                        enabled: "{gpii.qssWidget.volume}.model.switch.value",
+                        messages: {
+                            on: "{gpii.qssWidget.volume}.model.messages.on",
+                            off: "{gpii.qssWidget.volume}.model.messages.off"
+                        }
                     },
                     invokers: {
                         toggleModel: {
