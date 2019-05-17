@@ -322,7 +322,7 @@ gpii.app.qss.show = function (that, params) {
  * loses focus. Otherwise, it will stay open.
  */
 gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
-    if (closeQssOnBlur && tray.isMouseOver()) {
+    if (closeQssOnBlur && !tray.isMouseOver()) {
         that.hide();
     }
 };
