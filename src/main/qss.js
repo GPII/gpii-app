@@ -354,7 +354,7 @@ fluid.defaults("gpii.app.qssWrapper", {
  * @param {Object} updatedSetting - The `gpii.app.qssNotification` instance.
  */
 gpii.app.qssWrapper.showRestartWarningNotification = function (that, qss, qssNotification, updatedSetting) {
-    // The notification is shown only once, and only if its not a keyIn even
+    // The notification is shown only once, and only if it's not a keyIn event
     if (!that.model.notificationShown && !that.model.isKeyedIn) {
 
         that.model.notificationShown = true;
