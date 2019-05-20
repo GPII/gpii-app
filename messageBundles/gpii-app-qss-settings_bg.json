@@ -76,7 +76,7 @@
     },
     "gpii_app_qss_settings_common-volume": {
         "tooltip": "<p>Регулира, включва и изключва силата на звука на Windows.</p>",
-        "title": "Сила на звука",
+        "title": "Сила и изключване на звука",
         "tip": "<p>Сила на звука</p>",
         "footerTip": ""
     }

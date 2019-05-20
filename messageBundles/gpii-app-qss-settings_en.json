@@ -85,7 +85,7 @@
     },
     "gpii_app_qss_settings_common-volume": {
         "tooltip": "<p>Adjusts Windows Volume and provides Mute on/off.</p>",
-        "title": "Volume",
+        "title": "Volume & Mute",
         "tip": "<p>Volume</p>",
         "footerTip": ""
     }
