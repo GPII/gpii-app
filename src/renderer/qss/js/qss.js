@@ -30,18 +30,19 @@
 
         defaultHandlerGrade: "gpii.qss.buttonPresenter",
         handlerGrades: {
-            "boolean":  "gpii.qss.toggleButtonPresenter",
-            "number":   "gpii.qss.widgetButtonPresenter",
-            "string":   "gpii.qss.widgetButtonPresenter",
-            "close":    "gpii.qss.closeButtonPresenter",
-            "psp":      "gpii.qss.keyInButtonPresenter",
-            "save":     "gpii.qss.saveButtonPresenter",
-            "undo":     "gpii.qss.undoButtonPresenter",
-            "resetAll": "gpii.qss.resetAllButtonPresenter",
-            "more":     "gpii.qss.moreButtonPresenter",
-            "usb-open": "gpii.qss.openUSBButtonPresenter",
+            "boolean":           "gpii.qss.toggleButtonPresenter",
+            "number":            "gpii.qss.widgetButtonPresenter",
+            "string":            "gpii.qss.widgetButtonPresenter",
+            "close":             "gpii.qss.closeButtonPresenter",
+            "psp":               "gpii.qss.keyInButtonPresenter",
+            "save":              "gpii.qss.saveButtonPresenter",
+            "undo":              "gpii.qss.undoButtonPresenter",
+            "resetAll":          "gpii.qss.resetAllButtonPresenter",
+            "more":              "gpii.qss.moreButtonPresenter",
+            "usb-open":          "gpii.qss.openUSBButtonPresenter",
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
-            "disabled": "gpii.qss.disabledButtonPresenter"
+            "volume":            "gpii.qss.volumeButtonPresenter",
+            "disabled":          "gpii.qss.disabledButtonPresenter"
         },
 
         dynamicContainerMarkup: {

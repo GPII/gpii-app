@@ -118,4 +118,48 @@
     gpii.qss.toggleButtonPresenter.getCaption = function (value, messages) {
         return value ? messages.caption : "";
     };
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS Volume
+     * toggle button.
+     */
+    fluid.defaults("gpii.qss.volumeButtonPresenter", {
+        gradeNames: ["gpii.qss.widgetButtonPresenter"],
+        model: {
+            messages: {
+                caption: null
+            }
+        },
+        modelRelay: {
+            "caption": {
+                target: "caption",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.qss.volumeButtonPresenter.getCaption",
+                    args: ["{that}.model.value", "{that}.model.messages"]
+                }
+            }
+        },
+        modelListeners: {
+            caption: {
+                this: "{that}.dom.caption",
+                method: "text",
+                args: ["{change}.value"]
+            }
+        }
+    });
+
+    /**
+     * Returns the caption of the toggle button that needs to be shown below the button's
+     * title in case the state of the button is "on".
+     * In the case of the Volume widget, the caption message is shown only when the value is 0.
+     * @param {Boolean} value - The state of the button.
+     * @param {Object} messages - An object containing internationalizable messages for
+     * this component.
+     * @return {String} The caption message for the toggle button.
+     */
+    gpii.qss.volumeButtonPresenter.getCaption = function (value, messages) {
+        return !value ? messages.caption : "";
+    };
+
 })(fluid);

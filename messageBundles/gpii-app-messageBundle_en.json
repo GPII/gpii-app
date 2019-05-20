@@ -57,6 +57,7 @@
     "gpii_psp_footer_help": "Help",
 
     "gpii_qss_toggleButtonPresenter_caption": "[now ON]",
+    "gpii_qss_volumeButtonPresenter_caption": "(Audio Muted)",
 
     "gpii_psp_qssMorePanel_title": "More",
     "gpii_psp_qssMorePanel_details": "Watch this space for more Morphic buttons, as well as additional features to help you tune the computer to your specific needs and preferences",

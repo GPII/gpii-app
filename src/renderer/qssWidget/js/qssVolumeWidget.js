@@ -35,7 +35,7 @@
 
         model: {
             setting: {},
-            switch: {
+            switchButton: {
                 value: false
             },
             value: "{that}.model.setting.value",
@@ -43,13 +43,6 @@
                 switchTitle: "{that}.model.setting.schema.switchTitle"
             }
         },
-
-        // listeners: {
-        //     // Invoked on create of the component; by default hides the alert
-        //     "onCreate.hideErrorMessage": {
-        //         func: "{gpii.qssWidget.volume}.errorMessage.events.onSuccess.fire"
-        //     }
-        // },
 
         components: {
             stepper: {
@@ -71,7 +64,7 @@
                 container: "{that}.dom.switch",
                 options: {
                     model: {
-                        enabled: "{gpii.qssWidget.volume}.model.switch.value",
+                        enabled: "{gpii.qssWidget.volume}.model.switchButton.value",
                         messages: {
                             on: "{gpii.qssWidget.volume}.model.messages.on",
                             off: "{gpii.qssWidget.volume}.model.messages.off"
@@ -108,6 +101,7 @@
         event.fire(volumeWidget.model.setting);
 
         that.applier.change("enabled", !that.model.enabled, null, "settingAlter");
+        volumeWidget.applier.change("value", !volumeWidget.model.switchButton.value, null, "settingAlter");
     };
 
 
