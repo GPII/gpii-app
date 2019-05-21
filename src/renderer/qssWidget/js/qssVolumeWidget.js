@@ -28,7 +28,9 @@
         selectors: {
             stepper: ".flc-volumeStepper",
             switch: ".flc-volumeSwitch",
-            switchTitle: ".flc-volumeWidget-switchTitle"
+            switchTitle: ".flc-volumeWidget-switchTitle",
+            helpImage: ".flc-qssVolumeWidget-helpImage",
+            extendedTip: ".flc-qssVolumeWidget-extendedTip"
         },
 
         enableRichText: true,
@@ -40,7 +42,15 @@
             },
             value: "{that}.model.setting.value",
             messages: {
-                switchTitle: "{that}.model.setting.schema.switchTitle"
+                switchTitle: "{that}.model.setting.schema.switchTitle",
+                extendedTip: "{that}.model.setting.widget.extendedTip"
+            }
+        },
+        listeners: {
+          "onCreate": {
+                this: "{that}.dom.helpImage",
+                method: "attr",
+                args: ["src", "{that}.model.setting.schema.helpImage"]
             }
         },
 
