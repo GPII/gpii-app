@@ -48,7 +48,7 @@
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
     }, {
-        "path": "http://registry\\.gpii\\.net/applications/com.microsoft.windows.volumeControl.Volume",
+        "path": "http://registry\\.gpii\\.net/common/volume",
         "schema": {
             "type": "volume",
             "min": 0,
