@@ -101,7 +101,7 @@
         event.fire(volumeWidget.model.setting);
 
         that.applier.change("enabled", !that.model.enabled, null, "settingAlter");
-        volumeWidget.applier.change("value", !volumeWidget.model.switchButton.value, null, "settingAlter");
+        volumeWidget.applier.change("value", volumeWidget.model.value, null, "settingAlter");
     };
 
 
