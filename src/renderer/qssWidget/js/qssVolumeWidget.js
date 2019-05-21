@@ -34,6 +34,7 @@
         },
 
         enableRichText: true,
+        sounds: {},
 
         model: {
             setting: {},
@@ -45,6 +46,9 @@
                 switchTitle: "{that}.model.setting.schema.switchTitle",
                 extendedTip: "{that}.model.setting.widget.extendedTip"
             }
+        },
+        events: {
+            onNotificationRequired: null
         },
         listeners: {
           "onCreate": {
@@ -66,6 +70,10 @@
                             on: null,
                             off: null
                         }
+                    },
+                    sounds: "{volume}.options.sounds",
+                    events: {
+                        onNotificationRequired: "{volume}.events.onNotificationRequired"
                     }
                 }
             },
