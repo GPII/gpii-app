@@ -130,13 +130,16 @@
                 caption: null
             }
         },
+        styles: {
+            redButton: "fl-qss-redButton"
+        },
         modelRelay: {
             "caption": {
                 target: "caption",
                 singleTransform: {
                     type: "fluid.transforms.free",
                     func: "gpii.qss.volumeButtonPresenter.getCaption",
-                    args: ["{that}.model.value", "{that}.model.messages"]
+                    args: ["{that}.model.value", "{that}.model.messages", "{that}"]
                 }
             }
         },
@@ -156,10 +159,26 @@
      * @param {Boolean} value - The state of the button.
      * @param {Object} messages - An object containing internationalizable messages for
      * this component.
+     * @param {Component} that - The `gpii.qss.volumeButtonPresenter` instance.
      * @return {String} The caption message for the toggle button.
      */
-    gpii.qss.volumeButtonPresenter.getCaption = function (value, messages) {
+    gpii.qss.volumeButtonPresenter.getCaption = function (value, messages, that) {
+        gpii.qss.volumeButtonPresenter.changeButtonColor(that.container, that.options.styles.redButton, value);
         return !value ? messages.caption : "";
+    };
+
+    /**
+     * Change the color of the "Volume & Mute" button if the value is 0.
+     * @param {jQuery} container - The jQuery container object
+     * @param {String} style - Contains css class
+     * @param {Boolean} value - The state of the button.
+     */
+    gpii.qss.volumeButtonPresenter.changeButtonColor = function (container, style, value) {
+        if (!value) {
+            container.addClass(style);
+        } else {
+            container.removeClass(style);
+        }
     };
 
 })(fluid);
