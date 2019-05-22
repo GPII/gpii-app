@@ -87,6 +87,7 @@
         "tooltip": "<p>Adjusts Windows Volume and provides Mute on/off.</p>",
         "title": "Volume & Mute",
         "tip": "<p>Volume</p>",
-        "extendedTip": "You can also change the volume using the speaker icon on the system tray (near the clock at the bottom of the screen)."
+        "extendedTip": "You can also change the volume using the speaker icon on the system tray (near the clock at the bottom of the screen).",
+        "switchTitle": "Mute all audio"
     }
 }

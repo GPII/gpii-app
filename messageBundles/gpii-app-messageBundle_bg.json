@@ -26,6 +26,8 @@
 
     "gpii_psp_widgets_switch_on": "Вкл",
     "gpii_psp_widgets_switch_off": "Изкл",
+    "gpii_qssWidget_volume_on": "Звукът е изключен",
+    "gpii_qssWidget_volume_off": "Звукът е включен",
 
     "gpii_psp_header_autosaveText": "Автоматично запазване е включено",
     "gpii_psp_header_keyOut":"Отпиши се",

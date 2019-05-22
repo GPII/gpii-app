@@ -124,6 +124,7 @@
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
                             extendedTip: "{qssWidget}.model.setting.extendedTip",
+                            switchTitle: "{qssWidget}.model.setting.switchTitle",
                             learnMore: "{qssWidget}.model.messages.learnMore"
                         }
                     },

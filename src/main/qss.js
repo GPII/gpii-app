@@ -742,6 +742,7 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
         translatedSetting.tooltip = message.tooltip;
         translatedSetting.tip = message.tip;
         translatedSetting.extendedTip = message.extendedTip;
+        translatedSetting.switchTitle = message.switchTitle;
 
         if (fluid.isValue(message.footerTip)) {
             translatedSetting.widget = translatedSetting.widget || {};

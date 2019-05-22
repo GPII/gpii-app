@@ -43,7 +43,7 @@
             },
             value: "{that}.model.setting.value",
             messages: {
-                switchTitle: "{that}.model.setting.schema.switchTitle",
+                switchTitle: "{that}.model.setting.widget.switchTitle",
                 extendedTip: "{that}.model.setting.widget.extendedTip"
             }
         },
@@ -51,7 +51,7 @@
             onNotificationRequired: null
         },
         listeners: {
-          "onCreate": {
+            "onCreate": {
                 this: "{that}.dom.helpImage",
                 method: "attr",
                 args: ["src", "{that}.model.setting.schema.helpImage"]
