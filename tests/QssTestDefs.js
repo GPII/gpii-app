@@ -241,7 +241,6 @@ var navigationSequence = [
     }
 ];
 
-
 var restartWarningSequence = [
     { // Simulate language change
         func: "{that}.app.qssWrapper.alterSetting",
@@ -249,35 +248,13 @@ var restartWarningSequence = [
             path: "http://registry\\.gpii\\.net/common/language",
             value: "ko-KR"
         }]
-    }, { // ... the restart warning notification should be shown
-        event: "{that qssNotification}.events.onDialogShown",
-        listener: "jqUnit.assert",
-        args: ["The notification dialog is shown when restartWarning setting is changed."]
-    }, {
-        funcName: "{that}.app.qssWrapper.qssNotification.hide"
-    }, { // Changing the user restartWarning preference
-        event: "{that qssNotification}.events.onDialogHidden",
-        listener: "{that}.app.applier.change",
-        args: ["preferences.disableRestartWarning", true]
-    }, { // and trying to show a restart warning notification
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "disableRestartWarning",
-        listener: "{that}.app.qssWrapper.showRestartWarningNotification",
-        args: [{
-            path: "http://registry\\.gpii\\.net/common/language",
-            restartWarning: true,
-            schema: {},
-            value: "en-US"
-        }]
-    }, { // should have disabled it
+    }, { // restart warning is not shown
         funcName: "jqUnit.assertFalse",
         args: [
-            "Restart warning notification is not shown when disabled by user setting",
+            "Restart warning notification is shown only one time per session",
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
-    },
-
-    { // bring everything back to normal
+    }, { // bring everything back to normal
         func: "{that}.app.resetAllToStandard"
     }
 ];
@@ -1741,7 +1718,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 69,
+    expect: 68,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1791,7 +1768,7 @@ gpii.tests.qss.testDefs = {
         docuMorphTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
-        restartWarningSequence,
+        restartWarningSequence, // The test doesn't cover all the possible behaviors as described in the GPII-3943
         crossQssTranslations,
         appZoomTestSequence
     )
