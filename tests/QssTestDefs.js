@@ -1738,7 +1738,7 @@ gpii.tests.qss.testDefs = {
         quickFoldersTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
-        restartWarningSequence,
+        restartWarningSequence, // The test doesn't cover all the possible behaviors as described in the GPII-3943
         crossQssTranslations,
         appZoomTestSequence
     )
