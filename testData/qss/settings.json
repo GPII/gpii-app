@@ -72,7 +72,6 @@
                 "white-black",
                 "yellow-black",
                 "black-yellow",
-                "grey-black",
                 "grey-white",
                 "black-brown"
             ],
@@ -107,11 +106,6 @@
                 "background-color": "#ffff00",
                 "color": "#000000",
                 "border": "1px dashed #6c6c6c"
-            },
-            "grey-black": {
-                "background-color": "#222222",
-                "color": "#888888",
-                "border-color": "transparent"
             },
             "grey-white": {
                 "background-color": "#ffffff",

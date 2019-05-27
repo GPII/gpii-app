@@ -79,7 +79,7 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     offsetX = Math.max(0, (offsetX || 0));
     offsetY = Math.max(0, (offsetY || 0));
 
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    var screenSize = electron.screen.getPrimaryDisplay().workArea;
 
     // position relatively to the bottom right corner
     // note that as offset is positive we're restricting window
@@ -96,8 +96,10 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     desiredY = desiredY || 0;
 
     return {
-        x: desiredX,
-        y: desiredY
+        // Offset it to factor in the start of the work area, which takes into account docked windows like magnifier and
+        // Read&Write.
+        x: desiredX + screenSize.x,
+        y: desiredY + screenSize.y
     };
 };
 

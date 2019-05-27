@@ -236,11 +236,25 @@ BOOL positionTrayWindows(BOOL force)
 		buttonRect.left = highContrast ? 1 : 0;
 		buttonRect.right = trayClient.right;
 	} else {
-		// Shrink the tasks window
-		taskRect.right = notifyRect.left - fixDpi(BUTTON_WIDTH);
-		// Put the button between
-		buttonRect.left = taskRect.right;
-		buttonRect.right = notifyRect.left;
+		// Check the reading direction - if the notification icons are left of the task list, then assume right-to-left.
+		BOOL rtl = notifyRect.left < taskRect.left;
+
+		if (rtl) {
+			// notification area is on the left
+			// Shrink the tasks window
+			taskRect.left = notifyRect.right + fixDpi(BUTTON_WIDTH);
+			// Put the button between
+			buttonRect.left = trayClient.right - taskRect.left;
+			buttonRect.right = trayClient.right - notifyRect.right;
+		} else {
+			// notification area is on the right (the common way)
+			// Shrink the tasks window
+			taskRect.right = notifyRect.left - fixDpi(BUTTON_WIDTH);
+			// Put the button between
+			buttonRect.left = taskRect.right;
+			buttonRect.right = notifyRect.left;
+		}
+
 		buttonRect.top = highContrast ? 1 : 0;
 		buttonRect.bottom = trayClient.bottom;
 	}
