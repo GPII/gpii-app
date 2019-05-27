@@ -154,7 +154,11 @@
         invokers: {
             renderImage: {
                 funcName: "gpii.qss.volumeButtonPresenter.renderImage",
-                args: ["{that}", "{that}.dom.image", "{that}.model.item.schema.image", "{arguments}.0"]
+                args: ["{that}.dom.image", "{that}.model.item.schema.image", "{arguments}.0"]
+            },
+            hideTitle: {
+                funcName: "gpii.qss.volumeButtonPresenter.hideTitle",
+                args: ["{that}.dom.title", "{arguments}.0"]
             },
             changeButtonColor: {
                 funcName: "gpii.qss.volumeButtonPresenter.changeButtonColor",
@@ -164,14 +168,27 @@
     });
 
 
+
+    /**
+     * Show or hide the title of the button.
+     * @param {jQuery} titleElem - The jQuery object corresponding to the title of the button.
+     * @param {Number} value - The state of the button.
+     */
+    gpii.qss.volumeButtonPresenter.hideTitle = function (titleElem, value) {
+        if (!value) {
+            titleElem.hide();
+        } else {
+            titleElem.show();
+        }
+    };
+
     /**
      * If available in the setting's schema, shows the specified image for the button when the value of setting is 0.
-     * @param {Component} that - The `gpii.qss.volumeButtonPresenter` instance.
      * @param {jQuery} imageElem - The jQuery object corresponding to the image of the button.
      * @param {String} image - The path to the image.
      * @param {Number} value - The state of the button.
      */
-    gpii.qss.volumeButtonPresenter.renderImage = function (that, imageElem, image, value) {
+    gpii.qss.volumeButtonPresenter.renderImage = function (imageElem, image, value) {
         if (image && !value) {
             var maskImageValue = fluid.stringTemplate("url(\"%image\")", {
                 image: image
@@ -199,6 +216,7 @@
     gpii.qss.volumeButtonPresenter.getCaption = function (value, messages, that) {
         that.changeButtonColor(value);
         that.renderImage(value);
+        that.hideTitle(value);
         return !value ? messages.caption : "";
     };
 
