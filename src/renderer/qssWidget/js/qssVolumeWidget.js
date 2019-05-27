@@ -45,7 +45,8 @@
             messages: {
                 switchTitle: "{that}.model.setting.widget.switchTitle",
                 extendedTip: "{that}.model.setting.widget.extendedTip"
-            }
+            },
+            previousState: null
         },
         events: {
             onNotificationRequired: null
@@ -108,11 +109,14 @@
      * @param {EventListener} event - onQssWidgetSettingAltered event
      */
     gpii.qssWidget.volume.toggleModel = function (that, volumeWidget, event) {
+        if (volumeWidget.model.setting.value !== 0) {
+            volumeWidget.model.previousState = volumeWidget.model.setting.value;
+        }
 
         if (!that.model.enabled) {
             volumeWidget.model.setting.value = 0;
         } else {
-            volumeWidget.model.setting.value = 0.5;
+            volumeWidget.model.setting.value = volumeWidget.model.previousState;
         }
 
         // update the volume setting
