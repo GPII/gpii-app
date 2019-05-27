@@ -113,7 +113,7 @@
             volumeWidget.model.previousState = volumeWidget.model.setting.value;
         }
 
-        if (!that.model.enabled) {
+        if (!that.model.enabled && volumeWidget.model.setting.value !== 0) {
             volumeWidget.model.setting.value = 0;
         } else {
             volumeWidget.model.setting.value = volumeWidget.model.previousState;
