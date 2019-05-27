@@ -55,6 +55,7 @@
             "max": 1,
             "divisibleBy": 0.1,
             "default": 0.5,
+            "image": "language.svg",
             "helpImage": "readAloud.png"
         },
         "buttonTypes": ["largeButton", "settingButton"],

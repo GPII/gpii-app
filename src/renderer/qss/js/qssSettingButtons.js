@@ -128,7 +128,8 @@
         model: {
             messages: {
                 caption: null
-            }
+            },
+            item: {}
         },
         styles: {
             redButton: "fl-qss-redButton"
@@ -149,21 +150,55 @@
                 method: "text",
                 args: ["{change}.value"]
             }
+        },
+        invokers: {
+            renderImage: {
+                funcName: "gpii.qss.volumeButtonPresenter.renderImage",
+                args: ["{that}", "{that}.dom.image", "{that}.model.item.schema.image", "{arguments}.0"]
+            },
+            changeButtonColor: {
+                funcName: "gpii.qss.volumeButtonPresenter.changeButtonColor",
+                args: ["{that}.container", "{that}.options.styles.redButton", "{arguments}.0"]
+            }
         }
     });
+
+
+    /**
+     * If available in the setting's schema, shows the specified image for the button when the value of setting is 0.
+     * @param {Component} that - The `gpii.qss.volumeButtonPresenter` instance.
+     * @param {jQuery} imageElem - The jQuery object corresponding to the image of the button.
+     * @param {String} image - The path to the image.
+     * @param {Number} value - The state of the button.
+     */
+    gpii.qss.volumeButtonPresenter.renderImage = function (that, imageElem, image, value) {
+        if (image && !value) {
+            var maskImageValue = fluid.stringTemplate("url(\"%image\")", {
+                image: image
+            });
+
+            // use a mask image to avoid having 2 different images (one for when the
+            // button is activated and one when it is not)
+            imageElem.css("mask-image", maskImageValue);
+            imageElem.show();
+        } else {
+            imageElem.hide();
+        }
+    };
 
     /**
      * Returns the caption of the toggle button that needs to be shown below the button's
      * title in case the state of the button is "on".
      * In the case of the Volume widget, the caption message is shown only when the value is 0.
-     * @param {Boolean} value - The state of the button.
+     * @param {Number} value - The state of the button.
      * @param {Object} messages - An object containing internationalizable messages for
      * this component.
      * @param {Component} that - The `gpii.qss.volumeButtonPresenter` instance.
      * @return {String} The caption message for the toggle button.
      */
     gpii.qss.volumeButtonPresenter.getCaption = function (value, messages, that) {
-        gpii.qss.volumeButtonPresenter.changeButtonColor(that.container, that.options.styles.redButton, value);
+        that.changeButtonColor(value);
+        that.renderImage(value);
         return !value ? messages.caption : "";
     };
 
