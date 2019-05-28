@@ -178,7 +178,7 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
     }, {
-        "path": "http://registry\\.gpii\\.net/applications/com.microsoft.windows.brightness.BrightnessVal",
+        "path": "http://registry\\.gpii\\.net/common/screenBrightness",
         "schema": {
             "type": "brightness",
             "min": "0",
