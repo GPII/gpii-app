@@ -1484,7 +1484,7 @@ var brightnessWidgetTestSequence = [
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of button should be",
-            "Brightness",
+            "Bright- ness",
             "{arguments}.0"
         ]
     }, { // Close the QSS
@@ -1787,7 +1787,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 67,
+    expect: 70,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
