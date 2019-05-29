@@ -106,7 +106,14 @@ body {
 }
 
 .fl-qss-button.fl-qss-redButton {
-    background-color:  #800000 !important;
+    background-color: #800000 !important;
+}
+.fl-qss-button.fl-qss-redButton .fl-qss-btnImage {
+    width: 51px;
+    margin-top: -20px;
+}
+.fl-qss-button.fl-qss-redButton .fl-qss-btnCaption {
+    bottom: 5px;
 }
 
 .fl-qss-button.fl-qss-settingButton {

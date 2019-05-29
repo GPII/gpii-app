@@ -26,7 +26,7 @@
 
     "gpii_qssWidget_toggle_on": "On",
     "gpii_qssWidget_toggle_off": "Off",
-    "gpii_qssWidget_volume_on": "Muted",
+    "gpii_qssWidget_volume_on": "Audio muted",
     "gpii_qssWidget_volume_off": "Audio on",
 
     "gpii_psp_header_autosaveText": "Auto-save is on",
