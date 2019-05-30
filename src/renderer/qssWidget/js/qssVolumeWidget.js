@@ -38,15 +38,12 @@
 
         model: {
             setting: {},
-            switchButton: {
-                value: false
-            },
             value: "{that}.model.setting.value",
+            previousValue: "{that}.model.setting.schema.previousValue",
             messages: {
                 switchTitle: "{that}.model.setting.widget.switchTitle",
                 extendedTip: "{that}.model.setting.widget.extendedTip"
-            },
-            previousState: null
+            }
         },
         events: {
             onNotificationRequired: null
@@ -83,7 +80,12 @@
                 container: "{that}.dom.switch",
                 options: {
                     model: {
-                        enabled: "{gpii.qssWidget.volume}.model.switchButton.value",
+                        enabled: {
+                            expander: {
+                                funcName: "gpii.qssWidget.volume.transformValue",
+                                args: ["{gpii.qssWidget.volume}.model.setting.value"]
+                            }
+                        },
                         messages: {
                             on: "{gpii.qssWidget.volume}.model.messages.on",
                             off: "{gpii.qssWidget.volume}.model.messages.off"
@@ -101,6 +103,16 @@
     });
 
     /**
+     * Transforms a number value to boolean.
+     * @param {Number} value - The value of the setting
+     * @return {Boolean} The modified value.
+     */
+    gpii.qssWidget.volume.transformValue = function (value) {
+        var boolValue = !value ? true : false;
+        return boolValue;
+    };
+
+    /**
      * Invoked whenever the user has activated the "switch" UI element (either
      * by clicking on it or pressing "Space" or "Enter"). What this function
      * does is to change the `enabled` model property to its opposite value.
@@ -110,13 +122,14 @@
      */
     gpii.qssWidget.volume.toggleModel = function (that, volumeWidget, event) {
         if (volumeWidget.model.setting.value !== 0) {
-            volumeWidget.model.previousState = volumeWidget.model.setting.value;
+            volumeWidget.model.previousValue = volumeWidget.model.setting.value;
+            that.applier.change("previousValue", volumeWidget.model.setting.value, null, "settingAlter");
         }
 
-        if (!that.model.enabled && volumeWidget.model.setting.value !== 0) {
+        if (!that.model.enabled && volumeWidget.model.value !== 0) {
             volumeWidget.model.setting.value = 0;
         } else {
-            volumeWidget.model.setting.value = volumeWidget.model.previousState;
+            volumeWidget.model.setting.value = volumeWidget.model.previousValue;
         }
 
         // update the volume setting
