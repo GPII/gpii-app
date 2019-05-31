@@ -55,6 +55,12 @@
                 args: ["src", "{that}.model.setting.schema.helpImage"]
             }
         },
+        modelListeners: {
+            value: {
+                funcName: "gpii.qssWidget.volume.updateSwitchState",
+                args: ["{switchButton}", "{stepper}", "{change}.value"]
+            }
+        },
 
         components: {
             stepper: {
@@ -62,8 +68,8 @@
                 container: "{that}.dom.stepper",
                 options: {
                     model: {
-                        setting: "{gpii.qssWidget.volume}.model.setting",
-                        value: "{gpii.qssWidget.volume}.model.value",
+                        setting: "{volume}.model.setting",
+                        value: "{volume}.model.value",
                         messages: {
                             on: null,
                             off: null
@@ -83,24 +89,39 @@
                         enabled: {
                             expander: {
                                 funcName: "gpii.qssWidget.volume.transformValue",
-                                args: ["{gpii.qssWidget.volume}.model.setting.value"]
+                                args: ["{volume}.model.setting.value"]
                             }
                         },
                         messages: {
-                            on: "{gpii.qssWidget.volume}.model.messages.on",
-                            off: "{gpii.qssWidget.volume}.model.messages.off"
+                            on: "{volume}.model.messages.on",
+                            off: "{volume}.model.messages.off"
                         }
                     },
                     invokers: {
                         toggleModel: {
                             funcName: "gpii.qssWidget.volume.toggleModel",
-                            args: ["{that}", "{gpii.qssWidget.volume}", "{channelNotifier}.events.onQssWidgetSettingAltered"]
+                            args: ["{that}", "{volume}", "{stepper}", "{channelNotifier}.events.onQssWidgetSettingAltered"]
                         }
                     }
                 }
             }
         }
     });
+
+    /**
+     * Invoked whenever the volume value is changed and updating the state of the
+     * volume switch button.
+     * @param {Component} switchButton - The `gpii.psp.widgets.volume.switchButton` instance.
+     * @param {Component} stepper - The `gpii.psp.widgets.volumeStepper instance.
+     * @param {Number} value - The value of the setting.
+     */
+    gpii.qssWidget.volume.updateSwitchState = function (switchButton, stepper, value) {
+        if (value === 0 && !switchButton.model.enabled) {
+            switchButton.applier.change("enabled", !switchButton.model.enabled, null, "settingAlter");
+        } else if (value !== 0 && switchButton.model.enabled) {
+            switchButton.applier.change("enabled", !switchButton.model.enabled, null, "settingAlter");
+        }
+    };
 
     /**
      * Transforms a number value to boolean.
@@ -115,21 +136,28 @@
     /**
      * Invoked whenever the user has activated the "switch" UI element (either
      * by clicking on it or pressing "Space" or "Enter"). What this function
-     * does is to change the `enabled` model property to its opposite value.
-     * @param {Component} that - The `gpii.psp.widgets.switch` instance.
+     * does is to change the `enabled` model property to its opposite value and update settings.
+     * @param {Component} that - The `gpii.psp.widgets.volume.switchButton` instance.
      * @param {Component} volumeWidget - The `gpii.psp.widgets.volume` instance.
+     * @param {Component} stepper - The `gpii.psp.widgets.volumeStepper instance.
      * @param {EventListener} event - onQssWidgetSettingAltered event
      */
-    gpii.qssWidget.volume.toggleModel = function (that, volumeWidget, event) {
+    gpii.qssWidget.volume.toggleModel = function (that, volumeWidget, stepper, event) {
+        if (!volumeWidget.model.setting.value && !that.model.enabled) {
+            return;
+        }
+
         if (volumeWidget.model.setting.value !== 0) {
-            volumeWidget.model.previousValue = volumeWidget.model.setting.value;
+            volumeWidget.model.setting.previousValue = volumeWidget.model.setting.value;
             that.applier.change("previousValue", volumeWidget.model.setting.value, null, "settingAlter");
         }
 
-        if (!that.model.enabled && volumeWidget.model.value !== 0) {
+        if (!that.model.enabled && volumeWidget.model.setting.value !== 0) {
             volumeWidget.model.setting.value = 0;
+            volumeWidget.model.value = 0;
         } else {
-            volumeWidget.model.setting.value = volumeWidget.model.previousValue;
+            volumeWidget.model.setting.value = volumeWidget.model.setting.previousValue;
+            volumeWidget.model.value = volumeWidget.model.setting.previousValue;
         }
 
         // update the volume setting
@@ -137,6 +165,7 @@
 
         that.applier.change("enabled", !that.model.enabled, null, "settingAlter");
         volumeWidget.applier.change("value", volumeWidget.model.value, null, "settingAlter");
+        stepper.applier.change("value", volumeWidget.model.value, null, "settingAlter");
     };
 
 
