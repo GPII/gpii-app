@@ -1369,7 +1369,7 @@ var openUsbTestSequence = [
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of button should be",
-            "Open USB Drive",
+            "Open & Eject USB",
             "{arguments}.0"
         ]
     }, { // Close the QSS
@@ -1705,7 +1705,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 67,
+    expect: 68,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
