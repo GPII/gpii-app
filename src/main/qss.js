@@ -51,6 +51,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         // paths might be needed for some reason
         settingPaths: {
             language: "http://registry\\.gpii\\.net/common/language",
+            volume: "http://registry\\.gpii\\.net/common/volume",
             psp: "psp"
         },
 
@@ -634,10 +635,14 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
     var languageSetting = fluid.find_if(loadedSettings, function (setting) {
         return setting.path === settingOptions.settingPaths.language;
     });
+    var volumeSetting = fluid.find_if(loadedSettings, function (setting) {
+        return setting.path === settingOptions.settingPaths.volume;
+    });
     gpii.app.qssWrapper.populateLanguageSettingOptions(settingOptions, locale, installedLanguages, languageSetting);
 
-    // sync the language value as well
+    // sync the language and volume value as well
     languageSetting.value = locale;
+    volumeSetting.value = gpii.windows.nativeSettingsHandler.GetVolume().value;
 
     /*
      * Hide settings
