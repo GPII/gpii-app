@@ -1,7 +1,7 @@
 /**
  * The QSS Open USB widget
  *
- * A custom widget for the Mount and Unmount USB functionality
+ * A custom widget for the Mount and Eject USB functionality
  * used the menuWidget as a base and fires the onQssOpenUsbRequested and
  * onQssUnmountUsbRequested events on the button clicks
  *
@@ -85,7 +85,9 @@
                         updateValue: {
                             funcName: "gpii.qssWidget.openUSB.handleOpenUSB",
                             args: [
-                                "{arguments}.0", // value
+                                "{arguments}.0", // value,
+                                "{openUSB}",
+                                "{arguments}.1", // keyboardEvent
                                 "{channelNotifier}.events.onQssOpenUsbRequested", // Mount USB event
                                 "{channelNotifier}.events.onQssUnmountUsbRequested" // Unmount USB event
                             ]
@@ -261,10 +263,13 @@
      * in case of no valid button type is pressed does nothing
      *
      * @param {String} value - accepts only "Mount" and "Unmount"
+     * @param {Component} openUSB - The `gpii.qssWidget.openUSB` instance
+     * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
+     * change in the setting's value.
      * @param {EventListener} mountUsbEvent - handle to the onQssOpenUsbRequested event
      * @param {EventListener} unmountUsbEvent - handle to the onQssUnmountUsbRequested event
      */
-    gpii.qssWidget.openUSB.handleOpenUSB = function(value, mountUsbEvent, unmountUsbEvent) {
+    gpii.qssWidget.openUSB.handleOpenUSB = function(value, openUSB, keyboardEvent, mountUsbEvent, unmountUsbEvent) {
         if (fluid.isValue(value)) {
             switch (value) {
                 case "Mount":
@@ -272,13 +277,14 @@
                     mountUsbEvent.fire();
                     break;
                 case "Unmount":
-                    // fires the event that unmounts any attached USB drive
+                    // fires the event that ejects any attached USB drive
                     unmountUsbEvent.fire();
                     break;
                 default:
                     // do nothing in every other case
                     break;
             }
+            openUSB.close(keyboardEvent);
         }
     };
 

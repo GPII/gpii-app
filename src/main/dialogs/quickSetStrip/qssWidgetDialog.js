@@ -138,7 +138,7 @@ fluid.defaults("gpii.app.qssWidget", {
                         args: []
                     },
                     onQssUnmountUsbRequested: {
-                        funcName: "gpii.app.unmountUSB",
+                        funcName: "gpii.app.ejectUSB",
                         args: []
                     }
                 }
