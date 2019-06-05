@@ -137,8 +137,14 @@ fluid.defaults("gpii.app.qssWidget", {
                         funcName: "gpii.app.officeSimplificationCommand",
                         args: ["{arguments}.0"]
                     },
-                    onQssLoadInitialOfficeRibbonsState: "gpii.app.getOfficeRibbons",
-                    onQssResetWord: "gpii.app.resetWord",
+                    onQssLoadInitialOfficeRibbonsState: {
+                        funcName: "gpii.app.getOfficeRibbons",
+                        args: [
+                            "{qssWidget}.dialog",
+                            "{arguments}.0" // messageChannel
+                        ]
+                    },
+                    onQssResetWord: "gpii.app.resetWord"
                 }
             }
         }

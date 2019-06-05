@@ -211,14 +211,16 @@ gpii.app.officeSimplificationCommand = function (command) {
 };
 
 /**
- * TODO: getOfficeRibbons needs a proper description
- * @return {String} - returns the current state of the MS Word's UI preset
+ * Get the current state of the Office Ribbons.
+ * @param {Object} browserWindow - An Electron `BrowserWindow` object.
+ * @param {String} messageChannel - The channel to which the message should be sent.
  */
-gpii.app.getOfficeRibbons = function () {
+gpii.app.getOfficeRibbons = function (browserWindow, messageChannel) {
     // we should have a proper call to JJ's function to determine which preset is pre-loaded
     var result = "both";
 
-    return result;
+    // send current state of ribbons to the office widget
+    gpii.app.notifyWindow(browserWindow, messageChannel, result);
 };
 
 /**
@@ -227,4 +229,3 @@ gpii.app.getOfficeRibbons = function () {
 gpii.app.resetWord = function () {
     console.log("gpii.app.resetWord: RESET");
 };
-

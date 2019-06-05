@@ -215,7 +215,7 @@
                         onQssWidgetCreated:                 "{qssWidget}.events.onQssWidgetCreated",
                         onQssOfficeSimplificationRequest:   "{qssWidget}.events.onQssOfficeSimplificationRequest",
                         onQssLoadInitialOfficeRibbonsState: "{qssWidget}.events.onQssLoadInitialOfficeRibbonsState",
-                        onQssResetWord:                     "{qssWidget}.events.onQssResetWord",
+                        onQssResetWord:                     "{qssWidget}.events.onQssResetWord"
                     }
                 }
             }

@@ -19,6 +19,8 @@
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
+    var electron = require("electron"),
+        ipcRenderer = electron.ipcRenderer;
 
     /**
      * Represents the QSS MS Office simplification widget.
@@ -36,7 +38,7 @@
             },
             setting: {},
             messages: {
-                footerTip: "{that}.model.setting.widget.footerTip",
+                footerTip: "{that}.model.setting.widget.footerTip"
             }
         },
         selectors: {
@@ -55,7 +57,6 @@
                 options: {
                     model: {
                         disabled: "{office}.model.disabled",
-                        // value: "{office}.model.setting.value",
                         styles: "{office}.model.setting.styles"
                     },
                     modelRelay: {
@@ -201,7 +202,8 @@
     fluid.defaults("gpii.qssWidget.office.presenter", {
         gradeNames: ["fluid.viewComponent", "gpii.qssWidget.button"],
         model: {
-            item: null
+            item: null,
+            ipcListener: "LoadInitialOfficeRibbonsState"
         },
         styles: {
             active: "fl-qssWidgetMenu-active",
@@ -218,13 +220,17 @@
             onItemFocus: "{repeater}.events.onItemFocus"
         },
         listeners: {
+            "onCreate.registerIpcListener": {
+                funcName: "gpii.qssWidget.office.presenter.registerIpcListener",
+                args: ["{that}", "{office}"]
+            },
             "onCreate.applyStyles": {
                 funcName: "gpii.qssWidget.office.presenter.applyStyles",
                 args: ["{that}", "{that}.container", "{repeater}.model.styles"]
             },
             "onCreate.loadState" : {
-                funcName: "gpii.qssWidget.office.presenter.loadState",
-                args: ["{that}", "{office}", "{channelNotifier}.events.onQssLoadInitialOfficeRibbonsState"]
+                funcName: "{channelNotifier}.events.onQssLoadInitialOfficeRibbonsState.fire",
+                args: ["{that}.model.ipcListener"]
             },
             onItemFocus: {
                 funcName: "gpii.qssWidget.office.presenter.focusItem",
@@ -252,23 +258,31 @@
     });
 
     /**
+     * Registers a listener for the `LoadInitialOfficeRibbonsState` event from the main process.
+     * @param {Component} presenter - The `gpii.qssWidget.office.presenter` instance.
+     * @param {Component} office - The `gpii.qssWidget.office` instance.
+     */
+    gpii.qssWidget.office.presenter.registerIpcListener = function (presenter, office) {
+        ipcRenderer.on(presenter.model.ipcListener, function (event, ribbonState) {
+            gpii.qssWidget.office.presenter.loadState(presenter, office, ribbonState);
+        });
+    };
+
+    /**
      * Pre-loads the data in the office.model.states array
-     * TODO: loadState - this should use an event to get the real values from JJ's function (when we have it)
      * @param {Component} that - The `gpii.qssWidget.office.presenter` instance.
      * @param {Component} office - The `gpii.qssWidget.office` instance.
-     * @param {EventListener} event - handle to the onQssLoadInitialOfficeRibbonsState event
+     * @param {String} ribbonState - The initial state of ribbons
      */
-    gpii.qssWidget.office.presenter.loadState = function (that, office, officeRibbonStateEvent) {
-        var loadState = "standard"; // will be populated with data from officeRibbonStateEvent
-
+    gpii.qssWidget.office.presenter.loadState = function (that, office, ribbonState) {
         // pre-fills the states of all available schema keys
-        if (loadState === office.model.availableCommands.allTrueCommand) {
+        if (ribbonState === office.model.availableCommands.allTrueCommand) {
             fluid.each(office.model.setting.schema.keys, function (key) {
                 if (key !== office.model.availableCommands.resetCommand) {
                     office.model.states[key] = true;
                 }
             });
-        } else if (loadState === office.model.availableCommands.allFalseCommand) {
+        } else if (ribbonState === office.model.availableCommands.allFalseCommand) {
             fluid.each(office.model.setting.schema.keys, function (key) {
                 if (key !== office.model.availableCommands.resetCommand) {
                     office.model.states[key] = false;
@@ -276,13 +290,16 @@
             });
         } else {
             fluid.each(office.model.setting.schema.keys, function (key) {
-                if (key === loadState && key !== office.model.availableCommands.resetCommand) {
+                if (key === ribbonState && key !== office.model.availableCommands.resetCommand) {
                     office.model.states[key] = true;
                 }
             });
         }
         // checks the checkboxes if needed
         gpii.qssWidget.office.presenter.applyCheckmarks(that, office);
+
+        // remove all unused listeners
+        ipcRenderer.removeAllListeners(that.model.ipcListener);
     };
 
     /**
