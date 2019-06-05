@@ -156,8 +156,8 @@
             volumeWidget.model.setting.value = 0;
             volumeWidget.model.value = 0;
         } else {
-            volumeWidget.model.setting.value = volumeWidget.model.setting.previousValue;
-            volumeWidget.model.value = volumeWidget.model.setting.previousValue;
+            volumeWidget.model.setting.value = volumeWidget.model.previousValue;
+            volumeWidget.model.value = volumeWidget.model.previousValue;
         }
 
         // update the volume setting
@@ -210,9 +210,9 @@
         },
 
         modelListeners: {
-            "setting.value": {
+            value: {
                 func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
-                args: ["{that}.model.setting"],
+                args: ["{volume}.model.setting"],
                 includeSource: "settingAlter"
             }
         },
