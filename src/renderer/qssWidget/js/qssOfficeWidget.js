@@ -203,7 +203,7 @@
         gradeNames: ["fluid.viewComponent", "gpii.qssWidget.button"],
         model: {
             item: null,
-            ipcListener: "LoadInitialOfficeRibbonsState"
+            messageChannel: "LoadInitialOfficeRibbonsState" // Channel listening for initial state of the Office Ribbons
         },
         styles: {
             active: "fl-qssWidgetMenu-active",
@@ -230,7 +230,7 @@
             },
             "onCreate.loadState" : {
                 funcName: "{channelNotifier}.events.onQssLoadInitialOfficeRibbonsState.fire",
-                args: ["{that}.model.ipcListener"]
+                args: ["{that}.model.messageChannel"]
             },
             onItemFocus: {
                 funcName: "gpii.qssWidget.office.presenter.focusItem",
@@ -263,7 +263,7 @@
      * @param {Component} office - The `gpii.qssWidget.office` instance.
      */
     gpii.qssWidget.office.presenter.registerIpcListener = function (presenter, office) {
-        ipcRenderer.on(presenter.model.ipcListener, function (event, ribbonState) {
+        ipcRenderer.on(presenter.model.messageChannel, function (event, ribbonState) {
             gpii.qssWidget.office.presenter.loadState(presenter, office, ribbonState);
         });
     };
@@ -299,7 +299,7 @@
         gpii.qssWidget.office.presenter.applyCheckmarks(that, office);
 
         // remove all unused listeners
-        ipcRenderer.removeAllListeners(that.model.ipcListener);
+        ipcRenderer.removeAllListeners(that.model.messageChannel);
     };
 
     /**

@@ -207,6 +207,7 @@ gpii.app.openUSB = function () {
  * @param {String} command - this is the name of the UI preset for the MS Word
  */
 gpii.app.officeSimplificationCommand = function (command) {
+    // TODO: officeSimplificationCommand - waiting for the core implemetation, just logging text for now
     console.log("gpii.app.officeSimplificationCommand: ", command);
 };
 
@@ -224,8 +225,9 @@ gpii.app.getOfficeRibbons = function (browserWindow, messageChannel) {
 };
 
 /**
- * TODO: resetWord needs a proper description
+ * Resetting Office ribbons to the initial state
  */
 gpii.app.resetWord = function () {
+    // TODO: resetWord - waiting on Steve's "Restart Word" implemetation, just logging text for now to see if it works
     console.log("gpii.app.resetWord: RESET");
 };
