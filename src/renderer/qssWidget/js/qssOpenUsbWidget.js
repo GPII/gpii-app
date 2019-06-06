@@ -30,7 +30,7 @@
             disabled: false,
             setting: {},
             messages: {
-                footerTip: "{that}.model.setting.widget.footerTip",
+                footerTip: "{that}.model.setting.widget.footerTip"
             }
         },
         members: {
@@ -269,20 +269,20 @@
      * @param {EventListener} mountUsbEvent - handle to the onQssOpenUsbRequested event
      * @param {EventListener} unmountUsbEvent - handle to the onQssUnmountUsbRequested event
      */
-    gpii.qssWidget.openUSB.handleOpenUSB = function(value, openUSB, keyboardEvent, mountUsbEvent, unmountUsbEvent) {
+    gpii.qssWidget.openUSB.handleOpenUSB = function (value, openUSB, keyboardEvent, mountUsbEvent, unmountUsbEvent) {
         if (fluid.isValue(value)) {
             switch (value) {
-                case "Mount":
-                    // fires the event that mounts and open the USB drive
-                    mountUsbEvent.fire();
-                    break;
-                case "Unmount":
-                    // fires the event that ejects any attached USB drive
-                    unmountUsbEvent.fire();
-                    break;
-                default:
-                    // do nothing in every other case
-                    break;
+            case "Mount":
+                // fires the event that mounts and open the USB drive
+                mountUsbEvent.fire();
+                break;
+            case "Unmount":
+                // fires the event that ejects any attached USB drive
+                unmountUsbEvent.fire();
+                break;
+            default:
+                // do nothing in every other case
+                break;
             }
             openUSB.close(keyboardEvent);
         }
