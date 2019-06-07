@@ -19,8 +19,6 @@
 "use strict";
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
-    var electron = require("electron"),
-        ipcRenderer = electron.ipcRenderer;
 
     /**
      * Represents the QSS MS Office simplification widget.
@@ -263,9 +261,7 @@
      * @param {Component} office - The `gpii.qssWidget.office` instance.
      */
     gpii.qssWidget.office.presenter.registerIpcListener = function (presenter, office) {
-        ipcRenderer.on(presenter.model.messageChannel, function (event, ribbonState) {
-            gpii.qssWidget.office.presenter.loadState(presenter, office, ribbonState);
-        });
+        gpii.psp.registerIpcListener(presenter.model.messageChannel, gpii.qssWidget.office.presenter.loadState, presenter, office);
     };
 
     /**
@@ -299,7 +295,7 @@
         gpii.qssWidget.office.presenter.applyCheckmarks(that, office);
 
         // remove all unused listeners
-        ipcRenderer.removeAllListeners(that.model.messageChannel);
+        gpii.psp.removeIpcAllListeners(that.model.messageChannel);
     };
 
     /**
