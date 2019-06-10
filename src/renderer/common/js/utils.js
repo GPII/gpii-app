@@ -18,6 +18,7 @@
 (function (fluid, jQuery) {
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell,
+        ipcRenderer = require("electron").ipcRenderer,
         child_process = require("child_process");
 
     fluid.registerNamespace("gpii.psp");
@@ -61,6 +62,26 @@
             fluid.log(fluid.logLevel.WARN, "execShareXCommand: Cannot execute - " + commandToExecute);
         }
         return false;
+    };
+
+    /**
+     * Registers an IPC listener event and executes the provided function on result
+     * @param {String} messageChannel - The channel to which the message should be sent.
+     * @param {Function} funcExec - handle to the function to be executed
+     */
+    gpii.psp.registerIpcListener = function (messageChannel, funcExec) {
+        ipcRenderer.on(messageChannel, function (event, result) {
+            // execute the function when the result arrives
+            funcExec(result);
+        });
+    };
+
+    /**
+     * Clears all of the IPC event listeners
+     * @param {String} messageChannel - The channel to which the message should be sent.
+     */
+    gpii.psp.removeIpcAllListeners = function (messageChannel) {
+        ipcRenderer.removeAllListeners(messageChannel);
     };
 
     /**

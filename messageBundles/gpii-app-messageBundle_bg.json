@@ -61,5 +61,8 @@
     "gpii_qss_saveButtonPresenter_notification": {
         "keyedOut": "За да запазите вашите настройки трябва да си създадете Morphic акаунт. Отидете на <a href=\"%accountUrl\">%accountUrl</a>.",
         "keyedIn": "Вашите настройки са запазени в Morphic Cloud."
-    }
+    },
+
+    "gpii_qssWidget_openUSB_noUsbInserted": "В компютъра не са включени USB устройства. Поставете USB и опитайте отново.",
+    "gpii_qssWidget_openUSB_ejectUsbDrives": "В компютъра няма активни USB устройства. Безопасно е да премахнете всяко устройство в компютъра"
 }

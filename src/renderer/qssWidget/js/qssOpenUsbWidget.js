@@ -29,8 +29,12 @@
         model: {
             disabled: false,
             setting: {},
+            messageChannel: "LoadInitialOfficeRibbonsState", // Channel listening for messages related to usb mount, unmount functionality
+            closeOnBlur: false,
             messages: {
-                footerTip: "{that}.model.setting.widget.footerTip"
+                footerTip: "{that}.model.setting.widget.footerTip",
+                noUsbInserted: "",
+                ejectUsbDrives: ""
             }
         },
         members: {
@@ -89,7 +93,8 @@
                                 "{openUSB}",
                                 "{arguments}.1", // keyboardEvent
                                 "{channelNotifier}.events.onQssOpenUsbRequested", // Mount USB event
-                                "{channelNotifier}.events.onQssUnmountUsbRequested" // Unmount USB event
+                                "{channelNotifier}.events.onQssUnmountUsbRequested", // Unmount USB event
+                                "{openUSB}.model.messageChannel"
                             ]
                         }
                     },
@@ -115,12 +120,20 @@
             }
         },
         listeners: {
+            "onCreate.registerIpcListener": {
+                funcName: "gpii.psp.registerIpcListener",
+                args: ["{that}.model.messageChannel", "{openUSB}.showNotification"]
+            },
             "onCreate.visibilityChange": {
                 funcName: "gpii.qssWidget.openUSB.addVisibilityChangeListener",
                 args: ["{closeTimer}"]
             },
             "onDestroy.visibilityChange": {
                 funcName: "gpii.qssWidget.openUSB.removeVisibilityChangeListener"
+            },
+            "onDestroy.removeIpcAllListeners": {
+                funcName: "gpii.psp.removeIpcAllListeners",
+                args: ["{that}.model.messageChannel"]
             }
         },
         invokers: {
@@ -139,6 +152,13 @@
                     "{closeTimer}",
                     "{arguments}.0" // keyboardEvent
                 ]
+            },
+            showNotification: {
+                func: "{that}.events.onNotificationRequired.fire",
+                args: [{
+                    description: "{arguments}.0",
+                    closeOnBlur: "{that}.model.closeOnBlur"
+                }]
             }
         },
         events: {
@@ -205,6 +225,37 @@
     };
 
     /**
+     * Gets the value the pressed button from the menu and determines which even to fire
+     * in case of no valid button type is pressed does nothing
+     *
+     * @param {String} value - accepts only "Mount" and "Unmount"
+     * @param {Component} openUSB - The `gpii.qssWidget.openUSB` instance
+     * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
+     * change in the setting's value.
+     * @param {EventListener} mountUsbEvent - handle to the onQssOpenUsbRequested event
+     * @param {EventListener} unmountUsbEvent - handle to the onQssUnmountUsbRequested event
+     * @param {String} messageChannel - The channel to which the message should be sent.
+     */
+    gpii.qssWidget.openUSB.handleOpenUSB = function (value, openUSB, keyboardEvent, mountUsbEvent, unmountUsbEvent, messageChannel) {
+        if (fluid.isValue(value)) {
+            switch (value) {
+            case "Mount":
+                // fires the event that mounts and open the USB drive
+                mountUsbEvent.fire(messageChannel, openUSB.model.messages);
+                break;
+            case "Unmount":
+                // fires the event that ejects any attached USB drive
+                unmountUsbEvent.fire(messageChannel, openUSB.model.messages);
+                break;
+            default:
+                // do nothing in every other case
+                break;
+            }
+            openUSB.close(keyboardEvent);
+        }
+    };
+
+    /**
      * A handler for the `repeater` instance in the QSS widget menu. Takes care of rendering
      * a particular setting option and handling user interaction.
      */
@@ -257,36 +308,6 @@
             }
         }
     });
-
-    /**
-     * Gets the value the pressed button from the menu and determines which even to fire
-     * in case of no valid button type is pressed does nothing
-     *
-     * @param {String} value - accepts only "Mount" and "Unmount"
-     * @param {Component} openUSB - The `gpii.qssWidget.openUSB` instance
-     * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
-     * change in the setting's value.
-     * @param {EventListener} mountUsbEvent - handle to the onQssOpenUsbRequested event
-     * @param {EventListener} unmountUsbEvent - handle to the onQssUnmountUsbRequested event
-     */
-    gpii.qssWidget.openUSB.handleOpenUSB = function (value, openUSB, keyboardEvent, mountUsbEvent, unmountUsbEvent) {
-        if (fluid.isValue(value)) {
-            switch (value) {
-            case "Mount":
-                // fires the event that mounts and open the USB drive
-                mountUsbEvent.fire();
-                break;
-            case "Unmount":
-                // fires the event that ejects any attached USB drive
-                unmountUsbEvent.fire();
-                break;
-            default:
-                // do nothing in every other case
-                break;
-            }
-            openUSB.close(keyboardEvent);
-        }
-    };
 
     /**
      * Focuses the current QSS menu option if its index matches the specified `index` parameter.

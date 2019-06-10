@@ -135,11 +135,19 @@ fluid.defaults("gpii.app.qssWidget", {
                     },
                     onQssOpenUsbRequested: {
                         funcName: "gpii.app.openUSB",
-                        args: []
+                        args: [
+                            "{qssWidget}.dialog",
+                            "{arguments}.0", // messageChannel
+                            "{arguments}.1" // messages
+                        ]
                     },
                     onQssUnmountUsbRequested: {
                         funcName: "gpii.app.ejectUSB",
-                        args: []
+                        args: [
+                            "{qssWidget}.dialog",
+                            "{arguments}.0", // messageChannel
+                            "{arguments}.1" // messages
+                        ]
                     }
                 }
             }

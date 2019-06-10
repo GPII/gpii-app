@@ -195,12 +195,19 @@ gpii.app.isPointInRect = function (point, rectangle) {
  *
  * In most cases, there's only a single USB drive. But if there's more than one USB drive,
  * then those that do not contain the token file are shown.
+ * @param {Object} browserWindow - An Electron `BrowserWindow` object.
+ * @param {String} messageChannel - The channel to which the message should be sent.
+ * @param {Object} messages - An object containing messages openUsb component.
  */
-gpii.app.openUSB = function () {
+gpii.app.openUSB = function (browserWindow, messageChannel, messages) {
     gpii.windows.getUserUsbDrives().then(function (paths) {
-        fluid.each(paths, function (path) {
-            child_process.exec("explorer.exe \"" + path + "\"");
-        });
+        if (!paths.length) {
+            gpii.app.notifyWindow(browserWindow, messageChannel, messages.noUsbInserted);
+        } else {
+            fluid.each(paths, function (path) {
+                child_process.exec("explorer.exe \"" + path + "\"");
+            });
+        }
     });
 };
 
@@ -209,8 +216,11 @@ gpii.app.openUSB = function () {
  *
  * Ejects a USB drive - the selected USB drive is the same as the one that would be opened by openUSB.
  * This performs the same action as "Eject" from the right-click-menu on the drive in Explorer.
+ * @param {Object} browserWindow - An Electron `BrowserWindow` object.
+ * @param {String} messageChannel - The channel to which the message should be sent.
+ * @param {Object} messages - An object containing messages openUsb component.
  */
-gpii.app.ejectUSB = function () {
+gpii.app.ejectUSB = function (browserWindow, messageChannel, messages) {
     // Powershell to invoke the "Eject" verb of the drive icon in my computer, which looks something like:
     //  ((Shell32.Folder)shell).NameSpace(ShellSpecialFolderConstants.ssfDRIVES) // Get "My Computer"
     //    .ParseName(x:\)    // Get the drive.
@@ -234,6 +244,8 @@ gpii.app.ejectUSB = function () {
             // Needs to be called from a 64-bit process
             gpii.windows.nativeExec("powershell.exe -NoProfile -NonInteractive -ExecutionPolicy ByPass -Command "
                 + command);
+        } else {
+            gpii.app.notifyWindow(browserWindow, messageChannel, messages.ejectUsbDrives);
         }
     });
 };
