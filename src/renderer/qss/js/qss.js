@@ -40,6 +40,7 @@
             "resetAll": "gpii.qss.resetAllButtonPresenter",
             "more":     "gpii.qss.moreButtonPresenter",
             "usb-open": "gpii.qss.openUSBButtonPresenter",
+            "brightness": "gpii.qss.widgetButtonPresenter",
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "disabled": "gpii.qss.disabledButtonPresenter"
         },
