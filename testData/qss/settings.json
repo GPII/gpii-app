@@ -63,12 +63,12 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
     }, {
-        "path": "officeSimplification",
+        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft.office",
         "schema": {
             "type": "office",
             "keys": [
-                "simple",
-                "essentials",
+                "Basics+StandardSet",
+                "Essentials+StandardSet",
                 "restart-word"
             ],
             "default": ""

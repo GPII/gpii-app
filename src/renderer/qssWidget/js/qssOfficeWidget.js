@@ -29,9 +29,9 @@
             disabled: false,
             states: {},
             availableCommands: {
-                defaultCommand: "standard",
-                allTrueCommand: "both",
-                allFalseCommand: "standard",
+                defaultCommand: "StandardSet",
+                allTrueCommand: "Basics+Essentials+StandardSet",
+                allFalseCommand: "StandardSet",
                 resetCommand: "restart-word"
             },
             setting: {},
@@ -244,6 +244,7 @@
             activate: {
                 funcName: "gpii.qssWidget.office.presenter.toggleCheckmark",
                 args: [
+                    "{that}",
                     "{that}.model.item.key",
                     "{that}.model.item",
                     "{that}.container",
@@ -363,6 +364,7 @@
 
     /** TODO: toggleCheckmark: delete the debugs when ready
      * Adds a checkmark next to a setting option if it is the currently selected one for the setting.
+     * @param {Component} that - The `gpii.psp.repeater` instance.
      * @param {String} key - The `key` of the selected setting option.
      * @param {Object} item - The current setting option.
      * @param {jQuery} container - A jQuery object representing the setting option's container.
@@ -370,7 +372,7 @@
      * @param {EventListener} commandEvent - handle to the onQssOfficeSimplificationRequest event
      * @param {EventListener} resetWordEvent - handle to the onQssResetWord event
      */
-    gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container, office, commandEvent, resetWordEvent) {
+    gpii.qssWidget.office.presenter.toggleCheckmark = function (that, key, item, container, office, commandEvent, resetWordEvent) {
         if (key === office.model.availableCommands.resetCommand) {
             // we have the reset command in place
             resetWordEvent.fire();
@@ -389,10 +391,17 @@
 
             var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
 
+            console.log("toggleCheckmark: Trying to apply value = "+commandToUse);
+
+            // applying the value
+            that.applier.change("value", commandToUse, null, "settingAlter");
+/*
             // debug
             console.log("office.model.states: ", office.model.states);
             console.log("commandToUse: ", commandToUse);
             commandEvent.fire(commandToUse);
+
+ */
         }
     };
 
@@ -408,16 +417,4 @@
             container.css(elementStyles);
         }
     };
-    /**
-     * Adds an attribute property for the default setting value.
-     * @param {String} key - The `key` of the setting option.
-     * @param {Object} item - The default value from the settings.
-     * @param {jQuery} container - A jQuery object representing the setting option's container.
-     * @param {Object} styles - An object containing useful predefined CSS classes.
-     */
-    // gpii.qssWidget.office.presenter.defaultValue = function (key, item, container, styles) {
-    //     if (key === item) {
-    //         container.addClass(styles["default"]);
-    //     }
-    // };
 })(fluid);

@@ -694,6 +694,9 @@ gpii.app.qssWrapper.getSetting = function (settings, path) {
  * @param {String} [source] - The source of the update.
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
+    console.log("alterSetting =======");
+    console.log(updatedSetting);
+    console.log("====================");
     var settingIndex = that.model.settings.findIndex(function (setting) {
         return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
     });

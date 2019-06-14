@@ -218,7 +218,7 @@ gpii.app.officeSimplificationCommand = function (command) {
  */
 gpii.app.getOfficeRibbons = function (browserWindow, messageChannel) {
     // we should have a proper call to JJ's function to determine which preset is pre-loaded
-    var result = "both";
+    var result = "StandardSet";
 
     // send current state of ribbons to the office widget
     gpii.app.notifyWindow(browserWindow, messageChannel, result);
