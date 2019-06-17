@@ -29,7 +29,7 @@
         model: {
             disabled: false,
             setting: {},
-            messageChannel: "LoadInitialOfficeRibbonsState", // Channel listening for messages related to usb mount, unmount functionality
+            messageChannel: "usbMessageChannel", // Channel listening for messages related to usb mount, unmount functionality
             closeOnBlur: false,
             messages: {
                 footerTip: "{that}.model.setting.widget.footerTip",
