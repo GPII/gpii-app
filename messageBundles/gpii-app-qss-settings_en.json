@@ -70,11 +70,7 @@
         "tooltip": "<p>Open and safely Eject all USB flash drives plugged into the computer.</p>",
         "title": "Open & Eject USB",
         "tip": "<p>Your USB Drive</p><p><img height=12 src='../../assets/arrow-up.svg'>Insert a USB drive and open it with the button below.</p>",
-        "footerTip": "<p><img height=12 src='../../assets/arrow-up.svg'>When you are done, prevent data loss by ejecting USB drives Safely.</p><ol><li>Close all documents opened from the USB drive and</li><li>Then use the button below to safely eject the USB drives</li></ol>",
-        "enum": [
-            "Open all USB drives",
-            "Safely eject all USB drives"
-        ]
+        "footerTip": "<p><img height=12 src='../../assets/arrow-up.svg'>When you are done, prevent data loss by ejecting USB drives Safely.</p><ol><li>Close all documents opened from the USB drive and</li><li>Then use the button below to safely eject the USB drives</li></ol>"
     },
     "gpii_app_qss_settings_screenCapture": {
         "tooltip": "<p>Screen Capture.</p><p>Take pictures of all or part of the screen.</p>",

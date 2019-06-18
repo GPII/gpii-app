@@ -76,5 +76,7 @@
     "gpii_qssWidget_stepper_lowerBoundError": "This is lowest setting",
 
     "gpii_qssWidget_openUSB_noUsbInserted": "There are no USB drives plugged into the computer. Insert your USB and try again.",
-    "gpii_qssWidget_openUSB_ejectUsbDrives": "There are no USB drives active in the computer. It is safe to remove any drive in the computer"
+    "gpii_qssWidget_openUSB_ejectUsbDrives": "There are no USB drives active in the computer. It is safe to remove any drive in the computer",
+    "gpii_qssWidget_openUSB_openUsbButtonLabel": "Open all USB drives",
+    "gpii_qssWidget_openUSB_ejectUsbButtonLabel": "Safely eject all USB drives"
 }

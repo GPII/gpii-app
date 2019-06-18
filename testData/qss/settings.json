@@ -142,17 +142,12 @@
     }, {
         "path": "openUSB",
         "schema": {
-            "type": "openUSB",
-            "keys": [
-                "Mount",
-                "Unmount"
-            ]
+            "type": "openUSB"
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 210,
         "messageKey": "usb-open",
-        "learnMoreLink": "https://morphic.world/help/qsshelp#usb-open",
-        "value": ""
+        "learnMoreLink": "https://morphic.world/help/qsshelp#usb-open"
     }, {
         "path": "more",
         "schema": {
