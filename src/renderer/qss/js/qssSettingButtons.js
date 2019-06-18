@@ -175,7 +175,7 @@
     /**
      * Show or hide the title of the button.
      * @param {jQuery} titleElem - The jQuery object corresponding to the title of the button.
-     * @param {Number} value - The state of the button.
+     * @param {volumeState} value - The state of the button.
      */
     gpii.qss.volumeButtonPresenter.hideTitle = function (titleElem, value) {
         if (value === 0) {
@@ -189,7 +189,7 @@
      * If available in the setting's schema, shows the specified image for the button when the value of setting is 0.
      * @param {jQuery} imageElem - The jQuery object corresponding to the image of the button.
      * @param {String} image - The path to the image.
-     * @param {Number} value - The state of the button.
+     * @param {volumeState} value - The state of the button.
      */
     gpii.qss.volumeButtonPresenter.renderImage = function (imageElem, image, value) {
         if (image && value === 0) {
@@ -210,7 +210,7 @@
      * Returns the caption of the toggle button that needs to be shown below the button's
      * title in case the state of the button is "on".
      * In the case of the Volume widget, the caption message is shown only when the value is 0.
-     * @param {Number} value - The state of the button.
+     * @param {volumeState} value - The state of the button.
      * @param {Object} messages - An object containing internationalizable messages for
      * this component.
      * @param {Component} that - The `gpii.qss.volumeButtonPresenter` instance.
@@ -227,7 +227,7 @@
      * Change the color of the "Volume & Mute" button if the value is 0.
      * @param {jQuery} container - The jQuery container object
      * @param {String} style - Contains css class
-     * @param {Number} value - The state of the button.
+     * @param {volumeState} value - The state of the button.
      */
     gpii.qss.volumeButtonPresenter.toggleStyle = function (container, style, value) {
         if (value === 0) {
