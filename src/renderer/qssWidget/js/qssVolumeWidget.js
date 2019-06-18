@@ -156,8 +156,8 @@
             volumeWidget.model.setting.value = 0;
             volumeWidget.model.value = 0;
         } else {
-            volumeWidget.model.setting.value = volumeWidget.model.previousValue;
-            volumeWidget.model.value = volumeWidget.model.previousValue;
+            volumeWidget.model.setting.value = volumeWidget.model.setting.previousValue;
+            volumeWidget.model.value = volumeWidget.model.setting.previousValue;
         }
 
         // update the volume setting
