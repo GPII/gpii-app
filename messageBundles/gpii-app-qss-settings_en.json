@@ -45,7 +45,7 @@
             "White on black",
             "Yellow on black",
             "Black on yellow",
-            "Grey on white",
+            "Gray on white",
             "Black on brown"
         ]
     },
@@ -71,7 +71,7 @@
         "title": "Open USB Drive"
     },
     "gpii_app_qss_settings_screenCapture": {
-        "tooltip": "<p>Screen Capture.</p><p>Take pictures or record videos of the screen.</p>",
+        "tooltip": "<p>Screen Capture.</p><p>Take pictures of all or part of the screen.</p>",
         "title": "Screen Capture",
         "tip": "<p>Screen Capture</p><p>To capture all or part of the screen</p><ul><li>Click either button below</li><li>Then click and drag the mouse to select the part of the screen you want.</li><li>Let go of the mouse button. DONE.</li></ul><p><b>The top button</b> lets you “COPY” some or all of the screen so you can then “PASTE” it into any email, document, etc. (using Ctrl-V).</p><p><b>The 2nd button</b> creates a “Picture” like a camera. You will find the file on your desktop.</p>",
         "enum": [
