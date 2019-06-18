@@ -36,6 +36,7 @@ require("./siteConfigurationHandler.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
 require("./userErrorsHandler.js");
+require("./metrics.js");
 
 // enhance the normal require to work with .json5 files
 require("json5/lib/register");

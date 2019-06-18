@@ -70,6 +70,9 @@
      */
     fluid.defaults("gpii.qss.closeButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
+        attrs: {
+            "aria-label": "Close" // screen reader text for the button
+        },
         invokers: {
             activate: {
                 funcName: "gpii.qss.closeButtonPresenter.activate",
@@ -182,6 +185,28 @@
     gpii.qss.moreButtonPresenter.activate = function (that, qssList, activationParams) {
         that.notifyButtonActivated(activationParams);
         qssList.events.onMorePanelRequired.fire();
+    };
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Open USB Button"
+     * QSS button.
+     */
+    fluid.defaults("gpii.qss.openUSBButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.openUSBButtonPresenter.activate",
+                args: ["{channelNotifier}.events.onQssOpenUsbRequested"]
+            }
+        }
+    });
+
+    /**
+     * A custom function for handling activation of the "Open USB" QSS button.
+     * @param {EventListener} openUSB - the handle to the openUSB's event listener
+     */
+    gpii.qss.openUSBButtonPresenter.activate = function (openUSB) {
+        openUSB.fire();
     };
 
     /**

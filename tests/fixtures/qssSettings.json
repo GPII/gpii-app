@@ -83,7 +83,6 @@
                 "white-black",
                 "yellow-black",
                 "black-yellow",
-                "grey-black",
                 "grey-white",
                 "black-brown"
             ],
@@ -93,7 +92,6 @@
                 "White on black",
                 "Yellow on black",
                 "Black on yellow",
-                "Light on dark grey",
                 "Grey on white",
                 "Black on brown"
             ],
@@ -170,8 +168,7 @@
             "keys": [
                 "Morphic: Capture entire screen to clipboard",
                 "Morphic: Capture entire screen to desktop",
-                "Morphic: Record region to desktop with computer audio",
-                "Morphic: Record region to desktop with computer and mic audio"
+                "Morphic: Record region to desktop with computer audio"
             ],
             "default": ""
         },
@@ -199,6 +196,14 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 180,
         "messageKey": "cloud-folder-open"
+    }, {
+        "path": "usb-open",
+        "schema": {
+            "type": "usb-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 190,
+        "messageKey": "usb-open"
     }, {
         "path": "more",
         "schema": {

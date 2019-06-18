@@ -1,11 +1,11 @@
 {
     "gpii_app_menu_about": "About...",
     "gpii_app_menu_openQss": "Open Morphic",
-    "gpii_app_menu_keyedIn": "Keyed in with %snapsetName",
+    "gpii_app_menu_keyedIn": "User Signed In",
     "gpii_app_menu_keyOut": "Reset Morphic",
 
     "gpii_app_tray_defaultTooltip": "Morphic: Ready",
-    "gpii_app_tray_prefSetTooltip": "Morphic: %prefSet",
+    "gpii_app_tray_prefSetTooltip": "Morphic: User Signed In",
 
     "gpii_app_qssWrapper_restartWarningNotification": "To see the %settingTitle change, you may need to restart some applications.",
 

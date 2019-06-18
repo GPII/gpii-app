@@ -43,6 +43,10 @@ function getQuickCloudFolderWIdgetBtnText() {
     return jQuery(".flc-quickSetStrip > div:nth-of-type(8) > span").text();
 }
 
+function getUsbWIdgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-of-type(9) > span").text();
+}
+
 
 // QSS related
 var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseenter\")",
@@ -70,6 +74,7 @@ var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfSearchWidget = "jQuery('.flc-search').is(':visible');",
     checkIfSearchAlert = "jQuery('.flc-qssSearchWidget-errorMessage').is(':visible');",
     checkIfQuickCloudFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(8)').is(':visible')",
+    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-of-type(9)').is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
@@ -168,7 +173,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 14;
+var qssSettingsCount = 15;
 
 var navigationSequence = [
     {
@@ -240,7 +245,6 @@ var navigationSequence = [
     }
 ];
 
-
 var restartWarningSequence = [
     { // Simulate language change
         func: "{that}.app.qssWrapper.alterSetting",
@@ -248,35 +252,13 @@ var restartWarningSequence = [
             path: "http://registry\\.gpii\\.net/common/language",
             value: "ko-KR"
         }]
-    }, { // ... the restart warning notification should be shown
-        event: "{that qssNotification}.events.onDialogShown",
-        listener: "jqUnit.assert",
-        args: ["The notification dialog is shown when restartWarning setting is changed."]
-    }, {
-        funcName: "{that}.app.qssWrapper.qssNotification.hide"
-    }, { // Changing the user restartWarning preference
-        event: "{that qssNotification}.events.onDialogHidden",
-        listener: "{that}.app.applier.change",
-        args: ["preferences.disableRestartWarning", true]
-    }, { // and trying to show a restart warning notification
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "disableRestartWarning",
-        listener: "{that}.app.qssWrapper.showRestartWarningNotification",
-        args: [{
-            path: "http://registry\\.gpii\\.net/common/language",
-            restartWarning: true,
-            schema: {},
-            value: "en-US"
-        }]
-    }, { // should have disabled it
+    }, { // restart warning is not shown
         funcName: "jqUnit.assertFalse",
         args: [
-            "Restart warning notification is not shown when disabled by user setting",
+            "Restart warning notification is shown only one time per session",
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
-    },
-
-    { // bring everything back to normal
+    }, { // bring everything back to normal
         func: "{that}.app.resetAllToStandard"
     }
 ];
@@ -1423,6 +1405,39 @@ var quickLocalFoldersTestSequence = [
     }
 ];
 
+var openUsbTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // ... and open USB button should be visible
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            checkIfUSBWidget
+        ],
+        resolve: "jqUnit.assertTrue",
+        resolveArgs: ["The Open USB button is displayed: ", "{arguments}.0"]
+    }, { // Text of button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getUsbWIdgetBtnText
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Text of button should be",
+            "Open USB Drive",
+            "{arguments}.0"
+        ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
 var quickCloudFoldersTestSequence = [
     { // Open the QSS...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
@@ -1746,7 +1761,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 69,
+    expect: 70,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1793,9 +1808,10 @@ gpii.tests.qss.testDefs = {
         undoTestSequence,
         quickLocalFoldersTestSequence,
         quickCloudFoldersTestSequence,
+        openUsbTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
-        restartWarningSequence,
+        restartWarningSequence, // The test doesn't cover all the possible behaviors as described in the GPII-3943
         crossQssTranslations,
         appZoomTestSequence
     )

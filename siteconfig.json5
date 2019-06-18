@@ -9,7 +9,7 @@
         tooltipDisplayDelay: 500, // ms
 
         // The scaling factor for the QSS
-        scaleFactor: 1.5,
+        scaleFactor: 1.4,
         urls: {
             account: "http://morphic.world/account",
             cloudFolder: "https://docs.google.com/document/d/1gOi5JXw30lyD5DGbwe6tme_MfEyaiDz95AQSrzPNfZU/"
@@ -33,7 +33,7 @@
 
         // Defines the message used in the keyedOut save message
         messages: {
-            keyedOut: "To save you must insert a Morphic Key. Please ask for one at the Front Desk."
+            keyedOut: "To save you must insert a Morphic Key. Please ask for one at the Front Desk. If you have a key inserted, remove it and re-insert it, then you can SAVE."
         },
 
         // Defines where the base folder for the Quick Folder is

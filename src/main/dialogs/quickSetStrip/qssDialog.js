@@ -140,7 +140,9 @@ fluid.defaults("gpii.app.qss", {
                     onQssUndoRequired: null,
                     onQssResetAllRequired: null,
                     onQssSaveRequired: null,
-                    onQssPspToggled: null
+                    onQssPspToggled: null,
+
+                    onQssOpenUsbRequested: null
                 },
 
                 listeners: {
@@ -150,6 +152,10 @@ fluid.defaults("gpii.app.qss", {
                     onQssSettingAltered: {
                         funcName: "fluid.log",
                         args: ["QSS Dialog: Setting altered QSS - ", "{arguments}.0.path", "{arguments}.0.value"]
+                    },
+                    onQssOpenUsbRequested: {
+                        funcName: "gpii.app.openUSB",
+                        args: []
                     }
                 }
             }
@@ -311,7 +317,7 @@ gpii.app.qss.show = function (that, params) {
  * loses focus. Otherwise, it will stay open.
  */
 gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
-    if (closeQssOnBlur && tray.isMouseOver()) {
+    if (closeQssOnBlur && !tray.isMouseOver()) {
         that.hide();
     }
 };

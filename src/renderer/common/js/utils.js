@@ -107,6 +107,7 @@
     /**
     * Check if a directory exists.
     * @param {String} directory - The directory to check.
+    * @return {Boolean} `true` if a directory exists and `false` otherwise.
     */
     gpii.psp.checkIfDirectoryExists = function (directory) {
         try {

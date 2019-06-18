@@ -17,6 +17,7 @@
 var os            = require("os");
 var fluid         = require("infusion");
 var electron      = require("electron");
+var child_process = require("child_process");
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -78,7 +79,7 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     offsetX = Math.max(0, (offsetX || 0));
     offsetY = Math.max(0, (offsetY || 0));
 
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize;
+    var screenSize = electron.screen.getPrimaryDisplay().workArea;
 
     // position relatively to the bottom right corner
     // note that as offset is positive we're restricting window
@@ -95,8 +96,10 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     desiredY = desiredY || 0;
 
     return {
-        x: desiredX,
-        y: desiredY
+        // Offset it to factor in the start of the work area, which takes into account docked windows like magnifier and
+        // Read&Write.
+        x: desiredX + screenSize.x,
+        y: desiredY + screenSize.y
     };
 };
 
@@ -185,4 +188,18 @@ gpii.app.isHashNotEmpty = function (hash) {
 gpii.app.isPointInRect = function (point, rectangle) {
     return rectangle.x <= point.x && point.x <= rectangle.x + rectangle.width &&
            rectangle.y <= point.y && point.y <= rectangle.y + rectangle.height;
+};
+
+/**
+ * A custom function for handling activation of the "Open USB" QSS button.
+ *
+ * In most cases, there's only a single USB drive. But if there's more than one USB drive,
+ * then those that do not contain the token file are shown.
+ */
+gpii.app.openUSB = function () {
+    gpii.windows.getUserUsbDrives().then(function (paths) {
+        fluid.each(paths, function (path) {
+            child_process.exec("explorer.exe \"" + path + "\"");
+        });
+    });
 };

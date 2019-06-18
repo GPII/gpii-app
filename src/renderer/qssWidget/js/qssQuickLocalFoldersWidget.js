@@ -126,9 +126,9 @@
 
     /**
      * Event for the submit button, looks if the folder exists and open it
-     * @param {String} folderValue
-     * @param {Component} errorMessage
-     * @param {String} morphicQuickFolderPath
+     * @param {String} folderValue - value from the search input
+     * @param {Component} errorMessage - The `gpii.qssWidget.quickLocalFolders.errorMessage` instance
+     * @param {String} morphicQuickFolderPath - Base path to the folder
      */
     gpii.qssWidget.quickLocalFolders.onSearch = function (folderValue, errorMessage, morphicQuickFolderPath) {
         var directory = morphicQuickFolderPath + folderValue;

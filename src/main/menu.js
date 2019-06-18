@@ -98,7 +98,6 @@ fluid.defaults("gpii.app.menuInAppDev", {
                     "{that}.options.locales",
                     "{that}.options.themes",
                     "{that}.options.snapsets",
-                    "{that}.model.preferenceSetsMenuItems",
                     "{that}.model.showAbout",
                     "@expand:gpii.app.menu.getSeparatorItem()",
                     "{that}.model.keyOut",
@@ -399,7 +398,6 @@ fluid.defaults("gpii.app.menu", {
                 args: [
                     "{that}.model.showQSS",
                     "{that}.model.keyedInSnapset",
-                    "{that}.model.preferenceSetsMenuItems",
                     "{that}.model.showAbout",
                     "@expand:gpii.app.menu.getSeparatorItem()",
                     "{that}.model.keyOut"
