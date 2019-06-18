@@ -160,14 +160,17 @@
                 funcName: "gpii.qss.volumeButtonPresenter.hideTitle",
                 args: ["{that}.dom.title", "{arguments}.0"]
             },
-            changeButtonColor: {
-                funcName: "gpii.qss.volumeButtonPresenter.changeButtonColor",
+            toggleStyle: {
+                funcName: "gpii.qss.volumeButtonPresenter.toggleStyle",
                 args: ["{that}.container", "{that}.options.styles.redButton", "{arguments}.0"]
             }
         }
     });
 
-
+    /**
+     * State of the Volume button. If the value is 0 the state of the button is ON, any other value is OFF.
+     * @typedef {Number} volumeState
+    */
 
     /**
      * Show or hide the title of the button.
@@ -175,7 +178,7 @@
      * @param {Number} value - The state of the button.
      */
     gpii.qss.volumeButtonPresenter.hideTitle = function (titleElem, value) {
-        if (!value) {
+        if (value === 0) {
             titleElem.hide();
         } else {
             titleElem.show();
@@ -189,7 +192,7 @@
      * @param {Number} value - The state of the button.
      */
     gpii.qss.volumeButtonPresenter.renderImage = function (imageElem, image, value) {
-        if (image && !value) {
+        if (image && value === 0) {
             var maskImageValue = fluid.stringTemplate("url(\"%image\")", {
                 image: image
             });
@@ -214,20 +217,20 @@
      * @return {String} The caption message for the toggle button.
      */
     gpii.qss.volumeButtonPresenter.getCaption = function (value, messages, that) {
-        that.changeButtonColor(value);
+        that.toggleStyle(value);
         that.renderImage(value);
         that.hideTitle(value);
-        return !value ? messages.caption : "";
+        return value === 0 ? messages.caption : "";
     };
 
     /**
      * Change the color of the "Volume & Mute" button if the value is 0.
      * @param {jQuery} container - The jQuery container object
      * @param {String} style - Contains css class
-     * @param {Boolean} value - The state of the button.
+     * @param {Number} value - The state of the button.
      */
-    gpii.qss.volumeButtonPresenter.changeButtonColor = function (container, style, value) {
-        if (!value) {
+    gpii.qss.volumeButtonPresenter.toggleStyle = function (container, style, value) {
+        if (value === 0) {
             container.addClass(style);
         } else {
             container.removeClass(style);
