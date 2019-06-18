@@ -18,7 +18,6 @@ var os            = require("os");
 var fluid         = require("infusion");
 var electron      = require("electron");
 var child_process = require("child_process");
-var fs            = require("fs");
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -203,25 +202,4 @@ gpii.app.openUSB = function () {
             child_process.exec("explorer.exe \"" + path + "\"");
         });
     });
-};
-
-/**
- * A custom function for handling opening of an .exe file.
- * @param {String} executablePath - path to executable file
- */
-gpii.app.launchExecutable = function (executablePath) {
-    var fileProperties = fs.statSync(executablePath);
-
-    // Check that the file is executable
-    if (fileProperties.mode === 33206) {
-        try {
-            child_process.exec(executablePath);
-            return true;
-        } catch (err) {
-            fluid.log(fluid.logLevel.WARN, "launchExecutable: Cannot execute - " + executablePath);
-        }
-    } else {
-        fluid.log(fluid.logLevel.WARN, "launchExecutable: File is not executable - " + executablePath);
-    }
-    return false;
 };

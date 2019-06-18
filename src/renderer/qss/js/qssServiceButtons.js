@@ -210,27 +210,19 @@
     };
 
     /**
-     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "launch .exe file"
-     * QSS button.
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * "Launch DocuMorph" QSS button. It uses the universal launchExecutable function
+     * which tries to execute the file from the provided path
      */
-    fluid.defaults("gpii.qss.launchExePresenter", {
+    fluid.defaults("gpii.qss.launchDocuMorphPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
             activate: {
-                funcName: "gpii.qss.launchExePresenter.activate",
-                args: ["{channelNotifier}.events.onQssLaunchExecutable", "{gpii.qss}.options.siteConfig.docuMorphExecutable"]
+                funcName: "gpii.psp.launchExecutable",
+                args: ["{gpii.qss}.options.siteConfig.docuMorphExecutable"]
             }
         }
     });
-
-    /**
-     * A custom function for handling activation of the "Launch Docu Morph" QSS button.
-     * @param {EventListener} launchExecutable - the handle to the launchExecutable's event listener
-     * @param {String} file - path to executable file
-     */
-    gpii.qss.launchExePresenter.activate = function (launchExecutable, file) {
-        launchExecutable.fire(file);
-    };
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Undo"

@@ -41,7 +41,7 @@
             "more":              "gpii.qss.moreButtonPresenter",
             "usb-open":          "gpii.qss.openUSBButtonPresenter",
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
-            "launch-documorph":  "gpii.qss.launchExePresenter",
+            "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
             "disabled":          "gpii.qss.disabledButtonPresenter"
         },
 
@@ -235,8 +235,7 @@
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
                         onQssPspToggled: "{quickSetStripList}.events.onPspToggled",
 
-                        onQssOpenUsbRequested: null,
-                        onQssLaunchExecutable: null
+                        onQssOpenUsbRequested: null
                     }
                 }
             }
