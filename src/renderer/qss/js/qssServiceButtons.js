@@ -70,6 +70,9 @@
      */
     fluid.defaults("gpii.qss.closeButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
+        attrs: {
+            "aria-label": "Close" // screen reader text for the button
+        },
         invokers: {
             activate: {
                 funcName: "gpii.qss.closeButtonPresenter.activate",
