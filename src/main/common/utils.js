@@ -195,7 +195,7 @@ gpii.app.isPointInRect = function (point, rectangle) {
  * @param {Object} siteConfig - instance of the siteConfig object
  * @returns {Boolean}
  */
-gpii.app.isButtonList = function(siteConfig) {
+gpii.app.hasButtonList = function(siteConfig) {
     return fluid.isValue(siteConfig.buttonList);
 };
 
@@ -203,22 +203,22 @@ gpii.app.isButtonList = function(siteConfig) {
  * Looks for a `id` and matches it to the provided string
  * return empty array when there is no button found
  * @param {String} buttonId - the `id` of the button
- * @param {Array} availableButtons - the full settings list
- * @returns {Array}
+ * @param {Object[]} availableButtons - the full settings list
+ * @returns {Boolean|Object} - returns false when button is not found,
+ * or the setting object if found
  */
-gpii.app.findButtonId = function(buttonId, availableButtons) {
-    var returnData = [];  // returning empty array by default
-
+gpii.app.findButtonById = function(buttonId, availableButtons) {
     if (fluid.isValue(buttonId) && fluid.isValue(availableButtons)) {
-        fluid.each(availableButtons, function(button) {
+        return fluid.find_if(availableButtons, function(button) {
             if (fluid.isValue(button.id)) {
                 if (button.id === buttonId) {
-                    returnData = button; // returning the button data
+                    return true; // button found
                 }
             }
+            return false;
         });
     }
-    return returnData;
+    return false;
 };
 
 /**
@@ -237,8 +237,8 @@ gpii.app.filterButtonList = function(siteConfigButtonList, availableButtons) {
     // creating the matchedList
     // looking for `id` and if matches adding it
     fluid.each(siteConfigButtonList, function(buttonId) {
-        var matchedButton = gpii.app.findButtonId(buttonId, availableButtons);
-        if (matchedButton !== []) {
+        var matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
+        if (matchedButton !== false) {
             // adding the proper tabindex
             matchedButton.tabindex = tabindex;
             tabindex += 10; // increasing the tabindex

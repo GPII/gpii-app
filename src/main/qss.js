@@ -610,7 +610,7 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
     var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
         loadedSettings = availableSettings; // by default we are getting all of the buttons
 
-    if (gpii.app.isButtonList(siteConfig)) { // checking if we have a valid button list in the siteConfig
+    if (gpii.app.hasButtonList(siteConfig)) { // checking if we have a valid button list in the siteConfig
         // filtering the buttons based on buttonList array
         loadedSettings = gpii.app.filterButtonList(siteConfig.buttonList, availableSettings);
     }
