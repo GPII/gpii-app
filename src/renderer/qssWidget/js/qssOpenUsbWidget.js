@@ -59,7 +59,6 @@
                             funcName: "gpii.qssWidget.openUSB.openUsbActivated",
                             args: [
                                 "{openUSB}",
-                                "{arguments}.1", // keyboardEvent
                                 "{channelNotifier}.events.onQssOpenUsbRequested", // Mount USB event
                                 "{openUSB}.model.messageChannel"
                             ]
@@ -79,7 +78,6 @@
                             funcName: "gpii.qssWidget.openUSB.ejectUsbActivated",
                             args: [
                                 "{openUSB}",
-                                "{arguments}.1", // keyboardEvent
                                 "{channelNotifier}.events.onQssUnmountUsbRequested", // Unmount USB event
                                 "{openUSB}.model.messageChannel"
                             ]
@@ -145,29 +143,25 @@
     /**
      * Fire onQssOpenUsbRequested when the openUsbButton is presed.
      * @param {Component} openUSB - The `gpii.qssWidget.openUSB` instance
-     * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
-     * change in the setting's value.
      * @param {fluid.event} mountUsbEvent - the onQssOpenUsbRequested event
      * @param {String} messageChannel - The channel to which the message should be sent.
      */
-    gpii.qssWidget.openUSB.openUsbActivated = function (openUSB, keyboardEvent, mountUsbEvent, messageChannel) {
+    gpii.qssWidget.openUSB.openUsbActivated = function (openUSB, mountUsbEvent, messageChannel) {
         // fires the event that mounts and open the USB drive
         mountUsbEvent.fire(messageChannel, openUSB.model.messages);
-        openUSB.close(keyboardEvent);
+        openUSB.close();
     };
 
     /**
      * Fire onQssUnmountUsbRequested when the ejectUsbButton is presed.
      * @param {Component} openUSB - The `gpii.qssWidget.openUSB` instance
-     * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
-     * change in the setting's value.
      * @param {fluid.event} unmountUsbEvent - the onQssUnmountUsbRequested event
      * @param {String} messageChannel - The channel to which the message should be sent.
      */
-    gpii.qssWidget.openUSB.ejectUsbActivated = function (openUSB, keyboardEvent, unmountUsbEvent, messageChannel) {
+    gpii.qssWidget.openUSB.ejectUsbActivated = function (openUSB, unmountUsbEvent, messageChannel) {
         // fires the event that ejects any attached USB drive
         unmountUsbEvent.fire(messageChannel, openUSB.model.messages);
-        openUSB.close(keyboardEvent);
+        openUSB.close();
     };
 
 })(fluid);
