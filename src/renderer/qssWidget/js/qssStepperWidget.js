@@ -39,8 +39,8 @@
 
                 footerTip: "{that}.model.setting.widget.footerTip",
 
-                upperBoundError: "This is highest setting",
-                lowerBoundError: "This is lowest setting"
+                upperBoundError: "This is the highest setting",
+                lowerBoundError: "This is the lowest setting"
             },
             setting: {},
 
