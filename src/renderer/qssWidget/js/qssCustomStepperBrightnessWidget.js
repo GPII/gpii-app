@@ -96,19 +96,21 @@
 
         invokers: {
             activateIncBtn: {
-                funcName: "gpii.qssWidget.stepperBrightness.activateIncButton",
+                funcName: "gpii.qssWidget.stepperBrightness.activateButton",
                 args: [
                     "{that}",
                     "{that}.dom.incButton",
-                    "{that}.model.setting.schema" // only restrictions will be used
+                    "{that}.increment", // the proper function to be executed
+                    "{that}.events.onUpperBoundReached" // the proper event to be fired
                 ]
             },
             activateDecBtn: {
-                funcName: "gpii.qssWidget.stepperBrightness.activateDecButton",
+                funcName: "gpii.qssWidget.stepperBrightness.activateButton",
                 args: [
                     "{that}",
                     "{that}.dom.decButton",
-                    "{that}.model.setting.schema"
+                    "{that}.decrement", // the proper function to be executed
+                    "{that}.events.onLowerBoundReached" // the proper event to be fired
                 ]
             },
             increment: {
@@ -116,7 +118,8 @@
                 args: [
                     "{that}",
                     "{that}.model.value",
-                    "{that}.model.setting.schema"
+                    "{that}.model.setting.schema",
+                    1 // step multiplier, no effect of the step itself
                 ]
             },
             decrement: {
@@ -125,7 +128,7 @@
                     "{that}",
                     "{that}.model.value",
                     "{that}.model.setting.schema",
-                    true
+                    -1 // step multiplier to reverse the step
                 ]
             },
             animateButton: {
@@ -211,44 +214,27 @@
     };
 
     /**
-     * Invoked whenever the increment button is activated. Takes care of
-     * increasing the setting's value with the amount specified in the setting's
+     * Invoked whenever the either button is activated. Takes care of
+     * changing the setting's value with the amount specified in the setting's
      * schema, animating the button appropriately and/or firing an event if
-     * an attempt is made to increase value above the maximum allowed value.
+     * an attempt is made to increase/decrease value above or below the
+     * maximum or minimum allowed value.
      * @param {Component} that - The `gpii.qssWidget.stepperBrightness` instance.
-     * @param {jQuery} button - The jQuery object repesenting the increment button
-     * in the QSS stepper widget.
+     * @param {jQuery} button - The jQuery object representing the inc/dev buttons
+     * @param {Function} actionFunc - Uses the provided function to change the value
+     * button is pressed in the QSS stepper widget.
+     * @param {fluid.event} boundEvent - a handle to the event to be fired when
+     * bound is reached
      */
-    gpii.qssWidget.stepperBrightness.activateIncButton = function (that, button) {
-        var boundReached = that.increment();
+    gpii.qssWidget.stepperBrightness.activateButton = function (that, button, actionFunc, boundEvent) {
+        var boundReached = actionFunc();
+
         that.animateButton(button, boundReached);
         if (boundReached) {
             // register bound hit
             that.boundReachedHits += 1;
-
-            that.events.onUpperBoundReached.fire();
-        } else {
-            that.boundReachedHits = 0;
-        }
-    };
-
-    /**
-     * Invoked whenever the decrement button is activated. Takes care of
-     * decreasing the setting's value with the amount specified in the setting's
-     * schema, animating the button appropriately and/or firing an event if
-     * an attempt is made to decrease value below the minimum allowed value.
-     * @param {Component} that - The `gpii.qssWidget.stepperBrightness` instance.
-     * @param {jQuery} button - The jQuery object repesenting the decrement button
-     * in the QSS stepper widget.
-     */
-    gpii.qssWidget.stepperBrightness.activateDecButton = function (that, button) {
-        var boundReached = that.decrement();
-        that.animateButton(button, boundReached);
-        if (boundReached) {
-            // register bound hit
-            that.boundReachedHits += 1;
-
-            that.events.onLowerBoundReached.fire();
+            // fire the event
+            boundEvent.fire();
         } else {
             that.boundReachedHits = 0;
         }
@@ -267,29 +253,31 @@
      * @param {Number} schema.max - The maximum possible value for the setting.
      * @param {Number} schema.divisibleBy - The amount which is added or subtracted
      * from the setting's value every time this function is invoked.
-     * @param {Boolean} shouldSubtract - Whether the `divisibleBy` amount should be
+     * @param {Number} stepMultiplier - a basic numeric step multiplier, if its 1 there
+     * will be no change in the step size, -1 will reverse it, and everything else
+     * will act as a real multiplier (2 for 2x as an example)
      * subtracted from or added to the setting's value.
      * @return {Boolean} Whether there was a change in the setting's value.
      */
-    gpii.qssWidget.stepperBrightness.makeRestrictedStep = function (that, value, schema, shouldSubtract) {
-        var step = (shouldSubtract ? -schema.divisibleBy : schema.divisibleBy);
+    gpii.qssWidget.stepperBrightness.makeRestrictedStep = function (that, value, schema, stepMultiplier) {
+        var step = schema.divisibleBy * stepMultiplier;
 
         value = parseFloat( (value + step).toPrecision(2) );
         // Handle not given min and max
-        var restrcitedValue = value;
+        var restrictedValue = value;
 
         if (fluid.isValue(schema.max)) {
-            restrcitedValue = Math.min(restrcitedValue, schema.max);
+            restrictedValue = Math.min(restrictedValue, schema.max);
         }
 
         if (fluid.isValue(schema.min)) {
-            restrcitedValue = Math.max(restrcitedValue, schema.min);
+            restrictedValue = Math.max(restrictedValue, schema.min);
         }
 
-        that.applier.change("value", restrcitedValue, null, "settingAlter");
+        that.applier.change("value", restrictedValue, null, "settingAlter");
 
         // Whether a bound was hit
-        return value !== restrcitedValue;
+        return value !== restrictedValue;
     };
 
     /**
