@@ -75,8 +75,8 @@
 
     "gpii_qssWidget_stepper_incrementButton": "Larger",
     "gpii_qssWidget_stepper_decrementButton": "Smaller",
-    "gpii_qssWidget_stepper_upperBoundError": "This is highest setting",
-    "gpii_qssWidget_stepper_lowerBoundError": "This is lowest setting",
+    "gpii_qssWidget_stepper_upperBoundError": "This is the highest setting",
+    "gpii_qssWidget_stepper_lowerBoundError": "This is the lowest setting",
 
     "gpii_qssWidget_volumeStepper_incrementButton": "Louder",
     "gpii_qssWidget_volumeStepper_decrementButton": "Quieter",
