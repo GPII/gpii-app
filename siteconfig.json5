@@ -5,6 +5,9 @@
 
     // Configuration options for the QSS window
     qss: {
+        // Determines if the QSS will be shown automatically on Morphic's startup
+        showQssOnStart: true,
+
         // Defines the delay in milliseconds before the tooltip is shown after a QSS button is selected
         tooltipDisplayDelay: 500, // ms
 
