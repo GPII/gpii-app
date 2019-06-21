@@ -318,6 +318,19 @@ gpii.app.trayButton.notifications = {
 gpii.app.trayButton.startProcess = function (that) {
     fluid.log("Starting TrayButton process.");
     var child = child_process.spawn(fluid.module.resolvePath(that.options.trayButtonExe), []);
+    child.stdout.on("data", function (buffer) {
+        var messages = buffer.toString().trim().split(/[\r\n]+/);
+        fluid.each(messages, function (message) {
+            fluid.log("traybutton: ", message);
+            if (message.startsWith("fail:")) {
+                try {
+                    fluid.fail("traybutton", message);
+                } catch (e) {
+                    // Ignore the exception, so more lines can be processed.
+                }
+            }
+        });
+    });
     child.on("exit", function (code) {
         fluid.log("TrayButton process terminated.");
         if (code && !fluid.isDestroyed(that)) {
