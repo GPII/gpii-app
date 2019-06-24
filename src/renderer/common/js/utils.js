@@ -19,7 +19,8 @@
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell,
         ipcRenderer = require("electron").ipcRenderer,
-        child_process = require("child_process");
+        child_process = require("child_process"),
+        fs = require("fs");
 
     fluid.registerNamespace("gpii.psp");
 
@@ -82,6 +83,27 @@
      */
     gpii.psp.removeIpcAllListeners = function (messageChannel) {
         ipcRenderer.removeAllListeners(messageChannel);
+    };
+
+    /*
+     * A custom function for handling opening of an .exe file.
+     * @param {String} executablePath - path to executable file
+     */
+    gpii.psp.launchExecutable = function (executablePath) {
+        var fileProperties = fs.statSync(executablePath);
+
+        // Check that the file is executable
+        if (fileProperties.mode === 0o100666) {
+            try {
+                child_process.exec(executablePath);
+                return true;
+            } catch (err) {
+                fluid.log(fluid.logLevel.WARN, "launchExecutable: Cannot execute - " + executablePath);
+            }
+        } else {
+            fluid.log(fluid.logLevel.WARN, "launchExecutable: File is not executable - " + executablePath);
+        }
+        return false;
     };
 
     /**

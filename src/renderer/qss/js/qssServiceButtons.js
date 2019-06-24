@@ -187,6 +187,22 @@
         qssList.events.onMorePanelRequired.fire();
     };
 
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * "Launch DocuMorph" QSS button. It uses the universal launchExecutable function
+     * which tries to execute the file from the provided path
+     */
+    fluid.defaults("gpii.qss.launchDocuMorphPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.psp.launchExecutable",
+                args: ["{gpii.qss}.options.siteConfig.docuMorphExecutable"]
+            }
+        }
+    });
+
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Undo"
      * QSS button.

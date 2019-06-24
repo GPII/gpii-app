@@ -149,6 +149,14 @@
         "messageKey": "usb-open",
         "learnMoreLink": "https://morphic.world/help/qsshelp#usb-open"
     }, {
+        "path": "launch-documorph",
+        "schema": {
+            "type": "launch-documorph"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 220,
+        "messageKey": "launch-documorph"
+    }, {
         "path": "more",
         "schema": {
             "type": "more"
