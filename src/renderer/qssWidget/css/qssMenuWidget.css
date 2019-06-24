@@ -18,6 +18,8 @@
 .fl-qssMenuWidget .fl-qssMenuWidget-controls {
     position: relative;
     overflow: hidden;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
@@ -108,5 +110,4 @@
 .fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssWidget-tip p:last-of-type {
     margin: 0;
 }
-
 /* Specific version for the Screen Capture's widget: END */

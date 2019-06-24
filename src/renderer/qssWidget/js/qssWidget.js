@@ -54,7 +54,8 @@
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
             toggle: ".flc-qssToggleWidget",
-            screenCapture: ".flc-qssScreenCaptureWidget"
+            screenCapture: ".flc-qssScreenCaptureWidget",
+            openUSB: ".flc-qssOpenUSBWidget"
         },
 
         /**
@@ -65,17 +66,27 @@
             "number": "gpii.qssWidget.stepper",
             "string": "gpii.qssWidget.menu",
             "boolean": "gpii.qssWidget.toggle",
-            "screenCapture": "gpii.qssWidget.screenCapture"
+            "screenCapture": "gpii.qssWidget.screenCapture",
+            "openUSB": "gpii.qssWidget.openUSB"
         },
 
         events: {
+            // Important information
+            // These events are available in the all of the widgets
+            // It can be used to access the main events and utils from them
+            // Usage: {channelNotifier}.events.onQssWidgetHideQssRequested
+
             onWidgetClosed: null,
             onQssWidgetHideQssRequested: null,
             onSettingUpdated: null,
             onQssWidgetHeightChanged: null,
             onQssWidgetSettingAltered: null,
             onQssWidgetNotificationRequired: null,
-            onQssWidgetCreated: null
+            onQssWidgetCreated: null,
+
+            // USB related events
+            onQssOpenUsbRequested: null,
+            onQssUnmountUsbRequested: null
         },
 
         sounds: {},
@@ -207,7 +218,10 @@
                         onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
-                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated"
+                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated",
+                        // USB buttons
+                        onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
+                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested"
                     }
                 }
             }

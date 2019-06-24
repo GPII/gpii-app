@@ -148,13 +148,14 @@
         "messageKey": "cloud-folder-open"
     }, {
         "id": "usb-open",
-        "path": "usb-open",
+        "path": "openUSB",
         "schema": {
-            "type": "usb-open"
+            "type": "openUSB"
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 210,
-        "messageKey": "usb-open"
+        "messageKey": "usb-open",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#usb-open"
     }, {
         "id": "launch-documorph",
         "path": "launch-documorph",
