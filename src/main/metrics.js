@@ -95,6 +95,34 @@ setting-changed: A setting has changed via a quick-strip widget
     }
 }
 
+tooltip-shown: QS tooltip was shown
+{
+  "module": "metrics.app",
+  "event": "tooltip-shown",
+  "data": {
+    "path": "http://registry\\.gpii\\.net/common/language"
+  }
+}
+
+tooltip-shown: QS tooltip was hidden
+{
+  "module": "metrics.app",
+  "event": "tooltip-shown",
+  "data": {
+    "path": "http://registry\\.gpii\\.net/common/language"
+  }
+}
+
+learnMore: "Learn more" link was clicked
+{
+  "module": "metrics.app",
+  "event": "learnMore",
+  "data": {
+    "path": "http://registry\\.gpii\\.net/common/language",
+    "learnMoreLink": "https://morphic.world/help/qsshelp#language"
+  }
+}
+
 */
 
 
@@ -179,7 +207,7 @@ fluid.defaults("gpii.app.metrics.qssWidget", {
         },
         "{channelListener}.events.onLearnMoreClicked": {
             func: "{eventLog}.metrics.uiMetric",
-            args: [ "learnmore", {
+            args: [ "learnMore", {
                 path: "{that}.model.setting.path",
                 learnMoreLink: "{that}.model.setting.learnMoreLink"
             } ]
