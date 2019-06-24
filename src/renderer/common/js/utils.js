@@ -67,12 +67,13 @@
     /**
      * A custom function for handling opening of an .exe file.
      * @param {String} executablePath - path to executable file
+     * @return {Boolean} - returns `true` on successfully executed file
      */
     gpii.psp.launchExecutable = function (executablePath) {
         var fileProperties = fs.statSync(executablePath);
 
         // Check that the file is executable
-        if (fileProperties.mode === 0o100666) {
+        if (fileProperties.mode === parseInt("0100666", 8)) {
             try {
                 child_process.exec(executablePath);
                 return true;

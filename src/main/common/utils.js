@@ -193,9 +193,9 @@ gpii.app.isPointInRect = function (point, rectangle) {
 /**
  * Checks if the buttonList attribute exists in the siteConfig object
  * @param {Object} siteConfig - instance of the siteConfig object
- * @returns {Boolean}
+ * @return {Boolean} - `true` if there is button list found
  */
-gpii.app.hasButtonList = function(siteConfig) {
+gpii.app.hasButtonList = function (siteConfig) {
     return fluid.isValue(siteConfig.buttonList);
 };
 
@@ -204,16 +204,14 @@ gpii.app.hasButtonList = function(siteConfig) {
  * return empty array when there is no button found
  * @param {String} buttonId - the `id` of the button
  * @param {Object[]} availableButtons - the full settings list
- * @returns {Boolean|Object} - returns false when button is not found,
+ * @return {Boolean|Object} - returns false when button is not found,
  * or the setting object if found
  */
-gpii.app.findButtonById = function(buttonId, availableButtons) {
+gpii.app.findButtonById = function (buttonId, availableButtons) {
     if (fluid.isValue(buttonId) && fluid.isValue(availableButtons)) {
-        return fluid.find_if(availableButtons, function(button) {
-            if (fluid.isValue(button.id)) {
-                if (button.id === buttonId) {
-                    return true; // button found
-                }
+        return fluid.find_if(availableButtons, function (button) {
+            if (button.id === buttonId) {
+                return true; // button found
             }
             return false;
         });
@@ -225,9 +223,9 @@ gpii.app.findButtonById = function(buttonId, availableButtons) {
  * Filters the full button list based on the provided array of `id` attributes
  * @param {Array} siteConfigButtonList - basic array of strings
  * @param {Object[]} availableButtons - all available buttons found in settings.json
- * @returns {Object[]} - filtered version of available buttons (same structure)
+ * @return {Object[]} - filtered version of available buttons (same structure)
  */
-gpii.app.filterButtonList = function(siteConfigButtonList, availableButtons) {
+gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     var matchedList = [], // these buttons are explicitly selected in the
                           // siteConfig, added in the same order
         afterList = [],   // all the buttons that don't have `id` at all,
@@ -236,7 +234,7 @@ gpii.app.filterButtonList = function(siteConfigButtonList, availableButtons) {
 
     // creating the matchedList
     // looking for `id` and if matches adding it
-    fluid.each(siteConfigButtonList, function(buttonId) {
+    fluid.each(siteConfigButtonList, function (buttonId) {
         var matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
         if (matchedButton !== false) {
             // adding the proper tabindex
@@ -249,7 +247,7 @@ gpii.app.filterButtonList = function(siteConfigButtonList, availableButtons) {
 
     // creating the afterList
     // looking for all of other buttons that don't have `id` at all
-    fluid.each(availableButtons, function(afterButton) {
+    fluid.each(availableButtons, function (afterButton) {
         if (!fluid.isValue(afterButton.id)) { // there is no `id`, adding it
             // adding the proper index
             afterButton.tabindex = tabindex;
