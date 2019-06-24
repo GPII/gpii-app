@@ -1734,7 +1734,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 68,
+    expect: 69,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
