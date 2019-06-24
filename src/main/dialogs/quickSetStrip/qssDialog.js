@@ -156,7 +156,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssOpenUsbRequested: {
                         funcName: "gpii.app.openUSB",
                         args: []
-                    },
+                    }
                 }
             }
         }

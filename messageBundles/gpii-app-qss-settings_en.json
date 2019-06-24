@@ -87,5 +87,9 @@
         "tooltip": "<p>Adjusts Display Brightness.</p>",
         "title": "Bright- ness",
         "tip": "<p>Increase or decrease Brightness of the Screen</p><p>If your screen allows brightness to be controlled remotely, these buttons will change screen brightness</p>"
+    },
+    "gpii_app_qss_settings_launch-documorph": {
+        "tooltip": "<p>Converts documents into more accessible forms.</p>",
+        "title": "Docu- Morph"
     }
 }

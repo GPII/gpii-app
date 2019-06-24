@@ -30,19 +30,20 @@
 
         defaultHandlerGrade: "gpii.qss.buttonPresenter",
         handlerGrades: {
-            "boolean":  "gpii.qss.toggleButtonPresenter",
-            "number":   "gpii.qss.widgetButtonPresenter",
-            "string":   "gpii.qss.widgetButtonPresenter",
-            "close":    "gpii.qss.closeButtonPresenter",
-            "psp":      "gpii.qss.keyInButtonPresenter",
-            "save":     "gpii.qss.saveButtonPresenter",
-            "undo":     "gpii.qss.undoButtonPresenter",
-            "resetAll": "gpii.qss.resetAllButtonPresenter",
-            "more":     "gpii.qss.moreButtonPresenter",
-            "usb-open": "gpii.qss.openUSBButtonPresenter",
-            "brightness": "gpii.qss.widgetButtonPresenter",
+            "boolean":           "gpii.qss.toggleButtonPresenter",
+            "number":            "gpii.qss.widgetButtonPresenter",
+            "string":            "gpii.qss.widgetButtonPresenter",
+            "close":             "gpii.qss.closeButtonPresenter",
+            "psp":               "gpii.qss.keyInButtonPresenter",
+            "save":              "gpii.qss.saveButtonPresenter",
+            "undo":              "gpii.qss.undoButtonPresenter",
+            "resetAll":          "gpii.qss.resetAllButtonPresenter",
+            "more":              "gpii.qss.moreButtonPresenter",
+            "usb-open":          "gpii.qss.openUSBButtonPresenter",
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
-            "disabled": "gpii.qss.disabledButtonPresenter"
+            "brightness":        "gpii.qss.widgetButtonPresenter",
+            "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
+            "disabled":          "gpii.qss.disabledButtonPresenter"
         },
 
         dynamicContainerMarkup: {
