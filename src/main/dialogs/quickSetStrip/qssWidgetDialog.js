@@ -113,7 +113,8 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssUnmountUsbRequested: null,
                     onQssGetVolumeRequested: null,
                     onQssReApplyPreferencesRequired: null,
-                    onQssGetEnvironmentalLoginKeyRequested: null
+                    onQssGetEnvironmentalLoginKeyRequested: null,
+                    onLearnMoreClicked: null
                 },
                 listeners: {
                     onQssWidgetClosed: [{

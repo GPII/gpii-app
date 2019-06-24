@@ -176,6 +176,13 @@ fluid.defaults("gpii.app.metrics.qssWidget", {
             args: [ "widget-hidden", {
                 path: "{that}.model.setting.path"
             } ]
+        },
+        "{channelListener}.events.onLearnMoreClicked": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: [ "learnmore", {
+                path: "{that}.model.setting.path",
+                learnMoreLink: "{that}.model.setting.learnMoreLink"
+            } ]
         }
     }
 });

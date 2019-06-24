@@ -99,7 +99,9 @@
             // Volume & Mute related event
             onQssGetVolumeRequested: null,
             onQssReApplyPreferencesRequired: null,
-            onQssGetEnvironmentalLoginKeyRequested: null
+            onQssGetEnvironmentalLoginKeyRequested: null,
+
+            onLearnMoreClicked: null
         },
 
         sounds: {},
@@ -165,6 +167,9 @@
                                     messages: {
                                         learnMore: "{qssWidget}.model.messages.learnMore"
                                     }
+                                },
+                                listeners: {
+                                    "onClicked.learnMore": "{qssWidget}.events.onLearnMoreClicked"
                                 }
                             }
                         }
@@ -240,7 +245,8 @@
                         // Volume button
                         onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
                         onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
-                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested"
+                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested",
+                        onLearnMoreClicked:              "{qssWidget}.events.onLearnMoreClicked"
                     }
                 }
             }
