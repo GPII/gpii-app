@@ -1,5 +1,6 @@
 [
     {
+        "id": "language",
         "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {
             "type": "string",
@@ -15,6 +16,7 @@
         "value": "en-US",
         "restartWarning": true
     }, {
+        "id": "screen-zoom",
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
         "schema": {
             "type": "number",
@@ -35,6 +37,7 @@
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
     }, {
+        "id": "text-zoom",
         "path": "appTextZoom",
         "schema": {
             "type": "number",
@@ -48,6 +51,7 @@
         "value": 0,
         "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
     }, {
+        "id": "screen-capture",
         "path": "screenCapture",
         "schema": {
             "type": "screenCapture",
@@ -63,6 +67,7 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
     }, {
+        "id": "high-contrast",
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
             "type": "string",
@@ -120,6 +125,7 @@
         },
         "learnMoreLink": "https://morphic.world/help/qsshelp#contrast"
     }, {
+        "id": "read-aloud",
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
         "schema": {
             "type": "boolean",
@@ -132,6 +138,7 @@
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
     }, {
+        "id": "cloud-folder-open",
         "path": "cloud-folder-open",
         "schema": {
             "type": "cloud-folder-open"
@@ -140,6 +147,7 @@
         "tabindex": 200,
         "messageKey": "cloud-folder-open"
     }, {
+        "id": "usb-open",
         "path": "usb-open",
         "schema": {
             "type": "usb-open"
@@ -148,6 +156,7 @@
         "tabindex": 210,
         "messageKey": "usb-open"
     }, {
+        "id": "launch-documorph",
         "path": "launch-documorph",
         "schema": {
             "type": "launch-documorph"
