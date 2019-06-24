@@ -268,7 +268,7 @@ gpii.app.filterButtonList = function(siteConfigButtonList, availableButtons) {
  * In most cases, there's only a single USB drive. But if there's more than one USB drive,
  * then those that do not contain the token file are shown.
  */
-gpii.app.openUSB = function() {
+gpii.app.openUSB = function () {
     gpii.windows.getUserUsbDrives().then(function (paths) {
         fluid.each(paths, function (path) {
             child_process.exec("explorer.exe \"" + path + "\"");

@@ -36,11 +36,15 @@ function clickStepperIndicator() {
 }
 
 function getQuickFolderWIdgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-of-type(7) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(9) > span").text();
 }
 
 function getUsbWIdgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-of-type(8) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
+}
+
+function getDocuMorphWIdgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
 }
 
 
@@ -66,8 +70,8 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-of-type(7)').is(':visible')",
-    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-of-type(8)').is(':visible')",
+    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(9)').is(':visible')",
+    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(8)').is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
@@ -165,7 +169,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 14;
+var qssSettingsCount = 15;
 
 var navigationSequence = [
     {
@@ -1399,6 +1403,31 @@ var quickFoldersTestSequence = [
     }
 ];
 
+var docuMorphTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // Text of the button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getDocuMorphWIdgetBtnText
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Text of the button should be",
+            "Docu- Morph",
+            "{arguments}.0"
+        ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
 fluid.defaults("gpii.tests.qss.mockedAppZoom", {
     gradeNames: "fluid.component",
 
@@ -1689,7 +1718,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 67,
+    expect: 68,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1736,6 +1765,7 @@ gpii.tests.qss.testDefs = {
         undoTestSequence,
         openUsbTestSequence,
         quickFoldersTestSequence,
+        docuMorphTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
         restartWarningSequence, // The test doesn't cover all the possible behaviors as described in the GPII-3943
