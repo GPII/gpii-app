@@ -156,6 +156,7 @@
         "tabindex": 210,
         "messageKey": "usb-open"
     }, {
+        "id": "launch-documorph",
         "path": "launch-documorph",
         "schema": {
             "type": "launch-documorph"
