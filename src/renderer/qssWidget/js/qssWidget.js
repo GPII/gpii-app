@@ -86,7 +86,9 @@
 
             // USB related events
             onQssOpenUsbRequested: null,
-            onQssUnmountUsbRequested: null
+            onQssUnmountUsbRequested: null,
+
+            onLearnMoreClicked: null
         },
 
         sounds: {},
@@ -150,6 +152,9 @@
                                     messages: {
                                         learnMore: "{qssWidget}.model.messages.learnMore"
                                     }
+                                },
+                                listeners: {
+                                    "onClicked.learnMore": "{qssWidget}.events.onLearnMoreClicked"
                                 }
                             }
                         }
@@ -221,7 +226,8 @@
                         onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated",
                         // USB buttons
                         onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
-                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested"
+                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
+                        onLearnMoreClicked:              "{qssWidget}.events.onLearnMoreClicked"
                     }
                 }
             }
