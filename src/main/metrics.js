@@ -117,6 +117,10 @@ fluid.defaults("gpii.app.metrics", {
         "qssWidget": {
             "record": "gpii.app.metrics.qssWidget",
             "target": "{/ gpii.app.qssWidget}.options.gradeNames"
+        },
+        "tooltip": {
+            "record": "gpii.app.metrics.qssTooltipDialog",
+            "target": "{/ gpii.app.qssTooltipDialog}.options.gradeNames"
         }
     }
 });
@@ -170,6 +174,25 @@ fluid.defaults("gpii.app.metrics.qssWidget", {
         "onDialogHidden.metrics": {
             func: "{eventLog}.metrics.uiMetric",
             args: [ "widget-hidden", {
+                path: "{that}.model.setting.path"
+            } ]
+        }
+    }
+});
+
+/** Mix-in grade to provide metrics for QSS widgets */
+fluid.defaults("gpii.app.metrics.qssTooltipDialog", {
+    gradeNames: ["fluid.component"],
+    listeners: {
+        "onDialogShown.metrics": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: [ "tooltip-shown", {
+                path: "{that}.model.setting.path"
+            } ]
+        },
+        "onDialogHidden.metrics": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: [ "tooltip-hidden", {
                 path: "{that}.model.setting.path"
             } ]
         }
