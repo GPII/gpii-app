@@ -102,7 +102,7 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             target: "{app gpiiConnector}.options.defaultPreferences.systemDefaultLanguage"
         },
         distributeDefaultSettingsPath: {
-            record: "{that}.options.siteConfig.defaultValues",
+            record: "{that}.options.siteConfig.defaultSettingsFileLocation",
             target: "{app gpiiConnector}.options.defaultPreferences.defaultSettingsPath"
         },
         distributeSurveyTriggersUrl: {

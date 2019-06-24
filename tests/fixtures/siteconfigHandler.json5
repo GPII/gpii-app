@@ -9,5 +9,5 @@
             keyedOut: "To save your settings you need to setup a Morphic Account."
         }
     },
-    defaultValues: "gpii\\defaultSettings.json5"
+    defaultSettingsFileLocation: "./defaultSettings.json5"
 }

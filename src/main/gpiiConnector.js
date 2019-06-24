@@ -770,7 +770,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
  * @param {String} defaultSettingsPath - The path to the file containing the QSS
  * @return {Object[]} An array of the loaded settings
  */
-gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function(defaultSettingsPath) {
+gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettingsPath) {
     var compiledPath = gpii.app.compileAppDataPath(defaultSettingsPath);
 
     if (gpii.app.checkIfFileExists(compiledPath)) {
@@ -779,7 +779,7 @@ gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function(defaultSettingsPat
 
         if (fluid.isValue(loadedSettings.contexts["gpii-default"].preferences)) {
 
-            fluid.each(loadedSettings.contexts["gpii-default"].preferences, function(value, path) {
+            fluid.each(loadedSettings.contexts["gpii-default"].preferences, function (value, path) {
                 var fixedPath = path.replace(/\./g, "\\."),
                     fixedValue = value;
 

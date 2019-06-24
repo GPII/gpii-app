@@ -13,5 +13,5 @@
     	alwaysOnTop: true
     },
     surveyTriggersUrl: "http://localhost:8083/surveys/triggers.json",
-    defaultValues: "gpii\\defaultSettings.json5"
+    defaultSettingsFileLocation: "./defaultSettings.json5"
 }
