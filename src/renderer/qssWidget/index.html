@@ -11,12 +11,14 @@
         <link rel="stylesheet" href="css/qssMenuWidget.css">
         <link rel="stylesheet" href="css/qssStepperWidget.css">
         <link rel="stylesheet" href="css/qssToggleWidget.css">
+        <link rel="stylesheet" href="css/qssUSBWidget.css">
 
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
 
         <script type="text/javascript" src="js/qssMenuWidget.js"></script>
         <script type="text/javascript" src="js/qssScreenCaptureWidget.js"></script>
+        <script type="text/javascript" src="js/qssOpenUsbWidget.js"></script>
         <script type="text/javascript" src="js/qssStepperWidget.js"></script>
         <script type="text/javascript" src="js/qssToggleWidget.js"></script>
         <script type="text/javascript" src="js/qssWidget.js"></script>
@@ -43,7 +45,7 @@
     <body>
         <div class="flc-qssWidget fl-qssWidget">
             <div class="flc-titlebar fl-titlebar">
-                <div class="flc-closeBtn fl-closeBtn btn btn-regular fl-focusable" role="button" tabindex="0">&#x2715;</div>
+                <div class="flc-closeBtn fl-closeBtn btn btn-regular fl-focusable" role="button" tabindex="0" aria-label="Close">&#x2715;</div>
             </div>
 
             <!-- the Stepper Widget -->
@@ -107,6 +109,19 @@
                 <div class="flc-qssScreenCaptureWidget-controlsWrapper fl-qssMenuWidget-controlsWrapper">
                     <div role="radiogroup" class="flc-qssScreenCaptureWidget-controls fl-qssMenuWidget-controls"></div>
                 </div>
+            </div>
+
+            <!-- the open USB Widget -->
+            <div class="flc-qssOpenUSBWidget fl-dialog-content fl-scrollable fl-qssMenuWidget fl-qssOpenUSBWidget">
+                <div class="flc-qssWidget-tip fl-qssWidget-tip fl-qssOpenUSBWidget-tip"></div>
+                <button class="flc-openUsbButton btn fl-btn fl-focusable">
+                    <span class="flc-btnLabel"></span>
+                </button>
+                <div class="flc-qssOpenUSBWidget-footerTip fl-qssOpenUSBWidget-footerTip"></div>
+                <button class="flc-ejectUsbButton btn fl-btn fl-focusable">
+                    <span class="flc-btnLabel"></span>
+                </button>
+                <div class="flc-qssWidget-learnMoreLink fl-qssWidget-learnMoreLink fl-focusable" role="link" tabindex="0"></div>
             </div>
         </div>
         <div class="fl-qssWidget-arrow"></div>

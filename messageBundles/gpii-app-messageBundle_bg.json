@@ -1,11 +1,11 @@
 {
     "gpii_app_menu_about": "Относно...",
     "gpii_app_menu_openQss": "Отвори Morphic",
-    "gpii_app_menu_keyedIn": "Вписан с %snapsetName",
+    "gpii_app_menu_keyedIn": "Вход с профил",
     "gpii_app_menu_keyOut": "Ресетни Morphic",
 
     "gpii_app_tray_defaultTooltip": "Morphic: В готовност",
-    "gpii_app_tray_prefSetTooltip": "Morphic: %prefSet",
+    "gpii_app_tray_prefSetTooltip": "Morphic: Вход с профил",
 
     "gpii_psp_mainWindow_titlebarAppName": "Morphic панел с настройки",
 
@@ -61,5 +61,10 @@
     "gpii_qss_saveButtonPresenter_notification": {
         "keyedOut": "За да запазите вашите настройки трябва да си създадете Morphic акаунт. Отидете на <a href=\"%accountUrl\">%accountUrl</a>.",
         "keyedIn": "Вашите настройки са запазени в Morphic Cloud."
-    }
+    },
+
+    "gpii_qssWidget_openUSB_noUsbInserted": "В компютъра не са включени USB устройства. Поставете USB и опитайте отново.",
+    "gpii_qssWidget_openUSB_ejectUsbDrives": "В компютъра няма активни USB устройства. Безопасно е да премахнете всяко устройство в компютъра",
+    "gpii_qssWidget_openUSB_openUsbButtonLabel": "Отвори всички USB устройства",
+    "gpii_qssWidget_openUSB_ejectUsbButtonLabel": "Премахни безопасно всички USB устройствата"
 }

@@ -83,7 +83,6 @@
                 "white-black",
                 "yellow-black",
                 "black-yellow",
-                "grey-black",
                 "grey-white",
                 "black-brown"
             ],
@@ -93,7 +92,6 @@
                 "White on black",
                 "Yellow on black",
                 "Black on yellow",
-                "Light on dark grey",
                 "Grey on white",
                 "Black on brown"
             ],
@@ -196,6 +194,14 @@
         "tabindex": 190,
         "messageKey": "usb-open"
     }, {
+        "path": "launch-documorph",
+        "schema": {
+            "type": "launch-documorph"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 195,
+        "messageKey": "launch-documorph"
+    },  {
         "path": "more",
         "schema": {
             "type": "more",
