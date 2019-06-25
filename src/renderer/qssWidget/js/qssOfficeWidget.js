@@ -227,8 +227,8 @@
         },
         listeners: {
             "onCreate.registerIpcListener": {
-                funcName: "gpii.qssWidget.office.presenter.registerIpcListener",
-                args: ["{that}", "{office}"]
+                funcName: "gpii.psp.registerIpcListener",
+                args: ["{that}.model.messageChannel", "{that}.loadState"]
             },
             "onCreate.applyStyles": {
                 funcName: "gpii.qssWidget.office.presenter.applyStyles",
@@ -261,18 +261,13 @@
                     "{channelNotifier}.events.onQssOfficeSimplificationRequest", // sends the office request
                     "{channelNotifier}.events.onQssResetWord" // resets the Word application
                 ]
+            },
+            loadState: {
+                funcName: "gpii.qssWidget.office.presenter.loadState",
+                args: ["{that}", "{office}", "{arguments}.0"]
             }
         }
     });
-
-    /**
-     * Registers a listener for the `LoadInitialOfficeRibbonsState` event from the main process.
-     * @param {Component} presenter - The `gpii.qssWidget.office.presenter` instance.
-     * @param {Component} office - The `gpii.qssWidget.office` instance.
-     */
-    gpii.qssWidget.office.presenter.registerIpcListener = function (presenter, office) {
-        gpii.psp.registerIpcListener(presenter.model.messageChannel, gpii.qssWidget.office.presenter.loadState, presenter, office);
-    };
 
     /**
      * Pre-loads the data in the office.model.states array

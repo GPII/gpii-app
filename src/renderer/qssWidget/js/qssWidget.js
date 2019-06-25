@@ -55,7 +55,8 @@
             menu: ".flc-qssMenuWidget",
             toggle: ".flc-qssToggleWidget",
             screenCapture: ".flc-qssScreenCaptureWidget",
-            office: ".flc-qssOfficeWidget"
+            office: ".flc-qssOfficeWidget",
+            openUSB: ".flc-qssOpenUSBWidget"
         },
 
         /**
@@ -67,10 +68,16 @@
             "string": "gpii.qssWidget.menu",
             "boolean": "gpii.qssWidget.toggle",
             "screenCapture": "gpii.qssWidget.screenCapture",
-            "office": "gpii.qssWidget.office"
+            "office": "gpii.qssWidget.office",
+            "openUSB": "gpii.qssWidget.openUSB"
         },
 
         events: {
+            // Important information
+            // These events are available in the all of the widgets
+            // It can be used to access the main events and utils from them
+            // Usage: {channelNotifier}.events.onQssWidgetHideQssRequested
+
             onWidgetClosed: null,
             onQssWidgetHideQssRequested: null,
             onSettingUpdated: null,
@@ -78,9 +85,15 @@
             onQssWidgetSettingAltered: null,
             onQssWidgetNotificationRequired: null,
             onQssWidgetCreated: null,
+
+            // Office Simplify related events
             onQssOfficeSimplificationRequest: null,
             onQssLoadInitialOfficeRibbonsState: null,
-            onQssResetWord: null
+            onQssResetWord: null,
+
+            // USB related events
+            onQssOpenUsbRequested: null,
+            onQssUnmountUsbRequested: null
         },
 
         sounds: {},
@@ -215,7 +228,9 @@
                         onQssWidgetCreated:                 "{qssWidget}.events.onQssWidgetCreated",
                         onQssOfficeSimplificationRequest:   "{qssWidget}.events.onQssOfficeSimplificationRequest",
                         onQssLoadInitialOfficeRibbonsState: "{qssWidget}.events.onQssLoadInitialOfficeRibbonsState",
-                        onQssResetWord:                     "{qssWidget}.events.onQssResetWord"
+                        onQssResetWord:                     "{qssWidget}.events.onQssResetWord",
+                        onQssOpenUsbRequested:              "{qssWidget}.events.onQssOpenUsbRequested",
+                        onQssUnmountUsbRequested:           "{qssWidget}.events.onQssUnmountUsbRequested"
                     }
                 }
             }
@@ -344,7 +359,9 @@
      * @return {Number} - The height of the QSS menu assuming it is fully displayed.
      */
     gpii.qssWidget.calculateHeight = function (container, parentContainer, heightListenerContainer) {
-        return container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight;
+        var baseHeight = container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight,
+            heightFix = 12; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
+        return baseHeight + heightFix;
     };
 
     /**

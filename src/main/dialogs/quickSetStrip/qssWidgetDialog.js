@@ -40,7 +40,7 @@ fluid.defaults("gpii.app.qssWidget", {
     extraVerticalOffset: 7,
 
     // A list of QSS setting types for which this widget is applicable.
-    supportedSettings: ["string", "number", "boolean", "screenCapture", "office"],
+    supportedSettings: ["string", "number", "boolean", "screenCapture", "openUSB", "office"],
 
     model: {
         setting: {}
@@ -106,9 +106,15 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
                     onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated",
+
+                    // Office Simplify related events
                     onQssOfficeSimplificationRequest: null,
                     onQssLoadInitialOfficeRibbonsState: null,
-                    onQssResetWord: null
+                    onQssResetWord: null,
+
+                    // USB related events
+                    onQssOpenUsbRequested: null,
+                    onQssUnmountUsbRequested: null
                 },
                 listeners: {
                     onQssWidgetClosed: [{
@@ -144,7 +150,23 @@ fluid.defaults("gpii.app.qssWidget", {
                             "{arguments}.0" // messageChannel
                         ]
                     },
-                    onQssResetWord: "gpii.app.resetWord"
+                    onQssResetWord: "gpii.app.resetWord",
+                    onQssOpenUsbRequested: {
+                        funcName: "gpii.app.openUSB",
+                        args: [
+                            "{qssWidget}.dialog",
+                            "{arguments}.0", // messageChannel
+                            "{arguments}.1" // messages
+                        ]
+                    },
+                    onQssUnmountUsbRequested: {
+                        funcName: "gpii.app.ejectUSB",
+                        args: [
+                            "{qssWidget}.dialog",
+                            "{arguments}.0", // messageChannel
+                            "{arguments}.1" // messages
+                        ]
+                    }
                 }
             }
         }

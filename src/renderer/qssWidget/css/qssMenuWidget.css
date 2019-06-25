@@ -18,12 +18,14 @@
 .fl-qssMenuWidget .fl-qssMenuWidget-controls {
     position: relative;
     overflow: hidden;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
     position: relative;
     width: 120px;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     padding: 5px;
     border: 1px solid #0f4797;
     border-radius: 3px;
@@ -108,7 +110,6 @@
 .fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssWidget-tip p:last-of-type {
     margin: 0;
 }
-
 /* Specific version for the Screen Capture's widget: END */
 
 /* Specific version for the Office Simplification's widget: BEGIN */

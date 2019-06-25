@@ -36,10 +36,14 @@ function clickStepperIndicator() {
 }
 
 function getQuickFolderWidgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(9) > span").text();
 }
 
 function getUsbWidgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
+}
+
+function getDocuMorphWIdgetBtnText() {
     return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
 }
 
@@ -57,6 +61,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
     clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
     clickOfficeSimplifyBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
+    clickOpenUsbBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(8)\").click()",
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
@@ -67,8 +72,8 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    checkIfQuickFoldersWidget = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(8)\").is(':visible')",
-    checkIfUSBWidget = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(7)\").is(':visible')",
+    checkIfQuickFoldersWidget = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(9)\").is(':visible')",
+    checkIfUSBWidget = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(8)\").is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
@@ -166,7 +171,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 15;
+var qssSettingsCount = 16;
 
 var navigationSequence = [
     {
@@ -238,7 +243,6 @@ var navigationSequence = [
     }
 ];
 
-
 var restartWarningSequence = [
     { // Simulate language change
         func: "{that}.app.qssWrapper.alterSetting",
@@ -246,35 +250,13 @@ var restartWarningSequence = [
             path: "http://registry\\.gpii\\.net/common/language",
             value: "ko-KR"
         }]
-    }, { // ... the restart warning notification should be shown
-        event: "{that qssNotification}.events.onDialogShown",
-        listener: "jqUnit.assert",
-        args: ["The notification dialog is shown when restartWarning setting is changed."]
-    }, {
-        funcName: "{that}.app.qssWrapper.qssNotification.hide"
-    }, { // Changing the user restartWarning preference
-        event: "{that qssNotification}.events.onDialogHidden",
-        listener: "{that}.app.applier.change",
-        args: ["preferences.disableRestartWarning", true]
-    }, { // and trying to show a restart warning notification
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "disableRestartWarning",
-        listener: "{that}.app.qssWrapper.showRestartWarningNotification",
-        args: [{
-            path: "http://registry\\.gpii\\.net/common/language",
-            restartWarning: true,
-            schema: {},
-            value: "en-US"
-        }]
-    }, { // should have disabled it
+    }, { // restart warning is not shown
         funcName: "jqUnit.assertFalse",
         args: [
-            "Restart warning notification is not shown when disabled by user setting",
+            "Restart warning notification is shown only one time per session",
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
-    },
-
-    { // bring everything back to normal
+    }, { // bring everything back to normal
         func: "{that}.app.resetAllToStandard"
     }
 ];
@@ -987,6 +969,21 @@ var qssCrossTestSequence = [
         ],
         resolve: "jqUnit.assertFalse",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
+    }, { // Open the USB widget
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickOpenUsbBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... and the menu widget shouldn't be shown
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            checkIfMenuWidget
+        ],
+        resolve: "jqUnit.assertFalse",
+        resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     },
     //
     // Setting changes tests
@@ -1392,7 +1389,7 @@ var openUsbTestSequence = [
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of button should be",
-            "Open USB Drive",
+            "Open & Eject USB",
             "{arguments}.0"
         ]
     }, { // Close the QSS
@@ -1426,6 +1423,31 @@ var quickFoldersTestSequence = [
         resolveArgs: [
             "Text of the button should be",
             "Open Quick Folder",
+            "{arguments}.0"
+        ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
+var docuMorphTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // Text of the button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getDocuMorphWIdgetBtnText
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Text of the button should be",
+            "Docu- Morph",
             "{arguments}.0"
         ]
     }, { // Close the QSS
@@ -1728,7 +1750,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 69,
+    expect: 70,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1775,9 +1797,10 @@ gpii.tests.qss.testDefs = {
         undoTestSequence,
         openUsbTestSequence,
         quickFoldersTestSequence,
+        docuMorphTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
-        restartWarningSequence,
+        restartWarningSequence, // The test doesn't cover all the possible behaviors as described in the GPII-3943
         crossQssTranslations,
         appZoomTestSequence
     )

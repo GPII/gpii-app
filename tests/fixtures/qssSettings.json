@@ -209,6 +209,14 @@
         "tabindex": 190,
         "messageKey": "usb-open"
     }, {
+        "path": "launch-documorph",
+        "schema": {
+            "type": "launch-documorph"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 195,
+        "messageKey": "launch-documorph"
+    },  {
         "path": "more",
         "schema": {
             "type": "more",
