@@ -127,7 +127,7 @@ learnMore: "Learn more" link was clicked
 
 
 /**
- * Component that controls the tray widgets.
+ * Metrics for gpii-app
  */
 fluid.defaults("gpii.app.metrics", {
     gradeNames: ["fluid.component"],
@@ -139,17 +139,20 @@ fluid.defaults("gpii.app.metrics", {
     },
     distributeOptions: {
         "qss": {
-            "record": "gpii.app.metrics.qssInWrapper",
-            "target": "{/ gpii.app.qssInWrapper}.options.gradeNames"
+            record: "gpii.app.metrics.qssInWrapper",
+            target: "{/ gpii.app.qssInWrapper}.options.gradeNames"
         },
         "qssWidget": {
-            "record": "gpii.app.metrics.qssWidget",
-            "target": "{/ gpii.app.qssWidget}.options.gradeNames"
+            record: "gpii.app.metrics.qssWidget",
+            target: "{/ gpii.app.qssWidget}.options.gradeNames"
         },
         "tooltip": {
-            "record": "gpii.app.metrics.qssTooltipDialog",
-            "target": "{/ gpii.app.qssTooltipDialog}.options.gradeNames"
+            record: "gpii.app.metrics.qssTooltipDialog",
+            target: "{/ gpii.app.qssTooltipDialog}.options.gradeNames"
         }
+    },
+    durationEvents: {
+        "tooltip-shown": "tooltip-hidden"
     }
 });
 
