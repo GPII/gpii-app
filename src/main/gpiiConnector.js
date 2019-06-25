@@ -41,7 +41,7 @@ fluid.defaults("gpii.app.gpiiConnector", {
         closeQssOnBlur: false,
         closePspOnBlur: true,
         disableRestartWarning: false,
-        defaultSettingsPath: null
+        defaultSettingsData: null
     },
 
     events: {
@@ -767,11 +767,14 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
 /**
  * Retrieves synchronously the default QSS settings from a file on the local machine
  * folder. These are to be provided from the core in the future.
- * @param {String} defaultSettingsPath - The path to the file containing the QSS
+ * @param {String} defaultSettings - The path to the file containing the QSS
  * @return {Object[]} An array of the loaded settings
  */
-gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettingsPath) {
-    var compiledPath = gpii.app.compileAppDataPath(defaultSettingsPath);
+gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettings) {
+    var compiledPath = defaultSettings.fileLocation;
+    if (defaultSettings.relativePath) {
+        compiledPath = gpii.app.compileAppDataPath(defaultSettings.fileLocation);
+    }
 
     if (gpii.app.checkIfFileExists(compiledPath)) {
         var loadedSettings = fluid.require(compiledPath),
@@ -786,6 +789,7 @@ gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettingsPa
                 result[fixedPath] = { "value": fixedValue };
             });
         }
+
         return result;
     } else {
         fluid.log(fluid.logLevel.WARN, "loadDefaultSettings: Cannot find the settings file - " + compiledPath);
@@ -805,7 +809,7 @@ gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettingsPa
  * @return {Object} The decorated PSP channel message
  */
 gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, message) {
-    var loadedSettings = gpii.app.dev.gpiiConnector.qss.loadDefaultSettings(that.options.defaultPreferences.defaultSettingsPath),
+    var loadedSettings = gpii.app.dev.gpiiConnector.qss.loadDefaultSettings(that.options.defaultPreferences.defaultSettingsData),
         payload = message.payload || {};
 
     if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {

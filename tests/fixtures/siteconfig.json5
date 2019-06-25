@@ -13,5 +13,7 @@
     	alwaysOnTop: true
     },
     surveyTriggersUrl: "http://localhost:8083/surveys/triggers.json",
-    defaultSettingsFileLocation: "./defaultSettings.json5"
+    defaultSettingsData: {
+        fileLocation: "V:\\tests\\fixtures\\defaultSettings.json5"
+    }
 }

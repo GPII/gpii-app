@@ -195,7 +195,7 @@ gpii.app.isPointInRect = function (point, rectangle) {
  * In most cases, there's only a single USB drive. But if there's more than one USB drive,
  * then those that do not contain the token file are shown.
  */
-gpii.app.openUSB = function() {
+gpii.app.openUSB = function () {
     gpii.windows.getUserUsbDrives().then(function (paths) {
         fluid.each(paths, function (path) {
             child_process.exec("explorer.exe \"" + path + "\"");
@@ -205,10 +205,10 @@ gpii.app.openUSB = function() {
 
 /**
  * Check if a file exists.
- * @param {String} path to the file.
+ * @param {String} file to the file.
  * @return {Boolean} `true` if the file exists.
  */
-gpii.app.checkIfFileExists = function(file) {
+gpii.app.checkIfFileExists = function (file) {
     return fs.existsSync(file);
 };
 
@@ -219,7 +219,7 @@ gpii.app.checkIfFileExists = function(file) {
  * @param {String} defaultSettingsPath
  * @returns {String}
  */
-gpii.app.compileAppDataPath = function(defaultSettingsPath) {
-    const path = require('path');
+gpii.app.compileAppDataPath = function (defaultSettingsPath) {
+    var path = require("path");
     return path.join(process.env.appdata, defaultSettingsPath);
 };

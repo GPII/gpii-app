@@ -9,5 +9,7 @@
             keyedOut: "To save your settings you need to setup a Morphic Account."
         }
     },
-    defaultSettingsFileLocation: "./defaultSettings.json5"
+    defaultSettingsData: {
+        fileLocation: "V:\\tests\\fixtures\\defaultSettings123.json5"
+    }
 }
