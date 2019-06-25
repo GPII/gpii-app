@@ -39,6 +39,13 @@
                 footerTip: "{that}.model.setting.widget.footerTip"
             }
         },
+        modelListeners: {
+            setting: {
+                func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
+                args: ["{change}.value"],
+                includeSource: "settingAlter"
+            }
+        },
         selectors: {
             heightListenerContainer: ".flc-qssOfficeWidget-controls",
             menuControlsWrapper: ".flc-qssOfficeWidget-controlsWrapper",
@@ -55,6 +62,7 @@
                 options: {
                     model: {
                         disabled: "{office}.model.disabled",
+                        value: "{office}.model.setting.value",
                         styles: "{office}.model.setting.styles"
                     },
                     modelRelay: {
@@ -249,6 +257,7 @@
                     "{that}.model.item",
                     "{that}.container",
                     "{office}",
+                    "{repeater}",
                     "{channelNotifier}.events.onQssOfficeSimplificationRequest", // sends the office request
                     "{channelNotifier}.events.onQssResetWord" // resets the Word application
                 ]
@@ -369,10 +378,11 @@
      * @param {Object} item - The current setting option.
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      * @param {Component} office - The `gpii.qssWidget.office` instance.
+     * @param {Component} repeater - The `gpii.qssWidget.office.repeater` instance.
      * @param {EventListener} commandEvent - handle to the onQssOfficeSimplificationRequest event
      * @param {EventListener} resetWordEvent - handle to the onQssResetWord event
      */
-    gpii.qssWidget.office.presenter.toggleCheckmark = function (that, key, item, container, office, commandEvent, resetWordEvent) {
+    gpii.qssWidget.office.presenter.toggleCheckmark = function (that, key, item, container, office, repeater, commandEvent, resetWordEvent) {
         if (key === office.model.availableCommands.resetCommand) {
             // we have the reset command in place
             resetWordEvent.fire();
@@ -391,17 +401,14 @@
 
             var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
 
-            console.log("toggleCheckmark: Trying to apply value = "+commandToUse);
-
             // applying the value
-            that.applier.change("value", commandToUse, null, "settingAlter");
-/*
+            repeater.applier.change("value", commandToUse, null, "settingAlter");
+            /*
             // debug
             console.log("office.model.states: ", office.model.states);
             console.log("commandToUse: ", commandToUse);
             commandEvent.fire(commandToUse);
-
- */
+            */
         }
     };
 
