@@ -4,8 +4,11 @@
     hideQssSaveButton: false,
 
     // File containing default values which are used after resetting user settings
-    // the path its joined after %appdata%, so the end result its something similar to:
-    // gpii\\defaultSettings.json5
+    // if relativePath is true then fileLocation is joined after %appdata%, so the
+    // end result its something similar to:
+    // "C:\Users\vagrant\AppData\Roaming\gpii\defaultSettings.json5"
+    // if relativePath is false then fileLocation is assumed that its absolute path
+    // and no changes are done to it
     defaultSettingsData: {
         relativePath: true,
         fileLocation: "gpii\\defaultSettings.json5"

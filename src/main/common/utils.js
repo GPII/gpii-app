@@ -334,10 +334,10 @@ gpii.app.checkIfFileExists = function (file) {
  * Uses environment's %appdata% variable and combines it with the data from the site config
  * the result should be something like:
  * C:\Users\vagrant\AppData\Roaming\gpii\defaultSettings.json5
- * @param {String} defaultSettingsPath
- * @returns {String}
+ * @param {String} fileLocation - path to the file's location
+ * @return {String} - file location path joined with %appdata%
  */
-gpii.app.compileAppDataPath = function (defaultSettingsPath) {
+gpii.app.compileAppDataPath = function (fileLocation) {
     var path = require("path");
-    return path.join(process.env.appdata, defaultSettingsPath);
+    return path.join(process.env.appdata, fileLocation);
 };

@@ -765,23 +765,33 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
 });
 
 /**
+ * An object containing information the default setting's location
+ * @typedef {Object} defaultSetting
+ * @property {Boolean} relativePath - true if the path should be joined with %appdata%
+ * @property {String} fileLocation - path to file's location
+ */
+
+/**
  * Retrieves synchronously the default QSS settings from a file on the local machine
  * folder. These are to be provided from the core in the future.
- * @param {String} defaultSettings - The path to the file containing the QSS
+ * @param {defaultSetting} defaultSettings - data of the file's location
  * @return {Object[]} An array of the loaded settings
  */
 gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettings) {
+    // by default we are assuming the the fileLocation is absolute path
     var compiledPath = defaultSettings.fileLocation;
     if (defaultSettings.relativePath) {
+        // if the path is relative we join if to %appdata%
         compiledPath = gpii.app.compileAppDataPath(defaultSettings.fileLocation);
     }
 
     if (gpii.app.checkIfFileExists(compiledPath)) {
+        // file exists, so we try to load it
         var loadedSettings = fluid.require(compiledPath),
             result = {};
 
         if (fluid.isValue(loadedSettings.contexts["gpii-default"].preferences)) {
-
+            // the structure matches our assumption, going through the nodes and collect the data
             fluid.each(loadedSettings.contexts["gpii-default"].preferences, function (value, path) {
                 var fixedPath = path.replace(/\./g, "\\."),
                     fixedValue = value;
