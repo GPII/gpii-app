@@ -27,13 +27,14 @@ The following events are captured:
 qss-shown: The quick-strip was shown.
 {
     "module":"metrics.app",
-    "event":"qss-shown",
+    "event":"qss-shown"
 }
 
 qss-hidden: The quick-strip was hidden.
 {
     "module":"metrics.app",
     "event":"qss-hidden",
+    "data": { duration: 56 }
 }
 
 button-focused: A button on the quick-strip has been focused.
@@ -82,6 +83,7 @@ widget-hidden: A qss widget is closed
     "event":"widget-hidden",
     "data": {
         "path":"appTextZoom"
+        "duration": 15
     }
 }
 
@@ -107,9 +109,10 @@ tooltip-shown: QS tooltip was shown
 tooltip-shown: QS tooltip was hidden
 {
   "module": "metrics.app",
-  "event": "tooltip-shown",
+  "event": "tooltip-hidden",
   "data": {
     "path": "http://registry\\.gpii\\.net/common/language"
+    "duration": 10
   }
 }
 
@@ -171,7 +174,9 @@ fluid.defaults("gpii.app.metrics", {
         }
     },
     durationEvents: {
-        "tooltip-shown": "tooltip-hidden"
+        "tooltip-shown": "tooltip-hidden",
+        "qss-shown": "qss-hidden",
+        "widget-shown": "widget-hidden"
     }
 });
 
