@@ -123,6 +123,25 @@ learnMore: "Learn more" link was clicked
   }
 }
 
+reset: The reset to standard desktop icon was clicked:
+{
+  "module": "startup",
+  "event": "reset",
+  "data": {
+    "commandLine": "morphic-app.exe --reset"
+  }
+}
+
+open: The show Morphic desktop link was clicked:
+{
+  "module": "startup",
+  "event": "open",
+  "data": {
+    "commandLine": "morphic-app.exe"
+  }
+}
+
+
 */
 
 
