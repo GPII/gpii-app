@@ -88,6 +88,18 @@
                     events: {
                         onItemFocus: null
                     },
+                    invokers: {
+                        updateValue: {
+                            funcName: "gpii.qssWidget.office.updateValue",
+                            args: [
+                                "{that}",
+                                "{office}",
+                                "{that}.container",
+                                "{arguments}.0", // value
+                                "{arguments}.1" // keyboardEvent
+                            ]
+                        }
+                    },
                     listeners: {
                         "onCreate.enable": {
                             this: "{that}.container",
@@ -140,6 +152,19 @@
             onHeightChanged: null
         }
     });
+
+
+    gpii.qssWidget.office.updateValue = function (that, menu, container, value, keyboardEvent) {
+        if (!that.model.disabled && that.model.value !== value) {
+            that.applier.change("value", value, null, "settingAlter");
+
+            // Disable interactions with the window as it is about to close
+            that.applier.change("disabled", true);
+            container.addClass(that.options.styles.disabled);
+
+            menu.close(keyboardEvent);
+        }
+    };
 
     /**
      * Invoked whenever the user changes the value of the given setting. Schedules that
@@ -218,6 +243,10 @@
                 this: "{that}.container",
                 method: "text",
                 args: ["{that}.model.item.value"]
+            },
+            "{repeater}.model.value": {
+                funcName: "gpii.qssWidget.menu.presenter.toggleCheckmark",
+                args: ["{change}.value", "{that}.model.item", "{that}.container"]
             }
         },
         events: {
@@ -240,14 +269,10 @@
         },
         invokers: {
             activate: {
-                funcName: "gpii.qssWidget.office.presenter.toggleCheckmark",
+                func: "{repeater}.updateValue",
                 args: [
-                    "{that}",
                     "{that}.model.item.key",
-                    "{that}.model.item",
-                    "{that}.container",
-                    "{office}",
-                    "{repeater}"
+                    "{arguments}.0" // keyboardEvent
                 ]
             }
         }
@@ -266,49 +291,17 @@
         }
     };
 
-    /** TODO: applyCheckmarks: remove TODO when ready
-     * Adds a checked icon next to a setting option if it is the currently selected one for the setting.
-     * @param {Component} that - The `gpii.qssWidget.office.presenter` instance.
-     * @param {Component} office - The `gpii.qssWidget.office` instance.
-     */
-    gpii.qssWidget.office.presenter.applyCheckmarks = function (that, office) {
-        if (office.model.states[that.model.item.key] === true) {
-            that.container.attr("aria-checked", true);
-        }
-    };
-
     /** TODO: toggleCheckmark: delete the debugs when ready
      * Adds a checkmark next to a setting option if it is the currently selected one for the setting.
-     * @param {Component} that - The `gpii.psp.repeater` instance.
      * @param {String} key - The `key` of the selected setting option.
      * @param {Object} item - The current setting option.
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      * @param {Component} office - The `gpii.qssWidget.office` instance.
      * @param {Component} repeater - The `gpii.qssWidget.office.repeater` instance.
      */
-    gpii.qssWidget.office.presenter.toggleCheckmark = function (that, key, item, container, office, repeater) {
-        // this is just a ribbon command
-
-        // toggle the current state
-        office.model.states[key] = !office.model.states[key];
-
+    gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container) {
         // visually checks the selected option
-        if (office.model.states[key] === true) {
-            container.attr("aria-checked", item.key === key);
-        } else {
-            container.removeAttr("aria-checked");
-        }
-
-        var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
-
-        // applying the value
-        repeater.applier.change("value", commandToUse, null, "settingAlter");
-        /*
-        // debug
-        console.log("office.model.states: ", office.model.states);
-        console.log("commandToUse: ", commandToUse);
-        commandEvent.fire(commandToUse);
-        */
+        container.attr("aria-checked", item.key === key);
     };
 
     /**
