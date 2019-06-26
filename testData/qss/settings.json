@@ -68,7 +68,7 @@
         "value": ""
     }, {
         "id": "office-simplification",
-        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft.office",
+        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.office.word-ribbon",
         "schema": {
             "type": "office",
             "keys": [
