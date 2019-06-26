@@ -322,33 +322,3 @@ gpii.app.ejectUSB = function (browserWindow, messageChannel, messages) {
         }
     });
 };
-
-/**
- * TODO: officeSimplificationCommand needs a proper description
- * @param {String} command - this is the name of the UI preset for the MS Word
- */
-gpii.app.officeSimplificationCommand = function (command) {
-    // TODO: officeSimplificationCommand - waiting for the core implemetation, just logging text for now
-    console.log("gpii.app.officeSimplificationCommand: ", command);
-};
-
-/**
- * Get the current state of the Office Ribbons.
- * @param {Object} browserWindow - An Electron `BrowserWindow` object.
- * @param {String} messageChannel - The channel to which the message should be sent.
- */
-gpii.app.getOfficeRibbons = function (browserWindow, messageChannel) {
-    // we should have a proper call to JJ's function to determine which preset is pre-loaded
-    var result = "StandardSet";
-
-    // send current state of ribbons to the office widget
-    gpii.app.notifyWindow(browserWindow, messageChannel, result);
-};
-
-/**
- * Resetting Office ribbons to the initial state
- */
-gpii.app.resetWord = function () {
-    // TODO: resetWord - waiting on Steve's "Restart Word" implemetation, just logging text for now to see if it works
-    console.log("gpii.app.resetWord: RESET");
-};

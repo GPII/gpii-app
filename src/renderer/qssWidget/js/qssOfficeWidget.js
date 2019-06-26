@@ -31,8 +31,7 @@
             availableCommands: {
                 defaultCommand: "StandardSet",
                 allTrueCommand: "Basics+Essentials+StandardSet",
-                allFalseCommand: "StandardSet",
-                resetCommand: "restart-word"
+                allFalseCommand: "StandardSet"
             },
             setting: {},
             messages: {
@@ -208,8 +207,7 @@
     fluid.defaults("gpii.qssWidget.office.presenter", {
         gradeNames: ["fluid.viewComponent", "gpii.qssWidget.button"],
         model: {
-            item: null,
-            messageChannel: "LoadInitialOfficeRibbonsState" // Channel listening for initial state of the Office Ribbons
+            item: null
         },
         styles: {
             active: "fl-qssWidgetMenu-active",
@@ -226,17 +224,9 @@
             onItemFocus: "{repeater}.events.onItemFocus"
         },
         listeners: {
-            "onCreate.registerIpcListener": {
-                funcName: "gpii.psp.registerIpcListener",
-                args: ["{that}.model.messageChannel", "{that}.loadState"]
-            },
             "onCreate.applyStyles": {
                 funcName: "gpii.qssWidget.office.presenter.applyStyles",
                 args: ["{that}", "{that}.container", "{repeater}.model.styles"]
-            },
-            "onCreate.loadState" : {
-                funcName: "{channelNotifier}.events.onQssLoadInitialOfficeRibbonsState.fire",
-                args: ["{that}.model.messageChannel"]
             },
             onItemFocus: {
                 funcName: "gpii.qssWidget.office.presenter.focusItem",
@@ -257,51 +247,11 @@
                     "{that}.model.item",
                     "{that}.container",
                     "{office}",
-                    "{repeater}",
-                    "{channelNotifier}.events.onQssOfficeSimplificationRequest", // sends the office request
-                    "{channelNotifier}.events.onQssResetWord" // resets the Word application
+                    "{repeater}"
                 ]
-            },
-            loadState: {
-                funcName: "gpii.qssWidget.office.presenter.loadState",
-                args: ["{that}", "{office}", "{arguments}.0"]
             }
         }
     });
-
-    /**
-     * Pre-loads the data in the office.model.states array
-     * @param {Component} that - The `gpii.qssWidget.office.presenter` instance.
-     * @param {Component} office - The `gpii.qssWidget.office` instance.
-     * @param {String} ribbonState - The initial state of ribbons
-     */
-    gpii.qssWidget.office.presenter.loadState = function (that, office, ribbonState) {
-        // pre-fills the states of all available schema keys
-        if (ribbonState === office.model.availableCommands.allTrueCommand) {
-            fluid.each(office.model.setting.schema.keys, function (key) {
-                if (key !== office.model.availableCommands.resetCommand) {
-                    office.model.states[key] = true;
-                }
-            });
-        } else if (ribbonState === office.model.availableCommands.allFalseCommand) {
-            fluid.each(office.model.setting.schema.keys, function (key) {
-                if (key !== office.model.availableCommands.resetCommand) {
-                    office.model.states[key] = false;
-                }
-            });
-        } else {
-            fluid.each(office.model.setting.schema.keys, function (key) {
-                if (key === ribbonState && key !== office.model.availableCommands.resetCommand) {
-                    office.model.states[key] = true;
-                }
-            });
-        }
-        // checks the checkboxes if needed
-        gpii.qssWidget.office.presenter.applyCheckmarks(that, office);
-
-        // remove all unused listeners
-        gpii.psp.removeIpcAllListeners(that.model.messageChannel);
-    };
 
     /**
      * Focuses the current QSS menu option if its index matches the specified `index` parameter.
@@ -313,45 +263,6 @@
     gpii.qssWidget.office.presenter.focusItem = function (that, focusManager, container, index) {
         if (that.model.index === index) {
             focusManager.focusElement(container, true);
-        }
-    };
-
-    /**
-     * TODO: getCommand: remove TODO when ready
-     * {Object} states - simple true/false object with the current states
-     * {Object} availableCommands - a simple list of available commands defined in the model
-     */
-    gpii.qssWidget.office.getCommand = function (states, availableCommands) {
-        var stateNames = [],
-            defaultCommand = availableCommands.defaultCommand,
-            resetCommand = availableCommands.resetCommand,
-            allTrue = availableCommands.allTrueCommand,
-            allFalse = availableCommands.allFalseCommand,
-            allStates = 0;
-
-        fluid.each(states, function (state, name) {
-            if (name !== resetCommand) {
-                if (state === true) {
-                    stateNames.push(name);
-                }
-                allStates++;
-            }
-        });
-
-        if (stateNames.length === 0) {
-            // no option is selected
-            return allFalse;
-        } else if (stateNames.length === allStates) {
-            // all of the options are selected
-            return allTrue;
-        } else if (stateNames.length === 1) {
-            // only one of the options is selected
-            // IMPORTANT: returning the name of the option as command
-            return stateNames.pop();
-        } else {
-            // IMPORTANT: we should never got to here
-            // but just in case, returning the default command
-            return defaultCommand;
         }
     };
 
@@ -374,37 +285,30 @@
      * @param {jQuery} container - A jQuery object representing the setting option's container.
      * @param {Component} office - The `gpii.qssWidget.office` instance.
      * @param {Component} repeater - The `gpii.qssWidget.office.repeater` instance.
-     * @param {EventListener} commandEvent - handle to the onQssOfficeSimplificationRequest event
-     * @param {EventListener} resetWordEvent - handle to the onQssResetWord event
      */
-    gpii.qssWidget.office.presenter.toggleCheckmark = function (that, key, item, container, office, repeater, commandEvent, resetWordEvent) {
-        if (key === office.model.availableCommands.resetCommand) {
-            // we have the reset command in place
-            resetWordEvent.fire();
+    gpii.qssWidget.office.presenter.toggleCheckmark = function (that, key, item, container, office, repeater) {
+        // this is just a ribbon command
+
+        // toggle the current state
+        office.model.states[key] = !office.model.states[key];
+
+        // visually checks the selected option
+        if (office.model.states[key] === true) {
+            container.attr("aria-checked", item.key === key);
         } else {
-            // this is just a ribbon command
-
-            // toggle the current state
-            office.model.states[key] = !office.model.states[key];
-
-            // visually checks the selected option
-            if (office.model.states[key] === true) {
-                container.attr("aria-checked", item.key === key);
-            } else {
-                container.removeAttr("aria-checked");
-            }
-
-            var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
-
-            // applying the value
-            repeater.applier.change("value", commandToUse, null, "settingAlter");
-            /*
-            // debug
-            console.log("office.model.states: ", office.model.states);
-            console.log("commandToUse: ", commandToUse);
-            commandEvent.fire(commandToUse);
-            */
+            container.removeAttr("aria-checked");
         }
+
+        var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
+
+        // applying the value
+        repeater.applier.change("value", commandToUse, null, "settingAlter");
+        /*
+        // debug
+        console.log("office.model.states: ", office.model.states);
+        console.log("commandToUse: ", commandToUse);
+        commandEvent.fire(commandToUse);
+        */
     };
 
     /**

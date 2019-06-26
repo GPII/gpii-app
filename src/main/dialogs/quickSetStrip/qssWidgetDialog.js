@@ -107,11 +107,6 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
                     onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated",
 
-                    // Office Simplify related events
-                    onQssOfficeSimplificationRequest: null,
-                    onQssLoadInitialOfficeRibbonsState: null,
-                    onQssResetWord: null,
-
                     // USB related events
                     onQssOpenUsbRequested: null,
                     onQssUnmountUsbRequested: null
@@ -139,18 +134,6 @@ fluid.defaults("gpii.app.qssWidget", {
                         funcName: "gpii.app.qssWidget.showOnInit",
                         args: ["{qssWidget}"]
                     },
-                    onQssOfficeSimplificationRequest: {
-                        funcName: "gpii.app.officeSimplificationCommand",
-                        args: ["{arguments}.0"]
-                    },
-                    onQssLoadInitialOfficeRibbonsState: {
-                        funcName: "gpii.app.getOfficeRibbons",
-                        args: [
-                            "{qssWidget}.dialog",
-                            "{arguments}.0" // messageChannel
-                        ]
-                    },
-                    onQssResetWord: "gpii.app.resetWord",
                     onQssOpenUsbRequested: {
                         funcName: "gpii.app.openUSB",
                         args: [

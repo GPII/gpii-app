@@ -86,11 +86,6 @@
             onQssWidgetNotificationRequired: null,
             onQssWidgetCreated: null,
 
-            // Office Simplify related events
-            onQssOfficeSimplificationRequest: null,
-            onQssLoadInitialOfficeRibbonsState: null,
-            onQssResetWord: null,
-
             // USB related events
             onQssOpenUsbRequested: null,
             onQssUnmountUsbRequested: null
@@ -226,9 +221,6 @@
                         onQssWidgetSettingAltered:          "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetNotificationRequired:    "{qssWidget}.events.onQssWidgetNotificationRequired",
                         onQssWidgetCreated:                 "{qssWidget}.events.onQssWidgetCreated",
-                        onQssOfficeSimplificationRequest:   "{qssWidget}.events.onQssOfficeSimplificationRequest",
-                        onQssLoadInitialOfficeRibbonsState: "{qssWidget}.events.onQssLoadInitialOfficeRibbonsState",
-                        onQssResetWord:                     "{qssWidget}.events.onQssResetWord",
                         onQssOpenUsbRequested:              "{qssWidget}.events.onQssOpenUsbRequested",
                         onQssUnmountUsbRequested:           "{qssWidget}.events.onQssUnmountUsbRequested"
                     }

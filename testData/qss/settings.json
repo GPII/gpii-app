@@ -72,11 +72,12 @@
         "schema": {
             "type": "office",
             "keys": [
+                "StandardSet",
                 "Basics+StandardSet",
                 "Essentials+StandardSet",
-                "restart-word"
+                "Basics+Essentials+StandardSet"
             ],
-            "default": ""
+            "default": "StandardSet"
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 135,
