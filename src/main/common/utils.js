@@ -211,11 +211,16 @@ gpii.app.openUSB = function () {
  * @return {Number} - The actual value of the volume
  */
 gpii.app.getVolumeValue = function () {
-    var volumeValue = gpii.windows.nativeSettingsHandler.GetVolume().value;
+    try {
+        var volumeValue = gpii.windows.nativeSettingsHandler.GetVolume().value;
 
-    if (!volumeValue || isNaN(volumeValue)) {
+        if (!volumeValue || isNaN(volumeValue)) {
+            return 0.5;
+        } else {
+            return volumeValue;
+        }
+    } catch (err) {
+        fluid.log(fluid.logLevel.WARN, err);
         return 0.5;
-    } else {
-        return volumeValue;
     }
 };
