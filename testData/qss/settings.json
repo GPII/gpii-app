@@ -72,10 +72,8 @@
         "schema": {
             "type": "office",
             "keys": [
-                "StandardSet",
                 "Basics+StandardSet",
-                "Essentials+StandardSet",
-                "Basics+Essentials+StandardSet"
+                "Essentials+StandardSet"
             ],
             "default": "StandardSet"
         },
@@ -83,7 +81,7 @@
         "tabindex": 135,
         "messageKey": "officeSimplification",
         "learnMoreLink": "https://morphic.world/help/qsshelp#office-simplification",
-        "value": ""
+        "value": "StandardSet"
     }, {
         "id": "high-contrast",
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",

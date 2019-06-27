@@ -90,10 +90,8 @@
         "title": "MS Word Simplify",
         "tip": "<p>Microsoft Word simplification</p><p>Morphic can add simpler ribbons (the menu bars with icons at the top of Word) to make it easier for people who don't use all the options.</p><ul><li>Choose one or both to add them to Word</li></ul>",
         "enum": [
-            "Standard",
             "Basic (Morphic)",
-            "Essentials (Morphic)",
-            "Basic + Essentials (Morphic)"
+            "Essentials (Morphic)"
         ]
     },
     "gpii_app_qss_settings_launch-documorph": {

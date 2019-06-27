@@ -88,18 +88,6 @@
                     events: {
                         onItemFocus: null
                     },
-                    invokers: {
-                        updateValue: {
-                            funcName: "gpii.qssWidget.office.updateValue",
-                            args: [
-                                "{that}",
-                                "{office}",
-                                "{that}.container",
-                                "{arguments}.0", // value
-                                "{arguments}.1" // keyboardEvent
-                            ]
-                        }
-                    },
                     listeners: {
                         "onCreate.enable": {
                             this: "{that}.container",
@@ -154,16 +142,106 @@
     });
 
 
-    gpii.qssWidget.office.updateValue = function (that, menu, container, value, keyboardEvent) {
-        if (!that.model.disabled && that.model.value !== value) {
-            that.applier.change("value", value, null, "settingAlter");
+    /**
+     * TODO: getCommand: remove TODO when ready
+     * {Object} states - simple true/false object with the current states
+     * {Object} availableCommands - a simple list of available commands defined in the model
+     */
+    gpii.qssWidget.office.getCommand = function (states, availableCommands) {
+        var stateNames = [],
+            defaultCommand = availableCommands.defaultCommand,
+            resetCommand = availableCommands.resetCommand,
+            allTrue = availableCommands.allTrueCommand,
+            allFalse = availableCommands.allFalseCommand,
+            allStates = 0;
 
-            // Disable interactions with the window as it is about to close
-            that.applier.change("disabled", true);
-            container.addClass(that.options.styles.disabled);
+        fluid.each(states, function (state, name) {
+            if (name !== resetCommand) {
+                if (state === true) {
+                    stateNames.push(name);
+                }
+                allStates++;
+            }
+        });
 
-            menu.close(keyboardEvent);
+        if (stateNames.length === 0) {
+            // no option is selected
+            return allFalse;
+        } else if (stateNames.length === allStates) {
+            // all of the options are selected
+            return allTrue;
+        } else if (stateNames.length === 1) {
+            // only one of the options is selected
+            // IMPORTANT: returning the name of the option as command
+            return stateNames.pop();
+        } else {
+            // IMPORTANT: we should never got to here
+            // but just in case, returning the default command
+            return defaultCommand;
         }
+    };
+
+    /**
+     * Pre-loads the data in the office.model.states array
+     * @param {Component} that - The `gpii.qssWidget.office.presenter` instance.
+     * @param {Component} office - The `gpii.qssWidget.office` instance.
+     * @param {String} ribbonState - The initial state of ribbons
+     */
+    gpii.qssWidget.office.loadState = function (that, office) {
+        // pre-fills the states of all available schema keys
+        if (office.model.setting.value === office.model.availableCommands.allTrueCommand) {
+            fluid.each(office.model.setting.schema.keys, function (key) {
+                if (key !== office.model.availableCommands.resetCommand) {
+                    office.model.states[key] = true;
+                }
+            });
+        } else if (office.model.setting.value === office.model.availableCommands.allFalseCommand) {
+            fluid.each(office.model.setting.schema.keys, function (key) {
+                if (key !== office.model.availableCommands.resetCommand) {
+                    office.model.states[key] = false;
+                }
+            });
+        } else {
+            fluid.each(office.model.setting.schema.keys, function (key) {
+                if (key === office.model.setting.value && key !== office.model.availableCommands.resetCommand) {
+                    office.model.states[key] = true;
+                }
+            });
+        }
+
+        // // checks the checkboxes if needed
+        gpii.qssWidget.office.applyCheckmarks(that, office.model.states) ;
+
+    };
+
+    /** TODO: applyCheckmarks: remove TODO when ready
+     * Adds a checked icon next to a setting option if it is the currently selected one for the setting.
+     * @param {Component} that - The `gpii.qssWidget.presenter` instance.
+     * @param {Component} office - The `gpii.qssWidget.office` instance.
+     */
+    gpii.qssWidget.office.applyCheckmarks = function (that, states) {
+        console.log(states);
+        if (states[that.model.item.key] === true) {
+            that.container.attr("aria-checked", true);
+        }
+    };
+
+    gpii.qssWidget.office.updateValue = function (that, key, item, container, office, repeater) {
+
+        // toggle the current state
+        office.model.states[key] = !office.model.states[key];
+
+        // visually checks the selected option
+        if (office.model.states[key] === true) {
+            container.attr("aria-checked", item.key === key);
+        } else {
+            container.removeAttr("aria-checked");
+        }
+
+        var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
+
+        // applying the value
+        repeater.applier.change("value", commandToUse, null, "settingAlter");
     };
 
     /**
@@ -243,10 +321,6 @@
                 this: "{that}.container",
                 method: "text",
                 args: ["{that}.model.item.value"]
-            },
-            "{repeater}.model.value": {
-                funcName: "gpii.qssWidget.menu.presenter.toggleCheckmark",
-                args: ["{change}.value", "{that}.model.item", "{that}.container"]
             }
         },
         events: {
@@ -256,6 +330,13 @@
             "onCreate.applyStyles": {
                 funcName: "gpii.qssWidget.office.presenter.applyStyles",
                 args: ["{that}", "{that}.container", "{repeater}.model.styles"]
+            },
+            "onCreate.loadState": {
+                funcName: "gpii.qssWidget.office.loadState",
+                args: [
+                    "{that}",
+                    "{office}"
+                ]
             },
             onItemFocus: {
                 funcName: "gpii.qssWidget.office.presenter.focusItem",
@@ -269,10 +350,14 @@
         },
         invokers: {
             activate: {
-                func: "{repeater}.updateValue",
+                funcName: "gpii.qssWidget.office.updateValue",
                 args: [
+                    "{that}",
                     "{that}.model.item.key",
-                    "{arguments}.0" // keyboardEvent
+                    "{that}.model.item",
+                    "{that}.container",
+                    "{office}",
+                    "{repeater}"
                 ]
             }
         }
@@ -289,19 +374,6 @@
         if (that.model.index === index) {
             focusManager.focusElement(container, true);
         }
-    };
-
-    /** TODO: toggleCheckmark: delete the debugs when ready
-     * Adds a checkmark next to a setting option if it is the currently selected one for the setting.
-     * @param {String} key - The `key` of the selected setting option.
-     * @param {Object} item - The current setting option.
-     * @param {jQuery} container - A jQuery object representing the setting option's container.
-     * @param {Component} office - The `gpii.qssWidget.office` instance.
-     * @param {Component} repeater - The `gpii.qssWidget.office.repeater` instance.
-     */
-    gpii.qssWidget.office.presenter.toggleCheckmark = function (key, item, container) {
-        // visually checks the selected option
-        container.attr("aria-checked", item.key === key);
     };
 
     /**
