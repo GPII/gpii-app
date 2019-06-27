@@ -143,9 +143,10 @@
 
 
     /**
-     * TODO: getCommand: remove TODO when ready
-     * {Object} states - simple true/false object with the current states
-     * {Object} availableCommands - a simple list of available commands defined in the model
+     * Checks the current states and generates the appropriate command
+     * @param {Object} states - simple true/false object with the current states
+     * @param {Object} availableCommands - a simple list of available commands defined in the model
+     * @return {String} - string value of the compiled command
      */
     gpii.qssWidget.office.getCommand = function (states, availableCommands) {
         var stateNames = [],
@@ -214,13 +215,12 @@
 
     };
 
-    /** TODO: applyCheckmarks: remove TODO when ready
+    /**
      * Adds a checked icon next to a setting option if it is the currently selected one for the setting.
      * @param {Component} that - The `gpii.qssWidget.presenter` instance.
-     * @param {Component} office - The `gpii.qssWidget.office` instance.
+     * @param {Component} states - simple true/false object with the current states
      */
     gpii.qssWidget.office.applyCheckmarks = function (that, states) {
-        console.log(states);
         if (states[that.model.item.key] === true) {
             that.container.attr("aria-checked", true);
         }
