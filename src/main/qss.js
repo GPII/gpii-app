@@ -654,13 +654,15 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
         return setting.path === settingOptions.settingPaths.volume;
     });
 
+    // we double check if this setting exists because can be disabled via siteConfig's buttonList
     if (fluid.isValue(languageSetting)) {
         gpii.app.qssWrapper.populateLanguageSettingOptions(settingOptions, locale, installedLanguages, languageSetting);
         // sync the language value as well
         languageSetting.value = locale;
     }
 
-    if (fluid.isValue(volumeSetting) && fluid.isValue(gpii.windows.nativeSettingsHandler)) {
+    // we double check if this setting exists because can be disabled via siteConfig's buttonList
+    if (fluid.isValue(volumeSetting)) {
         volumeSetting.value = gpii.windows.nativeSettingsHandler.GetVolume().value;
     }
 
