@@ -155,11 +155,6 @@ fluid.defaults("gpii.app.qss", {
                     onQssSettingAltered: {
                         funcName: "fluid.log",
                         args: ["QSS Dialog: Setting altered QSS - ", "{arguments}.0.path", "{arguments}.0.value"]
-                    },
-                    // ??? DELETE MAYBE
-                    onQssOpenUsbRequested: {
-                        funcName: "gpii.app.openUSB",
-                        args: []
                     }
                 }
             }

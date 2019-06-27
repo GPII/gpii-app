@@ -69,6 +69,7 @@
             "boolean": "gpii.qssWidget.toggle",
             "screenCapture": "gpii.qssWidget.screenCapture",
             "openUSB": "gpii.qssWidget.openUSB",
+            "volume": "gpii.qssWidget.volume"
         },
 
         events: {
