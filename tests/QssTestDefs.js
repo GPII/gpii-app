@@ -36,11 +36,11 @@ function clickStepperIndicator() {
 }
 
 function getQuickFolderWidgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(9) > span").text();
 }
 
 function getUsbWidgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
 }
 
 function getVolumeWidgetBtnText() {
@@ -68,7 +68,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(3)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
     clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
-    clickOpenUsbBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(8)\").click()",
+    clickOpenUsbBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(8)\").click()",
     clickVolumeBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
@@ -80,8 +80,8 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(8)').is(':visible')",
-    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(7)').is(':visible')",
+    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(9)').is(':visible')",
+    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(8)').is(':visible')",
     checkIfVolumeButtonImage = "jQuery('.flc-quickSetStrip > div:nth-of-type(7) > .flc-qss-btnImage').is(':visible')",
     checkIfVolumeButtonTitle = "jQuery('.flc-quickSetStrip > div:nth-of-type(7) > .flc-qss-btnLabel').is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
@@ -183,7 +183,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 15;
+var qssSettingsCount = 16;
 
 var navigationSequence = [
     {
@@ -1860,7 +1860,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 75,
+    expect: 77,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
