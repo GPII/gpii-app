@@ -1,0 +1,32 @@
+.fl-qssOpenUSBWidget .fl-btn {
+    width: auto;
+    min-height: 25px;
+    padding: 5px;
+    color: white;
+    background: #002957;
+    border-color: #002957;
+    border-radius: 3px;
+    font-size: 10px;
+    line-height: 10px;
+    user-select: none;
+    cursor: pointer;
+}
+.fl-qssOpenUSBWidget .fl-qssWidget-tip p {
+    margin-bottom: 5px;
+}
+.fl-qssOpenUSBWidget .fl-qssWidget-tip p:last-of-type {
+    margin: 0;
+}
+.fl-qssOpenUSBWidget-tip {
+    margin-bottom: 5px;
+}
+.fl-qssOpenUSBWidget-footerTip {
+    margin: 15px 0 5px 0;
+}
+.fl-qssOpenUSBWidget-footerTip p {
+    margin: 0;
+}
+.fl-qssOpenUSBWidget-footerTip ul, .fl-qssOpenUSBWidget-footerTip ol {
+    margin: 0;
+    padding-left: 15px;
+}

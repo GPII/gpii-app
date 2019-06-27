@@ -51,6 +51,10 @@ function getVolumeWidgetBtnColor() {
     return jQuery(".flc-quickSetStrip > div:nth-of-type(7)").css("background-color");
 }
 
+function getDocuMorphWidgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
+}
+
 
 // QSS related
 var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseenter\")",
@@ -64,6 +68,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(3)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
     clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
+    clickOpenUsbBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(8)\").click()",
     clickVolumeBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
@@ -961,6 +966,21 @@ var qssCrossTestSequence = [
         ],
         resolve: "jqUnit.assertFalse",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
+    }, { // Open the USB widget
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickOpenUsbBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... and the menu widget shouldn't be shown
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            checkIfMenuWidget
+        ],
+        resolve: "jqUnit.assertFalse",
+        resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     },
     //
     // Setting changes tests
@@ -1366,7 +1386,7 @@ var openUsbTestSequence = [
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of button should be",
-            "Open USB Drive",
+            "Open & Eject USB",
             "{arguments}.0"
         ]
     }, { // Close the QSS
@@ -1400,6 +1420,31 @@ var quickFoldersTestSequence = [
         resolveArgs: [
             "Text of the button should be",
             "Open Quick Folder",
+            "{arguments}.0"
+        ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
+var docuMorphTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // Text of the button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getDocuMorphWidgetBtnText
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Text of the button should be",
+            "Docu- Morph",
             "{arguments}.0"
         ]
     }, { // Close the QSS
@@ -1863,6 +1908,7 @@ gpii.tests.qss.testDefs = {
         openUsbTestSequence,
         quickFoldersTestSequence,
         volumeButtonTestSequence,
+        docuMorphTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,
         restartWarningSequence, // The test doesn't cover all the possible behaviors as described in the GPII-3943

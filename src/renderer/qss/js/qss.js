@@ -39,8 +39,9 @@
             "undo":              "gpii.qss.undoButtonPresenter",
             "resetAll":          "gpii.qss.resetAllButtonPresenter",
             "more":              "gpii.qss.moreButtonPresenter",
-            "usb-open":          "gpii.qss.openUSBButtonPresenter",
+            "openUSB":           "gpii.qss.widgetButtonPresenter",
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
+            "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
             "volume":            "gpii.qss.volumeButtonPresenter",
             "disabled":          "gpii.qss.disabledButtonPresenter"
         },
@@ -233,9 +234,7 @@
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
-                        onQssPspToggled: "{quickSetStripList}.events.onPspToggled",
-
-                        onQssOpenUsbRequested: null
+                        onQssPspToggled: "{quickSetStripList}.events.onPspToggled"
                     }
                 }
             }

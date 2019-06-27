@@ -187,27 +187,21 @@
         qssList.events.onMorePanelRequired.fire();
     };
 
+
     /**
-     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Open USB Button"
-     * QSS button.
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * "Launch DocuMorph" QSS button. It uses the universal launchExecutable function
+     * which tries to execute the file from the provided path
      */
-    fluid.defaults("gpii.qss.openUSBButtonPresenter", {
+    fluid.defaults("gpii.qss.launchDocuMorphPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
             activate: {
-                funcName: "gpii.qss.openUSBButtonPresenter.activate",
-                args: ["{channelNotifier}.events.onQssOpenUsbRequested"]
+                funcName: "gpii.psp.launchExecutable",
+                args: ["{gpii.qss}.options.siteConfig.docuMorphExecutable"]
             }
         }
     });
-
-    /**
-     * A custom function for handling activation of the "Open USB" QSS button.
-     * @param {EventListener} openUSB - the handle to the openUSB's event listener
-     */
-    gpii.qss.openUSBButtonPresenter.activate = function (openUSB) {
-        openUSB.fire();
-    };
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Undo"
