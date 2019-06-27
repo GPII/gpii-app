@@ -43,7 +43,8 @@
             messages: {
                 switchTitle: "{that}.model.setting.widget.switchTitle",
                 extendedTip: "{that}.model.setting.widget.extendedTip"
-            }
+            },
+            messageChannel: "volumeMessageChannel" // Channel listening for messages related volume/mute functionality
         },
         events: {
             onNotificationRequired: null
@@ -53,6 +54,14 @@
                 this: "{that}.dom.helpImage",
                 method: "attr",
                 args: ["src", "{that}.model.setting.schema.helpImage"]
+            },
+            "onCreate.registerIpcListener": {
+                funcName: "gpii.psp.registerIpcListener",
+                args: ["{that}.model.messageChannel", "{volume}.loadActualValue"]
+            },
+            "onCreate.sendGetVolumeRequest": {
+                funcName: "{channelNotifier}.events.onQssGetVolumeRequested.fire",
+                args: ["{that}.model.messageChannel"]
             }
         },
         modelListeners: {
@@ -61,7 +70,12 @@
                 args: ["{switchButton}", "{stepper}", "{change}.value"]
             }
         },
-
+        invokers: {
+            loadActualValue: {
+                funcName: "gpii.qssWidget.volume.loadActualValue",
+                args: ["{volume}", "{arguments}.0"]
+            }
+        },
         components: {
             stepper: {
                 type: "gpii.qssWidget.volumeStepper",
@@ -107,6 +121,16 @@
             }
         }
     });
+
+    /**
+     * Set the actual volume value in the case the volume is changed through the Windows itself
+     * @param {Component} that - The `gpii.psp.widgets.volume` instance.
+     * @param {Number} value - The value of the setting.
+     */
+    gpii.qssWidget.volume.loadActualValue = function (that, value) {
+        that.model.setting.value = value;
+        that.applier.change("value", value, null, "settingAlter");
+    };
 
     /**
      * Invoked whenever the volume value is changed and updating the state of the
@@ -237,7 +261,6 @@
                     "{that}.model.messages.upperBoundError"
                 ]
             },
-
             "onCreate.attachAnimationClearer": {
                 funcName: "gpii.qssWidget.volumeStepper.clearElementsAnimation",
                 args: [
