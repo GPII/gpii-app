@@ -43,7 +43,15 @@ function getUsbWidgetBtnText() {
     return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
 }
 
-function getDocuMorphWIdgetBtnText() {
+function getVolumeWidgetBtnText() {
+    return jQuery(".flc-quickSetStrip > div:nth-of-type(7) > span").text();
+}
+
+function getVolumeWidgetBtnColor() {
+    return jQuery(".flc-quickSetStrip > div:nth-of-type(7)").css("background-color");
+}
+
+function getDocuMorphWidgetBtnText() {
     return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
 }
 
@@ -62,6 +70,7 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
     clickOfficeSimplifyBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
     clickOpenUsbBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(8)\").click()",
+    clickVolumeBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
@@ -72,12 +81,16 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    checkIfQuickFoldersWidget = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(9)\").is(':visible')",
-    checkIfUSBWidget = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(8)\").is(':visible')",
+    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(9)').is(':visible')",
+    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(8)').is(':visible')",
+    checkIfVolumeButtonImage = "jQuery('.flc-quickSetStrip > div:nth-of-type(7) > .flc-qss-btnImage').is(':visible')",
+    checkIfVolumeButtonTitle = "jQuery('.flc-quickSetStrip > div:nth-of-type(7) > .flc-qss-btnLabel').is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
-    clickToggleBtn = "jQuery('.flc-switchUI-control').click()";
+    clickToggleBtn = "jQuery('.flc-switchUI-control').click()",
+    clickVolumeSwitchBtn = "jQuery('.flc-volumeSwitch > .flc-switchUI-control').click()",
+    clickVolumeStepperIncBtn = "jQuery('.flc-volumeStepper .flc-qssVolumeStepperWidget-incBtn').click()";
 
 // Generic
 var closeClosableDialog = "jQuery(\".flc-closeBtn\").click()";
@@ -1442,12 +1455,125 @@ var docuMorphTestSequence = [
         task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            getDocuMorphWIdgetBtnText
+            getDocuMorphWidgetBtnText
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Text of the button should be",
             "Docu- Morph",
+            "{arguments}.0"
+        ]
+    }, { // Close the QSS
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickCloseBtn
+        ],
+        resolve: "fluid.identity"
+    }
+];
+
+var volumeButtonTestSequence = [
+    { // Open the QSS...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
+    }, { // Text of the button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getVolumeWidgetBtnText
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Text of the button should be",
+            "Volume & Mute",
+            "{arguments}.0"
+        ]
+    }, { // ... and click on the "Volume & Mute" button.
+        func: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickVolumeBtn
+        ]
+    }, {
+        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
+        path: "isShown",
+        listener: "fluid.identity"
+    }, {
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickVolumeSwitchBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... should notify the core
+        event: "{that}.app.settingsBroker.events.onSettingApplied",
+        listener: "jqUnit.assertLeftHand",
+        args: [
+            "Change event was fired from QSS widget interaction.",
+            { path: "http://registry\\.gpii\\.net/common/volume", value: 0 },
+            "{arguments}.0"
+        ]
+    }, { // ... and the button image should be visible
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            checkIfVolumeButtonImage
+        ],
+        resolve: "jqUnit.assertTrue",
+        resolveArgs: ["The Volume button image is displayed: ", "{arguments}.0"]
+    }, { // ... title should be hidden
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            checkIfVolumeButtonTitle
+        ],
+        resolve: "jqUnit.assertFalse",
+        resolveArgs: ["The Volume button title is hidden: ", "{arguments}.0"]
+    }, { // Color of the button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getVolumeWidgetBtnColor
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Color of the button should be",
+            "rgb(128, 0, 0)",
+            "{arguments}.0"
+        ]
+    }, {
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            clickVolumeStepperIncBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... and the button image should be visible
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            checkIfVolumeButtonImage
+        ],
+        resolve: "jqUnit.assertFalse",
+        resolveArgs: ["The Volume button image is hidden: ", "{arguments}.0"]
+    }, { // ... and the button image should be visible
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            checkIfVolumeButtonTitle
+        ],
+        resolve: "jqUnit.assertTrue",
+        resolveArgs: ["The Volume button title is displayed: ", "{arguments}.0"]
+    }, { // Color of the button should be
+        task: "gpii.test.invokeFunctionInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            getVolumeWidgetBtnColor
+        ],
+        resolve: "jqUnit.assertEquals",
+        resolveArgs: [
+            "Color of the button should be",
+            "rgb(0, 129, 69)",
             "{arguments}.0"
         ]
     }, { // Close the QSS
@@ -1750,7 +1876,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 70,
+    expect: 77,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1797,6 +1923,7 @@ gpii.tests.qss.testDefs = {
         undoTestSequence,
         openUsbTestSequence,
         quickFoldersTestSequence,
+        volumeButtonTestSequence,
         docuMorphTestSequence,
         qssCrossTestSequence,
         stepperindicatorsSequence,

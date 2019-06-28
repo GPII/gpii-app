@@ -322,3 +322,24 @@ gpii.app.ejectUSB = function (browserWindow, messageChannel, messages) {
         }
     });
 };
+
+
+/**
+ * Get the actual volume value. If there are an error or no value return the default
+ * volume value
+ * @return {Number} - The actual value of the volume
+ */
+gpii.app.getVolumeValue = function () {
+    try {
+        var volumeValue = gpii.windows.nativeSettingsHandler.GetVolume().value;
+
+        if (!volumeValue || isNaN(volumeValue)) {
+            return 0.5;
+        } else {
+            return volumeValue;
+        }
+    } catch (err) {
+        fluid.log(fluid.logLevel.WARN, err);
+        return 0.5;
+    }
+};

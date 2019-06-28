@@ -55,8 +55,9 @@
             menu: ".flc-qssMenuWidget",
             toggle: ".flc-qssToggleWidget",
             screenCapture: ".flc-qssScreenCaptureWidget",
-            office: ".flc-qssOfficeWidget",
-            openUSB: ".flc-qssOpenUSBWidget"
+            openUSB: ".flc-qssOpenUSBWidget",
+            volume: ".flc-qssVolumeWidget",
+            office: ".flc-qssOfficeWidget"
         },
 
         /**
@@ -68,8 +69,9 @@
             "string": "gpii.qssWidget.menu",
             "boolean": "gpii.qssWidget.toggle",
             "screenCapture": "gpii.qssWidget.screenCapture",
-            "office": "gpii.qssWidget.office",
-            "openUSB": "gpii.qssWidget.openUSB"
+            "openUSB": "gpii.qssWidget.openUSB",
+            "volume": "gpii.qssWidget.volume",
+            "office": "gpii.qssWidget.office"
         },
 
         events: {
@@ -135,6 +137,7 @@
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
                             extendedTip: "{qssWidget}.model.setting.extendedTip",
+                            switchTitle: "{qssWidget}.model.setting.switchTitle",
                             learnMore: "{qssWidget}.model.messages.learnMore"
                         }
                     },
