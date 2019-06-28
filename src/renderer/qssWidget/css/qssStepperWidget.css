@@ -36,7 +36,9 @@
     margin-bottom: 5px;
 }
 
-.fl-qssWidget-tip ul {
+.fl-qssWidget-tip ul, .fl-qssWidget-tip ol,
+.fl-qssWidget-footerTip ul, .fl-qssWidget-footerTip ol
+{
     margin-top: 5px;
     margin-bottom: 0;
     padding-left: 15px;
@@ -51,7 +53,7 @@
      *  of the container by excluding the parent's container padding.
      */
     width: calc(100% + 2 * 10px);
-    margin: 0 -10px 10px -10px;
+    margin: 0 -10px 7px -10px;
 }
 
 .fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-buttons {
@@ -97,7 +99,7 @@
 }
 
 .fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator {
-    margin: 6px auto;
+    margin: 4px auto;
     height: 8px;
     width: 8px;
     cursor: pointer;
@@ -209,3 +211,16 @@
     margin-bottom: 15px;
 }
 
+/* Custom CSS just for the Volume Widget's steppers: BEGIN */
+.fl-qssVolumeWidget .fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-buttons {
+    flex-basis: 74%;
+    padding-left: 13%;
+    padding-right: 13%;
+}
+
+.fl-qssVolumeWidget .fl-qssToggleWidget-settingTitle {
+    text-align: left;
+    font-weight: bold;
+}
+
+/* Custom CSS just for the Volume and Brightness Widget's steppers: END */

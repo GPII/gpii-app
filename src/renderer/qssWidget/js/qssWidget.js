@@ -54,7 +54,9 @@
             stepper: ".flc-qssStepperWidget",
             menu: ".flc-qssMenuWidget",
             toggle: ".flc-qssToggleWidget",
-            screenCapture: ".flc-qssScreenCaptureWidget"
+            screenCapture: ".flc-qssScreenCaptureWidget",
+            openUSB: ".flc-qssOpenUSBWidget",
+            volume: ".flc-qssVolumeWidget"
         },
 
         /**
@@ -65,17 +67,28 @@
             "number": "gpii.qssWidget.stepper",
             "string": "gpii.qssWidget.menu",
             "boolean": "gpii.qssWidget.toggle",
-            "screenCapture": "gpii.qssWidget.screenCapture"
+            "screenCapture": "gpii.qssWidget.screenCapture",
+            "openUSB": "gpii.qssWidget.openUSB",
+            "volume": "gpii.qssWidget.volume"
         },
 
         events: {
+            // Important information
+            // These events are available in the all of the widgets
+            // It can be used to access the main events and utils from them
+            // Usage: {channelNotifier}.events.onQssWidgetHideQssRequested
+
             onWidgetClosed: null,
             onQssWidgetHideQssRequested: null,
             onSettingUpdated: null,
             onQssWidgetHeightChanged: null,
             onQssWidgetSettingAltered: null,
             onQssWidgetNotificationRequired: null,
-            onQssWidgetCreated: null
+            onQssWidgetCreated: null,
+
+            // USB related events
+            onQssOpenUsbRequested: null,
+            onQssUnmountUsbRequested: null
         },
 
         sounds: {},
@@ -122,6 +135,7 @@
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
                             extendedTip: "{qssWidget}.model.setting.extendedTip",
+                            switchTitle: "{qssWidget}.model.setting.switchTitle",
                             learnMore: "{qssWidget}.model.messages.learnMore"
                         }
                     },
@@ -207,7 +221,10 @@
                         onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
                         onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
                         onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
-                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated"
+                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated",
+                        // USB buttons
+                        onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
+                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested"
                     }
                 }
             }
@@ -336,7 +353,9 @@
      * @return {Number} - The height of the QSS menu assuming it is fully displayed.
      */
     gpii.qssWidget.calculateHeight = function (container, parentContainer, heightListenerContainer) {
-        return container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight;
+        var baseHeight = container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight,
+            heightFix = 12; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
+        return baseHeight + heightFix;
     };
 
     /**
