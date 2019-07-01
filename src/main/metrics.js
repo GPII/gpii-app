@@ -192,19 +192,41 @@ fluid.defaults("gpii.app.metrics", {
 fluid.defaults("gpii.app.metrics.qssInWrapper", {
     gradeNames: ["fluid.component"],
     listeners: {
-        "{channelListener}.events.onQssButtonFocused": {
+        "{channelListener}.events.onQssButtonFocused": [{
+            namespace: "metric",
             func: "{eventLog}.metrics.uiMetric",
             args: [ "button-focused", {
                 buttonPath: "{arguments}.0.path"
             } ]
-        },
+        }, {
+            priority: "before:metric",
+            namespace: "metrics-state",
+            func: "{eventLog}.setState",
+            args: [ "focus", "{arguments}.0.path" ]
+        }],
         "{channelListener}.events.onQssButtonActivated": {
+            namespace: "metrics",
             func: "{eventLog}.metrics.uiMetric",
             args: [ "button-activated", {
                 buttonPath: "{arguments}.0.path",
                 key: "{arguments}.2.key",
                 mouse: "{arguments}.2.type"
             } ]
+        },
+        "{channelListener}.events.onQssButtonMouseEnter": {
+            namespace: "metric-state",
+            func: "{eventLog}.setState",
+            args: [ "hover", "{arguments}.0.path" ]
+        },
+        "{channelListener}.events.onQssButtonMouseLeave": {
+            namespace: "metric-state",
+            func: "{eventLog}.setState",
+            args: [ "hover" ]
+        },
+        "{channelListener}.events.onQssButtonsFocusLost": {
+            namespace: "metric-state",
+            func: "{eventLog}.setState",
+            args: [ "focus" ]
         },
         "onDialogShown.metrics": {
             func: "{eventLog}.metrics.uiMetric",
