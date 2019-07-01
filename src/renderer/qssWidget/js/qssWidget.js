@@ -228,7 +228,7 @@
                         // USB buttons
                         onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
                         onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
-
+                        // Volume button
                         onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested"
                     }
                 }
