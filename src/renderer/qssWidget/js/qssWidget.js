@@ -90,7 +90,10 @@
 
             // USB related events
             onQssOpenUsbRequested: null,
-            onQssUnmountUsbRequested: null
+            onQssUnmountUsbRequested: null,
+
+            // Volume & Mute related event
+            onQssGetVolumeRequested: null
         },
 
         sounds: {},
@@ -218,14 +221,17 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
-                        onQssWidgetClosed:                  "{qssWidget}.events.onWidgetClosed",
-                        onQssWidgetHideQssRequested:        "{qssWidget}.events.onQssWidgetHideQssRequested",
-                        onQssWidgetHeightChanged:           "{qssWidget}.events.onQssWidgetHeightChanged",
-                        onQssWidgetSettingAltered:          "{qssWidget}.events.onQssWidgetSettingAltered",
-                        onQssWidgetNotificationRequired:    "{qssWidget}.events.onQssWidgetNotificationRequired",
-                        onQssWidgetCreated:                 "{qssWidget}.events.onQssWidgetCreated",
-                        onQssOpenUsbRequested:              "{qssWidget}.events.onQssOpenUsbRequested",
-                        onQssUnmountUsbRequested:           "{qssWidget}.events.onQssUnmountUsbRequested"
+                        onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
+                        onQssWidgetHideQssRequested:     "{qssWidget}.events.onQssWidgetHideQssRequested",
+                        onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
+                        onQssWidgetSettingAltered:       "{qssWidget}.events.onQssWidgetSettingAltered",
+                        onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
+                        onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated",
+                        // USB buttons
+                        onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
+                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
+                        // Volume button
+                        onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested"
                     }
                 }
             }
