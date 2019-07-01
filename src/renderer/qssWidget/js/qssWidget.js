@@ -88,7 +88,10 @@
 
             // USB related events
             onQssOpenUsbRequested: null,
-            onQssUnmountUsbRequested: null
+            onQssUnmountUsbRequested: null,
+
+            // Volume & Mute related event
+            onQssGetVolumeRequested: null
         },
 
         sounds: {},
@@ -224,7 +227,9 @@
                         onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated",
                         // USB buttons
                         onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
-                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested"
+                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
+                        // Volume button
+                        onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested"
                     }
                 }
             }
