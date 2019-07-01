@@ -213,6 +213,14 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
         "onDialogHidden.metrics": {
             func: "{eventLog}.metrics.uiMetric",
             args: [ "qss-hidden" ]
+        },
+        "onDialogShown.logState": {
+            func: "{eventLog}.setState",
+            args: [ "qss", "open" ]
+        },
+        "onDialogHidden.logState": {
+            func: "{eventLog}.setState",
+            args: [ "qss" ]
         }
     },
     components: {
