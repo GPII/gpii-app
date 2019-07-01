@@ -144,6 +144,14 @@ open: The show Morphic desktop link was clicked:
   }
 }
 
+tray-icon: The tray icon was clicked
+{
+    "module":"metrics.app",
+    "event":"setting-changed",
+    "data":{
+        "menu": true // optional: true of icon was right-clicked.
+    }
+}
 
 */
 
@@ -205,6 +213,28 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
         "onDialogHidden.metrics": {
             func: "{eventLog}.metrics.uiMetric",
             args: [ "qss-hidden" ]
+        }
+    },
+    components: {
+        trayListener: {
+            createOnEvent: "{app}.events.onPSPReady",
+            type: "fluid.component",
+            options: {
+                listeners: {
+                    "{gpii.app}.tray.events.onTrayIconClicked": {
+                        func: "{eventLog}.metrics.uiMetric",
+                        args: [ "tray-icon" ]
+                    },
+                    "{gpii.app}.tray.events.onTrayIconMenuShown": {
+                        func: "{eventLog}.metrics.uiMetric",
+                        args: [ "button-activated", {
+                            buttonPath: "{arguments}.0.path",
+                            key: "{arguments}.2.key",
+                            mouse: "{arguments}.2.type"
+                        } ]
+                    }
+                }
+            }
         }
     }
 });
