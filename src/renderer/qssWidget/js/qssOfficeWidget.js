@@ -114,7 +114,7 @@
                 funcName: "gpii.qssWidget.office.addVisibilityChangeListener",
                 args: ["{closeTimer}"]
             },
-            "onDestroy.visibilitychange": {
+            "onDestroy.visibilityChange": {
                 funcName: "gpii.qssWidget.office.removeVisibilityChangeListener"
             }
         },
@@ -143,43 +143,70 @@
 
 
     /**
-     * Checks the current states and generates the appropriate command
-     * @param {Object} states - simple true/false object with the current states
-     * @param {Object} availableCommands - a simple list of available commands defined in the model
+     * Checks the current states and generates the appropriate command based on the true/false values and the
+     * availableCommands list. For example if both states are false is sending the allFalseCommand, if both of
+     * them are true is sending the allTrueCommand. And if only one of them is selected then is sending the key
+     * of the selected state as a command.
+     * @param {Object.<String, Boolean>} states - simple true/false object with the current states
+     * @param {Object.<String, String>} availableCommands - a simple list of available commands defined in the model
      * @return {String} - string value of the compiled command
      */
     gpii.qssWidget.office.getCommand = function (states, availableCommands) {
-        var stateNames = [],
+        var selectedStateNames = [],
             defaultCommand = availableCommands.defaultCommand,
-            resetCommand = availableCommands.resetCommand,
             allTrue = availableCommands.allTrueCommand,
             allFalse = availableCommands.allFalseCommand,
             allStates = 0;
 
         fluid.each(states, function (state, name) {
-            if (name !== resetCommand) {
-                if (state === true) {
-                    stateNames.push(name);
-                }
-                allStates++;
+            if (state) {
+                selectedStateNames.push(name);
             }
+            allStates++;
         });
 
-        if (stateNames.length === 0) {
+        if (selectedStateNames.length === 0) {
             // no option is selected
             return allFalse;
-        } else if (stateNames.length === allStates) {
+        } else if (selectedStateNames.length === allStates) {
             // all of the options are selected
             return allTrue;
-        } else if (stateNames.length === 1) {
+        } else if (selectedStateNames.length === 1) {
             // only one of the options is selected
             // IMPORTANT: returning the name of the option as command
-            return stateNames.pop();
+            return selectedStateNames.pop();
         } else {
             // IMPORTANT: we should never got to here
             // but just in case, returning the default command
             return defaultCommand;
         }
+    };
+
+    /**
+     * Returns states object with the pre-filled keys and values
+     * @param {Array} keys - simple true/false object with the current states
+     * @param {Boolean} value - true/false state
+     * @return {Object.<String, Boolean>} - pre-filled states object
+     */
+    gpii.qssWidget.office.fillStates = function (keys, value) {
+        var filledStates = {};
+        fluid.each(keys, function (key) {
+            filledStates[key] = value;
+        });
+        return filledStates;
+    };
+
+    /**
+     * Returns states object with modified value for the specific key
+     * @param {Object.<String, Boolean>} states - the initial states list
+     * @param {String} key - the key that we want to modify
+     * @param {Boolean} value - true/false state
+     * @return {Object.<String, Boolean>} - modified states object
+     */
+    gpii.qssWidget.office.changeState = function (states, key, value) {
+        var newStates = states;
+        newStates[key] = value;
+        return newStates;
     };
 
     /**
@@ -190,35 +217,31 @@
      */
     gpii.qssWidget.office.loadState = function (that, office) {
         // pre-fills the states of all available schema keys
-        if (office.model.setting.value === office.model.availableCommands.allTrueCommand) {
-            fluid.each(office.model.setting.schema.keys, function (key) {
-                if (key !== office.model.availableCommands.resetCommand) {
-                    office.model.states[key] = true;
-                }
-            });
-        } else if (office.model.setting.value === office.model.availableCommands.allFalseCommand) {
-            fluid.each(office.model.setting.schema.keys, function (key) {
-                if (key !== office.model.availableCommands.resetCommand) {
-                    office.model.states[key] = false;
-                }
-            });
+        var currentValue = office.model.setting.value,
+            commands = office.model.availableCommands,
+            schemaKeys = office.model.setting.schema.keys;
+
+        if (currentValue === commands.allTrueCommand) {
+            // pre-fill the states with true
+            office.applier.change("states", gpii.qssWidget.office.fillStates(schemaKeys, true), false, "settingAlter");
+        } else if (currentValue === commands.allFalseCommand) {
+            // pre-fill the states with false
+            office.applier.change("states", gpii.qssWidget.office.fillStates(schemaKeys, false), false, "settingAlter");
         } else {
-            fluid.each(office.model.setting.schema.keys, function (key) {
-                if (key === office.model.setting.value && key !== office.model.availableCommands.resetCommand) {
-                    office.model.states[key] = true;
-                }
-            });
+            // pre-fill the states with false first
+            var newStates = gpii.qssWidget.office.fillStates(schemaKeys, false);
+            // now change only the selected key using the current value as a key
+            office.applier.change("states", gpii.qssWidget.office.changeState(newStates, currentValue, true), false, "settingAlter");
         }
 
-        // // checks the checkboxes if needed
-        gpii.qssWidget.office.applyCheckmarks(that, office.model.states) ;
-
+        // checks the required checkboxes
+        gpii.qssWidget.office.applyCheckmarks(that, office.model.states);
     };
 
     /**
      * Adds a checked icon next to a setting option if it is the currently selected one for the setting.
      * @param {Component} that - The `gpii.qssWidget.presenter` instance.
-     * @param {Component} states - simple true/false object with the current states
+     * @param {Object.<String, Boolean>} states - simple true/false object with the current states
      */
     gpii.qssWidget.office.applyCheckmarks = function (that, states) {
         if (states[that.model.item.key] === true) {
@@ -226,21 +249,31 @@
         }
     };
 
-    gpii.qssWidget.office.updateValue = function (that, key, item, container, office, repeater) {
-
+    /**
+     * Updates the value in the model of the widget's repeater based on the office model's states
+     * @param {Component} that - The `gpii.qssWidget.office.presenter` instance.
+     * @param {String} key - The key of the current button.
+     * @param {jQuery} container - The jQuery object representing the container of the
+     * QSS menu widget.
+     * @param {Component} office - The `gpii.qssWidget.office` instance.
+     * @param {Component} repeater - The `gpii.psp.repeater` instance.
+     */
+    gpii.qssWidget.office.updateValue = function (that, key, container, office, repeater) {
         // toggle the current state
-        office.model.states[key] = !office.model.states[key];
+        var newStates = gpii.qssWidget.office.changeState(office.model.states, key, !office.model.states[key]);
+
+        // apply the change to the state
+        office.applier.change("states", newStates, false, "settingAlter");
 
         // visually checks the selected option
-        if (office.model.states[key] === true) {
-            container.attr("aria-checked", item.key === key);
+        if (newStates[key]) {
+            container.attr("aria-checked", true);
         } else {
             container.removeAttr("aria-checked");
         }
 
-        var commandToUse = gpii.qssWidget.office.getCommand(office.model.states, office.model.availableCommands);
-
         // applying the value
+        var commandToUse = gpii.qssWidget.office.getCommand(newStates, office.model.availableCommands);
         repeater.applier.change("value", commandToUse, null, "settingAlter");
     };
 
@@ -267,7 +300,7 @@
      * the widget with a delay.
      */
     gpii.qssWidget.office.addVisibilityChangeListener = function (closeTimer) {
-        $(document).on("visibilitychange.qssOfficeWidget", function () {
+        $(document).on("visibilityChange.qssOfficeWidget", function () {
             if (document.visibilityState === "hidden") {
                 closeTimer.clear();
             }
@@ -279,7 +312,7 @@
      * destroyed.
      */
     gpii.qssWidget.office.removeVisibilityChangeListener = function () {
-        $(document).off("visibilitychange.qssOfficeWidget");
+        $(document).off("visibilityChange.qssOfficeWidget");
     };
 
     /**
@@ -354,7 +387,6 @@
                 args: [
                     "{that}",
                     "{that}.model.item.key",
-                    "{that}.model.item",
                     "{that}.container",
                     "{office}",
                     "{repeater}"
