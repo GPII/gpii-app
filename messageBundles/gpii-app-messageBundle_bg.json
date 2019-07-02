@@ -26,6 +26,8 @@
 
     "gpii_psp_widgets_switch_on": "Вкл",
     "gpii_psp_widgets_switch_off": "Изкл",
+    "gpii_qssWidget_volume_on": "Звукът е изключен",
+    "gpii_qssWidget_volume_off": "Звукът е включен",
 
     "gpii_psp_header_autosaveText": "Автоматично запазване е включено",
     "gpii_psp_header_keyOut":"Отпиши се",
@@ -55,6 +57,7 @@
     "gpii_psp_footer_help": "Помощ",
 
     "gpii_qss_toggleButtonPresenter_caption": "[ВКЛ.]",
+    "gpii_qss_volumeButtonPresenter_caption": "(Звукът е изключен)",
 
     "gpii_psp_qssWidget_learnMore": "Научи повече...",
 
@@ -62,6 +65,11 @@
         "keyedOut": "За да запазите вашите настройки трябва да си създадете Morphic акаунт. Отидете на <a href=\"%accountUrl\">%accountUrl</a>.",
         "keyedIn": "Вашите настройки са запазени в Morphic Cloud."
     },
+
+    "gpii_qssWidget_volumeStepper_incrementButton": "По-силно",
+    "gpii_qssWidget_volumeStepper_decrementButton": "По-тихо",
+    "gpii_qssWidget_volumeStepper_upperBoundError": "Това е най-високата настройка",
+    "gpii_qssWidget_volumeStepper_lowerBoundError": "Това е най-ниската настройка",
 
     "gpii_qssWidget_openUSB_noUsbInserted": "В компютъра не са включени USB устройства. Поставете USB и опитайте отново.",
     "gpii_qssWidget_openUSB_ejectUsbDrives": "В компютъра няма активни USB устройства. Безопасно е да премахнете всяко устройство в компютъра",

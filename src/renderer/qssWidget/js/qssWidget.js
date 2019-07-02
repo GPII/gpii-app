@@ -55,7 +55,8 @@
             menu: ".flc-qssMenuWidget",
             toggle: ".flc-qssToggleWidget",
             screenCapture: ".flc-qssScreenCaptureWidget",
-            openUSB: ".flc-qssOpenUSBWidget"
+            openUSB: ".flc-qssOpenUSBWidget",
+            volume: ".flc-qssVolumeWidget"
         },
 
         /**
@@ -67,7 +68,8 @@
             "string": "gpii.qssWidget.menu",
             "boolean": "gpii.qssWidget.toggle",
             "screenCapture": "gpii.qssWidget.screenCapture",
-            "openUSB": "gpii.qssWidget.openUSB"
+            "openUSB": "gpii.qssWidget.openUSB",
+            "volume": "gpii.qssWidget.volume"
         },
 
         events: {
@@ -86,7 +88,10 @@
 
             // USB related events
             onQssOpenUsbRequested: null,
-            onQssUnmountUsbRequested: null
+            onQssUnmountUsbRequested: null,
+
+            // Volume & Mute related event
+            onQssGetVolumeRequested: null
         },
 
         sounds: {},
@@ -133,6 +138,7 @@
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
                             extendedTip: "{qssWidget}.model.setting.extendedTip",
+                            switchTitle: "{qssWidget}.model.setting.switchTitle",
                             learnMore: "{qssWidget}.model.messages.learnMore"
                         }
                     },
@@ -221,7 +227,9 @@
                         onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated",
                         // USB buttons
                         onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
-                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested"
+                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
+                        // Volume button
+                        onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested"
                     }
                 }
             }

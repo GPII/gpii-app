@@ -42,6 +42,7 @@
             "openUSB":           "gpii.qss.widgetButtonPresenter",
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
+            "volume":            "gpii.qss.volumeButtonPresenter",
             "disabled":          "gpii.qss.disabledButtonPresenter"
         },
 

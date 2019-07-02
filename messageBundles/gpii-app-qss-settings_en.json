@@ -85,6 +85,13 @@
         "tooltip": "<p>The Quick Folder has commonly requested documents, web pages, and other resources.</p>",
         "title": "Open Quick Folder"
     },
+    "gpii_app_qss_settings_common-volume": {
+        "tooltip": "<p>Adjusts Windows Volume and provides Mute on/off.</p>",
+        "title": "Volume & Mute",
+        "tip": "<p>Volume</p>",
+        "extendedTip": "You can also change the volume using the speaker icon on the system tray (near the clock at the bottom of the screen).",
+        "switchTitle": "Mute all audio"
+    },
     "gpii_app_qss_settings_launch-documorph": {
         "tooltip": "<p>Converts documents into more accessible forms.</p>",
         "title": "Docu- Morph"

@@ -76,6 +76,13 @@
         "tooltip": "<p>Отваря cloud базирана публична папка.</p>",
         "title": "Quick Folders"
     },
+    "gpii_app_qss_settings_common-volume": {
+        "tooltip": "<p>Регулира, включва и изключва силата на звука на Windows.</p>",
+        "title": "Сила и изключване на звука",
+        "tip": "<p>Сила на звука</p>",
+        "extendedTip": "Можете също да промените силата на звука, като използвате иконата на високоговорителя в системната лента (близо до часовника в долната част на екрана).",
+        "switchTitle": "Заглушаване на целия звук"
+    },
     "gpii_app_qss_settings_launch-documorph": {
         "tooltip": "<p>Стартирай апликацията DocuMorph.</p>",
         "title": "Стартирай Docu Morph"
