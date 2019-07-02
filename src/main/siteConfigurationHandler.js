@@ -95,6 +95,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",
             target: "{app tray}.options.trayType"
+        },
+        distributeMetrics: {
+            record: "{that}.options.siteConfig.metrics",
+            target: "{/ gpii.app.metrics}.options.siteConfig"
         }
     }
 });
