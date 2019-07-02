@@ -54,7 +54,8 @@
             "read-aloud",
             "cloud-folder-open",
             "usb-open",
-            "launch-documorph"
+            "launch-documorph",
+            "volume"
         ],
 
         // the path to the DocuMorph's executable file, used in the service buttons
