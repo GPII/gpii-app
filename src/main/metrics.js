@@ -192,6 +192,10 @@ fluid.defaults("gpii.app.metrics", {
 fluid.defaults("gpii.app.metrics.qssInWrapper", {
     gradeNames: ["fluid.component"],
     listeners: {
+        "onCreate.logSite": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: [ "site-id", "{siteConfigurationHandler}.options.siteConfig.site" ]
+        },
         "{channelListener}.events.onQssButtonFocused": [{
             namespace: "metric",
             func: "{eventLog}.metrics.uiMetric",
