@@ -1,0 +1,18 @@
+// Service configuration for production.
+{
+    "processes": {
+        "gpii": {
+            "command": "morphic-app.exe",
+            "ipc": "gpii",
+            "autoRestart": true,
+            "disabled": false,
+            env: {
+                //NODE_ENV: "app.testing"
+                GPII_CLOUD_URL: "https://flowmanager.stg.gcp.gpii.net"
+            }
+        }
+    },
+    "logging": {
+        "level": "DEBUG"
+    }
+}

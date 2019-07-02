@@ -36,10 +36,6 @@
         messages: {
             keyedOut: "To save you must insert a Morphic Key. Please ask for one at the Front Desk. If you have a key inserted, remove it and re-insert it, then you can SAVE."
         },
-
-        // the path to the ShareX's executable file, used in the screenCaptureWidget
-        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe",
-
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
         buttonList: [
@@ -55,9 +51,10 @@
             "office-simplification",
             "volume"
         ],
-
         // the path to the DocuMorph's executable file, used in the service buttons
-        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe"
+        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe",
+        // the path to the ShareX's executable file, used in the screenCaptureWidget
+        shareXPath: "C:\\Program Files (x86)\\Morphic\\sharex\\sharex-portable\\sharex.exe"
     },
 
     // Configuration options for the PSP window
