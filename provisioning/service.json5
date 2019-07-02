@@ -14,5 +14,6 @@
     },
     "logging": {
         "level": "DEBUG"
-    }
+    },
+    "secretFile": "%ProgramData%\\Morphic Credentials\\secret.txt"
 }
