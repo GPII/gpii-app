@@ -128,7 +128,6 @@
      * @param {Number} value - The value of the setting.
      */
     gpii.qssWidget.volume.loadActualValue = function (that, value) {
-        that.model.setting.value = value;
         that.applier.change("value", value, null, "settingAlter");
     };
 
