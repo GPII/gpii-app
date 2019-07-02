@@ -44,11 +44,11 @@ function getUsbWidgetBtnText() {
 }
 
 function getVolumeWidgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-of-type(7) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-of-type(8) > span").text();
 }
 
 function getVolumeWidgetBtnColor() {
-    return jQuery(".flc-quickSetStrip > div:nth-of-type(7)").css("background-color");
+    return jQuery(".flc-quickSetStrip > div:nth-of-type(8)").css("background-color");
 }
 
 function getDocuMorphWidgetBtnText() {
@@ -68,8 +68,9 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(3)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
     clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
+    clickOfficeSimplifyBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
     clickOpenUsbBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(8)\").click()",
-    clickVolumeBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
+    clickVolumeBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(8)\").click()",
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
     clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
@@ -82,8 +83,8 @@ var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
     checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(9)').is(':visible')",
     checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(8)').is(':visible')",
-    checkIfVolumeButtonImage = "jQuery('.flc-quickSetStrip > div:nth-of-type(7) > .flc-qss-btnImage').is(':visible')",
-    checkIfVolumeButtonTitle = "jQuery('.flc-quickSetStrip > div:nth-of-type(7) > .flc-qss-btnLabel').is(':visible')",
+    checkIfVolumeButtonImage = "jQuery('.flc-quickSetStrip > div:nth-of-type(8) > .flc-qss-btnImage').is(':visible')",
+    checkIfVolumeButtonTitle = "jQuery('.flc-quickSetStrip > div:nth-of-type(8) > .flc-qss-btnLabel').is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
     clickDecreaseBtn = "jQuery('.flc-qssStepperWidget-decBtn').click()",
@@ -183,7 +184,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 16;
+var qssSettingsCount = 17;
 
 var navigationSequence = [
     {
@@ -956,6 +957,21 @@ var qssCrossTestSequence = [
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickScreenCaptureBtn
+        ],
+        resolve: "fluid.identity"
+    }, { // ... and the menu widget shouldn't be shown
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qssWidget.dialog",
+            checkIfMenuWidget
+        ],
+        resolve: "jqUnit.assertFalse",
+        resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
+    }, { // Open the MS Office Simplify widget
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            clickOfficeSimplifyBtn
         ],
         resolve: "fluid.identity"
     }, { // ... and the menu widget shouldn't be shown
@@ -1860,7 +1876,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 77,
+    expect: 78,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
