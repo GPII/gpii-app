@@ -71,6 +71,7 @@
      * @param {Function} funcExec - handle to the function to be executed
      */
     gpii.psp.registerIpcListener = function (messageChannel, funcExec) {
+
         ipcRenderer.on(messageChannel, function (event, result) {
             // execute the function when the result arrives
             funcExec(result);
