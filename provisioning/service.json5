@@ -7,8 +7,8 @@
             "autoRestart": true,
             "disabled": false,
             env: {
-                //NODE_ENV: "app.testing"
-                GPII_CLOUD_URL: "https://flowmanager.stg.gcp.gpii.net"
+                NODE_ENV: "app.production",
+                GPII_CLOUD_URL: "https://flowmanager.prd.gcp.gpii.net"
             }
         }
     },
