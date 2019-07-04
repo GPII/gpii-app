@@ -93,7 +93,9 @@
             onQssUnmountUsbRequested: null,
 
             // Volume & Mute related event
-            onQssGetVolumeRequested: null
+            onQssGetVolumeRequested: null,
+
+            onLearnMoreClicked: null
         },
 
         sounds: {},
@@ -158,6 +160,9 @@
                                     messages: {
                                         learnMore: "{qssWidget}.model.messages.learnMore"
                                     }
+                                },
+                                listeners: {
+                                    "onClicked.learnMore": "{qssWidget}.events.onLearnMoreClicked"
                                 }
                             }
                         }
@@ -231,7 +236,8 @@
                         onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
                         onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
                         // Volume button
-                        onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested"
+                        onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
+                        onLearnMoreClicked:              "{qssWidget}.events.onLearnMoreClicked"
                     }
                 }
             }

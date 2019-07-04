@@ -51,9 +51,17 @@ app.on("second-instance", function (event, commandLine) {
         var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
         service.closing().then(gpiiApp.exit, gpiiApp.exit);
     } else {
+        var reset = commandLine.indexOf("--reset") > -1;
+
+        // Log this metric
+        var eventLog = fluid.queryIoCSelector(fluid.rootComponent, "gpii.eventLog")[0];
+        if (eventLog) {
+            eventLog.logEvent("startup", reset ? "reset" : "open", {commandLine: commandLine});
+        }
+
         var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
         qssWrapper.qss.show();
-        if (commandLine.indexOf("--reset") > -1) {
+        if (reset) {
             setTimeout(function () {
                 // GPII-3455: Call this in another execution stack, to allow electron to free some things, otherwise an
                 // error of a COM object being accessed in the wrong thread is raised - but that doesn't appear to be

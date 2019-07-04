@@ -1,4 +1,7 @@
 {
+    // Unique identifier for the deployment.
+    site: "default.gpii.net",
+
     // Whether to hide the QSS save button.
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
@@ -108,5 +111,12 @@
     surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
 
     // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
-    trayType: ["gpii.app.trayButton"]
+    trayType: ["gpii.app.trayButton"],
+
+    metrics: {
+        // Can be true to disable everything, or "errors-only" to only capture errors.
+        disable: false,
+        // true to disable capturing key/mouse timings
+        disableInput: false
+    }
 }
