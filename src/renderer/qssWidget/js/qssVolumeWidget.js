@@ -23,9 +23,11 @@
      * QSS Volume widget
      */
     fluid.defaults("gpii.qssWidget.volume", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
 
         selectors: {
+            heightListenerContainer: ".flc-qssVolumeWidget-controls",
+            controlsWrapper: ".flc-qssVolumeWidget-wrapper",
             stepper: ".flc-volumeStepper",
             switch: ".flc-volumeSwitch",
             switchTitle: ".flc-volumeWidget-switchTitle",
@@ -47,7 +49,8 @@
             messageChannel: "volumeMessageChannel" // Channel listening for messages related volume/mute functionality
         },
         events: {
-            onNotificationRequired: null
+            onNotificationRequired: null,
+            onHeightChanged: null
         },
         listeners: {
             "onCreate": {
@@ -74,6 +77,14 @@
             loadActualValue: {
                 funcName: "gpii.qssWidget.volume.loadActualValue",
                 args: ["{volume}", "{arguments}.0"]
+            },
+            calculateHeight: {
+                funcName: "gpii.qssWidget.calculateHeight",
+                args: [
+                    "{qssWidget}.container",
+                    "{that}.dom.controlsWrapper",
+                    "{that}.dom.heightListenerContainer"
+                ]
             }
         },
         components: {
