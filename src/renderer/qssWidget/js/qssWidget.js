@@ -115,7 +115,6 @@
             onQssReApplyPreferencesRequired: null,
             onQssGetEnvironmentalLoginKeyRequested: null,
 
-            onLearnMoreClicked: null,
             onMetric: null,
             onMetricState: null
         },
@@ -183,9 +182,6 @@
                                     messages: {
                                         learnMore: "{qssWidget}.model.messages.learnMore"
                                     }
-                                },
-                                listeners: {
-                                    "onClicked.learnMore": "{qssWidget}.events.onLearnMoreClicked"
                                 }
                             }
                         }

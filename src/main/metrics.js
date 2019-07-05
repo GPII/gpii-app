@@ -116,16 +116,6 @@ tooltip-shown: QS tooltip was hidden
   }
 }
 
-learnMore: "Learn more" link was clicked
-{
-  "module": "metrics.app",
-  "event": "learnMore",
-  "data": {
-    "path": "http://registry\\.gpii\\.net/common/language",
-    "learnMoreLink": "https://morphic.world/help/qsshelp#language"
-  }
-}
-
 reset: The reset to standard desktop icon was clicked:
 {
   "module": "startup",
