@@ -27,14 +27,18 @@ The following events are captured:
 qss-shown: The quick-strip was shown.
 {
     "module":"metrics.app",
-    "event":"qss-shown"
+    "event":"qss-shown",
+    "qss": "open" // This will be present in all subsequent messages, until it is closed.
+    "app": "active" // This will be present in all subsequent messages, only when the QSS (or any other morphic window)
+                    // is the active window.
 }
 
 qss-hidden: The quick-strip was hidden.
 {
     "module":"metrics.app",
     "event":"qss-hidden",
-    "data": { duration: 56 }
+    "data": { duration: 56 } // how long it was shown for
+    "qss": "open" // This will be removed in all subsequent messages, until it is re-opened.
 }
 
 button-focused: A button on the quick-strip has been focused.
@@ -42,8 +46,12 @@ button-focused: A button on the quick-strip has been focused.
     "module": "metrics.app",
     "event": "button-focused",
     "data": {
-        "buttonPath":"undo"
-    }
+        "buttonPath":"openUSB"
+    },
+    "focus": "openUSB" // This will be present in all subsequent messages, while this button has the focus or while
+                       // the widget window is open. Note that this may still be present even when the qss has lost
+                       // focus or hidden. Combine with the "qss" and "app" fields for accuracy.
+    "hover": "openUSB" // this will be added to all subsequent events, while the mouse is over it.
 }
 
 button-activated: A quick-strip button has been actioned.
@@ -83,8 +91,29 @@ widget-hidden: A qss widget is closed
     "event":"widget-hidden",
     "data": {
         "path":"appTextZoom"
-        "duration": 15
+        "duration": 15 // how long it was shown for
     }
+}
+
+widget-focus: A component within a widget has gained focus
+{
+  "module": "metrics.app",
+  "event": "widget-focus",
+  "data": {
+    "id": "en-US"
+  },
+  "widget-focus": "en-US" // this will be added to all subsequent events, until it loses focus.
+  "widget-hover": "en-US" // this will be added to all subsequent events, while the mouse is over it.
+}
+
+widget-unfocus: A component within a widget has lost focus
+{
+  "module": "metrics.app",
+  "event": "widget-unfocus",
+  "data": {
+    "id": "learnMoreLink"
+  }
+  "widget-focus": "learnMoreLink" // this will not be present in subsequent events, until another gains focus.
 }
 
 setting-changed: A setting has changed via a quick-strip widget
@@ -174,7 +203,8 @@ fluid.defaults("gpii.app.metrics", {
     durationEvents: {
         "tooltip-shown": "tooltip-hidden",
         "qss-shown": "qss-hidden",
-        "widget-shown": "widget-hidden"
+        "widget-shown": "widget-hidden",
+        "widget-focus": "widget-unfocus"
     }
 });
 
@@ -231,10 +261,12 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
             args: [ "qss-hidden" ]
         },
         "onDialogShown.logState": {
+            priority: "before:metrics",
             func: "{eventLog}.setState",
             args: [ "qss", "open" ]
         },
         "onDialogHidden.logState": {
+            priority: "after:metrics",
             func: "{eventLog}.setState",
             args: [ "qss" ]
         }
