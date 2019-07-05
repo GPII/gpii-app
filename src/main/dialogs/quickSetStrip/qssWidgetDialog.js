@@ -114,7 +114,9 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssGetVolumeRequested: null,
                     onQssReApplyPreferencesRequired: null,
                     onQssGetEnvironmentalLoginKeyRequested: null,
-                    onLearnMoreClicked: null
+                    onLearnMoreClicked: null,
+                    onMetric: null,
+                    onMetricState: null
                 },
                 listeners: {
                     onQssWidgetClosed: [{

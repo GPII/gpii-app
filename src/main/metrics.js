@@ -296,12 +296,15 @@ fluid.defaults("gpii.app.metrics.qssWidget", {
                 path: "{that}.model.setting.path"
             } ]
         },
-        "{channelListener}.events.onLearnMoreClicked": {
+        "{channelListener}.events.onMetric": {
+            namespace: "metric",
             func: "{eventLog}.metrics.uiMetric",
-            args: [ "learnMore", {
-                path: "{that}.model.setting.path",
-                learnMoreLink: "{that}.model.setting.learnMoreLink"
-            } ]
+            args: [ "{arguments}.0", "{arguments}.1" ]
+        },
+        "{channelListener}.events.onMetricState": {
+            namespace: "metrics-state",
+            func: "{eventLog}.setState",
+            args: [ "{arguments}.0", "{arguments}.1" ]
         }
     }
 });

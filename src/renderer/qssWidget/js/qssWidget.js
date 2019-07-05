@@ -62,6 +62,20 @@
             translateTools: ".flc-qssTranslateToolsWidget"
         },
 
+        distributeOptions: {
+            "clickable": {
+                target: "{that gpii.app.clickable}.options.gradeNames",
+                record: "gpii.psp.metrics"
+            },
+            "button": {
+                target: "{that gpii.psp.widgets.button}.options.gradeNames",
+                record: "gpii.psp.metrics"
+            },
+            "switch": {
+                target: "{that gpii.psp.widgets.switch}.options.gradeNames",
+                record: "gpii.psp.metrics"
+            }
+        },
         /**
          * The last part of each grade name should be the name of the selector identifying
          * the container for the widget.
@@ -101,7 +115,9 @@
             onQssReApplyPreferencesRequired: null,
             onQssGetEnvironmentalLoginKeyRequested: null,
 
-            onLearnMoreClicked: null
+            onLearnMoreClicked: null,
+            onMetric: null,
+            onMetricState: null
         },
 
         sounds: {},
@@ -246,7 +262,9 @@
                         onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
                         onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
                         onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested",
-                        onLearnMoreClicked:              "{qssWidget}.events.onLearnMoreClicked"
+                        onLearnMoreClicked:              "{qssWidget}.events.onLearnMoreClicked",
+                        onMetric:                        "{qssWidget}.events.onMetric",
+                        onMetricState:                   "{qssWidget}.events.onMetricState"
                     }
                 }
             }
