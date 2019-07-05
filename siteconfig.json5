@@ -47,13 +47,13 @@
             "screen-zoom",
             "text-zoom",
             "screen-capture",
+            "office-simplification",
             "high-contrast",
             "read-aloud",
-            "cloud-folder-open",
-            "usb-open",
+            "volume",
             "launch-documorph",
-            "office-simplification",
-            "volume"
+            "cloud-folder-open",
+            "usb-open"
         ],
 
         // the path to the DocuMorph's executable file, used in the service buttons
