@@ -87,10 +87,10 @@
     gpii.psp.metrics.addFocusHandlers = function (that, container) {
         container.on("focus", function () {
             that.setState("widget-focus", that.metricsID);
-            that.metric("widget-focus", that.metricsID);
+            that.metric("widget-focus", {id: that.metricsID});
         });
         container.on("blur", function () {
-            that.metric("widget-unfocus", that.metricsID);
+            that.metric("widget-unfocus", {id: that.metricsID});
             that.setState("widget-focus");
         });
     };
