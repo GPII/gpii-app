@@ -56,7 +56,8 @@
             toggle: ".flc-qssToggleWidget",
             screenCapture: ".flc-qssScreenCaptureWidget",
             openUSB: ".flc-qssOpenUSBWidget",
-            volume: ".flc-qssVolumeWidget"
+            volume: ".flc-qssVolumeWidget",
+            office: ".flc-qssOfficeWidget"
         },
 
         distributeOptions: {
@@ -83,7 +84,8 @@
             "boolean": "gpii.qssWidget.toggle",
             "screenCapture": "gpii.qssWidget.screenCapture",
             "openUSB": "gpii.qssWidget.openUSB",
-            "volume": "gpii.qssWidget.volume"
+            "volume": "gpii.qssWidget.volume",
+            "office": "gpii.qssWidget.office"
         },
 
         events: {
