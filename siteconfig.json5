@@ -57,7 +57,7 @@
         ],
 
         // the path to the DocuMorph's executable file, used in the service buttons
-        docuMorphExecutable: "C:\\Windows\\system32\\notepad.exe"
+        docuMorphExecutable: "C:\\Program Files (x86)\\Sensus ApS\\DocuMorph Widget\\DocuMorph.Widget.exe"
     },
 
     // Configuration options for the PSP window
