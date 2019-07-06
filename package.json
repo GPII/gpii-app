@@ -1,6 +1,6 @@
 {
     "name": "gpii-app",
-    "version": "1.0.1",
+    "version": "1.2.0",
     "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
     "main": "main.js",
     "repository": {
@@ -12,7 +12,7 @@
         "electron": "3.0.2",
         "electron-edge-js": "8.3.8",
         "electron-localshortcut": "3.1.0",
-        "gpii-windows": "stegru/windows#GPII-3853",
+        "gpii-windows": "javihernandez/windows#60f764552761462ef0e0a2c8cc46b3fab61e6a1c",
         "infusion": "3.0.0-dev.20190328T144119Z.ec44dbfab",
         "nan": "2.10.0",
         "node-jqunit": "1.1.8",

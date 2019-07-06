@@ -1,0 +1,19 @@
+// Service configuration for production.
+{
+    "processes": {
+        "gpii": {
+            "command": "morphic-app.exe",
+            "ipc": "gpii",
+            "autoRestart": true,
+            "disabled": false,
+            env: {
+                NODE_ENV: "app.production",
+                GPII_CLOUD_URL: "https://flowmanager.prd.gcp.gpii.net"
+            }
+        }
+    },
+    "logging": {
+        "level": "DEBUG"
+    },
+    "secretFile": "%ProgramData%\\Morphic Credentials\\secret.txt"
+}

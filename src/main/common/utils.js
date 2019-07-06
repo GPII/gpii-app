@@ -15,6 +15,7 @@
 "use strict";
 
 var os            = require("os");
+var fs            = require("fs");
 var fluid         = require("infusion");
 var electron      = require("electron");
 var child_process = require("child_process");
@@ -321,6 +322,27 @@ gpii.app.ejectUSB = function (browserWindow, messageChannel, messages) {
             gpii.app.notifyWindow(browserWindow, messageChannel, messages.ejectUsbDrives);
         }
     });
+};
+
+/**
+ * Check if a file exists.
+ * @param {String} file to the file.
+ * @return {Boolean} `true` if the file exists.
+ */
+gpii.app.checkIfFileExists = function (file) {
+    return fs.existsSync(file);
+};
+
+/**
+ * Uses environment's %appdata% variable and combines it with the data from the site config
+ * the result should be something like:
+ * C:\Users\vagrant\AppData\Roaming\gpii\defaultSettings.json5
+ * @param {String} fileLocation - path to the file's location
+ * @return {String} - file location path joined with %appdata%
+ */
+gpii.app.compileAppDataPath = function (fileLocation) {
+    var path = require("path");
+    return path.join(process.env.appdata, fileLocation);
 };
 
 /**

@@ -12,5 +12,8 @@
     	resizable: true,
     	alwaysOnTop: true
     },
-    surveyTriggersUrl: "http://localhost:8083/surveys/triggers.json"
+    surveyTriggersUrl: "http://localhost:8083/surveys/triggers.json",
+    defaultSettingsData: {
+        fileLocation: "V:\\tests\\fixtures\\defaultSettings.json5"
+    }
 }

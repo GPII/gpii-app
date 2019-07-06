@@ -6,6 +6,17 @@
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
 
+    // File containing default values which are used after resetting user settings
+    // if relativePath is true then fileLocation is joined after %appdata%, so the
+    // end result its something similar to:
+    // "C:\Users\vagrant\AppData\Roaming\gpii\defaultSettings.json5"
+    // if relativePath is false then fileLocation is assumed that its absolute path
+    // and no changes are done to it
+    defaultSettingsData: {
+        relativePath: true,
+        fileLocation: "gpii\\defaultSettings.json5"
+    },
+
     // Configuration options for the QSS window
     qss: {
         // Determines if the QSS will be shown automatically on Morphic's startup
@@ -39,10 +50,6 @@
         messages: {
             keyedOut: "To save you must insert a Morphic Key. Please ask for one at the Front Desk. If you have a key inserted, remove it and re-insert it, then you can SAVE."
         },
-
-        // the path to the ShareX's executable file, used in the screenCaptureWidget
-        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe",
-
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
         buttonList: [
@@ -50,17 +57,18 @@
             "screen-zoom",
             "text-zoom",
             "screen-capture",
+            "office-simplification",
             "high-contrast",
             "read-aloud",
-            "cloud-folder-open",
-            "usb-open",
+            "volume",
             "launch-documorph",
-            "office-simplification",
-            "volume"
+            "cloud-folder-open",
+            "usb-open"
         ],
-
         // the path to the DocuMorph's executable file, used in the service buttons
-        docuMorphExecutable: "C:\\Windows\\system32\\notepad.exe"
+        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe",
+        // the path to the ShareX's executable file, used in the screenCaptureWidget
+        shareXPath: "C:\\Program Files (x86)\\Morphic\\sharex\\sharex-portable\\sharex.exe"
     },
 
     // Configuration options for the PSP window
