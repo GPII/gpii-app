@@ -314,7 +314,8 @@
                     "{that}",
                     "{that}.model.value",
                     "{that}.model.setting.schema",
-                    -1 // step multiplier to reverse the step
+                    -1, // step multiplier to reverse the step
+                    "{volume}.model.setting.previousValue"
                 ]
             },
             animateButton: {
