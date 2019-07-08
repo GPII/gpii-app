@@ -452,7 +452,7 @@
         } else {
             var step = schema.divisibleBy * stepMultiplier;
 
-            value = parseFloat( (value + step).toPrecision(2) );
+            value = parseFloat( (value + step).toPrecision(3) );
             // Handle not given min and max
             restrictedValue = value;
 
