@@ -57,7 +57,8 @@
             screenCapture: ".flc-qssScreenCaptureWidget",
             openUSB: ".flc-qssOpenUSBWidget",
             volume: ".flc-qssVolumeWidget",
-            office: ".flc-qssOfficeWidget"
+            office: ".flc-qssOfficeWidget",
+            mySavedSettings: ".flc-qssMySavedSettingsWidget"
         },
 
         /**
@@ -71,7 +72,8 @@
             "screenCapture": "gpii.qssWidget.screenCapture",
             "openUSB": "gpii.qssWidget.openUSB",
             "volume": "gpii.qssWidget.volume",
-            "office": "gpii.qssWidget.office"
+            "office": "gpii.qssWidget.office",
+            "mySavedSettings": "gpii.qssWidget.mySavedSettings"
         },
 
         events: {

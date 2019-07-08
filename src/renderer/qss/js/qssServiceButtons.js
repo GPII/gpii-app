@@ -23,46 +23,12 @@
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Key in"
      * QSS button.
      */
-    fluid.defaults("gpii.qss.keyInButtonPresenter", {
-        gradeNames: ["gpii.qss.disabledButtonPresenter"],
+    fluid.defaults("gpii.qss.mySavedSettingsButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
         attrs: {
-            "aria-label": "Settings Panel"
+            "aria-label": "My saved settings"
         }
-        // This code is commented because of changes in GPII-3773 request.
-        // Some or all code may be removed or parts of it re-used in the future.
-        /*,
-        listeners: {
-            "onArrowUpPressed.activate": {
-                func: "{that}.onActivationKeyPressed",
-                args: [
-                    {key: "ArrowUp"}
-                ]
-            }
-        },
-        invokers: {
-            activate: {
-                funcName: "gpii.qss.keyInButtonPresenter.activate",
-                args: [
-                    "{that}",
-                    "{list}",
-                    "{arguments}.0" // activationParams
-                ]
-            }
-        }*/
     });
-
-    /**
-     * A custom function for handling activation of the "Key in" QSS button. Reuses the generic
-     * `notifyButtonActivated` invoker.
-     * @param {Component} that - The `gpii.qss.keyInButtonPresenter` instance.
-     * @param {Component} qssList - The `gpii.qss.list` instance.
-     * @param {Object} activationParams - An object containing parameter's for the activation
-     * of the button (e.g. which key was used to activate the button).
-     */
-    gpii.qss.keyInButtonPresenter.activate = function (that, qssList, activationParams) {
-        that.notifyButtonActivated(activationParams);
-        qssList.events.onPspToggled.fire();
-    };
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Close"

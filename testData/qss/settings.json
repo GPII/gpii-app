@@ -224,13 +224,13 @@
         "tabindex": 320,
         "messageKey": "undo"
     }, {
-        "path": "psp",
+        "path": "mySavedSettings",
         "schema": {
-            "type": "psp"
+            "type": "mySavedSettings"
         },
         "buttonTypes": ["smallButton"],
         "tabindex": 310,
-        "messageKey": "psp"
+        "messageKey": "mySavedSettings"
     }, {
         "path": "resetAll",
         "schema": {

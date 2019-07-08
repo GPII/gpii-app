@@ -74,5 +74,7 @@
     "gpii_qssWidget_openUSB_noUsbInserted": "В компютъра не са включени USB устройства. Поставете USB и опитайте отново.",
     "gpii_qssWidget_openUSB_ejectUsbDrives": "В компютъра няма активни USB устройства. Безопасно е да премахнете всяко устройство в компютъра",
     "gpii_qssWidget_openUSB_openUsbButtonLabel": "Отвори всички USB устройства",
-    "gpii_qssWidget_openUSB_ejectUsbButtonLabel": "Премахни безопасно всички USB устройствата"
+    "gpii_qssWidget_openUSB_ejectUsbButtonLabel": "Премахни безопасно всички USB устройствата",
+
+    "gpii_qssWidget_mySavedSettings_reApplyPreferencesButtonLabel": "Re-apply my preferences"
 }
