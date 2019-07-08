@@ -57,7 +57,7 @@
             "type": "volume",
             "min": 0,
             "max": 1,
-            "divisibleBy": 0.1,
+            "divisibleBy": 0.02,
             "previousValue": 0.5,
             "image": "volume-mute.svg",
             "helpImage": "volumeMute.png"

@@ -31,8 +31,8 @@
     },
     "gpii_app_qss_settings_common-selfVoicing-enabled": {
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>",
-        "title": "Read Aloud",
-        "tip": "<p>Turns on and adjusts Read Aloud  mode in Chrome</p>",
+        "title": "Chrome Read Aloud",
+        "tip": "<p>Turns on and adjusts Read Aloud mode in Chrome</p>",
         "extendedTip": "<p>To use Read Aloud</p><ol><li>Open web page in Chrome <img height=12 src='../../icons/chrome.svg'></li><li>Select / highlight text</li><li>Click Play button that pops up</li></ol>"
     },
     "gpii_app_qss_settings_common-highContrastTheme": {
@@ -56,10 +56,10 @@
         "footerTip": ""
     },
     "gpii_app_qss_settings_appTextZoom": {
-        "tooltip": "<p>Change text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
-        "title": "App / Text Zoom",
-        "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting, so will not save/undo.)</p>",
-        "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do App/Text Zoom without using Morphic."
+        "tooltip": "<p>Changes text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
+        "title": "Zoom Top Window",
+        "tip": "<p>Zoom Top Window</p><p>Note: Not all windows zoom.</p>",
+        "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do Zoom Top Window without using Morphic."
     },
     "gpii_app_qss_settings_common-language": {
         "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
@@ -97,7 +97,7 @@
     "gpii_app_qss_settings_common-volume": {
         "tooltip": "<p>Adjusts Windows Volume and provides Mute on/off.</p>",
         "title": "Volume & Mute",
-        "tip": "<p>Volume</p>",
+        "tip": "<p>Volume and Mute</p>",
         "extendedTip": "You can also change the volume using the speaker icon on the system tray (near the clock at the bottom of the screen).",
         "switchTitle": "Mute all audio"
     },
