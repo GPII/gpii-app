@@ -24,6 +24,8 @@ var fluid = require("infusion");
 
 The following events are captured:
 
+site-id: Recorded at start-up, to identify the deployment.
+
 qss-shown: The quick-strip was shown.
 {
     "module":"metrics.app",
