@@ -69,7 +69,10 @@ fluid.defaults("gpii.app.errorDialog", {
                 events: {
                     onErrorDialogContentHeightChanged: "{errorDialog}.events.onContentHeightChanged",
                     onErrorDialogButtonClicked: null,
-                    onErrorDialogClosed: null
+                    onErrorDialogClosed: null,
+
+                    onMetric: null,
+                    onMetricState: null
                 },
                 listeners: {
                     onErrorDialogButtonClicked: {

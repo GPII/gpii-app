@@ -111,6 +111,7 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssOpenUsbRequested: null,
                     onQssUnmountUsbRequested: null,
                     onQssGetVolumeRequested: null,
+
                     onMetric: null,
                     onMetricState: null
 

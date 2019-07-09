@@ -198,13 +198,26 @@ fluid.defaults("gpii.app.metrics", {
         "tooltip": {
             record: "gpii.app.metrics.qssTooltipDialog",
             target: "{/ gpii.app.qssTooltipDialog}.options.gradeNames"
+        },
+        "notification": {
+            record: "gpii.app.metrics.qssNotification",
+            target: "{/ gpii.app.qssNotification}.options.gradeNames"
+        },
+        "error": {
+            record: "gpii.app.metrics.errorDialog",
+            target: "{/ gpii.app.errorDialog}.options.gradeNames"
+        },
+        "more": {
+            record: "gpii.app.metrics.morePanel",
+            target: "{/ gpii.app.qssMorePanel}.options.gradeNames"
         }
     },
     durationEvents: {
         "tooltip-shown": "tooltip-hidden",
         "qss-shown": "qss-hidden",
         "widget-shown": "widget-hidden",
-        "widget-focus": "widget-unfocus"
+        "widget-focus": "widget-unfocus",
+        "notification-shown": "notification-hidden"
     }
 });
 
@@ -346,6 +359,73 @@ fluid.defaults("gpii.app.metrics.qssTooltipDialog", {
             args: [ "tooltip-hidden", {
                 path: "{that}.model.setting.path"
             } ]
+        }
+    }
+});
+
+// Notification dialog
+fluid.defaults("gpii.app.metrics.qssNotification", {
+    gradeNames: ["fluid.component"],
+    listeners: {
+        "onQssNotificationShown.metrics": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: ["notification-shown", {
+                description: "{arguments}.0.description"
+            }]
+        },
+        "onDialogHidden.metrics": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: ["notification-hidden"]
+        },
+        "{channelListener}.events.onMetric": {
+            namespace: "metric",
+            func: "{eventLog}.metrics.uiMetric",
+            args: ["{arguments}.0", "{arguments}.1"]
+        },
+        "{channelListener}.events.onMetricState": {
+            namespace: "metrics-state",
+            func: "{eventLog}.setState",
+            args: ["{arguments}.0", "{arguments}.1"]
+        }
+    }
+});
+
+// Error dialog
+fluid.defaults("gpii.app.metrics.errorDialog", {
+    gradeNames: ["fluid.component"],
+    listeners: {
+        "onDialogShown.metrics": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: ["error-shown", {errCode: "{that}.options.config.params.errCode"}]
+        },
+        "onDialogHidden.metrics": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: ["error-hidden", {errCode: "{that}.options.config.params.errCode"}]
+        },
+        "{channelListener}.events.onMetric": {
+            namespace: "metric",
+            func: "{eventLog}.metrics.uiMetric",
+            args: ["{arguments}.0", "{arguments}.1"]
+        },
+        "{channelListener}.events.onMetricState": {
+            namespace: "metrics-state",
+            func: "{eventLog}.setState",
+            args: ["{arguments}.0", "{arguments}.1"]
+        }
+    }
+});
+
+// More panel
+fluid.defaults("gpii.app.metrics.morePanel", {
+    gradeNames: ["fluid.component"],
+    listeners: {
+        "onDialogShown.metrics": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: ["more-shown"]
+        },
+        "onDialogHidden.metrics": {
+            func: "{eventLog}.metrics.uiMetric",
+            args: ["more-hidden"]
         }
     }
 });

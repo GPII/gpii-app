@@ -44,7 +44,7 @@
      * showing the "Learn more" links, etc.
      */
     fluid.defaults("gpii.psp.qssWidget", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.metrics.qssWidget"],
 
         model: {
             setting: {}
@@ -60,20 +60,6 @@
             office: ".flc-qssOfficeWidget"
         },
 
-        distributeOptions: {
-            "clickable": {
-                target: "{that gpii.app.clickable}.options.gradeNames",
-                record: "gpii.psp.metrics"
-            },
-            "button": {
-                target: "{that gpii.psp.widgets.button}.options.gradeNames",
-                record: "gpii.psp.metrics"
-            },
-            "switch": {
-                target: "{that gpii.psp.widgets.switch}.options.gradeNames",
-                record: "gpii.psp.metrics"
-            }
-        },
         /**
          * The last part of each grade name should be the name of the selector identifying
          * the container for the widget.
@@ -107,10 +93,7 @@
             onQssUnmountUsbRequested: null,
 
             // Volume & Mute related event
-            onQssGetVolumeRequested: null,
-
-            onMetric: null,
-            onMetricState: null
+            onQssGetVolumeRequested: null
         },
 
         sounds: {},
