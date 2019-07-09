@@ -59,7 +59,7 @@
         "tooltip": "<p>Changes text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
         "title": "Zoom Top Window",
         "tip": "<p>Zoom Top Window</p><p>Note: Not all windows zoom.</p>",
-        "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do Zoom Top Window without using Morphic."
+        "footerTip": "<a href=\"https://www.google.com/url?q=https://docs.google.com/document/d/1vnDDMvQENv3psIvZt_ibtedp4CWm62QnATcjYSxxN00/edit?usp%3Dsharing&sa=D&ust=1562689098659000&usg=AFQjCNE1ldXLzAvn2c41Hsiv5kyYzHyZQw\">Want a faster way to zoom a window?</a>"
     },
     "gpii_app_qss_settings_common-language": {
         "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
