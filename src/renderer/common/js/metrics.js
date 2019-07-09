@@ -18,11 +18,54 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
+    // Mix-in grade to capture metrics in dialogs.
+    fluid.defaults("gpii.psp.metrics.dialog", {
+        gradeNames: ["gpii.psp.metrics"],
+        distributeOptions: {
+            "clickable": {
+                target: "{that gpii.app.clickable}.options.gradeNames",
+                record: "gpii.psp.metrics"
+            },
+            "button": {
+                target: "{that gpii.psp.widgets.button}.options.gradeNames",
+                record: "gpii.psp.metrics"
+            },
+            "switch": {
+                target: "{that gpii.psp.widgets.switch}.options.gradeNames",
+                record: "gpii.psp.metrics"
+            }
+        },
+        events: {
+            onMetric: null,
+            onMetricState: null
+        },
+        members: {
+            componentType: "dialog"
+        }
+    });
+
+    fluid.defaults("gpii.psp.metrics.qssWidget", {
+        gradeNames: ["gpii.psp.metrics.dialog"],
+        members: {
+            componentType: "widget",
+            metricsID: undefined
+        },
+        invokers: {
+            getMetricsID: {
+                funcName: "gpii.psp.metrics.getWidgetMetricsID",
+                args: ["{that}"]
+            }
+        }
+    });
+
     // Mix-in grade for components whose hover/focus state should be captured for metrics.
     fluid.defaults("gpii.psp.metrics", {
         gradeNames: ["gpii.app.hoverable"],
         members: {
-            metricsID: "@expand:fluid.identity({that}.container.selectorName)"
+            metricsID: "@expand:fluid.identity({that}.container.selectorName)",
+            componentType: "field",
+            hoverState: "@expand:fluid.add({that}.componentType,-hover)",
+            focusState: "@expand:fluid.add({that}.componentType,-focus)"
         },
         invokers: {
             metric: {
@@ -32,12 +75,15 @@
             setState: {
                 func: "{channelNotifier}.events.onMetricState.fire",
                 args: ["{arguments}.0", "{arguments}.1"]
+            },
+            getMetricsID: {
+                funcName: "gpii.psp.metrics.getMetricsID",
+                args: ["{that}", "{that}.model.item"]
             }
         },
         listeners: {
             "onCreate.getId": {
-                funcName: "gpii.psp.metrics.getMetricsID",
-                args: ["{that}", "{that}.model.item"]
+                func: "{that}.getMetricsID"
             },
             "onCreate.addFocusHandlers": {
                 funcName: "gpii.psp.metrics.addFocusHandlers",
@@ -45,11 +91,11 @@
             },
             "onMouseEnter.metricsState": {
                 func: "{that}.setState",
-                args: ["widget-hover", "{that}.metricsID"]
+                args: ["{that}.hoverState", "@expand:{that}.getMetricsID()"]
             },
             "onMouseLeave.metricsState": {
                 func: "{that}.setState",
-                args: ["widget-hover"]
+                args: ["{that}.hoverState"]
             }
         }
     });
@@ -76,6 +122,10 @@
         return that.metricsID;
     };
 
+    gpii.psp.metrics.getWidgetMetricsID = function (that) {
+        return fluid.get(that.model, "setting.path") || that.typeName;
+    };
+
     /**
      * Adds the focus and blur handlers to the container, so the metrics core can keep an eye on what's currently
      * focused.
@@ -86,12 +136,12 @@
      */
     gpii.psp.metrics.addFocusHandlers = function (that, container) {
         container.on("focus", function () {
-            that.setState("widget-focus", that.metricsID);
-            that.metric("widget-focus", {id: that.metricsID});
+            that.setState(that.componentType + "-focus", that.getMetricsID());
+            that.metric(that.componentType + "-focus", {id: that.getMetricsID()});
         });
         container.on("blur", function () {
-            that.metric("widget-unfocus", {id: that.metricsID});
-            that.setState("widget-focus");
+            that.metric(that.componentType + "-unfocus", {id: that.getMetricsID()});
+            that.setState(that.componentType + "-focus");
         });
     };
 
