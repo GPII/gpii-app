@@ -39,7 +39,7 @@
         },
 
         events: {
-            onReApplyPreferencesClicked: null
+            // onQssReApplyPreferencesRequired: null
         },
 
         components: {
@@ -54,7 +54,7 @@
                         label: "{mySavedSettings}.model.messages.reApplyPreferencesButtonLabel"
                     },
                     invokers: {
-                        "onClick": "{mySavedSettings}.events.onReApplyPreferencesClicked.fire"
+                        "onClick": "{channelNotifier}.events.onQssReApplyPreferencesRequired.fire"
                     }
                 }
             }
