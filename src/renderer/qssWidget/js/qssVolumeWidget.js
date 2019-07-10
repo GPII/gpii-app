@@ -444,11 +444,12 @@
      * will be no change in the step size, -1 will reverse it, and everything else
      * will act as a real multiplier (2 for 2x as an example)
      * subtracted from or added to the setting's value.
+     * @param {Number} previousValue - The value before the mute button is activated
      * @return {Boolean} Whether there was a change in the setting's value.
      */
     gpii.qssWidget.volumeStepper.makeRestrictedStep = function (that, value, schema, stepMultiplier, previousValue) {
         var restrictedValue;
-        if (value === 0 && previousValue) {
+        if (value === 0 && previousValue !== undefined) {
             restrictedValue = previousValue;
         } else {
             var step = schema.divisibleBy * stepMultiplier;
