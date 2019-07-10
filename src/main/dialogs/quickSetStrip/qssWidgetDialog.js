@@ -160,8 +160,7 @@ fluid.defaults("gpii.app.qssWidget", {
                         ]
                     },
                     onQssReApplyPreferencesRequired: {
-                        funcName: "gpii.app.reApplyPreferences",
-                        args: []
+                        funcName: "{app}.reApplyPreferences"
                     }
                 }
             }
