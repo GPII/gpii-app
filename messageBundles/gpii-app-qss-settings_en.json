@@ -62,9 +62,9 @@
         "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do Zoom Top Window without using Morphic."
     },
     "gpii_app_qss_settings_common-language": {
-        "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
-        "title": "Language",
-        "tip": "<p>Changes Language of Windows</p><p>Also works for apps that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>You may need to restart some apps to see change.</li></ul>"
+        "tooltip": "<p>Change Language of Menus & Ribbons.</p><p>Works in Windows, Edge, Office and other programs with language packs installed.</p>",
+        "title": " Language of Menus",
+        "tip": "<p>Change Language of Menus/Ribbons</p><p>Works in Windows, and other apps that support Windows language settings.</p><ul><li>Does not translate documents etc.</li><li>You may need to restart some apps to see change.</li></ul>"
     },
     "gpii_app_qss_settings_usb-open": {
         "tooltip": "<p>Open and safely Eject all USB flash drives plugged into the computer.</p>",
