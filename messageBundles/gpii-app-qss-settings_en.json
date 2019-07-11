@@ -31,8 +31,8 @@
     },
     "gpii_app_qss_settings_common-selfVoicing-enabled": {
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>",
-        "title": "Read Aloud",
-        "tip": "<p>Turns on and adjusts Read Aloud  mode in Chrome</p>",
+        "title": "Chrome Read Aloud",
+        "tip": "<p>Turns on and adjusts Read Aloud mode in Chrome</p>",
         "extendedTip": "<p>To use Read Aloud</p><ol><li>Open web page in Chrome <img height=12 src='../../icons/chrome.svg'></li><li>Select / highlight text</li><li>Click Play button that pops up</li></ol>"
     },
     "gpii_app_qss_settings_common-highContrastTheme": {
@@ -45,8 +45,7 @@
             "White on black",
             "Yellow on black",
             "Black on yellow",
-            "Light on dark grey",
-            "Grey on white",
+            "Gray on white",
             "Black on brown"
         ]
     },
@@ -57,10 +56,10 @@
         "footerTip": ""
     },
     "gpii_app_qss_settings_appTextZoom": {
-        "tooltip": "<p>Change text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
-        "title": "App / Text Zoom",
-        "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting, so will not save/undo.)</p>",
-        "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do App/Text Zoom without using Morphic."
+        "tooltip": "<p>Changes text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
+        "title": "Zoom Top Window",
+        "tip": "<p>Zoom Top Window</p><p>Note: Not all windows zoom.</p>",
+        "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do Zoom Top Window without using Morphic."
     },
     "gpii_app_qss_settings_common-language": {
         "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
@@ -68,11 +67,13 @@
         "tip": "<p>Changes Language of Windows</p><p>Also works for apps that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>You may need to restart some apps to see change.</li></ul>"
     },
     "gpii_app_qss_settings_usb-open": {
-        "tooltip": "<p>Opens up any USB Flash Drives plugged into computer.</p>",
-        "title": "Open USB Drive"
+        "tooltip": "<p>Open and safely Eject all USB flash drives plugged into the computer.</p>",
+        "title": "Open & Eject USB",
+        "tip": "<p>Your USB Drive</p><p>Insert a USB drive and open it with the button below.</p>",
+        "footerTip": "<p>When you are done, prevent data loss by ejecting USB drives safely.</p><ol><li>Close all documents opened from the USB drive and</li><li>Then use the button below to safely eject the USB drives</li></ol>"
     },
     "gpii_app_qss_settings_screenCapture": {
-        "tooltip": "<p>Screen Capture.</p><p>Take pictures or record videos of the screen.</p>",
+        "tooltip": "<p>Screen Capture.</p><p>Take pictures of all or part of the screen.</p>",
         "title": "Screen Capture",
         "tip": "<p>Screen Capture</p><p>To capture all or part of the screen</p><ul><li>Click either button below</li><li>Then click and drag the mouse to select the part of the screen you want.</li><li>Let go of the mouse button. DONE.</li></ul><p><b>The top button</b> lets you “COPY” some or all of the screen so you can then “PASTE” it into any email, document, etc. (using Ctrl-V).</p><p><b>The 2nd button</b> creates a “Picture” like a camera. You will find the file on your desktop.</p>",
         "enum": [
@@ -83,5 +84,25 @@
     "gpii_app_qss_settings_cloud-folder-open": {
         "tooltip": "<p>The Quick Folder has commonly requested documents, web pages, and other resources.</p>",
         "title": "Open Quick Folder"
+    },
+    "gpii_app_qss_settings_officeSimplification": {
+        "tooltip": "<p>Microsoft Word simplification.</p><p>Provides simpler menus for Microsoft Word</p>",
+        "title": "MS Word Simplify",
+        "tip": "<p>Microsoft Word simplification</p><p>Morphic can add simpler ribbons (the menu bars with icons at the top of Word) to make it easier for people who don't use all the options.</p><ul><li>Choose one or both to add them to Word</li></ul>",
+        "enum": [
+            "Basic (Morphic)",
+            "Essentials (Morphic)"
+        ]
+    },
+    "gpii_app_qss_settings_common-volume": {
+        "tooltip": "<p>Adjusts Windows Volume and provides Mute on/off.</p>",
+        "title": "Volume & Mute",
+        "tip": "<p>Volume and Mute</p>",
+        "extendedTip": "You can also change the volume using the speaker icon on the system tray (near the clock at the bottom of the screen).",
+        "switchTitle": "Mute all audio"
+    },
+    "gpii_app_qss_settings_launch-documorph": {
+        "tooltip": "<p>Converts documents into more accessible forms.</p>",
+        "title": "Docu- Morph"
     }
 }

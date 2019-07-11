@@ -118,4 +118,123 @@
     gpii.qss.toggleButtonPresenter.getCaption = function (value, messages) {
         return value ? messages.caption : "";
     };
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with QSS Volume
+     * toggle button.
+     */
+    fluid.defaults("gpii.qss.volumeButtonPresenter", {
+        gradeNames: ["gpii.qss.widgetButtonPresenter"],
+        model: {
+            messages: {
+                caption: null
+            },
+            item: {}
+        },
+        styles: {
+            redButton: "fl-qss-redButton"
+        },
+        modelRelay: {
+            "caption": {
+                target: "caption",
+                singleTransform: {
+                    type: "fluid.transforms.free",
+                    func: "gpii.qss.volumeButtonPresenter.getCaption",
+                    args: ["{that}.model.value", "{that}.model.messages", "{that}"]
+                }
+            }
+        },
+        modelListeners: {
+            caption: {
+                this: "{that}.dom.caption",
+                method: "text",
+                args: ["{change}.value"]
+            }
+        },
+        invokers: {
+            renderImage: {
+                funcName: "gpii.qss.volumeButtonPresenter.renderImage",
+                args: ["{that}.dom.image", "{that}.model.item.schema.image", "{arguments}.0"]
+            },
+            hideTitle: {
+                funcName: "gpii.qss.volumeButtonPresenter.hideTitle",
+                args: ["{that}.dom.title", "{arguments}.0"]
+            },
+            toggleStyle: {
+                funcName: "gpii.qss.volumeButtonPresenter.toggleStyle",
+                args: ["{that}.container", "{that}.options.styles.redButton", "{arguments}.0"]
+            }
+        }
+    });
+
+    /**
+     * State of the Volume button. If the value is 0 the state of the button is ON, any other value is OFF.
+     * @typedef {Number} volumeState
+    */
+
+    /**
+     * Show or hide the title of the button.
+     * @param {jQuery} titleElem - The jQuery object corresponding to the title of the button.
+     * @param {volumeState} value - The state of the button.
+     */
+    gpii.qss.volumeButtonPresenter.hideTitle = function (titleElem, value) {
+        if (value === 0) {
+            titleElem.hide();
+        } else {
+            titleElem.show();
+        }
+    };
+
+    /**
+     * If available in the setting's schema, shows the specified image for the button when the value of setting is 0.
+     * @param {jQuery} imageElem - The jQuery object corresponding to the image of the button.
+     * @param {String} image - The path to the image.
+     * @param {volumeState} value - The state of the button.
+     */
+    gpii.qss.volumeButtonPresenter.renderImage = function (imageElem, image, value) {
+        if (image && value === 0) {
+            var maskImageValue = fluid.stringTemplate("url(\"%image\")", {
+                image: image
+            });
+
+            // use a mask image to avoid having 2 different images (one for when the
+            // button is activated and one when it is not)
+            imageElem.css("mask-image", maskImageValue);
+            imageElem.show();
+        } else {
+            imageElem.hide();
+        }
+    };
+
+    /**
+     * Returns the caption of the toggle button that needs to be shown below the button's
+     * title in case the state of the button is "on".
+     * In the case of the Volume widget, the caption message is shown only when the value is 0.
+     * @param {volumeState} value - The state of the button.
+     * @param {Object} messages - An object containing internationalizable messages for
+     * this component.
+     * @param {Component} that - The `gpii.qss.volumeButtonPresenter` instance.
+     * @return {String} The caption message for the toggle button.
+     */
+    gpii.qss.volumeButtonPresenter.getCaption = function (value, messages, that) {
+        that.toggleStyle(value);
+        that.renderImage(value);
+        that.hideTitle(value);
+        return value === 0 ? messages.caption : "";
+    };
+
+    /**
+     * Change the color of the "Volume & Mute" button if the value is 0.
+     * @param {jQuery} container - The jQuery container object
+     * @param {String} style - Contains css class
+     * @param {volumeState} value - The state of the button.
+     */
+    gpii.qss.volumeButtonPresenter.toggleStyle = function (container, style, value) {
+        if (value === 0) {
+            container.addClass(style);
+        } else {
+            container.removeClass(style);
+        }
+    };
+
 })(fluid);
