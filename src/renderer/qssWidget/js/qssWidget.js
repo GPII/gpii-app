@@ -135,6 +135,7 @@
                     }
                 },
                 options: {
+                    lastEnvironmentalLoginGpiiKey: "{qssWidget}.options.lastEnvironmentalLoginGpiiKey",
                     sounds: "{qssWidget}.options.sounds",
                     siteConfig: "{qssWidget}.options.siteConfig",
                     activationParams: "{arguments}.1",

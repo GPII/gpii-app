@@ -60,7 +60,8 @@ fluid.defaults("gpii.app.qssWidget", {
                         args: ["{that}.options.sounds.boundReachedErrorSound"]
                     }
                 }
-            }
+            },
+            lastEnvironmentalLoginGpiiKey: "{that}.model.lastEnvironmentalLoginGpiiKey"
         },
         attrs: {
             width: 170,

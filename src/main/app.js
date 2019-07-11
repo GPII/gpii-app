@@ -203,6 +203,7 @@ fluid.defaults("gpii.app", {
             options: {
                 appTextZoomPath: "appTextZoom",
                 model: {
+                    lastEnvironmentalLoginGpiiKey : "{lifecycleManager}.model.lastEnvironmentalLoginGpiiKey",
                     isKeyedIn: "{app}.model.isKeyedIn",
                     keyedInUserToken: "{app}.model.keyedInUserToken",
 
