@@ -18,8 +18,8 @@
     "gpii_app_qss_settings_mySavedSettings": {
         "tooltip": "<p>My Saved Settings</p>",
         "title": "My Saved Settings",
-        "tip": "<p>My Saved Settings</p><ul><li>To apply your saved settings, insert a Morphic USB key.</li><li>To re-apply them, remove and then reinsert the Morphic Key.</li></ul>",
-        "footerTip": "<p><i>The button below will only work if you sign into Morphic automatically when you sign into this computer</i></p>"
+        "tip": "<p>My Saved Settings</p>",
+        "footerTip": "<ul><li>To apply your saved settings, insert a Morphic USB key.</li><li>To re-apply them, remove and then reinsert the Morphic Key.</li></ul>"
     },
     "gpii_app_qss_settings_more": {
         "tooltip": "<p>More options for changing the settings on this computer.</p>",

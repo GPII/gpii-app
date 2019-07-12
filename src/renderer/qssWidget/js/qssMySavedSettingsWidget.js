@@ -38,8 +38,15 @@
             reApplyPreferencesBtn: ".flc-reApplyPreferencesBtn"
         },
 
-        events: {
-            // onQssReApplyPreferencesRequired: null
+        listeners: {
+            "onCreate.toggleView": {
+                funcName: "gpii.qssWidget.mySavedSettings.toggleView",
+                args: [
+                    "{that}.dom.reApplyPreferencesBtn",
+                    "{that}.dom.footerTip",
+                    "{that}.options.lastEnvironmentalLoginGpiiKey"
+                ]
+            }
         },
 
         components: {
@@ -60,5 +67,15 @@
             }
         }
     });
+
+    gpii.qssWidget.mySavedSettings.toggleView = function (autoKeyInView, tip, lastEnvironmentalLoginGpiiKey) {
+        if (!lastEnvironmentalLoginGpiiKey) {
+            autoKeyInView.hide();
+            tip.show();
+        } else {
+            autoKeyInView.show();
+            tip.hide();
+        }
+    };
 
 })(fluid);
