@@ -793,10 +793,16 @@ gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettings) 
         if (fluid.isValue(loadedSettings.contexts["gpii-default"].preferences)) {
             // the structure matches our assumption, going through the nodes and collect the data
             fluid.each(loadedSettings.contexts["gpii-default"].preferences, function (value, path) {
-                var fixedPath = path.replace(/\./g, "\\."),
-                    fixedValue = value;
-
-                result[fixedPath] = { "value": fixedValue };
+                var fixedPath = path.replace(/\./g, "\\.");
+                if (!fluid.isPlainObject(value)) {
+                    var fixedValue = value;
+                    result[fixedPath] = { "value": fixedValue };
+                } else {
+                    fluid.each(value, function (v, k) {
+                        var longPath = fixedPath.concat(".", k);
+                        result[longPath] = { "value": v };
+                    });
+                }
             });
         }
 
