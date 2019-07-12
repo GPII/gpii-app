@@ -431,9 +431,9 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.resetAllToStandard",
             args: ["{that}", "{psp}", "{qssWrapper}.qss"]
         },
+        // Re-apply the last environmental login
         reApplyPreferences: {
-            funcName: "gpii.app.reApplyPreferences",
-            args: ["{lifecycleManager}"]
+            func: "{lifecycleManager}.replayEnvironmentalLogin"
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -547,15 +547,6 @@ gpii.app.keyIn = function (lifecycleManager, token) {
   */
 gpii.app.keyOut = function (lifecycleManager, token) {
     return lifecycleManager.performLogout(token);
-};
-
-/**
-  * Re-apply the last environmental login.
-  * @param {Component} lifecycleManager - The `gpii.lifecycleManager` instance.
-  * @return {Promise} A promise that will be resolved/rejected when the request is finished.
-  */
-gpii.app.reApplyPreferences = function (lifecycleManager) {
-    return lifecycleManager.replayEnvironmentalLogin();
 };
 
 /**

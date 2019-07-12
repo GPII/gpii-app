@@ -99,7 +99,7 @@ fluid.defaults("gpii.app.qssWrapper", {
             restartWarningNotification: null
         },
 
-        lastEnvironmentalLoginGpiiKey: null,
+        lastEnvironmentalLoginGpiiKey: "",
         isKeyedIn: false,
         keyedInUserToken: null,
         notificationShown: false, // used to check if the notification is already shown
