@@ -23,7 +23,12 @@
 
 
 .fl-qssWidget-footerTip {
-    color: #21932b;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.fl-qssWidget-footerTip a {
+    color: #000000;
 }
 
 .fl-qssWidget-tip p {
