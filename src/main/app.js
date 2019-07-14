@@ -435,6 +435,10 @@ fluid.defaults("gpii.app", {
         reApplyPreferences: {
             func: "{lifecycleManager}.replayEnvironmentalLogin"
         },
+        getEnvironmentalLoginKey: {
+            funcName: "gpii.app.getEnvironmentalLoginKey",
+            args: ["{lifecycleManager}.model.lastEnvironmentalLoginGpiiKey", "{arguments}.0", "{arguments}.1"]
+        },
         exit: {
             funcName: "gpii.app.exit",
             args: "{that}"
@@ -442,6 +446,16 @@ fluid.defaults("gpii.app", {
     },
     defaultTheme: "white"
 });
+
+/**
+ * Get the Gpii key name of the last environmental login.
+ * @param {Object} browserWindow - An Electron `BrowserWindow` object.
+ * @param {String} messageChannel - The channel to which the message should be sent.
+ * @param {String} lastEnvironmentalLoginGpiiKey - Gpii key name of the last environmental login.
+ */
+gpii.app.getEnvironmentalLoginKey = function (lastEnvironmentalLoginGpiiKey, browserWindow, messageChannel) {
+    gpii.app.notifyWindow(browserWindow, messageChannel, lastEnvironmentalLoginGpiiKey);
+};
 
 /**
  * Changes the keyboard shortcut for opening the GPII app. The previously registered

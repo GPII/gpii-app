@@ -96,7 +96,8 @@
 
             // Volume & Mute related event
             onQssGetVolumeRequested: null,
-            onQssReApplyPreferencesRequired: null
+            onQssReApplyPreferencesRequired: null,
+            onQssGetEnvironmentalLoginKeyRequested: null
         },
 
         sounds: {},
@@ -236,7 +237,8 @@
                         onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
                         // Volume button
                         onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
-                        onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired"
+                        onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
+                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested"
                     }
                 }
             }

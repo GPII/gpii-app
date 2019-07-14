@@ -29,7 +29,8 @@
             messages: {
                 reApplyPreferencesButtonLabel: null,
                 footerTip: "{that}.model.setting.widget.footerTip"
-            }
+            },
+            messageChannel: "mySavedSettingsMessageChannel" // Channel listening for messages related to auto key in functionality
         },
 
         enableRichText: true,
@@ -39,13 +40,13 @@
         },
 
         listeners: {
-            "onCreate.toggleView": {
-                funcName: "gpii.qssWidget.mySavedSettings.toggleView",
-                args: [
-                    "{that}.dom.reApplyPreferencesBtn",
-                    "{that}.dom.footerTip",
-                    "{that}.options.lastEnvironmentalLoginGpiiKey"
-                ]
+            "onCreate.registerIpcListener": {
+                funcName: "gpii.psp.registerIpcListener",
+                args: ["{that}.model.messageChannel", "{that}.toggleView"]
+            },
+            "onCreate.sendGetRequest": {
+                funcName: "{channelNotifier}.events.onQssGetEnvironmentalLoginKeyRequested.fire",
+                args: ["{that}.model.messageChannel"]
             }
         },
 
@@ -64,6 +65,17 @@
                         "onClick": "{channelNotifier}.events.onQssReApplyPreferencesRequired.fire"
                     }
                 }
+            }
+        },
+
+        invokers: {
+            toggleView: {
+                funcName: "gpii.qssWidget.mySavedSettings.toggleView",
+                args: [
+                    "{that}.dom.reApplyPreferencesBtn",
+                    "{that}.dom.footerTip",
+                    "{arguments}.0"
+                ]
             }
         }
     });

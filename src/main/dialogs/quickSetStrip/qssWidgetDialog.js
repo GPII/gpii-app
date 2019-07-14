@@ -112,7 +112,8 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssOpenUsbRequested: null,
                     onQssUnmountUsbRequested: null,
                     onQssGetVolumeRequested: null,
-                    onQssReApplyPreferencesRequired: null
+                    onQssReApplyPreferencesRequired: null,
+                    onQssGetEnvironmentalLoginKeyRequested: null
                 },
                 listeners: {
                     onQssWidgetClosed: [{
@@ -162,6 +163,13 @@ fluid.defaults("gpii.app.qssWidget", {
                     },
                     onQssReApplyPreferencesRequired: {
                         funcName: "{app}.reApplyPreferences"
+                    },
+                    onQssGetEnvironmentalLoginKeyRequested: {
+                        funcName: "{app}.getEnvironmentalLoginKey",
+                        args: [
+                            "{qssWidget}.dialog",
+                            "{arguments}.0" // messageChannel
+                        ]
                     }
                 }
             }
