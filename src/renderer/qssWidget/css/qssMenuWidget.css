@@ -23,7 +23,7 @@
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
     position: relative;
     width: 120px;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     padding: 5px;
     border: 1px solid #0f4797;
     border-radius: 3px;
@@ -98,4 +98,48 @@
     .fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:nth-child(4) {
         margin-top: 20px;
     }
+.fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssWidget-tip {
+    font-size: 8.5px;
+    line-height: 110%;
+}
+.fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssWidget-tip p {
+    margin-bottom: 5px;
+}
+.fl-qssMenuWidget.fl-qssScreenCaptureWidget .fl-qssWidget-tip p:last-of-type {
+    margin: 0;
+}
 /* Specific version for the Screen Capture's widget: END */
+
+/* Specific version for the Office Simplification's widget: BEGIN */
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
+    border-color: white;
+    text-align: left;
+    margin-left: 15px;
+    color: #19294c;
+    font-weight: bold;
+}
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:after {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    content: "";
+    cursor: pointer;
+
+    left: -15px;
+    width: 15px;
+    height: 15px;
+
+    background-color: black;
+    -webkit-mask: url("../../../assets/checkbox-unchecked.svg") 0 0/100% 100%;
+    mask: url("../../../assets/checkbox-unchecked.svg") 0 0/100% 100%;
+}
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:after {
+    background-color: #008145;
+    -webkit-mask: url("../../../assets/checkbox-checked.svg") 0 0/100% 100%;
+    mask: url("../../../assets/checkbox-checked.svg") 0 0/100% 100%;
+}
+
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-footerTip {
+    margin-top: 5px;
+}
+/* Specific version for the Office Simplification's widget: END */

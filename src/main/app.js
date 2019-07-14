@@ -37,6 +37,7 @@ require("./surveys/surveyManager.js");
 require("./storage.js");
 require("./tray.js");
 require("./userErrorsHandler.js");
+require("./metrics.js");
 
 // enhance the normal require to work with .json5 files
 require("json5/lib/register");
@@ -364,7 +365,9 @@ fluid.defaults("gpii.app", {
             }
         },
         onGPIIReady: null,
+
         onAppReady: null,
+
         onPSPChannelConnected: null,
         onPSPReady: null,
 
@@ -406,12 +409,14 @@ fluid.defaults("gpii.app", {
             this: "{that}.events.onPSPReady",
             method: "fire",
             priority: "last"
-        },
-        "{lifecycleManager}.events.onDestroy": {
-            listener: "{that}.keyOut",
-            priority: "first",
-            namespace: "beforeExit"
         }
+
+        // Disabled per: https://github.com/GPII/gpii-app/pull/100#issuecomment-471778768
+        //"{lifecycleManager}.events.onDestroy": {
+        //    listener: "{that}.keyOut",
+        //    priority: "first",
+        //    namespace: "beforeExit"
+        //}
     },
     invokers: {
         updateKeyedInUserToken: {

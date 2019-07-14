@@ -1,11 +1,11 @@
 {
     "gpii_app_menu_about": "About...",
     "gpii_app_menu_openQss": "Open Morphic",
-    "gpii_app_menu_keyedIn": "Keyed in with %snapsetName",
+    "gpii_app_menu_keyedIn": "User Signed In",
     "gpii_app_menu_keyOut": "Reset Morphic",
 
     "gpii_app_tray_defaultTooltip": "Morphic: Ready",
-    "gpii_app_tray_prefSetTooltip": "Morphic: %prefSet",
+    "gpii_app_tray_prefSetTooltip": "Morphic: User Signed In",
 
     "gpii_app_qssWrapper_restartWarningNotification": "To see the %settingTitle change, you may need to restart some applications.",
 
@@ -24,8 +24,10 @@
     "gpii_psp_signIn_signUpButton": "Create an Account",
     "gpii_psp_signIn_forgotPasswordButton": "Forgot Password?",
 
-    "gpii_psp_widgets_switch_on": "On",
-    "gpii_psp_widgets_switch_off": "Off",
+    "gpii_qssWidget_toggle_on": "On",
+    "gpii_qssWidget_toggle_off": "Off",
+    "gpii_qssWidget_volume_on": "Audio muted",
+    "gpii_qssWidget_volume_off": "Audio on",
 
     "gpii_psp_header_autosaveText": "Auto-save is on",
     "gpii_psp_header_keyOut":"Sign out",
@@ -55,6 +57,7 @@
     "gpii_psp_footer_help": "Help",
 
     "gpii_qss_toggleButtonPresenter_caption": "[now ON]",
+    "gpii_qss_volumeButtonPresenter_caption": "(Audio Muted)",
 
     "gpii_psp_qssMorePanel_title": "More",
     "gpii_psp_qssMorePanel_details": "Watch this space for more Morphic buttons, as well as additional features to help you tune the computer to your specific needs and preferences",
@@ -72,6 +75,16 @@
 
     "gpii_qssWidget_stepper_incrementButton": "Larger",
     "gpii_qssWidget_stepper_decrementButton": "Smaller",
-    "gpii_qssWidget_stepper_upperBoundError": "This is highest setting",
-    "gpii_qssWidget_stepper_lowerBoundError": "This is lowest setting"
+    "gpii_qssWidget_stepper_upperBoundError": "This is the highest setting",
+    "gpii_qssWidget_stepper_lowerBoundError": "This is the lowest setting",
+
+    "gpii_qssWidget_volumeStepper_incrementButton": "Louder",
+    "gpii_qssWidget_volumeStepper_decrementButton": "Quieter",
+    "gpii_qssWidget_volumeStepper_upperBoundError": "This is highest setting",
+    "gpii_qssWidget_volumeStepper_lowerBoundError": "This is lowest setting",
+
+    "gpii_qssWidget_openUSB_noUsbInserted": "There are no USB drives plugged into the computer. Insert your USB and try again.",
+    "gpii_qssWidget_openUSB_ejectUsbDrives": "There are no USB drives active in the computer. It is safe to remove any drive in the computer",
+    "gpii_qssWidget_openUSB_openUsbButtonLabel": "Open all USB drives",
+    "gpii_qssWidget_openUSB_ejectUsbButtonLabel": "Safely eject all USB drives"
 }

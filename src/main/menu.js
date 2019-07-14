@@ -103,7 +103,6 @@ fluid.defaults("gpii.app.menuInAppDev", {
                     "{that}.options.locales",
                     "{that}.options.themes",
                     "{that}.options.snapsets",
-                    "{that}.model.preferenceSetsMenuItems",
                     "{that}.model.showAbout",
                     "@expand:gpii.app.menu.getSeparatorItem()",
                     "{that}.model.keyOut",
@@ -417,7 +416,6 @@ fluid.defaults("gpii.app.menu", {
                     "{that}.model.showQSS",
                     "{that}.model.showCaptureTool",
                     "{that}.model.keyedInSnapset",
-                    "{that}.model.preferenceSetsMenuItems",
                     "{that}.model.showAbout",
                     "@expand:gpii.app.menu.getSeparatorItem()",
                     "{that}.model.keyOut"

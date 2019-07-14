@@ -83,7 +83,6 @@
                 "white-black",
                 "yellow-black",
                 "black-yellow",
-                "grey-black",
                 "grey-white",
                 "black-brown"
             ],
@@ -93,7 +92,6 @@
                 "White on black",
                 "Yellow on black",
                 "Black on yellow",
-                "Light on dark grey",
                 "Grey on white",
                 "Black on brown"
             ],
@@ -170,8 +168,7 @@
             "keys": [
                 "Morphic: Capture entire screen to clipboard",
                 "Morphic: Capture entire screen to desktop",
-                "Morphic: Record region to desktop with computer audio",
-                "Morphic: Record region to desktop with computer and mic audio"
+                "Morphic: Record region to desktop with computer audio"
             ],
             "default": ""
         },
@@ -181,6 +178,38 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
     }, {
+        "path": "officeSimplification",
+        "schema": {
+            "type": "office",
+            "keys": [
+                "simple",
+                "essentials"
+            ],
+            "default": ""
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 80,
+        "messageKey": "officeSimplification",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#office-simplification",
+        "value": ""
+    },  {
+        "path": "http://registry\\.gpii\\.net/common/volume",
+        "schema": {
+            "type": "volume",
+            "min": 0,
+            "max": 1,
+            "divisibleBy": 0.1,
+            "default": 0.5,
+            "image": "language.svg",
+            "helpImage": "readAloud.png"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 80,
+        "messageKey": "common-volume",
+        "value": 0.5,
+        "learnMoreLink": "https://morphic.world/help/qsshelp#volume"
+
+    }, {
         "path": "cloud-folder-open",
         "schema": {
             "type": "cloud-folder-open"
@@ -189,6 +218,22 @@
         "tabindex": 180,
         "messageKey": "cloud-folder-open"
     }, {
+        "path": "usb-open",
+        "schema": {
+            "type": "usb-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 190,
+        "messageKey": "usb-open"
+    }, {
+        "path": "launch-documorph",
+        "schema": {
+            "type": "launch-documorph"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 195,
+        "messageKey": "launch-documorph"
+    },  {
         "path": "more",
         "schema": {
             "type": "more",

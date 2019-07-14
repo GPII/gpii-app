@@ -57,19 +57,44 @@
         "title": "Език",
         "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>"
     },
+    "gpii_app_qss_settings_usb-open": {
+        "tooltip": "<p>Отваря всички USB флашки свързани с компютъра.</p>",
+        "title": "Отвори USB",
+        "tip": "<p>Вашето USB Устройство</p><p>Поставете USB устройство и го отворете с бутона по-долу.</p>",
+        "footerTip": "<p>Когато сте готови, предотвратете загуба на данни като премахнете USB устройствата безопасно.</p><ol><li>Затворете всички отворени документи от USB устройството и</li><li>Тогава използвайте бутона по долу за да премахнете безопасно USB устройствата</li></ol>"
+    },
     "gpii_app_qss_settings_screenCapture": {
         "tooltip": "<p>Направи Снимка.</p><p>Вземи снимка или видео от екрана си.</p>",
         "title": "Направи Снимка",
         "tip": "<p>Направи Снимка</p><p>Използвайте бутоните по-долу да направите снимка, или видео на екрана си. Моля спазвайте Закона за авторските права!</p><ul><li>Изполвайте мишката, за да избере зона и цъкнете, за да направите снимката.</li><li>Кликнете и влачете по екрана за избиране на зона.</li></ul>",
         "enum": [
             "Направи снимка в клипбоарда",
-            "Направи снимка на десктопа",
-            "Запиши видео и аудио",
-            "Запиши видео + микрофон"
+            "Направи снимка на десктопа"
         ]
     },
     "gpii_app_qss_settings_cloud-folder-open": {
         "tooltip": "<p>Отваря cloud базирана публична папка.</p>",
         "title": "Quick Folders"
+    },
+    "gpii_app_qss_settings_officeSimplification": {
+        "tooltip": "<p>Опростяване на Microsoft Word.</p><p>Предоставя опростени менюта за Microsoft Word.</p>",
+        "title": "Опрости MS Word",
+        "tip": "<p>Опростяване на Microsoft Word</p><p>Morphic може да опрости менютата в (групите менюта горе-вляво в Word), с цел да направи прогрмата по-лека за хора, които не са свикнали.</p><ul><li>Избери един или повече профила, за да добавиш в Word</li></ul>",
+        "enum": [
+            "Simple (Morphic)",
+            "Essentials (Morphic)",
+            "Рестартирай Word"
+        ]
+    },
+    "gpii_app_qss_settings_common-volume": {
+        "tooltip": "<p>Регулира, включва и изключва силата на звука на Windows.</p>",
+        "title": "Сила и изключване на звука",
+        "tip": "<p>Сила на звука</p>",
+        "extendedTip": "Можете също да промените силата на звука, като използвате иконата на високоговорителя в системната лента (близо до часовника в долната част на екрана).",
+        "switchTitle": "Заглушаване на целия звук"
+    },
+    "gpii_app_qss_settings_launch-documorph": {
+        "tooltip": "<p>Стартирай апликацията DocuMorph.</p>",
+        "title": "Стартирай Docu Morph"
     }
 }

@@ -22,7 +22,7 @@ require("./testUtils.js");
 
 fluid.registerNamespace("gpii.tests.userErrorsHandler.testDefs");
 
-var invalidUser = "asdasd_";
+var randomUser = "asdasd_";
 var expectedDialogOptionsProperties = ["title", "subhead", "details", "errCode"];
 
 gpii.tests.userErrorsHandler.assertErrorDialogOptions = function (dialogOptions) {
@@ -43,13 +43,13 @@ gpii.tests.userErrorsHandler.testDefs = {
     name: "User errors handler integration tests",
     expect: 5,
     config: {
-        configName: "gpii.tests.dev.config",
+        configName: "gpii.tests.dev.missingPrefsServer.config",
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{ // When an error is fired...
         func: "{that}.app.keyIn",
-        args: invalidUser
+        args: randomUser // Invalid key ins are now a non-error, but ours will fail because the prefs server isn't reachable.
     }, { // ... an error dialog should be shown with the proper values.
         event: "{that}.app.dialogManager.error.events.onDialogCreate",
         listener: "gpii.tests.userErrorsHandler.assertErrorDialogOptions",

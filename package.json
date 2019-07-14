@@ -9,15 +9,15 @@
     },
     "license": "BSD-3-Clause",
     "dependencies": {
-        "electron": "^3.0.2",
+        "electron": "3.0.2",
         "electron-edge-js": "8.3.8",
         "electron-localshortcut": "3.1.0",
         "gpii-handlebars": "sgithens/gpii-handlebars#GPII-3640",
-        "gpii-windows": "sgithens/windows#gpii-228-2018",
-        "infusion": "3.0.0-dev.20180222T160835Z.6e1311a",
+        "gpii-windows": "sgithens/windows#0fb426e09e36169187cc1964f5d1889a89b2892b",
+        "infusion": "3.0.0-dev.20190328T144119Z.ec44dbfab",
         "nan": "2.10.0",
         "node-jqunit": "1.1.8",
-        "ref": "^1.3.4",
+        "ref": "1.3.4",
         "request": "2.88.0",
         "winstrap": "0.5.12",
         "ws": "6.1.2",
@@ -26,6 +26,7 @@
     "devDependencies": {
         "electron-packager": "8.5.1",
         "eslint-config-fluid": "1.3.0",
+        "gpii-express": "1.0.15",
         "gpii-grunt-lint-all": "1.0.5",
         "gpii-testem": "2.1.6",
         "graceful-fs": "4.1.11",
@@ -37,18 +38,18 @@
         "shelljs": "0.8.2"
     },
     "scripts": {
-        "start": "electron .",
-        "dev": "electron . ./configs app.dev",
+        "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
+        "dev": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron . ./configs app.dev",
         "build": "electron ./scripts/compileMessageBundles.js && .\\trayButton\\build.cmd",
         "postinstall": "npm run build",
         "pretest": "npm run pretest:clean && npm run build && npm run pretest:instrument",
         "pretest:clean": "node node_modules/rimraf/bin.js coverage instrumented reports build && node ./node_modules/mkdirp/bin/cmd.js coverage instrumented reports",
         "pretest:instrument": "node tests/lib/instrumentSource.js",
         "test": "npm run test:psp && npm run test:gpiiWindows",
-        "test:psp": "./node_modules/.bin/electron ./instrumented/tests.js",
-        "test:gpiiWindows": "./node_modules/.bin/electron testsGpiiWindows.js",
+        "test:psp": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron ./instrumented/tests.js",
+        "test:gpiiWindows": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron testsGpiiWindows.js",
         "posttest": "node node_modules/nyc/bin/nyc.js report --temp-directory coverage",
-        "test:psp:noCoverage": "./node_modules/.bin/electron tests.js",
+        "test:psp:noCoverage": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron tests.js",
         "test:noCoverage": "npm run build && npm run test:psp:noCoverage"
     }
 }

@@ -1,11 +1,11 @@
 {
     "gpii_app_menu_about": "Относно...",
     "gpii_app_menu_openQss": "Отвори Morphic",
-    "gpii_app_menu_keyedIn": "Вписан с %snapsetName",
+    "gpii_app_menu_keyedIn": "Вход с профил",
     "gpii_app_menu_keyOut": "Ресетни Morphic",
 
     "gpii_app_tray_defaultTooltip": "Morphic: В готовност",
-    "gpii_app_tray_prefSetTooltip": "Morphic: %prefSet",
+    "gpii_app_tray_prefSetTooltip": "Morphic: Вход с профил",
 
     "gpii_psp_mainWindow_titlebarAppName": "Morphic панел с настройки",
 
@@ -26,6 +26,8 @@
 
     "gpii_psp_widgets_switch_on": "Вкл",
     "gpii_psp_widgets_switch_off": "Изкл",
+    "gpii_qssWidget_volume_on": "Звукът е изключен",
+    "gpii_qssWidget_volume_off": "Звукът е включен",
 
     "gpii_psp_header_autosaveText": "Автоматично запазване е включено",
     "gpii_psp_header_keyOut":"Отпиши се",
@@ -55,11 +57,22 @@
     "gpii_psp_footer_help": "Помощ",
 
     "gpii_qss_toggleButtonPresenter_caption": "[ВКЛ.]",
+    "gpii_qss_volumeButtonPresenter_caption": "(Звукът е изключен)",
 
     "gpii_psp_qssWidget_learnMore": "Научи повече...",
 
     "gpii_qss_saveButtonPresenter_notification": {
         "keyedOut": "За да запазите вашите настройки трябва да си създадете Morphic акаунт. Отидете на <a href=\"%accountUrl\">%accountUrl</a>.",
         "keyedIn": "Вашите настройки са запазени в Morphic Cloud."
-    }
+    },
+
+    "gpii_qssWidget_volumeStepper_incrementButton": "По-силно",
+    "gpii_qssWidget_volumeStepper_decrementButton": "По-тихо",
+    "gpii_qssWidget_volumeStepper_upperBoundError": "Това е най-високата настройка",
+    "gpii_qssWidget_volumeStepper_lowerBoundError": "Това е най-ниската настройка",
+
+    "gpii_qssWidget_openUSB_noUsbInserted": "В компютъра не са включени USB устройства. Поставете USB и опитайте отново.",
+    "gpii_qssWidget_openUSB_ejectUsbDrives": "В компютъра няма активни USB устройства. Безопасно е да премахнете всяко устройство в компютъра",
+    "gpii_qssWidget_openUSB_openUsbButtonLabel": "Отвори всички USB устройства",
+    "gpii_qssWidget_openUSB_ejectUsbButtonLabel": "Премахни безопасно всички USB устройствата"
 }

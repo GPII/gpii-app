@@ -127,6 +127,11 @@ fluid.defaults("gpii.app.qss", {
             type: "gpii.app.channelListener",
             options: {
                 events: {
+                    // Important information
+                    // These events are available in the service buttons as well
+                    // It can be used to access the main events and utils from them
+                    // Usage: "{channelNotifier}.events.onQssResetAllRequired"
+
                     onQssClosed: null,
                     onQssButtonFocused: null,
                     onQssButtonsFocusLost: null,
@@ -311,7 +316,7 @@ gpii.app.qss.show = function (that, params) {
  * loses focus. Otherwise, it will stay open.
  */
 gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
-    if (closeQssOnBlur && tray.isMouseOver()) {
+    if (closeQssOnBlur && !tray.isMouseOver()) {
         that.hide();
     }
 };

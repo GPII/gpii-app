@@ -18,9 +18,9 @@
 (function (fluid, jQuery) {
     var gpii = fluid.registerNamespace("gpii"),
         shell = require("electron").shell,
-        child_process = require("child_process");
-
-
+        ipcRenderer = require("electron").ipcRenderer,
+        child_process = require("child_process"),
+        fs = require("fs");
 
     fluid.registerNamespace("gpii.psp");
 
@@ -61,6 +61,51 @@
             return true;
         } catch (err) {
             fluid.log(fluid.logLevel.WARN, "execShareXCommand: Cannot execute - " + commandToExecute);
+        }
+        return false;
+    };
+
+    /**
+     * Registers an IPC listener event and executes the provided function on result
+     * @param {String} messageChannel - The channel to which the message should be sent.
+     * @param {Function} funcExec - handle to the function to be executed
+     */
+    gpii.psp.registerIpcListener = function (messageChannel, funcExec) {
+        ipcRenderer.on(messageChannel, function (event, result) {
+            // execute the function when the result arrives
+            funcExec(result);
+        });
+    };
+
+    /**
+     * Clears all of the IPC event listeners
+     * @param {String} messageChannel - The channel to which the message should be sent.
+     */
+    gpii.psp.removeIpcAllListeners = function (messageChannel) {
+        ipcRenderer.removeAllListeners(messageChannel);
+    };
+
+    /*
+     * A custom function for handling opening of an .exe file.
+     * @param {String} executablePath - path to executable file
+     * @return {Boolean} - returns `true` on successfully executed file
+     */
+    gpii.psp.launchExecutable = function (executablePath) {
+        try {
+            var fileProperties = fs.statSync(executablePath);
+            // Check that the file is executable
+            if (fileProperties.mode === parseInt("0100666", 8)) {
+                try {
+                    child_process.exec("\"" + executablePath + "\"");
+                    return true;
+                } catch (err) {
+                    fluid.log(fluid.logLevel.WARN, "launchExecutable: Cannot execute - " + executablePath);
+                }
+            } else {
+                fluid.log(fluid.logLevel.WARN, "launchExecutable: File is not executable - " + executablePath);
+            }
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "launchExecutable: Invalid or missing path - " + executablePath);
         }
         return false;
     };

@@ -5,14 +5,17 @@
 
     // Configuration options for the QSS window
     qss: {
+        // Determines if the QSS will be shown automatically on Morphic's startup
+        showQssOnStart: true,
+
         // Defines the delay in milliseconds before the tooltip is shown after a QSS button is selected
         tooltipDisplayDelay: 500, // ms
 
         // The scaling factor for the QSS
-        scaleFactor: 1.5,
+        scaleFactor: 1.4,
         urls: {
             account: "http://morphic.world/account",
-            cloudFolder: "https://1drv.ms/f/s!AgsFNSfCYeO3glLjXGakJRG3irEc"
+            cloudFolder: "https://docs.google.com/document/d/1gOi5JXw30lyD5DGbwe6tme_MfEyaiDz95AQSrzPNfZU/"
         },
 
         // The template that is used for every label of the language setting's options.
@@ -31,11 +34,31 @@
         // NOTE: this is not related to the default language value defined for the language setting
         systemDefaultLanguage: "en-US",
         messages: {
-            keyedOut: "To save your settings you need to setup a Morphic Account. Go to <a href=\"http://morphic.world/account\">http://morphic.world/account</a>."
+            keyedOut: "To save you must insert a Morphic Key. Please ask for one at the Front Desk. If you have a key inserted, remove it and re-insert it, then you can SAVE."
         },
 
         // the path to the ShareX's executable file, used in the screenCaptureWidget
-        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe"
+        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe",
+
+        // list of the desired list of buttons shown in QSS
+        // it uses the `id` attribute found in settings.json items
+        buttonList: [
+            "language",
+            "translate-tools",
+            "screen-zoom",
+            "text-zoom",
+            "screen-capture",
+            "office-simplification",
+            "high-contrast",
+            "read-aloud",
+            "volume",
+            "launch-documorph",
+            "cloud-folder-open",
+            "usb-open"
+        ],
+
+        // the path to the DocuMorph's executable file, used in the service buttons
+        docuMorphExecutable: "C:\\Program Files (x86)\\Sensus ApS\\DocuMorph Widget\\DocuMorph.Widget.exe"
     },
 
     // Configuration options for the PSP window
