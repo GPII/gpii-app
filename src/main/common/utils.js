@@ -227,11 +227,14 @@ gpii.app.findButtonById = function (buttonId, availableButtons) {
  * @return {Object[]} - filtered version of available buttons (same structure)
  */
 gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
-    var matchedList = [], // these buttons are explicitly selected in the
-                          // siteConfig, added in the same order
-        afterList = [],   // all the buttons that don't have `id` at all,
-                          // they are added at the end of the list
-        tabindex = 100;   // starting tabindex, adding +10 of each new item
+    /**
+    * These buttons are explicitly selected in the siteConfig, added in the same order.
+    * All of the buttons that don't have `id` at all, they are added at the end of the list
+    * starting tabindex, adding +10 of each new item.
+    */
+    var matchedList = [],
+        afterList = [],
+        tabindex = 100;
 
     // creating the matchedList
     // looking for `id` and if matches adding it

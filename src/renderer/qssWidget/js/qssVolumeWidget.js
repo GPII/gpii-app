@@ -23,9 +23,11 @@
      * QSS Volume widget
      */
     fluid.defaults("gpii.qssWidget.volume", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
 
         selectors: {
+            heightListenerContainer: ".flc-qssVolumeWidget-controls",
+            controlsWrapper: ".flc-qssVolumeWidget-wrapper",
             stepper: ".flc-volumeStepper",
             switch: ".flc-volumeSwitch",
             switchTitle: ".flc-volumeWidget-switchTitle",
@@ -47,7 +49,8 @@
             messageChannel: "volumeMessageChannel" // Channel listening for messages related volume/mute functionality
         },
         events: {
-            onNotificationRequired: null
+            onNotificationRequired: null,
+            onHeightChanged: null
         },
         listeners: {
             "onCreate": {
@@ -74,6 +77,14 @@
             loadActualValue: {
                 funcName: "gpii.qssWidget.volume.loadActualValue",
                 args: ["{volume}", "{arguments}.0"]
+            },
+            calculateHeight: {
+                funcName: "gpii.qssWidget.calculateHeight",
+                args: [
+                    "{qssWidget}.container",
+                    "{that}.dom.controlsWrapper",
+                    "{that}.dom.heightListenerContainer"
+                ]
             }
         },
         components: {
@@ -293,7 +304,8 @@
                     "{that}",
                     "{that}.model.value",
                     "{that}.model.setting.schema",
-                    1 // step multiplier, no effect of the step itself
+                    1, // step multiplier, no effect of the step itself
+                    "{volume}.model.setting.previousValue"
                 ]
             },
             decrement: {
@@ -302,7 +314,8 @@
                     "{that}",
                     "{that}.model.value",
                     "{that}.model.setting.schema",
-                    -1 // step multiplier to reverse the step
+                    -1, // step multiplier to reverse the step
+                    "{volume}.model.setting.previousValue"
                 ]
             },
             animateButton: {
@@ -431,21 +444,27 @@
      * will be no change in the step size, -1 will reverse it, and everything else
      * will act as a real multiplier (2 for 2x as an example)
      * subtracted from or added to the setting's value.
+     * @param {Number} previousValue - The value before the mute button is activated
      * @return {Boolean} Whether there was a change in the setting's value.
      */
-    gpii.qssWidget.volumeStepper.makeRestrictedStep = function (that, value, schema, stepMultiplier) {
-        var step = schema.divisibleBy * stepMultiplier;
+    gpii.qssWidget.volumeStepper.makeRestrictedStep = function (that, value, schema, stepMultiplier, previousValue) {
+        var restrictedValue;
+        if (value === 0 && previousValue !== undefined) {
+            restrictedValue = previousValue;
+        } else {
+            var step = schema.divisibleBy * stepMultiplier;
 
-        value = parseFloat( (value + step).toPrecision(2) );
-        // Handle not given min and max
-        var restrictedValue = value;
+            value = parseFloat( (value + step).toPrecision(3) );
+            // Handle not given min and max
+            restrictedValue = value;
 
-        if (fluid.isValue(schema.max)) {
-            restrictedValue = Math.min(restrictedValue, schema.max);
-        }
+            if (fluid.isValue(schema.max)) {
+                restrictedValue = Math.min(restrictedValue, schema.max);
+            }
 
-        if (fluid.isValue(schema.min)) {
-            restrictedValue = Math.max(restrictedValue, schema.min);
+            if (fluid.isValue(schema.min)) {
+                restrictedValue = Math.max(restrictedValue, schema.min);
+            }
         }
 
         that.applier.change("value", restrictedValue, null, "settingAlter");

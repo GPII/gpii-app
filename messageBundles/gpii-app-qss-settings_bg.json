@@ -76,6 +76,16 @@
         "tooltip": "<p>Отваря cloud базирана публична папка.</p>",
         "title": "Quick Folders"
     },
+    "gpii_app_qss_settings_officeSimplification": {
+        "tooltip": "<p>Опростяване на Microsoft Word.</p><p>Предоставя опростени менюта за Microsoft Word.</p>",
+        "title": "Опрости MS Word",
+        "tip": "<p>Опростяване на Microsoft Word</p><p>Morphic може да опрости менютата в (групите менюта горе-вляво в Word), с цел да направи прогрмата по-лека за хора, които не са свикнали.</p><ul><li>Избери един или повече профила, за да добавиш в Word</li></ul>",
+        "enum": [
+            "Simple (Morphic)",
+            "Essentials (Morphic)",
+            "Рестартирай Word"
+        ]
+    },
     "gpii_app_qss_settings_common-volume": {
         "tooltip": "<p>Регулира, включва и изключва силата на звука на Windows.</p>",
         "title": "Сила и изключване на звука",

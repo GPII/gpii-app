@@ -12,6 +12,8 @@ body {
     flex-direction: column;
     flex-wrap: wrap;
     align-content: flex-end;
+
+    border: 1px solid #002957;
 }
 
 .fl-qss-logo {
@@ -150,8 +152,9 @@ body {
 .fl-qss-button .fl-qss-btnImage {
     display: block;
     width: 44px;
-    height: 20px;
+    height: 18px;
     margin-top: -5px;
+    margin-bottom: 3px;
 
     background-color: #ffffff;
 

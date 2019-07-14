@@ -40,7 +40,7 @@ fluid.defaults("gpii.app.qssWidget", {
     extraVerticalOffset: 7,
 
     // A list of QSS setting types for which this widget is applicable.
-    supportedSettings: ["string", "number", "boolean", "screenCapture", "openUSB", "volume"],
+    supportedSettings: ["string", "number", "boolean", "screenCapture", "openUSB", "volume", "office"],
 
     model: {
         setting: {}
@@ -106,6 +106,7 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssWidgetNotificationRequired: "{qssWidget}.events.onQssWidgetNotificationRequired",
                     onQssWidgetSettingAltered: "{qssWidget}.events.onQssWidgetSettingAltered",
                     onQssWidgetCreated: "{qssWidget}.events.onQssWidgetCreated",
+
                     // USB related events
                     onQssOpenUsbRequested: null,
                     onQssUnmountUsbRequested: null,
