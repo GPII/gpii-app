@@ -6,7 +6,7 @@
     // Configuration options for the QSS window
     qss: {
         // Determines if the QSS will be shown automatically on Morphic's startup
-        showQssOnStart: true,
+        showQssOnStart: false,
 
         // Defines the delay in milliseconds before the tooltip is shown after a QSS button is selected
         tooltipDisplayDelay: 500, // ms
@@ -15,7 +15,7 @@
         scaleFactor: 1.2,
         urls: {
             account: "http://morphic.world/account",
-            cloudFolder: "https://docs.google.com/document/d/1gOi5JXw30lyD5DGbwe6tme_MfEyaiDz95AQSrzPNfZU/"
+            cloudFolder: "https://drive.google.com/drive/folders/11m-AKdP-0wjEBocpVtvnK8iE23P7hFTS"
         },
 
         // The template that is used for every label of the language setting's options.
@@ -85,7 +85,7 @@
     closePspOnClickOutside: true,
 
     // The shortcut that open the QSS. For posible values refer to: https://electronjs.org/docs/api/accelerator
-    openQssShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
+    openQssShortcut: "Shift+Ctrl+AltOrOption+SuperOrCmd+M",
 
     // Configuration options for the QSS More panel
     qssMorePanel: {
