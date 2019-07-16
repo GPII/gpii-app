@@ -378,16 +378,6 @@ fluid.defaults("gpii.app.metrics.qssNotification", {
         "onDialogHidden.metrics": {
             func: "{eventLog}.metrics.uiMetric",
             args: ["notification-hidden"]
-        },
-        "{channelListener}.events.onMetric": {
-            namespace: "metric",
-            func: "{eventLog}.metrics.uiMetric",
-            args: ["{arguments}.0", "{arguments}.1"]
-        },
-        "{channelListener}.events.onMetricState": {
-            namespace: "metrics-state",
-            func: "{eventLog}.setState",
-            args: ["{arguments}.0", "{arguments}.1"]
         }
     }
 });
