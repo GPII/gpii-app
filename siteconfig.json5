@@ -18,6 +18,8 @@
             cloudFolder: "https://docs.google.com/document/d/1gOi5JXw30lyD5DGbwe6tme_MfEyaiDz95AQSrzPNfZU/"
         },
 
+        alwaysUseChrome: true,
+
         // The template that is used for every label of the language setting's options.
         // The "%" followed by a word specifies a variable and there are three possible variables:
         // - native - the name of the language in its native form
@@ -70,7 +72,7 @@
     },
 
     // Whether to hide the QSS when a user clicks outside of it
-    closeQssOnClickOutside: true,
+    closeQssOnClickOutside: false,
 
     // Whether to disable the displaying of notifications that suggest some
     // applications may need to be restarted in order for a changed setting to be
@@ -79,7 +81,7 @@
     disableRestartWarning: false,
 
     // Whether to hide the PSP when a user clicks outside of it
-    closePspOnClickOutside: true,
+    closePspOnClickOutside: false,
 
     // The shortcut that open the QSS. For posible values refer to: https://electronjs.org/docs/api/accelerator
     openQssShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
