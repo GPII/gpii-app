@@ -72,7 +72,7 @@
     },
 
     // Whether to hide the QSS when a user clicks outside of it
-    closeQssOnClickOutside: false,
+    closeQssOnClickOutside: true,
 
     // Whether to disable the displaying of notifications that suggest some
     // applications may need to be restarted in order for a changed setting to be
@@ -81,7 +81,7 @@
     disableRestartWarning: false,
 
     // Whether to hide the PSP when a user clicks outside of it
-    closePspOnClickOutside: false,
+    closePspOnClickOutside: true,
 
     // The shortcut that open the QSS. For posible values refer to: https://electronjs.org/docs/api/accelerator
     openQssShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
