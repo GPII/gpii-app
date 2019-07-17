@@ -152,8 +152,9 @@ body {
 .fl-qss-button .fl-qss-btnImage {
     display: block;
     width: 44px;
-    height: 20px;
+    height: 18px;
     margin-top: -5px;
+    margin-bottom: 3px;
 
     background-color: #ffffff;
 
