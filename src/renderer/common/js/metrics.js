@@ -55,6 +55,12 @@
                 funcName: "gpii.psp.metrics.getWidgetMetricsID",
                 args: ["{that}"]
             }
+        },
+        listeners: {
+            "onQssWidgetCreated.metric": {
+                funcName: "gpii.psp.metrics.addTipLinkHandlers",
+                args: ["{that}", "{that}.container"]
+            }
         }
     });
 
@@ -142,6 +148,25 @@
         container.on("blur", function () {
             that.metric(that.componentType + "-unfocus", {id: that.getMetricsID()});
             that.setState(that.componentType + "-focus");
+        });
+    };
+
+    /**
+     * Adds the click handlers to links within the tip element of the container.
+     *
+     * @param {Component} that The gpii.psp.metrics instance.
+     * @param {jQuery} container A jQuery object representing the component's container.
+     *
+     */
+    gpii.psp.metrics.addTipLinkHandlers = function (that, container) {
+        container.find(".flc-qssWidget-tip a").on("click", function (eventObject) {
+            that.metric("link-click", {
+                widget: that.getMetricsID(),
+                link: eventObject.target.href,
+                id: eventObject.target.id,
+                text: eventObject.target.innerText,
+                eventType: eventObject.type
+            });
         });
     };
 
