@@ -18,7 +18,7 @@
             cloudFolder: "https://docs.google.com/document/d/1gOi5JXw30lyD5DGbwe6tme_MfEyaiDz95AQSrzPNfZU/"
         },
 
-        alwaysUseChrome: true,
+        alwaysUseChrome: false,
 
         // The template that is used for every label of the language setting's options.
         // The "%" followed by a word specifies a variable and there are three possible variables:
