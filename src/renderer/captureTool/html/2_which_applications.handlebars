@@ -11,10 +11,10 @@
 </div>
 <form>
     <div class="form-group fl-capture-scrolled">
-    {{#each installedSolutions}}
+    {{#each orderedInstalledSolutions}}
         <div class="checkbox">
                 <label>
-                    <input name="fc-choose-app" value="{{@key}}" type="checkbox"></input>
+                    <input name="fc-choose-app" value="{{this.id}}" type="checkbox"></input>
                     <span>{{this.name}}</span>
                 </label>
         </div>

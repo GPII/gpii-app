@@ -5,6 +5,44 @@
     fluid.registerNamespace("gpii.psp");
     fluid.registerNamespace("gpii.captureTool");
 
+    // TODO Ultimately these should be relocated to a JSON5 file, probably in
+    // universal so they can be used by any application or reporting utility
+    // that needs to present the results to a human.
+    gpii.captureTool.appOrdering = [
+        "com.microsoft.windows.language",
+        "com.microsoft.windows.screenDPI",
+        "com.microsoft.windows.highContrast",
+        "com.microsoft.windows.brightness",
+        "com.microsoft.windows.nightScreen",
+        "com.microsoft.windows.cursors",
+        "com.microsoft.windows.mouseSettings",
+        "com.microsoft.windows.mouseTrailing",
+        "com.microsoft.windows.touchPadSettings",
+        "com.microsoft.windows.mouseKeys",
+        "com.microsoft.windows.filterKeys",
+        "com.microsoft.windows.stickyKeys",
+        "com.microsoft.windows.typingEnhancement",
+        "com.microsoft.windows.onscreenKeyboard",
+        "com.microsoft.windows.desktopBackground",
+        "com.microsoft.windows.desktopBackgroundColor",
+        "com.microsoft.windows.magnifier",
+        "com.microsoft.windows.narrator",
+        "com.texthelp.readWriteGold",
+        "com.office.windowsWordHome365LearningTools",
+        "com.office.windowsWordPro365LearningTools",
+        "com.office.windowsOneNoteLearningTools",
+        "com.freedomscientific.magic",
+        "org.nvda-project",
+        "com.freedomscientific.jaws",
+        "eu.singularlogic.pixelsense.sociable",
+        "net.gpii.uioPlus",
+        "com.microsoft.windows.screenResolution",
+        "net.opendirective.maavis",
+        "com.microsoft.windows.volumeControl",
+        "net.gpii.test.speechControl",
+        "net.gpii.explode"
+    ];
+
     fluid.defaults("gpii.captureTool", {
         gradeNames: ["gpii.handlebars.templateAware.standalone", "gpii.binder.bindMarkupEvents"],
         model: {
@@ -42,7 +80,7 @@
                     title: "Checkbook Balancer"
                 }
             },
-            capturedSettingsToRender: {},
+            capturedSettingsToRender: [],
             // The capturedPreferences will be generated from the capturedSettings. These will
             // be the preferences ready to be attached to a prefset/context to be sent up.
             capturedPreferences: null,
@@ -278,15 +316,63 @@
     gpii.captureTool.annotateSettingsCapture = function (that, mergedCapture) {
         var togo = mergedCapture;
         fluid.each(togo, function (capturedSolution, solutionID) {
-            capturedSolution.name = that.model.installedSolutions[solutionID].name;
-            capturedSolution.numberOfSettings = Object.keys(capturedSolution.settings).length;
+            if (!that.model.installedSolutions[solutionID]) {
+                console.log("The solutionID is missing for this installedSolution: ", solutionID);
+                return;
+            }
+
+            if (capturedSolution) {
+                capturedSolution.name = that.model.installedSolutions[solutionID].name;
+                capturedSolution.numberOfSettings = Object.keys(capturedSolution.settings).length;
+            }
+            else {
+                console.log("This capturedSolution is undefined: ", solutionID);
+            }
         });
         return togo;
+    };
+
+    /**
+     * Takes an object of values keyed by solution ids, converts them in to a list
+     * adding the ID as a value with key `id`, and then sorts them based on our
+     * preferred list of solutions orders for display.
+     *
+     * @param {Object} data - An object with keyed entries, were each key is the id
+     * of a solutions registry entry.
+     */
+    gpii.captureTool.createArrayFromSolutionsHash = function (data) {
+        var orderedInstalledSolutions = [];
+        fluid.each(data, function (val, key) {
+            var next = fluid.copy(val);
+            next.id = key;
+            orderedInstalledSolutions.push(next);
+        });
+        fluid.stableSort(orderedInstalledSolutions, function (a, b) {
+            var idx = gpii.captureTool.appOrdering;
+            function idxOrEnd(i) {
+                return idx.indexOf(i) === -1 ? idx.length + 1 : idx.indexOf(i);
+            }
+
+            var idxA = idxOrEnd(a.id);
+            var idxB = idxOrEnd(b.id);
+            if (idxA < idxB) {
+                return -1;
+            }
+            else if (idxA > idxB) {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        });
+        return orderedInstalledSolutions;
     };
 
     gpii.captureTool.setupIPC = function (that) {
         ipcRenderer.on("sendingInstalledSolutions", function (event, arg) {
             that.fullChange("installedSolutions", arg);
+            var orderedInstalledSolutions = gpii.captureTool.createArrayFromSolutionsHash(arg);
+            that.fullChange("orderedInstalledSolutions", orderedInstalledSolutions);
         });
 
         ipcRenderer.on("sendingRunningSolutions", function (event, arg) {
@@ -402,9 +488,9 @@
 
     gpii.captureTool.selectAllSettingsToKeepButton = function (that) {
         var settings = [];
-        fluid.each(that.model.capturedSettingsToRender, function (app, appId) {
+        fluid.each(that.model.capturedSettingsToRender, function (app) {
             fluid.each(app.settings, function (setting, settingId) {
-                settings.push(appId + ":" + settingId);
+                settings.push(app.id + ":" + settingId);
             });
         });
         that.applier.change("settingsToKeep", settings);
@@ -465,34 +551,59 @@
                     togo[appId].renderSettings[settingKey] = {};
                     var curRenderSetting = togo[appId].renderSettings[settingKey];
                     curRenderSetting.settingId = settingKey;
+                    var renderVal = fluid.copy(settingVal);
                     if (that.model.installedSolutionsSchemas[appId][settingKey] &&
                         that.model.installedSolutionsSchemas[appId][settingKey].title) {
                         var curSchema = that.model.installedSolutionsSchemas[appId][settingKey];
-                        curRenderSetting.settingLabel = curSchema.title;
-                        curRenderSetting.settingDesc = curSchema.description;
-                        curRenderSetting.debugInfo = "Val: " + settingVal + " Default: " + curSchema.default;
 
-                        if (curSchema.enumLabels && curSchema.enum && curSchema.enum[settingVal]) {
-                            curRenderSetting.settingVal = curSchema.enumLabels[settingVal];
+                        // TODO anything with a `path` attribute is probably an SPI setting, so we should likely
+                        // remove it.
+                        // If the setting value is an object and has only 1 key with name `value`, use that to
+                        // replace the value.
+                        // If the setting value is an object and has 2 keys, `value` and `path`, also set
+                        // `value` to be the value.
+                        if (fluid.isPlainObject(settingVal) && fluid.keys(settingVal).length === 1 &&
+                            settingVal.value !== undefined) {
+                            renderVal = renderVal.value;
+                            console.log("First case");
                         }
-                        else if (fluid.isPrimitive(settingVal)) {
-                            curRenderSetting.settingVal = settingVal;
-                        }
-                        else if (fluid.isPlainObject(settingVal)) {
-                            curRenderSetting.settingVal = JSON.stringify(settingVal);
+                        else if (fluid.isPlainObject(settingVal) && fluid.keys(settingVal).length === 2 &&
+                            settingVal.value !== undefined && settingVal.path !== undefined) {
+                            renderVal = renderVal.value;
+                            console.log("Second case");
                         }
                         else {
-                            curRenderSetting.settingVal = settingVal;
+                            console.log("Third Case");
+                        }
+
+                        console.log("The current schema is: ", settingVal, settingKey, curSchema);
+                        curRenderSetting.settingLabel = curSchema.title;
+                        curRenderSetting.settingDesc = curSchema.description;
+                        // curRenderSetting.debugInfo = "Val: " + JSON.stringify(renderVal) + " Default: " + curSchema["default"];
+                        curRenderSetting.debugInfo = "Default: " + curSchema["default"];
+
+                        if (curSchema.enumLabels && curSchema["enum"] && curSchema["enum"][renderVal]) {
+                            curRenderSetting.settingVal = curSchema.enumLabels[renderVal];
+                        }
+                        else if (fluid.isPrimitive(renderVal)) {
+                            curRenderSetting.settingVal = renderVal;
+                        }
+                        else if (fluid.isPlainObject(renderVal)) {
+                            curRenderSetting.settingVal = JSON.stringify(renderVal);
+                        }
+                        else {
+                            curRenderSetting.settingVal = renderVal;
                         }
                     }
                     else {
                         curRenderSetting.settingLabel = settingKey;
-                        curRenderSetting.settingVal = settingVal;
+                        curRenderSetting.settingVal = renderVal;
                     }
                 });
             }
         });
-        that.fullChange("capturedSettingsToRender", togo);
+        var orderedCapturedSettingsToRender = gpii.captureTool.createArrayFromSolutionsHash(togo);
+        that.fullChange("capturedSettingsToRender", orderedCapturedSettingsToRender);
     };
 
     gpii.captureTool.updateNumAppsSelected = function (that) {
@@ -512,7 +623,7 @@
     gpii.captureTool.updateInstalledSolutionsSchemas = function (that) {
         var togo = {};
         fluid.each(that.model.installedSolutions, function (solution, appId) {
-            fluid.each(solution.settingsHandlers, function (config, configId) {
+            fluid.each(solution.settingsHandlers, function (config) {
                 fluid.each(config.supportedSettings, function (settingSchema, settingId) {
                     if (!togo[appId]) {
                         togo[appId] = {};
