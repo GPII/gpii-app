@@ -240,7 +240,8 @@
         },
         "buttonTypes": ["smallButton"],
         "tabindex": 310,
-        "messageKey": "mySavedSettings"
+        "messageKey": "mySavedSettings",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#mysavedsettings"
     }, {
         "path": "resetAll",
         "schema": {
