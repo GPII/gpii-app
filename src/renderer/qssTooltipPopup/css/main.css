@@ -1,5 +1,6 @@
 body {
     background-color: transparent;
+    overflow: hidden;
 }
 
 .fl-qssTooltip {
@@ -92,7 +93,7 @@ body {
 }
 
 .fl-arrow-center .fl-footer-arrow .fl-arrow {
-    margin-top: -9px;
+    margin-top: -10px;
 }
 
 .fl-arrow-center .fl-footer-arrow .fl-arrow-border {

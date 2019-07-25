@@ -141,7 +141,7 @@
     };
 
     /**
-     * Fire onQssOpenUsbRequested when the openUsbButton is presed.
+     * Fire onQssOpenUsbRequested when the openUsbButton is pressed.
      * @param {Component} openUSB - The `gpii.qssWidget.openUSB` instance
      * @param {fluid.event} mountUsbEvent - the onQssOpenUsbRequested event
      * @param {String} messageChannel - The channel to which the message should be sent.

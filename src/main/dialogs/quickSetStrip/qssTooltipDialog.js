@@ -43,7 +43,13 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     model: {
         isKeyedIn: false,
         setting: null,
-        tooltip: null
+        tooltip: null,
+        arrowDirection: "right",
+        availableDirections: {
+            defaultDirection: "right",
+            leftDirection: "left",
+            centerDirection: "center"
+        }
     },
 
     modelRelay: {
@@ -55,6 +61,16 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                 args: [
                     "{that}.model.isKeyedIn",
                     "{that}.model.setting"
+                ]
+            }
+        },
+        arrowDirection: {
+            target: "arrowDirection",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.qssTooltipDialog.getArrowDirection",
+                args: [
+                    "{that}.model.arrowDirection"
                 ]
             }
         }
@@ -103,12 +119,18 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                 events: {
                     // update message in the tooltip
                     // expect this message to be translated
-                    onTooltipUpdated: null
+                    onTooltipUpdated: null,
+                    onTooltipArrowDirection: null
                 },
                 modelListeners: {
                     "{qssTooltipDialog}.model.tooltip": {
                         func: "{that}.events.onTooltipUpdated.fire",
                         args: ["{change}.value"],
+                        excludeSource: "init"
+                    },
+                    "{qssTooltipDialog}.model.arrowDirection": {
+                        func: "{that}.events.onTooltipArrowDirection.fire",
+                        args: ["{qssTooltipDialog}.model.arrowDirection"],
                         excludeSource: "init"
                     }
                 }
@@ -130,6 +152,15 @@ gpii.app.qssTooltipDialog.getTooltip = function (isKeyedIn, setting) {
         var tooltip = setting.tooltip;
         return (isKeyedIn ? tooltip.keyedIn : tooltip.keyedOut) || tooltip;
     }
+};
+
+/**
+ * Returns the new direction of the tooltip's arrow
+ * @param {String} arrowDirection - arrow direction
+ * @return {String} arrow direction
+ */
+gpii.app.qssTooltipDialog.getArrowDirection = function (arrowDirection) {
+    return arrowDirection;
 };
 
 /**
@@ -158,6 +189,8 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
  */
 gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) {
     var screen = require("electron").screen, // used to get the current screen size
+        availableDirections = that.model.availableDirections,
+        arrowDirection = availableDirections.defaultDirection, // default tooltip arrow direction
         arrowWidth = that.options.arrowWidth,
         scaleFactor = that.model.scaleFactor,
         tooltipWidth = that.options.config.attrs.width * scaleFactor, // current tooltip width
@@ -168,8 +201,16 @@ gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) 
     if (offsetX + tooltipWidth > screenWidth) {
         // setting the offset to fit the screen
         offsetX = screenWidth - tooltipWidth;
+        // changing the arrow to be in the center
+        arrowDirection = availableDirections.centerDirection;
+    } else {
+        arrowDirection = availableDirections.defaultDirection;
     }
 
+    // apply the new arrow direction
+    that.applier.change("arrowDirection", arrowDirection);
+
+    // return the calculated offsets
     return {
         offsetX: offsetX,
         offsetY: btnCenterOffset.y
