@@ -16,6 +16,16 @@
         "value": "en-US",
         "restartWarning": true
     }, {
+        "id": "translate-tools",
+        "path": "translate-tools",
+        "schema": {
+            "type": "string"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 103,
+        "messageKey": "translate-tools",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#translate"
+    }, {
         "id": "screen-zoom",
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
         "schema": {
