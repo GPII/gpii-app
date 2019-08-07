@@ -282,7 +282,10 @@
         invokers: {
             activate: {
                 funcName: "gpii.qss.openCloudFolderPresenter.activate",
-                args: ["{gpii.qss}.options.siteConfig.urls.cloudFolder"] // siteConfig's cloud folder url
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.cloudFolder",  // siteConfig's cloud folder url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
             }
         }
     });
@@ -291,17 +294,34 @@
      * A custom function for handling activation of the "Quick Folders" QSS button.
      * opens a provided url in the default browser using electron's shell
      * @param {String} cloudFolderUrl - cloud folder's url
+     * @param {Boolean} alwaysUseChrome - true to use chrome, rather than the default browser.
      */
-    gpii.qss.openCloudFolderPresenter.activate = function (cloudFolderUrl) {
+    gpii.qss.openCloudFolderPresenter.activate = function (cloudFolderUrl, alwaysUseChrome) {
         var shell = require("electron").shell;
 
         if (fluid.isValue(cloudFolderUrl)) {
-            // we have the url, opening it in the default browser
-            shell.openExternal(cloudFolderUrl);
+            if (alwaysUseChrome) {
+                var child_process = require("child_process");
+                var command =
+                    // Check chrome is installed
+                    "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe\" /ve"
+                    // If so, run chrome
+                    + " && start chrome \"" + cloudFolderUrl.replace(/"/g, "%22") + "\"";
+                child_process.exec(command, function (err) {
+                    if (err) {
+                        // It failed, so use the default browser.
+                        shell.openExternal(cloudFolderUrl);
+                    }
+                });
+            } else {
+                // we have the url, opening it in the default browser
+                shell.openExternal(cloudFolderUrl);
+            }
         } else {
             // there is no value in the config, sending the warning
             fluid.log(fluid.logLevel.WARN, "Service Buttons (openCloudFolderPresenter): Cannot find a proper url path [siteConfig.qss.urlscloudFolder]");
         }
+
     };
 
 })(fluid);
