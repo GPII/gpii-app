@@ -91,18 +91,21 @@
      * @return {Boolean} - returns `true` on successfully executed file
      */
     gpii.psp.launchExecutable = function (executablePath) {
-        var fileProperties = fs.statSync(executablePath);
-
-        // Check that the file is executable
-        if (fileProperties.mode === parseInt("0100666", 8)) {
-            try {
-                child_process.exec(executablePath);
-                return true;
-            } catch (err) {
-                fluid.log(fluid.logLevel.WARN, "launchExecutable: Cannot execute - " + executablePath);
+        try {
+            var fileProperties = fs.statSync(executablePath);
+            // Check that the file is executable
+            if (fileProperties.mode === parseInt("0100666", 8)) {
+                try {
+                    child_process.exec("\"" + executablePath + "\"");
+                    return true;
+                } catch (err) {
+                    fluid.log(fluid.logLevel.WARN, "launchExecutable: Cannot execute - " + executablePath);
+                }
+            } else {
+                fluid.log(fluid.logLevel.WARN, "launchExecutable: File is not executable - " + executablePath);
             }
-        } else {
-            fluid.log(fluid.logLevel.WARN, "launchExecutable: File is not executable - " + executablePath);
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "launchExecutable: Invalid or missing path - " + executablePath);
         }
         return false;
     };

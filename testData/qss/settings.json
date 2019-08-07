@@ -16,6 +16,16 @@
         "value": "en-US",
         "restartWarning": true
     }, {
+        "id": "translate-tools",
+        "path": "translate-tools",
+        "schema": {
+            "type": "string"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 103,
+        "messageKey": "translate-tools",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#translate"
+    }, {
         "id": "screen-zoom",
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
         "schema": {
@@ -57,8 +67,7 @@
             "type": "volume",
             "min": 0,
             "max": 1,
-            "divisibleBy": 0.1,
-            "default": 0.5,
+            "divisibleBy": 0.02,
             "previousValue": 0.5,
             "image": "volume-mute.svg",
             "helpImage": "volumeMute.png"
@@ -85,6 +94,22 @@
         "messageKey": "screenCapture",
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
+    }, {
+        "id": "office-simplification",
+        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.office.word-ribbon",
+        "schema": {
+            "type": "office",
+            "keys": [
+                "Basics+StandardSet",
+                "Essentials+StandardSet"
+            ],
+            "default": "StandardSet"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 135,
+        "messageKey": "officeSimplification",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#office-simplification",
+        "value": "StandardSet"
     }, {
         "id": "high-contrast",
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",

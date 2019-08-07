@@ -23,9 +23,11 @@
      * QSS Volume widget
      */
     fluid.defaults("gpii.qssWidget.volume", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
 
         selectors: {
+            heightListenerContainer: ".flc-qssVolumeWidget-controls",
+            controlsWrapper: ".flc-qssVolumeWidget-wrapper",
             stepper: ".flc-volumeStepper",
             switch: ".flc-volumeSwitch",
             switchTitle: ".flc-volumeWidget-switchTitle",
@@ -43,16 +45,26 @@
             messages: {
                 switchTitle: "{that}.model.setting.widget.switchTitle",
                 extendedTip: "{that}.model.setting.widget.extendedTip"
-            }
+            },
+            messageChannel: "volumeMessageChannel" // Channel listening for messages related volume/mute functionality
         },
         events: {
-            onNotificationRequired: null
+            onNotificationRequired: null,
+            onHeightChanged: null
         },
         listeners: {
             "onCreate": {
                 this: "{that}.dom.helpImage",
                 method: "attr",
                 args: ["src", "{that}.model.setting.schema.helpImage"]
+            },
+            "onCreate.registerIpcListener": {
+                funcName: "gpii.psp.registerIpcListener",
+                args: ["{that}.model.messageChannel", "{volume}.loadActualValue"]
+            },
+            "onCreate.sendGetVolumeRequest": {
+                funcName: "{channelNotifier}.events.onQssGetVolumeRequested.fire",
+                args: ["{that}.model.messageChannel"]
             }
         },
         modelListeners: {
@@ -61,7 +73,20 @@
                 args: ["{switchButton}", "{stepper}", "{change}.value"]
             }
         },
-
+        invokers: {
+            loadActualValue: {
+                funcName: "gpii.qssWidget.volume.loadActualValue",
+                args: ["{volume}", "{arguments}.0"]
+            },
+            calculateHeight: {
+                funcName: "gpii.qssWidget.calculateHeight",
+                args: [
+                    "{qssWidget}.container",
+                    "{that}.dom.controlsWrapper",
+                    "{that}.dom.heightListenerContainer"
+                ]
+            }
+        },
         components: {
             stepper: {
                 type: "gpii.qssWidget.volumeStepper",
@@ -109,6 +134,15 @@
     });
 
     /**
+     * Set the actual volume value in the case the volume is changed through the Windows itself
+     * @param {Component} that - The `gpii.psp.widgets.volume` instance.
+     * @param {Number} value - The value of the setting.
+     */
+    gpii.qssWidget.volume.loadActualValue = function (that, value) {
+        that.applier.change("value", value, null, "settingAlter");
+    };
+
+    /**
      * Invoked whenever the volume value is changed and updating the state of the
      * volume switch button.
      * @param {Component} switchButton - The `gpii.psp.widgets.volume.switchButton` instance.
@@ -116,7 +150,7 @@
      * @param {Number} value - The value of the setting.
      */
     gpii.qssWidget.volume.updateSwitchState = function (switchButton, stepper, value) {
-        if (value === 0 && !switchButton.model.enabled) {
+        if (!value !== switchButton.model.enabled) {
             switchButton.applier.change("enabled", !switchButton.model.enabled, null, "settingAlter");
         } else if (value !== 0 && switchButton.model.enabled) {
             switchButton.applier.change("enabled", !switchButton.model.enabled, null, "settingAlter");
@@ -129,8 +163,7 @@
      * @return {Boolean} The modified value.
      */
     gpii.qssWidget.volume.transformValue = function (value) {
-        var boolValue = !value ? true : false;
-        return boolValue;
+        return !value;
     };
 
     /**
@@ -237,7 +270,6 @@
                     "{that}.model.messages.upperBoundError"
                 ]
             },
-
             "onCreate.attachAnimationClearer": {
                 funcName: "gpii.qssWidget.volumeStepper.clearElementsAnimation",
                 args: [
@@ -249,19 +281,21 @@
 
         invokers: {
             activateIncBtn: {
-                funcName: "gpii.qssWidget.volumeStepper.activateIncButton",
+                funcName: "gpii.qssWidget.volumeStepper.activateButton",
                 args: [
                     "{that}",
                     "{that}.dom.incButton",
-                    "{that}.model.setting.schema" // only restrictions will be used
+                    "{that}.increment", // the proper function to be executed
+                    "{that}.events.onUpperBoundReached" // the proper event to be fired
                 ]
             },
             activateDecBtn: {
-                funcName: "gpii.qssWidget.volumeStepper.activateDecButton",
+                funcName: "gpii.qssWidget.volumeStepper.activateButton",
                 args: [
                     "{that}",
                     "{that}.dom.decButton",
-                    "{that}.model.setting.schema"
+                    "{that}.decrement", // the proper function to be executed
+                    "{that}.events.onLowerBoundReached" // the proper event to be fired
                 ]
             },
             increment: {
@@ -269,7 +303,9 @@
                 args: [
                     "{that}",
                     "{that}.model.value",
-                    "{that}.model.setting.schema"
+                    "{that}.model.setting.schema",
+                    1, // step multiplier, no effect of the step itself
+                    "{volume}.model.setting.previousValue"
                 ]
             },
             decrement: {
@@ -278,7 +314,8 @@
                     "{that}",
                     "{that}.model.value",
                     "{that}.model.setting.schema",
-                    true
+                    -1, // step multiplier to reverse the step
+                    "{volume}.model.setting.previousValue"
                 ]
             },
             animateButton: {
@@ -364,44 +401,27 @@
     };
 
     /**
-     * Invoked whenever the increment button is activated. Takes care of
-     * increasing the setting's value with the amount specified in the setting's
+     * Invoked whenever the either button is activated. Takes care of
+     * changing the setting's value with the amount specified in the setting's
      * schema, animating the button appropriately and/or firing an event if
-     * an attempt is made to increase value above the maximum allowed value.
+     * an attempt is made to increase/decrease value above or below the
+     * maximum or minimum allowed value.
      * @param {Component} that - The `gpii.qssWidget.volumeStepper` instance.
-     * @param {jQuery} button - The jQuery object repesenting the increment button
-     * in the QSS stepper widget.
+     * @param {jQuery} button - The jQuery object representing the inc/dev buttons
+     * @param {Function} actionFunc - Uses the provided function to change the value
+     * button is pressed in the QSS stepper widget.
+     * @param {fluid.event} boundEvent - a handle to the event to be fired when
+     * bound is reached
      */
-    gpii.qssWidget.volumeStepper.activateIncButton = function (that, button) {
-        var boundReached = that.increment();
+    gpii.qssWidget.volumeStepper.activateButton = function (that, button, actionFunc, boundEvent) {
+        var boundReached = actionFunc();
+
         that.animateButton(button, boundReached);
         if (boundReached) {
             // register bound hit
             that.boundReachedHits += 1;
-
-            that.events.onUpperBoundReached.fire();
-        } else {
-            that.boundReachedHits = 0;
-        }
-    };
-
-    /**
-     * Invoked whenever the decrement button is activated. Takes care of
-     * decreasing the setting's value with the amount specified in the setting's
-     * schema, animating the button appropriately and/or firing an event if
-     * an attempt is made to decrease value below the minimum allowed value.
-     * @param {Component} that - The `gpii.qssWidget.volumeStepper` instance.
-     * @param {jQuery} button - The jQuery object repesenting the decrement button
-     * in the QSS stepper widget.
-     */
-    gpii.qssWidget.volumeStepper.activateDecButton = function (that, button) {
-        var boundReached = that.decrement();
-        that.animateButton(button, boundReached);
-        if (boundReached) {
-            // register bound hit
-            that.boundReachedHits += 1;
-
-            that.events.onLowerBoundReached.fire();
+            // fire the event
+            boundEvent.fire();
         } else {
             that.boundReachedHits = 0;
         }
@@ -413,36 +433,44 @@
      * setting's schema. It also takes care that the new value of the setting does
      * not become bigger/smaller than the maximum/minimum allowed value for the
      * setting.
-     * @param {Component} that - The `gpii.qssWidget.volumeStepper` instance.
+     * @param {Component} that - The `gpii.qssWidget.stepperBrightness` instance.
      * @param {Number} value - The initial value of the setting before the operation.
      * @param {Object} schema - Describes the schema of the setting.
      * @param {Number} schema.min - The minimum possible value for the setting.
      * @param {Number} schema.max - The maximum possible value for the setting.
      * @param {Number} schema.divisibleBy - The amount which is added or subtracted
      * from the setting's value every time this function is invoked.
-     * @param {Boolean} shouldSubtract - Whether the `divisibleBy` amount should be
+     * @param {Number} stepMultiplier - a basic numeric step multiplier, if its 1 there
+     * will be no change in the step size, -1 will reverse it, and everything else
+     * will act as a real multiplier (2 for 2x as an example)
      * subtracted from or added to the setting's value.
+     * @param {Number} previousValue - The value before the mute button is activated
      * @return {Boolean} Whether there was a change in the setting's value.
      */
-    gpii.qssWidget.volumeStepper.makeRestrictedStep = function (that, value, schema, shouldSubtract) {
-        var step = (shouldSubtract ? -schema.divisibleBy : schema.divisibleBy);
+    gpii.qssWidget.volumeStepper.makeRestrictedStep = function (that, value, schema, stepMultiplier, previousValue) {
+        var restrictedValue;
+        if (value === 0 && previousValue !== undefined) {
+            restrictedValue = previousValue;
+        } else {
+            var step = schema.divisibleBy * stepMultiplier;
 
-        value = parseFloat( (value + step).toPrecision(2) );
-        // Handle not given min and max
-        var restrcitedValue = value;
+            value = parseFloat( (value + step).toPrecision(3) );
+            // Handle not given min and max
+            restrictedValue = value;
 
-        if (fluid.isValue(schema.max)) {
-            restrcitedValue = Math.min(restrcitedValue, schema.max);
+            if (fluid.isValue(schema.max)) {
+                restrictedValue = Math.min(restrictedValue, schema.max);
+            }
+
+            if (fluid.isValue(schema.min)) {
+                restrictedValue = Math.max(restrictedValue, schema.min);
+            }
         }
 
-        if (fluid.isValue(schema.min)) {
-            restrcitedValue = Math.max(restrcitedValue, schema.min);
-        }
-
-        that.applier.change("value", restrcitedValue, null, "settingAlter");
+        that.applier.change("value", restrictedValue, null, "settingAlter");
 
         // Whether a bound was hit
-        return value !== restrcitedValue;
+        return value !== restrictedValue;
     };
 
     /**

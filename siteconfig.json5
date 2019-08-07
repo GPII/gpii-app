@@ -18,6 +18,8 @@
             cloudFolder: "https://docs.google.com/document/d/1gOi5JXw30lyD5DGbwe6tme_MfEyaiDz95AQSrzPNfZU/"
         },
 
+        alwaysUseChrome: false,
+
         // The template that is used for every label of the language setting's options.
         // The "%" followed by a word specifies a variable and there are three possible variables:
         // - native - the name of the language in its native form
@@ -44,19 +46,21 @@
         // it uses the `id` attribute found in settings.json items
         buttonList: [
             "language",
+            "translate-tools",
             "screen-zoom",
             "text-zoom",
             "screen-capture",
+            "office-simplification",
             "high-contrast",
             "read-aloud",
-            "cloud-folder-open",
-            "usb-open",
+            "volume",
             "launch-documorph",
-            "volume"
+            "cloud-folder-open",
+            "usb-open"
         ],
 
         // the path to the DocuMorph's executable file, used in the service buttons
-        docuMorphExecutable: "C:\\Windows\\system32\\notepad.exe"
+        docuMorphExecutable: "C:\\Program Files (x86)\\Sensus ApS\\DocuMorph Widget\\DocuMorph.Widget.exe"
     },
 
     // Configuration options for the PSP window
