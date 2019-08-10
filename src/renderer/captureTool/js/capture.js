@@ -332,7 +332,7 @@
         return togo;
     };
 
-    /**
+    /*
      * Takes an object of values keyed by solution ids, converts them in to a list
      * adding the ID as a value with key `id`, and then sorts them based on our
      * preferred list of solutions orders for display.

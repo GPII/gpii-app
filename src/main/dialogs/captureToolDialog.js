@@ -12,11 +12,11 @@
  */
 "use strict";
 
-var fluid    = require("infusion");
-var electron = require("electron");
-
-var ipcMain           = electron.ipcMain;
-var gpii              = fluid.registerNamespace("gpii");
+var fs = require("fs"),
+    fluid = require("infusion"),
+    electron = require("electron"),
+    ipcMain = electron.ipcMain,
+    gpii = fluid.registerNamespace("gpii");
 
 require("../common/utils.js");
 
@@ -25,6 +25,37 @@ require("./basic/blurrable.js");
 require("./basic/centeredDialog.js");
 require("./basic/resizable.js");
 require("./basic/offScreenHidable.js");
+
+
+fluid.defaults("gpii.app.captureToolUtils", {
+    gradeNames: ["fluid.component"],
+    events: {
+        onCollectDiagnostics: null
+    },
+    listeners: {
+        onCollectDiagnostics: [{
+            func: "{flowManager}.capture.getSolutions"
+        }, {
+            funcName: "gpii.app.captureToolUtils.collectPayload",
+            args: ["{arguments}.0", "{arguments}.1", "solutions"]
+        }, {
+            func: "{flowManager}.capture.getInstalledSolutions"
+        }, {
+            funcName: "gpii.app.captureToolUtils.collectPayload",
+            args: ["{arguments}.0", "{arguments}.1", "installedSolutions"]
+        }, {
+            func: "{flowManager}.capture.getSystemSettingsCapture"
+        }, {
+            funcName: "gpii.app.captureToolUtils.collectPayload",
+            args: ["{arguments}.0", "{arguments}.1", "settingsCapture"]
+        }]
+    }
+});
+
+gpii.app.captureToolUtils.collectPayload = function (value, options, keyName) {
+    options[keyName] = value;
+    return options;
+};
 
 fluid.defaults("gpii.app.captureTool", {
     gradeNames: [
@@ -74,6 +105,10 @@ fluid.defaults("gpii.app.captureTool", {
         testPspChannel: {
             funcName: "gpii.app.captureTool.testPspChannel",
             args: ["{that}", "{pspChannel}", "{flowManager}", "{arguments}.0"]
+        },
+        generateDiagnostics: {
+            funcName: "gpii.app.captureTool.generateDiagnostics",
+            args: ["{that}", "{flowManager}"]
         }
     },
     listeners: {
@@ -96,6 +131,52 @@ fluid.defaults("gpii.app.captureTool", {
     }
 });
 
+/**
+ * This function will create a set of diagnostic log dumps and files for analyzing
+ * the output of capture on a machine. It will create a directory in the install
+ * directory with the current timestamp named `capture-diagnostics-TIMESTAMP` which
+ * will include the following files:
+ *
+ * + gpiiSettingsDir/
+ *   + capture-diagnostics-TIMESTAMP
+ *     - solutions.json
+ *     - installedSolutions.json
+ *     - settingsCapture.json
+ *
+ * @param {gpii.app.captureToolUtils} captureToolUtils = An instance of `gpii.app.captureToolUtils`
+ */
+gpii.app.captureTool.logCaptureDiagnostics = function (captureToolUtils) {
+    var settingsDirComponent = gpii.settingsDir();
+    var gpiiSettingsDir = settingsDirComponent.getGpiiSettingsDir();
+
+    var startupTime = Date.now();
+    var captureDirName = gpiiSettingsDir + "/capture-diagnostics-" + gpii.journal.formatTimestamp(startupTime);
+    fs.mkdirSync(captureDirName);
+    fluid.log("Capture Diagnostics directory is: ", captureDirName);
+
+    gpii.app.captureTool.generateDiagnostics(captureToolUtils).then(
+        function (data) {
+            // 0. Solutions
+            fs.appendFileSync(captureDirName + "/solutions.json", JSON.stringify(data.solutions, null, 4));
+            // 1. Installed Solutions
+            fs.appendFileSync(captureDirName + "/installedSolutions.json", JSON.stringify(data.installedSolutions, null, 4));
+            // 2. Full System Settings Capture
+            fs.appendFileSync(captureDirName + "/settingsCapture.json", JSON.stringify(data.settingsCapture, null, 4));
+        },
+        function (err) {
+            fluid.log("Error running capture diagnostics. ", err);
+        }
+    );
+};
+
+/*
+ * Generates and returns a set of diagnostics for the current local machine.
+ *
+ * Returns a promise containing these.
+ */
+gpii.app.captureTool.generateDiagnostics = function (captureToolUtils) {
+    return fluid.promise.fireTransformEvent(captureToolUtils.events.onCollectDiagnostics, {});
+};
 
 gpii.app.captureTool.init = function (that, flowManager) {
     ipcMain.on("getInstalledSolutions", function (event /*, arg */) {
@@ -105,14 +186,14 @@ gpii.app.captureTool.init = function (that, flowManager) {
                 var runningSolutions = {};
                 fluid.each(data, function (solutionEntry, solutionId) {
                     try {
-                        console.log("ABOUT TO CHECK PROCESS FOR: ", solutionId);
+                        fluid.log("ABOUT TO CHECK PROCESS FOR: ", solutionId);
                         var isRunningState = gpii.processReporter.handleIsRunning(solutionEntry);
-                        console.log("RUNNING STATE: ", isRunningState);
+                        fluid.log("RUNNING STATE: ", isRunningState);
                         if (isRunningState) {
                             runningSolutions[solutionId] = solutionEntry;
                         }
                     } catch (err) {
-                        console.log("Exception trying to look up", solutionEntry.isRunning);
+                        fluid.log("Exception trying to look up", solutionEntry.isRunning);
                     }
                 });
                 event.sender.send("sendingRunningSolutions", runningSolutions);

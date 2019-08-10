@@ -261,6 +261,10 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        captureToolUtils: {
+            type: "gpii.app.captureToolUtils",
+            createOnEvent: "onPSPPrerequisitesReady"
+        },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
             createOnEvent: "onPSPPrerequisitesReady",

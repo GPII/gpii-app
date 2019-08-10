@@ -56,6 +56,11 @@ fluid.defaults("gpii.app.menuInApp", {
             listener: "{gpii.app}.events.onOpenCaptureTool.fire"
         },
 
+        "onCaptureDiagnostics.run": {
+            listener: "gpii.app.captureTool.logCaptureDiagnostics",
+            args: ["{gpii.app}.captureToolUtils"]
+        },
+
         // onKeyOut event is fired when a keyed-in user keys out through the task tray.
         // This should result in:
         // 1. key out the currently keyed in user
@@ -99,6 +104,7 @@ fluid.defaults("gpii.app.menuInAppDev", {
                 args: [
                     "{that}.model.showQSS",
                     "{that}.model.showCaptureTool",
+                    "{that}.model.captureToolDiagnostics",
                     "{that}.model.keyedInSnapset",
                     "{that}.options.locales",
                     "{that}.options.themes",
@@ -396,6 +402,17 @@ fluid.defaults("gpii.app.menu", {
                 excludeSource: "init"
             }
         },
+        "captureToolDiagnostics": {
+            target: "captureToolDiagnostics",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getSimpleMenuItem",
+                args: ["Capture Diagnostics", "onCaptureDiagnostics"]
+            },
+            forward: {
+                excludeSource: "init"
+            }
+        },
         "preferenceSetsMenuItems": {
             target: "preferenceSetsMenuItems",
             singleTransform: {
@@ -415,6 +432,7 @@ fluid.defaults("gpii.app.menu", {
                 args: [
                     "{that}.model.showQSS",
                     "{that}.model.showCaptureTool",
+                    "{that}.model.captureToolDiagnostics",
                     "{that}.model.keyedInSnapset",
                     "{that}.model.showAbout",
                     "@expand:gpii.app.menu.getSeparatorItem()",
@@ -430,6 +448,7 @@ fluid.defaults("gpii.app.menu", {
     events: {
         onQss:                        null,
         onCaptureTool:                null,
+        onCaptureDiagnostics:         null,
         onAbout:                      null,
         onActivePreferenceSetAltered: null,
         onKeyOut:                     null
