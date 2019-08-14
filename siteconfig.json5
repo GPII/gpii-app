@@ -52,7 +52,7 @@
                 "buttonData": "C:\\Windows\\system32\\notepad.exe",
                 "fullScreen": true,
                 "popupText": "<p>Launch the Notepad application.</p>",
-                "description": "The full description of the button"
+                "description": "The full description of the button..."
             }, {
                 "buttonId": "UserCustomButton",
                 "buttonName": "Open Reddit",
@@ -60,7 +60,7 @@
                 "buttonData": "https://www.reddit.com/",
                 "fullScreen": true,
                 "popupText": "<p>Open Reddit in a web browser.</p>",
-                "description": "The full description of the button"
+                "description": "The full description of the button..."
             },
             "language",
             "translate-tools",

@@ -238,13 +238,18 @@ gpii.app.generateCustomButton = function (buttonData) {
             "path": buttonType,
             "schema": {
                 "type": buttonType,
-                "title": buttonData.buttonName
+                "title": buttonData.buttonName,
+                "fullScreen": true
             },
             "buttonTypes": ["largeButton", "settingButton"]
         };
         if (fluid.isValue(buttonData.popupText)) {
             // adding the tooltip text as well
             data.tooltip = buttonData.popupText;
+        }
+        if (fluid.isValue(buttonData.fullScreen)) {
+            // adding the full screen option if there is one
+            data.schema.fullScreen = buttonData.fullScreen;
         }
         if (buttonData.buttonType === "APP") {
             // adding the application's path
