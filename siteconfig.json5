@@ -45,6 +45,23 @@
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
         buttonList: [
+            {
+                "buttonId": "UserCustomButton",
+                "buttonName": "Launch Notepad",
+                "buttonType": "APP",
+                "buttonData": "C:\\Windows\\system32\\notepad.exe",
+                "fullScreen": true,
+                "popupText": "<p>Launch the Notepad application.</p>",
+                "description": "The full description of the button"
+            }, {
+                "buttonId": "UserCustomButton",
+                "buttonName": "Open Reddit",
+                "buttonType": "WEB",
+                "buttonData": "https://www.reddit.com/",
+                "fullScreen": true,
+                "popupText": "<p>Open Reddit in a web browser.</p>",
+                "description": "The full description of the button"
+            },
             "language",
             "translate-tools",
             "screen-zoom",

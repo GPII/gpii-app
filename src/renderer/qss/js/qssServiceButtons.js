@@ -204,6 +204,39 @@
     });
 
     /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * custom buttons that need to open application, it requires only the (full) path
+     * to the executable.
+     */
+    fluid.defaults("gpii.qss.customLaunchAppPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.psp.launchExecutable",
+                args: ["{that}.model.item.schema.filepath"]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * custom buttons that need to open url in the browser, it requires both the
+     * url, and the boolean that determines if will try to force Chrome or not
+     */
+    fluid.defaults("gpii.qss.customOpenUrlPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.psp.openUrl",
+                args: [
+                    "{that}.model.item.schema.url",  // using the url from the custom button's schema
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
+
+    /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Undo"
      * QSS button.
      */
@@ -281,7 +314,7 @@
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
             activate: {
-                funcName: "gpii.qss.openCloudFolderPresenter.activate",
+                funcName: "gpii.psp.openUrl",
                 args: [
                     "{gpii.qss}.options.siteConfig.urls.cloudFolder",  // siteConfig's cloud folder url
                     "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
@@ -289,39 +322,4 @@
             }
         }
     });
-
-    /**
-     * A custom function for handling activation of the "Quick Folders" QSS button.
-     * opens a provided url in the default browser using electron's shell
-     * @param {String} cloudFolderUrl - cloud folder's url
-     * @param {Boolean} alwaysUseChrome - true to use chrome, rather than the default browser.
-     */
-    gpii.qss.openCloudFolderPresenter.activate = function (cloudFolderUrl, alwaysUseChrome) {
-        var shell = require("electron").shell;
-
-        if (fluid.isValue(cloudFolderUrl)) {
-            if (alwaysUseChrome) {
-                var child_process = require("child_process");
-                var command =
-                    // Check chrome is installed
-                    "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe\" /ve"
-                    // If so, run chrome
-                    + " && start chrome \"" + cloudFolderUrl.replace(/"/g, "%22") + "\"";
-                child_process.exec(command, function (err) {
-                    if (err) {
-                        // It failed, so use the default browser.
-                        shell.openExternal(cloudFolderUrl);
-                    }
-                });
-            } else {
-                // we have the url, opening it in the default browser
-                shell.openExternal(cloudFolderUrl);
-            }
-        } else {
-            // there is no value in the config, sending the warning
-            fluid.log(fluid.logLevel.WARN, "Service Buttons (openCloudFolderPresenter): Cannot find a proper url path [siteConfig.qss.urlscloudFolder]");
-        }
-
-    };
-
 })(fluid);

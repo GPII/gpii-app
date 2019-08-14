@@ -220,6 +220,44 @@ gpii.app.findButtonById = function (buttonId, availableButtons) {
 };
 
 /**
+ * Generates the proper service button schema for the custom button
+ * @param {Object} buttonData - a simple data object with the values needed for the custom button
+ * @return {Object|Boolean} - data object constructed exactly as every other in the settings.json or false
+ */
+gpii.app.generateCustomButton = function (buttonData) {
+    var serviceButtonTypeApp = "custom-launch-app",
+        serviceButtonTypeWeb = "custom-open-url",
+        data = false;
+
+    // we need to have the data, with all required fields:
+    // buttonId, buttonName, buttonType, buttonData
+    if (buttonData && fluid.isValue(buttonData.buttonId) && fluid.isValue(buttonData.buttonName) && fluid.isValue(buttonData.buttonType) && fluid.isValue(buttonData.buttonData)) {
+        var buttonType = buttonData.buttonType === "APP" ? serviceButtonTypeApp : serviceButtonTypeWeb;
+        data = {
+            "id": buttonData.buttonId,
+            "path": buttonType,
+            "schema": {
+                "type": buttonType,
+                "title": buttonData.buttonName
+            },
+            "buttonTypes": ["largeButton", "settingButton"]
+        };
+        if (fluid.isValue(buttonData.popupText)) {
+            // adding the tooltip text as well
+            data.tooltip = buttonData.popupText;
+        }
+        if (buttonData.buttonType === "APP") {
+            // adding the application's path
+            data.schema.filepath = buttonData.buttonData;
+        } else {
+            // adding the web page's url
+            data.schema.url = buttonData.buttonData;
+        }
+    }
+    return data;
+};
+
+/**
  * Filters the full button list based on the provided array of `id` attributes
  * @param {Array} siteConfigButtonList - basic array of strings
  * @param {Object[]} availableButtons - all available buttons found in settings.json
@@ -238,7 +276,14 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     // creating the matchedList
     // looking for `id` and if matches adding it
     fluid.each(siteConfigButtonList, function (buttonId) {
-        var matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
+        var matchedButton = false;
+
+        if (typeof buttonId === "object") {
+            // this is custom button
+            matchedButton = gpii.app.generateCustomButton(buttonId);
+        } else {
+            matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
+        }
         if (matchedButton !== false) {
             // adding the proper tabindex
             matchedButton.tabindex = tabindex;

@@ -85,6 +85,37 @@
         ipcRenderer.removeAllListeners(messageChannel);
     };
 
+    /**
+     * A custom function for handling activation of the "Quick Folders" QSS button.
+     * opens a provided url in the default browser using electron's shell
+     * @param {String} siteUrl - cloud folder's url
+     * @param {Boolean} alwaysUseChrome - true to use chrome, rather than the default browser.
+     */
+    gpii.psp.openUrl = function (siteUrl, alwaysUseChrome) {
+        if (fluid.isValue(siteUrl)) {
+            if (alwaysUseChrome) {
+                var child_process = require("child_process");
+                var command =
+                    // Check chrome is installed
+                    "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe\" /ve"
+                    // If so, run chrome
+                    + " && start chrome \"" + siteUrl.replace(/"/g, "%22") + "\"";
+                child_process.exec(command, function (err) {
+                    if (err) {
+                        // It failed, so use the default browser.
+                        shell.openExternal(siteUrl);
+                    }
+                });
+            } else {
+                // we have the url, opening it in the default browser
+                shell.openExternal(siteUrl);
+            }
+        } else {
+            // there is no value in the config, sending the warning
+            fluid.log(fluid.logLevel.WARN, "Service Buttons (openCloudFolderPresenter): Cannot find a proper url path [siteConfig.qss.urlscloudFolder]");
+        }
+    };
+
     /*
      * A custom function for handling opening of an .exe file.
      * @param {String} executablePath - path to executable file
