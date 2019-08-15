@@ -55,7 +55,7 @@ gpii.tests.gpiiConnector.testDefs = {
             gpii.tests.gpiiConnector.getSettingUpdateMessage(DPIScalePath, 2)
         ]
     }, {
-        event: "{that}.app.psp.events.onSettingUpdated",
+        event: "{that}.app.qss.events.onSettingUpdated",
         listener: "jqUnit.assertDeepEq",
         args: [
             "The setting which was updated in the PSP is correct",

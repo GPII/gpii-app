@@ -39,7 +39,6 @@ fluid.defaults("gpii.app.gpiiConnector", {
          * be used instead.
          */
         closeQssOnBlur: false,
-        closePspOnBlur: true,
         disableRestartWarning: false
     },
 
@@ -266,10 +265,9 @@ gpii.app.extractSettings = function (element) {
  */
 gpii.app.extractPreferencesData = function (message, defaultPreferences) {
     var value = message.value || {},
-        // Whether the PSP should be closed when the user clicks outside. The default
-        // value is `true` (in case this is not specified in the payload). Note that
+        // Whether the QSS should be closed when the user clicks outside. The default
+        // value is `false` (in case this is not specified in the payload). Note that
         // the latter will always be the case in the keyed out payload!
-        closePspOnBlur = fluid.isValue(value.closePspOnBlur) ? value.closePspOnBlur : defaultPreferences.closePspOnBlur,
         closeQssOnBlur = fluid.isValue(value.closeQssOnBlur) ? value.closeQssOnBlur : defaultPreferences.closeQssOnBlur,
         disableRestartWarning =
             fluid.isValue(value.disableRestartWarning) ?
@@ -302,7 +300,6 @@ gpii.app.extractPreferencesData = function (message, defaultPreferences) {
         sets: sets,
         activeSet: activeSet,
         settingGroups: settingGroups,
-        closePspOnBlur: closePspOnBlur,
         closeQssOnBlur: closeQssOnBlur,
         disableRestartWarning: disableRestartWarning,
         gpiiAppShortcut: gpiiAppShortcut
@@ -574,8 +571,6 @@ gpii.app.dev.gpiiConnector.decoratePreferences = function (systemLanguageListene
   * @property {String} activeSet - The path of the currently active preference set.
   * @property {SettingGroup[]} settingGroups - The setting groups
   * for the parsed message.
-  * @property {Boolean} closePspOnBlur - Whether the PSP should be closed when the user
-  * clicks outside of it or not.
   */
 
 

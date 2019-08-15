@@ -264,22 +264,6 @@
         "messageKey": "undo",
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>"
     }, {
-        "path": "psp",
-        "schema": {
-            "type": "psp",
-            "title": {
-                "keyedIn": "Settings Panel",
-                "keyedOut": "Sign In"
-            }
-        },
-        "buttonTypes": ["smallButton"],
-        "tabindex": 230,
-        "messageKey": "psp",
-        "tooltip": {
-            "keyedIn": "<p>Opens Morphic Settings Panel</p><p>Where you can quickly adjust often-changed settings of yours.</p>",
-            "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
-        }
-    }, {
         "path": "resetAll",
         "schema": {
             "type": "resetAll",

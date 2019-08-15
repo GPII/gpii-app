@@ -234,14 +234,6 @@
         "tabindex": 320,
         "messageKey": "undo"
     }, {
-        "path": "psp",
-        "schema": {
-            "type": "psp"
-        },
-        "buttonTypes": ["smallButton"],
-        "tabindex": 310,
-        "messageKey": "psp"
-    }, {
         "path": "resetAll",
         "schema": {
             "type": "resetAll"

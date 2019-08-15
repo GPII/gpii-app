@@ -84,9 +84,6 @@ fluid.defaults("gpii.app.factsManager", {
         }],
         "{qssWrapper}.qss.events.onDialogShown": {
             funcName: "{that}.increaseInteractionsCount"
-        },
-        "{psp}.events.onDialogShown": {
-            funcName: "{that}.increaseInteractionsCount"
         }
     },
     invokers: {

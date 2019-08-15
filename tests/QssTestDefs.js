@@ -36,11 +36,11 @@ function clickStepperIndicator() {
 }
 
 function getQuickFolderWidgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(9) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
 }
 
 function getUsbWidgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(8) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
 }
 
 function getVolumeWidgetBtnText() {
@@ -52,7 +52,7 @@ function getVolumeWidgetBtnColor() {
 }
 
 function getDocuMorphWidgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
+    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(6) > span").text();
 }
 
 
@@ -69,20 +69,19 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
     clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
     clickOfficeSimplifyBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
-    clickOpenUsbBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(8)\").click()",
+    clickOpenUsbBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(7)\").click()",
     clickVolumeBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(8)\").click()",
-    clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(6)\").click()",
-    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
-    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
-    // clickPspBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(3)\").click()", // the button is disabled temporary (GPII-3773)
+    clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
+    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
+    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(3)\").click()",
     clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(2)\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(9)').is(':visible')",
-    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(8)').is(':visible')",
+    checkIfQuickFoldersWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(8)').is(':visible')",
+    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(7)').is(':visible')",
     checkIfVolumeButtonImage = "jQuery('.flc-quickSetStrip > div:nth-of-type(8) > .flc-qss-btnImage').is(':visible')",
     checkIfVolumeButtonTitle = "jQuery('.flc-quickSetStrip > div:nth-of-type(8) > .flc-qss-btnLabel').is(':visible')",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
@@ -184,7 +183,7 @@ gpii.tests.qss.clearFocusedElement = function () {
     jQuery(".fl-qss-button").removeClass("fl-focused fl-highlighted");
 };
 
-var qssSettingsCount = 17;
+var qssSettingsCount = 16;
 
 var navigationSequence = [
     {
@@ -209,10 +208,10 @@ var navigationSequence = [
     // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 3),
     // gpii.tests.qss.pressKey("Down"),
     // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 2),
-    gpii.tests.qss.pressKey("Left"),
-    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 4),
-    gpii.tests.qss.pressKey("Up"),
-    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 5),
+    // gpii.tests.qss.pressKey("Left"),
+    // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 4),
+    // gpii.tests.qss.pressKey("Up"),
+    // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 4),
     // This part of the test is commented because the button is disabled temporary (GPII-3773) and cannot be focused.
     // Some tests may be removed or parts of them re-used in the future.
     // gpii.tests.qss.pressKey("Right"),
@@ -1876,7 +1875,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 78,
+    expect: 76,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"

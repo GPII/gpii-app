@@ -15,16 +15,6 @@
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>",
         "title": "Save"
     },
-    "gpii_app_qss_settings_psp": {
-        "tooltip": {
-            "keyedIn": "<p>Opens Morphic Settings Panel</p><p>Where you can quickly adjust often-changed settings of yours.</p>",
-            "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
-        },
-        "title": {
-            "keyedIn": " ",
-            "keyedOut": " "
-        }
-    },
     "gpii_app_qss_settings_more": {
         "tooltip": "<p>More options for changing the settings on this computer.</p>",
         "title": "MORE...\n\n(& HELP)"
