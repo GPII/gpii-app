@@ -1,8 +1,8 @@
-{{> page_header_partial pageHeader="Sign into MyMorphic"}}
+{{> page_header_partial pageHeader="Morphic Capture Tool"}}
 
 <table>
 <tr>
-    <td width="50%" style="border-right: thin solid gray">
+    {{!-- <td width="50%" style="border-right: thin solid gray">
     <p>
         Sign into the MyMorphic account where you want to save your settings.
     </p>
@@ -22,11 +22,11 @@
             </div>
     </form>
     </div>
-    <input type="button" class="btn btn-default flc-capture-next" value="Sign In" />
+
     <p>
         <a href="#">Forgot password?</a>
     </p>
-    </td>
+    </td> --}}
     <td style="padding-left: 20px; vertical-align: top">
         <p>
             <span class="type-t5">Work In Progress Capture Tool</span>, with
@@ -34,7 +34,7 @@
         </p>
         <p style="text-align: justify">
             <em>Notes:</em><br/>
-            Username/password is currently ignored, settings can be saved to the cloud by keying
+            Settings can be saved to the cloud by keying
             in with a user in the same fashion as the Morphic Quickstrip save.
         </p>
         <p>
@@ -43,6 +43,7 @@
             set already exists, the captured preferences will be merged into the existing set in
             the cloud.
         </p>
+        <input type="button" class="btn btn-default flc-capture-next" value="Sign In" />
     </td>
 </tr>
 </table>

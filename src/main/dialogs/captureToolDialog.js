@@ -34,7 +34,8 @@ fluid.defaults("gpii.app.captureToolUtils", {
     },
     listeners: {
         onCollectDiagnostics: [{
-            func: "{flowManager}.capture.getSolutions"
+            funcName: "gpii.flowManager.getSolutionsPromise",
+            args: [ "{flowManager}.solutionsRegistryDataSource", null]
         }, {
             funcName: "gpii.app.captureToolUtils.collectPayload",
             args: ["{arguments}.0", "{arguments}.1", "solutions"]
@@ -151,22 +152,37 @@ gpii.app.captureTool.logCaptureDiagnostics = function (captureToolUtils) {
 
     var startupTime = Date.now();
     var captureDirName = gpiiSettingsDir + "/capture-diagnostics-" + gpii.journal.formatTimestamp(startupTime);
-    fs.mkdirSync(captureDirName);
+
     fluid.log("Capture Diagnostics directory is: ", captureDirName);
 
-    gpii.app.captureTool.generateDiagnostics(captureToolUtils).then(
-        function (data) {
-            // 0. Solutions
-            fs.appendFileSync(captureDirName + "/solutions.json", JSON.stringify(data.solutions, null, 4));
-            // 1. Installed Solutions
-            fs.appendFileSync(captureDirName + "/installedSolutions.json", JSON.stringify(data.installedSolutions, null, 4));
-            // 2. Full System Settings Capture
-            fs.appendFileSync(captureDirName + "/settingsCapture.json", JSON.stringify(data.settingsCapture, null, 4));
-        },
-        function (err) {
-            fluid.log("Error running capture diagnostics. ", err);
-        }
-    );
+    var dailogPromise = electron.dialog.showMessageBox({
+        buttons: ["Cancel", "Run Capture"],
+        message: "Select 'Run Capture' to run the capture diagnostics and store them to disk.\n\n  After capture they will be stored in:\n" + captureDirName
+    });
+
+    if (dailogPromise === 1) {
+        fs.mkdirSync(captureDirName);
+        gpii.app.captureTool.generateDiagnostics(captureToolUtils).then(
+            function (data) {
+                // 0. Solutions
+                fs.appendFileSync(captureDirName + "/solutions.json", JSON.stringify(data.solutions, null, 4));
+                // 1. Installed Solutions
+                fs.appendFileSync(captureDirName + "/installedSolutions.json", JSON.stringify(data.installedSolutions, null, 4));
+                // 2. Full System Settings Capture
+                fs.appendFileSync(captureDirName + "/settingsCapture.json", JSON.stringify(data.settingsCapture, null, 4));
+
+                electron.dialog.showMessageBox({
+                    message: "Capture diagnostics successfully taken and are now stored in this directory:\n" + captureDirName
+                });
+            },
+            function (err) {
+                electron.dialog.showMessageBox({
+                    message: "There was a problem capturing the diagnostics:\n" + err
+                });
+                fluid.log("Error running capture diagnostics. ", err);
+            }
+        );
+    }
 };
 
 /*
@@ -236,6 +252,9 @@ gpii.app.captureTool.init = function (that, flowManager) {
 };
 
 gpii.app.captureTool.testPspChannel = function (that, pspChannel, flowManager, options) {
+    console.log("Capturing using cloudURL: ", flowManager.settingsDataSource.options.cloudURL);
+    console.log("BEFORE Take a look at PSP Channel Model: ", flowManager.pspChannel.model);
+
     var payload = {
         contexts: {}
     };
@@ -243,6 +262,8 @@ gpii.app.captureTool.testPspChannel = function (that, pspChannel, flowManager, o
     payload.contexts[options.prefSetId] = options.prefSetPayload;
 
     flowManager.savePreferences(that.model.keyedInUserToken, payload);
+
+    console.log("AFTER Take a look at PSP Channel Model: ", flowManager.pspChannel.model);
 };
 
 gpii.app.captureTool.updateRenderModel = function (that /*, change*/) {
