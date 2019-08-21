@@ -223,7 +223,7 @@ var sessionTimerTriggerHandlersSequence = [
     }, { // ...will make the session lucky again (as the interactions count becomes 4)
         func: "jqUnit.assertTrue",
         args: [
-            "Opening the PSP will make the session lucky",
+            "Opening the QSS will make the session lucky",
             "{that}.app.surveyManager.surveyTriggerManager.triggerHandler.conditionHandler.model.isLuckySession"
         ]
     }, { // Update a setting in the QSS
