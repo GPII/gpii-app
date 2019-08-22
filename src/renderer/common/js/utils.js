@@ -101,6 +101,10 @@
                     "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe\" /ve"
                     // If so, run chrome
                     + " && start chrome \"" + siteUrl.replace(/"/g, "%22") + "\"";
+                if (forceFullScreen) {
+                    // adding the full screen option for Chrome as well
+                    command += " --start-fullscreen";
+                }
                 child_process.exec(command, function (err) {
                     if (err) {
                         // It failed, so use the default browser.
@@ -130,6 +134,10 @@
             if (fileProperties.mode === parseInt("0100666", 8)) {
                 try {
                     child_process.exec("\"" + executablePath + "\"");
+                    if (forceFullScreen) {
+                        console.log("gpii.psp.launchExecutable ====");
+                        console.log("forceFullScreen: true");
+                    }
                     return true;
                 } catch (err) {
                     fluid.log(fluid.logLevel.WARN, "launchExecutable: Cannot execute - " + executablePath);
