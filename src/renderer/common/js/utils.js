@@ -90,8 +90,9 @@
      * opens a provided url in the default browser using electron's shell
      * @param {String} siteUrl - cloud folder's url
      * @param {Boolean} alwaysUseChrome - true to use chrome, rather than the default browser.
+     * @param {Boolean} forceFullScreen - the function requires the browser to be open maximized
      */
-    gpii.psp.openUrl = function (siteUrl, alwaysUseChrome) {
+    gpii.psp.openUrl = function (siteUrl, alwaysUseChrome, forceFullScreen) {
         if (fluid.isValue(siteUrl)) {
             if (alwaysUseChrome) {
                 var child_process = require("child_process");
@@ -116,12 +117,13 @@
         }
     };
 
-    /*
+    /**
      * A custom function for handling opening of an .exe file.
      * @param {String} executablePath - path to executable file
+     * @param {Boolean} forceFullScreen - the function requires the application to be open maximized
      * @return {Boolean} - returns `true` on successfully executed file
      */
-    gpii.psp.launchExecutable = function (executablePath) {
+    gpii.psp.launchExecutable = function (executablePath, forceFullScreen) {
         try {
             var fileProperties = fs.statSync(executablePath);
             // Check that the file is executable

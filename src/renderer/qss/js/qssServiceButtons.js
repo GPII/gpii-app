@@ -213,7 +213,10 @@
         invokers: {
             activate: {
                 funcName: "gpii.psp.launchExecutable",
-                args: ["{that}.model.item.schema.filepath"]
+                args: [
+                    "{that}.model.item.schema.filepath", // using the file's path from the custom button's schema
+                    "{that}.model.item.schema.fullScreen" // using the fullScreen from the custom button's schema
+                ]
             }
         }
     });
@@ -229,8 +232,9 @@
             activate: {
                 funcName: "gpii.psp.openUrl",
                 args: [
-                    "{that}.model.item.schema.url",  // using the url from the custom button's schema
-                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                    "{that}.model.item.schema.url", // using the url from the custom button's schema
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome", // Override the OS default browser.
+                    "{that}.model.item.schema.fullScreen" // using the fullScreen from the custom button's schema
                 ]
             }
         }
