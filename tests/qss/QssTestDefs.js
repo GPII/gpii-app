@@ -26,6 +26,8 @@ require("./qssWidget-textZoomTests.js");
 require("./qssWidget-documorphTests.js");
 require("./qssWidget-volumeTests.js");
 require("./qssWidget-quickFolderTests.js");
+require("./qssWidget-usbTests.js");
+require("./qssService-undoTests.js");
 
 
 /*
@@ -38,10 +40,6 @@ function getStepperIndicatorsCount() {
 
 function clickStepperIndicator() {
     jQuery(".fl-qssStepperWidget-indicator:nth-of-type(1)").click();
-}
-
-function getUsbWidgetBtnText() {
-    return jQuery(".flc-quickSetStrip > div:nth-last-of-type(7) > span").text();
 }
 
 
@@ -58,17 +56,14 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
     clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
     clickOfficeSimplifyBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
-    clickOpenUsbBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(7)\").click()",
     clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
     clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
-    clickUndoBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(3)\").click()",
     clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(2)\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
 // QSS Widgets related
 var checkIfMenuWidget = "jQuery('.flc-qssMenuWidget').is(':visible');",
     checkIfStepperWidget = "jQuery('.flc-qssStepperWidget').is(':visible');",
-    checkIfUSBWidget = "jQuery('.flc-quickSetStrip > div:nth-last-of-type(7)').is(':visible')",
    
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
     clickIncreaseBtn = "jQuery('.flc-qssStepperWidget-incBtn').click()",
@@ -965,21 +960,6 @@ var qssCrossTestSequence = [
         ],
         resolve: "jqUnit.assertFalse",
         resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
-    }, { // Open the USB widget
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickOpenUsbBtn
-        ],
-        resolve: "fluid.identity"
-    }, { // ... and the menu widget shouldn't be shown
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            checkIfMenuWidget
-        ],
-        resolve: "jqUnit.assertFalse",
-        resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
     },
     //
     // Setting changes tests
@@ -1091,261 +1071,7 @@ var qssCrossTestSequence = [
     // }
 ];
 
-var clickUndoButtonSeqEl = {
-    func: "gpii.test.executeJavaScriptInWebContentsDelayed",
-    args: [
-        "{that}.app.qssWrapper.qss.dialog",
-        clickUndoBtn
-    ]
-};
 
-var undoCrossTestSequence = [
-    { // When the tray icon is clicked...
-        func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    },
-    // Change the value of the "Read Aloud" setting ...
-    openReadAloudMenuSeqEl,
-    clickToggleButtonSeqEl,
-    {
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "settings.*",
-        listener: "fluid.identity"
-    },
-    clickUndoButtonSeqEl, // ... and clicking undo button
-    { // ... should revert setting's value
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "settings.*",
-        listener: "jqUnit.assertLeftHand",
-        args: [
-            "QSS undo button should undo setting change",
-            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: false },
-            "{arguments}.0"
-        ]
-    },
-    //
-    // Multiple setting changes
-    openReadAloudMenuSeqEl,
-    clickToggleButtonSeqEl, // Changing a setting
-    {
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "settings.*",
-        listener: "fluid.identity"
-    },
-    clickToggleButtonSeqEl, // Making second setting change
-    {
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "settings.*",
-        listener: "fluid.identity"
-    },
-    clickUndoButtonSeqEl,
-    { // ... should restore last setting's state
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "settings.*",
-        listener: "jqUnit.assertLeftHand",
-        args: [
-            "QSS undo shortcut should undo setting change",
-            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: true },
-            "{arguments}.0"
-        ]
-    },
-    clickUndoButtonSeqEl,
-    { // ... should trigger undo as well
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "settings.*",
-        listener: "jqUnit.assertLeftHand",
-        args: [
-            "QSS widget undo shortcut should undo setting change",
-            { path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled", value: false },
-            "{arguments}.0"
-        ]
-    },
-    ////
-    //// Indicator test
-    ////
-    openReadAloudMenuSeqEl,
-    clickToggleButtonSeqEl, // Changing a setting
-    { // ... should enable undo indicator
-        event: "{that}.app.qssWrapper.qss.events.onUndoIndicatorChanged",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "QSS change should enable undo indicator",
-            "{arguments}.0"
-        ]
-    },
-    clickUndoButtonSeqEl, // ... and unding it
-    { // ... should disable it
-        event: "{that}.app.qssWrapper.qss.events.onUndoIndicatorChanged",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "QSS undo should disable undo indicator",
-            "{arguments}.0"
-        ]
-    }, { // close and ensure setting changes have been applied
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickCloseBtn
-        ],
-        resolve: "fluid.identity"
-    }
-];
-
-// More isolated tests for the undo functionality
-var undoTestSequence = [
-    { // make a change to a setting
-        func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.1", {value: 1}]
-    }, { // ... there should be a setting registered
-        changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
-        path: "hasChanges",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "QSS setting change should indicate available change",
-            "{that}.app.qssWrapper.undoStack.model.hasChanges"
-        ]
-    }, { // Undoing the change
-        func: "{that}.app.qssWrapper.undoStack.undo"
-    }, { // ... should restore setting's state
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "settings.*",
-        listener: "jqUnit.assertLeftHand",
-        args: [
-            "QSS single setting change should be undone properly",
-            {
-                path: "http://registry\\.gpii\\.net/common/DPIScale",
-                value: 0 // this is the default value of the DPI Scale setting
-            },
-            "{arguments}.0"
-        ]
-    }, { // ... should restore `hasChanges` flag state
-        funcName: "jqUnit.assertFalse",
-        args: [
-            "QSS setting change indicator should restore state when stack is emptied",
-            "{that}.app.qssWrapper.undoStack.model.hasChanges"
-        ]
-    },
-    //
-    // Multiple setting changes
-    //
-    { // make a change to a setting
-        func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.1", {value: 1}]
-    }, { // make a change to a setting
-        func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.4", {value: true}]
-    }, { // ... `hasChanges` should have its state kept
-        funcName: "jqUnit.assertTrue",
-        args: [
-            "QSS setting change indicator should restore state when stack is emptied",
-            "{that}.app.qssWrapper.undoStack.model.hasChanges"
-        ]
-    }, { // ... reverting last change
-        func: "{that}.app.qssWrapper.undoStack.undo"
-    }, { // ... should restore second setting's state
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "settings.*",
-        listener: "jqUnit.assertLeftHand",
-        args: [
-            "QSS last setting change should be undone",
-            {
-                path: "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
-                value: false
-            },
-            "{arguments}.0"
-        ]
-    }, { // ... reverting all of the changes
-        func: "{that}.app.qssWrapper.undoStack.undo"
-    }, { // ... should restore first setting's state
-        event: "{that}.app.qssWrapper.undoStack.events.onChangeUndone", // use whole path for the event attachment
-        listener: "jqUnit.assertLeftHand",
-        args: [
-            "QSS last setting change should be undone",
-            {
-                path: "http://registry\\.gpii\\.net/common/DPIScale",
-                value: 0
-            },
-            "{arguments}.0"
-        ]
-    }, { // ... and `hasChanges` should have its state restored
-        funcName: "jqUnit.assertFalse",
-        args: [
-            "QSS setting change indicator should restore state when stack is emptied",
-            "{that}.app.qssWrapper.undoStack.model.hasChanges"
-        ]
-    },
-    //
-    // Empty stack
-    //
-    { // Undoing empty stack should not cause an error
-        func: "{that}.app.qssWrapper.undoStack.undo"
-    },
-    //
-    // Unwatched setting changes
-    //
-    { // make a change to an undoable setting shouldn't have effect
-        func: "{that}.app.qssWrapper.alterSetting",
-        args: ["settings.2", {value: 2}]
-    }, { // ... and making a watched change
-        func: "{that}.app.qssWrapper.applier.change",
-        args: ["settings.1", {value: 1}]
-    }, { // ... should change `hasChanges` flag state
-        changeEvent: "{that}.app.qssWrapper.undoStack.applier.modelChanged",
-        path: "hasChanges",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "QSS setting change indicator should restore state when stack is emptied",
-            "{that}.app.qssWrapper.undoStack.model.hasChanges"
-        ]
-    }, { // Click the "Reset All to Standard" button
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickResetAllBtn
-        ]
-    }, {
-        changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-        path: "settings.1.value",
-        listener: "jqUnit.assertEquals",
-        args: [
-            "Reset All to Standard will revert the DPI setting to its original value",
-            0,
-            "{that}.app.qssWrapper.model.settings.1.value"
-        ]
-    }
-];
-
-var openUsbTestSequence = [
-    { // Open the QSS...
-        func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, { // ... and open USB button should be visible
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            checkIfUSBWidget
-        ],
-        resolve: "jqUnit.assertTrue",
-        resolveArgs: ["The Open USB button is displayed: ", "{arguments}.0"]
-    }, { // Text of button should be
-        task: "gpii.test.invokeFunctionInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            getUsbWidgetBtnText
-        ],
-        resolve: "jqUnit.assertEquals",
-        resolveArgs: [
-            "Text of button should be",
-            "Open & Eject USB",
-            "{arguments}.0"
-        ]
-    }, { // Close the QSS
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickCloseBtn
-        ],
-        resolve: "fluid.identity"
-    }
-];
 
 
 /**
@@ -1615,7 +1341,7 @@ var closeQss = { // Close the QSS
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 15,
+    expect: 31,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1660,12 +1386,13 @@ gpii.tests.qss.testDefs = {
         // qssInstalledLanguages,
         // undoCrossTestSequence,
         // undoTestSequence,
-        // openUsbTestSequence,
         // qssCrossTestSequence,
         // stepperindicatorsSequence,
         // restartWarningSequence, // The test doesn't cover all the possible behaviors as described in the GPII-3943
         // crossQssTranslations,
         // closeQss,
+        gpii.tests.qss.undoTests,
+        gpii.tests.qss.usbTests,
         gpii.tests.qss.quickFolderTests,
         gpii.tests.qss.volumeTests,
         gpii.tests.qss.documorphTests,

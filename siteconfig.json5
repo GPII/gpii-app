@@ -59,6 +59,7 @@
             "usb-open",
             "service-more",
             "service-save",
+            "service-undo",
             "service-reset-all",
             "service-close"
         ],
