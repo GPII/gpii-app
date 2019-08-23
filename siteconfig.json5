@@ -56,7 +56,11 @@
             "volume",
             "launch-documorph",
             "cloud-folder-open",
-            "usb-open"
+            "usb-open",
+            "service-more",
+            "service-save",
+            "service-reset-all",
+            "service-close"
         ],
 
         // the path to the DocuMorph's executable file, used in the service buttons

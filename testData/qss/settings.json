@@ -210,6 +210,7 @@
         "tabindex": 220,
         "messageKey": "launch-documorph"
     }, {
+        "id": "service-more",
         "path": "more",
         "schema": {
             "type": "more"
@@ -218,6 +219,7 @@
         "tabindex": 230,
         "messageKey": "more"
     }, {
+        "id": "service-save",
         "path": "save",
         "schema": {
             "type": "save"
@@ -226,6 +228,7 @@
         "tabindex": 300,
         "messageKey": "save"
     }, {
+        "id": "service-undo",
         "path": "undo",
         "schema": {
             "type": "undo"
@@ -234,6 +237,7 @@
         "tabindex": 320,
         "messageKey": "undo"
     }, {
+        "id": "service-reset-all",
         "path": "resetAll",
         "schema": {
             "type": "resetAll"
@@ -242,6 +246,7 @@
         "tabindex": 330,
         "messageKey": "resetAll"
     }, {
+        "id": "service-close",
         "path": "close",
         "schema": {
             "type": "close"
