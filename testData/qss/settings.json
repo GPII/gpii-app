@@ -19,7 +19,7 @@
         "id": "translate-tools",
         "path": "translate-tools",
         "schema": {
-            "type": "string"
+            "type": "translateTools"
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 103,
