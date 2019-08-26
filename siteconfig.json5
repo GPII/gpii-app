@@ -44,6 +44,16 @@
 
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
+        // Custom buttons: Instead of a string with buttonId you add an object with the custom button data like this:
+        // {
+        //      "buttonId": "MakeYourOwn",
+        //      "buttonName": "Launch Notepad", // Free text that will be use as button's label
+        //      "buttonType": "APP", // APP, or WEB
+        //      "buttonData": "C:\\Windows\\system32\\notepad.exe", // system path, or url
+        //      "fullScreen": true, // true, or false
+        //      "popupText": "<p>Launch the Notepad application.</p>", // tooltip text
+        //      "description": "The full description of the button..." // optional description
+        // }
         buttonList: [
             {
                 "buttonId": "MakeYourOwn",
