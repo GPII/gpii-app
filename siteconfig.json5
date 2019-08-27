@@ -67,7 +67,7 @@
                 "buttonId": "MakeYourOwn",
                 "buttonName": "Open Reddit",
                 "buttonType": "WEB",
-                "buttonData": "https://www.reddit.com/",
+                "buttonData": "www.reddit.com",
                 "fullScreen": true,
                 "popupText": "<p>Open Reddit in a web browser.</p>",
                 "description": "The full description of the button..."

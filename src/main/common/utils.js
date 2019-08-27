@@ -14,10 +14,11 @@
  */
 "use strict";
 
-var os            = require("os");
-var fluid         = require("infusion");
-var electron      = require("electron");
-var child_process = require("child_process");
+var os = require("os"),
+    fluid = require("infusion"),
+    electron = require("electron"),
+    child_process = require("child_process"),
+    fs = require("fs");
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -227,6 +228,9 @@ gpii.app.findButtonById = function (buttonId, availableButtons) {
 gpii.app.generateCustomButton = function (buttonData) {
     var serviceButtonTypeApp = "custom-launch-app",
         serviceButtonTypeWeb = "custom-open-url",
+        titleAppNotFound = "Program not found",
+        titleUrlInvalid = "Invalid URL",
+        disabledStyle = "disabledButton",
         data = false;
 
     // we need to have the data, with all required fields:
@@ -252,11 +256,31 @@ gpii.app.generateCustomButton = function (buttonData) {
             data.schema.fullScreen = true;
         }
         if (buttonData.buttonType === "APP") {
-            // adding the application's path
-            data.schema.filepath = buttonData.buttonData;
+            // checks if the file exits and its executable
+            if (gpii.app.checkExecutable(buttonData.buttonData)) {
+                // adding the application's path
+                data.schema.filepath = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleAppNotFound;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
         } else {
-            // adding the web page's url
-            data.schema.url = buttonData.buttonData;
+            // adding the http if its missing
+            if (buttonData.buttonData.indexOf("https://") === -1 && buttonData.buttonData.indexOf("http://") === -1) {
+                buttonData.buttonData = "http://" + buttonData.buttonData;
+            }
+            // checking if the url looks valid
+            if (gpii.app.checkUrl(buttonData.buttonData)) {
+                // adding the web page's url
+                data.schema.url = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleUrlInvalid;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
         }
     }
     return data;
@@ -396,4 +420,50 @@ gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
         fluid.log(fluid.logLevel.WARN, err);
         return defaultVolumeValue;
     }
+};
+
+/**
+ * Simple file function to check a path to the executable file
+ * @param {String} executablePath - path to executable file
+ * @return {Boolean} - returns `true` when the file exits and its executable
+ */
+gpii.app.checkExecutable = function (executablePath) {
+    try {
+        var fileProperties = fs.statSync(executablePath);
+        // Check that the file is executable
+        if (fileProperties.mode === parseInt("0100666", 8)) {
+            // returns true only if the file exists and its executable
+            return true;
+        } else {
+            fluid.log(fluid.logLevel.WARN, "checkExecutable: File is not executable - " + executablePath);
+        }
+    } catch (err) {
+        fluid.log(fluid.logLevel.WARN, "checkExecutable: Invalid or missing path - " + executablePath);
+    }
+    // returns false in any other case
+    return false;
+};
+
+/**
+ * Simple function to try to validate the url
+ * @param {String} url - browser's url
+ * @return {Boolean} - returns `true` when the url looks valid
+ */
+gpii.app.checkUrl = function (url) {
+    // validating the url
+    var pattern = new RegExp("^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name and extension
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?" + // port
+        "(\\/[-a-z\\d%@_.~+&:]*)*" + // path
+        "(\\?[;&a-z\\d%@_.,~+&:=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$", "i"); // fragment locator
+    if (!pattern.test(url)) {
+        fluid.log(fluid.logLevel.WARN, "checkUrl: Invalid button url - " + url);
+    } else {
+        // returns true only if the url is valid
+        return true;
+    }
+    // returns false in any other case
+    return false;
 };

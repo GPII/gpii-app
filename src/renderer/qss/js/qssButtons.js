@@ -98,6 +98,7 @@
 
         styles: {
             activated: "fl-activated",
+            disabledButton: "fl-qss-disabled",
             smallButton: "fl-qss-smallButton",
             largeButton: "fl-qss-largeButton",
             settingButton: "fl-qss-settingButton",
