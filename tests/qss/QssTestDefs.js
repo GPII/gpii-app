@@ -27,7 +27,11 @@ require("./qssWidget-documorphTests.js");
 require("./qssWidget-volumeTests.js");
 require("./qssWidget-quickFolderTests.js");
 require("./qssWidget-usbTests.js");
+require("./qssWidget-screenCaptureTests.js");
+require("./qssWidget-officeSimplifyTests.js");
 require("./qssService-undoTests.js");
+require("./qssService-saveTests.js");
+require("./qssService-morePanelTests.js");
 
 
 /*
@@ -54,10 +58,6 @@ var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\
     clickScreenZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(2)\").click()",
     clickAppTextZoomBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(3)\").click()",
     clickReadAloudBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(5)\").click()",
-    clickScreenCaptureBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(6)\").click()",
-    clickOfficeSimplifyBtn = "jQuery(\".flc-quickSetStrip > div:nth-of-type(7)\").click()",
-    clickMoreBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(5)\").click()",
-    clickSaveBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(4)\").click()",
     clickResetAllBtn = "jQuery(\".flc-quickSetStrip > div:nth-last-of-type(2)\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
@@ -355,38 +355,6 @@ var tooltipSequence = [
         args: [
             "The QSS tooltip is closed when Esc is used",
             "{that}.app.qssWrapper.qssTooltip.model.isShown"
-        ]
-    }
-];
-
-var morePanelSequence = [
-    {  // When the "More" button is clicked...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickMoreBtn
-        ]
-    }, { // ... the QSS More panel will show up.
-        changeEvent: "{that}.app.qssWrapper.qssMorePanel.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "The QSS More panel is shown when the More button in the QSS is clicked",
-            "{that}.app.qssWrapper.qssMorePanel.model.isShown"
-        ]
-    }, { // If the "More" button is clicked once again...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickMoreBtn
-        ]
-    }, { // ... the QSS More panel will be hidden.
-        changeEvent: "{that}.app.qssWrapper.qssMorePanel.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS More panel is hidden if the More button in the QSS is clicked while the More panel is open",
-            "{that}.app.qssWrapper.qssMorePanel.model.isShown"
         ]
     }
 ];
@@ -736,43 +704,6 @@ var stepperInteractionsSequence = [
     }
 ];
 
-var saveButtonSequence = [
-    /*
-     * Notification & QSS integration
-     */
-    { // When the "Save" button is clicked...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickSaveBtn
-        ]
-    }, { // ... the QSS notification dialog will show up.
-        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "The QSS notification is shown when the Save button is clicked",
-            "{that}.app.qssWrapper.qssNotification.model.isShown"
-        ]
-    }, { // When the "Close" button in the QSS notification is clicked...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qssNotification.dialog",
-            closeClosableDialog
-        ]
-    }, { // ... the QSS notification dialog will be hidden.
-        changeEvent: "{that}.app.qssWrapper.qssNotification.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS notification is hidden when its closed button is pressed",
-            "{that}.app.qssWrapper.qssNotification.model.isShown"
-        ]
-    }
-];
-
-
-
 var qssCrossTestSequence = [
     // This tests are commented because of changes in GPII-3773 request.
     // Some tests may be removed or parts of them re-used in the future.
@@ -866,14 +797,6 @@ var qssCrossTestSequence = [
      * Tooltip & QSS integration
      */
     tooltipSequence,
-    //
-    // Save button
-    //
-    saveButtonSequence,
-    //
-    // "More" panel
-    //
-    morePanelSequence,
     /*
      * Widget & QSS integration
      */
@@ -930,37 +853,7 @@ var qssCrossTestSequence = [
         ],
         resolve: "jqUnit.assertTrue",
         resolveArgs: ["The QSS stepper widget is displayed: ", "{arguments}.0"]
-    },*/ { // Open the Screen Capture widget
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickScreenCaptureBtn
-        ],
-        resolve: "fluid.identity"
-    }, { // ... and the menu widget shouldn't be shown
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            checkIfMenuWidget
-        ],
-        resolve: "jqUnit.assertFalse",
-        resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
-    }, { // Open the MS Office Simplify widget
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickOfficeSimplifyBtn
-        ],
-        resolve: "fluid.identity"
-    }, { // ... and the menu widget shouldn't be shown
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            checkIfMenuWidget
-        ],
-        resolve: "jqUnit.assertFalse",
-        resolveArgs: ["The QSS menu widget is displayed: ", "{arguments}.0"]
-    },
+    },*/
     //
     // Setting changes tests
     //
@@ -1341,7 +1234,7 @@ var closeQss = { // Close the QSS
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 31,
+    expect: 37,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1392,11 +1285,15 @@ gpii.tests.qss.testDefs = {
         // crossQssTranslations,
         // closeQss,
         gpii.tests.qss.undoTests,
+        gpii.tests.qss.saveTests,
+        gpii.tests.qss.morePanelTests,
         gpii.tests.qss.usbTests,
         gpii.tests.qss.quickFolderTests,
         gpii.tests.qss.volumeTests,
         gpii.tests.qss.documorphTests,
         gpii.tests.qss.textZoomTests,
-        gpii.tests.qss.readAloudTests
+        gpii.tests.qss.readAloudTests,
+        gpii.tests.qss.screenCaptureTests,
+        gpii.tests.qss.officeSimplifyTests
     )
 };
