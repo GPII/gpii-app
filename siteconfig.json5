@@ -60,6 +60,7 @@
             "service-more",
             "service-save",
             "service-undo",
+            "service-dummy",
             "service-reset-all",
             "service-close"
         ],

@@ -237,6 +237,15 @@
         "tabindex": 320,
         "messageKey": "undo"
     }, {
+        "id": "service-dummy",
+        "path": "dummy",
+        "schema": {
+            "type": "dummy"
+        },
+        "buttonTypes": ["smallButton"],
+        "tabindex": 310,
+        "messageKey": "dummy"
+    }, {
         "id": "service-reset-all",
         "path": "resetAll",
         "schema": {

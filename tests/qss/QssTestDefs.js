@@ -27,6 +27,7 @@ require("./qssWidget-documorphTests.js");
 require("./qssWidget-volumeTests.js");
 require("./qssWidget-quickFolderTests.js");
 require("./qssWidget-usbTests.js");
+require("./qssWidget-stepperTests.js");
 require("./qssService-undoTests.js");
 
 
@@ -1328,20 +1329,9 @@ var qssInstalledLanguages = [
     }
 ];
 
-var closeQss = { // Close the QSS
-    task: "gpii.test.executeJavaScriptInWebContents",
-    args: [
-        "{that}.app.qssWrapper.qss.dialog",
-        clickCloseBtn
-    ],
-    resolve: "fluid.identity"
-}
-
-
-
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 31,
+    expect: 40,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -1384,14 +1374,12 @@ gpii.tests.qss.testDefs = {
         // For no particular reason the tests work properly in this sequence
         // navigationSequence,
         // qssInstalledLanguages,
-        // undoCrossTestSequence,
-        // undoTestSequence,
         // qssCrossTestSequence,
         // stepperindicatorsSequence,
         // restartWarningSequence, // The test doesn't cover all the possible behaviors as described in the GPII-3943
         // crossQssTranslations,
-        // closeQss,
         gpii.tests.qss.undoTests,
+        gpii.tests.qss.stepperindicatorsSequence,
         gpii.tests.qss.usbTests,
         gpii.tests.qss.quickFolderTests,
         gpii.tests.qss.volumeTests,
