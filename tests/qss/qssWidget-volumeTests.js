@@ -62,6 +62,10 @@ gpii.tests.qss.volumeTests = [
         path: "isShown",
         listener: "fluid.identity"
     }, {
+        task: "gpii.test.linger",
+        args: [1000],
+        resolve: "fluid.identity"
+    }, {
         task: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qssWidget.dialog",
@@ -110,6 +114,10 @@ gpii.tests.qss.volumeTests = [
             "{that}.app.qssWrapper.qssWidget.dialog",
             clickVolumeStepperIncBtn
         ],
+        resolve: "fluid.identity"
+    }, {
+        task: "gpii.test.linger",
+        args: [1000],
         resolve: "fluid.identity"
     }, { // ... and the button image should be visible
         task: "gpii.test.executeJavaScriptInWebContents",

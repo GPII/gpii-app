@@ -28,19 +28,19 @@ require("./qssWidget-documorphTests.js");
 require("./qssWidget-volumeTests.js");
 require("./qssWidget-quickFolderTests.js");
 require("./qssWidget-usbTests.js");
-require("./qssWidget-stepperTests.js");
 require("./qssWidget-screenCaptureTests.js");
 require("./qssWidget-officeSimplifyTests.js");
+require("./qssWidget-stepperTests.js");
+require("./qssWidget-menuTests.js");
 require("./qssService-undoTests.js");
 require("./qssService-saveTests.js");
 require("./qssService-morePanelTests.js");
+require("./qssCommons-tooltipTests.js");
+require("./qssCommons-restartWarningTests.js");
+require("./qssCommons-widgetClosingBehaviourTests.js");
 
 // QSS related
-var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseenter\")",
-    unhoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseleave\")",
-    focusCloseBtn = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-of-type\").trigger(event)",
-    clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").click()",
-    hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-of-type\").trigger('mouseenter')",
+var clickCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").click()",
     clickLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-of-type\").click()",
     getQssSettingsList = "(function getItems() { var repeater = fluid.queryIoCSelector(fluid.rootComponent, 'gpii.psp.repeater')[0]; return repeater.model.items; }())";
 
@@ -155,335 +155,6 @@ var navigationSequence = [
     }
 ];
 
-var restartWarningSequence = [
-    { // Simulate language change
-        func: "{that}.app.qssWrapper.alterSetting",
-        args: [{
-            path: "http://registry\\.gpii\\.net/common/language",
-            value: "ko-KR"
-        }]
-    }, { // restart warning is not shown
-        funcName: "jqUnit.assertFalse",
-        args: [
-            "Restart warning notification is shown only one time per session",
-            "{that}.app.qssWrapper.qssNotification.model.isShown"
-        ]
-    }, { // bring everything back to normal
-        func: "{that}.app.resetAllToStandard"
-    }
-];
-
-
-var tooltipSequence = [
-    { // Open the QSS...
-        func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, {
-        func: "jqUnit.assertFalse",
-        args: [
-            "The QSS tooltip is not shown initially",
-            "{that}.app.qssWrapper.qssTooltip.model.isShown"
-        ]
-    }, { // ... and hover on its close button.
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            hoverCloseBtn
-        ]
-    }, { // This will bring up the tooltip for that button.
-        changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "The QSS tooltip is shown when a button is hovered",
-            "{that}.app.qssWrapper.qssTooltip.model.isShown"
-        ]
-    }, { // When the button is no longer hovered...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            unhoverCloseBtn
-        ]
-    }, { // ... the tooltip is gone.
-        changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS tooltip is hidden when the button is no longer hovered",
-            "{that}.app.qssWrapper.qssTooltip.model.isShown"
-        ]
-    },
-    // hover & click === close
-    { // Hovering the language button
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            hoverLanguageBtn
-        ]
-    }, { // ... should show the tooltip
-        changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "The QSS tooltip is shown when a button is focused using the keyboard",
-            "{that}.app.qssWrapper.qssTooltip.model.isShown"
-        ]
-    }, { // ... and clicking (activating) the button
-        funcName: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickLanguageBtn
-        ]
-    }, { // ... should close the tooltip
-        changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS tooltip is closed when a button is activated",
-            "{that}.app.qssWrapper.qssTooltip.model.isShown"
-        ]
-    },
-    // menu close === no tooltip
-    {   // XXX we need some minor timeout for the QSS to get
-        // in normal state. In case this is not present,
-        // the next item doesn't take effect
-        task: "gpii.test.linger",
-        args: [1000],
-        resolve: "fluid.identity"
-    },
-    // hover & esc === close
-    { // Focusing the close button
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            focusCloseBtn
-        ]
-    }, { // ... will show the tooltip
-        event: "{that}.app.qssWrapper.qssTooltip.events.onDialogShown",
-        listener: "fluid.identity" // already tested
-    }, { // ... and then, when Esc is used
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            {
-                key: "Escape",
-                type: "keyDown"
-            }
-        ]
-    }, { // ... should close the tooltip
-        changeEvent: "{that}.app.qssWrapper.qssTooltip.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS tooltip is closed when Esc is used",
-            "{that}.app.qssWrapper.qssTooltip.model.isShown"
-        ]
-    }
-];
-
-var menuInteractionsSequence = [
-    { // If the language button in the QSS is clicked...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickLanguageBtn
-        ]
-    }, { // ... the QSS widget menu will be shown.
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "The QSS widget is shown when the language button is pressed",
-            "{that}.app.qssWrapper.qssWidget.model.isShown"
-        ]
-    }, { // If the close button in the QSS is pressed...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            closeClosableDialog
-        ]
-    }, { // ... the QSS widget menu will be hidden.
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS widget is hidden when its closed button is pressed",
-            "{that}.app.qssWrapper.qssWidget.model.isShown"
-        ]
-    }, { // If the language button in the QSS is clicked once...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickLanguageBtn
-        ]
-    }, {
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "fluid.identity"
-    }, { // ... and is then clicked again...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickLanguageBtn
-        ]
-    }, { // ... the QSS widget menu will be hidden again.
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS widget is hidden when its closed button is pressed",
-            "{that}.app.qssWrapper.qssWidget.model.isShown"
-        ]
-    }, { // Attempts to activate a button which does not have keyboard highlight...
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            {
-                key: "Enter"
-            }
-        ]
-    }, { // ... will fail
-        func: "jqUnit.assertFalse",
-        args: [
-            "QSS button cannot be activated using the keyboard if the button does not have focus",
-            "{that}.app.qssWrapper.qssWidget.model.isShown"
-        ]
-    }
-];
-
-var widgetClosingBehaviourSequence = [
-    { // Click the language button again...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickLanguageBtn
-        ]
-    }, { // ... and wait for the QSS widget to show up...
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "fluid.identity"
-    }, { // ... and then simulate an ArrowLeft key press.
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            {
-                key: "Left" // The key should be a value allowed to appear in an accelerator string.
-            }
-        ]
-    }, { // This should close the QSS widget dialog.
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS widget is hidden when the ArrowLeft key is pressed",
-            "{that}.app.qssWrapper.qssWidget.model.isShown"
-        ]
-    }, { // Now the focus is on the "Close" button. Pressing Tab will move it back to the language button.
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            {
-                key: "Tab"
-            }
-        ]
-    }, { // Pressing the spacebar key...
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            {
-                key: "Space" // The key should be a value allowed to appear in an accelerator string.
-            }
-        ]
-    }, { // ... will make the language menu show up.
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertTrue",
-        args: [
-            "The QSS widget is shown when the QSS button is activated using spacebar",
-            "{that}.app.qssWrapper.qssWidget.model.isShown"
-        ]
-    }, { // Pressing the ESC key while the QSS widget is focused...
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            {
-                key: "Escape"
-            }
-        ]
-    }, { // ... will close it.
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS widget is closed when it has focus and the ESC key is pressed",
-            "{that}.app.qssWrapper.qssWidget.model.isShown"
-        ]
-    }, { // Click the language button again...
-        func: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickLanguageBtn
-        ]
-    }, { // ... and wait for the QSS widget to show up.
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "fluid.identity"
-    }, { // Pressing the ArrowRight key while the QSS widget is focused...
-        funcName: "gpii.tests.qss.simulateShortcut",
-        args: [
-            "{that}.app.qssWrapper.qssWidget.dialog",
-            {
-                key: "Right" // The key should be a value allowed to appear in an accelerator string.
-            }
-        ]
-    }, { // ... will close it.
-        changeEvent: "{that}.app.qssWrapper.qssWidget.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
-        args: [
-            "The QSS widget is hidden when the ArrowRight key is pressed",
-            "{that}.app.qssWrapper.qssWidget.model.isShown"
-        ]
-    }
-];
-
-var qssCrossTestSequence = [
-    // This tests are commented because of changes in GPII-3773 request.
-    // Some tests may be removed or parts of them re-used in the future.
-    /*
-     * Tests QSS and PSP visibility
-     * Test QSS button interactions
-     */
-    { // When the tray icon is clicked...
-        func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, {
-        task: "gpii.test.executeJavaScriptInWebContents",
-        args: [
-            "{that}.app.qssWrapper.qss.dialog",
-            clickCloseBtn
-        ],
-        resolve: "fluid.identity"
-    },
-    /*
-     * Tooltip & QSS integration
-     */
-    tooltipSequence,
-    /*
-     * Widget & QSS integration
-     */
-    //
-    // Menu widget interactions
-    //
-    menuInteractionsSequence,
-    //
-    // Widget closing behaviour
-    //
-    widgetClosingBehaviourSequence,
-    //
-    // Combined tests
-    //*/
-    //
-    // Setting changes tests
-    //
     // TODO this could be used instead (of the previous)
     //{ // ! should send info to broker
     //     changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
@@ -495,7 +166,6 @@ var qssCrossTestSequence = [
     //         "{that}.app.qssWrapper.model.settings.0.value"
     //     ]
     // }
-];
 
 
 
@@ -756,7 +426,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 50,
+    expect: 66,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -798,11 +468,12 @@ gpii.tests.qss.testDefs = {
         }],
         // For no particular reason the tests work properly in this sequence
         // navigationSequence,
-        // qssCrossTestSequence,
-        // stepperindicatorsSequence,
-        // restartWarningSequence, // The test doesn't cover all the possible behaviors as described in the GPII-3943
         // crossQssTranslations,
+        // Commons
         qssInstalledLanguages,
+        gpii.tests.qss.tooltipTests,
+        gpii.tests.qss.widgetClosingBehaviourTests,
+        gpii.tests.qss.restartWarningTests,
         // Service Buttons
         gpii.tests.qss.undoTests,
         gpii.tests.qss.saveTests,
@@ -817,6 +488,7 @@ gpii.tests.qss.testDefs = {
         gpii.tests.qss.readAloudTests,
         gpii.tests.qss.screenCaptureTests,
         gpii.tests.qss.officeSimplifyTests,
+        gpii.tests.qss.menuTests,
         gpii.tests.qss.stepperindicatorsSequence
     )
 };
