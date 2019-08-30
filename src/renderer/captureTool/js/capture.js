@@ -579,7 +579,7 @@
      * checked.
      */
     gpii.captureTool.updateSolutionSettingsTree = function (that) {
-        fluid.each(that.model.capturedSettingsToRender, function(solution) {
+        fluid.each(that.model.capturedSettingsToRender, function (solution) {
             var numSelected = 0;
             fluid.each(Object.keys(solution.settings), function (settingId) {
                 var solSetting = solution.id + ":" + settingId;
