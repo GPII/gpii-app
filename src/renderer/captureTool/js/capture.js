@@ -50,7 +50,7 @@
             // Populated based off the installed Solutions, will have the settings schemas keyed by:
             // appId -> settingId -> schema
             installedSolutionsSchemas: null,
-            currentPage: "1_sign_in",
+            currentPage: "1_ready_to_capture",
             // Possible values for this are:
             // "everything", "running", "chooseapps"
             whatToCapture: "everything",
@@ -62,7 +62,7 @@
             templates: {
                 pages: {
                     capturePage: "<p>This is a capture page 8!</p>",
-                    "1_sign_in": "@expand:gpii.captureTool.loadTemplate(1_sign_in)",
+                    "1_ready_to_capture": "@expand:gpii.captureTool.loadTemplate(1_ready_to_capture)",
                     "2_what_to_capture": "@expand:gpii.captureTool.loadTemplate(2_what_to_capture)",
                     "2_which_applications": "@expand:gpii.captureTool.loadTemplate(2_which_applications)",
                     "3_capturing_settings": "@expand:gpii.captureTool.loadTemplate(3_capturing_settings)",
@@ -134,6 +134,8 @@
                 func: "{that}.updatePreferencesToKeep"
             }, {
                 func: "{that}.updateNumSettingsSelected"
+            }, {
+                func: "{that}.updateSolutionSettingsTree"
             }],
             "installedSolutions": {
                 func: "{that}.updateInstalledSolutionsSchemas"
@@ -208,9 +210,21 @@
                 funcName: "gpii.captureTool.updateNumSettingsSelected",
                 args: ["{that}"]
             },
+            updateSolutionSettingsTree: {
+                funcName: "gpii.captureTool.updateSolutionSettingsTree",
+                args: ["{that}"]
+            },
             updateInstalledSolutionsSchemas: {
                 funcName: "gpii.captureTool.updateInstalledSolutionsSchemas",
                 args: ["{that}"]
+            },
+            onSolutionHeaderToKeepCheck: {
+                funcName: "gpii.captureTool.onSolutionHeaderToKeepCheck",
+                args: ["{that}", "{arguments}.0"]
+            },
+            onHideShowSolution: {
+                funcName: "gpii.captureTool.onHideShowSolution",
+                args: ["{that}", "{arguments}.0"]
             }
         },
         selectors: {
@@ -221,6 +235,8 @@
             whatToCaptureRadio: "[name='fl-capture-whattocapture']",
             prefsSetNameInput: "[name='fl-capture-prefsetname']",
             solutionsToCaptureCheckbox: "[name='fc-choose-app']",
+            // This is the group header for each solutions set of settings
+            solutionsSettingsToKeepCheckbox: "[name='fc-solutions-to-keep']",
             settingsToKeepCheckbox: "[name='fc-settings-to-keep']",
             // These 2 select/clear all selectors are used on the "Which applications to Capture",
             // and "Which settings to keep" pages
@@ -229,7 +245,8 @@
             selectAllSettingsToKeepButton: ".flc-select-all-settings",
             clearAllSettingsToKeepButton: ".flc-clear-all-settings",
             numAppsSelectedDisplay: ".flc-num-apps-selected",
-            numSettingsSelectedDisplay: ".flc-num-settings-selected"
+            numSettingsSelectedDisplay: ".flc-num-settings-selected",
+            hideShowSolutionButton: ".flc-hideshow-solution"
         },
         markupEventBindings: {
             nextButton: {
@@ -259,12 +276,20 @@
             clearAllSettingsToKeepButton: {
                 method: "click",
                 args: "{that}.clearAllSettingsToKeepButton"
+            },
+            solutionsSettingsToKeepCheckbox: {
+                method: "click",
+                args: "{that}.onSolutionHeaderToKeepCheck"
+            },
+            hideShowSolutionButton: {
+                method: "click",
+                args: "{that}.onHideShowSolution"
             }
         },
         listeners: {
             "onCreate.renderSignIn": {
                 func: "{that}.render",
-                args: ["1_sign_in"],
+                args: ["1_ready_to_capture"],
                 priority: "last"
             },
             "onCreate.setupIPC": {
@@ -388,6 +413,7 @@
             // This needs to happen again, because the page hasn't rendered yet,
             // and therefore the html element doens't exist yet.
             that.updateNumSettingsSelected();
+            that.updateSolutionSettingsTree();
         });
 
         ipcRenderer.on("modelUpdate", function (event, arg) {
@@ -397,7 +423,8 @@
             transaction.commit();
         });
 
-        // Get initial keyin state
+        // Get initial keyin state and solutions metadata
+        ipcRenderer.send("getInstalledSolutions", "Please please!");
         ipcRenderer.send("modelUpdate");
     };
 
@@ -425,10 +452,14 @@
     };
 
     gpii.captureTool.nextButton = function (that, currentPage) {
-        if (currentPage === "1_sign_in") {
+        if (currentPage === "1_sign_in") { // Currently not used with UX redesign
             that.applier.change("currentPage", "2_what_to_capture");
             ipcRenderer.send("getInstalledSolutions", "Please please!");
             that.render("2_what_to_capture");
+        }
+        // This is the version of the start page without username/password login
+        else if (currentPage === "1_ready_to_capture") {
+            that.startCapture();
         }
         else if (currentPage === "2_what_to_capture") {
             if (that.model.whatToCapture === "chooseapps") {
@@ -462,8 +493,8 @@
             that.render("2_what_to_capture");
         }
         else if (currentPage === "3_what_to_keep") {
-            that.applier.change("currentPage", "2_what_to_capture");
-            that.render("2_what_to_capture");
+            that.applier.change("currentPage", "1_ready_to_capture");
+            that.render("1_ready_to_capture");
         }
         else if (currentPage === "4_save_name") {
             that.applier.change("currentPage", "3_what_to_keep");
@@ -541,7 +572,89 @@
         that.fullChange("preferencesToKeep", togo);
     };
 
+    /*
+     * On the settings to keep page, this will be invoked each time an individual
+     * setting is changed, in order to update the heirarchical checkboxs for each
+     * solution, which can be in indeterminate form if only some of the solutions are
+     * checked.
+     */
+    gpii.captureTool.updateSolutionSettingsTree = function (that) {
+        fluid.each(that.model.capturedSettingsToRender, function(solution) {
+            var numSelected = 0;
+            fluid.each(Object.keys(solution.settings), function (settingId) {
+                var solSetting = solution.id + ":" + settingId;
+                if (fluid.contains(that.model.settingsToKeep, solSetting)) {
+                    numSelected += 1;
+                }
+            });
+
+            // sgithens TODO how to use selectors for this
+            var checkboxEl = $("#fc-solution-" + solution.id.replace(/\./g, "\\."))[0];
+            // In case this is called before the page is finished rendering
+            if (!checkboxEl) {
+                return;
+            }
+            if (numSelected === 0) {
+                checkboxEl.indeterminate = false;
+                checkboxEl.checked = false;
+            }
+            else if (solution.numberOfSettings === numSelected) {
+                checkboxEl.indeterminate = false;
+                checkboxEl.checked = true;
+            }
+            else {
+                checkboxEl.indeterminate = true;
+                checkboxEl.checked = false;
+            }
+        });
+    };
+
+    gpii.captureTool.onSolutionHeaderToKeepCheck = function (that, event) {
+        var solutionId = event.currentTarget.value;
+        var checkVal = event.currentTarget.checked;
+
+        var curSettings = fluid.copy(that.model.settingsToKeep);
+        var solutionData = fluid.find(that.model.capturedSettingsToRender, function (item) {
+            if (item.id === solutionId) {
+                return item;
+            }
+        });
+        if (checkVal) {
+            fluid.each(solutionData.settings, function (item, idx) {
+                if (!fluid.contains(curSettings, solutionId + ":" + idx)) {
+                    curSettings.push(solutionId + ":" + idx);
+                }
+            });
+        }
+        else {
+            fluid.each(solutionData.settings, function (item, idx) {
+                fluid.remove_if(curSettings, function (curSetting) {
+                    return curSetting === solutionId + ":" + idx;
+                });
+            });
+        }
+        that.applier.change("settingsToKeep", curSettings);
+    };
+
+    gpii.captureTool.onHideShowSolution = function (that, event) {
+        var solutionId = event.currentTarget.dataset.solution;
+        var hideShow = event.currentTarget.dataset.show;
+        var buttonEl = $(event.currentTarget);
+        if (hideShow) {
+            $("#flc-settings-for-" + solutionId.replace(/\./g, "\\.")).toggle();
+            buttonEl.data("show", true);
+            buttonEl.val("Show Settings");
+        }
+        else {
+            $("#flc-settings-for-" + solutionId.replace(/\./g, "\\.")).toggle();
+            buttonEl.data("show", false);
+            buttonEl.val("Hide Settings");
+        }
+
+    };
+
     gpii.captureTool.updateCapturedSettingsToRender = function (that) {
+
         var togo = {};
         fluid.each(that.model.capturedSettings, function (appData, appId) {
             if (appData.numberOfSettings >= 0) { // sgithens DEMO_TOGGLE
