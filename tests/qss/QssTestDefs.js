@@ -45,21 +45,6 @@ require("../../src/main/app.js");
 
 fluid.registerNamespace("gpii.tests.qss.testDefs");
 
-    // TODO this could be used instead (of the previous)
-    //{ // ! should send info to broker
-    //     changeEvent: "{that}.app.qssWrapper.applier.modelChanged",
-    //     path: "settings.*",
-    //     listener: "jqUnit.assertEquals",
-    //     args: [
-    //         "Change event was fired from QSS widget interaction.",
-    //         "hy",
-    //         "{that}.app.qssWrapper.model.settings.0.value"
-    //     ]
-    // }
-
-
-
-
 /**
  * Needed in order not to send setting updates to the Core. The testing of
  * the QSS functionalities does not require that the setting updates are

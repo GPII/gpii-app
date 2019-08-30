@@ -28,10 +28,10 @@ gpii.tests.qss.restartWarningTests = [
             path: "http://registry\\.gpii\\.net/common/language",
             value: "ko-KR"
         }]
-    }, { // restart warning is shown
-        funcName: "jqUnit.assertTrue",
+    }, { // restart warning is not shown
+        funcName: "jqUnit.assertFalse",
         args: [
-            "Restart warning notification is shown",
+            "Restart warning notification is shown only one time per session",
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
     }, { // bring everything back to normal
@@ -42,5 +42,5 @@ gpii.tests.qss.restartWarningTests = [
             "Restart warning notification is shown only one time per session",
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
-    },
+    }
 ];
