@@ -8,7 +8,7 @@
         "title": "Undo"
     },
     "gpii_app_qss_settings_resetAll": {
-        "tooltip": "<p>Reset to the standard settings for this computer</p><p>(does not affect personal saved settings)</p>",
+        "tooltip": "<p>Resets to the standard settings for this computer</p><p>(and signs you out of Morphic but does not change your saved settings)</p>",
         "title": "Reset to Standard"
     },
     "gpii_app_qss_settings_save": {
