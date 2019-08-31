@@ -114,5 +114,10 @@
     surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
 
     // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
-    trayType: ["gpii.app.trayButton"]
+    trayType: ["gpii.app.trayButton"],
+
+    autoLogin: {
+        blockedUsers: ["administrator", "guestma", "student", "admin", "guest", "visitor", "volunteer"],
+        userId: null
+    }
 }
