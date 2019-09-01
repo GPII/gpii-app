@@ -34,7 +34,7 @@ fluid.defaults("gpii.app.gpiiConnector", {
          * Will be used in case the user does not have a keyboard shortcut of his own.
          */
         gpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
-        /* Whether the QSS and the PSP should be closed once their BrowserWindows lose
+        /* Whether the QSS should be closed once their BrowserWindows lose
          * focus. If there are different values specified in the siteconfig.json5, they will
          * be used instead.
          */

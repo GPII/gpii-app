@@ -68,10 +68,6 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
             target: "{app qssTooltipDialog}.options.showDelay"
         },
-        // distributeDialogScaleFactor: {
-        //     record: "{app}.configurationHandler.options.siteConfig.psp.scaleFactor",
-        //     target: "{app dialogManager}.options.model.scaleFactor"
-        // },
         distributeQssMorePanelConfig: {
             record: "{that}.options.siteConfig.qssMorePanel",
             target: "{app qssMorePanel}.options.siteConfig"

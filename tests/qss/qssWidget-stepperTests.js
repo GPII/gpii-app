@@ -35,7 +35,7 @@ function clickStepperIndicator() {
 
 fluid.registerNamespace("gpii.tests.qss.stepperTests");
 
-gpii.tests.qss.stepperindicatorsSequence = [
+gpii.tests.qss.stepperTests = [
     { // Open the QSS...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
     }, { // Click on the "Screen Zoom" button...

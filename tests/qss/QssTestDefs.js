@@ -289,7 +289,7 @@ gpii.tests.qss.testDefs = {
         gpii.tests.qss.screenCaptureTests,
         gpii.tests.qss.officeSimplifyTests,
         gpii.tests.qss.menuTests,
-        gpii.tests.qss.stepperindicatorsSequence,
+        gpii.tests.qss.stepperTests,
         gpii.tests.qss.translationsTests
     )
 };

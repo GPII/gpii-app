@@ -115,7 +115,7 @@ gpii.tests.qss.navigationTests = [
             100
         ],
         resolve: "fluid.identity"
-    }, { // Close the QSS and the PSP
+    }, { // Close the QSS
         func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
