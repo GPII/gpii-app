@@ -127,7 +127,8 @@
      * @param {Boolean} forceFullScreen - the function requires the application to be open maximized
      * @return {Boolean} - returns `true` on successfully executed file
      */
-    gpii.psp.launchExecutable = function (executablePath, forceFullScreen) {
+    gpii.psp.launchExecutable = function (executablePath, forceFullScreen, qssList) {
+        console.log(qssList.events);
         try {
             var fileProperties = fs.statSync(executablePath);
             // Check that the file is executable

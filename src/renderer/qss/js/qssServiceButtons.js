@@ -215,7 +215,8 @@
                 funcName: "gpii.psp.launchExecutable",
                 args: [
                     "{that}.model.item.schema.filepath", // using the file's path from the custom button's schema
-                    "{that}.model.item.schema.fullScreen" // using the fullScreen from the custom button's schema
+                    "{that}.model.item.schema.fullScreen", // using the fullScreen from the custom button's schema
+                    "{list}"
                 ]
             }
         }
