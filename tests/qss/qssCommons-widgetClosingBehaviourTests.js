@@ -20,12 +20,12 @@ var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
 var clickLanguageBtn = "jQuery(\".fl-qss-btnId-language\").click()",
-	clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
+    clickCloseBtn    = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 fluid.registerNamespace("gpii.tests.qss.widgetClosingBehaviourTests");
 
 gpii.tests.qss.widgetClosingBehaviourTests = [
-	{ // Open the QSS...
+    { // Open the QSS...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
     }, { // Click the language button again...
         func: "gpii.test.executeJavaScriptInWebContents",

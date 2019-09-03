@@ -19,9 +19,8 @@
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
-var clickOpenUsbBtn  = "jQuery(\".fl-qss-btnId-usb-open\").click()",
-    checkIfUSBWidget = "jQuery(\".fl-qss-btnId-usb-open\").is(':visible')",
-	clickCloseBtn    = "jQuery(\".fl-qss-btnId-service-close\").click()";
+var checkIfUSBWidget = "jQuery(\".fl-qss-btnId-usb-open\").is(':visible')",
+    clickCloseBtn    = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 function getUsbWidgetBtnText() {
     return jQuery(".fl-qss-btnId-usb-open > span").text();

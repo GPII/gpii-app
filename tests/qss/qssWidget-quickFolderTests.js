@@ -20,7 +20,7 @@ var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
 var checkIfQuickFoldersWidget = "jQuery('.fl-qss-btnId-cloud-folder-open').is(':visible')",
-	clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
+    clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 function getQuickFolderWidgetBtnText() {
     return jQuery(".fl-qss-btnId-cloud-folder-open > span").text();

@@ -19,12 +19,12 @@
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
-var clickVolumeBtn = "jQuery(\".fl-qss-btnId-volume\").click()",
-	checkIfVolumeButtonImage = "jQuery('.fl-qss-btnId-volume > .flc-qss-btnImage').is(':visible')",
+var clickVolumeBtn           = "jQuery(\".fl-qss-btnId-volume\").click()",
+    checkIfVolumeButtonImage = "jQuery('.fl-qss-btnId-volume > .flc-qss-btnImage').is(':visible')",
     checkIfVolumeButtonTitle = "jQuery('.fl-qss-btnId-volume > .flc-qss-btnLabel').is(':visible')",
-    clickVolumeSwitchBtn = "jQuery('.flc-volumeSwitch > .flc-switchUI-control').click()",
+    clickVolumeSwitchBtn     = "jQuery('.flc-volumeSwitch > .flc-switchUI-control').click()",
     clickVolumeStepperIncBtn = "jQuery('.flc-volumeStepper .flc-qssVolumeStepperWidget-incBtn').click()",
-	clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
+    clickCloseBtn            = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 function getVolumeWidgetBtnText() {
     return jQuery(".fl-qss-btnId-volume > span").text();

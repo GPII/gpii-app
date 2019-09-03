@@ -19,9 +19,9 @@
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
-var clickLanguageBtn = "jQuery(\".fl-qss-btnId-language\").click()",
+var clickLanguageBtn    = "jQuery(\".fl-qss-btnId-language\").click()",
     clickMenuWidgetItem = "jQuery('.flc-qssWidgetMenu-item:nth-of-type(2)').click()",
-    clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
+    clickCloseBtn       = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 function getLanguageWidgetBtnText() {
     return jQuery(".fl-qss-btnId-language > span").text();

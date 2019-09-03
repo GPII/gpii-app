@@ -70,8 +70,7 @@ gpii.tests.qss.translationsTests = [
     { // trigger locale change
         funcName: "{that}.app.applier.change",
         args: ["locale", "bg"]
-    },
-    { // ... and check whether the settings' text has been updated in the main
+    }, { // ... and check whether the settings' text has been updated in the main
         funcName: "gpii.test.assertLeftHandDeep",
         args: [
             "QSS should have its settings translated with locale change",

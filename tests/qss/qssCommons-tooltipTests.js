@@ -19,12 +19,12 @@
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
-var hoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseenter\")",
-	unhoverCloseBtn = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseleave\")",
-	hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-of-type\").trigger('mouseenter')",
-	focusCloseBtn = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-of-type\").trigger(event)",
-	clickLanguageBtn = "jQuery(\".fl-qss-btnId-language\").click()",
-    clickCloseBtn       = "jQuery(\".fl-qss-btnId-service-close\").click()";
+var hoverCloseBtn    = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseenter\")",
+    unhoverCloseBtn  = "jQuery(\".flc-quickSetStrip > div:last-of-type\").trigger(\"mouseleave\")",
+    hoverLanguageBtn = "jQuery(\".flc-quickSetStrip > div:first-of-type\").trigger('mouseenter')",
+    focusCloseBtn    = "var event = jQuery.Event(\"keyup\"); event.shiftKey = true; event.key = \"Tab\"; jQuery(\".flc-quickSetStrip > div:first-of-type\").trigger(event)",
+    clickLanguageBtn = "jQuery(\".fl-qss-btnId-language\").click()",
+    clickCloseBtn    = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 fluid.registerNamespace("gpii.tests.qss.tooltipTests");
 

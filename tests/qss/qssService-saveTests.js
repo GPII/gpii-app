@@ -20,8 +20,8 @@ var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
 var clickSaveBtn        = "jQuery(\".fl-qss-btnId-service-save\").click()",
-	closeClosableDialog = "jQuery(\".flc-closeBtn\").click()",
-	clickCloseBtn       = "jQuery(\".fl-qss-btnId-service-close\").click()";
+    closeClosableDialog = "jQuery(\".flc-closeBtn\").click()",
+    clickCloseBtn       = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 
 fluid.registerNamespace("gpii.tests.qss.saveTests");

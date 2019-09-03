@@ -20,16 +20,15 @@ var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
 var clickMoreBtn  = "jQuery(\".fl-qss-btnId-service-more\").click()",
-	clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
+    clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 
 fluid.registerNamespace("gpii.tests.qss.morePanelTests");
 
 gpii.tests.qss.morePanelTests = [
-	{ // Open the QSS...
+    { // Open the QSS...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    },
-    {  // When the "More" button is clicked...
+    }, {  // When the "More" button is clicked...
         func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",

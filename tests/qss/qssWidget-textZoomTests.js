@@ -21,9 +21,9 @@ var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
 var clickAppTextZoomBtn = "jQuery(\".fl-qss-btnId-text-zoom\").click()",
-    clickIncreaseBtn = "jQuery(\".flc-qssStepperWidget-incBtn\").click()",
-    clickDecreaseBtn = "jQuery(\".flc-qssStepperWidget-decBtn\").click()",
-    clickCloseBtn     = "jQuery(\".fl-qss-btnId-service-close\").click()";
+    clickIncreaseBtn    = "jQuery(\".flc-qssStepperWidget-incBtn\").click()",
+    clickDecreaseBtn    = "jQuery(\".flc-qssStepperWidget-decBtn\").click()",
+    clickCloseBtn       = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 fluid.defaults("gpii.tests.qss.mockedAppZoom", {
     gradeNames: "fluid.component",
