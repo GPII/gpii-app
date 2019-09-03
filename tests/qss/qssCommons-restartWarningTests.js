@@ -22,16 +22,19 @@ var gpii  = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.tests.qss.restartWarningTests");
 
 gpii.tests.qss.restartWarningTests = [
-    { // Simulate language change
+    { // clear notificationShown state
+        funcName: "{that}.app.qssWrapper.applier.change",
+        args: ["notificationShown", false]
+    }, { // Simulate language change
         func: "{that}.app.qssWrapper.alterSetting",
         args: [{
             path: "http://registry\\.gpii\\.net/common/language",
             value: "ko-KR"
         }]
-    }, { // restart warning is not shown
-        funcName: "jqUnit.assertFalse",
+    }, { // restart warning is shown
+        funcName: "jqUnit.assertTrue",
         args: [
-            "Restart warning notification is shown only one time per session",
+            "Restart warning notification is shown",
             "{that}.app.qssWrapper.qssNotification.model.isShown"
         ]
     }, { // bring everything back to normal
