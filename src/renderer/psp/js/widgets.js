@@ -310,9 +310,6 @@
                 "this": "{that}.container",
                 method: "click",
                 args: ["{that}.events.onClick.fire"]
-            },
-            onClick: {
-                funcName: "fluid.identity"
             }
         },
         modelListeners: {
