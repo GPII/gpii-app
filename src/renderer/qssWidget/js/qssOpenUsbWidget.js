@@ -54,7 +54,7 @@
                     model: {
                         label: "{openUSB}.model.messages.openUsbButtonLabel"
                     },
-                    invokers: {
+                    listeners: {
                         onClick: {
                             funcName: "gpii.qssWidget.openUSB.openUsbActivated",
                             args: [
@@ -73,7 +73,7 @@
                     model: {
                         label: "{openUSB}.model.messages.ejectUsbButtonLabel"
                     },
-                    invokers: {
+                    listeners: {
                         onClick: {
                             funcName: "gpii.qssWidget.openUSB.ejectUsbActivated",
                             args: [

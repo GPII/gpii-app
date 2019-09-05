@@ -107,7 +107,7 @@
                     model: {
                         label: "{restartWarning}.model.messages.undo"
                     },
-                    invokers: {
+                    listeners: {
                         onClick: {
                             this: "{restartWarning}.events.onUndoChanges",
                             method: "fire",
@@ -123,7 +123,7 @@
                     model: {
                         label: "{restartWarning}.model.restartBtnLabel"
                     },
-                    invokers: {
+                    listeners: {
                         onClick: {
                             this: "{restartWarning}.events.onRestartNow",
                             method: "fire",

@@ -37,7 +37,7 @@
                     model: {
                         label: "{footer}.model.messages.help"
                     },
-                    invokers: {
+                    listeners: {
                         "onClick": "gpii.psp.openUrlExternally({footer}.model.urls.help)"
                     }
                 }

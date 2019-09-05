@@ -101,7 +101,7 @@
                     model: {
                         label: "{header}.model.messages.keyOut"
                     },
-                    invokers: {
+                    listeners: {
                         "onClick": "{header}.events.onKeyOut.fire"
                     }
                 }

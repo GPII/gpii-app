@@ -132,7 +132,7 @@
                     model: {
                         label: "{signIn}.model.messages.signInButton"
                     },
-                    invokers: {
+                    listeners: {
                         "onClick": "{signIn}.events.onSignInClicked.fire"
                     }
                 }

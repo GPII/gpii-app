@@ -297,6 +297,9 @@
             "aria-label": "{button}.model.decButtonLabel"
             // user provided attributes
         },
+        events: {
+            onClick: null
+        },
         listeners: {
             "onCreate.addAttrs": {
                 "this": "{that}.container",
@@ -306,7 +309,10 @@
             "onCreate.addClickHandler": {
                 "this": "{that}.container",
                 method: "click",
-                args: ["{that}.onClick"]
+                args: ["{that}.events.onClick.fire"]
+            },
+            onClick: {
+                funcName: "fluid.identity"
             }
         },
         modelListeners: {
@@ -314,11 +320,6 @@
                 "this": "{that}.dom.label",
                 method: "text",
                 args: ["{that}.model.label"]
-            }
-        },
-        invokers: {
-            onClick: {
-                funcName: "fluid.identity"
             }
         }
     });
