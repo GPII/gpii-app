@@ -67,6 +67,8 @@
                     "2_which_applications": "@expand:gpii.captureTool.loadTemplate(2_which_applications)",
                     "3_capturing_settings": "@expand:gpii.captureTool.loadTemplate(3_capturing_settings)",
                     "3_what_to_keep": "@expand:gpii.captureTool.loadTemplate(3_what_to_keep)",
+                    "4_save_choose_prefsset": "@expand:gpii.captureTool.loadTemplate(4_save_choose_prefsset)",
+                    "4_confirm_update_prefsset": "@expand:gpii.captureTool.loadTemplate(4_confirm_update_prefsset)",
                     "4_save_name": "@expand:gpii.captureTool.loadTemplate(4_save_name)",
                     "5_confirmation": "@expand:gpii.captureTool.loadTemplate(5_confirmation)"
                 },
@@ -88,7 +90,14 @@
 
             // These should be model relays to the main app
             isKeyedIn: null,
-            keyedInUserToken: null
+            keyedInUserToken: null,
+
+            captureAnimationLoopTimer: 1,
+            captureDone: false,
+
+            // For the select which prefset page:
+            prefsSetSaveType: "existing", // Should be `existing` or `save-new`
+            selectedPrefsSet: "gpii-default"
         },
         bindings: {
             whatToCaptureRadio: "whatToCapture",
@@ -225,6 +234,14 @@
             onHideShowSolution: {
                 funcName: "gpii.captureTool.onHideShowSolution",
                 args: ["{that}", "{arguments}.0"]
+            },
+            onHideShowNumSettingLink: {
+                funcName: "gpii.captureTool.onHideShowNumSettingLink",
+                args: ["{that}", "{arguments}.0"]
+            },
+            onSelectPrefssetDropdown: {
+                funcName: "gpii.captureTool.onSelectPrefssetDropdown",
+                args: ["{that}", "{arguments}.0"]
             }
         },
         selectors: {
@@ -246,7 +263,12 @@
             clearAllSettingsToKeepButton: ".flc-clear-all-settings",
             numAppsSelectedDisplay: ".flc-num-apps-selected",
             numSettingsSelectedDisplay: ".flc-num-settings-selected",
-            hideShowSolutionButton: ".flc-hideshow-solution"
+            hideShowSolutionButton: ".flc-hideshow-solution",
+            hideShowNumSettingLink: ".flc-hideshow-numsetting-link",
+            captureAnimationLoopEllipsis: ".flc-capture-animation-loop-ellipsis",
+            captureAnimationLoopTimer: ".flc-capture-animation-loop-timer",
+            selectPrefssetDropdown: ".flc-select-prefset-dropdown",
+            currentlySelectedPrefset: ".flc-current-selected-prefset"
         },
         markupEventBindings: {
             nextButton: {
@@ -284,6 +306,14 @@
             hideShowSolutionButton: {
                 method: "click",
                 args: "{that}.onHideShowSolution"
+            },
+            hideShowNumSettingLink: {
+                method: "click",
+                args: "{that}.onHideShowNumSettingLink"
+            },
+            selectPrefssetDropdown: {
+                method: "click",
+                args: "{that}.onSelectPrefssetDropdown"
             }
         },
         listeners: {
@@ -406,14 +436,11 @@
 
         ipcRenderer.on("sendingAllSolutionsCapture", function (event, arg) {
             var finalSettings = gpii.captureTool.annotateSettingsCapture(that, gpii.captureTool.mergeSettingsCapture(arg));
+
             that.fullChange("capturedSettings", finalSettings);
             that.fullChange("currentPage", "3_what_to_keep");
-            that.selectAllSettingsToKeepButton();
-            that.render("3_what_to_keep");
-            // This needs to happen again, because the page hasn't rendered yet,
-            // and therefore the html element doens't exist yet.
-            that.updateNumSettingsSelected();
-            that.updateSolutionSettingsTree();
+            that.applier.change("captureDone", true);
+
         });
 
         ipcRenderer.on("modelUpdate", function (event, arg) {
@@ -437,6 +464,43 @@
     gpii.captureTool.startCapture = function (that) {
         that.applier.change("currentPage", "3_capturing_settings");
         that.render("3_capturing_settings");
+
+        var captureAnimationLoop = function () {
+            var curCount = that.model.captureAnimationLoopTimer + 1;
+            fluid.each(that.dom.locate("captureAnimationLoopTimer"), function (el) {
+                el.innerText = curCount;
+            });
+            fluid.each(that.dom.locate("captureAnimationLoopEllipsis"), function (el) {
+                if (curCount % 3 === 0) {
+                    el.innerText = ". . .";
+                }
+                else if ((curCount + 1) % 3 === 0) {
+                    el.innerText = ". .";
+                }
+                else {
+                    el.innerText = ".";
+                }
+            });
+            that.applier.change("captureAnimationLoopTimer", curCount);
+
+            if (that.model.captureDone && curCount > 5) {
+                that.selectAllSettingsToKeepButton();
+                that.render("3_what_to_keep");
+                // This needs to happen again, because the page hasn't rendered yet,
+                // and therefore the html element doens't exist yet.
+                that.updateNumSettingsSelected();
+                that.updateSolutionSettingsTree();
+                that.applier.change("captureDone", false);
+                that.applier.change("captureAnimationLoopTimer", 1);
+            }
+            else {
+                setTimeout(captureAnimationLoop, 1000);
+            }
+
+
+        };
+        setTimeout(captureAnimationLoop, 1000);
+
         var options = {};
         if (that.model.whatToCapture === "running") {
             options.solutionsList = Object.keys(that.model.runningSolutions);
@@ -474,10 +538,25 @@
             that.startCapture();
         }
         else if (currentPage === "3_what_to_keep") {
-            that.applier.change("currentPage", "4_save_name");
-            that.render("4_save_name");
+            that.applier.change("currentPage", "4_save_choose_prefsset");
+            that.render("4_save_choose_prefsset");
         }
-        else if (currentPage === "4_save_name") {
+        else if (currentPage === "4_save_choose_prefsset") {
+            if (that.model.prefsSetSaveType === "existing") {
+                that.applier.change("currentPage", "4_confirm_update_prefsset");
+                that.render("4_confirm_update_prefsset");
+            }
+            else { // === "save-new"
+                that.applier.change("currentPage", "4_save_name");
+                that.render("4_save_name");
+            }
+        }
+        else if (currentPage === "4_confirm_update_prefsset") {
+            that.applier.change("currentPage", "5_confirmation");
+            that.render("5_confirmation");
+            that.saveCapturedPreferences();
+        }
+        else if (currentPage == "4_save_name") {
             that.applier.change("currentPage", "5_confirmation");
             that.render("5_confirmation");
             that.saveCapturedPreferences();
@@ -496,9 +575,17 @@
             that.applier.change("currentPage", "1_ready_to_capture");
             that.render("1_ready_to_capture");
         }
-        else if (currentPage === "4_save_name") {
+        else if (currentPage === "4_save_choose_prefsset") {
             that.applier.change("currentPage", "3_what_to_keep");
             that.render("3_what_to_keep");
+        }
+        else if (currentPage === "4_save_name") {
+            that.applier.change("currentPage", "4_save_choose_prefsset");
+            that.render("4_save_choose_prefsset");
+        }
+        else if (currentPage === "4_confirm_update_prefsset") {
+            that.applier.change("currentPage", "4_save_choose_prefsset");
+            that.render("4_save_choose_prefsset");
         }
         else {
             console.log("Not sure what the next page is...");
@@ -636,21 +723,35 @@
         that.applier.change("settingsToKeep", curSettings);
     };
 
+    gpii.captureTool.onHideShowNumSettingLink = function (vhat, event) {
+        var solutionId = event.currentTarget.dataset.solution;
+        var button = $(".flc-hideshow-solution[data-solution='" + solutionId + "']");
+        button.click();
+    };
+
     gpii.captureTool.onHideShowSolution = function (that, event) {
         var solutionId = event.currentTarget.dataset.solution;
         var hideShow = event.currentTarget.dataset.show;
         var buttonEl = $(event.currentTarget);
-        if (hideShow) {
-            $("#flc-settings-for-" + solutionId.replace(/\./g, "\\.")).toggle();
-            buttonEl.data("show", true);
-            buttonEl.val("Show Settings");
+        if (hideShow === true || hideShow === "true") {
+            $("#flc-settings-for-" + solutionId.replace(/\./g, "\\.")).toggle(hideShow);
+            event.currentTarget.dataset.show = false;
+            event.currentTarget.value = "Show Settings";
         }
         else {
-            $("#flc-settings-for-" + solutionId.replace(/\./g, "\\.")).toggle();
-            buttonEl.data("show", false);
-            buttonEl.val("Hide Settings");
+            $("#flc-settings-for-" + solutionId.replace(/\./g, "\\.")).toggle(hideShow);
+            event.currentTarget.dataset.show = true;
+            event.currentTarget.value = "Hide Settings";
         }
 
+    };
+
+    gpii.captureTool.onSelectPrefssetDropdown = function (that, event) {
+        var curSelected = that.locate("currentlySelectedPrefset");
+        curSelected[0].innerHTML = event.currentTarget.innerHTML;
+        var curTarget = $(event.currentTarget);
+        that.applier.change("prefsSetSaveType", curTarget.data("type"));
+        that.applier.change("selectedPrefsSet", curTarget.data("prefsset-id"));
     };
 
     gpii.captureTool.updateCapturedSettingsToRender = function (that) {

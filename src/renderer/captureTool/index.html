@@ -7,6 +7,13 @@
         <link rel="stylesheet" href="./css/captureDialogue.css">
 
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
+
+        <!-- https://stackoverflow.com/questions/22658015/bootstrap-throws-uncaught-error-bootstraps-javascript-requires-jquery -->
+        <script>
+            window.jQuery = window.$ = require('jquery');
+        </script>
+
+        <script type="text/javascript" src="./js/bootstrap-3.3.7.js"></script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/node_modules/infusion/dist/infusion-all.js"></script>
 
         <script type="text/javascript" src="../common/js/utils.js"></script>
@@ -37,6 +44,15 @@
 
         <script type="text/javascript" src="js/capture.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+
+        <!-- https://stackoverflow.com/questions/20547819/vertical-align-with-bootstrap-3 -->
+        <style>
+        .vcenter {
+            display: inline-block;
+            vertical-align: middle;
+            float: none;
+        }
+        </style>
     </head>
     <body>
         <div class="fl-dialog fl-dialog-fullScreen">

@@ -1,28 +1,30 @@
 <div class="fl-capture-footer">
 <ol class="breadcrumb">
     {{#if activeSignIn}}
-        <li><span class="fl-capture-current-page .color-fill-accent-neutral-mid">1. Sign in</span></li>
+        <li><span class="fl-capture-current-page .color-fill-accent-neutral-mid">1. Sign In &amp; and Start</span></li>
     {{else}}
-        <li><span>1. Sign in</span></li>
+        <li><span>1. Sign In &amp; and Start</span></li>
     {{/if}}
 
     {{#if activeWhatToCapture}}
-        <li><span class="fl-capture-current-page">2. What to Capture</span></li>
+        <li><span class="fl-capture-current-page">2. Capture</span></li>
     {{else}}
-        <li><span>2. What to Capture</span</li>
+        <li><span>2. Capture</span</li>
     {{/if}}
 
     {{#if activeWhatToKeep}}
-        <li><span class="fl-capture-current-page">3. What to Keep</span></li>
+        <li><span class="fl-capture-current-page">3. What to Save</span></li>
     {{else}}
-        <li><span>3. What to Keep</span></li>
+        <li><span>3. What to Save</span></li>
     {{/if}}
 
     {{#if activeSave}}
-        <li><span class="fl-capture-current-page">4. Save</span></li>
+        <li><span class="fl-capture-current-page">4. Where to Save</span></li>
     {{else}}
-        <li><span>4. Save</span></li>
+        <li><span>4. Where to Save</span></li>
     {{/if}}
+
+    <li><span>5. Done</span></li>
 
     <span style="padding-left: 200px">Dev Status: {{isKeyedIn}} - {{keyedInUserToken}}</span>
 

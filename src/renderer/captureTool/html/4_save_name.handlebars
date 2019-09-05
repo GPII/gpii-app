@@ -13,21 +13,13 @@ For example is this the set of preferences you would like to have on most comput
         <input type="text" name="fl-capture-prefsetname" class="form-control"
             id="fl-capture-prefsetname" placeholder="Capture Name">
     </div>
-<input type="button" class="btn btn-default flc-capture-back" value="Back" />
 
 
-
-{{#if isKeyedIn}}
 <p>
     You are currently keyed in with {{keyedInUserToken}}, and the capture will be saved to that vault.
 </p>
+    <input type="button" class="btn btn-default flc-capture-back" value="Back" />
     <input type="button" class="btn btn-default flc-capture-next" value="Next" />
-{{else}}
-<p>
-    You are not currently keyed in to Morphic. Please key in in order to save this capture.
-</p>
-    <input disabled="true" type="button" class="btn btn-default flc-capture-next" value="Next" />
-{{/if}}
-</form>
+
 
 {{> footer_location_partial activeSave="true"}}

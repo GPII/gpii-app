@@ -1,0 +1,42 @@
+{{> page_header_partial pageHeader="4. Decide where to save your settings"}}
+
+<p>
+Give the pref-set a name that will help you remember what is in it, or how you expect to use it.
+</p>
+<p>
+For example is this the set of preferences you would like to have on most computers, or is it what you like to use at the library, or at work, or at night?
+</p>
+<br/>
+<form>
+
+<div class="dropdown">
+    <button id="example-dropdown" class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+        <span class="flc-current-selected-prefset">
+            <a class="flc-select-prefset-dropdown" data-prefsset-id="gpii-default" href="#"><img width="25px" src="./at_home.png" /> At Home</a>
+        </span>
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-example">
+        <li><a class="flc-select-prefset-dropdown" data-type="existing" data-prefsset-id="gpii-default" href="#"><img width="25px" src="./at_home.png" /> At Home</a></li>
+        {{!-- <li><a href="#"><img width="25px" src="./at_work.png" /> At Work</a></li> --}}
+        <li><a class="flc-select-prefset-dropdown" data-type="save-new" data-prefsset-id="gpii-default" href="#"><img width="25px" src="./save_new_set.png" /> Save as a new set...</a></li>
+        {{!-- <li><a href="#" class="disabled">Disabled</a></li> --}}
+    </ul>
+</div>
+
+{{#if isKeyedIn}}
+<p>
+    You are currently keyed in with {{keyedInUserToken}}, and the capture will be saved to that vault.
+</p>
+    <input type="button" class="btn btn-default flc-capture-back" value="Back" />
+    <input type="button" class="btn btn-default flc-capture-next" value="Next" />
+{{else}}
+<p>
+    You are not currently keyed in to Morphic. Please key in in order to save this capture.
+</p>
+    <input type="button" class="btn btn-default flc-capture-back" value="Back" />
+    <input disabled="true" type="button" class="btn btn-default flc-capture-next" value="Next" />
+{{/if}}
+</form>
+
+{{> footer_location_partial activeSave="true"}}

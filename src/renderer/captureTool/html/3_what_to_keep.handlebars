@@ -14,19 +14,20 @@
 <form>
 <div class="form-group fl-capture-scrolled">
     {{#each capturedSettingsToRender}}
-        <div style="background-color: gray">
-            <div class="checkbox" style="display:inline" style="background-color: gray">
+    <div>
+        <div class="clearfix color-bg-light-vivid-low" style="margin-bottom: 10px; padding: 5px">
+            <div class="checkbox" style="display:inline">
                 <label>
                     <input type="checkbox" name="fc-solutions-to-keep" value="{{this.id}}" id="fc-solution-{{this.id}}" />
                     <span> </span>
                 </label>
             </div>
-            <strong>{{this.numberOfSettings}} settings found for {{this.name}} {{this.id}}</strong>
-            <input class="flc-hideshow-solution" type="button" value="Show Settings" data-show="false" data-solution="{{this.id}}" />
+            <strong>{{this.name}} ( <a class="flc-hideshow-numsetting-link" data-solution="{{this.id}}"> {{this.numberOfSettings}} settings </a> ) </strong>
+            <input class="flc-hideshow-solution btn btn-default theme-light pull-right" style="background-color: rgba(255,255,255,1)" type="button" value="Show Settings" data-show="false" data-solution="{{this.id}}" />
         </div>
         <div style="margin-left: 40px; display: none;" id="flc-settings-for-{{this.id}}">
         {{#each this.renderSettings}}
-            <div class="pull-right" style="color: gray"><em>Debug Info: {{this.debugInfo}}</em></div>
+            {{!-- <div class="pull-right" style="color: gray"><em>Debug Info: {{this.debugInfo}}</em></div> --}}
             <div class="checkbox">
                 <label>
                     <input name="fc-settings-to-keep" value="{{../id}}:{{this.settingId}}" type="checkbox" />
@@ -38,6 +39,7 @@
             </div>
         {{/each}}
         </div>
+    </div>
     {{/each}}
 </div>
 </form>
