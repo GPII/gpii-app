@@ -240,6 +240,6 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.siteConfigurationHandler.testDefs),
     fluid.copy(gpii.tests.storage.testDefs),
     fluid.copy(gpii.tests.userErrorsHandler.testDefs),
-    // fluid.copy(gpii.tests.gpiiConnector.testDefs),  // should be changed to match the new specification
+    fluid.copy(gpii.tests.gpiiConnector.testDefs),  // should be changed to match the new specification
     fluid.copy(gpii.tests.webview.testDefs)
 ]);
