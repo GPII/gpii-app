@@ -10,17 +10,23 @@ For example is this the set of preferences you would like to have on most comput
 <form>
 
 <div class="dropdown">
-    <button id="example-dropdown" class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+    <button style="padding-left: 0px" id="example-dropdown" class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
         <span class="flc-current-selected-prefset">
-            <a class="flc-select-prefset-dropdown" data-prefsset-id="gpii-default" href="#"><img width="25px" src="./at_home.png" /> At Home</a>
+            <a class="flc-select-prefset-dropdown" data-prefsset-id="gpii-default" href="#"><img width="30px" src="./at_home.png" /> At Home</a>
         </span>
         <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-example">
-        <li><a class="flc-select-prefset-dropdown" data-type="existing" data-prefsset-id="gpii-default" href="#"><img width="25px" src="./at_home.png" /> At Home</a></li>
-        {{!-- <li><a href="#"><img width="25px" src="./at_work.png" /> At Work</a></li> --}}
-        <li><a class="flc-select-prefset-dropdown" data-type="save-new" data-prefsset-id="gpii-default" href="#"><img width="25px" src="./save_new_set.png" /> Save as a new set...</a></li>
-        {{!-- <li><a href="#" class="disabled">Disabled</a></li> --}}
+        <li>
+            <a style="padding-left: 0px" class="flc-select-prefset-dropdown" data-type="existing" data-prefsset-id="gpii-default" href="#">
+                <img width="30px" src="./at_home.png" /> At Home
+            </a>
+        </li>
+        <li>
+            <a style="padding-left: 0px" class="flc-select-prefset-dropdown" data-type="save-new" data-prefsset-id="gpii-default" href="#">
+                <img width="30px" src="./save_new_set.png" /> Save as a new set...
+            </a>
+        </li>
     </ul>
 </div>
 

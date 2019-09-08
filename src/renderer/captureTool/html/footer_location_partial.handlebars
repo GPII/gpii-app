@@ -1,32 +1,109 @@
 <div class="fl-capture-footer">
-<ol class="breadcrumb">
+
     {{#if activeSignIn}}
-        <li><span class="fl-capture-current-page .color-fill-accent-neutral-mid">1. Sign In &amp; and Start</span></li>
-    {{else}}
-        <li><span>1. Sign In &amp; and Start</span></li>
+<ol class="list-inline" style="margin-bottom: 0px">
+    <li style="margin-bottom: 0px; border-bottom: thick black solid">
+        <span>1. Sign in &amp; and Start</span>
+    <li style="margin-bottom: 0px">
+        <span>2. Capture</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span>3. What to Save</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span>4. Where to Save</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span>5. Done</span>
+    </li>
+</ol>
     {{/if}}
 
-    {{#if activeWhatToCapture}}
-        <li><span class="fl-capture-current-page">2. Capture</span></li>
-    {{else}}
-        <li><span>2. Capture</span</li>
+    {{#if capturingSettings}}
+<ol class="list-inline" style="margin-bottom: 0px">
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>1. Sign in &amp; and Start</span>
+    <li style="margin-bottom: 0px; border-bottom: thick black solid">
+        <span>2. Capture</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span>3. What to Save</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span>4. Where to Save</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span>5. Done</span>
+    </li>
+</ol>
     {{/if}}
 
     {{#if activeWhatToKeep}}
-        <li><span class="fl-capture-current-page">3. What to Save</span></li>
-    {{else}}
-        <li><span>3. What to Save</span></li>
+<ol class="list-inline" style="margin-bottom: 0px">
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>1. Sign in &amp; and Start</span>
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>2. Capture</span>
+    </li>
+    <li style="margin-bottom: 0px; border-bottom: thick black solid">
+        <span>3. What to Save</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span>4. Where to Save</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span>5. Done</span>
+    </li>
+</ol>
     {{/if}}
 
     {{#if activeSave}}
-        <li><span class="fl-capture-current-page">4. Where to Save</span></li>
-    {{else}}
-        <li><span>4. Where to Save</span></li>
+<ol class="list-inline" style="margin-bottom: 0px">
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>1. Sign in &amp; and Start</span>
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>2. Capture</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>3. What to Save</span>
+    </li>
+    <li style="margin-bottom: 0px; border-bottom: thick black solid">
+        <span>4. Where to Save</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span>5. Done</span>
+    </li>
+</ol>
     {{/if}}
 
-    <li><span>5. Done</span></li>
-
-    <span style="padding-left: 200px">Dev Status: {{isKeyedIn}} - {{keyedInUserToken}}</span>
-
+    {{#if doneConfirmation}}
+<ol class="list-inline" style="margin-bottom: 0px">
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>1. Sign in &amp; and Start</span>
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>2. Capture</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>3. What to Save</span>
+    </li>
+    <li style="margin-bottom: 0px">
+        <span class="glyph glyph-completed"></span>
+        <span>4. Where to Save</span>
+    </li>
+    <li style="margin-bottom: 0px; border-bottom: thick black solid">
+        <span class="glyph glyph-completed"></span>
+        <span>5. Done</span>
+    </li>
 </ol>
+    {{/if}}
+
 </div>
