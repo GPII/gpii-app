@@ -254,6 +254,7 @@ gpii.app.captureTool.init = function (that, flowManager) {
 gpii.app.captureTool.testPspChannel = function (that, pspChannel, flowManager, options) {
     console.log("Capturing using cloudURL: ", flowManager.settingsDataSource.options.cloudURL);
     console.log("BEFORE Take a look at PSP Channel Model: ", flowManager.pspChannel.model);
+    console.log("These are the save options: ", options);
 
     var payload = {
         contexts: {}
