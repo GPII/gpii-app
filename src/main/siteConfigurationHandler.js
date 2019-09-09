@@ -68,15 +68,6 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
             target: "{app qssTooltipDialog}.options.showDelay"
         },
-
-        distributePspConfig: {
-            record: "{that}.options.siteConfig.psp",
-            target: "{app psp}.options.siteConfig"
-        },
-        distributeDialogScaleFactor: {
-            record: "{app}.configurationHandler.options.siteConfig.psp.scaleFactor",
-            target: "{app dialogManager}.options.model.scaleFactor"
-        },
         distributeQssMorePanelConfig: {
             record: "{that}.options.siteConfig.qssMorePanel",
             target: "{app qssMorePanel}.options.siteConfig"
@@ -84,10 +75,6 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeQssClickOutside: {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
             target: "{app gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
-        },
-        distributePspClickOutside: {
-            record: "{that}.options.siteConfig.closePspOnClickOutside",
-            target: "{app gpiiConnector}.options.defaultPreferences.closePspOnBlur"
         },
         distributeOpenQssShortcut: {
             record: "{that}.options.siteConfig.openQssShortcut",
