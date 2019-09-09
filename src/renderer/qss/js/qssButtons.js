@@ -236,6 +236,10 @@
             if (styles[buttonType]) {
                 container.addClass(styles[buttonType]);
             }
+            // adding the button id, if there is any in the schema
+            if (that.model.item.id) {
+                container.addClass("fl-qss-btnId-" + that.model.item.id);
+            }
         });
     };
 

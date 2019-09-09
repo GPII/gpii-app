@@ -93,7 +93,7 @@ fluid.defaults("gpii.app.qss", {
         onUndoIndicatorChanged: null
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
+    linkedWindowsGrades: ["gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
 
     components: {
         channelNotifier: {
@@ -144,8 +144,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssMorePanelRequired: null,
                     onQssUndoRequired: null,
                     onQssResetAllRequired: null,
-                    onQssSaveRequired: null,
-                    onQssPspToggled: null
+                    onQssSaveRequired: null
                 },
 
                 listeners: {
