@@ -48,7 +48,7 @@
             "setting.value": {
                 func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{that}.model.setting"],
-                includeSource: "settingAlter"
+                includeSource: "fromWidget"
             },
             "setting.schema.helpImage": {
                 this: "{that}.dom.helpImage",
@@ -87,6 +87,6 @@
      * @param {Component} that - The `gpii.psp.widgets.switch` instance.
      */
     gpii.qssWidget.toggle.toggleModel = function (that) {
-        that.applier.change("enabled", !that.model.enabled, null, "settingAlter");
+        that.applier.change("enabled", !that.model.enabled, null, "fromWidget");
     };
 })(fluid);
