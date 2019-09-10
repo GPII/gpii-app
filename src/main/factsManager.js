@@ -34,7 +34,7 @@ fluid.defaults("gpii.app.factsManager", {
     gradeNames: ["fluid.modelComponent"],
     model: {
         keyedInTimestamp: null,
-        // Number of interactions with the GPII app. Incremented whenever the PSP or QSS is
+        // Number of interactions with the GPII app. Incremented whenever the QSS is
         // opened, as well as when an actual user (i.e. different from `noUser`) keys in.
         interactionsCount: null,
 
@@ -83,9 +83,6 @@ fluid.defaults("gpii.app.factsManager", {
             func: "{that}.increaseInteractionsCount"
         }],
         "{qssWrapper}.qss.events.onDialogShown": {
-            funcName: "{that}.increaseInteractionsCount"
-        },
-        "{psp}.events.onDialogShown": {
             funcName: "{that}.increaseInteractionsCount"
         }
     },

@@ -73,7 +73,7 @@ fluid.defaults("gpii.app.qssWidget", {
         fileSuffixPath: "qssWidget/index.html"
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssNotification", "gpii.app.qssWidget"],
+    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssNotification", "gpii.app.qssWidget"],
 
     sounds: {
         boundReachedErrorSound: "boundReachedError.mp3"

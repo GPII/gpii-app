@@ -34,7 +34,6 @@
             "number":            "gpii.qss.widgetButtonPresenter",
             "string":            "gpii.qss.widgetButtonPresenter",
             "close":             "gpii.qss.closeButtonPresenter",
-            "psp":               "gpii.qss.keyInButtonPresenter",
             "save":              "gpii.qss.saveButtonPresenter",
             "undo":              "gpii.qss.undoButtonPresenter",
             "resetAll":          "gpii.qss.resetAllButtonPresenter",
@@ -75,8 +74,7 @@
             onMorePanelRequired: null,
             onUndoRequired: null,
             onResetAllRequired: null,
-            onSaveRequired: null,
-            onPspToggled: null
+            onSaveRequired: null
         },
 
         invokers: {
@@ -237,8 +235,7 @@
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
-                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
-                        onQssPspToggled: "{quickSetStripList}.events.onPspToggled"
+                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired"
                     }
                 }
             }

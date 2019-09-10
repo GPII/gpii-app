@@ -84,21 +84,18 @@
             "volume",
             "launch-documorph",
             "cloud-folder-open",
-            "usb-open"
+            "usb-open",
+            "service-more",
+            "service-save",
+            "service-undo",
+            "service-dummy",
+            "service-reset-all",
+            "service-close"
         ],
 
         // The path to the DocuMorph's executable file, used in the service buttons.
         // This is the path where DocuMorph lives after installing Morphic. Can be adjusted for development purposes.
         docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe"
-    },
-
-    // Configuration options for the PSP window
-    psp: {
-        // The scaling factor for the PSP
-        scaleFactor: 0.85,
-        urls: {
-            help: "http://pmt.gpii.org/help"
-        }
     },
 
     // Whether to hide the QSS when a user clicks outside of it
@@ -109,9 +106,6 @@
     // fully applied. An example for such setting is `Language`.
     // If set to `true`, such notifications will NOT be displayed.
     disableRestartWarning: true,
-
-    // Whether to hide the PSP when a user clicks outside of it
-    closePspOnClickOutside: true,
 
     // The shortcut that open the QSS. For posible values refer to: https://electronjs.org/docs/api/accelerator
     openQssShortcut: "Shift+Ctrl+AltOrOption+SuperOrCmd+M",
