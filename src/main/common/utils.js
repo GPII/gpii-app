@@ -256,7 +256,7 @@ gpii.app.generateCustomButton = function (buttonData) {
             data.schema.fullScreen = true;
         }
         if (buttonData.buttonType === "APP") {
-            // checks if the file exits and its executable
+            // checks if the file exists and its executable
             if (gpii.app.checkExecutable(buttonData.buttonData)) {
                 // adding the application's path
                 data.schema.filepath = buttonData.buttonData;
@@ -425,7 +425,7 @@ gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
 /**
  * Simple file function to check a path to the executable file
  * @param {String} executablePath - path to executable file
- * @return {Boolean} - returns `true` when the file exits and its executable
+ * @return {Boolean} - returns `true` when the file exists and its executable
  */
 gpii.app.checkExecutable = function (executablePath) {
     try {
