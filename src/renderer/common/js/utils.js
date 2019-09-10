@@ -23,6 +23,7 @@
         fs = require("fs");
 
     fluid.registerNamespace("gpii.psp");
+    fluid.registerNamespace("gpii.windows");
 
     /**
      * An implementation of the modulation operation which resolves the
@@ -92,10 +93,9 @@
      * @param {Boolean} alwaysUseChrome - true to use chrome, rather than the default browser.
      * @param {Boolean} forceFullScreen - the function requires the browser to be open maximized
      */
-    gpii.psp.openUrl = function (siteUrl, alwaysUseChrome, forceFullScreen) {
+    gpii.windows.openUrl = function (siteUrl, alwaysUseChrome, forceFullScreen) {
         if (fluid.isValue(siteUrl)) {
             if (alwaysUseChrome) {
-                var child_process = require("child_process");
                 var command =
                     // Check chrome is installed
                     "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe\" /ve"
@@ -127,8 +127,7 @@
      * @param {Boolean} forceFullScreen - the function requires the application to be open maximized
      * @return {Boolean} - returns `true` on successfully executed file
      */
-    gpii.psp.launchExecutable = function (executablePath, forceFullScreen, qssList) {
-        console.log(qssList.events);
+    gpii.windows.launchExecutable = function (executablePath, forceFullScreen) {
         try {
             var fileProperties = fs.statSync(executablePath);
             // Check that the file is executable
@@ -136,7 +135,7 @@
                 try {
                     child_process.exec("\"" + executablePath + "\"");
                     if (forceFullScreen) {
-                        console.log("gpii.psp.launchExecutable ====");
+                        console.log("gpii.windows.launchExecutable ====");
                         console.log("forceFullScreen: true");
                     }
                     return true;

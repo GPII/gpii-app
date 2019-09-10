@@ -146,7 +146,8 @@ fluid.defaults("gpii.app.qss", {
                     onQssResetAllRequired: null,
                     onQssSaveRequired: null,
                     onQssPspToggled: null,
-                    // custom buttons events
+
+                    // Custom buttons events
                     onQssStartProcess: null
                 },
 
@@ -159,8 +160,11 @@ fluid.defaults("gpii.app.qss", {
                         args: ["QSS Dialog: Setting altered QSS - ", "{arguments}.0.path", "{arguments}.0.value"]
                     },
                     onQssStartProcess: {
-                        funcName: "gpii.windows.startProcess",
-                        args: ["C:\\Windows\\system32\\notepad.exe"]
+                        funcName: "gpii.app.startProcess",
+                        args: [
+                            "{arguments}.0",
+                            "{arguments}.1"
+                        ]
                     }
                 }
             }

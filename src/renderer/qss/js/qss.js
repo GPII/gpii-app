@@ -235,7 +235,10 @@
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
-                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired"
+                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
+
+                        // Custom buttons events
+                        onQssStartProcess: null
                     }
                 }
             }

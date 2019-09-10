@@ -152,7 +152,7 @@
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
             activate: {
-                funcName: "gpii.psp.launchExecutable",
+                funcName: "gpii.windows.launchExecutable",
                 args: ["{gpii.qss}.options.siteConfig.docuMorphExecutable"]
             }
         }
@@ -167,15 +167,26 @@
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
             activate: {
-                funcName: "gpii.psp.launchExecutable",
+                funcName: "gpii.qss.startProcessPresenter",
                 args: [
                     "{that}.model.item.schema.filepath", // using the file's path from the custom button's schema
                     "{that}.model.item.schema.fullScreen", // using the fullScreen from the custom button's schema
-                    "{list}"
+                    "{channelNotifier}.events.onQssStartProcess"
                 ]
             }
         }
     });
+
+    /**
+     * Custom function that handles starting new processes
+     * @param {String} process - path to the executable
+     * @param {Boolean} fullScreen - true/false to start the process in full screen or not
+     * @param {Event} startProcessEvent - handle to the onQssStartProcess event
+     */
+    gpii.qss.startProcessPresenter = function (process, fullScreen, startProcessEvent) {
+        //gpii.windows.launchExecutable(process, fullScreen);
+        startProcessEvent.fire(process, fullScreen);
+    };
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
@@ -186,7 +197,7 @@
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
             activate: {
-                funcName: "gpii.psp.openUrl",
+                funcName: "gpii.windows.openUrl",
                 args: [
                     "{that}.model.item.schema.url", // using the url from the custom button's schema
                     "{gpii.qss}.options.siteConfig.alwaysUseChrome", // Override the OS default browser.
@@ -274,7 +285,7 @@
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
             activate: {
-                funcName: "gpii.psp.openUrl",
+                funcName: "gpii.windows.openUrl",
                 args: [
                     "{gpii.qss}.options.siteConfig.urls.cloudFolder",  // siteConfig's cloud folder url
                     "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
