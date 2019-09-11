@@ -101,7 +101,8 @@
             smallButton: "fl-qss-smallButton",
             largeButton: "fl-qss-largeButton",
             settingButton: "fl-qss-settingButton",
-            closeButton: "fl-qss-closeButton"
+            closeButton: "fl-qss-closeButton",
+            separator: "fl-qss-separator"
         },
 
         attrs: {

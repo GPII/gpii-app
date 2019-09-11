@@ -47,6 +47,14 @@ body {
     user-select: none;
 }
 
+/* This kind of button is used just as separator */
+.fl-qss-button.fl-qss-separator {
+    padding: 3px 0;
+    background: none;
+    cursor: auto;
+    width: 5px;
+}
+
 .fl-qss-button.fl-qss-largeButton {
     padding: 3px 0;
     font-size: 9px;

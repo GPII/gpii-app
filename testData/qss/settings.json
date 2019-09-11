@@ -210,6 +210,14 @@
         "tabindex": 220,
         "messageKey": "launch-documorph"
     }, {
+        "id": "separator",
+        "path": "separator",
+        "schema": {
+            "type": "separator",
+            "title": ""
+        },
+        "buttonTypes": ["separator"]
+    }, {
         "id": "service-more",
         "path": "more",
         "schema": {

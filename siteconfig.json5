@@ -47,6 +47,9 @@
         // it uses the `id` attribute found in settings.json items
         buttonList: [
             "language",
+            "separator",
+            "separator",
+            "separator",
             "translate-tools",
             "screen-zoom",
             "text-zoom",
@@ -58,6 +61,7 @@
             "launch-documorph",
             "cloud-folder-open",
             "usb-open",
+            "separator",
             "service-more",
             "service-save",
             "service-undo",
