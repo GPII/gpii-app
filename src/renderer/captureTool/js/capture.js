@@ -97,7 +97,8 @@
 
             // For the select which prefset page:
             prefsSetSaveType: "existing", // Should be `existing` or `save-new`
-            selectedPrefsSet: "gpii-default"
+            selectedPrefsSet: "gpii-default",
+            selectedPrefsSetName: "GPII Default"
         },
         bindings: {
             whatToCaptureRadio: "whatToCapture",
@@ -447,6 +448,7 @@
             var transaction = that.applier.initiate();
             transaction.fireChangeRequest({ path: "isKeyedIn", value: arg.isKeyedIn});
             transaction.fireChangeRequest({ path: "keyedInUserToken", value: arg.keyedInUserToken});
+            transaction.fireChangeRequest({ path: "preferences", value: arg.preferences});
             transaction.commit();
         });
 
@@ -619,12 +621,19 @@
     };
 
     gpii.captureTool.saveCapturedPreferences = function (that) {
+        var prefsSetName = that.model.prefsSetName;
+        var prefsSetId = prefsSetName;
+        if (that.model.prefsSetSaveType === "existing") {
+            prefsSetId = that.model.selectedPrefsSet;
+            prefsSetName = that.model.selectedPrefsSetName;
+        }
+
         var prefSetPayload = {
-            name: that.model.prefsSetName,
+            name: prefsSetName,
             preferences: that.model.preferencesToKeep
         };
         ipcRenderer.send("saveCapturedPreferences", {
-            prefSetId: that.model.prefsSetName, //needs to be simplified... nospaces etc.
+            prefSetId: prefsSetId, //needs to be simplified... nospaces etc.
             prefSetPayload: prefSetPayload
         });
     };
@@ -752,6 +761,7 @@
         var curTarget = $(event.currentTarget);
         that.applier.change("prefsSetSaveType", curTarget.data("type"));
         that.applier.change("selectedPrefsSet", curTarget.data("prefsset-id"));
+        that.applier.change("selectedPrefsSetName", curTarget.data("prefsset-name"));
     };
 
     gpii.captureTool.updateCapturedSettingsToRender = function (that) {

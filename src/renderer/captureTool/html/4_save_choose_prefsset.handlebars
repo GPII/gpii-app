@@ -17,11 +17,13 @@ For example is this the set of preferences you would like to have on most comput
         <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-example">
+        {{#each preferences.contexts}}
         <li>
-            <a style="padding-left: 0px" class="flc-select-prefset-dropdown" data-type="existing" data-prefsset-id="gpii-default" href="#">
-                <img width="30px" src="./at_home.png" /> At Home
+            <a style="padding-left: 0px" class="flc-select-prefset-dropdown" data-type="existing" data-prefsset-id="{{@key}}" data-prefsset-name="{{this.name}}" href="#">
+                <img width="30px" src="./at_home.png" /> {{this.name}}
             </a>
         </li>
+        {{/each}}
         <li>
             <a style="padding-left: 0px" class="flc-select-prefset-dropdown" data-type="save-new" data-prefsset-id="gpii-default" href="#">
                 <img width="30px" src="./save_new_set.png" /> Save as a new set...

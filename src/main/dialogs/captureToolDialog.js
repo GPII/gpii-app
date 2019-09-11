@@ -242,7 +242,8 @@ gpii.app.captureTool.init = function (that, flowManager) {
     ipcMain.on("modelUpdate", function (event /*, arg */) {
         event.sender.send("modelUpdate", {
             isKeyedIn: that.model.isKeyedIn,
-            keyedInUserToken: that.model.keyedInUserToken
+            keyedInUserToken: that.model.keyedInUserToken,
+            preferences: flowManager.pspChannel.model.preferences
         });
     });
 
