@@ -184,7 +184,6 @@
      * @param {Event} startProcessEvent - handle to the onQssStartProcess event
      */
     gpii.qss.startProcessPresenter = function (process, fullScreen, startProcessEvent) {
-        //gpii.windows.launchExecutable(process, fullScreen);
         startProcessEvent.fire(process, fullScreen);
     };
 

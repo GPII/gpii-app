@@ -221,6 +221,36 @@ gpii.app.findButtonById = function (buttonId, availableButtons) {
 };
 
 /**
+ * Looks for the specified key list into the data object and returns true only
+ * if ALL of the keys are matched. It sends fluid warning if required
+ * @param {Object} dataObject - a generic data object
+ * @param {Array} expectedKeys - array list of expected keys to exists
+ * @param {Boolean} warningSend - (optional) true if want to send fluid warnings
+ * @param {String} warningTitle - (optional) description of the warnings
+ * @return {Boolean} - returns true if all of the keys are matched
+ */
+gpii.app.expect = function (dataObject, expectedKeys, warningSend, warningTitle) {
+    var result = true;
+
+    if (dataObject && expectedKeys && fluid.isValue(dataObject) && fluid.isValue(expectedKeys)) {
+        fluid.each(expectedKeys, function (key) {
+            if (typeof dataObject[key] === "undefined") {
+                // we have at least one missing key
+                result = false;
+                // sending the warning if needed
+                if (warningSend) {
+                    fluid.log(fluid.logLevel.WARN, (warningTitle ? warningTitle : "gpii.app.expect") + ": missing expected key [" + key + "]");
+                }
+            }
+        });
+    } else {
+        // we have a missing data object, or keys
+        result = false;
+    }
+    return result;
+};
+
+/**
  * Generates the proper service button schema for the custom button
  * @param {Object} buttonData - a simple data object with the values needed for the custom button
  * @return {Object|Boolean} - data object constructed exactly as every other in the settings.json or false
@@ -235,7 +265,7 @@ gpii.app.generateCustomButton = function (buttonData) {
 
     // we need to have the data, with all required fields:
     // buttonId, buttonName, buttonType, buttonData
-    if (buttonData && fluid.isValue(buttonData.buttonId) && fluid.isValue(buttonData.buttonName) && fluid.isValue(buttonData.buttonType) && fluid.isValue(buttonData.buttonData)) {
+    if (gpii.app.expect(buttonData, ["buttonId", "buttonName", "buttonType", "buttonData"], true, "generateCustomButton")) {
         var buttonType = buttonData.buttonType === "APP" ? serviceButtonTypeApp : serviceButtonTypeWeb;
         data = {
             "id": buttonData.buttonId,
@@ -466,4 +496,21 @@ gpii.app.checkUrl = function (url) {
     }
     // returns false in any other case
     return false;
+};
+
+/**
+ * Starting a new process with the gpii.windows.startProfcess
+ * @param {String} process - file path to the process executable
+ * @param {Boolean} fullScreen - true/false if the process to be maximized by default
+ */
+gpii.app.startProcess = function (process, fullScreen) {
+    var arg = "", // by default all of the arguments are empty, reserved for future
+        options = {}; // no options by default
+
+    if (fullScreen) {
+        // we are adding the maximized option when the full screen is requested
+        options.windowState = "maximized";
+    }
+    // executing the process
+    gpii.windows.startProcess(process, arg, options);
 };
