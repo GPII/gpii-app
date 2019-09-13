@@ -218,6 +218,14 @@
         },
         "buttonTypes": ["separator"]
     }, {
+        "id": "separator-visible",
+        "path": "separator",
+        "schema": {
+            "type": "separator",
+            "title": ""
+        },
+        "buttonTypes": ["separator", "separatorVisible"]
+    }, {
         "id": "service-more",
         "path": "more",
         "schema": {
