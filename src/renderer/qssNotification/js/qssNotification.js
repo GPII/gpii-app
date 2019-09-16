@@ -101,7 +101,7 @@
                     model: {
                         label: "{qssNotification}.model.messages.dismissButtonLabel"
                     },
-                    invokers: {
+                    listeners: {
                         onClick: "{qssNotification}.events.onQssNotificationClosed.fire"
                     }
                 }
