@@ -139,7 +139,7 @@
      * @param {Number} value - The value of the setting.
      */
     gpii.qssWidget.volume.loadActualValue = function (that, value) {
-        that.applier.change("value", value, null, "settingAlter");
+        that.applier.change("value", value, null, "fromWidget");
     };
 
     /**
@@ -151,9 +151,9 @@
      */
     gpii.qssWidget.volume.updateSwitchState = function (switchButton, stepper, value) {
         if (!value !== switchButton.model.enabled) {
-            switchButton.applier.change("enabled", !switchButton.model.enabled, null, "settingAlter");
+            switchButton.applier.change("enabled", !switchButton.model.enabled, null, "fromWidget");
         } else if (value !== 0 && switchButton.model.enabled) {
-            switchButton.applier.change("enabled", !switchButton.model.enabled, null, "settingAlter");
+            switchButton.applier.change("enabled", !switchButton.model.enabled, null, "fromWidget");
         }
     };
 
@@ -182,7 +182,7 @@
 
         if (volumeWidget.model.setting.value !== 0) {
             volumeWidget.model.setting.previousValue = volumeWidget.model.setting.value;
-            that.applier.change("previousValue", volumeWidget.model.setting.value, null, "settingAlter");
+            that.applier.change("previousValue", volumeWidget.model.setting.value, null, "fromWidget");
         }
 
         if (!that.model.enabled && volumeWidget.model.setting.value !== 0) {
@@ -196,9 +196,9 @@
         // update the volume setting
         event.fire(volumeWidget.model.setting);
 
-        that.applier.change("enabled", !that.model.enabled, null, "settingAlter");
-        volumeWidget.applier.change("value", volumeWidget.model.value, null, "settingAlter");
-        stepper.applier.change("value", volumeWidget.model.value, null, "settingAlter");
+        that.applier.change("enabled", !that.model.enabled, null, "fromWidget");
+        volumeWidget.applier.change("value", volumeWidget.model.value, null, "fromWidget");
+        stepper.applier.change("value", volumeWidget.model.value, null, "fromWidget");
     };
 
 
@@ -246,7 +246,7 @@
             value: {
                 func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{volume}.model.setting"],
-                includeSource: "settingAlter"
+                includeSource: "fromWidget"
             }
         },
 
@@ -467,7 +467,7 @@
             }
         }
 
-        that.applier.change("value", restrictedValue, null, "settingAlter");
+        that.applier.change("value", restrictedValue, null, "fromWidget");
 
         // Whether a bound was hit
         return value !== restrictedValue;

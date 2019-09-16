@@ -35,7 +35,7 @@
             setting: {
                 func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{change}.value"],
-                includeSource: "settingAlter"
+                includeSource: "fromWidget"
             }
         },
         selectors: {
@@ -198,7 +198,7 @@
      */
     gpii.qssWidget.menu.updateValue = function (that, menu, container, value, keyboardEvent) {
         if (!that.model.disabled && that.model.value !== value) {
-            that.applier.change("value", value, null, "settingAlter");
+            that.applier.change("value", value, null, "fromWidget");
 
             // Disable interactions with the window as it is about to close
             that.applier.change("disabled", true);
@@ -253,7 +253,7 @@
             }, {
                 funcName: "gpii.qssWidget.menu.presenter.animateActivation",
                 args: ["{change}.value", "{that}.model.item", "{that}.container", "{that}.options.styles"],
-                includeSource: "settingAlter"
+                includeSource: "fromWidget"
             }]
         },
         events: {
