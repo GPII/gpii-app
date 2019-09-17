@@ -436,6 +436,38 @@
         return orderedInstalledSolutions;
     };
 
+    /*
+     * Given the `preferences` from a preferences safe, determine which preferences
+     * set is the default. For nearly all cases this will be the preference set keyed
+     * with id `gpii-default`, but in the event there is no entry with the key, we
+     * will choose the first one from the objects keys.
+     *
+     * If for some reason there are no preference sets at all, we will create a new
+     * default entry.
+     */
+    gpii.captureTool.determineDefaultPrefsSet = function (preferences) {
+        console.log("Determine defaults from: ", preferences);
+        if (preferences.contexts["gpii-default"]) {
+            return {
+                prefsSetId: "gpii-default",
+                name: preferences.contexts["gpii-default"]["name"]
+            }
+        }
+        else if (preferences.contexts.length > 0) {
+            var firstEntry = Object.keys(preferences.contexts)[0];
+            return {
+                prefsSetId: firstEntry,
+                name: preferences.contexts[firstEntry]["name"]
+            }
+        }
+        else {
+            return {
+                prefsSetId: "gpii-default",
+                name: "Default Preferences"
+            }
+        }
+    };
+
     gpii.captureTool.setupIPC = function (that) {
         ipcRenderer.on("sendingInstalledSolutions", function (event, arg) {
             that.fullChange("installedSolutions", arg);
@@ -461,6 +493,9 @@
             transaction.fireChangeRequest({ path: "isKeyedIn", value: arg.isKeyedIn});
             transaction.fireChangeRequest({ path: "keyedInUserToken", value: arg.keyedInUserToken});
             transaction.fireChangeRequest({ path: "preferences", value: arg.preferences});
+            // TODO: This update should potentially be a model listener on preferences
+            transaction.fireChangeRequest({ path: "defaultPrefsSet",
+                value: gpii.captureTool.determineDefaultPrefsSet(arg.preferences)});
             transaction.commit();
         });
 
