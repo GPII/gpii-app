@@ -46,16 +46,28 @@
     fluid.defaults("gpii.captureTool", {
         gradeNames: ["gpii.handlebars.templateAware.standalone", "gpii.binder.bindMarkupEvents"],
         model: {
+            // Page Flow
+            //
+            // These model entries are used for keeping track of the current
+            // page and step in the workflow.
+            currentPage: "1_ready_to_capture",
+
+            // Page 2: Select which Solutions to Capture
+            //
+            // This page has been temporarily removed from the UI, but the model
+            // entries below are also used in diagnostics and debugging.
             installedSolutions: null, // Populated during initialiation, using the local device reporter
             // Populated based off the installed Solutions, will have the settings schemas keyed by:
             // appId -> settingId -> schema
             installedSolutionsSchemas: null,
-            currentPage: "1_ready_to_capture",
             // Possible values for this are:
             // "everything", "running", "chooseapps"
             whatToCapture: "everything",
             runningSolutions: {},
             solutionsToCapture: [],
+
+            // Page 3: Choosing which settings to keep
+
             settingsToKeep: [],
             // Prefs Set Name to Save the captured settings to
             prefsSetName: "MyCapture",

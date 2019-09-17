@@ -1,3 +1,21 @@
+/*
+ * General Styles
+ */
+ .inline {
+     display: inline;
+ }
+
+ .hide {
+     display: none;
+ }
+
+/*
+ * This is necessary for the dropdown on page 4 to be fully visible.
+ */
+div#flc-captureWidgetInitial {
+    height: 90%;
+}
+
 .fl-capture-current-page {
     font-weight: bold;
     background: rgb(179, 211, 241);
@@ -25,3 +43,9 @@
     /* vertical-align: bottom; */
     /* background: orange; */
 /* } */
+
+/* This is the button for collapsing solutions on page 3_what_to_keep */
+input.btn.btn-default.theme-light.flc-hideshow-solution {
+    background-color: rgba(255,255,255,1);
+}
+

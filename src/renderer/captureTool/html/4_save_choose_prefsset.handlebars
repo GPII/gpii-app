@@ -1,14 +1,16 @@
 {{> page_header_partial pageHeader="4. Decide where to save your settings"}}
 
 <p>
-Give the pref-set a name that will help you remember what is in it, or how you expect to use it.
+    Select a preference set where you want to save your captured preferences.
+    Any new settings will replace settings that are older.
 </p>
 <p>
-For example is this the set of preferences you would like to have on most computers, or is it what you like to use at the library, or at work, or at night?
+    You can also create a new preference set.
 </p>
-<br/>
-<form>
 
+<br/>
+
+<span>Save to</span>
 <div class="dropdown">
     <button style="padding-left: 0px" id="example-dropdown" class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
         <span class="flc-current-selected-prefset">
@@ -52,6 +54,5 @@ For example is this the set of preferences you would like to have on most comput
     <input type="button" class="btn btn-default flc-capture-back" value="Back" />
     <input disabled="true" type="button" class="btn btn-default flc-capture-next" value="Next" />
 {{/if}} --}}
-</form>
 
 {{> footer_location_partial activeSave="true"}}
