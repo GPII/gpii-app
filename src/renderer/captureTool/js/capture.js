@@ -482,6 +482,15 @@
         ipcRenderer.on("sendingAllSolutionsCapture", function (event, arg) {
             var finalSettings = gpii.captureTool.annotateSettingsCapture(that, gpii.captureTool.mergeSettingsCapture(arg));
 
+            // Remove any solutions with zero settings per UX Review
+            fluid.each(finalSettings, function (item, key) {
+                // Is it safe to modify an object during iteration with fluid.each?
+                if (!item.numberOfSettings || item.numberOfSettings === 0) {
+                    delete finalSettings[key];
+                    console.log("Removing solution with zero settings: ", key);
+                }
+            });
+
             that.fullChange("capturedSettings", finalSettings);
             that.fullChange("currentPage", "3_what_to_keep");
             that.applier.change("captureDone", true);
