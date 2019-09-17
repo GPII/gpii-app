@@ -70,6 +70,10 @@ body {
     border: 1px solid #ff0000 !important;
 }
 
+.fl-qssWidget .fl-qssWidget-learnMoreLink.noMargin {
+    margin: 0;
+}
+
 .fl-qssWidget .fl-qssWidget-learnMoreLink {
     margin: 10px 0;
     border: 1px solid transparent;

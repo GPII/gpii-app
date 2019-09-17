@@ -169,6 +169,57 @@
         },
         "learnMoreLink": "https://morphic.world/help/qsshelp#contrast"
     }, {
+        "id": "mouse",
+        "path": "mouse",
+        "schema": {
+            "type": "mouse"
+        },
+        "settings": {
+            "mouseSpeed": {
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed",
+                "schema": {
+                    "type": "number",
+                    "default": 10,
+                    "min": 1,
+                    "max": 20,
+                    "divisibleBy": 2
+                },
+                "value": 10,
+                "messageKey": "windows-mouseSpeed"
+            },
+            "swapMouseButtons": {
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons",
+                "schema": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "value": false,
+                "messageKey": "windows-swapMouseButtons"
+            },
+            "easierDoubleClick": {
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.easierDoubleClick",
+                "schema": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "value": false,
+                "messageKey": "windows-easierDoubleClick"
+            },
+            "largerMousePointer": {
+                "path": "http://registry\\.gpii\\.net/common/cursorSize",
+                "schema": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "value": false,
+                "messageKey": "windows-largerMousePointer"
+            }
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 145,
+        "messageKey": "common-mouse",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#mouse"
+    }, {
         "id": "read-aloud",
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
         "schema": {

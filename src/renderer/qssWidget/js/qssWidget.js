@@ -58,7 +58,8 @@
             openUSB: ".flc-qssOpenUSBWidget",
             volume: ".flc-qssVolumeWidget",
             office: ".flc-qssOfficeWidget",
-            translateTools: ".flc-qssTranslateToolsWidget"
+            translateTools: ".flc-qssTranslateToolsWidget",
+            mouse: ".flc-qssMouseWidget"
         },
 
         /**
@@ -73,7 +74,8 @@
             "openUSB": "gpii.qssWidget.openUSB",
             "volume": "gpii.qssWidget.volume",
             "office": "gpii.qssWidget.office",
-            "translateTools": "gpii.qssWidget.translateTools"
+            "translateTools": "gpii.qssWidget.translateTools",
+            "mouse": "gpii.qssWidget.mouse"
         },
 
         events: {
