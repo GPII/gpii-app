@@ -207,13 +207,11 @@ gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) 
         arrowDirection = availableDirections.defaultDirection;
     }
 
-    // apply the new arrow direction
-    that.applier.change("arrowDirection", arrowDirection);
-
-    // return the calculated offsets
+    // return the calculated offsets and arrow direction
     return {
         offsetX: offsetX,
-        offsetY: btnCenterOffset.y
+        offsetY: btnCenterOffset.y,
+        direction: arrowDirection
     };
 };
 
@@ -224,12 +222,15 @@ gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) 
  * button.
  */
 gpii.app.qssTooltipDialog.show = function (that, btnCenterOffset) {
-    var offset = gpii.app.qssTooltipDialog.getTooltipPosition(that, btnCenterOffset);
+    var offsetAndDirection = gpii.app.qssTooltipDialog.getTooltipPosition(that, btnCenterOffset);
 
     that.dialog.setAlwaysOnTop(true);
 
     // reposition window properly
-    that.setPosition(offset.offsetX, offset.offsetY);
+    that.setPosition(offsetAndDirection.offsetX, offsetAndDirection.offsetY);
+
+    // apply the new arrow direction
+    that.applier.change("arrowDirection", offsetAndDirection.direction);
 
     // Trigger the showing mechanism
     that.applier.change("isShown", true);
