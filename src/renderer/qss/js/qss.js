@@ -40,6 +40,7 @@
             "resetAll":          "gpii.qss.resetAllButtonPresenter",
             "more":              "gpii.qss.moreButtonPresenter",
             "openUSB":           "gpii.qss.widgetButtonPresenter",
+            "office":            "gpii.qss.widgetButtonPresenter",
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
             "volume":            "gpii.qss.volumeButtonPresenter",
@@ -71,8 +72,7 @@
             onMorePanelRequired: null,
             onUndoRequired: null,
             onResetAllRequired: null,
-            onSaveRequired: null,
-            onPspToggled: null
+            onSaveRequired: null
         },
 
         invokers: {
@@ -233,8 +233,7 @@
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
-                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
-                        onQssPspToggled: "{quickSetStripList}.events.onPspToggled"
+                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired"
                     }
                 }
             }

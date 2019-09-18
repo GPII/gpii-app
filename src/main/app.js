@@ -24,7 +24,6 @@ require("./assetsManager.js");
 require("./common/utils.js");
 require("./common/ws.js");
 require("./dialogs/dialogManager.js");
-require("./dialogs/psp.js");
 require("./storage.js");
 require("./factsManager.js");
 require("./gpiiConnector.js");
@@ -74,7 +73,6 @@ fluid.defaults("gpii.app", {
             settingGroups: [],
 
             // user settings
-            closePspOnBlur: null,
             closeQssOnBlur: null,
             disableRestartWarning: null
         },
@@ -247,10 +245,6 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-        psp: {
-            type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady"
-        },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -285,9 +279,9 @@ fluid.defaults("gpii.app", {
                         ]
                     },
                     /*
-                     * A local shortcut (registered for the QSS, QSS widget and PSP) isn't fully sufficient for handling
+                     * A local shortcut (registered for the QSS and QSS widget) isn't fully sufficient for handling
                      * the closing of the tooltip as but it's the best sane that can be done. For example,
-                     * in case the QSS loses focus and neither of the related windows (PSP and qssWidget)
+                     * in case the QSS loses focus and neither of the related windows (qssWidget)
                      * is focused the tooltip will be hidden but hovering
                      * a button afterwards will show the tooltip again. In that case the tooltip won't be
                      * closable with "Esc" because we're using only a local shortcut.
@@ -299,7 +293,7 @@ fluid.defaults("gpii.app", {
                         args: [
                             "{that}.options.shortcutAccelerators.closeQssTooltip",
                             "onCloseQssTooltipShortcut",
-                            ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.psp"]
+                            ["gpii.app.qss", "gpii.app.qssWidget"]
                         ]
                     },
 
@@ -325,9 +319,6 @@ fluid.defaults("gpii.app", {
             options: {
                 model: {
                     isKeyedIn: "{gpii.app}.model.isKeyedIn"
-                },
-                events: {
-                    onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
                 },
                 listeners: {
                     onTrayIconClicked: {
@@ -429,7 +420,7 @@ fluid.defaults("gpii.app", {
         },
         resetAllToStandard: {
             funcName: "gpii.app.resetAllToStandard",
-            args: ["{that}", "{psp}", "{qssWrapper}.qss"]
+            args: ["{that}", "{qssWrapper}.qss"]
         },
         // Re-apply the last environmental login
         reApplyPreferences: {
@@ -567,13 +558,11 @@ gpii.app.keyOut = function (lifecycleManager, token) {
  * Performs a reset of all settings to their standard values. It also closes
  * the QSS in case it is open.
  * @param {Component} that - The `gpii.app` instance.
- * @param {Component} psp - The `gpii.app.psp` instance.
  * @param {Component} qss - The `gpii.app.qss` instance.
  * @return {Promise} A promise that will be resolved or rejected when the reset
  * all operation completes.
  */
-gpii.app.resetAllToStandard = function (that, psp, qss) {
-    psp.hide();
+gpii.app.resetAllToStandard = function (that, qss) {
     qss.hide();
     return that.keyIn("reset");
 };

@@ -28,23 +28,6 @@ gpii.tests.app.testInitialMenu = function (menu) {
     gpii.tests.app.testMenu(menuTemplate);
 };
 
-// Test regarding the PSP window
-fluid.registerNamespace("gpii.tests.app.psp");
-
-gpii.tests.app.psp.testPSPWindowIsShown = function (psp) {
-    jqUnit.assertTrue("The PSP Window is shown", psp.model.isShown);
-};
-
-gpii.tests.app.psp.testPSPWindowIsHidden = function (psp) {
-    jqUnit.assertFalse("The PSP Window is hidden", psp.model.isShown);
-};
-
-gpii.tests.app.psp.testInitialPSPWindow = function (psp) {
-    jqUnit.assertNotUndefined("The PSP was instantiated", psp);
-    jqUnit.assertNotUndefined("The PSP Electron window was instantiated", psp.dialog);
-    gpii.tests.app.psp.testPSPWindowIsHidden(psp);
-};
-
 gpii.tests.app.testTemplateExists = function (template, expectedLength) {
     jqUnit.assertValue("The menu template was created", template);
     jqUnit.assertEquals("There are " + expectedLength + " items in the menu", expectedLength, template.length);
@@ -81,7 +64,7 @@ fluid.registerNamespace("gpii.tests.app.testDefs");
 
 gpii.tests.app.testDefs = {
     name: "GPII application integration tests",
-    expect: 28,
+    expect: 24,
     config: {
         configName: "gpii.tests.production.config",
         configPath: "tests/configs"
@@ -90,17 +73,7 @@ gpii.tests.app.testDefs = {
     sequence: [{ // Test the menu that will be rendered
         func: "gpii.tests.app.testInitialMenu",
         args: ["{that}.app.tray.menu"]
-    }, [ // PSP window tests
-        { // pspWindow should've been created by now
-            funcName: "gpii.tests.app.psp.testInitialPSPWindow",
-            args: ["{that}.app.psp"]
-        }, {
-            func: "{that}.app.psp.show"
-        }, {
-            funcName: "gpii.tests.app.psp.testPSPWindowIsShown",
-            args: ["{that}.app.psp"]
-        }
-    ], { // Test menu after key in
+    }, { // Test menu after key in
         func: "{that}.app.keyIn",
         args: "snapset_1a"
     }, {
