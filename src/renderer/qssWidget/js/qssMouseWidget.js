@@ -631,26 +631,23 @@
             }
         },
 
-        modelListeners: {
-            "setting.value": {
-                func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
-                args: ["{that}.model.setting"],
-                includeSource: "settingAlter"
-            }
-        },
-
         components: {
             toggleButton: {
                 type: "gpii.psp.widgets.switch",
                 container: "{that}.dom.toggleButton",
                 options: {
                     model: {
-                        enabled: "{gpii.qssWidget.mouseWidgetToggle}.model.value"
+                        enabled: {
+                            expander: {
+                                funcName: "gpii.qssWidget.mouseWidgetToggle.transformValue",
+                                args: ["{gpii.qssWidget.mouseWidgetToggle}.model.value", "{gpii.qssWidget.mouseWidgetToggle}.model.setting.schema"]
+                            }
+                        }
                     },
                     invokers: {
                         toggleModel: {
                             funcName: "gpii.qssWidget.mouseWidgetToggle.toggleModel",
-                            args: ["{that}"]
+                            args: ["{that}", "{gpii.qssWidget.mouseWidgetToggle}", "{channelNotifier}.events.onQssWidgetSettingAltered"]
                         }
                     }
                 }
@@ -658,13 +655,43 @@
         }
     });
 
+
+    /**
+     * Transforms a number value to boolean.
+     * @param {Number} value - The value of the setting.
+     * @param {Object} schema - Describes the schema of the setting.
+     * @return {Boolean} The modified value.
+     */
+    gpii.qssWidget.mouseWidgetToggle.transformValue = function (value, schema) {
+        if (value === schema.mapOff) {
+            return false;
+        } else if (value === schema.mapOn) {
+            return true;
+        } else {
+            return value;
+        }
+    };
+
     /**
      * Invoked whenever the user has activated the "switch" UI element (either
      * by clicking on it or pressing "Space" or "Enter"). What this function
      * does is to change the `enabled` model property to its opposite value.
      * @param {Component} that - The `gpii.psp.widgets.switch` instance.
+     * @param {Component} toggleWidget - The `gpii.qssWidget.mouseWidgetToggle` instance.
+     * @param {fluid.event} event - onQssWidgetSettingAltered event
      */
-    gpii.qssWidget.mouseWidgetToggle.toggleModel = function (that) {
+    gpii.qssWidget.mouseWidgetToggle.toggleModel = function (that, toggleWidget, event) {
+        if (toggleWidget.model.setting.schema.mapOff || toggleWidget.model.setting.schema.mapOn) {
+            if (that.model.enabled) {
+                toggleWidget.model.setting.value = toggleWidget.model.setting.schema.mapOff;
+            } else {
+                toggleWidget.model.setting.value = toggleWidget.model.setting.schema.mapOn;
+            }
+        } else {
+            toggleWidget.model.setting.value = !that.model.enabled;
+        }
+
+        event.fire(toggleWidget.model.setting);
         that.applier.change("enabled", !that.model.enabled, null, "settingAlter");
     };
 

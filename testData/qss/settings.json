@@ -176,6 +176,7 @@
         },
         "settings": {
             "mouseSpeed": {
+                "id": "mouseSpeed",
                 "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed",
                 "schema": {
                     "type": "number",
@@ -188,24 +189,31 @@
                 "messageKey": "windows-mouseSpeed"
             },
             "swapMouseButtons": {
+                "id": "swapMouseButtons",
                 "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons",
                 "schema": {
                     "type": "boolean",
-                    "default": false
+                    "mapOn": 1,
+                    "mapOff": 0,
+                    "default": 0
                 },
-                "value": false,
+                "value": 0,
                 "messageKey": "windows-swapMouseButtons"
             },
             "easierDoubleClick": {
-                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.easierDoubleClick",
+                "id": "easierDoubleClick",
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.DoubleClickTime",
                 "schema": {
                     "type": "boolean",
-                    "default": false
+                    "mapOn": 5000,
+                    "mapOff": 500,
+                    "default": 500
                 },
-                "value": false,
+                "value": 500,
                 "messageKey": "windows-easierDoubleClick"
             },
             "largerMousePointer": {
+                "id": "largerMousePointer",
                 "path": "http://registry\\.gpii\\.net/common/cursorSize",
                 "schema": {
                     "type": "boolean",

@@ -438,7 +438,7 @@ gpii.app.qssWrapper.registerUndoableChange = function (that, oldValue) {
 gpii.app.undoStack.revertChange = function (qssWrapper, change) {
     if (gpii.app.hasSecondarySettings(change)) {
         // this change has secondary settings
-        fluid.each(change.settings, function(secondaryChange) {
+        fluid.each(change.settings, function (secondaryChange) {
             // applying the secondary settings
             qssWrapper.alterSetting({
                 path:  secondaryChange.path,
@@ -737,28 +737,28 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
             return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
         });
 
-            // there is no result, looking for secondary settings
-    if (settingIndex === -1) {
-        var primarySettingIndex = false, // store primary setting's index (ie. 0; 1; etc.)
-            secondarySettingKey = false, // store secondary setting's key (ie. "mouseSpeed"; "swapMouseButtons"; etc.)
-            secondarySettingData = false; // store secondary index object data
+        // there is no result, looking for secondary settings
+        if (settingIndex === -1) {
+            var primarySettingIndex = false, // store primary setting's index (ie. 0; 1; etc.)
+                secondarySettingKey = false, // store secondary setting's key (ie. "mouseSpeed"; "swapMouseButtons"; etc.)
+                secondarySettingData = false; // store secondary index object data
 
-        fluid.each(that.model.settings, function(el, index) {
-            if (gpii.app.hasSecondarySettings(el)) {
-                primarySettingIndex = index;
-                secondarySettingData = fluid.find_if(el.settings, function(setting, key) {
-                    secondarySettingKey = key;
-                    return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
-                });
+            fluid.each(that.model.settings, function (el, index) {
+                if (gpii.app.hasSecondarySettings(el)) {
+                    primarySettingIndex = index;
+                    secondarySettingData = fluid.find_if(el.settings, function (setting, key) {
+                        secondarySettingKey = key;
+                        return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
+                    });
+                }
+            });
+
+            if (secondarySettingData) {
+                // we found a secondary setting that matches
+                // applying the secondary setting's change
+                that.applier.change("settings." + primarySettingIndex + ".settings." + secondarySettingKey, updatedSetting, null, source);
             }
-        });
-
-        if (secondarySettingData) {
-            // we found a secondary setting that matches
-            // applying the secondary setting's change
-            that.applier.change("settings."+primarySettingIndex+".settings."+secondarySettingKey, updatedSetting, null, source);
-        }
-    } else {
+        } else {
         // we do have result, applying primary setting's change
             that.applier.change("settings." + settingIndex, updatedSetting, null, source);
         }
@@ -818,7 +818,7 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
     }
     // checking if we have secondary settings (looking for a `settings` node
     if (fluid.isValue(translatedSetting.settings)) {
-        fluid.each(translatedSetting.settings, function(secondarySetting, index) {
+        fluid.each(translatedSetting.settings, function (secondarySetting) {
             var secondaryMessage = qssSettingMessages[secondarySetting.messageKey];
             if (secondaryMessage && fluid.isValue(secondaryMessage.title)) {
                 // applying the title of the setting

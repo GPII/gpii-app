@@ -356,17 +356,18 @@ gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
  * @param {Object} oldValue - The previous value of the altered setting.
  */
 
-gpii.app.getSecondarySettingsChanges = function(value, oldValue) {
+gpii.app.getSecondarySettingsChanges = function (value, oldValue) {
     return fluid.find_if(value.settings, function (setting, key) {
         return !fluid.model.diff(setting, oldValue.settings[key]);
     });
 };
 
- /**
+/**
  * Checks if the button has a secondary settings
  * @param {Object} button - The setting which has been altered via the QSS or
  * its widget.
+ * @return {Boolean} Return true if the button has a secondary settings.
  */
-gpii.app.hasSecondarySettings = function(button) {
+gpii.app.hasSecondarySettings = function (button) {
     return fluid.isValue(button.settings);
 };
