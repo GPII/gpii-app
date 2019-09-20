@@ -398,10 +398,17 @@
      */
     gpii.qssWidget.mouseSpeedStepper.makeRestrictedStep = function (that, value, schema, shouldSubtract) {
         var step = (shouldSubtract ? -schema.divisibleBy : schema.divisibleBy);
+        var restrcitedValue;
 
-        value = parseFloat( (value + step).toPrecision(2) );
-        // Handle not given min and max
-        var restrcitedValue = value;
+        if (value === schema.min && shouldSubtract) {
+            // handle edge case specific only to mouse speed steppper
+            restrcitedValue = 2;
+        } else {
+            value = parseFloat( (value - step).toPrecision(2) );
+
+            // Handle not given min and max
+            restrcitedValue = value;
+        };
 
         if (fluid.isValue(schema.max)) {
             restrcitedValue = Math.min(restrcitedValue, schema.max);
@@ -414,7 +421,7 @@
         that.applier.change("value", restrcitedValue, null, "settingAlter");
 
         // Whether a bound was hit
-        return value !== restrcitedValue;
+        return restrcitedValue <= schema.min || restrcitedValue >= schema.max;
     };
 
     /**
@@ -536,15 +543,23 @@
         var indicators = [];
 
         for (
-            var indicatorValue = setting.schema.max;
-            indicatorValue >= setting.schema.min;
-            indicatorValue = parseFloat((indicatorValue - setting.schema.divisibleBy).toPrecision(2))
+            var indicatorValue = 0;
+            indicatorValue <= setting.schema.max;
+            indicatorValue = parseFloat((indicatorValue + setting.schema.divisibleBy).toPrecision(2))
         ) {
-            indicators.push({
-                indicatorValue: indicatorValue, // what value to be applied when selected
-                isSelected: indicatorValue === setting.value,
-                isRecommended: indicatorValue === setting.schema["default"]
-            });
+            if (indicatorValue === 0) {
+                indicators.push({
+                    indicatorValue: setting.schema.min, // value cannot be 0, instead use setting minimum value
+                    isSelected: setting.schema.min === setting.value,
+                    isRecommended: setting.schema.min === setting.schema["default"]
+                });
+            } else {
+                indicators.push({
+                    indicatorValue: indicatorValue, // what value to be applied when selected
+                    isSelected: indicatorValue === setting.value,
+                    isRecommended: indicatorValue === setting.schema["default"]
+                });
+            }
         }
         return indicators;
     };
