@@ -95,6 +95,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",
             target: "{app tray}.options.trayType"
+        },
+        distributeResetToStandardProfileUrl: {
+            record: "{that}.options.siteConfig.resetToStandardProfileUrl",
+            target: "{flowManager defaultSettingsLoader}.options.defaultSettingsUrl"
         }
     }
 });
