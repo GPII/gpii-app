@@ -35,7 +35,7 @@ div#flc-captureWidgetInitial {
 
 .fl-capture-current-page {
     font-weight: bold;
-    background: rgb(179, 211, 241);
+    background: #b3d3f1;
 }
 
 .fl-capture-footer {
@@ -54,6 +54,12 @@ div#flc-captureWidgetInitial {
 
 .fl-capture-footer .breadcrumb {
     margin: 0 0 0 0;
+}
+
+.fl-capture-active-footer {
+    margin-bottom: 2px;
+    border-bottom: thick rgba(0, 0, 0, 0.6) solid;
+    background-color: rgba(0, 120, 215, 0.1);
 }
 
 /* .fl-capture-footer li { */
