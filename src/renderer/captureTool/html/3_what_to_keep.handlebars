@@ -1,18 +1,22 @@
-{{> page_header_partial pageHeader="3. Decide which settings to keep"}}
+<div class="fl-flex-container">
 
-<p>
-    The capture tool found {{settingsToKeep.length}} settings in the {{capturedSettingsToRender.length}} applications. Look at each application's settings
-    and decide which settings you want to keep.
-</p>
-<hr/>
-<div>
-    <span><span class="flc-num-settings-selected">0</span> settings selected</span>
-    <a href="#" class="flc-select-all-settings">Select All</a>
-    <a href="#" class="flc-clear-all-settings">Clear All</a>
+<div class="fl-flex-regular-box">
+    {{> page_header_partial pageHeader="3. Decide which settings to keep"}}
+
+    <p>
+        The capture tool found {{settingsToKeep.length}} settings in the {{capturedSettingsToRender.length}} applications. Look at each application's settings
+        and decide which settings you want to keep.
+    </p>
+    <hr/>
+    <div>
+        <span><span class="flc-num-settings-selected">0</span> settings selected</span>
+        <a href="#" class="flc-select-all-settings">Select All</a>
+        <a href="#" class="flc-clear-all-settings">Clear All</a>
+    </div>
 </div>
 
-<form>
-<div class="form-group fl-capture-scrolled">
+{{!-- <form> --}}
+<div class="form-group fl-capture-scrolled fl-flex-expand-box">
     {{#each capturedSettingsToRender}}
     <div>
         <div class="clearfix color-bg-light-vivid-low" style="margin-bottom: 10px; padding: 5px">
@@ -42,8 +46,13 @@
     </div>
     {{/each}}
 </div>
-</form>
-<input type="button" class="btn btn-default flc-capture-back" value="Back" />
-<input type="button" class="btn btn-default flc-capture-next" value="Next" />
+{{!-- </form> --}}
+
+<div class="fl-flex-regular-box">
+    <input type="button" class="btn btn-default flc-capture-back" value="Back" />
+    <input type="button" class="btn btn-default flc-capture-next" value="Next" />
+</div>
+
+</div>
 
 {{> footer_location_partial activeWhatToKeep="true"}}

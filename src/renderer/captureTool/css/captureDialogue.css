@@ -10,6 +10,23 @@
  }
 
 /*
+ * Flex containers
+ */
+.fl-flex-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.fl-flex-regular-box {
+    flex: 0;
+}
+
+.fl-flex-expand-box {
+    flex: 1;
+}
+
+/*
  * This is necessary for the dropdown on page 4 to be fully visible.
  */
 div#flc-captureWidgetInitial {
