@@ -27,6 +27,28 @@
 }
 
 /*
+ * Page 3: What to Keep
+ */
+
+ .fl-capture-scrolled {
+    overflow: auto;
+    height: 40%;
+    border: thin black solid;
+    padding: 10px;
+}
+
+/* This is the button for collapsing solutions on page 3_what_to_keep */
+input.btn.btn-default.theme-light.flc-hideshow-solution {
+    background-color: rgba(255,255,255,1);
+    margin-top: 0px;
+}
+
+.form-group.fl-capture-scrolled .checkbox {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+/*
  * This is necessary for the dropdown on page 4 to be fully visible.
  */
 div#flc-captureWidgetInitial {
@@ -45,13 +67,6 @@ div#flc-captureWidgetInitial {
     /* height: 2.5rem; */
 }
 
-.fl-capture-scrolled {
-    overflow: auto;
-    height: 40%;
-    border: thin black solid;
-    padding: 10px;
-}
-
 .fl-capture-footer .breadcrumb {
     margin: 0 0 0 0;
 }
@@ -62,13 +77,4 @@ div#flc-captureWidgetInitial {
     background-color: rgba(0, 120, 215, 0.1);
 }
 
-/* .fl-capture-footer li { */
-    /* vertical-align: bottom; */
-    /* background: orange; */
-/* } */
-
-/* This is the button for collapsing solutions on page 3_what_to_keep */
-input.btn.btn-default.theme-light.flc-hideshow-solution {
-    background-color: rgba(255,255,255,1);
-}
 

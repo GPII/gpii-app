@@ -611,6 +611,12 @@
         }
         else if (currentPage === "4_confirm_update_prefsset") {
             that.applier.change("currentPage", "5_confirmation");
+            var prefsSetName = that.model.prefsSetName;
+            var prefsSetId = prefsSetName; // TODO: This should likely be a UUID
+            if (that.model.prefsSetSaveType === "existing") {
+                that.applier.change("prefsSetId", that.model.selectedPrefsSet);
+                that.applier.change("prefsSetName", that.model.selectedPrefsSetName);
+            }
             that.render("5_confirmation");
             that.saveCapturedPreferences();
         }
@@ -677,19 +683,19 @@
     };
 
     gpii.captureTool.saveCapturedPreferences = function (that) {
-        var prefsSetName = that.model.prefsSetName;
-        var prefsSetId = prefsSetName;
-        if (that.model.prefsSetSaveType === "existing") {
-            prefsSetId = that.model.selectedPrefsSet;
-            prefsSetName = that.model.selectedPrefsSetName;
-        }
+        // var prefsSetName = that.model.prefsSetName;
+        // var prefsSetId = prefsSetName;
+        // if (that.model.prefsSetSaveType === "existing") {
+        //     prefsSetId = that.model.selectedPrefsSet;
+        //     prefsSetName = that.model.selectedPrefsSetName;
+        // }
 
         var prefSetPayload = {
-            name: prefsSetName,
+            name: that.model.prefsSetName,
             preferences: that.model.preferencesToKeep
         };
         ipcRenderer.send("saveCapturedPreferences", {
-            prefSetId: prefsSetId, //needs to be simplified... nospaces etc.
+            prefSetId: that.model.prefsSetId, //needs to be simplified... nospaces etc.
             prefSetPayload: prefSetPayload
         });
     };
