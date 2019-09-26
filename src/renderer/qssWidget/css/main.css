@@ -25,7 +25,7 @@ body {
     box-sizing: border-box;
 
     display: flex;
-    flex-direction: column;
+    /*flex-direction: column;*/
     
     background-color: #ffffff;
     color: #19294c;
@@ -34,6 +34,19 @@ body {
 
     overflow-x: hidden;
     overflow-y: overlay;
+}
+
+.fl-widget-content {
+    width: 50%;
+    float: left;
+    padding-right: 10px;
+}
+
+.fl-sidecart-panel {
+    width: 50%;
+    float: left;
+    padding-left: 10px;
+    border-left: 1px solid silver;
 }
 
 .fl-qssWidget::-webkit-scrollbar {

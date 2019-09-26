@@ -58,7 +58,8 @@
             openUSB: ".flc-qssOpenUSBWidget",
             volume: ".flc-qssVolumeWidget",
             office: ".flc-qssOfficeWidget",
-            translateTools: ".flc-qssTranslateToolsWidget"
+            translateTools: ".flc-qssTranslateToolsWidget",
+            sideCart: ".flc-sidecart-panel"
         },
 
         /**
@@ -119,6 +120,35 @@
                     }
                 }
             },
+            sideCart: {
+                type: "gpii.qssWidget.sideCart",
+                container: "{qssWidget}.dom.sideCart",
+                options: {
+                    model: {
+                        messages: {
+                            sideCartContent: "{qssWidget}.model.setting.sideCart"
+                        }
+                    },
+                    selectors: {
+                        learnMoreLink: ".flc-qssWidget-learnMoreLink",
+                        sideCartContent: ".flc-qssWidget-sidecart"
+                    },
+                    components: {
+                        learnMoreLink: {
+                            type: "gpii.psp.qssWidget.learnMoreLink",
+                            container: "{that}.dom.learnMoreLink",
+                            options: {
+                                model: {
+                                    setting: "{qssWidget}.model.setting",
+                                    messages: {
+                                        learnMore: "{qssWidget}.model.messages.learnMore"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             widget: {
                 type: {
                     expander: {
@@ -142,27 +172,11 @@
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
                             extendedTip: "{qssWidget}.model.setting.extendedTip",
-                            switchTitle: "{qssWidget}.model.setting.switchTitle",
-                            learnMore: "{qssWidget}.model.messages.learnMore"
+                            switchTitle: "{qssWidget}.model.setting.switchTitle"
                         }
                     },
                     selectors: {
-                        tip: ".flc-qssWidget-tip",
-                        learnMoreLink: ".flc-qssWidget-learnMoreLink"
-                    },
-                    components: {
-                        learnMoreLink: {
-                            type: "gpii.psp.qssWidget.learnMoreLink",
-                            container: "{that}.dom.learnMoreLink",
-                            options: {
-                                model: {
-                                    setting: "{qssWidget}.model.setting",
-                                    messages: {
-                                        learnMore: "{qssWidget}.model.messages.learnMore"
-                                    }
-                                }
-                            }
-                        }
+                        tip: ".flc-qssWidget-tip"
                     },
                     events: {
                         onNotificationRequired:   "{qssWidget}.events.onQssWidgetNotificationRequired",

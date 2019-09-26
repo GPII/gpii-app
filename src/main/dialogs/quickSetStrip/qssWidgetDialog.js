@@ -63,7 +63,7 @@ fluid.defaults("gpii.app.qssWidget", {
             }
         },
         attrs: {
-            width: 170,
+            width: 370,
             height: 255,
             alwaysOnTop: true
         },
