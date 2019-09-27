@@ -36,6 +36,7 @@ fluid.defaults("gpii.app.qss", {
         logoWidth: 117,
         // The width of a single button together with its left margin
         buttonWidth: 59,
+        separatorWidth: 10,
         closeButtonWidth: 29
     },
     qssButtonTypes: {
@@ -93,7 +94,7 @@ fluid.defaults("gpii.app.qss", {
         onUndoIndicatorChanged: null
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
+    linkedWindowsGrades: ["gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
 
     components: {
         channelNotifier: {
@@ -144,8 +145,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssMorePanelRequired: null,
                     onQssUndoRequired: null,
                     onQssResetAllRequired: null,
-                    onQssSaveRequired: null,
-                    onQssPspToggled: null
+                    onQssSaveRequired: null
                 },
 
                 listeners: {
@@ -215,8 +215,10 @@ fluid.defaults("gpii.app.qss", {
  * @return {Number} - The total scaled size of the QSS's button
  */
 gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, buttons) {
-    var qssButtonTypes   = options.qssButtonTypes,
+    var separatorId = "separator",
+        qssButtonTypes   = options.qssButtonTypes,
         buttonWidth      = options.dialogContentMetrics.buttonWidth,
+        separatorWidth   = options.dialogContentMetrics.separatorWidth,
         closeButtonWidth = options.dialogContentMetrics.closeButtonWidth;
 
     // start off with the first button size and the constant close button
@@ -228,7 +230,13 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
             !buttons[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
             buttons[i].path !== qssButtonTypes.closeButton
         ) {
-            buttonsWidth += buttonWidth;
+            if (buttons[i].buttonTypes[0] === separatorId) {
+                // this is separator type button, which is slimmer that the others
+                buttonsWidth += separatorWidth;
+            } else {
+                // standart button width
+                buttonsWidth += buttonWidth;
+            }
         }
     }
 

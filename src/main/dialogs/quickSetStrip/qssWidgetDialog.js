@@ -40,7 +40,7 @@ fluid.defaults("gpii.app.qssWidget", {
     extraVerticalOffset: 7,
 
     // A list of QSS setting types for which this widget is applicable.
-    supportedSettings: ["string", "number", "boolean", "screenCapture", "openUSB", "volume", "office"],
+    supportedSettings: ["string", "number", "boolean", "screenCapture", "openUSB", "volume", "office", "translateTools"],
 
     model: {
         setting: {}
@@ -73,7 +73,7 @@ fluid.defaults("gpii.app.qssWidget", {
         fileSuffixPath: "qssWidget/index.html"
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qss", "gpii.app.qssNotification", "gpii.app.qssWidget"],
+    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssNotification", "gpii.app.qssWidget"],
 
     sounds: {
         boundReachedErrorSound: "boundReachedError.mp3"
