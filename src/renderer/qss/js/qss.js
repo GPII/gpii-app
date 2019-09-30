@@ -46,7 +46,9 @@
             "disabled":          "gpii.qss.disabledButtonPresenter",
             // custom button grades
             "custom-launch-app": "gpii.qss.customLaunchAppPresenter",
-            "custom-open-url":   "gpii.qss.customOpenUrlPresenter"
+            "custom-open-url":   "gpii.qss.customOpenUrlPresenter",
+            // separator grade
+            "separator":         "gpii.qss.separatorButtonPresenter"
         },
 
         dynamicContainerMarkup: {

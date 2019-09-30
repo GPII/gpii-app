@@ -328,7 +328,8 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     * All of the buttons that don't have `id` at all, they are added at the end of the list
     * starting tabindex, adding +10 of each new item.
     */
-    var matchedList = [],
+    var separatorId = "separator",
+        matchedList = [],
         afterList = [],
         tabindex = 100;
 
@@ -344,9 +345,12 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
             matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
         }
         if (matchedButton !== false) {
-            // adding the proper tabindex
-            matchedButton.tabindex = tabindex;
-            tabindex += 10; // increasing the tabindex
+            // the separators don't need tabindex
+            if (buttonId !== separatorId) {
+                // adding the proper tabindex
+                matchedButton.tabindex = tabindex;
+                tabindex += 10; // increasing the tabindex
+            }
             // adding button to the matched ones
             matchedList.push(matchedButton);
         }
