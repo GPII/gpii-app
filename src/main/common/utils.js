@@ -479,7 +479,8 @@ gpii.app.checkExecutable = function (executablePath) {
 };
 
 /**
- * Simple function to try to validate the url
+ * Simple function to try to validate the url - posted by Ajay A and contributed to Devshed:
+ * https://www.quora.com/What-is-the-best-way-to-validate-for-a-URL-in-JavaScript
  * @param {String} url - browser's url
  * @return {Boolean} - returns `true` when the url looks valid
  */
