@@ -59,7 +59,8 @@
             volume: ".flc-qssVolumeWidget",
             office: ".flc-qssOfficeWidget",
             translateTools: ".flc-qssTranslateToolsWidget",
-            sideCart: ".flc-sidecart-panel"
+            sideCart: ".flc-sidecart-panel",
+            sideCartButton: ".flc-sidecart-button"
         },
 
         /**
@@ -120,35 +121,6 @@
                     }
                 }
             },
-            sideCart: {
-                type: "gpii.qssWidget.sideCart",
-                container: "{qssWidget}.dom.sideCart",
-                options: {
-                    model: {
-                        messages: {
-                            sideCartContent: "{qssWidget}.model.setting.sideCart"
-                        }
-                    },
-                    selectors: {
-                        learnMoreLink: ".flc-qssWidget-learnMoreLink",
-                        sideCartContent: ".flc-qssWidget-sidecart"
-                    },
-                    components: {
-                        learnMoreLink: {
-                            type: "gpii.psp.qssWidget.learnMoreLink",
-                            container: "{that}.dom.learnMoreLink",
-                            options: {
-                                model: {
-                                    setting: "{qssWidget}.model.setting",
-                                    messages: {
-                                        learnMore: "{qssWidget}.model.messages.learnMore"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             widget: {
                 type: {
                     expander: {
@@ -192,6 +164,51 @@
                             func: "{that}.events.onQssWidgetCreated.fire",
                             args: [null],
                             priority: "last"
+                        }
+                    }
+                }
+            },
+            sideCart: {
+                type: "gpii.qssWidget.sideCart",
+                container: "{qssWidget}.dom.sideCart",
+                options: {
+                    model: {
+                        setting: "{qssWidget}.model.setting"
+                    },
+                    selectors: {
+                        learnMoreLink: ".flc-qssWidget-learnMoreLink"
+                    },
+                    components: {
+                        learnMoreLink: {
+                            type: "gpii.psp.qssWidget.learnMoreLink",
+                            container: "{that}.dom.learnMoreLink",
+                            options: {
+                                model: {
+                                    setting: "{qssWidget}.model.setting",
+                                    messages: {
+                                        learnMore: "{qssWidget}.model.messages.learnMore"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            openSideCartButton: {
+                type: "gpii.psp.widgets.button",
+                container: "{that}.dom.sideCartButton",
+                options: {
+                    model: {
+                        label: "{qssWidget}.model.setting.schema.helpButtonLabel"
+                    },
+                    listeners: {
+                        onClick: {
+                            funcName: "gpii.psp.qssWidget.openSideCartActivated",
+                            args: [
+                                "{qssWidget}",
+                                "{sideCart}.container",
+                                "{widget}.container"
+                            ]
                         }
                     }
                 }
@@ -276,6 +293,15 @@
             }
         }
     });
+
+
+    /**
+     *
+     */
+    gpii.psp.qssWidget.openSideCartActivated = function (that, sideCartContainer, widgetContainer) {
+        sideCartContainer.removeClass("fl-hide-sidecart-panel");
+    };
+
 
     /**
      * Fires the appropriate event which is communicated to the main process to

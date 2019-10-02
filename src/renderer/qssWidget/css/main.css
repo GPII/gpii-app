@@ -49,6 +49,14 @@ body {
     border-left: 1px solid silver;
 }
 
+.flc-sidecart-button {
+    position: absolute;
+}
+
+.fl-hide-sidecart-panel {
+    display: none;
+}
+
 .fl-qssWidget::-webkit-scrollbar {
     width: 6px;
 }

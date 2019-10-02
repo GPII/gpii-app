@@ -19,7 +19,8 @@
         "id": "translate-tools",
         "path": "translate-tools",
         "schema": {
-            "type": "translateTools"
+            "type": "translateTools",
+            "helpButtonLabel": "Help & More options"
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 103,
