@@ -63,16 +63,6 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                     "{that}.model.setting"
                 ]
             }
-        },
-        arrowDirection: {
-            target: "arrowDirection",
-            singleTransform: {
-                type: "fluid.transforms.free",
-                func: "gpii.app.qssTooltipDialog.getArrowDirection",
-                args: [
-                    "{that}.model.arrowDirection"
-                ]
-            }
         }
     },
 
@@ -107,7 +97,8 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
             funcName: "gpii.app.qssTooltipDialog.show",
             args: [
                 "{that}",
-                "{arguments}.0"
+                "{arguments}.0",
+                "{channelNotifier}.events.onTooltipArrowDirection"
             ]
         }
     },
@@ -126,11 +117,6 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                     "{qssTooltipDialog}.model.tooltip": {
                         func: "{that}.events.onTooltipUpdated.fire",
                         args: ["{change}.value"],
-                        excludeSource: "init"
-                    },
-                    "{qssTooltipDialog}.model.arrowDirection": {
-                        func: "{that}.events.onTooltipArrowDirection.fire",
-                        args: ["{qssTooltipDialog}.model.arrowDirection"],
                         excludeSource: "init"
                     }
                 }
@@ -152,15 +138,6 @@ gpii.app.qssTooltipDialog.getTooltip = function (isKeyedIn, setting) {
         var tooltip = setting.tooltip;
         return (isKeyedIn ? tooltip.keyedIn : tooltip.keyedOut) || tooltip;
     }
-};
-
-/**
- * Returns the new direction of the tooltip's arrow
- * @param {String} arrowDirection - arrow direction
- * @return {String} arrow direction
- */
-gpii.app.qssTooltipDialog.getArrowDirection = function (arrowDirection) {
-    return arrowDirection;
 };
 
 /**
@@ -220,8 +197,9 @@ gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) 
  * @param {Component} that - The `gpii.app.qssTooltipDialog` instance.
  * @param {Object} btnCenterOffset - An object containing metrics for the QSS
  * button.
+ * @param {fluid.event} arrowDirectionEvent - The onTooltipArrowDirection event.
  */
-gpii.app.qssTooltipDialog.show = function (that, btnCenterOffset) {
+gpii.app.qssTooltipDialog.show = function (that, btnCenterOffset, arrowDirectionEvent) {
     var offsetAndDirection = gpii.app.qssTooltipDialog.getTooltipPosition(that, btnCenterOffset);
 
     that.dialog.setAlwaysOnTop(true);
@@ -230,7 +208,7 @@ gpii.app.qssTooltipDialog.show = function (that, btnCenterOffset) {
     that.setPosition(offsetAndDirection.offsetX, offsetAndDirection.offsetY);
 
     // apply the new arrow direction
-    that.applier.change("arrowDirection", offsetAndDirection.direction);
+    arrowDirectionEvent.fire(offsetAndDirection.direction);
 
     // Trigger the showing mechanism
     that.applier.change("isShown", true);
