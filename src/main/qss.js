@@ -731,37 +731,30 @@ gpii.app.qssWrapper.getSetting = function (settings, path) {
  * @param {String} [source] - The source of the update.
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
-    // trying to find the primary setting's index (anything that is not secondary setting)
     if (fluid.isValue(updatedSetting)) { // adding a check just in case of some missteps
-        var settingIndex = that.model.settings.findIndex(function (setting) {
-            return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
-        });
 
-        // there is no result, looking for secondary settings
-        if (settingIndex === -1) {
-            var primarySettingIndex = false, // store primary setting's index (ie. 0; 1; etc.)
-                secondarySettingKey = false, // store secondary setting's key (ie. "mouseSpeed"; "swapMouseButtons"; etc.)
-                secondarySettingData = false; // store secondary index object data
+        fluid.each(that.model.settings, function (setting, index) {
 
-            fluid.each(that.model.settings, function (el, index) {
-                if (gpii.app.hasSecondarySettings(el)) {
-                    primarySettingIndex = index;
-                    secondarySettingData = fluid.find_if(el.settings, function (setting, key) {
-                        secondarySettingKey = key;
-                        return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
+            if (fluid.contains(setting.buttonTypes, "settingButton")) {
+                if (gpii.app.hasSecondarySettings(setting)) {
+
+                    fluid.each(setting.settings, function (nestedSetting, key) {
+                        if (nestedSetting.path === updatedSetting.path && !fluid.model.diff(nestedSetting, updatedSetting)) {
+
+                            // applying the secondary setting's change
+                            that.applier.change("settings." + index + ".settings." + key, updatedSetting, null, source);
+                        }
                     });
-                }
-            });
 
-            if (secondarySettingData) {
-                // we found a secondary setting that matches
-                // applying the secondary setting's change
-                that.applier.change("settings." + primarySettingIndex + ".settings." + secondarySettingKey, updatedSetting, null, source);
+                } else {
+                    if (setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
+
+                        // applying primary setting's change
+                        that.applier.change("settings." + index, updatedSetting, null, source);
+                    }
+                }
             }
-        } else {
-        // we do have result, applying primary setting's change
-            that.applier.change("settings." + settingIndex, updatedSetting, null, source);
-        }
+        });
     }
 };
 
@@ -803,8 +796,14 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
     if (message) {
         translatedSetting.tooltip = message.tooltip;
         translatedSetting.tip = message.tip;
-        translatedSetting.extendedTip = message.extendedTip;
-        translatedSetting.switchTitle = message.switchTitle;
+
+        if (fluid.isValue(message.extendedTip)) {
+            translatedSetting.extendedTip = message.extendedTip;
+        }
+
+        if (fluid.isValue(message.switchTitle)) {
+            translatedSetting.switchTitle = message.switchTitle;
+        }
 
         if (fluid.isValue(message.footerTip)) {
             translatedSetting.widget = translatedSetting.widget || {};
