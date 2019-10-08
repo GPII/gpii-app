@@ -349,32 +349,6 @@
         transaction.commit();
     };
 
-    gpii.captureTool.mergeSettingsCapture = function (rawCapture) {
-        var capture = {};
-        fluid.each(rawCapture, function (capturedItem) {
-            fluid.each(capturedItem, function (settings, name) {
-                fluid.each(settings, function (outerSettingBlock) {
-                    fluid.each(outerSettingBlock, function (oofSettingBlock) {
-                        if (Object.keys(oofSettingBlock).length === 0) {
-                            capture[name] = { settings: {} };
-                        }
-                        fluid.each(oofSettingBlock, function (settingBlock, settingName) {
-                            if (capture[name]) {
-                                capture[name].settings[settingName] = settingBlock;
-                            }
-                            else {
-                                capture[name] = { settings: {} };
-                                capture[name].settings[settingName] = settingBlock;
-                            }
-                        });
-                    });
-                });
-            });
-        });
-
-        return capture;
-    };
-
     /*
      * Annotates the merged capture with data for rendering the list including
      * solution names and the number of settings captured for each solutions.
@@ -382,20 +356,18 @@
      * Edits the mergedCapture in place, and also re-returns it.
      */
     gpii.captureTool.annotateSettingsCapture = function (that, mergedCapture) {
-        var togo = mergedCapture;
-        fluid.each(togo, function (capturedSolution, solutionID) {
+        var togo = {};
+        fluid.each(mergedCapture, function (capturedSolution, solutionID) {
             if (!that.model.installedSolutions[solutionID]) {
                 console.log("The solutionID is missing for this installedSolution: ", solutionID);
                 return;
             }
 
-            if (capturedSolution) {
-                capturedSolution.name = that.model.installedSolutions[solutionID].name;
-                capturedSolution.numberOfSettings = Object.keys(capturedSolution.settings).length;
-            }
-            else {
-                console.log("This capturedSolution is undefined: ", solutionID);
-            }
+            togo[solutionID] = {
+                settings: capturedSolution,
+                name: that.model.installedSolutions[solutionID].name,
+                numberOfSettings: Object.keys(capturedSolution).length
+            };
         });
         return togo;
     };
@@ -450,21 +422,21 @@
         if (preferences.contexts["gpii-default"]) {
             return {
                 prefsSetId: "gpii-default",
-                name: preferences.contexts["gpii-default"]["name"]
-            }
+                name: preferences.contexts["gpii-default"].name
+            };
         }
         else if (preferences.contexts.length > 0) {
             var firstEntry = Object.keys(preferences.contexts)[0];
             return {
                 prefsSetId: firstEntry,
-                name: preferences.contexts[firstEntry]["name"]
-            }
+                name: preferences.contexts[firstEntry].name
+            };
         }
         else {
             return {
                 prefsSetId: "gpii-default",
                 name: "Default Preferences"
-            }
+            };
         }
     };
 
@@ -480,7 +452,7 @@
         });
 
         ipcRenderer.on("sendingAllSolutionsCapture", function (event, arg) {
-            var finalSettings = gpii.captureTool.annotateSettingsCapture(that, gpii.captureTool.mergeSettingsCapture(arg));
+            var finalSettings = gpii.captureTool.annotateSettingsCapture(that, arg);
 
             // Remove any solutions with zero settings per UX Review
             fluid.each(finalSettings, function (item, key) {
@@ -611,8 +583,6 @@
         }
         else if (currentPage === "4_confirm_update_prefsset") {
             that.applier.change("currentPage", "5_confirmation");
-            var prefsSetName = that.model.prefsSetName;
-            var prefsSetId = prefsSetName; // TODO: This should likely be a UUID
             if (that.model.prefsSetSaveType === "existing") {
                 that.applier.change("prefsSetId", that.model.selectedPrefsSet);
                 that.applier.change("prefsSetName", that.model.selectedPrefsSetName);
@@ -620,7 +590,7 @@
             that.render("5_confirmation");
             that.saveCapturedPreferences();
         }
-        else if (currentPage == "4_save_name") {
+        else if (currentPage === "4_save_name") {
             that.applier.change("currentPage", "5_confirmation");
             that.render("5_confirmation");
             that.saveCapturedPreferences();
@@ -803,7 +773,6 @@
     gpii.captureTool.onHideShowSolution = function (that, event) {
         var solutionId = event.currentTarget.dataset.solution;
         var hideShow = event.currentTarget.dataset.show;
-        var buttonEl = $(event.currentTarget);
         if (hideShow === true || hideShow === "true") {
             $("#flc-settings-for-" + solutionId.replace(/\./g, "\\.")).toggle(hideShow);
             event.currentTarget.dataset.show = false;
