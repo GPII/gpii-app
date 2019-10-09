@@ -44,6 +44,10 @@
             "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
             "volume":            "gpii.qss.volumeButtonPresenter",
             "disabled":          "gpii.qss.disabledButtonPresenter",
+            // custom button grades
+            "custom-launch-app": "gpii.qss.customLaunchAppPresenter",
+            "custom-open-url":   "gpii.qss.customOpenUrlPresenter",
+            // separator grade
             "separator":         "gpii.qss.separatorButtonPresenter"
         },
 
@@ -233,7 +237,10 @@
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
-                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired"
+                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
+
+                        // Custom buttons events
+                        onQssStartProcess: null
                     }
                 }
             }

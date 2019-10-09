@@ -14,10 +14,11 @@
  */
 "use strict";
 
-var os            = require("os");
-var fluid         = require("infusion");
-var electron      = require("electron");
-var child_process = require("child_process");
+var os = require("os"),
+    fluid = require("infusion"),
+    electron = require("electron"),
+    child_process = require("child_process"),
+    fs = require("fs");
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -220,6 +221,102 @@ gpii.app.findButtonById = function (buttonId, availableButtons) {
 };
 
 /**
+ * Looks for the specified key list into the data object and returns true only
+ * if ALL of the keys are matched. It sends fluid warning if required
+ * @param {Object} dataObject - a generic data object
+ * @param {Array} expectedKeys - array list of expected keys to exists
+ * @param {Boolean} warningSend - (optional) true if want to send fluid warnings
+ * @param {String} warningTitle - (optional) description of the warnings
+ * @return {Boolean} - returns true if all of the keys are matched
+ */
+gpii.app.expect = function (dataObject, expectedKeys, warningSend, warningTitle) {
+    var result = true;
+
+    if (dataObject && expectedKeys && fluid.isValue(dataObject) && fluid.isValue(expectedKeys)) {
+        fluid.each(expectedKeys, function (key) {
+            if (typeof dataObject[key] === "undefined") {
+                // we have at least one missing key
+                result = false;
+                // sending the warning if needed
+                if (warningSend) {
+                    fluid.log(fluid.logLevel.WARN, (warningTitle ? warningTitle : "gpii.app.expect") + ": missing expected key [" + key + "]");
+                }
+            }
+        });
+    } else {
+        // we have a missing data object, or keys
+        result = false;
+    }
+    return result;
+};
+
+/**
+ * Generates the proper service button schema for the custom button
+ * @param {Object} buttonData - a simple data object with the values needed for the custom button
+ * @return {Object|Boolean} - data object constructed exactly as every other in the settings.json or false
+ */
+gpii.app.generateCustomButton = function (buttonData) {
+    var serviceButtonTypeApp = "custom-launch-app",
+        serviceButtonTypeWeb = "custom-open-url",
+        titleAppNotFound = "Program not found",
+        titleUrlInvalid = "Invalid URL",
+        disabledStyle = "disabledButton",
+        data = false;
+
+    // we need to have the data, with all required fields:
+    // buttonId, buttonName, buttonType, buttonData
+    if (gpii.app.expect(buttonData, ["buttonId", "buttonName", "buttonType", "buttonData"], true, "generateCustomButton")) {
+        var buttonType = buttonData.buttonType === "APP" ? serviceButtonTypeApp : serviceButtonTypeWeb;
+        data = {
+            "id": buttonData.buttonId,
+            "path": buttonType,
+            "schema": {
+                "type": buttonType,
+                "title": buttonData.buttonName,
+                "fullScreen": false
+            },
+            "buttonTypes": ["largeButton", "settingButton"]
+        };
+        if (fluid.isValue(buttonData.popupText)) {
+            // adding the tooltip text as well
+            data.tooltip = buttonData.popupText;
+        }
+        if (fluid.isValue(buttonData.fullScreen) && buttonData.fullScreen) {
+            // adding the full screen option if there is one
+            data.schema.fullScreen = true;
+        }
+        if (buttonData.buttonType === "APP") {
+            // checks if the file exists and its executable
+            if (gpii.app.checkExecutable(buttonData.buttonData)) {
+                // adding the application's path
+                data.schema.filepath = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleAppNotFound;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
+        } else {
+            // adding the http if its missing
+            if (buttonData.buttonData.indexOf("https://") === -1 && buttonData.buttonData.indexOf("http://") === -1) {
+                buttonData.buttonData = "http://" + buttonData.buttonData;
+            }
+            // checking if the url looks valid
+            if (gpii.app.checkUrl(buttonData.buttonData)) {
+                // adding the web page's url
+                data.schema.url = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleUrlInvalid;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
+        }
+    }
+    return data;
+};
+
+/**
  * Filters the full button list based on the provided array of `id` attributes
  * @param {Array} siteConfigButtonList - basic array of strings
  * @param {Object[]} availableButtons - all available buttons found in settings.json
@@ -239,7 +336,14 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     // creating the matchedList
     // looking for `id` and if matches adding it
     fluid.each(siteConfigButtonList, function (buttonId) {
-        var matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
+        var matchedButton = false;
+
+        if (typeof buttonId === "object") {
+            // this is custom button
+            matchedButton = gpii.app.generateCustomButton(buttonId);
+        } else {
+            matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
+        }
         if (matchedButton !== false) {
             // the separators don't need tabindex
             if (buttonId !== separatorId) {
@@ -350,4 +454,68 @@ gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
         fluid.log(fluid.logLevel.WARN, err);
         return defaultVolumeValue;
     }
+};
+
+/**
+ * Simple file function to check a path to the executable file
+ * @param {String} executablePath - path to executable file
+ * @return {Boolean} - returns `true` when the file exists and its executable
+ */
+gpii.app.checkExecutable = function (executablePath) {
+    try {
+        var fileProperties = fs.statSync(executablePath);
+        // Check that the file is executable
+        if (fileProperties.mode === parseInt("0100666", 8)) {
+            // returns true only if the file exists and its executable
+            return true;
+        } else {
+            fluid.log(fluid.logLevel.WARN, "checkExecutable: File is not executable - " + executablePath);
+        }
+    } catch (err) {
+        fluid.log(fluid.logLevel.WARN, "checkExecutable: Invalid or missing path - " + executablePath);
+    }
+    // returns false in any other case
+    return false;
+};
+
+/**
+ * Simple function to try to validate the url - posted by Ajay A and contributed to Devshed:
+ * https://www.quora.com/What-is-the-best-way-to-validate-for-a-URL-in-JavaScript
+ * @param {String} url - browser's url
+ * @return {Boolean} - returns `true` when the url looks valid
+ */
+gpii.app.checkUrl = function (url) {
+    // validating the url
+    var pattern = new RegExp("^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name and extension
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?" + // port
+        "(\\/[-a-z\\d%@_.~+&:]*)*" + // path
+        "(\\?[;&a-z\\d%@_.,~+&:=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$", "i"); // fragment locator
+    if (!pattern.test(url)) {
+        fluid.log(fluid.logLevel.WARN, "checkUrl: Invalid button url - " + url);
+    } else {
+        // returns true only if the url is valid
+        return true;
+    }
+    // returns false in any other case
+    return false;
+};
+
+/**
+ * Starting a new process with the gpii.windows.startProfcess
+ * @param {String} process - file path to the process executable
+ * @param {Boolean} fullScreen - true/false if the process to be maximized by default
+ */
+gpii.app.startProcess = function (process, fullScreen) {
+    var arg = "", // by default all of the arguments are empty, reserved for future
+        options = {}; // no options by default
+
+    if (fullScreen) {
+        // we are adding the maximized option when the full screen is requested
+        options.windowState = "maximized";
+    }
+    // executing the process
+    gpii.windows.startProcess(process, arg, options);
 };
