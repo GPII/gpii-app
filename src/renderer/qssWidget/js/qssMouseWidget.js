@@ -176,7 +176,7 @@
             "setting.value": {
                 func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{that}.model.setting"],
-                includeSource: "settingAlter"
+                includeSource: "fromWidget"
             }
         },
 
@@ -418,7 +418,7 @@
             restrcitedValue = Math.max(restrcitedValue, schema.min);
         }
 
-        that.applier.change("value", restrcitedValue, null, "settingAlter");
+        that.applier.change("value", restrcitedValue, null, "fromWidget");
 
         // Whether a bound was hit
         return restrcitedValue <= schema.min || restrcitedValue >= schema.max;
@@ -486,7 +486,7 @@
         //
         dynamicContainerMarkup: {
             container: "<div role='radio' class='%containerClass fl-qssStepperWidget-indicator' tabindex='-1'></div>",
-            containerClassPrefix: "flc-qssMouseSpeedStepperWidget-indicator"
+            containerClassPrefix: "flc-qssStepperWidget-indicator"
         },
         handlerType: "gpii.qssWidget.mouseSpeedStepper.indicator.presenter",
         markup: null,
@@ -519,7 +519,7 @@
             "onIndicatorClicked.updateValue": {
                 changePath: "setting.value",
                 value: "{arguments}.0",
-                source: "settingAlter"
+                source: "fromWidget"
             }
         }
     });
@@ -536,32 +536,34 @@
      * can be generated an empty array is returned
      */
     gpii.qssWidget.mouseSpeedStepper.getIndicatorsList = function (setting) {
-        if (!Number.isInteger(setting.schema.min) || !Number.isInteger(setting.schema.max)) {
-            return [];
-        }
-
-        var indicators = [];
-
-        for (
-            var indicatorValue = 0;
-            indicatorValue <= setting.schema.max;
-            indicatorValue = parseFloat((indicatorValue + setting.schema.divisibleBy).toPrecision(2))
-        ) {
-            if (indicatorValue === 0) {
-                indicators.push({
-                    indicatorValue: setting.schema.min, // value cannot be 0, instead use setting minimum value
-                    isSelected: setting.schema.min === setting.value,
-                    isRecommended: setting.schema.min === setting.schema["default"]
-                });
-            } else {
-                indicators.push({
-                    indicatorValue: indicatorValue, // what value to be applied when selected
-                    isSelected: indicatorValue === setting.value,
-                    isRecommended: indicatorValue === setting.schema["default"]
-                });
+        if (fluid.isValue(setting)) {
+            if (!Number.isInteger(setting.schema.min) || !Number.isInteger(setting.schema.max)) {
+                return [];
             }
+
+            var indicators = [];
+
+            for (
+                var indicatorValue = 0;
+                indicatorValue <= setting.schema.max;
+                indicatorValue = parseFloat((indicatorValue + setting.schema.divisibleBy).toPrecision(2))
+            ) {
+                if (indicatorValue === 0) {
+                    indicators.push({
+                        indicatorValue: setting.schema.min, // value cannot be 0, instead use setting minimum value
+                        isSelected: setting.schema.min === setting.value,
+                        isRecommended: setting.schema.min === setting.schema["default"]
+                    });
+                } else {
+                    indicators.push({
+                        indicatorValue: indicatorValue, // what value to be applied when selected
+                        isSelected: indicatorValue === setting.value,
+                        isRecommended: indicatorValue === setting.schema["default"]
+                    });
+                }
+            }
+            return indicators;
         }
-        return indicators;
     };
 
     /**
@@ -707,7 +709,7 @@
         }
 
         event.fire(toggleWidget.model.setting);
-        that.applier.change("enabled", !that.model.enabled, null, "settingAlter");
+        that.applier.change("enabled", !that.model.enabled, null, "fromWidget");
     };
 
 })(fluid);

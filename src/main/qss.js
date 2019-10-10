@@ -735,7 +735,7 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
 
         fluid.each(that.model.settings, function (setting, index) {
 
-            if (fluid.contains(setting.buttonTypes, "settingButton")) {
+            // if (fluid.contains(setting.buttonTypes, "settingButton")) {
                 if (gpii.app.hasSecondarySettings(setting)) {
 
                     fluid.each(setting.settings, function (nestedSetting, key) {
@@ -753,7 +753,7 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
                         that.applier.change("settings." + index, updatedSetting, null, source);
                     }
                 }
-            }
+            // }
         });
     }
 };

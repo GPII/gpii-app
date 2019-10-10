@@ -43,6 +43,7 @@
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
             "volume":            "gpii.qss.volumeButtonPresenter",
+            "mouse":             "gpii.qss.widgetButtonPresenter",
             "disabled":          "gpii.qss.disabledButtonPresenter"
         },
 
