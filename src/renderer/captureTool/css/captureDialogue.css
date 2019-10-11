@@ -9,6 +9,18 @@
      display: none;
  }
 
+ .btn.btn-primary.fl-capture-next {
+    border-radius: 5px;
+    background-color: #002957;
+ }
+
+.btn.btn-default.fl-capture-back {
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    color: #002957;
+    border: thin solid #002957;
+}
+
 /*
  * Flex containers
  */
@@ -30,6 +42,10 @@
  * Page 3: What to Keep
  */
 
+.fl-settings-action-link {
+    color: #345474;
+}
+
  .fl-capture-scrolled {
     overflow: auto;
     height: 40%;
@@ -41,6 +57,11 @@
 input.btn.btn-default.theme-light.flc-hideshow-solution {
     background-color: rgba(255,255,255,1);
     margin-top: 0px;
+    color: #002957;
+    border-radius: 5px;
+    border: thin solid #002957;
+    padding: 3px;
+    min-width: 100px;
 }
 
 .form-group.fl-capture-scrolled .checkbox {
@@ -48,16 +69,26 @@ input.btn.btn-default.theme-light.flc-hideshow-solution {
     margin-bottom: 2px;
 }
 
+div.checkbox label input:checked~span::before {
+    background-color: #002957;
+}
+
+div.checkbox label input:indeterminate~span::before {
+    background-color: #002957;
+    color: #FFFFFF;
+    border-color: #002957;
+    content: "\268A";
+}
+
+div.checkbox:hover input:indeterminate~span::before {
+    color: #FFFFFF;
+}
+
 /*
  * This is necessary for the dropdown on page 4 to be fully visible.
  */
 div#flc-captureWidgetInitial {
     height: 90%;
-}
-
-.fl-capture-current-page {
-    font-weight: bold;
-    background: #b3d3f1;
 }
 
 .fl-capture-footer {
@@ -73,8 +104,6 @@ div#flc-captureWidgetInitial {
 
 .fl-capture-active-footer {
     margin-bottom: 2px;
-    border-bottom: thick rgba(0, 0, 0, 0.6) solid;
-    background-color: rgba(0, 120, 215, 0.1);
+    border-bottom: thick solid #008145;
+    background-color: #BFDFD0;
 }
-
-
