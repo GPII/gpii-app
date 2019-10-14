@@ -96,7 +96,7 @@
             "service-more",
             "service-save",
             "service-undo",
-            "service-dummy",
+            "service-saved-settings",
             "service-reset-all",
             "service-close"
         ],

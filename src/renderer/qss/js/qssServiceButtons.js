@@ -20,6 +20,17 @@
     var gpii = fluid.registerNamespace("gpii");
 
     /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Key in"
+     * QSS button.
+     */
+    fluid.defaults("gpii.qss.mySavedSettingsButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        attrs: {
+            "aria-label": "My saved settings"
+        }
+    });
+
+    /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Close"
      * QSS button.
      */
