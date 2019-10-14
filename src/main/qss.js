@@ -734,26 +734,23 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
     if (fluid.isValue(updatedSetting)) { // adding a check just in case of some missteps
 
         fluid.each(that.model.settings, function (setting, index) {
+            if (gpii.app.hasSecondarySettings(setting)) {
 
-            // if (fluid.contains(setting.buttonTypes, "settingButton")) {
-                if (gpii.app.hasSecondarySettings(setting)) {
+                fluid.each(setting.settings, function (nestedSetting, key) {
+                    if (nestedSetting.path === updatedSetting.path && !fluid.model.diff(nestedSetting, updatedSetting)) {
 
-                    fluid.each(setting.settings, function (nestedSetting, key) {
-                        if (nestedSetting.path === updatedSetting.path && !fluid.model.diff(nestedSetting, updatedSetting)) {
-
-                            // applying the secondary setting's change
-                            that.applier.change("settings." + index + ".settings." + key, updatedSetting, null, source);
-                        }
-                    });
-
-                } else {
-                    if (setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
-
-                        // applying primary setting's change
-                        that.applier.change("settings." + index, updatedSetting, null, source);
+                        // applying the secondary setting's change
+                        that.applier.change("settings." + index + ".settings." + key, updatedSetting, null, source);
                     }
+                });
+
+            } else {
+                if (setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
+
+                    // applying primary setting's change
+                    that.applier.change("settings." + index, updatedSetting, null, source);
                 }
-            // }
+            }
         });
     }
 };
