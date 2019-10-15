@@ -30,7 +30,7 @@ body {
     background-color: #ffffff;
     color: #19294c;
 
-    font: normal 9px "Open Sans", "Sans-Serif";
+    font: normal 9px "Segoe UI", "Sans-Serif";
 
     overflow-x: hidden;
     overflow-y: overlay;
@@ -130,4 +130,3 @@ body {
     border-top-color: #ffffff;
     margin-left: -9px;
 }
-
