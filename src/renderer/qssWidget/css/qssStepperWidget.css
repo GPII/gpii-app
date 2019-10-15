@@ -223,13 +223,13 @@
     font-size: 8.5px;
 }
 
- .fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls {
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls {
     display: block;
     width: auto;
     margin: 0 0 5px 0;
 }
 
- .fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls .fl-qssMouseSpeedStepperWidget-controls-buttons {
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls .fl-qssMouseSpeedStepperWidget-controls-buttons {
     display: flex;
     flex-basis: auto;
     flex-direction: row;
@@ -238,34 +238,36 @@
     padding: 0;
 }
 
- .fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
     font-size: 8.5px;
     width: 49%;
     min-width: auto;
     min-height: 24px;
 }
 
- .fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn + .fl-qssStepperWidget-btn {
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn + .fl-qssStepperWidget-btn {
     margin-top: 0;
 }
 
- .fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-indicators {
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-indicators {
+    margin-top: 2px;
     flex-basis: auto;
     flex-direction: row;
 }
 
- .fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator:first-child {
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator,
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator:first-child {
     margin: 6px auto;
 }
 
- .fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator[data-type="selected"] {
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator[data-type="selected"] {
     margin: 3px 0 0 0;
 }
 
- .fl-qssMouseSpeedStepperWidget .fl-icon {
+.fl-qssMouseSpeedStepperWidget .fl-icon {
     display: none;
 }
 
- .fl-qssMouseWidgetToggle .fl-btnLabel {
+.fl-qssMouseWidgetToggle .fl-btnLabel {
     font-size: 8.5px;
 }
