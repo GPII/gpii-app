@@ -41,7 +41,7 @@ body {
     background-color: #405E81;
     color: #ffffff;
 
-    font: bold 8px "Open Sans", "Sans-Serif";
+    font: bold 8px "Segoe UI", "Sans-Serif";
     line-height: 10px;
     cursor: pointer;
     user-select: none;
@@ -82,7 +82,7 @@ body {
 
     background: transparent;
     color: #000000;
-    font: normal 27px "Open Sans", "Sans-Serif";
+    font: normal 27px "Segoe UI", "Sans-Serif";
 }
 
 .fl-qss-button.fl-qss-closeButton:hover {
