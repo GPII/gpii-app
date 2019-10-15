@@ -64,11 +64,13 @@ body {
 }
 
 .fl-sidecart-button {
-    width: 65%;
+    width: auto;
     position: absolute;
+    left: 60px;
     bottom: 20px;
+    padding: 3px 8px;
     background: none;
-    border: 1px solid transparent;
+    border: 1px solid silver;
     color: #002957;
     cursor: pointer;
     font-size: 9px;
@@ -83,7 +85,7 @@ body {
 .fl-sidecart-button .fl-btnLabel {
     background: url(../../../assets/arrow-right.svg) no-repeat right;
     padding-right: 16px;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .fl-hide-sidecart-panel {
@@ -91,7 +93,7 @@ body {
 }
 
 .fl-qssWidget-tip {
-    padding-bottom: 25px;
+    padding-bottom: 30px;
 }
 
 .fl-qssWidget::-webkit-scrollbar {
@@ -107,9 +109,10 @@ body {
     position: absolute;
     top: 3px;
     right: 5px;
-    border: 1px solid transparent;
+    border: 1px solid white;
 
-    font-size: 10px;
+    font-size: 13px;
+    padding: 2px;
     line-height: 10px;
     cursor: pointer;
 }
@@ -130,14 +133,16 @@ body {
 
 .fl-qssWidget .fl-qssWidget-learnMoreLink {
     position: absolute;
-    width: 33%;
+    width: auto;
+    right: 15px;
     bottom: 10px;
 
+    padding: 3px 8px;
     margin: 10px 0;
-    border: 1px solid transparent;
+    border: 1px solid white;
 
     color: #002957;
-    text-decoration: underline;
+    text-decoration: none;
     text-align: center;
     cursor: pointer;
 }
