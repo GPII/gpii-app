@@ -269,6 +269,22 @@
         "tabindex": 220,
         "messageKey": "launch-documorph"
     }, {
+        "id": "separator",
+        "path": "separator",
+        "schema": {
+            "type": "separator",
+            "title": ""
+        },
+        "buttonTypes": ["separator"]
+    }, {
+        "id": "separator-visible",
+        "path": "separator",
+        "schema": {
+            "type": "separator",
+            "title": ""
+        },
+        "buttonTypes": ["separator", "separatorVisible"]
+    }, {
         "id": "service-more",
         "path": "more",
         "schema": {
@@ -296,14 +312,15 @@
         "tabindex": 320,
         "messageKey": "undo"
     }, {
-        "id": "service-dummy",
-        "path": "dummy",
+        "id": "service-saved-settings",
+        "path": "mySavedSettings",
         "schema": {
-            "type": "dummy"
+            "type": "mySavedSettings"
         },
         "buttonTypes": ["smallButton"],
         "tabindex": 310,
-        "messageKey": "dummy"
+        "messageKey": "mySavedSettings",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#mysavedsettings"
     }, {
         "id": "service-reset-all",
         "path": "resetAll",

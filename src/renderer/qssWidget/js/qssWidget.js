@@ -58,8 +58,9 @@
             openUSB: ".flc-qssOpenUSBWidget",
             volume: ".flc-qssVolumeWidget",
             office: ".flc-qssOfficeWidget",
+            mouse: ".flc-qssMouseWidget",
             translateTools: ".flc-qssTranslateToolsWidget",
-            mouse: ".flc-qssMouseWidget"
+            mySavedSettings: ".flc-qssMySavedSettingsWidget"
         },
 
         /**
@@ -74,8 +75,9 @@
             "openUSB": "gpii.qssWidget.openUSB",
             "volume": "gpii.qssWidget.volume",
             "office": "gpii.qssWidget.office",
+            "mouse": "gpii.qssWidget.mouse",
             "translateTools": "gpii.qssWidget.translateTools",
-            "mouse": "gpii.qssWidget.mouse"
+            "mySavedSettings": "gpii.qssWidget.mySavedSettings"
         },
 
         events: {
@@ -97,7 +99,9 @@
             onQssUnmountUsbRequested: null,
 
             // Volume & Mute related event
-            onQssGetVolumeRequested: null
+            onQssGetVolumeRequested: null,
+            onQssReApplyPreferencesRequired: null,
+            onQssGetEnvironmentalLoginKeyRequested: null
         },
 
         sounds: {},
@@ -136,6 +140,7 @@
                     }
                 },
                 options: {
+                    lastEnvironmentalLoginGpiiKey: "{qssWidget}.options.lastEnvironmentalLoginGpiiKey",
                     sounds: "{qssWidget}.options.sounds",
                     siteConfig: "{qssWidget}.options.siteConfig",
                     activationParams: "{arguments}.1",
@@ -235,7 +240,9 @@
                         onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
                         onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
                         // Volume button
-                        onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested"
+                        onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
+                        onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
+                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested"
                     }
                 }
             }

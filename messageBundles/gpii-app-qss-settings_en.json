@@ -15,9 +15,11 @@
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>",
         "title": "Save"
     },
-    "gpii_app_qss_settings_dummy": {
-        "tooltip": "",
-        "title": ""
+    "gpii_app_qss_settings_mySavedSettings": {
+        "tooltip": "<p>My Saved Settings</p>",
+        "title": "My Saved Settings",
+        "tip": "<p>My Saved Settings</p>",
+        "footerTip": "<ul><li>To apply your saved settings, insert a Morphic USB key.</li><li>To re-apply them, remove and then reinsert the Morphic Key.</li></ul>"
     },
     "gpii_app_qss_settings_more": {
         "tooltip": "<p>More options for changing the settings on this computer.</p>",
@@ -99,7 +101,7 @@
         "tooltip": "<p>Converts documents into more accessible forms.</p>",
         "title": "Docu- Morph"
     },
-        "gpii_app_qss_settings_translate-tools": {
+    "gpii_app_qss_settings_translate-tools": {
         "tooltip": "<p>Tools to translate text, documents, web pages, or live speech.</p>",
         "title": "Translate Tools",
         "tip": "<p>Translate Tools</p>To translate <b>text, documents, web pages</b> or <b>live speech</b>, try one of the following free services or apps.<br /><br /><i>Links are for convenience. No endorsement or privacy guarantee.</i><br /><br /><b>Microsoft Word 365</b> has a Translator in its <b>Review</b> ribbon<br /><br /><b>Web based & Apps</b><br /><ul><li><a href='https://translate.google.com/' class=\"fl-focusable\">Google</a>  - <b>Web, Text, Docs</b></li><li><a href='https://www.bing.com/translator' class=\"fl-focusable\">Microsoft Bing</a>  - <b>Web, Text</b></li><li><a href='http://www.online-translator.com/' class=\"fl-focusable\">PROMT</a>  - <b>Web</b></li><li><a href='http://www.reverso.net/text_translation.aspx' class=\"fl-focusable\">Reverso</a>  - <b>Web</b></li><li><a href='https://www.translatelive.com/' class=\"fl-focusable\">Translate Live</a>  - <b>Live Speech</b></li><li><a href='https://www.microsoft.com/en-us/translator/' class=\"fl-focusable\">Microsoft Translator APP</a>  - <b>Web, Text, Live Speech, StreetSigns</b></li></ul><br /><b>NOTE:</b> There are also plug-ins and built-in translation features for different browsers."
