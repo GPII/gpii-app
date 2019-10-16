@@ -95,6 +95,15 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
     }, {
+        "id": "snipping-tool",
+        "path": "snipping-tool",
+        "schema": {
+            "type": "snipping-tool"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 131,
+        "messageKey": "snipping-tool"
+    }, {
         "id": "office-simplification",
         "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.office.word-ribbon",
         "schema": {

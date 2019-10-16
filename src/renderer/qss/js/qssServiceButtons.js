@@ -171,6 +171,21 @@
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * "Screen Snip" QSS button. It uses the openSnippingTool function
+     * which tries to execute the file from the provided path
+     */
+    fluid.defaults("gpii.qss.snippingToolPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openSnippingTool",
+                args: ["{gpii.qss}.options.siteConfig.snippingToolCommand"]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with snippingToolPresenterthe
      * custom buttons that need to open application, it requires only the (full) path
      * to the executable.
      */

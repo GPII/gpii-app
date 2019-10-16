@@ -92,5 +92,9 @@
     "gpii_app_qss_settings_launch-documorph": {
         "tooltip": "<p>Стартирай апликацията DocuMorph.</p>",
         "title": "Стартирай Docu Morph"
+    },
+    "gpii_app_qss_settings_snipping-tool": {
+        "tooltip": "<p>Стартирай инструмента за отрязване на екрана.</p>",
+        "title": "Screen Snip"
     }
 }
