@@ -440,9 +440,9 @@ fluid.defaults("gpii.app", {
 
 /**
  * Get the Gpii key name of the last environmental login.
+ * @param {String} lastEnvironmentalLoginGpiiKey - Gpii key name of the last environmental login.
  * @param {Object} browserWindow - An Electron `BrowserWindow` object.
  * @param {String} messageChannel - The channel to which the message should be sent.
- * @param {String} lastEnvironmentalLoginGpiiKey - Gpii key name of the last environmental login.
  */
 gpii.app.getEnvironmentalLoginKey = function (lastEnvironmentalLoginGpiiKey, browserWindow, messageChannel) {
     gpii.app.notifyWindow(browserWindow, messageChannel, lastEnvironmentalLoginGpiiKey);

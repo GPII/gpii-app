@@ -117,7 +117,7 @@
             }
         } else {
             // there is no value in the config, sending the warning
-            fluid.log(fluid.logLevel.WARN, "Service Buttons (openCloudFolderPresenter): Cannot find a proper url path [siteConfig.qss.urlscloudFolder]");
+            fluid.log(fluid.logLevel.WARN, "Service Buttons (openUrl): Cannot find a proper url path [siteConfig.qss]");
         }
     };
 

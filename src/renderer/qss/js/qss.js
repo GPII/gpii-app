@@ -49,7 +49,11 @@
             "custom-launch-app": "gpii.qss.customLaunchAppPresenter",
             "custom-open-url":   "gpii.qss.customOpenUrlPresenter",
             // separator grade
-            "separator":         "gpii.qss.separatorButtonPresenter"
+            "separator":         "gpii.qss.separatorButtonPresenter",
+            // url based buttons
+            "url-google-drive":  "gpii.qss.urlGoogleDrivePresenter",
+            "url-one-drive":     "gpii.qss.urlOneDrivePresenter",
+            "url-dropbox":       "gpii.qss.urlDropboxPresenter"
         },
 
         dynamicContainerMarkup: {

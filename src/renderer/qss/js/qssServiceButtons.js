@@ -288,8 +288,9 @@
     };
 
     /**
-     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Open USB Button"
-     * QSS button.
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Open Quick Folder"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
      */
     fluid.defaults("gpii.qss.openCloudFolderPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
@@ -298,6 +299,60 @@
                 funcName: "gpii.windows.openUrl",
                 args: [
                     "{gpii.qss}.options.siteConfig.urls.cloudFolder",  // siteConfig's cloud folder url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "My Google Drive"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
+     */
+    fluid.defaults("gpii.qss.urlGoogleDrivePresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.myGoogleDrive",  // siteConfig's url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "My One Drive"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
+     */
+    fluid.defaults("gpii.qss.urlOneDrivePresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.myOneDrive",  // siteConfig's url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "My Dropbox"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
+     */
+    fluid.defaults("gpii.qss.urlDropboxPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.myDropbox",  // siteConfig's url
                     "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
                 ]
             }

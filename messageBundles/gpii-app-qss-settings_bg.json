@@ -92,5 +92,17 @@
     "gpii_app_qss_settings_launch-documorph": {
         "tooltip": "<p>Стартирай апликацията DocuMorph.</p>",
         "title": "Стартирай Docu Morph"
+    },
+    "gpii_app_qss_settings_url-google-drive": {
+        "tooltip": "<p>Отваря Google Drive във браузъра.</p>",
+        "title": "Моят Google Drive"
+    },
+    "gpii_app_qss_settings_url-one-drive": {
+        "tooltip": "<p>Отваря One Drive във браузъра.</p>",
+        "title": "Моят One Drive"
+    },
+    "gpii_app_qss_settings_url-dropbox": {
+        "tooltip": "<p>Отваря Dropbox във браузъра.</p>",
+        "title": "Моят Dropbox"
     }
 }
