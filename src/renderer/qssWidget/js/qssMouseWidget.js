@@ -421,7 +421,7 @@
         that.applier.change("value", restrcitedValue, null, "fromWidget");
 
         // Whether a bound was hit
-        return restrcitedValue <= schema.min || restrcitedValue >= schema.max;
+        return value < 0 || value > schema.max;
     };
 
     /**
