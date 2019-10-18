@@ -21,7 +21,7 @@ var gpii  = fluid.registerNamespace("gpii");
 
 var clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
-function getDocuMorphWidgetBtnText() {
+function getDropboxDriveWidgetBtnText() {
     return jQuery(".fl-qss-btnId-url-dropbox > span").text();
 }
 
@@ -34,7 +34,7 @@ gpii.tests.qss.urlDropboxDrive = [
         task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            getDocuMorphWidgetBtnText
+            getDropboxDriveWidgetBtnText
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [

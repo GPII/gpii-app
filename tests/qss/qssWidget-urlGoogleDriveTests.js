@@ -21,7 +21,7 @@ var gpii  = fluid.registerNamespace("gpii");
 
 var clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
-function getDocuMorphWidgetBtnText() {
+function getGoogleDriveWidgetBtnText() {
     return jQuery(".fl-qss-btnId-url-google-drive > span").text();
 }
 
@@ -34,7 +34,7 @@ gpii.tests.qss.urlGoogleDrive = [
         task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            getDocuMorphWidgetBtnText
+            getGoogleDriveWidgetBtnText
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
