@@ -218,6 +218,15 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#volume"
 
     }, {
+        "id": "snipping-tool",
+        "path": "snipping-tool",
+        "schema": {
+            "type": "snipping-tool"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 170,
+        "messageKey": "snipping-tool"
+    }, {
         "id": "cloud-folder-open",
         "path": "cloud-folder-open",
         "schema": {
