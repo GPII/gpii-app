@@ -303,4 +303,22 @@
             }
         }
     });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Customize Quickstrip"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
+     */
+    fluid.defaults("gpii.qss.urlCustomizeQssPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.customizeQss",  // siteConfig's url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
 })(fluid);
