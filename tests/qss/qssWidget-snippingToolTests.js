@@ -21,7 +21,7 @@ var gpii  = fluid.registerNamespace("gpii");
 
 var clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
-function getDocuMorphWidgetBtnText() {
+function getSnippingToolWidgetBtnText() {
     return jQuery(".fl-qss-btnId-snipping-tool > span").text();
 }
 
@@ -34,7 +34,7 @@ gpii.tests.qss.snippingToolTests = [
         task: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
-            getDocuMorphWidgetBtnText
+            getSnippingToolWidgetBtnText
         ],
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
