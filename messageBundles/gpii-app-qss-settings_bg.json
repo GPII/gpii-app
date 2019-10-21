@@ -92,5 +92,9 @@
     "gpii_app_qss_settings_launch-documorph": {
         "tooltip": "<p>Стартирай апликацията DocuMorph.</p>",
         "title": "Стартирай Docu Morph"
+    },
+    "gpii_app_qss_settings_url-customize-qss": {
+        "tooltip": "<p>Отваря уеб страница където да промените бутоните в лентата.</p>",
+        "title": "Промени бутоните"
     }
 }
