@@ -122,5 +122,9 @@
     },
     "gpii_app_qss_settings_windows-mouseSpeed": {
         "title": "Mouse speed"
+    },
+    "gpii_app_qss_settings_url-customize-qss": {
+        "tooltip": "<p>Open the web tool to customize quickstrip's buttons.</p>",
+        "title": "Customize Quickstrip"
     }
 }
