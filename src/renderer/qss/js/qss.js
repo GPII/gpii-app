@@ -50,7 +50,9 @@
             "custom-launch-app": "gpii.qss.customLaunchAppPresenter",
             "custom-open-url":   "gpii.qss.customOpenUrlPresenter",
             // separator grade
-            "separator":         "gpii.qss.separatorButtonPresenter"
+            "separator":         "gpii.qss.separatorButtonPresenter",
+            // url based buttons
+            "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
         },
 
         dynamicContainerMarkup: {

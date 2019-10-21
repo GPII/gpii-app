@@ -109,5 +109,9 @@
     "gpii_app_qss_settings_snipping-tool": {
         "tooltip": "<p>Start the Windows Snipping Tool.</p>",
         "title": "Screen Snip"
+    },
+    "gpii_app_qss_settings_url-customize-qss": {
+        "tooltip": "<p>Open the web tool to customize quickstrip's buttons.</p>",
+        "title": "Customize Quickstrip"
     }
 }

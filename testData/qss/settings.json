@@ -191,6 +191,15 @@
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
     }, {
+        "id": "url-customize-qss",
+        "path": "url-customize-qss",
+        "schema": {
+            "type": "url-customize-qss"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 190,
+        "messageKey": "url-customize-qss"
+    }, {
         "id": "cloud-folder-open",
         "path": "cloud-folder-open",
         "schema": {

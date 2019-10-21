@@ -15,7 +15,8 @@
         scaleFactor: 1.2,
         urls: {
             account: "http://morphic.world/account",
-            cloudFolder: "https://drive.google.com/drive/folders/11m-AKdP-0wjEBocpVtvnK8iE23P7hFTS"
+            cloudFolder: "https://drive.google.com/drive/folders/11m-AKdP-0wjEBocpVtvnK8iE23P7hFTS",
+            customizeQss: "https://morphic.world/"
         },
 
         alwaysUseChrome: false,
@@ -102,6 +103,8 @@
             "launch-documorph",
             "cloud-folder-open",
             "usb-open",
+            "separator",
+            "url-customize-qss",
             "separator-visible",
             "service-more",
             "service-save",
