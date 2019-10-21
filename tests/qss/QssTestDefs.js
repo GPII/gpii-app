@@ -28,6 +28,7 @@ require("./qssWidget-screenCaptureTests.js");
 require("./qssWidget-officeSimplifyTests.js");
 require("./qssWidget-stepperTests.js");
 require("./qssWidget-menuTests.js");
+require("./qssWidget-snippingToolTests.js");
 require("./qssWidget-customizeQuickstripTests.js");
 require("./qssService-undoTests.js");
 require("./qssService-saveTests.js");
@@ -229,7 +230,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 75,
+    expect: 76,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -292,6 +293,7 @@ gpii.tests.qss.testDefs = {
         gpii.tests.qss.customizeQuickstripTests,
         gpii.tests.qss.menuTests,
         gpii.tests.qss.stepperTests,
-        gpii.tests.qss.translationsTests
+        gpii.tests.qss.translationsTests,
+        gpii.tests.qss.snippingToolTests
     )
 };
