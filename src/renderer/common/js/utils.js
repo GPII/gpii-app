@@ -153,6 +153,9 @@
 
     /**
      * A custom function for handling executing the Snipping Tool command.
+     * we are using different and simplified version of the launchExecutable because
+     * the command its not a real path to executable file, and we cannot escaped with
+     * quotes either.
      * @param {String} command - path to executable file
      * @return {Boolean} - returns `true` on successfully executed command
      */
