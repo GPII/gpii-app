@@ -50,7 +50,7 @@
 
         // The path to the Snipping Tools's executable file, used in the service buttons.
         // This uses the internal Windows 10 snipping tool
-        snippingToolCommand: "explorer.exe ms-screenclip:",
+        snippingToolCommand: "start ms-screenclip:",
 
 
         // list of the desired list of buttons shown in QSS
