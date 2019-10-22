@@ -93,6 +93,10 @@
         "tooltip": "<p>Стартирай апликацията DocuMorph.</p>",
         "title": "Стартирай Docu Morph"
     },
+    "gpii_app_qss_settings_snipping-tool": {
+        "tooltip": "<p>Стартирай инструмента за отрязване на екрана.</p>",
+        "title": "Screen Snip"
+    },
     "gpii_app_qss_settings_url-customize-qss": {
         "tooltip": "<p>Отваря уеб страница където да промените бутоните в лентата.</p>",
         "title": "Промени бутоните"

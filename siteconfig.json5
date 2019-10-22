@@ -44,6 +44,15 @@
         // This is the path where ShareX lives after installing Morphic. Can be adjusted for development purposes.
         shareXPath: "C:\\Program Files (x86)\\Morphic\\sharex\\sharex-portable\\sharex.exe",
 
+        // The path to the DocuMorph's executable file, used in the service buttons.
+        // This is the path where DocuMorph lives after installing Morphic. Can be adjusted for development purposes.
+        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe",
+
+        // The path to the Snipping Tools's executable file, used in the service buttons.
+        // This uses the internal Windows 10 snipping tool
+        snippingToolCommand: "start ms-screenclip:",
+
+
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
         // 
@@ -86,6 +95,7 @@
             "screen-zoom",
             "text-zoom",
             "screen-capture",
+            "snipping-tool",
             "office-simplification",
             "high-contrast",
             "mouse",
@@ -103,11 +113,7 @@
             "service-saved-settings",
             "service-reset-all",
             "service-close"
-        ],
-
-        // The path to the DocuMorph's executable file, used in the service buttons.
-        // This is the path where DocuMorph lives after installing Morphic. Can be adjusted for development purposes.
-        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe"
+        ]
     },
 
     // Whether to hide the QSS when a user clicks outside of it
