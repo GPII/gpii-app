@@ -164,6 +164,37 @@
                             func: "{that}.events.onQssWidgetCreated.fire",
                             args: [null],
                             priority: "last"
+                        },
+                        "onCreate.hideSideCard": {
+                            this: "{qssWidget}.dom.sideCart",
+                            method: "addClass",
+                            args: ["fl-hide-sidecart-panel"]
+                        }
+                    },
+                    components: {
+                        openSideCartButton: {
+                            type: "gpii.psp.widgets.button",
+                            container: "{qssWidget}.dom.sideCartButton",
+                            options: {
+                                model: {
+                                    label: {
+                                        expander: {
+                                            funcName: "gpii.psp.qssWidget.getSideCartButtonLabel",
+                                            args: ["{qssWidget}.model.setting.sideCart", "{qssWidget}.model.messages.learnMore", "{qssWidget}.model.messages.helpAndMoreOptions"]
+                                        }
+                                    }
+                                },
+                                listeners: {
+                                    onClick: {
+                                        funcName: "gpii.psp.qssWidget.openSideCartActivated",
+                                        args: [
+                                            "{sideCart}.container",
+                                            "{qssWidget}.model.setting.sideCart",
+                                            "{qssWidget}.model.setting.learnMoreLink"
+                                        ]
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -190,25 +221,6 @@
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-            },
-            openSideCartButton: {
-                type: "gpii.psp.widgets.button",
-                container: "{that}.dom.sideCartButton",
-                options: {
-                    model: {
-                        label: "{qssWidget}.model.setting.schema.helpButtonLabel"
-                    },
-                    listeners: {
-                        onClick: {
-                            funcName: "gpii.psp.qssWidget.openSideCartActivated",
-                            args: [
-                                "{qssWidget}",
-                                "{sideCart}.container",
-                                "{widget}.container"
-                            ]
                         }
                     }
                 }
@@ -294,12 +306,34 @@
         }
     });
 
+    /**
+     *
+     */
+    gpii.psp.qssWidget.getSideCartButtonLabel = function (sideCartContent, learnMoreMessage, helpAndMoreMessage) {
+        if (sideCartContent) {
+            return helpAndMoreMessage;
+        } else {
+            return learnMoreMessage;
+        }
+    };
 
     /**
      *
      */
-    gpii.psp.qssWidget.openSideCartActivated = function (that, sideCartContainer, widgetContainer) {
-        sideCartContainer.removeClass("fl-hide-sidecart-panel");
+    gpii.psp.qssWidget.openSideCartActivated = function (sideCartContainer, sideCartContent, learnMoreLink) {
+        // If there is no side panel content use button as a link.
+        if (!sideCartContent) {
+            if (learnMoreLink) {
+                gpii.psp.openUrlExternally(learnMoreLink);
+            }
+            return;
+        }
+
+        if (sideCartContainer.hasClass("fl-hide-sidecart-panel")) {
+            sideCartContainer.removeClass("fl-hide-sidecart-panel");
+        } else {
+            sideCartContainer.addClass("fl-hide-sidecart-panel");
+        }
     };
 
 

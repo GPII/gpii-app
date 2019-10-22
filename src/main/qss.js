@@ -778,6 +778,8 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
 
         if (fluid.isValue(message.sideCart)) {
             translatedSetting.sideCart = message.sideCart;
+        } else {
+            translatedSetting.sideCart = "";
         }
 
         translatedSetting.schema.title = message.title;

@@ -28,6 +28,7 @@
     "gpii_qss_volumeButtonPresenter_caption": "(Звукът е изключен)",
 
     "gpii_psp_qssWidget_learnMore": "Научи повече...",
+    "gpii_psp_qssWidget_helpAndMoreOptions": "Помощ & разширени опции",
 
     "gpii_qss_saveButtonPresenter_notification": {
         "keyedOut": "За да запазите вашите настройки трябва да си създадете Morphic акаунт. Отидете на <a href=\"%accountUrl\">%accountUrl</a>.",
