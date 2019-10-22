@@ -44,6 +44,7 @@
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
             "volume":            "gpii.qss.volumeButtonPresenter",
+            "snipping-tool":     "gpii.qss.snippingToolPresenter",
             "disabled":          "gpii.qss.disabledButtonPresenter",
             // custom button grades
             "custom-launch-app": "gpii.qss.customLaunchAppPresenter",
@@ -53,7 +54,8 @@
             // url based buttons
             "url-google-drive":  "gpii.qss.urlGoogleDrivePresenter",
             "url-one-drive":     "gpii.qss.urlOneDrivePresenter",
-            "url-dropbox":       "gpii.qss.urlDropboxPresenter"
+            "url-dropbox":       "gpii.qss.urlDropboxPresenter",
+            "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
         },
 
         dynamicContainerMarkup: {

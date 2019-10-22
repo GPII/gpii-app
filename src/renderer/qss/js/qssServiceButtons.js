@@ -171,6 +171,21 @@
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * "Screen Snip" QSS button. It uses the openSnippingTool function
+     * which tries to execute the file from the provided path
+     */
+    fluid.defaults("gpii.qss.snippingToolPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openSnippingTool",
+                args: ["{gpii.qss}.options.siteConfig.snippingToolCommand"]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with snippingToolPresenterthe
      * custom buttons that need to open application, it requires only the (full) path
      * to the executable.
      */
@@ -299,6 +314,24 @@
                 funcName: "gpii.windows.openUrl",
                 args: [
                     "{gpii.qss}.options.siteConfig.urls.cloudFolder",  // siteConfig's cloud folder url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Customize Quickstrip"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
+     */
+    fluid.defaults("gpii.qss.urlCustomizeQssPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.customizeQss",  // siteConfig's url
                     "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
                 ]
             }

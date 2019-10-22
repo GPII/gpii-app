@@ -18,7 +18,8 @@
             cloudFolder: "https://drive.google.com/drive/folders/11m-AKdP-0wjEBocpVtvnK8iE23P7hFTS",
             myGoogleDrive: "https://drive.google.com/",
             myOneDrive: "https://onedrive.live.com/about/signin/",
-            myDropbox: "https://www.dropbox.com/login"
+            myDropbox: "https://www.dropbox.com/login",
+            customizeQss: "https://morphic.world/"
         },
 
         alwaysUseChrome: false,
@@ -45,6 +46,15 @@
         // The path to the ShareX's executable file, used in the screenCaptureWidget.
         // This is the path where ShareX lives after installing Morphic. Can be adjusted for development purposes.
         shareXPath: "C:\\Program Files (x86)\\Morphic\\sharex\\sharex-portable\\sharex.exe",
+
+        // The path to the DocuMorph's executable file, used in the service buttons.
+        // This is the path where DocuMorph lives after installing Morphic. Can be adjusted for development purposes.
+        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe",
+
+        // The path to the Snipping Tools's executable file, used in the service buttons.
+        // This uses the internal Windows 10 snipping tool
+        snippingToolCommand: "start ms-screenclip:",
+
 
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
@@ -87,6 +97,7 @@
             "screen-zoom",
             "text-zoom",
             "screen-capture",
+            "snipping-tool",
             "office-simplification",
             "high-contrast",
             "read-aloud",
@@ -98,6 +109,7 @@
             "url-google-drive",
             "url-one-drive",
             "url-dropbox",
+            "url-customize-qss",
             "separator-visible",
             "service-more",
             "service-save",
@@ -105,11 +117,7 @@
             "service-saved-settings",
             "service-reset-all",
             "service-close"
-        ],
-
-        // The path to the DocuMorph's executable file, used in the service buttons.
-        // This is the path where DocuMorph lives after installing Morphic. Can be adjusted for development purposes.
-        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe"
+        ]
     },
 
     // Whether to hide the QSS when a user clicks outside of it

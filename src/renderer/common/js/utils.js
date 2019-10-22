@@ -152,6 +152,24 @@
     };
 
     /**
+     * A custom function for handling executing the Snipping Tool command.
+     * we are using different and simplified version of the launchExecutable because
+     * the command its not a real path to executable file, and we cannot escaped with
+     * quotes either.
+     * @param {String} command - path to executable file
+     * @return {Boolean} - returns `true` on successfully executed command
+     */
+    gpii.windows.openSnippingTool = function (command) {
+        try {
+            child_process.exec(command);
+            return true;
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "openSnippingTool: Cannot start the snipping tool!");
+        }
+        return false;
+    };
+
+    /**
      * Plays a sound identified by an absolute path or a URL to it.
      * @param {String} soundPath - The path or URL of the sound to play.
      */

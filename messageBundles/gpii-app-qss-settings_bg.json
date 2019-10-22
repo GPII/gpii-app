@@ -104,5 +104,13 @@
     "gpii_app_qss_settings_url-dropbox": {
         "tooltip": "<p>Отваря Dropbox във браузъра.</p>",
         "title": "Моят Dropbox"
+    },
+    "gpii_app_qss_settings_snipping-tool": {
+        "tooltip": "<p>Стартирай инструмента за отрязване на екрана.</p>",
+        "title": "Screen Snip"
+    },
+    "gpii_app_qss_settings_url-customize-qss": {
+        "tooltip": "<p>Отваря уеб страница където да промените бутоните в лентата.</p>",
+        "title": "Промени бутоните"
     }
 }
