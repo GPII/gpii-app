@@ -45,6 +45,12 @@
 
     fluid.defaults("gpii.captureTool", {
         gradeNames: ["gpii.handlebars.templateAware.standalone", "gpii.binder.bindMarkupEvents"],
+        templates: {
+            initial: "capturePage"
+        },
+        messages: {
+            "hello-message-key": "Hello, %mood world."
+        },
         model: {
             // General Purpose Model Values
             templates: {
@@ -128,19 +134,6 @@
             prefsSetName: "MyCapture"
 
         },
-        bindings: {
-            whatToCaptureRadio: "whatToCapture",
-            prefsSetNameInput: "prefsSetName",
-            solutionsToCaptureCheckbox: "solutionsToCapture",
-            settingsToKeepCheckbox: "settingsToKeep",
-            toggleShowDefaultSettingsCheckbox: "showDefaultSettings"
-        },
-        templates: {
-            initial: "capturePage"
-        },
-        messages: {
-            "hello-message-key": "Hello, %mood world."
-        },
         modelListeners: {
             "whatToCapture": [{
                 funcName: "console.log",
@@ -179,6 +172,97 @@
             }],
             "installedSolutions": {
                 func: "{that}.updateInstalledSolutionsSchemas"
+            }
+        },
+        bindings: {
+            whatToCaptureRadio: "whatToCapture",
+            prefsSetNameInput: "prefsSetName",
+            solutionsToCaptureCheckbox: "solutionsToCapture",
+            settingsToKeepCheckbox: "settingsToKeep",
+            toggleShowDefaultSettingsCheckbox: "showDefaultSettings"
+        },
+        selectors: {
+            initial: "#flc-captureWidgetInitial",
+            nextButton: ".flc-capture-next",
+            backButton: ".flc-capture-back",
+            doneButton: ".flc-capture-done",
+            whatToCaptureRadio: "[name='fl-capture-whattocapture']",
+            prefsSetNameInput: "[name='fl-capture-prefsetname']",
+            solutionsToCaptureCheckbox: "[name='fc-choose-app']",
+            // This is the group header for each solutions set of settings
+            solutionsSettingsToKeepCheckbox: "[name='fc-solutions-to-keep']",
+            settingsToKeepCheckbox: "[name='fc-settings-to-keep']",
+            toggleShowDefaultSettingsCheckbox: "[name='flc-toggle-show-default-settings']",
+            // These 2 select/clear all selectors are used on the "Which applications to Capture",
+            // and "Which settings to keep" pages
+            selectAllSolutionsButton: ".flc-select-all",
+            clearAllSolutionsButton: ".flc-clear-all",
+            selectAllSettingsToKeepButton: ".flc-select-all-settings",
+            clearAllSettingsToKeepButton: ".flc-clear-all-settings",
+            numAppsSelectedDisplay: ".flc-num-apps-selected",
+            numSettingsSelectedDisplay: ".flc-num-settings-selected",
+            hideShowSolutionButton: ".flc-hideshow-solution",
+            hideShowNumSettingLink: ".flc-hideshow-numsetting-link",
+            captureAnimationLoopEllipsis: ".flc-capture-animation-loop-ellipsis",
+            captureAnimationLoopTimer: ".flc-capture-animation-loop-timer",
+            selectPrefssetDropdown: ".flc-select-prefset-dropdown",
+            currentlySelectedPrefset: ".flc-current-selected-prefset"
+        },
+        markupEventBindings: {
+            nextButton: {
+                method: "click",
+                args: "{that}.nextButton"
+            },
+            backButton: {
+                method: "click",
+                args: "{that}.backButton"
+            },
+            doneButton: {
+                method: "click",
+                args: "{that}.doneButton"
+            },
+            selectAllSolutionsButton: {
+                method: "click",
+                args: "{that}.selectAllSolutionsButton"
+            },
+            clearAllSolutionsButton: {
+                method: "click",
+                args: "{that}.clearAllSolutionsButton"
+            },
+            selectAllSettingsToKeepButton: {
+                method: "click",
+                args: "{that}.selectAllSettingsToKeepButton"
+            },
+            clearAllSettingsToKeepButton: {
+                method: "click",
+                args: "{that}.clearAllSettingsToKeepButton"
+            },
+            solutionsSettingsToKeepCheckbox: {
+                method: "click",
+                args: "{that}.onSolutionHeaderToKeepCheck"
+            },
+            hideShowSolutionButton: {
+                method: "click",
+                args: "{that}.onHideShowSolution"
+            },
+            hideShowNumSettingLink: {
+                method: "click",
+                args: "{that}.onHideShowNumSettingLink"
+            },
+            selectPrefssetDropdown: {
+                method: "click",
+                args: "{that}.onSelectPrefssetDropdown"
+            }
+        },
+        listeners: {
+            "onCreate.renderSignIn": {
+                func: "{that}.render",
+                args: ["1_ready_to_capture"],
+                priority: "last"
+            },
+            "onCreate.setupIPC": {
+                func: "gpii.captureTool.setupIPC",
+                args: ["{that}"]
             }
         },
         invokers: {
@@ -273,90 +357,6 @@
             onSelectPrefssetDropdown: {
                 funcName: "gpii.captureTool.onSelectPrefssetDropdown",
                 args: ["{that}", "{arguments}.0"]
-            }
-        },
-        selectors: {
-            initial: "#flc-captureWidgetInitial",
-            nextButton: ".flc-capture-next",
-            backButton: ".flc-capture-back",
-            doneButton: ".flc-capture-done",
-            whatToCaptureRadio: "[name='fl-capture-whattocapture']",
-            prefsSetNameInput: "[name='fl-capture-prefsetname']",
-            solutionsToCaptureCheckbox: "[name='fc-choose-app']",
-            // This is the group header for each solutions set of settings
-            solutionsSettingsToKeepCheckbox: "[name='fc-solutions-to-keep']",
-            settingsToKeepCheckbox: "[name='fc-settings-to-keep']",
-            toggleShowDefaultSettingsCheckbox: "[name='flc-toggle-show-default-settings']",
-            // These 2 select/clear all selectors are used on the "Which applications to Capture",
-            // and "Which settings to keep" pages
-            selectAllSolutionsButton: ".flc-select-all",
-            clearAllSolutionsButton: ".flc-clear-all",
-            selectAllSettingsToKeepButton: ".flc-select-all-settings",
-            clearAllSettingsToKeepButton: ".flc-clear-all-settings",
-            numAppsSelectedDisplay: ".flc-num-apps-selected",
-            numSettingsSelectedDisplay: ".flc-num-settings-selected",
-            hideShowSolutionButton: ".flc-hideshow-solution",
-            hideShowNumSettingLink: ".flc-hideshow-numsetting-link",
-            captureAnimationLoopEllipsis: ".flc-capture-animation-loop-ellipsis",
-            captureAnimationLoopTimer: ".flc-capture-animation-loop-timer",
-            selectPrefssetDropdown: ".flc-select-prefset-dropdown",
-            currentlySelectedPrefset: ".flc-current-selected-prefset"
-        },
-        markupEventBindings: {
-            nextButton: {
-                method: "click",
-                args: "{that}.nextButton"
-            },
-            backButton: {
-                method: "click",
-                args: "{that}.backButton"
-            },
-            doneButton: {
-                method: "click",
-                args: "{that}.doneButton"
-            },
-            selectAllSolutionsButton: {
-                method: "click",
-                args: "{that}.selectAllSolutionsButton"
-            },
-            clearAllSolutionsButton: {
-                method: "click",
-                args: "{that}.clearAllSolutionsButton"
-            },
-            selectAllSettingsToKeepButton: {
-                method: "click",
-                args: "{that}.selectAllSettingsToKeepButton"
-            },
-            clearAllSettingsToKeepButton: {
-                method: "click",
-                args: "{that}.clearAllSettingsToKeepButton"
-            },
-            solutionsSettingsToKeepCheckbox: {
-                method: "click",
-                args: "{that}.onSolutionHeaderToKeepCheck"
-            },
-            hideShowSolutionButton: {
-                method: "click",
-                args: "{that}.onHideShowSolution"
-            },
-            hideShowNumSettingLink: {
-                method: "click",
-                args: "{that}.onHideShowNumSettingLink"
-            },
-            selectPrefssetDropdown: {
-                method: "click",
-                args: "{that}.onSelectPrefssetDropdown"
-            }
-        },
-        listeners: {
-            "onCreate.renderSignIn": {
-                func: "{that}.render",
-                args: ["1_ready_to_capture"],
-                priority: "last"
-            },
-            "onCreate.setupIPC": {
-                func: "gpii.captureTool.setupIPC",
-                args: ["{that}"]
             }
         }
     });
