@@ -100,6 +100,9 @@
             onQssGetVolumeRequested: null
         },
 
+        styles: {
+            hideSideCard: "fl-hide-sidecart-panel"
+        },
         sounds: {},
 
         components: {
@@ -185,12 +188,21 @@
                                     }
                                 },
                                 listeners: {
+                                    "onCreate.applyStyles": {
+                                        funcName: "gpii.psp.qssWidget.applySideCartButtonStyles",
+                                        args: [
+                                            "{that}.container",
+                                            "{qssWidget}.model.setting.sideCart",
+                                            "{qssWidget}.options.styles"
+                                        ]
+                                    },
                                     onClick: {
                                         funcName: "gpii.psp.qssWidget.openSideCartActivated",
                                         args: [
+                                            "{that}",
+                                            "{qssWidget}",
                                             "{sideCart}.container",
-                                            "{qssWidget}.model.setting.sideCart",
-                                            "{qssWidget}.model.setting.learnMoreLink"
+                                            "{qssWidget}.options.styles"
                                         ]
                                     }
                                 }
@@ -309,30 +321,38 @@
     /**
      *
      */
-    gpii.psp.qssWidget.getSideCartButtonLabel = function (sideCartContent, learnMoreMessage, helpAndMoreMessage) {
-        if (sideCartContent) {
-            return helpAndMoreMessage;
-        } else {
-            return learnMoreMessage;
-        }
+    gpii.psp.qssWidget.applySideCartButtonStyles = function (container, sideCartContent, styles) {
     };
 
     /**
      *
      */
-    gpii.psp.qssWidget.openSideCartActivated = function (sideCartContainer, sideCartContent, learnMoreLink) {
+    gpii.psp.qssWidget.getSideCartButtonLabel = function (sideCartContent, learnMoreMessage, helpAndMoreMessage) {
+        if (sideCartContent) {
+            return helpAndMoreMessage;
+        }
+
+        return learnMoreMessage;
+    };
+
+    /**
+     *
+     */
+    gpii.psp.qssWidget.openSideCartActivated = function (that, qssWidget, sideCartContainer, styles) {
         // If there is no side panel content use button as a link.
-        if (!sideCartContent) {
-            if (learnMoreLink) {
-                gpii.psp.openUrlExternally(learnMoreLink);
+        if (!qssWidget.model.setting.sideCart) {
+            if (qssWidget.model.setting.learnMoreLink) {
+                gpii.psp.openUrlExternally(qssWidget.model.setting.learnMoreLink);
             }
             return;
         }
 
-        if (sideCartContainer.hasClass("fl-hide-sidecart-panel")) {
-            sideCartContainer.removeClass("fl-hide-sidecart-panel");
+        if (sideCartContainer.hasClass(styles.hideSideCard)) {
+            sideCartContainer.removeClass(styles.hideSideCard);
+            that.applier.change("label", "Hide", null, "fromWidget");
         } else {
-            sideCartContainer.addClass("fl-hide-sidecart-panel");
+            sideCartContainer.addClass(styles.hideSideCard);
+            that.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
         }
     };
 
