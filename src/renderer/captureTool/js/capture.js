@@ -46,6 +46,31 @@
     fluid.defaults("gpii.captureTool", {
         gradeNames: ["gpii.handlebars.templateAware.standalone", "gpii.binder.bindMarkupEvents"],
         model: {
+            // General Purpose Model Values
+            templates: {
+                pages: {
+                    capturePage: "<p>placeholder</p>",
+                    "1_ready_to_capture": "@expand:gpii.captureTool.loadTemplate(1_ready_to_capture)",
+                    "2_what_to_capture": "@expand:gpii.captureTool.loadTemplate(2_what_to_capture)",
+                    "2_which_applications": "@expand:gpii.captureTool.loadTemplate(2_which_applications)",
+                    "3_capturing_settings": "@expand:gpii.captureTool.loadTemplate(3_capturing_settings)",
+                    "3_what_to_keep": "@expand:gpii.captureTool.loadTemplate(3_what_to_keep)",
+                    "4_save_choose_prefsset": "@expand:gpii.captureTool.loadTemplate(4_save_choose_prefsset)",
+                    "4_confirm_update_prefsset": "@expand:gpii.captureTool.loadTemplate(4_confirm_update_prefsset)",
+                    "4_save_name": "@expand:gpii.captureTool.loadTemplate(4_save_name)",
+                    "5_confirmation": "@expand:gpii.captureTool.loadTemplate(5_confirmation)"
+                },
+                partials: {
+                    footer_location_partial: "@expand:gpii.captureTool.loadTemplate(footer_location_partial)",
+                    page_header_partial: "@expand:gpii.captureTool.loadTemplate(page_header_partial)"
+                }
+            },
+
+            // These are model relays to the core gpii-app detailing if there is
+            // currently a user keyed in, and if they are, what their key in token is.
+            isKeyedIn: null,
+            keyedInUserToken: null,
+
             // Page Flow
             //
             // These model entries are used for keeping track of the current
@@ -66,57 +91,49 @@
             runningSolutions: {},
             solutionsToCapture: [],
 
+            // Interstitial Capturing Page, with animated Morphic logo!
+            // These 2 model values keep track of how long the capture has been running
+            captureAnimationLoopTimer: 1,
+            captureDone: false,
+
             // Page 3: Choosing which settings to keep
 
             settingsToKeep: [],
-            // Prefs Set Name to Save the captured settings to
-            prefsSetName: "MyCapture",
-            templates: {
-                pages: {
-                    capturePage: "<p>This is a capture page 8!</p>",
-                    "1_ready_to_capture": "@expand:gpii.captureTool.loadTemplate(1_ready_to_capture)",
-                    "2_what_to_capture": "@expand:gpii.captureTool.loadTemplate(2_what_to_capture)",
-                    "2_which_applications": "@expand:gpii.captureTool.loadTemplate(2_which_applications)",
-                    "3_capturing_settings": "@expand:gpii.captureTool.loadTemplate(3_capturing_settings)",
-                    "3_what_to_keep": "@expand:gpii.captureTool.loadTemplate(3_what_to_keep)",
-                    "4_save_choose_prefsset": "@expand:gpii.captureTool.loadTemplate(4_save_choose_prefsset)",
-                    "4_confirm_update_prefsset": "@expand:gpii.captureTool.loadTemplate(4_confirm_update_prefsset)",
-                    "4_save_name": "@expand:gpii.captureTool.loadTemplate(4_save_name)",
-                    "5_confirmation": "@expand:gpii.captureTool.loadTemplate(5_confirmation)"
-                },
-                partials: {
-                    footer_location_partial: "@expand:gpii.captureTool.loadTemplate(footer_location_partial)",
-                    page_header_partial: "@expand:gpii.captureTool.loadTemplate(page_header_partial)"
-                }
-            },
             capturedSettings: {
                 "checkbook": {
                     title: "Checkbook Balancer"
                 }
             },
+            // The capturedSettingsToRender are generated from the capturedSettings and
+            // add all the metadata needed by the handlebars template to render them for the
+            // user
             capturedSettingsToRender: [],
             // The capturedPreferences will be generated from the capturedSettings. These will
             // be the preferences ready to be attached to a prefset/context to be sent up.
             capturedPreferences: null,
             preferencesToKeep: null,
 
-            // These should be model relays to the main app
-            isKeyedIn: null,
-            keyedInUserToken: null,
+            showDefaultSettings: [],
 
-            captureAnimationLoopTimer: 1,
-            captureDone: false,
+            // Page 4: Where to save the settings
 
-            // For the select which prefset page:
+            // For the select dropdown which prefset page:
             prefsSetSaveType: "existing", // Should be `existing` or `save-new`
             selectedPrefsSet: "gpii-default",
-            selectedPrefsSetName: "GPII Default"
+            selectedPrefsSetName: "GPII Default",
+
+            // Prefs Set Name to Save the captured settings to. This is either
+            // what is typed in the input for saving to a new set, or the `selectedPrefsSetName`
+            // if an existing set is chosen.
+            prefsSetName: "MyCapture"
+
         },
         bindings: {
             whatToCaptureRadio: "whatToCapture",
             prefsSetNameInput: "prefsSetName",
             solutionsToCaptureCheckbox: "solutionsToCapture",
-            settingsToKeepCheckbox: "settingsToKeep"
+            settingsToKeepCheckbox: "settingsToKeep",
+            toggleShowDefaultSettingsCheckbox: "showDefaultSettings"
         },
         templates: {
             initial: "capturePage"
@@ -152,10 +169,11 @@
                     func: "{that}.updateCapturedSettingsToRender"
                 }
             ],
+            "capturedSettingsToRender": [{
+                func: "{that}.updateNumSettingsSelected"
+            }],
             "settingsToKeep": [{
                 func: "{that}.updatePreferencesToKeep"
-            }, {
-                func: "{that}.updateNumSettingsSelected"
             }, {
                 func: "{that}.updateSolutionSettingsTree"
             }],
@@ -268,6 +286,7 @@
             // This is the group header for each solutions set of settings
             solutionsSettingsToKeepCheckbox: "[name='fc-solutions-to-keep']",
             settingsToKeepCheckbox: "[name='fc-settings-to-keep']",
+            toggleShowDefaultSettingsCheckbox: "[name='flc-toggle-show-default-settings']",
             // These 2 select/clear all selectors are used on the "Which applications to Capture",
             // and "Which settings to keep" pages
             selectAllSolutionsButton: ".flc-select-all",
@@ -653,13 +672,6 @@
     };
 
     gpii.captureTool.saveCapturedPreferences = function (that) {
-        // var prefsSetName = that.model.prefsSetName;
-        // var prefsSetId = prefsSetName;
-        // if (that.model.prefsSetSaveType === "existing") {
-        //     prefsSetId = that.model.selectedPrefsSet;
-        //     prefsSetName = that.model.selectedPrefsSetName;
-        // }
-
         var prefSetPayload = {
             name: that.model.prefsSetName,
             preferences: that.model.preferencesToKeep
@@ -803,8 +815,7 @@
                 togo[appId] = appData;
                 togo[appId].renderSettings = {};
                 fluid.each(togo[appId].settings, function (settingVal, settingKey) {
-                    togo[appId].renderSettings[settingKey] = {};
-                    var curRenderSetting = togo[appId].renderSettings[settingKey];
+                    var curRenderSetting = {};
                     curRenderSetting.settingId = settingKey;
                     var renderVal = fluid.copy(settingVal);
                     if (that.model.installedSolutionsSchemas[appId][settingKey] &&
@@ -837,6 +848,15 @@
                         // curRenderSetting.debugInfo = "Val: " + JSON.stringify(renderVal) + " Default: " + curSchema["default"];
                         curRenderSetting.debugInfo = "Default: " + curSchema["default"];
 
+                        // Remove default values
+                        if (settingVal === curSchema.default) {
+                            console.log("Removing settings: ", appId, settingKey, settingVal);
+                            return;
+                        }
+                        else {
+                            console.log("NOT REMOVING: ", appId, settingKey, settingVal);
+                        }
+
                         if (curSchema.enumLabels && curSchema["enum"] && curSchema["enum"][renderVal]) {
                             curRenderSetting.settingVal = curSchema.enumLabels[renderVal];
                         }
@@ -854,6 +874,7 @@
                         curRenderSetting.settingLabel = settingKey;
                         curRenderSetting.settingVal = renderVal;
                     }
+                    togo[appId].renderSettings[settingKey] = curRenderSetting;
                 });
             }
         });
@@ -871,7 +892,7 @@
     gpii.captureTool.updateNumSettingsSelected = function (that) {
         var el = that.locate("numSettingsSelectedDisplay");
         if (el && el.html) {
-            el.html(that.model.settingsToKeep.length);
+            el.html(that.model.capturedSettingsToRender.length);
         }
     };
 
