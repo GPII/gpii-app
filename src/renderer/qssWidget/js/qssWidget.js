@@ -340,7 +340,7 @@
      */
     gpii.psp.qssWidget.openSideCartActivated = function (that, qssWidget, sideCartContainer, styles) {
         // If there is no side panel content use button as a link.
-        if (!qssWidget.model.setting.sideCart) {
+        if (!qssWidget.model.setting.sideCart || !qssWidget.options.siteConfig.osSettingsAvailable) {
             if (qssWidget.model.setting.learnMoreLink) {
                 gpii.psp.openUrlExternally(qssWidget.model.setting.learnMoreLink);
             }
