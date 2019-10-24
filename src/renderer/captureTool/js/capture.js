@@ -156,10 +156,18 @@
                 funcName: "console.log",
                 args: ["PrefSet Name: ", "{that}.model.prefsSetName"]
             },
-            "isKeyedIn": {
-                funcName: "{that}.render",
-                args: ["{that}.model.currentPage"]
-            },
+            "isKeyedIn": [
+                {
+                    // funcName: "{that}.render",
+                    // args: ["{that}.model.currentPage"]
+                    funcName: "console.log",
+                    args: ["Key In/Out", "{change}.value", "{that}.model.keyedInUserToken"]
+                },
+                {
+                    funcName: "gpii.captureTool.watchKeyInOut",
+                    args: ["{that}", "{that}.model.currentPage", "{change}.value"]
+                }
+            ],
             "capturedSettings": [
                 {
                     func: "{that}.updateCapturedPreferences"
@@ -199,6 +207,9 @@
                 },
                 {
                     func: "{that}.updateSolutionSettingsTree"
+                },
+                {
+                    func: "{that}.updateNumSettingsSelected"
                 }
             ],
             "installedSolutions": {
@@ -363,7 +374,7 @@
             },
             updateNumSettingsSelected: {
                 funcName: "gpii.captureTool.updateNumSettingsSelected",
-                args: ["{that}"]
+                args: ["{that}", "{that}.model.settingsToKeep"]
             },
             updateSolutionSettingsTree: {
                 funcName: "gpii.captureTool.updateSolutionSettingsTree",
@@ -469,6 +480,13 @@
      */
     gpii.captureTool.determineDefaultPrefsSet = function (preferences) {
         console.log("Determine defaults from: ", preferences);
+        if (!preferences || !preferences.contexts) {
+            return {
+                prefSetId: "",
+                name: ""
+            };
+        }
+
         if (preferences.contexts["gpii-default"]) {
             return {
                 prefsSetId: "gpii-default",
@@ -520,6 +538,7 @@
         });
 
         ipcRenderer.on("modelUpdate", function (event, arg) {
+            console.log("Model Update IPC 231", arg);
             var transaction = that.applier.initiate();
             transaction.fireChangeRequest({ path: "isKeyedIn", value: arg.isKeyedIn});
             transaction.fireChangeRequest({ path: "keyedInUserToken", value: arg.keyedInUserToken});
@@ -851,7 +870,7 @@
 
     gpii.captureTool.updateCurrentNumberOfTotalSettingsToRender = function (applierFunc, capturedSettingsToRender) {
         var tally = gpii.captureTool.calculateCurrentNumberOfTotalSettingsToRender(capturedSettingsToRender);
-        applierFunc('currentNumberOfTotalSettingsToRender', tally);
+        applierFunc("currentNumberOfTotalSettingsToRender", tally);
     };
 
     gpii.captureTool.updateCapturedSettingsToRender = function (that, showDefaultSettings) {
@@ -893,7 +912,7 @@
 
                         // Remove default values if checkbox is not enabled
                         if (showDefaultSettings.length === 0) {
-                            if (settingVal === curSchema.default) {
+                            if (settingVal === curSchema["default"]) {
                                 // Remove this setting by going on to the next item before we
                                 // add it to the list.
                                 return;
@@ -937,10 +956,10 @@
         }
     };
 
-    gpii.captureTool.updateNumSettingsSelected = function (that) {
+    gpii.captureTool.updateNumSettingsSelected = function (that, settingsToKeep) {
         var el = that.locate("numSettingsSelectedDisplay");
         if (el && el.html) {
-            el.html(that.model.capturedSettingsToRender.length);
+            el.html(settingsToKeep.length);
         }
     };
 
@@ -957,5 +976,35 @@
             });
         });
         that.fullChange("installedSolutionsSchemas", togo);
+    };
+
+    /*
+     * Watch Key In/Outs. If we are on any the pages (4, 4a, 4b) where
+     * the user choosing a preference set to save to, and save, we will
+     * need to update the screens if they key-out, or key-in as a different
+     * user.
+     *
+     * I believe in almost every scenerio the correct thing to do would be
+     * to go back to the first page 4, and clear/update the model properties:
+     *  - prefsSetSaveType
+     *  - selectedPrefsSet
+     *  - selectedPrefsSetName
+     *  - prefsSetName
+     */
+    gpii.captureTool.watchKeyInOut = function (that, currentPage /*, isKeyedIn */) {
+        var transaction = that.applier.initiate();
+        transaction.fireChangeRequest({ path: "prefsSetSaveType", value: "existing"});
+        transaction.fireChangeRequest({ path: "selectedPrefsSet", value: "gpii-default"});
+        transaction.fireChangeRequest({ path: "selectedPrefsSetName", value: "GPII Default"});
+        transaction.fireChangeRequest({ path: "prefsSetName", value: "My Capture"});
+        transaction.commit();
+
+        if (currentPage === "4_save_choose_prefsset" ||
+            currentPage === "4_confirm_update_prefsset" ||
+            currentPage === "4_save_name")
+        {
+            that.applier.change("currentPage", "4_save_choose_prefsset");
+            that.render("4_save_choose_prefsset");
+        }
     };
 })(fluid);

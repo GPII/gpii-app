@@ -66,7 +66,8 @@ fluid.defaults("gpii.app.captureTool", {
     ],
     model: {
         isKeyedIn: false,
-        keyedInUserToken: null
+        keyedInUserToken: null,
+        preferences: {}
     },
     /*
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
@@ -101,7 +102,7 @@ fluid.defaults("gpii.app.captureTool", {
     invokers: {
         updateRenderModel: {
             funcName: "gpii.app.captureTool.updateRenderModel",
-            args: ["{that}", "{arguments}.0"]
+            args: ["{that}", "{arguments}.0", "{arguments}.1"]
         },
         testPspChannel: {
             funcName: "gpii.app.captureTool.testPspChannel",
@@ -124,10 +125,27 @@ fluid.defaults("gpii.app.captureTool", {
         ]
     },
     modelListeners: {
-        "isKeyedIn": {
+        // This is a little flimsy. Ideally we'd like to send over
+        // one update rather than two. gpii-app seems to always have
+        // isKeyedIn updated before the pspChannel updates the preferences
+        // (which makes sense), so we listen for changes to preferences.
+        // Does it even matter though? If someones preferences changed, we
+        // would need to update the prefsset dropdown on page 4 too...
+        //
+        // So really there could be 2 situations. A change in key-in, which means
+        // we'd listen for isKeyedIn/keyedInUserToken and preferences. And second,
+        // the same user is keyed in, but their preferences changed.  Perhaps we
+        // should cache a copy of isKeyedIn/keyedInUserToken and set up 2
+        // listeners to handler this together.  Can you boil modelListeners/events?
+        // TODO
+        // This does actually cause an issue if you save a capture as a new prefset,
+        // then run the capture tool again it does not show up, but requires keying
+        // out and in again (this maybe be a different issue in using the channel).
+        // "isKeyedIn": {
+        "preferences": {
             func: "{that}.updateRenderModel",
             excludeSource: "init",
-            args: ["{change}"]
+            args: ["{pspChannel}.model.preferences", "{change}"]
         }
     }
 });
@@ -253,9 +271,9 @@ gpii.app.captureTool.init = function (that, flowManager) {
 };
 
 gpii.app.captureTool.testPspChannel = function (that, pspChannel, flowManager, options) {
-    console.log("Capturing using cloudURL: ", flowManager.settingsDataSource.options.cloudURL);
-    console.log("BEFORE Take a look at PSP Channel Model: ", flowManager.pspChannel.model);
-    console.log("These are the save options: ", options);
+    // console.log("Capturing using cloudURL: ", flowManager.settingsDataSource.options.cloudURL);
+    // console.log("BEFORE Take a look at PSP Channel Model: ", flowManager.pspChannel.model);
+    // console.log("These are the save options: ", options);
 
     var payload = {
         contexts: {}
@@ -264,13 +282,12 @@ gpii.app.captureTool.testPspChannel = function (that, pspChannel, flowManager, o
     payload.contexts[options.prefSetId] = options.prefSetPayload;
 
     flowManager.savePreferences(that.model.keyedInUserToken, payload);
-
-    console.log("AFTER Take a look at PSP Channel Model: ", flowManager.pspChannel.model);
 };
 
-gpii.app.captureTool.updateRenderModel = function (that /*, change*/) {
+gpii.app.captureTool.updateRenderModel = function (that /* , preferences, change */ ) {
     that.dialog.webContents.send("modelUpdate", {
         isKeyedIn: that.model.isKeyedIn,
-        keyedInUserToken: that.model.keyedInUserToken
+        keyedInUserToken: that.model.keyedInUserToken,
+        preferences: that.model.preferences
     });
 };

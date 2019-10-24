@@ -85,6 +85,15 @@ div.checkbox:hover input:indeterminate~span::before {
 }
 
 /*
+ * Page 4
+ */
+
+ div.dropdown .dropdown-menu.fl-prefsset-dropdown {
+     background-color: #FFFFFF;
+     border: thin black solid;
+ }
+
+/*
  * This is necessary for the dropdown on page 4 to be fully visible.
  */
 div#flc-captureWidgetInitial {

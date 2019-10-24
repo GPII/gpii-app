@@ -252,7 +252,8 @@ fluid.defaults("gpii.app", {
             options: {
                 model: {
                     isKeyedIn: "{app}.model.isKeyedIn",
-                    keyedInUserToken: "{app}.model.keyedInUserToken"
+                    keyedInUserToken: "{app}.model.keyedInUserToken",
+                    preferences: "{pspChannel}.model.preferences"
                 }
             }
         },

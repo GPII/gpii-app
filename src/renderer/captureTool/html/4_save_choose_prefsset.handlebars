@@ -1,5 +1,6 @@
 {{> page_header_partial pageHeader="4. Decide where to save your settings"}}
 
+{{#if isKeyedIn}}
 <p>
     Select a preference set where you want to save your captured preferences.
     Any new settings will replace settings that are older.
@@ -18,7 +19,7 @@
         </span>
         <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-example">
+    <ul class="dropdown-menu fl-prefsset-dropdown" role="menu" aria-labelledby="dropdown-example">
         {{#each preferences.contexts}}
         <li>
             <a style="padding-left: 0px" class="flc-select-prefset-dropdown" data-type="existing" data-prefsset-id="{{@key}}" data-prefsset-name="{{this.name}}" href="#">
@@ -40,19 +41,11 @@
     <input type="button" class="btn btn-default fl-capture-back flc-capture-back" value="Back" />
     <input type="button" class="btn btn-primary fl-capture-next flc-capture-next" value="Next" />
 
-
-{{!-- {{#if isKeyedIn}}
-<p>
-    You are currently keyed in with {{keyedInUserToken}}, and the capture will be saved to that vault.
-</p>
-    <input type="button" class="btn btn-default flc-capture-back" value="Back" />
-    <input type="button" class="btn btn-default flc-capture-next" value="Next" />
 {{else}}
 <p>
     You are not currently keyed in to Morphic. Please key in in order to save this capture.
 </p>
-    <input type="button" class="btn btn-default flc-capture-back" value="Back" />
-    <input disabled="true" type="button" class="btn btn-default flc-capture-next" value="Next" />
-{{/if}} --}}
+    <input type="button" class="btn btn-default fl-capture-back flc-capture-back" value="Back" />
+{{/if}}
 
 {{> footer_location_partial activeSave="true"}}
