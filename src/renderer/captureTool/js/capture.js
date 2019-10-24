@@ -121,6 +121,12 @@
 
             showDefaultSettings: [],
 
+            // This is a property meant for display in the UI that will take in to
+            // account if we are using `showDefaultSettings`.  It is based off of `capturedSettingsToRender`
+            // which also respects `showDefaultSettings`.  This should be calculated by tallying the
+            // `numberOfRenderSettings` property for each entry in `capturedSettingsToRender`.
+            currentNumberOfTotalSettingsToRender: 0,
+
             // Page 4: Where to save the settings
 
             // For the select dropdown which prefset page:
@@ -159,17 +165,42 @@
                     func: "{that}.updateCapturedPreferences"
                 },
                 {
-                    func: "{that}.updateCapturedSettingsToRender"
+                    func: "{that}.updateCapturedSettingsToRender",
+                    args: ["{that}.model.showDefaultSettings"]
                 }
             ],
-            "capturedSettingsToRender": [{
-                func: "{that}.updateNumSettingsSelected"
-            }],
-            "settingsToKeep": [{
-                func: "{that}.updatePreferencesToKeep"
-            }, {
-                func: "{that}.updateSolutionSettingsTree"
-            }],
+            "showDefaultSettings": [
+                {
+                    func: "{that}.updateCapturedSettingsToRender",
+                    args: ["{change}.value"]
+                },
+                {
+                    func: "{that}.render",
+                    args: ["{that}.model.currentPage"]
+                },
+                {
+                    // Currently, it's a bit dicey as to replaying the binder
+                    // when the options change.
+                    func: "{that}.clearAllSettingsToKeepButton"
+                }
+            ],
+            "capturedSettingsToRender": [
+                {
+                    func: "{that}.updateNumSettingsSelected"
+                },
+                {
+                    func: "gpii.captureTool.updateCurrentNumberOfTotalSettingsToRender",
+                    args: ["{that}.applier.change", "{that}.model.capturedSettingsToRender"]
+                }
+            ],
+            "settingsToKeep": [
+                {
+                    func: "{that}.updatePreferencesToKeep"
+                },
+                {
+                    func: "{that}.updateSolutionSettingsTree"
+                }
+            ],
             "installedSolutions": {
                 func: "{that}.updateInstalledSolutionsSchemas"
             }
@@ -320,7 +351,7 @@
             },
             updateCapturedSettingsToRender: {
                 funcName: "gpii.captureTool.updateCapturedSettingsToRender",
-                args: ["{that}"]
+                args: ["{that}", "{arguments}.0"]
             },
             fullChange: {
                 funcName: "gpii.captureTool.fullChange",
@@ -631,6 +662,9 @@
         else if (currentPage === "4_save_choose_prefsset") {
             that.applier.change("currentPage", "3_what_to_keep");
             that.render("3_what_to_keep");
+            // Currently, it's a bit dicey as to replaying the binder
+            // when the options change.
+            that.clearAllSettingsToKeepButton();
         }
         else if (currentPage === "4_save_name") {
             that.applier.change("currentPage", "4_save_choose_prefsset");
@@ -807,12 +841,24 @@
         that.applier.change("selectedPrefsSetName", curTarget.data("prefsset-name"));
     };
 
-    gpii.captureTool.updateCapturedSettingsToRender = function (that) {
+    gpii.captureTool.calculateCurrentNumberOfTotalSettingsToRender = function (capturedSettingsToRender) {
+        var tally = 0;
+        fluid.each(capturedSettingsToRender, function (item) {
+            tally += item.numberOfRenderSettings;
+        });
+        return tally;
+    };
 
+    gpii.captureTool.updateCurrentNumberOfTotalSettingsToRender = function (applierFunc, capturedSettingsToRender) {
+        var tally = gpii.captureTool.calculateCurrentNumberOfTotalSettingsToRender(capturedSettingsToRender);
+        applierFunc('currentNumberOfTotalSettingsToRender', tally);
+    };
+
+    gpii.captureTool.updateCapturedSettingsToRender = function (that, showDefaultSettings) {
         var togo = {};
         fluid.each(that.model.capturedSettings, function (appData, appId) {
             if (appData.numberOfSettings >= 0) { // sgithens DEMO_TOGGLE
-                togo[appId] = appData;
+                togo[appId] = fluid.copy(appData);
                 togo[appId].renderSettings = {};
                 fluid.each(togo[appId].settings, function (settingVal, settingKey) {
                     var curRenderSetting = {};
@@ -831,31 +877,28 @@
                         if (fluid.isPlainObject(settingVal) && fluid.keys(settingVal).length === 1 &&
                             settingVal.value !== undefined) {
                             renderVal = renderVal.value;
-                            console.log("First case");
                         }
                         else if (fluid.isPlainObject(settingVal) && fluid.keys(settingVal).length === 2 &&
                             settingVal.value !== undefined && settingVal.path !== undefined) {
                             renderVal = renderVal.value;
-                            console.log("Second case");
                         }
                         else {
                             console.log("Third Case");
                         }
 
-                        console.log("The current schema is: ", settingVal, settingKey, curSchema);
                         curRenderSetting.settingLabel = curSchema.title;
                         curRenderSetting.settingDesc = curSchema.description;
                         // curRenderSetting.debugInfo = "Val: " + JSON.stringify(renderVal) + " Default: " + curSchema["default"];
                         curRenderSetting.debugInfo = "Default: " + curSchema["default"];
 
-                        // Remove default values
-                        if (settingVal === curSchema.default) {
-                            console.log("Removing settings: ", appId, settingKey, settingVal);
-                            return;
-                        }
-                        else {
-                            console.log("NOT REMOVING: ", appId, settingKey, settingVal);
-                        }
+                        // Remove default values if checkbox is not enabled
+                        if (showDefaultSettings.length === 0) {
+                            if (settingVal === curSchema.default) {
+                                // Remove this setting by going on to the next item before we
+                                // add it to the list.
+                                return;
+                            }
+                        };
 
                         if (curSchema.enumLabels && curSchema["enum"] && curSchema["enum"][renderVal]) {
                             curRenderSetting.settingVal = curSchema.enumLabels[renderVal];
@@ -876,6 +919,11 @@
                     }
                     togo[appId].renderSettings[settingKey] = curRenderSetting;
                 });
+                // This takes into account whether or not we removed the default settings
+                togo[appId].numberOfRenderSettings = Object.keys(togo[appId].renderSettings).length;
+                if (togo[appId].numberOfRenderSettings === 0) {
+                    delete togo[appId];
+                }
             }
         });
         var orderedCapturedSettingsToRender = gpii.captureTool.createArrayFromSolutionsHash(togo);

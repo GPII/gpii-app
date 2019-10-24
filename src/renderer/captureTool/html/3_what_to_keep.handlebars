@@ -4,7 +4,7 @@
     {{> page_header_partial pageHeader="3. Decide which settings to keep"}}
 
     <p>
-        The capture tool found {{settingsToKeep.length}} settings in the {{capturedSettingsToRender.length}} applications. Look at each application's settings
+        The capture tool found {{currentNumberOfTotalSettingsToRender}} settings in the {{capturedSettingsToRender.length}} applications. Look at each application's settings
         and decide which settings you want to keep.
     </p>
     <hr/>
@@ -26,7 +26,7 @@
                     <span> </span>
                 </label>
             </div>
-            <strong>{{this.name}} ( <a class="flc-hideshow-numsetting-link fl-settings-action-link" data-solution="{{this.id}}"> {{this.numberOfSettings}} settings </a> ) </strong>
+            <strong>{{this.name}} ( <a class="flc-hideshow-numsetting-link fl-settings-action-link" data-solution="{{this.id}}"> {{this.numberOfSettings}} :: {{this.numberOfRenderSettings}} settings </a> ) </strong>
             <input class="flc-hideshow-solution btn btn-default theme-light pull-right" type="button" value="Show Settings" data-show="false" data-solution="{{this.id}}" />
         </div>
         <div style="margin-left: 40px; display: none;" id="flc-settings-for-{{this.id}}">
@@ -45,6 +45,12 @@
         </div>
     </div>
     {{/each}}
+</div>
+<div class="checkbox">
+    <label>
+        <input name="flc-toggle-show-default-settings" value="show-defaults" type="checkbox" />
+        <span>Show values that match application defaults</span>
+    </label>
 </div>
 {{!-- </form> --}}
 
