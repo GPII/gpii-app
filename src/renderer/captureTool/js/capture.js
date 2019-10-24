@@ -713,7 +713,7 @@
     gpii.captureTool.selectAllSettingsToKeepButton = function (that) {
         var settings = [];
         fluid.each(that.model.capturedSettingsToRender, function (app) {
-            fluid.each(app.settings, function (setting, settingId) {
+            fluid.each(app.renderSettings, function (setting, settingId) {
                 settings.push(app.id + ":" + settingId);
             });
         });
@@ -774,7 +774,7 @@
     gpii.captureTool.updateSolutionSettingsTree = function (that) {
         fluid.each(that.model.capturedSettingsToRender, function (solution) {
             var numSelected = 0;
-            fluid.each(Object.keys(solution.settings), function (settingId) {
+            fluid.each(Object.keys(solution.renderSettings), function (settingId) {
                 var solSetting = solution.id + ":" + settingId;
                 if (fluid.contains(that.model.settingsToKeep, solSetting)) {
                     numSelected += 1;
@@ -791,7 +791,7 @@
                 checkboxEl.indeterminate = false;
                 checkboxEl.checked = false;
             }
-            else if (solution.numberOfSettings === numSelected) {
+            else if (solution.numberOfRenderSettings === numSelected) {
                 checkboxEl.indeterminate = false;
                 checkboxEl.checked = true;
             }
