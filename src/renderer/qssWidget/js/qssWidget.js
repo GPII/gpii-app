@@ -183,7 +183,7 @@
                                     label: {
                                         expander: {
                                             funcName: "gpii.psp.qssWidget.getSideCartButtonLabel",
-                                            args: ["{qssWidget}.model.setting.sideCart", "{qssWidget}.model.messages.learnMore", "{qssWidget}.model.messages.helpAndMoreOptions"]
+                                            args: ["{qssWidget}.model.setting", "{qssWidget}.model.messages.learnMore", "{qssWidget}.model.messages.helpAndMoreOptions"]
                                         }
                                     }
                                 },
@@ -216,7 +216,8 @@
                 container: "{qssWidget}.dom.sideCart",
                 options: {
                     model: {
-                        setting: "{qssWidget}.model.setting"
+                        setting: "{qssWidget}.model.setting",
+                        osSettingsAvailable: "{qssWidget}.options.siteConfig.osSettingsAvailable"
                     },
                     selectors: {
                         learnMoreLink: ".flc-qssWidget-learnMoreLink"
@@ -327,8 +328,8 @@
     /**
      *
      */
-    gpii.psp.qssWidget.getSideCartButtonLabel = function (sideCartContent, learnMoreMessage, helpAndMoreMessage) {
-        if (sideCartContent) {
+    gpii.psp.qssWidget.getSideCartButtonLabel = function (setting, learnMoreMessage, helpAndMoreMessage) {
+        if (setting.sideCart || setting.sideCartWithSettings) {
             return helpAndMoreMessage;
         }
 
@@ -340,7 +341,7 @@
      */
     gpii.psp.qssWidget.openSideCartActivated = function (that, qssWidget, sideCartContainer, styles) {
         // If there is no side panel content use button as a link.
-        if (!qssWidget.model.setting.sideCart || !qssWidget.options.siteConfig.osSettingsAvailable) {
+        if (!qssWidget.model.setting.sideCart) {
             if (qssWidget.model.setting.learnMoreLink) {
                 gpii.psp.openUrlExternally(qssWidget.model.setting.learnMoreLink);
             }

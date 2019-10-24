@@ -6,7 +6,7 @@
     // Configuration options for the QSS window
     qss: {
         // Whether a user can open Settings pages and Control Panels of the operating system
-        osSettingsAvailable: false,
+        osSettingsAvailable: true,
 
         // Determines if the QSS will be shown automatically on Morphic's startup
         showQssOnStart: false,

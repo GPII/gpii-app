@@ -25,8 +25,9 @@
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         model: {
+            sideCartContent: null,
             messages: {
-                sideCartContent: "{that}.model.setting.sideCart"
+                sideCartContent: "{that}.model.sideCartContent"
             }
         },
 
@@ -34,7 +35,22 @@
             sideCartContent: ".flc-qssWidget-sidecart"
         },
 
-        enableRichText: true
+        enableRichText: true,
+
+        modelListeners: {
+            "setting.sideCart": {
+                funcName: "gpii.qssWidget.sideCart.getSideCartMessage",
+                args: ["{that}"]
+            }
+        }
     });
+
+    gpii.qssWidget.sideCart.getSideCartMessage = function (that) {
+        if (that.model.osSettingsAvailable) {
+            that.applier.change("sideCartContent", that.model.setting.sideCartWithSettings, null, "fromWidget");
+        } else {
+            that.applier.change("sideCartContent", that.model.setting.sideCart, null, "fromWidget");
+        }
+    };
 
 })(fluid);
