@@ -101,7 +101,10 @@
         },
 
         styles: {
-            hideSideCard: "fl-hide-sidecart-panel"
+            hideSidePanel: "fl-hide-sidecart-panel",
+            openSidePanel: "btn-icon-open",
+            closeSidePanel: "btn-icon-close",
+            openLinkIcon: "btn-icon-link"
         },
         sounds: {},
 
@@ -168,7 +171,7 @@
                             args: [null],
                             priority: "last"
                         },
-                        "onCreate.hideSideCard": {
+                        "onCreate.hideSidePanel": {
                             this: "{qssWidget}.dom.sideCart",
                             method: "addClass",
                             args: ["fl-hide-sidecart-panel"]
@@ -192,7 +195,7 @@
                                         funcName: "gpii.psp.qssWidget.applySideCartButtonStyles",
                                         args: [
                                             "{that}.container",
-                                            "{qssWidget}.model.setting.sideCart",
+                                            "{qssWidget}.model.setting",
                                             "{qssWidget}.options.styles"
                                         ]
                                     },
@@ -322,7 +325,14 @@
     /**
      *
      */
-    gpii.psp.qssWidget.applySideCartButtonStyles = function (container, sideCartContent, styles) {
+    gpii.psp.qssWidget.applySideCartButtonStyles = function (container, setting, styles) {
+        container.removeClass(styles.openLinkIcon + " " + styles.openSidePanel + " " + styles.closeSidePanel);
+
+        if (setting.sideCart || setting.sideCartWithSettings) {
+            container.addClass(styles.openSidePanel);
+        } else {
+            container.addClass(styles.openLinkIcon);
+        }
     };
 
     /**
@@ -339,7 +349,7 @@
     /**
      *
      */
-    gpii.psp.qssWidget.openSideCartActivated = function (that, qssWidget, sideCartContainer, styles) {
+    gpii.psp.qssWidget.openSideCartActivated = function (sidePanelButton, qssWidget, sideCartContainer, styles) {
         // If there is no side panel content use button as a link.
         if (!qssWidget.model.setting.sideCart) {
             if (qssWidget.model.setting.learnMoreLink) {
@@ -348,13 +358,18 @@
             return;
         }
 
-        if (sideCartContainer.hasClass(styles.hideSideCard)) {
-            sideCartContainer.removeClass(styles.hideSideCard);
-            that.applier.change("label", "Hide", null, "fromWidget");
+        sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
+
+        if (sideCartContainer.hasClass(styles.hideSidePanel)) {
+            sideCartContainer.removeClass(styles.hideSidePanel);
+            sidePanelButton.container.addClass(styles.closeSidePanel);
+            sidePanelButton.applier.change("label", "Hide", null, "fromWidget");
         } else {
-            sideCartContainer.addClass(styles.hideSideCard);
-            that.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
+            sideCartContainer.addClass(styles.hideSidePanel);
+            sidePanelButton.container.addClass(styles.openSidePanel);
+            sidePanelButton.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
         }
+
     };
 
 
