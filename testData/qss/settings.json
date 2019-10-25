@@ -95,6 +95,15 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
         "value": ""
     }, {
+        "id": "snipping-tool",
+        "path": "snipping-tool",
+        "schema": {
+            "type": "snipping-tool"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 131,
+        "messageKey": "snipping-tool"
+    }, {
         "id": "office-simplification",
         "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.office.word-ribbon",
         "schema": {
@@ -182,6 +191,15 @@
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
     }, {
+        "id": "url-customize-qss",
+        "path": "url-customize-qss",
+        "schema": {
+            "type": "url-customize-qss"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 190,
+        "messageKey": "url-customize-qss"
+    }, {
         "id": "cloud-folder-open",
         "path": "cloud-folder-open",
         "schema": {
@@ -210,6 +228,22 @@
         "tabindex": 220,
         "messageKey": "launch-documorph"
     }, {
+        "id": "separator",
+        "path": "separator",
+        "schema": {
+            "type": "separator",
+            "title": ""
+        },
+        "buttonTypes": ["separator"]
+    }, {
+        "id": "separator-visible",
+        "path": "separator",
+        "schema": {
+            "type": "separator",
+            "title": ""
+        },
+        "buttonTypes": ["separator", "separatorVisible"]
+    }, {
         "id": "service-more",
         "path": "more",
         "schema": {
@@ -237,14 +271,15 @@
         "tabindex": 320,
         "messageKey": "undo"
     }, {
-        "id": "service-dummy",
-        "path": "dummy",
+        "id": "service-saved-settings",
+        "path": "mySavedSettings",
         "schema": {
-            "type": "dummy"
+            "type": "mySavedSettings"
         },
         "buttonTypes": ["smallButton"],
         "tabindex": 310,
-        "messageKey": "dummy"
+        "messageKey": "mySavedSettings",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#mysavedsettings"
     }, {
         "id": "service-reset-all",
         "path": "resetAll",

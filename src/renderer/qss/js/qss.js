@@ -34,6 +34,7 @@
             "number":            "gpii.qss.widgetButtonPresenter",
             "string":            "gpii.qss.widgetButtonPresenter",
             "close":             "gpii.qss.closeButtonPresenter",
+            "mySavedSettings":   "gpii.qss.mySavedSettingsButtonPresenter",
             "save":              "gpii.qss.saveButtonPresenter",
             "undo":              "gpii.qss.undoButtonPresenter",
             "resetAll":          "gpii.qss.resetAllButtonPresenter",
@@ -43,7 +44,15 @@
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
             "volume":            "gpii.qss.volumeButtonPresenter",
-            "disabled":          "gpii.qss.disabledButtonPresenter"
+            "snipping-tool":     "gpii.qss.snippingToolPresenter",
+            "disabled":          "gpii.qss.disabledButtonPresenter",
+            // custom button grades
+            "custom-launch-app": "gpii.qss.customLaunchAppPresenter",
+            "custom-open-url":   "gpii.qss.customOpenUrlPresenter",
+            // separator grade
+            "separator":         "gpii.qss.separatorButtonPresenter",
+            // url based buttons
+            "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
         },
 
         dynamicContainerMarkup: {
@@ -232,7 +241,10 @@
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
-                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired"
+                        onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
+
+                        // Custom buttons events
+                        onQssStartProcess: null
                     }
                 }
             }

@@ -218,6 +218,24 @@
         "learnMoreLink": "https://morphic.world/help/qsshelp#volume"
 
     }, {
+        "id": "url-customize-qss",
+        "path": "url-customize-qss",
+        "schema": {
+            "type": "url-customize-qss"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 160,
+        "messageKey": "url-customize-qss"
+    }, {
+        "id": "snipping-tool",
+        "path": "snipping-tool",
+        "schema": {
+            "type": "snipping-tool"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 170,
+        "messageKey": "snipping-tool"
+    }, {
         "id": "cloud-folder-open",
         "path": "cloud-folder-open",
         "schema": {

@@ -15,7 +15,8 @@
         scaleFactor: 1.2,
         urls: {
             account: "http://morphic.world/account",
-            cloudFolder: "https://drive.google.com/drive/folders/11m-AKdP-0wjEBocpVtvnK8iE23P7hFTS"
+            cloudFolder: "https://drive.google.com/drive/folders/11m-AKdP-0wjEBocpVtvnK8iE23P7hFTS",
+            customizeQss: "https://morphic.world/"
         },
 
         alwaysUseChrome: false,
@@ -43,14 +44,58 @@
         // This is the path where ShareX lives after installing Morphic. Can be adjusted for development purposes.
         shareXPath: "C:\\Program Files (x86)\\Morphic\\sharex\\sharex-portable\\sharex.exe",
 
+        // The path to the DocuMorph's executable file, used in the service buttons.
+        // This is the path where DocuMorph lives after installing Morphic. Can be adjusted for development purposes.
+        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe",
+
+        // The path to the Snipping Tools's executable file, used in the service buttons.
+        // This uses the internal Windows 10 snipping tool
+        snippingToolCommand: "start ms-screenclip:",
+
+
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
+        // 
+        // Custom buttons: Instead of a string with buttonId you add an object with the custom button data like this:
+        // {
+        //      "buttonId": "MakeYourOwn",
+        //      "buttonName": "Launch Notepad", // Free text that will be use as button's label
+        //      "buttonType": "APP", // APP, or WEB
+        //      "buttonData": "C:\\Windows\\system32\\notepad.exe", // system path, or url
+        //      "fullScreen": true, // true, or false
+        //      "popupText": "<p>Launch the Notepad application.</p>", // tooltip text
+        //      "description": "The full description of the button..." // optional description
+        // }
+        // 
+        // Separator buttons: Use can use any combination of the separators, even one after another:
+        // "separator" // Use separator for invisible separator
+        // "separator-visible" // Use separator-visible for a gray separator (same size as the invisible one)
+         
         buttonList: [
+            {
+                "buttonId": "MakeYourOwn",
+                "buttonName": "Launch Notepad",
+                "buttonType": "APP",
+                "buttonData": "C:\\Windows\\system32\\notepad.exe",
+                "fullScreen": true,
+                "popupText": "<p>Launch the Notepad application.</p>",
+                "description": "The full description of the button..."
+            }, {
+                "buttonId": "MakeYourOwn",
+                "buttonName": "Open Reddit",
+                "buttonType": "WEB",
+                "buttonData": "www.reddit.com",
+                "fullScreen": true,
+                "popupText": "<p>Open Reddit in a web browser.</p>",
+                "description": "The full description of the button..."
+            },
+            "separator",
             "language",
             "translate-tools",
             "screen-zoom",
             "text-zoom",
             "screen-capture",
+            "snipping-tool",
             "office-simplification",
             "high-contrast",
             "read-aloud",
@@ -58,17 +103,16 @@
             "launch-documorph",
             "cloud-folder-open",
             "usb-open",
+            "separator",
+            "url-customize-qss",
+            "separator-visible",
             "service-more",
             "service-save",
             "service-undo",
-            "service-dummy",
+            "service-saved-settings",
             "service-reset-all",
             "service-close"
-        ],
-
-        // The path to the DocuMorph's executable file, used in the service buttons.
-        // This is the path where DocuMorph lives after installing Morphic. Can be adjusted for development purposes.
-        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe"
+        ]
     },
 
     // Whether to hide the QSS when a user clicks outside of it
