@@ -233,6 +233,34 @@
     });
 
     /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * custom buttons that need to execute key sequence or key combination, it requires
+     * a key data and a handle to the onQssExecuteKeySequence event, documentation:
+     * https://github.com/stegru/windows/blob/GPII-4135/gpii/node_modules/gpii-userInput/README.md
+     */
+    fluid.defaults("gpii.qss.customKeysPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.executeKeySequence",
+                args: [
+                    "{that}.model.item.schema.keyData", // using the key data from the custom button's schema
+                    "{channelNotifier}.events.onQssExecuteKeySequence"
+                ]
+            }
+        }
+    });
+
+    /**
+     * Custom function that handles executing the key sequence
+     * @param  {String} keyData - string with key combinations
+     * @param  {Event} executeKeyEvent - handle to the onQssExecuteKeySequence event
+     */
+    gpii.qss.executeKeySequence = function (keyData, executeKeyEvent) {
+        executeKeyEvent.fire(keyData);
+    };
+
+    /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Undo"
      * QSS button.
      */
