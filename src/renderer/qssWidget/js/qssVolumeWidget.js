@@ -91,32 +91,11 @@
                     sounds: "{volume}.options.sounds",
                     model: {
                         setting: "{volume}.model.setting",
-                        messages: "{volume}.model.messages"
+                        messages: "{volume}.model.messages",
+                        previousValue: "{volume}.model.previousValue"
                     },
                     events: {
                         onNotificationRequired: "{volume}.events.onNotificationRequired"
-                    },
-                    invokers: {
-                        increment: {
-                            funcName: "gpii.qssWidget.volume.makeRestrictedStep",
-                            args: [
-                                "{that}",
-                                "{that}.model.setting.value",
-                                "{that}.model.setting.schema",
-                                1, // step multiplier, no effect of the step itself
-                                "{volume}.model.previousValue"
-                            ]
-                        },
-                        decrement: {
-                            funcName: "gpii.qssWidget.volume.makeRestrictedStep",
-                            args: [
-                                "{that}",
-                                "{that}.model.setting.value",
-                                "{that}.model.setting.schema",
-                                -1, // step multiplier to reverse the step
-                                "{volume}.model.previousValue"
-                            ]
-                        }
                     }
                 }
             },
@@ -211,51 +190,5 @@
 
         that.applier.change("enabled", !that.model.enabled, null, "fromWidget");
         volumeWidget.applier.change("value", volumeWidget.model.value, null, "fromWidget");
-    };
-
-    /**
-     * Either increases or decreases the current setting's value (depending on the
-     * `shouldSubtract` parameter) with the `divisibleBy` amount specified in the
-     * setting's schema. It also takes care that the new value of the setting does
-     * not become bigger/smaller than the maximum/minimum allowed value for the
-     * setting.
-     * @param {Component} that - The `gpii.qssWidget.volumeStepper` instance.
-     * @param {Number} value - The initial value of the setting before the operation.
-     * @param {Object} schema - Describes the schema of the setting.
-     * @param {Number} schema.min - The minimum possible value for the setting.
-     * @param {Number} schema.max - The maximum possible value for the setting.
-     * @param {Number} schema.divisibleBy - The amount which is added or subtracted
-     * from the setting's value every time this function is invoked.
-     * @param {Number} stepMultiplier - a basic numeric step multiplier, if its 1 there
-     * will be no change in the step size, -1 will reverse it, and everything else
-     * will act as a real multiplier (2 for 2x as an example)
-     * subtracted from or added to the setting's value.
-     * @param {Number} previousValue - The value before the mute button is activated
-     * @return {Boolean} Whether there was a change in the setting's value.
-     */
-    gpii.qssWidget.volume.makeRestrictedStep = function (that, value, schema, stepMultiplier, previousValue) {
-        var restrictedValue;
-        if (value === 0 && previousValue !== undefined) {
-            restrictedValue = previousValue;
-        } else {
-            var step = schema.divisibleBy * stepMultiplier;
-
-            value = parseFloat( (value + step).toPrecision(3) );
-            // Handle not given min and max
-            restrictedValue = value;
-
-            if (fluid.isValue(schema.max)) {
-                restrictedValue = Math.min(restrictedValue, schema.max);
-            }
-
-            if (fluid.isValue(schema.min)) {
-                restrictedValue = Math.max(restrictedValue, schema.min);
-            }
-        }
-
-        that.applier.change("value", restrictedValue, null, "fromWidget");
-
-        // Whether a bound was hit
-        return value !== restrictedValue;
     };
 })(fluid);

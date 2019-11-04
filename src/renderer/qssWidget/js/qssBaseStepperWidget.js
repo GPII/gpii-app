@@ -118,7 +118,8 @@
                     "{that}",
                     "{that}.model.value",
                     "{that}.model.setting.schema",
-                    1 // step multiplier, no effect of the step itself
+                    1, // step multiplier, no effect of the step itself
+                    "{that}.model.previousValue"
                 ]
             },
             decrement: {
@@ -127,7 +128,8 @@
                     "{that}",
                     "{that}.model.value",
                     "{that}.model.setting.schema",
-                    -1 // step multiplier to reverse the step
+                    -1, // step multiplier to reverse the step
+                    "{that}.model.previousValue"
                 ]
             },
             animateButton: {
@@ -259,19 +261,24 @@
      * @param {Number} previousValue - The value before the mute button is activated
      * @return {Boolean} Whether there was a change in the setting's value.
      */
-    gpii.qssWidget.baseStepper.makeRestrictedStep = function (that, value, schema, stepMultiplier) {
-        var step = schema.divisibleBy * stepMultiplier;
+    gpii.qssWidget.baseStepper.makeRestrictedStep = function (that, value, schema, stepMultiplier, previousValue) {
+        var restrictedValue;
+        if (value === 0 && previousValue !== undefined) {
+            restrictedValue = previousValue;
+        } else {
+            var step = schema.divisibleBy * stepMultiplier;
 
-        value = parseFloat( (value + step).toPrecision(2) );
-        // Handle not given min and max
-        var restrictedValue = value;
+            value = parseFloat( (value + step).toPrecision(3) );
+            // Handle not given min and max
+            restrictedValue = value;
 
-        if (fluid.isValue(schema.max)) {
-            restrictedValue = Math.min(restrictedValue, schema.max);
-        }
+            if (fluid.isValue(schema.max)) {
+                restrictedValue = Math.min(restrictedValue, schema.max);
+            }
 
-        if (fluid.isValue(schema.min)) {
-            restrictedValue = Math.max(restrictedValue, schema.min);
+            if (fluid.isValue(schema.min)) {
+                restrictedValue = Math.max(restrictedValue, schema.min);
+            }
         }
 
         that.applier.change("value", restrictedValue, null, "fromWidget");
