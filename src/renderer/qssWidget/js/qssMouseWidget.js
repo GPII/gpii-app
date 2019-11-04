@@ -96,7 +96,7 @@
                                 "{that}",
                                 "{that}.model.setting.value",
                                 "{that}.model.setting.schema",
-                                false
+                                true
                             ]
                         },
                         decrement: {
@@ -105,7 +105,7 @@
                                 "{that}",
                                 "{that}.model.setting.value",
                                 "{that}.model.setting.schema",
-                                true
+                                false
                             ]
                         }
                     },
@@ -181,27 +181,27 @@
      */
     gpii.qssWidget.mouse.makeRestrictedStep = function (that, value, schema, shouldSubtract) {
         var step = (shouldSubtract ? -schema.divisibleBy : schema.divisibleBy);
-        var restrcitedValue;
+        var restrictedValue;
 
         if (value === schema.min && shouldSubtract) {
             // handle edge case specific only to mouse speed steppper
-            restrcitedValue = 2;
+            restrictedValue = 2;
         } else {
             value = parseFloat( (value - step).toPrecision(2) );
 
             // Handle not given min and max
-            restrcitedValue = value;
+            restrictedValue = value;
         }
 
         if (fluid.isValue(schema.max)) {
-            restrcitedValue = Math.min(restrcitedValue, schema.max);
+            restrictedValue = Math.min(restrictedValue, schema.max);
         }
 
         if (fluid.isValue(schema.min)) {
-            restrcitedValue = Math.max(restrcitedValue, schema.min);
+            restrictedValue = Math.max(restrictedValue, schema.min);
         }
 
-        that.applier.change("value", restrcitedValue, null, "fromWidget");
+        that.applier.change("value", restrictedValue, null, "fromWidget");
 
         // Whether a bound was hit
         return value < 0 || value > schema.max;

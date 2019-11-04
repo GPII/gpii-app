@@ -20,8 +20,8 @@ var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
 var clickMouseBtn = "jQuery('.fl-qss-btnId-mouse').click()",
-    clickDecreaseBtn = "jQuery('.fl-qssStepper-incBtn').click()",
-    clickIncreaseBtn = "jQuery('.fl-qssStepper-decBtn').click()",
+    clickDecreaseBtn = "jQuery('.fl-qssStepper-decBtn').click()",
+    clickIncreaseBtn = "jQuery('.fl-qssStepper-incBtn').click()",
     swapMouseToggleBtn = "jQuery('.flc-qssMouseWidget-swapMouseButtons .flc-switchUI-control').click()",
     easierDoubleClickToggleBtn = "jQuery('.flc-qssMouseWidget-easierDoubleClick .flc-switchUI-control').click()",
     largeMouseToggleBtn = "jQuery('.flc-qssMouseWidget-largerMousePointer .flc-switchUI-control').click()",
