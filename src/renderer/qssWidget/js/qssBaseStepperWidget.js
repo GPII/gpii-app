@@ -1,7 +1,8 @@
 /**
  * The QSS base stepper widget
  *
- * TODO
+ * Grade creates to be used in QSS stepper widget and every other use case.
+ * It’s used to increase/decrease a setting's value in steps.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -32,10 +33,7 @@
         enableRichText: true,
 
         model: {
-            messages: {
-                // settingTitle: "{that}.model.setting.schema.title",
-                // footerTip: "{that}model.messages.footerTip"
-            },
+            messages: {},
             setting: {},
 
             value: "{that}.model.setting.value"
