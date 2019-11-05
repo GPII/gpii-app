@@ -32,7 +32,7 @@
             setting: "{that}.model.setting"
         },
 
-        selectrors: {
+        selectors: {
             heightListenerContainer: ".flc-qssStepperWidget-indicators",
             indicators: ".flc-qssStepperWidget-indicators"
         },
@@ -41,16 +41,16 @@
             onNotificationRequired: "{that}.events.onQssWidgetNotificationRequired"
         },
 
-        // invokers: {
-        //     calculateHeight: {
-        //         funcName: "gpii.qssWidget.calculateHeight",
-        //         args: [
-        //             "{that}.container",
-        //             "{that}.dom.indicators",
-        //             "{that}.dom.heightListenerContainer"
-        //         ]
-        //     }
-        // },
+        invokers: {
+            calculateHeight: {
+                funcName: "gpii.qssWidget.calculateHeight",
+                args: [
+                    "{that}.container",
+                    "{that}.dom.indicators",
+                    "{that}.dom.heightListenerContainer"
+                ]
+            }
+        },
 
         components: {
             indicators: {
