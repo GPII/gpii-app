@@ -123,6 +123,18 @@
     "gpii_app_qss_settings_windows-mouseSpeed": {
         "title": "Mouse speed"
     },
+    "gpii_app_qss_settings_url-google-drive": {
+        "tooltip": "<p>Opens Google Drive in the browser.</p>",
+        "title": "My Google Drive"
+    },
+    "gpii_app_qss_settings_url-one-drive": {
+        "tooltip": "<p>Opens One Drive in the browser.</p>",
+        "title": "My One Drive"
+    },
+    "gpii_app_qss_settings_url-dropbox": {
+        "tooltip": "<p>Opens Dropbox in the browser.</p>",
+        "title": "My Dropbox"
+    },
     "gpii_app_qss_settings_snipping-tool": {
         "tooltip": "<p>Start the Windows Snipping Tool.</p>",
         "title": "Screen Snip"

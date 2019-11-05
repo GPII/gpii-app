@@ -250,6 +250,33 @@
         "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
     }, {
+        "id": "url-google-drive",
+        "path": "url-google-drive",
+        "schema": {
+            "type": "url-google-drive"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 160,
+        "messageKey": "url-google-drive"
+    }, {
+        "id": "url-one-drive",
+        "path": "url-one-drive",
+        "schema": {
+            "type": "url-one-drive"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 170,
+        "messageKey": "url-one-drive"
+    }, {
+        "id": "url-dropbox",
+        "path": "url-dropbox",
+        "schema": {
+            "type": "url-dropbox"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 180,
+        "messageKey": "url-dropbox"
+    }, {
         "id": "url-customize-qss",
         "path": "url-customize-qss",
         "schema": {
