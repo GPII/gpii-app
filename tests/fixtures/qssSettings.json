@@ -212,11 +212,56 @@
             "helpImage": "readAloud.png"
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 80,
+        "tabindex": 90,
         "messageKey": "common-volume",
         "value": 0.5,
         "learnMoreLink": "https://morphic.world/help/qsshelp#volume"
 
+    }, {
+        "id": "url-google-drive",
+        "path": "url-google-drive",
+        "schema": {
+            "type": "url-google-drive"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 100,
+        "messageKey": "url-google-drive"
+    }, {
+        "id": "url-one-drive",
+        "path": "url-one-drive",
+        "schema": {
+            "type": "url-one-drive"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 110,
+        "messageKey": "url-one-drive"
+    }, {
+        "id": "url-dropbox",
+        "path": "url-dropbox",
+        "schema": {
+            "type": "url-dropbox"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 120,
+        "messageKey": "url-dropbox"
+    }, {
+        "id": "url-customize-qss",
+        "path": "url-customize-qss",
+        "schema": {
+            "type": "url-customize-qss"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 160,
+        "messageKey": "url-customize-qss"
+    }, {
+        "id": "snipping-tool",
+        "path": "snipping-tool",
+        "schema": {
+            "type": "snipping-tool"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 170,
+        "messageKey": "snipping-tool"
     }, {
         "id": "cloud-folder-open",
         "path": "cloud-folder-open",
@@ -224,7 +269,7 @@
             "type": "cloud-folder-open"
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 180,
+        "tabindex": 130,
         "messageKey": "cloud-folder-open"
     }, {
         "id": "usb-open",
@@ -244,7 +289,7 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 195,
         "messageKey": "launch-documorph"
-    },  {
+    }, {
         "id": "service-more",
         "path": "more",
         "schema": {

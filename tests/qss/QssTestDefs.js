@@ -28,6 +28,11 @@ require("./qssWidget-screenCaptureTests.js");
 require("./qssWidget-officeSimplifyTests.js");
 require("./qssWidget-stepperTests.js");
 require("./qssWidget-menuTests.js");
+require("./qssWidget-urlGoogleDriveTests.js");
+require("./qssWidget-urlOneDriveTests.js");
+require("./qssWidget-urlDropboxTests.js");
+require("./qssWidget-snippingToolTests.js");
+require("./qssWidget-customizeQuickstripTests.js");
 require("./qssService-undoTests.js");
 require("./qssService-saveTests.js");
 require("./qssService-morePanelTests.js");
@@ -228,7 +233,7 @@ var qssInstalledLanguages = [
 
 gpii.tests.qss.testDefs = {
     name: "QSS Widget integration tests",
-    expect: 74,
+    expect: 79,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -284,12 +289,17 @@ gpii.tests.qss.testDefs = {
         gpii.tests.qss.quickFolderTests,
         gpii.tests.qss.volumeTests,
         gpii.tests.qss.documorphTests,
+        gpii.tests.qss.urlGoogleDrive,
+        gpii.tests.qss.urlOneDrive,
+        gpii.tests.qss.urlDropboxDrive,
         gpii.tests.qss.textZoomTests,
         gpii.tests.qss.readAloudTests,
         gpii.tests.qss.screenCaptureTests,
         gpii.tests.qss.officeSimplifyTests,
+        gpii.tests.qss.customizeQuickstripTests,
         gpii.tests.qss.menuTests,
         gpii.tests.qss.stepperTests,
-        gpii.tests.qss.translationsTests
+        gpii.tests.qss.translationsTests,
+        gpii.tests.qss.snippingToolTests
     )
 };

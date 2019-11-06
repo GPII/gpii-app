@@ -15,6 +15,12 @@
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>",
         "title": "Запиши"
     },
+    "gpii_app_qss_settings_mySavedSettings": {
+        "tooltip": "<p>My Saved Settings</p>",
+        "title": "My Saved Settings",
+        "tip": "<p>My Saved Settings</p><ul><li>To apply your saved settings, insert a Morphic USB key.</li><li>To re-apply them, remove and then reinsert the Morphic Key.</li></ul>",
+        "footerTip": "<p><i>The button below will only work if you sign into Morphic automatically when you sign into this computer</i></p>"
+    },
     "gpii_app_qss_settings_more": {
         "tooltip": "<p>More options for changing the settings on this computer.</p>",
         "title": "MORE...\n\n(& HELP)"
@@ -86,5 +92,25 @@
     "gpii_app_qss_settings_launch-documorph": {
         "tooltip": "<p>Стартирай апликацията DocuMorph.</p>",
         "title": "Стартирай Docu Morph"
+    },
+    "gpii_app_qss_settings_url-google-drive": {
+        "tooltip": "<p>Отваря Google Drive във браузъра.</p>",
+        "title": "Моят Google Drive"
+    },
+    "gpii_app_qss_settings_url-one-drive": {
+        "tooltip": "<p>Отваря One Drive във браузъра.</p>",
+        "title": "Моят One Drive"
+    },
+    "gpii_app_qss_settings_url-dropbox": {
+        "tooltip": "<p>Отваря Dropbox във браузъра.</p>",
+        "title": "Моят Dropbox"
+    },
+    "gpii_app_qss_settings_snipping-tool": {
+        "tooltip": "<p>Стартирай инструмента за отрязване на екрана.</p>",
+        "title": "Screen Snip"
+    },
+    "gpii_app_qss_settings_url-customize-qss": {
+        "tooltip": "<p>Отваря уеб страница където да промените бутоните в лентата.</p>",
+        "title": "Промени бутоните"
     }
 }

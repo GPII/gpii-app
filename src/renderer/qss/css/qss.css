@@ -41,10 +41,23 @@ body {
     background-color: #405E81;
     color: #ffffff;
 
-    font: bold 8px "Open Sans", "Sans-Serif";
+    font: bold 8px "Segoe UI", "Sans-Serif";
     line-height: 10px;
     cursor: pointer;
     user-select: none;
+}
+
+/* This kind of button is used just as invisible separator */
+.fl-qss-button.fl-qss-separator {
+    padding: 3px 0;
+    background: none;
+    cursor: auto;
+    width: 5px;
+}
+
+/* This kind of button is used just as visible separator */
+.fl-qss-button.fl-qss-separator-visible {
+    background: #a7a9ad !important;
 }
 
 .fl-qss-button.fl-qss-largeButton {
@@ -69,7 +82,7 @@ body {
 
     background: transparent;
     color: #000000;
-    font: normal 27px "Open Sans", "Sans-Serif";
+    font: normal 27px "Segoe UI", "Sans-Serif";
 }
 
 .fl-qss-button.fl-qss-closeButton:hover {
