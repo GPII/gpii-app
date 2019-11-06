@@ -96,7 +96,7 @@
                                 "{that}",
                                 "{that}.model.setting.value",
                                 "{that}.model.setting.schema",
-                                true
+                                -1
                             ]
                         },
                         decrement: {
@@ -105,7 +105,7 @@
                                 "{that}",
                                 "{that}.model.setting.value",
                                 "{that}.model.setting.schema",
-                                false
+                                1
                             ]
                         }
                     },
@@ -185,10 +185,10 @@
      * @return {Boolean} Whether there was a change in the setting's value.
      */
     gpii.qssWidget.mouse.makeRestrictedStep = function (that, value, schema, stepMultiplier) {
-        var step = (stepMultiplier ? -schema.divisibleBy : schema.divisibleBy);
-        var restrictedValue;
+        var step = schema.divisibleBy * stepMultiplier,
+            restrictedValue;
 
-        if (value === schema.min && stepMultiplier) {
+        if (value === schema.min && stepMultiplier === -1) {
             // handle edge case specific only to mouse speed steppper
             restrictedValue = 2;
         } else {
