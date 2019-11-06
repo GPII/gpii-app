@@ -5,6 +5,8 @@
     fluid.registerNamespace("gpii.psp");
     fluid.registerNamespace("gpii.captureTool");
 
+    var remoteFluid = require("electron").remote.getGlobal("fluid");
+
     // TODO Ultimately these should be relocated to a JSON5 file, probably in
     // universal so they can be used by any application or reporting utility
     // that needs to present the results to a human.
@@ -912,7 +914,8 @@
 
                         // Remove default values if checkbox is not enabled
                         if (showDefaultSettings.length === 0) {
-                            if (settingVal === curSchema["default"]) {
+                            var defaultVal = remoteFluid.invokeGlobalFunction("gpii.universal.solutionsRegistry.findDefaultValue", [curSchema]);
+                            if (defaultVal.hasDefault && defaultVal["default"] === settingVal) {
                                 // Remove this setting by going on to the next item before we
                                 // add it to the list.
                                 return;
