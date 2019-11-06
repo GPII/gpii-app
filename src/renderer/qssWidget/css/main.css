@@ -38,7 +38,9 @@ body {
 
 /* EXPERIMENTAL */
 .fl-qssWidget {
-    border: 1px solid #002957;
+    display: flex;
+    justify-content: center;
+    border: none;
     border-radius: 0;
     padding: 0;
     background: none;
@@ -46,16 +48,18 @@ body {
 }
 
 .fl-widget-content {
-    width: 57%;
-    float: left;
+    width: 148px;
     padding: 10px 10px 0 10px;
+    border: 1px solid #002957;
     background: white;
 }
 
 .fl-sidecart-panel {
-    width: 33%;
-    float: left;
-    padding: 10px 10px 0 10px;
+    width: 109px;
+    margin-top: 15px;
+    padding: 10px 10px 30px 10px;
+    border: 1px solid #002957;
+    border-left: none;
     background: #eee;
 }
 
@@ -66,7 +70,6 @@ body {
 .fl-sidecart-button {
     width: auto;
     position: absolute;
-    left: 60px;
     bottom: 20px;
     padding: 3px 8px;
     background: none;
@@ -88,12 +91,25 @@ body {
     text-decoration: none;
 }
 
+/* additional states for the sidecart button */
+.fl-sidecart-button.btn-icon-close {
+    right: 140px;
+}
+
+.fl-sidecart-button.btn-icon-close .fl-btnLabel {
+    background-image: url(../../../assets/arrow-left.svg);
+}
+
+.fl-sidecart-button.btn-icon-link .fl-btnLabel {
+    background-image: url(../../../assets/link-external.svg);
+}
+
 .fl-hide-sidecart-panel {
     display: none;
 }
 
 .fl-qssWidget-tip {
-    padding-bottom: 30px;
+    padding-bottom: 15px;
 }
 
 .fl-qssWidget::-webkit-scrollbar {
@@ -106,9 +122,6 @@ body {
 }
 
 .fl-qssWidget .fl-titlebar .fl-closeBtn {
-    position: absolute;
-    top: 3px;
-    right: 5px;
     border: 1px solid white;
 
     font-size: 13px;
@@ -134,7 +147,7 @@ body {
 .fl-qssWidget .fl-qssWidget-learnMoreLink {
     position: absolute;
     width: auto;
-    right: 15px;
+    right: 11px;
     bottom: 10px;
 
     padding: 3px 8px;

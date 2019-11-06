@@ -64,7 +64,7 @@ fluid.defaults("gpii.app.qssWidget", {
             lastEnvironmentalLoginGpiiKey: "{that}.model.lastEnvironmentalLoginGpiiKey"
         },
         attrs: {
-            width: 370,
+            width: 300,
             height: 255,
             alwaysOnTop: true
         },
