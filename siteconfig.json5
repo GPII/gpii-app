@@ -16,6 +16,9 @@
         urls: {
             account: "http://morphic.world/account",
             cloudFolder: "https://drive.google.com/drive/folders/11m-AKdP-0wjEBocpVtvnK8iE23P7hFTS",
+            myGoogleDrive: "https://drive.google.com/",
+            myOneDrive: "https://onedrive.live.com/about/signin/",
+            myDropbox: "https://www.dropbox.com/login",
             customizeQss: "https://morphic.world/"
         },
 
@@ -114,6 +117,9 @@
             "cloud-folder-open",
             "usb-open",
             "separator",
+            "url-google-drive",
+            "url-one-drive",
+            "url-dropbox",
             "url-customize-qss",
             "separator-visible",
             "service-more",

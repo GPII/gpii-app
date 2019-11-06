@@ -53,6 +53,9 @@
             // separator grade
             "separator":         "gpii.qss.separatorButtonPresenter",
             // url based buttons
+            "url-google-drive":  "gpii.qss.urlGoogleDrivePresenter",
+            "url-one-drive":     "gpii.qss.urlOneDrivePresenter",
+            "url-dropbox":       "gpii.qss.urlDropboxPresenter",
             "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
         },
 
