@@ -111,7 +111,7 @@
                     },
                     components: {
                         indicators: {
-                            type: "gpii.qssWidget.mouse.indicators",
+                            type: "gpii.qssWidget.baseStepper.indicators",
                             container: "{mouse}.dom.indicators",
                             options: {
                                 model: {
@@ -163,11 +163,14 @@
     });
 
     /**
+     * A custom function specific only for the mouse speed stepper.
      * Either increases or decreases the current setting's value (depending on the
-     * `shouldSubtract` parameter) with the `divisibleBy` amount specified in the
+     * `stepMultiplier` parameter) with the `divisibleBy` amount specified in the
      * setting's schema. It also takes care that the new value of the setting does
      * not become bigger/smaller than the maximum/minimum allowed value for the
      * setting.
+     * The difference from the original one (gpii.qssWidget.baseStepper.makeRestrictedStep)
+     * is that handle the edge case in which the windows pointer speed cannot accept a value of 0.
      * @param {Component} that - The `gpii.qssWidget.mouseSpeedStepper` instance.
      * @param {Number} value - The initial value of the setting before the operation.
      * @param {Object} schema - Describes the schema of the setting.
@@ -175,19 +178,21 @@
      * @param {Number} schema.max - The maximum possible value for the setting.
      * @param {Number} schema.divisibleBy - The amount which is added or subtracted
      * from the setting's value every time this function is invoked.
-     * @param {Boolean} shouldSubtract - Whether the `divisibleBy` amount should be
+     * @param {Number} stepMultiplier - a basic numeric step multiplier, if its 1 there
+     * will be no change in the step size, -1 will reverse it, and everything else
+     * will act as a real multiplier (2 for 2x as an example)
      * subtracted from or added to the setting's value.
      * @return {Boolean} Whether there was a change in the setting's value.
      */
-    gpii.qssWidget.mouse.makeRestrictedStep = function (that, value, schema, shouldSubtract) {
-        var step = (shouldSubtract ? -schema.divisibleBy : schema.divisibleBy);
+    gpii.qssWidget.mouse.makeRestrictedStep = function (that, value, schema, stepMultiplier) {
+        var step = (stepMultiplier ? -schema.divisibleBy : schema.divisibleBy);
         var restrictedValue;
 
-        if (value === schema.min && shouldSubtract) {
+        if (value === schema.min && stepMultiplier) {
             // handle edge case specific only to mouse speed steppper
             restrictedValue = 2;
         } else {
-            value = parseFloat( (value - step).toPrecision(2) );
+            value = parseFloat( (value - step).toPrecision(3) );
 
             // Handle not given min and max
             restrictedValue = value;
@@ -291,154 +296,4 @@
         that.applier.change("enabled", !that.model.enabled, null, "fromWidget");
     };
 
-    /**
-     * Creates and manages the setting "indicators" list.
-     */
-    fluid.defaults("gpii.qssWidget.mouse.indicators", {
-        gradeNames: "gpii.psp.repeater",
-
-        //
-        // Repeater stuff
-        //
-        dynamicContainerMarkup: {
-            container: "<div role='radio' class='%containerClass fl-qssStepperWidget-indicator' tabindex='-1'></div>",
-            containerClassPrefix: "flc-qssStepperWidget-indicator"
-        },
-        handlerType: "gpii.qssWidget.mouse.indicator.presenter",
-        markup: null,
-
-        //
-        // Custom
-        //
-        model: {
-            setting: {}
-        },
-        // Build the repeater items
-        modelRelay: {
-            items: {
-                target: "items",
-                singleTransform: {
-                    type: "fluid.transforms.free",
-                    func: "gpii.qssWidget.mouse.getIndicatorsList",
-                    args: [
-                        "{gpii.qssWidget.mouse.indicators}.model.setting"
-                    ]
-                }
-            }
-        },
-
-        events: {
-            onIndicatorClicked: null
-        },
-
-        listeners: {
-            "onIndicatorClicked.updateValue": {
-                changePath: "setting.value",
-                value: "{arguments}.0",
-                source: "fromWidget"
-            }
-        }
-    });
-
-    /**
-     * Generates the different indicators' data based on a setting .
-     * indicators are generated using the setting's `min`, `max` and `divisibleBy` properties.
-     * In case either of those is missing, no indicators will be generated.
-     * Note that items will be recomputed every time the setting changes but only items that
-     * need to be re-rendered will do so (changeApplier merges the values).
-     * @param {Object} setting - The setting for which indicators must be created
-     * @return {Object[]} - The list of data for each indicator element. In case no indicators
-     * can be generated an empty array is returned
-     */
-    gpii.qssWidget.mouse.getIndicatorsList = function (setting) {
-        if (fluid.isValue(setting)) {
-            if (!Number.isInteger(setting.schema.min) || !Number.isInteger(setting.schema.max)) {
-                return [];
-            }
-
-            var indicators = [];
-
-            for (
-                var indicatorValue = 0;
-                indicatorValue <= setting.schema.max;
-                indicatorValue = parseFloat((indicatorValue + setting.schema.divisibleBy).toPrecision(2))
-            ) {
-                if (indicatorValue === 0) {
-                    indicators.push({
-                        indicatorValue: setting.schema.min, // value cannot be 0, instead use setting minimum value
-                        isSelected: setting.schema.min === setting.value,
-                        isRecommended: setting.schema.min === setting.schema["default"]
-                    });
-                } else {
-                    indicators.push({
-                        indicatorValue: indicatorValue, // what value to be applied when selected
-                        isSelected: indicatorValue === setting.value,
-                        isRecommended: indicatorValue === setting.schema["default"]
-                    });
-                }
-            }
-            return indicators;
-        }
-    };
-
-    /**
-     * Handler for a single indicator element.
-     *
-     * Each indicator element has three states: normal, selected and default.
-     * These three states are indicated using a custom html element
-     * attribute - "data-type". Depending on the state of this attribute, different
-     * styles are applied (refer to the CSS for more info).
-     */
-    fluid.defaults("gpii.qssWidget.mouse.indicator.presenter", {
-        gradeNames: ["fluid.viewComponent", "gpii.app.clickable"],
-
-        model: {
-            item: {
-                indicatorValue: null,
-                isSelected: null,
-                isRecommended: null
-            }
-        },
-
-        stateAttribute: {
-            attrName: "data-type",
-            values: {
-                selected: "selected",
-                recommended: "recommended"
-            }
-        },
-
-        modelListeners: {
-            item: {
-                funcName: "gpii.qssWidget.mouse.indicator.updateState",
-                args: [
-                    "{that}.container",
-                    "{that}.options.stateAttribute",
-                    "{that}.model.item"
-                ]
-            }
-        },
-
-        listeners: {
-            onClicked: {
-                func: "{gpii.qssWidget.mouse.indicators}.events.onIndicatorClicked.fire",
-                args: "{that}.model.item.indicatorValue"
-            }
-        }
-    });
-
-    /**
-     * Alters the custom element attribute in order to change the styles applied to it.
-     * @param {jQuery} indicatorContainer - The container for the indicator element
-     * @param {Object} stateAttribute - Options for the state defining attribute
-     * @param {Object} indicatorData - The condition data for the element
-     */
-    gpii.qssWidget.mouse.indicator.updateState = function (indicatorContainer, stateAttribute, indicatorData) {
-        var type =
-            ( indicatorData.isSelected && stateAttribute.values.selected )  ||
-            ( indicatorData.isRecommended && stateAttribute.values.recommended ) ||
-            null;
-
-        indicatorContainer.attr(stateAttribute.attrName, type);
-    };
 })(fluid);

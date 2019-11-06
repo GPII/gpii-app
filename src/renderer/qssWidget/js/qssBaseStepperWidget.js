@@ -241,7 +241,7 @@
 
     /**
      * Either increases or decreases the current setting's value (depending on the
-     * `shouldSubtract` parameter) with the `divisibleBy` amount specified in the
+     * `stepMultiplier` parameter) with the `divisibleBy` amount specified in the
      * setting's schema. It also takes care that the new value of the setting does
      * not become bigger/smaller than the maximum/minimum allowed value for the
      * setting.
@@ -393,25 +393,55 @@
      * can be generated an empty array is returned
      */
     gpii.qssWidget.baseStepper.getIndicatorsList = function (setting) {
-        if (!Number.isInteger(setting.schema.min) || !Number.isInteger(setting.schema.max)) {
-            return [];
+        if (fluid.isValue(setting)) {
+
+            if (!Number.isInteger(setting.schema.min) || !Number.isInteger(setting.schema.max)) {
+                return [];
+            }
+
+            var indicators = [],
+                indicatorValue;
+
+            // Handle specific edge case applicable only for the mouse speed stepper.
+            // Can be used also in cases where the stepper indicators need to be horizontally located.
+            if (setting.id === "mouseSpeed") {
+                for (
+                    indicatorValue = 0;
+                    indicatorValue <= setting.schema.max;
+                    indicatorValue = parseFloat((indicatorValue + setting.schema.divisibleBy).toPrecision(3))
+                ) {
+                    if (indicatorValue === 0) {
+                        indicators.push({
+                            // the windows mouse speed setting value
+                            // cannot be 0, instead use the setting minimum value
+                            indicatorValue: setting.schema.min,
+                            isSelected: setting.schema.min === setting.value,
+                            isRecommended: setting.schema.min === setting.schema["default"]
+                        });
+                    } else {
+                        indicators.push({
+                            indicatorValue: indicatorValue, // what value to be applied when selected
+                            isSelected: indicatorValue === setting.value,
+                            isRecommended: indicatorValue === setting.schema["default"]
+                        });
+                    }
+                }
+            } else {
+                for (
+                    indicatorValue = setting.schema.max;
+                    indicatorValue >= setting.schema.min;
+                    indicatorValue = parseFloat((indicatorValue - setting.schema.divisibleBy).toPrecision(3))
+                ) {
+                    indicators.push({
+                        indicatorValue: indicatorValue, // what value to be applied when selected
+                        isSelected: indicatorValue === setting.value,
+                        isRecommended: indicatorValue === setting.schema["default"]
+                    });
+                }
+            }
+
+            return indicators;
         }
-
-        var indicators = [];
-
-        for (
-            var indicatorValue = setting.schema.max;
-            indicatorValue >= setting.schema.min;
-            indicatorValue = parseFloat((indicatorValue - setting.schema.divisibleBy).toPrecision(2))
-        ) {
-            indicators.push({
-                indicatorValue: indicatorValue, // what value to be applied when selected
-                isSelected: indicatorValue === setting.value,
-                isRecommended: indicatorValue === setting.schema["default"]
-            });
-        }
-
-        return indicators;
     };
 
     /**
