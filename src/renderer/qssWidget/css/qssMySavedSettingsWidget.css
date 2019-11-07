@@ -1,0 +1,21 @@
+.fl-qssMySavedSettingsWidget .fl-btn {
+    margin: 10px 0 5px 5px;
+    width: auto;
+    min-height: 30px;
+    padding-top: 0px;
+    font-size: 10;
+    font-weight: bold;
+    border: 1px solid #0f4797;
+    border-radius: 3px;
+    /*line-height: 10px;*/
+    box-sizing: border-box;
+    background-color: #ffffff;
+    /*text-align: center;*/
+    color: #0f4797;
+    user-select: none;
+    cursor: pointer;
+}
+
+.fl-qssMySavedSettingsWidget-footerTip {
+	padding-top: 10px;
+}

@@ -364,7 +364,7 @@ gpii.app.keyedInForHandler.restartTimer = function (that, keyedInTimestamp) {
  * is not defined, the `defaultSessionModulus` option in the component's configuration will
  * be used.
  * 3. There is no timer already started.
- * 4. The user has adjusted a setting's value either using the QSS or the PSP.
+ * 4. The user has adjusted a setting's value either using the QSS.
  *
  * Note that the `isLuckySession` model property of this component cannot be a fact in the
  * `factsManager` because it depends on the value of the `sessionModulus` which may not be
@@ -420,9 +420,6 @@ fluid.defaults("gpii.app.sessionTimerHandler", {
             func: "{that}.startTimerIfPossible"
         },
         "{qssWrapper}.qssWidget.events.onQssWidgetSettingAltered": {
-            func: "{that}.startTimerIfPossible"
-        },
-        "{psp}.events.onSettingAltered": {
             func: "{that}.startTimerIfPossible"
         },
         "{qssWrapper}.undoStack.events.onChangeUndone": {

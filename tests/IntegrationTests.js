@@ -28,7 +28,7 @@ gpii.loadTestingSupport();
 
 require("./DialogManagerTestDefs.js");
 require("./IntegrationTestDefs.js");
-require("./QssTestDefs.js");
+require("./qss/QssTestDefs.js");
 require("./SequentialDialogsTestDefs.js");
 require("./SettingsBrokerTestDefs.js");
 require("./StorageTestDefs.js");
@@ -39,7 +39,6 @@ require("./UserErrorsHandlerTestDefs.js");
 require("./SiteConfigurationHandlerTestDefs.js");
 require("./WebviewTestDefs.js");
 require("./GpiiConnectorTestDefs.js");
-require("./PspTestDefs.js");
 require("./TimerTestDefs.js");
 
 // TODO: Review this following CI run.
@@ -230,7 +229,6 @@ if (gpii.tests.app.isInstrumented) {
 gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.app.testDefs),
     fluid.copy(gpii.tests.dev.testDefs),
-    fluid.copy(gpii.tests.psp.testDefs),
     fluid.copy(gpii.tests.timer.testDefs),
     fluid.copy(gpii.tests.dialogManager.testDefs),
     fluid.copy(gpii.tests.qss.testDefs),
@@ -242,6 +240,6 @@ gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.siteConfigurationHandler.testDefs),
     fluid.copy(gpii.tests.storage.testDefs),
     fluid.copy(gpii.tests.userErrorsHandler.testDefs),
-    fluid.copy(gpii.tests.gpiiConnector.testDefs),
+    fluid.copy(gpii.tests.gpiiConnector.testDefs),  // should be changed to match the new specification
     fluid.copy(gpii.tests.webview.testDefs)
 ]);

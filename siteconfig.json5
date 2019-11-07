@@ -6,16 +6,20 @@
     // Configuration options for the QSS window
     qss: {
         // Determines if the QSS will be shown automatically on Morphic's startup
-        showQssOnStart: true,
+        showQssOnStart: false,
 
         // Defines the delay in milliseconds before the tooltip is shown after a QSS button is selected
         tooltipDisplayDelay: 500, // ms
 
         // The scaling factor for the QSS
-        scaleFactor: 1.4,
+        scaleFactor: 1.2,
         urls: {
             account: "http://morphic.world/account",
-            cloudFolder: "https://docs.google.com/document/d/1gOi5JXw30lyD5DGbwe6tme_MfEyaiDz95AQSrzPNfZU/"
+            cloudFolder: "https://drive.google.com/drive/folders/11m-AKdP-0wjEBocpVtvnK8iE23P7hFTS",
+            myGoogleDrive: "https://drive.google.com/",
+            myOneDrive: "https://onedrive.live.com/about/signin/",
+            myDropbox: "https://www.dropbox.com/login",
+            customizeQss: "https://morphic.world/"
         },
 
         alwaysUseChrome: false,
@@ -36,40 +40,84 @@
         // NOTE: this is not related to the default language value defined for the language setting
         systemDefaultLanguage: "en-US",
         messages: {
-            keyedOut: "To save you must insert a Morphic Key. Please ask for one at the Front Desk. If you have a key inserted, remove it and re-insert it, then you can SAVE."
+            keyedOut: "To save you must insert a Morphic Key. Please ask for one at the Front Desk. If you have a key inserted and you see this message, remove the key and re-insert it, then you can Save."
         },
 
-        // the path to the ShareX's executable file, used in the screenCaptureWidget
-        shareXPath: "C:\\Program Files (x86)\\Morphic\\windows\\resources\\sharex-portable\\sharex.exe",
+        // The path to the ShareX's executable file, used in the screenCaptureWidget.
+        // This is the path where ShareX lives after installing Morphic. Can be adjusted for development purposes.
+        shareXPath: "C:\\Program Files (x86)\\Morphic\\sharex\\sharex-portable\\sharex.exe",
+
+        // The path to the DocuMorph's executable file, used in the service buttons.
+        // This is the path where DocuMorph lives after installing Morphic. Can be adjusted for development purposes.
+        docuMorphExecutable: "C:\\Program Files (x86)\\Morphic\\documorph\\DocuMorph.Widget.exe",
+
+        // The path to the Snipping Tools's executable file, used in the service buttons.
+        // This uses the internal Windows 10 snipping tool
+        snippingToolCommand: "start ms-screenclip:",
+
 
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
+        //
+        // Custom buttons: Instead of a string with buttonId you add an object with the custom button data like this:
+        // {
+        //      "buttonId": "MakeYourOwn",
+        //      "buttonName": "Launch Notepad", // Free text that will be use as button's label
+        //      "buttonType": "APP", // APP, or WEB
+        //      "buttonData": "C:\\Windows\\system32\\notepad.exe", // system path, or url
+        //      "fullScreen": true, // true, or false
+        //      "popupText": "<p>Launch the Notepad application.</p>", // tooltip text
+        //      "description": "The full description of the button..." // optional description
+        // }
+        //
+        // Separator buttons: Use can use any combination of the separators, even one after another:
+        // "separator" // Use separator for invisible separator
+        // "separator-visible" // Use separator-visible for a gray separator (same size as the invisible one)
         buttonList: [
+            {
+                "buttonId": "MakeYourOwn",
+                "buttonName": "Launch Notepad",
+                "buttonType": "APP",
+                "buttonData": "C:\\Windows\\system32\\notepad.exe",
+                "fullScreen": true,
+                "popupText": "<p>Launch the Notepad application.</p>",
+                "description": "The full description of the button..."
+            }, {
+                "buttonId": "MakeYourOwn",
+                "buttonName": "Open Reddit",
+                "buttonType": "WEB",
+                "buttonData": "www.reddit.com",
+                "fullScreen": true,
+                "popupText": "<p>Open Reddit in a web browser.</p>",
+                "description": "The full description of the button..."
+            },
+            "separator",
             "language",
             "translate-tools",
             "screen-zoom",
             "text-zoom",
             "screen-capture",
+            "snipping-tool",
             "office-simplification",
             "high-contrast",
             "read-aloud",
             "volume",
             "launch-documorph",
             "cloud-folder-open",
-            "usb-open"
-        ],
-
-        // the path to the DocuMorph's executable file, used in the service buttons
-        docuMorphExecutable: "C:\\Program Files (x86)\\Sensus ApS\\DocuMorph Widget\\DocuMorph.Widget.exe"
-    },
-
-    // Configuration options for the PSP window
-    psp: {
-        // The scaling factor for the PSP
-        scaleFactor: 0.85,
-        urls: {
-            help: "http://pmt.gpii.org/help"
-        }
+            "usb-open",
+            "separator",
+            "url-google-drive",
+            "url-one-drive",
+            "url-dropbox",
+            "url-customize-qss",
+            "separator-visible",
+            "service-more",
+            "service-save",
+            "service-undo",
+            "service-saved-settings",
+            "service-reset-all",
+            "service-close"
+        ]
     },
 
     // Whether to hide the QSS when a user clicks outside of it
@@ -79,20 +127,17 @@
     // applications may need to be restarted in order for a changed setting to be
     // fully applied. An example for such setting is `Language`.
     // If set to `true`, such notifications will NOT be displayed.
-    disableRestartWarning: false,
-
-    // Whether to hide the PSP when a user clicks outside of it
-    closePspOnClickOutside: true,
+    disableRestartWarning: true,
 
     // The shortcut that open the QSS. For posible values refer to: https://electronjs.org/docs/api/accelerator
-    openQssShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
+    openQssShortcut: "Shift+Ctrl+AltOrOption+SuperOrCmd+M",
 
     // Configuration options for the QSS More panel
     qssMorePanel: {
         // These are default values. The actual dimensions of the QSS more panel
         // are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
-        defaultWidth: 400,
-        defaultHeight: 300,
+        defaultWidth: 600,
+        defaultHeight: 450,
         movable: true,
         resizable: true,
         alwaysOnTop: true,
