@@ -84,6 +84,14 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.disableRestartWarning",
             target: "{app gpiiConnector}.options.defaultPreferences.disableRestartWarning"
         },
+        distributeDefaultLanguageGpiiConnector: {
+            record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
+            target: "{app gpiiConnector}.options.defaultPreferences.systemDefaultLanguage"
+        },
+        distributeDefaultSettingsPath: {
+            record: "{that}.options.siteConfig.defaultSettingsData",
+            target: "{app gpiiConnector}.options.defaultPreferences.defaultSettingsData"
+        },
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
             target: "{app surveyConnector}.options.config.surveyTriggersUrl"
@@ -95,6 +103,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",
             target: "{app tray}.options.trayType"
+        },
+        distributeMetrics: {
+            record: "{that}.options.siteConfig.metrics",
+            target: "{/ gpii.app.metrics}.options.siteConfig"
         }
     }
 });

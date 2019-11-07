@@ -44,7 +44,7 @@
      * showing the "Learn more" links, etc.
      */
     fluid.defaults("gpii.psp.qssWidget", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.metrics.qssWidget"],
 
         model: {
             setting: {}
@@ -240,7 +240,9 @@
                         // Volume button
                         onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
                         onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
-                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested"
+                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested",
+                        onMetric:                        "{qssWidget}.events.onMetric",
+                        onMetricState:                   "{qssWidget}.events.onMetricState"
                     }
                 }
             }

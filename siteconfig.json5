@@ -1,7 +1,21 @@
 {
+    // Unique identifier for the deployment.
+    site: "default.gpii.net",
+
     // Whether to hide the QSS save button.
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
+
+    // File containing default values which are used after resetting user settings
+    // if relativePath is true then fileLocation is joined after %appdata%, so the
+    // end result its something similar to:
+    // "C:\Users\vagrant\AppData\Roaming\gpii\defaultSettings.json5"
+    // if relativePath is false then fileLocation is assumed that its absolute path
+    // and no changes are done to it
+    defaultSettingsData: {
+        relativePath: true,
+        fileLocation: "gpii\\defaultSettings.json5"
+    },
 
     // Configuration options for the QSS window
     qss: {
@@ -54,7 +68,6 @@
         // The path to the Snipping Tools's executable file, used in the service buttons.
         // This uses the internal Windows 10 snipping tool
         snippingToolCommand: "start ms-screenclip:",
-
 
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
@@ -159,5 +172,12 @@
     surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
 
     // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
-    trayType: ["gpii.app.trayButton"]
+    trayType: ["gpii.app.trayButton"],
+
+    metrics: {
+        // Can be true to disable everything, or "errors-only" to only capture errors.
+        disable: false,
+        // true to disable capturing key/mouse timings
+        disableInput: false
+    }
 }
