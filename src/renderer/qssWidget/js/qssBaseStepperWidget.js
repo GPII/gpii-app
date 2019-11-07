@@ -408,7 +408,7 @@
                 for (
                     indicatorValue = 0;
                     indicatorValue <= setting.schema.max;
-                    indicatorValue = parseFloat((indicatorValue + setting.schema.divisibleBy).toPrecision(3))
+                    indicatorValue = parseFloat((indicatorValue + setting.schema.divisibleBy).toPrecision(2))
                 ) {
                     if (indicatorValue === 0) {
                         indicators.push({
@@ -430,7 +430,7 @@
                 for (
                     indicatorValue = setting.schema.max;
                     indicatorValue >= setting.schema.min;
-                    indicatorValue = parseFloat((indicatorValue - setting.schema.divisibleBy).toPrecision(3))
+                    indicatorValue = parseFloat((indicatorValue - setting.schema.divisibleBy).toPrecision(2))
                 ) {
                     indicators.push({
                         indicatorValue: indicatorValue, // what value to be applied when selected
