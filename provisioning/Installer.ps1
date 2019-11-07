@@ -55,6 +55,12 @@ if (Test-Path $filebeatFile) {
     Copy-Item $filebeatFile $installerDir
 }
 
+# Place sharex inside the installer directory, if it's here.
+$sharexFile = (Join-Path $provisioningDir 'sharex.msm')
+if (Test-Path $sharexFile) {
+    Copy-Item $sharexFile $installerDir
+}
+
 # Create staging folder
 $stagingWindowsDir = Join-Path (Join-Path $installerDir "staging") "windows"
 if (Test-Path -Path $stagingWindowsDir) {
@@ -110,6 +116,24 @@ Invoke-Command "electron-packager.cmd" "$preStagingDir morphic-app --platform=wi
 # TODO: Try to avoid using the electron-packager directory name hardcoding it.
 $packagedAppDir = (Join-Path $packagerDir "morphic-app-win32-ia32")
 Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
+
+# Build the Windows Service
+$serviceDir = $(Join-Path $preStagingDir "node_modules\gpii-windows\gpii-service")
+$serviceModules = (Join-Path $serviceDir "node_modules")
+
+# Perform a clean production build of the service.
+if (Test-Path -Path $serviceModules) {
+    rm $serviceModules -Recurse -Force
+}
+Invoke-Command "npm" "install --production" $serviceDir
+Invoke-Command "npm" "install pkg -g" $serviceDir
+
+# Compile the service into a single executable
+Copy-Item (Join-Path $provisioningDir "service.json5") (Join-Path $serviceDir "config\service.json5")
+Invoke-Command "pkg" "package.json --output $(Join-Path $stagingWindowsDir "morphic-service.exe")" $serviceDir
+# The service's dependencies get packaged and installed like everything else.
+Get-ChildItem "$serviceDir\*.node" -Recurse | Move-Item -Destination $stagingWindowsDir
+Get-ChildItem "$serviceDir\config\service.json5" -Recurse | Move-Item -Destination $stagingWindowsDir
 
 md (Join-Path $installerDir "output")
 md (Join-Path $installerDir "temp")
