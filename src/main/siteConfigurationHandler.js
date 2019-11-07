@@ -107,6 +107,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeMetrics: {
             record: "{that}.options.siteConfig.metrics",
             target: "{/ gpii.app.metrics}.options.siteConfig"
+        },
+        distributeAutoLogin: {
+            record: "{that}.options.siteConfig.autoLogin",
+            target: "{/ gpii.windows.userListeners.windowsLogin}.options.config"
         }
     }
 });
