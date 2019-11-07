@@ -467,6 +467,7 @@ gpii.app.dev.gpiiConnector.decoratePreferences = function (systemLanguageListene
  * number.
  * @property {String[]} [enum] An array of the values which a "string" type setting
  * can have.
+ * @property {String} [default] The default value of the setting.
  */
 
 

@@ -490,11 +490,36 @@
         }
     });
 
+
+    /**
+     * An object containing information about the attribute state.
+     * @typedef {Object} stateAttribute
+     * @property {String} [attrName] The name of the attribute.
+     * @property {stateValues} [values] It contains all possible options for the state of each indicator.
+     */
+
+    /**
+     * An object containing value information of the attributes.
+     * @typedef {Object} stateValues
+     * @property {String} [selected] Predefined name of the property.
+     * @property {String} [recommended] Predefined name of the property.
+     */
+
+     /**
+     * An object containing information about the current indicator.
+     * @typedef {Object} indicatorData
+     * @property {Boolean} [isSelected] `true` value if the current indicator is selected.
+     * @property {Boolean} [isRecommended] `true` value if the current indicator is
+     * equal to the setting's default one.
+     * @property {Number} [indicatorValue] The value of the current indicator.
+     */
+
+
     /**
      * Alters the custom element attribute in order to change the styles applied to it.
      * @param {jQuery} indicatorContainer - The container for the indicator element
-     * @param {Object} stateAttribute - Options for the state defining attribute
-     * @param {Object} indicatorData - The condition data for the element
+     * @param {stateAttribute} stateAttribute - Options for the state defining attribute
+     * @param {indicatorData} indicatorData - The condition data for the element
      */
     gpii.qssWidget.baseStepper.indicator.updateState = function (indicatorContainer, stateAttribute, indicatorData) {
         var type =

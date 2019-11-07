@@ -48,7 +48,7 @@
      * on whether the changes to the setting can be undone and whether the new value of
      * the setting is the same as its default one.
      * @param {Component} that - The `gpii.qss.settingButtonPresenter` instance.
-     * @param {Object} setting - The setting object corresponding to this QSS button
+     * @param {ButtonDefinition} setting - The setting object corresponding to this QSS button
      */
     gpii.qss.settingButtonPresenter.updateChangeIndicator = function (that, setting) {
         var defaultValue,
