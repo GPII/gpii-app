@@ -92,7 +92,8 @@
                     model: {
                         setting: "{volume}.model.setting",
                         messages: "{volume}.model.messages",
-                        previousValue: "{volume}.model.previousValue"
+                        previousValue: "{volume}.model.previousValue",
+                        value: "{volume}.model.setting.value"
                     },
                     events: {
                         onNotificationRequired: "{volume}.events.onNotificationRequired"
@@ -174,15 +175,18 @@
 
         if (volumeWidget.model.setting.value !== 0) {
             volumeWidget.model.setting.previousValue = volumeWidget.model.setting.value;
+            stepper.model.previousValue = volumeWidget.model.setting.value;
             that.applier.change("previousValue", volumeWidget.model.setting.value, null, "fromWidget");
         }
 
         if (!that.model.enabled && volumeWidget.model.setting.value !== 0) {
             volumeWidget.model.setting.value = 0;
             volumeWidget.model.value = 0;
+            stepper.model.value = 0;
         } else {
             volumeWidget.model.setting.value = volumeWidget.model.setting.previousValue;
             volumeWidget.model.value = volumeWidget.model.setting.previousValue;
+            stepper.model.value = volumeWidget.model.setting.previousValue;
         }
 
         // update the volume setting

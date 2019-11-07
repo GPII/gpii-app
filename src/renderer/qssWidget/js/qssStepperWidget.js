@@ -29,7 +29,8 @@
             messages: {
                 footerTip: "{that}.model.setting.widget.footerTip"
             },
-            setting: "{that}.model.setting"
+            setting: "{that}.model.setting",
+            value: "{that}.model.setting.value"
         },
 
         selectors: {
@@ -58,7 +59,8 @@
                 container: "{that}.dom.indicators",
                 options: {
                     model: {
-                        setting: "{stepper}.model.setting"
+                        setting: "{stepper}.model.setting",
+                        value: "{stepper}.model.value"
                     }
                 }
             }

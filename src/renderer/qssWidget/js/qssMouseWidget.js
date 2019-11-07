@@ -84,7 +84,8 @@
                     sounds: "{mouse}.options.sounds",
                     model: {
                         messages: "{mouse}.model.messages",
-                        setting: "{mouse}.model.setting.settings.mouseSpeed"
+                        setting: "{mouse}.model.setting.settings.mouseSpeed",
+                        value: "{mouse}.model.setting.settings.mouseSpeed.value"
                     },
                     events: {
                         onNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired"
