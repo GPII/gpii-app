@@ -71,23 +71,34 @@
 
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
-        //
+
         // Custom buttons: Instead of a string with buttonId you add an object with the custom button data like this:
+        // APP type buttons require absolute path to executable in the buttonData
+        // WEB type buttons require a real valid url in the buttonData
+        // KEY type buttons require a key combation with this exact syntax:
+        // https://github.com/stegru/windows/blob/GPII-4135/gpii/node_modules/gpii-userInput/README.md
         // {
         //      "buttonId": "MakeYourOwn",
         //      "buttonName": "Launch Notepad", // Free text that will be use as button's label
-        //      "buttonType": "APP", // APP, or WEB
-        //      "buttonData": "C:\\Windows\\system32\\notepad.exe", // system path, or url
+        //      "buttonType": "APP", // APP, WEB, or KEY
+        //      "buttonData": "C:\\Windows\\system32\\notepad.exe", // system path, or url, or key combination
         //      "fullScreen": true, // true, or false
         //      "popupText": "<p>Launch the Notepad application.</p>", // tooltip text
         //      "description": "The full description of the button..." // optional description
         // }
-        //
+
         // Separator buttons: Use can use any combination of the separators, even one after another:
-        // "separator" // Use separator for invisible separator
-        // "separator-visible" // Use separator-visible for a gray separator (same size as the invisible one)
+        // - "separator" // Use separator for invisible separator
+        // - "separator-visible" // Use separator-visible for a gray separator (same size as the invisible one)
+
         buttonList: [
             {
+                "buttonId": "MakeYourOwn",
+                "buttonName": "Task Manager",
+                "buttonType": "KEY",
+                "buttonData": "^+{Escape}",
+                "popupText": "<p>Executes Ctrl+Shift+Esc combination, which opens Windows Task Manager.</p>"
+            }, {
                 "buttonId": "MakeYourOwn",
                 "buttonName": "Launch Notepad",
                 "buttonType": "APP",

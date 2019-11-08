@@ -159,7 +159,8 @@ fluid.defaults("gpii.app.qss", {
                     onQssPspToggled: null,
 
                     // Custom buttons events
-                    onQssStartProcess: null
+                    onQssStartProcess: null,
+                    onQssExecuteKeySequence: null
                 },
 
                 listeners: {
@@ -176,6 +177,10 @@ fluid.defaults("gpii.app.qss", {
                             "{arguments}.0",
                             "{arguments}.1"
                         ]
+                    },
+                    onQssExecuteKeySequence: {
+                        funcName: "gpii.app.executeKeySequence",
+                        args: ["{arguments}.0"]
                     }
                 }
             }
