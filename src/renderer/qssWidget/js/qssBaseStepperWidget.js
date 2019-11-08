@@ -260,9 +260,11 @@
      * @return {Boolean} Whether there was a change in the setting's value.
      */
     gpii.qssWidget.baseStepper.makeRestrictedStep = function (that, value, schema, stepMultiplier, previousValue) {
-        var restrictedValue;
+        var restrictedValue,
+            isChanged;
         if (value === 0 && previousValue !== undefined) {
             restrictedValue = previousValue;
+            isChanged = false;
         } else {
             var step = schema.divisibleBy * stepMultiplier;
 
@@ -277,12 +279,13 @@
             if (fluid.isValue(schema.min)) {
                 restrictedValue = Math.max(restrictedValue, schema.min);
             }
+            isChanged = value !== restrictedValue;
         }
 
         that.applier.change("value", restrictedValue, null, "fromWidget");
 
         // Whether a bound was hit
-        return value !== restrictedValue;
+        return isChanged;
     };
 
     /**

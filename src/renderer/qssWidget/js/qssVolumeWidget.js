@@ -193,6 +193,5 @@
         event.fire(volumeWidget.model.setting);
 
         that.applier.change("enabled", !that.model.enabled, null, "fromWidget");
-        volumeWidget.applier.change("value", volumeWidget.model.value, null, "fromWidget");
     };
 })(fluid);
