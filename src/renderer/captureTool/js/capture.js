@@ -922,8 +922,9 @@
                             }
                         };
 
-                        if (curSchema.enumLabels && curSchema["enum"] && curSchema["enum"][renderVal]) {
-                            curRenderSetting.settingVal = curSchema.enumLabels[renderVal];
+                        if (curSchema.enumLabels && curSchema["enum"] && curSchema["enum"].indexOf(renderVal) >= 0) {
+                            var enumIdx = curSchema["enum"].indexOf(renderVal);
+                            curRenderSetting.settingVal = curSchema.enumLabels[enumIdx];
                         }
                         else if (fluid.isPrimitive(renderVal)) {
                             curRenderSetting.settingVal = renderVal;
