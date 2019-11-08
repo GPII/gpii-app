@@ -58,8 +58,9 @@
             openUSB: ".flc-qssOpenUSBWidget",
             volume: ".flc-qssVolumeWidget",
             office: ".flc-qssOfficeWidget",
-            mySavedSettings: ".flc-qssMySavedSettingsWidget",
-            translateTools: ".flc-qssTranslateToolsWidget"
+            mouse: ".flc-qssMouseWidget",
+            translateTools: ".flc-qssTranslateToolsWidget",
+            mySavedSettings: ".flc-qssMySavedSettingsWidget"
         },
 
         /**
@@ -74,8 +75,9 @@
             "openUSB": "gpii.qssWidget.openUSB",
             "volume": "gpii.qssWidget.volume",
             "office": "gpii.qssWidget.office",
-            "mySavedSettings": "gpii.qssWidget.mySavedSettings",
-            "translateTools": "gpii.qssWidget.translateTools"
+            "mouse": "gpii.qssWidget.mouse",
+            "translateTools": "gpii.qssWidget.translateTools",
+            "mySavedSettings": "gpii.qssWidget.mySavedSettings"
         },
 
         events: {

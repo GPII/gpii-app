@@ -533,6 +533,10 @@ gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, oldVa
         var direction = setting.value > setting.oldValue ? "increase" : "decrease";
         appZoom.sendZoom(direction);
     } else {
+        if (fluid.isValue(setting.settings)) {
+            // this setting has secondary values, getting the proper one
+            setting = gpii.app.getSecondarySettingsChanges(setting, oldValue);
+        }
         settingsBroker.applySetting(setting);
     }
 };

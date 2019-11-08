@@ -44,6 +44,7 @@
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
             "volume":            "gpii.qss.volumeButtonPresenter",
+            "mouse":             "gpii.qss.widgetButtonPresenter",
             "snipping-tool":     "gpii.qss.snippingToolPresenter",
             "disabled":          "gpii.qss.disabledButtonPresenter",
             // custom button grades

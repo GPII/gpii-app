@@ -437,10 +437,22 @@ gpii.app.qssWrapper.registerUndoableChange = function (that, oldValue) {
  * @param {Object} change - The change to be reverted.
  */
 gpii.app.undoStack.revertChange = function (qssWrapper, change) {
-    qssWrapper.alterSetting({
-        path:  change.path,
-        value: change.value
-    }, "gpii.app.undoStack.undo");
+    if (gpii.app.hasSecondarySettings(change)) {
+        // this change has secondary settings
+        fluid.each(change.settings, function (secondaryChange) {
+            // applying the secondary settings
+            qssWrapper.alterSetting({
+                path:  secondaryChange.path,
+                value: secondaryChange.value
+            }, "gpii.app.undoStack.undo");
+        });
+    } else {
+        // applying the primary settings
+        qssWrapper.alterSetting({
+            path:  change.path,
+            value: change.value
+        }, "gpii.app.undoStack.undo");
+    }
 };
 
 /**
@@ -721,13 +733,26 @@ gpii.app.qssWrapper.getSetting = function (settings, path) {
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
     if (fluid.isValue(updatedSetting)) { // adding a check just in case of some missteps
-        var settingIndex = that.model.settings.findIndex(function (setting) {
-            return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
-        });
 
-        if (settingIndex !== -1) {
-            that.applier.change("settings." + settingIndex, updatedSetting, null, source);
-        }
+        fluid.each(that.model.settings, function (setting, index) {
+            if (gpii.app.hasSecondarySettings(setting)) {
+
+                fluid.each(setting.settings, function (nestedSetting, key) {
+                    if (nestedSetting.path === updatedSetting.path && !fluid.model.diff(nestedSetting, updatedSetting)) {
+
+                        // applying the secondary setting's change
+                        that.applier.change("settings." + index + ".settings." + key, updatedSetting, null, source);
+                    }
+                });
+
+            } else {
+                if (setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
+
+                    // applying primary setting's change
+                    that.applier.change("settings." + index, updatedSetting, null, source);
+                }
+            }
+        });
     }
 };
 
@@ -762,15 +787,21 @@ gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
  * @return {Object} A translated copy of the QSS setting
  */
 gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, setting) {
-    var translatedSetting = fluid.copy(setting);
+    var translatedSetting = fluid.copy(setting),
+        message = qssSettingMessages[translatedSetting.messageKey];
 
-    var message = qssSettingMessages[translatedSetting.messageKey];
-
+    // translation of the main settings
     if (message) {
         translatedSetting.tooltip = message.tooltip;
         translatedSetting.tip = message.tip;
-        translatedSetting.extendedTip = message.extendedTip;
-        translatedSetting.switchTitle = message.switchTitle;
+
+        if (fluid.isValue(message.extendedTip)) {
+            translatedSetting.extendedTip = message.extendedTip;
+        }
+
+        if (fluid.isValue(message.switchTitle)) {
+            translatedSetting.switchTitle = message.switchTitle;
+        }
 
         if (fluid.isValue(message.footerTip)) {
             translatedSetting.widget = translatedSetting.widget || {};
@@ -781,6 +812,17 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
         if (message["enum"]) {
             translatedSetting.schema["enum"] = message["enum"];
         }
+    }
+    // checking if we have secondary settings (looking for a `settings` node
+    if (fluid.isValue(translatedSetting.settings)) {
+        fluid.each(translatedSetting.settings, function (secondarySetting) {
+            var secondaryMessage = qssSettingMessages[secondarySetting.messageKey];
+            if (secondaryMessage && fluid.isValue(secondaryMessage.title)) {
+                // applying the title of the setting
+                // the secondary settings don't have any other translation part, only titles
+                secondarySetting.schema.title = secondaryMessage.title;
+            }
+        });
     }
 
     return translatedSetting;
