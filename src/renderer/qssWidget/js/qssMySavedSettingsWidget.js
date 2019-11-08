@@ -61,7 +61,7 @@
                     model: {
                         label: "{mySavedSettings}.model.messages.reApplyPreferencesButtonLabel"
                     },
-                    invokers: {
+                    listeners: {
                         "onClick": "{channelNotifier}.events.onQssReApplyPreferencesRequired.fire"
                     }
                 }
