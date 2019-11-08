@@ -15,7 +15,7 @@
         "electron-localshortcut": "3.1.0",
         "gpii-express": "1.0.15",
         "gpii-handlebars": "sgithens/gpii-handlebars#GPII-3640",
-        "gpii-windows": "sgithens/windows#178dac2c9a3e63a90571e60b9e50e17b1c7512fc",
+        "gpii-windows": "sgithens/windows#50f3bd1a929272e32b1c57812f311f8e4562b9ec",
         "infusion": "3.0.0-dev.20190328T144119Z.ec44dbfab",
         "nan": "2.10.0",
         "node-jqunit": "1.1.8",
