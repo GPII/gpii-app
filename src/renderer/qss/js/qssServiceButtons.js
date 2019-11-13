@@ -20,6 +20,17 @@
     var gpii = fluid.registerNamespace("gpii");
 
     /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Key in"
+     * QSS button.
+     */
+    fluid.defaults("gpii.qss.mySavedSettingsButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        attrs: {
+            "aria-label": "My saved settings"
+        }
+    });
+
+    /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Close"
      * QSS button.
      */
@@ -160,6 +171,21 @@
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * "Screen Snip" QSS button. It uses the openSnippingTool function
+     * which tries to execute the file from the provided path
+     */
+    fluid.defaults("gpii.qss.snippingToolPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openSnippingTool",
+                args: ["{gpii.qss}.options.siteConfig.snippingToolCommand"]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with snippingToolPresenterthe
      * custom buttons that need to open application, it requires only the (full) path
      * to the executable.
      */
@@ -205,6 +231,34 @@
             }
         }
     });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the
+     * custom buttons that need to execute key sequence or key combination, it requires
+     * a key data and a handle to the onQssExecuteKeySequence event, documentation:
+     * https://github.com/stegru/windows/blob/GPII-4135/gpii/node_modules/gpii-userInput/README.md
+     */
+    fluid.defaults("gpii.qss.customKeysPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.executeKeySequence",
+                args: [
+                    "{that}.model.item.schema.keyData", // using the key data from the custom button's schema
+                    "{channelNotifier}.events.onQssExecuteKeySequence"
+                ]
+            }
+        }
+    });
+
+    /**
+     * Custom function that handles executing the key sequence
+     * @param  {String} keyData - string with key combinations
+     * @param  {Event} executeKeyEvent - handle to the onQssExecuteKeySequence event
+     */
+    gpii.qss.executeKeySequence = function (keyData, executeKeyEvent) {
+        executeKeyEvent.fire(keyData);
+    };
 
     /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Undo"
@@ -277,8 +331,9 @@
     };
 
     /**
-     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Open USB Button"
-     * QSS button.
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Open Quick Folder"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
      */
     fluid.defaults("gpii.qss.openCloudFolderPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
@@ -287,6 +342,78 @@
                 funcName: "gpii.windows.openUrl",
                 args: [
                     "{gpii.qss}.options.siteConfig.urls.cloudFolder",  // siteConfig's cloud folder url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Customize Quickstrip"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
+     */
+    fluid.defaults("gpii.qss.urlCustomizeQssPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.customizeQss",  // siteConfig's url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "My Google Drive"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
+     */
+    fluid.defaults("gpii.qss.urlGoogleDrivePresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.myGoogleDrive",  // siteConfig's url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "My One Drive"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
+     */
+    fluid.defaults("gpii.qss.urlOneDrivePresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.myOneDrive",  // siteConfig's url
+                    "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
+                ]
+            }
+        }
+    });
+
+    /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "My Dropbox"
+     * QSS button. For all url based buttons we use different siteConfig variable for the data,
+     * but the same function to open the browser.
+     */
+    fluid.defaults("gpii.qss.urlDropboxPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        invokers: {
+            activate: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{gpii.qss}.options.siteConfig.urls.myDropbox",  // siteConfig's url
                     "{gpii.qss}.options.siteConfig.alwaysUseChrome" // Override the OS default browser.
                 ]
             }

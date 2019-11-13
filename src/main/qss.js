@@ -252,7 +252,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssWidget",
             options: {
                 model: {
-                    scaleFactor: "{qssWrapper}.model.scaleFactor"
+                    scaleFactor: "{qssWrapper}.model.scaleFactor",
+                    lastEnvironmentalLoginGpiiKey: "{qssWrapper}.model.lastEnvironmentalLoginGpiiKey"
                 },
                 listeners: {
                     onQssWidgetSettingAltered: {

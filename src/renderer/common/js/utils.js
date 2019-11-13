@@ -117,7 +117,7 @@
             }
         } else {
             // there is no value in the config, sending the warning
-            fluid.log(fluid.logLevel.WARN, "Service Buttons (openCloudFolderPresenter): Cannot find a proper url path [siteConfig.qss.urlscloudFolder]");
+            fluid.log(fluid.logLevel.WARN, "Service Buttons (openUrl): Cannot find a proper url path [siteConfig.qss]");
         }
     };
 
@@ -147,6 +147,24 @@
             }
         } catch (err) {
             fluid.log(fluid.logLevel.WARN, "launchExecutable: Invalid or missing path - " + executablePath);
+        }
+        return false;
+    };
+
+    /**
+     * A custom function for handling executing the Snipping Tool command.
+     * we are using different and simplified version of the launchExecutable because
+     * the command its not a real path to executable file, and we cannot escaped with
+     * quotes either.
+     * @param {String} command - path to executable file
+     * @return {Boolean} - returns `true` on successfully executed command
+     */
+    gpii.windows.openSnippingTool = function (command) {
+        try {
+            child_process.exec(command);
+            return true;
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "openSnippingTool: Cannot start the snipping tool!");
         }
         return false;
     };
