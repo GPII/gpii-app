@@ -102,7 +102,7 @@ gpii.tests.qss.mouseTests = [
         resolve: "jqUnit.assertEquals",
         resolveArgs: [
             "Stepper widget should have proper amount of indicators",
-            11, // dependent on the min/max value
+            10, // dependent on the min/max value
             "{arguments}.0"
         ]
     }, { // And clicking one of them
@@ -118,7 +118,7 @@ gpii.tests.qss.mouseTests = [
         listener: "jqUnit.assertEquals",
         args: [
             "Clicking a Stepper widget indicator should apply its value",
-            2,
+            4,
             "{arguments}.0.settings.mouseSpeed.value"
         ]
     }, { // Clicking on the decrement button...
@@ -135,7 +135,7 @@ gpii.tests.qss.mouseTests = [
             "Mouse speed change is correctly registered",
             {
                 path: "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed",
-                value: 1
+                value: 2
             },
             "{arguments}.0.settings.mouseSpeed"
         ]
@@ -150,7 +150,7 @@ gpii.tests.qss.mouseTests = [
         func: "jqUnit.assertEquals",
         args: [
             "The mouse speed value is not changed once its lowest value has been reached",
-            1,
+            2,
             "{that}.app.qssWrapper.model.settings.5.settings.mouseSpeed.value"
         ]
     }, { // Clicking on the decrement button once again...
@@ -191,7 +191,7 @@ gpii.tests.qss.mouseTests = [
             "First increase in mouse speed setting change is correctly registered",
             {
                 path: "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed",
-                value: 2
+                value: 4
             },
             "{arguments}.0.settings.mouseSpeed"
         ]

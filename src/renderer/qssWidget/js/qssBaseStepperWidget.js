@@ -191,6 +191,22 @@
         }
     });
 
+
+    /**
+     * Appling rounding on the minimum and maximum value and guarantees that a restricted value is a multiple of the step.
+     * @param {SettingSchema} schema - Describes the schema of the setting.
+     * @return {Object} - The adjusted min and max values.
+     */
+    gpii.qssWidget.baseStepper.adjustSchemaValue = function (schema) {
+        var newMultipleir = 1000,
+            adjustedSchema = {};
+
+        adjustedSchema.min = Math.ceil((schema.min - 1 / newMultipleir) / schema.divisibleBy) * schema.divisibleBy;
+        adjustedSchema.max = Math.floor((schema.max + 1 / newMultipleir) / schema.divisibleBy) * schema.divisibleBy;
+
+        return adjustedSchema;
+    };
+
     /**
      * Invoked whenever the value of the setting has reached its upper or lower
      * bound and an attempt is made to go beyond that bound. In that case an
@@ -260,8 +276,10 @@
      * @return {Boolean} Whether there was a change in the setting's value.
      */
     gpii.qssWidget.baseStepper.makeRestrictedStep = function (that, value, schema, stepMultiplier, previousValue) {
-        var restrictedValue,
+        var adjustedSchema = gpii.qssWidget.baseStepper.adjustSchemaValue(schema),
+            restrictedValue,
             isChanged;
+
         if (value === 0 && previousValue !== undefined) {
             restrictedValue = previousValue;
             isChanged = false;
@@ -273,11 +291,11 @@
             restrictedValue = value;
 
             if (fluid.isValue(schema.max)) {
-                restrictedValue = Math.min(restrictedValue, schema.max);
+                restrictedValue = Math.min(restrictedValue, adjustedSchema.max);
             }
 
             if (fluid.isValue(schema.min)) {
-                restrictedValue = Math.max(restrictedValue, schema.min);
+                restrictedValue = Math.max(restrictedValue, adjustedSchema.min);
             }
             isChanged = value !== restrictedValue;
         }
@@ -398,41 +416,33 @@
     gpii.qssWidget.baseStepper.getIndicatorsList = function (setting) {
         if (fluid.isValue(setting)) {
 
+
             if (!Number.isInteger(setting.schema.min) || !Number.isInteger(setting.schema.max)) {
                 return [];
             }
 
-            var indicators = [],
+            var adjustedSchema = gpii.qssWidget.baseStepper.adjustSchemaValue(setting.schema),
+                indicators = [],
                 indicatorValue;
 
             // Handle specific edge case applicable only for the mouse speed stepper.
             // Can be used also in cases where the stepper indicators need to be horizontally located.
             if (setting.id === "mouseSpeed") {
                 for (
-                    indicatorValue = 0;
-                    indicatorValue <= setting.schema.max;
+                    indicatorValue = adjustedSchema.min;
+                    indicatorValue <= adjustedSchema.max;
                     indicatorValue = parseFloat((indicatorValue + setting.schema.divisibleBy).toPrecision(2))
                 ) {
-                    if (indicatorValue === 0) {
-                        indicators.push({
-                            // the windows mouse speed setting value
-                            // cannot be 0, instead use the setting minimum value
-                            indicatorValue: setting.schema.min,
-                            isSelected: setting.schema.min === setting.value,
-                            isRecommended: setting.schema.min === setting.schema["default"]
-                        });
-                    } else {
-                        indicators.push({
-                            indicatorValue: indicatorValue, // what value to be applied when selected
-                            isSelected: indicatorValue === setting.value,
-                            isRecommended: indicatorValue === setting.schema["default"]
-                        });
-                    }
+                    indicators.push({
+                        indicatorValue: indicatorValue, // what value to be applied when selected
+                        isSelected: indicatorValue === setting.value,
+                        isRecommended: indicatorValue === setting.schema["default"]
+                    });
                 }
             } else {
                 for (
-                    indicatorValue = setting.schema.max;
-                    indicatorValue >= setting.schema.min;
+                    indicatorValue = adjustedSchema.max;
+                    indicatorValue >= adjustedSchema.min;
                     indicatorValue = parseFloat((indicatorValue - setting.schema.divisibleBy).toPrecision(2))
                 ) {
                     indicators.push({
@@ -508,7 +518,7 @@
      * @property {String} [recommended] Predefined name of the property.
      */
 
-     /**
+    /**
      * An object containing information about the current indicator.
      * @typedef {Object} indicatorData
      * @property {Boolean} [isSelected] `true` value if the current indicator is selected.

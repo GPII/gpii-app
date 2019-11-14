@@ -90,26 +90,6 @@
                     events: {
                         onNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired"
                     },
-                    invokers: {
-                        increment: {
-                            funcName: "gpii.qssWidget.mouse.makeRestrictedStep",
-                            args: [
-                                "{that}",
-                                "{that}.model.setting.value",
-                                "{that}.model.setting.schema",
-                                -1
-                            ]
-                        },
-                        decrement: {
-                            funcName: "gpii.qssWidget.mouse.makeRestrictedStep",
-                            args: [
-                                "{that}",
-                                "{that}.model.setting.value",
-                                "{that}.model.setting.schema",
-                                1
-                            ]
-                        }
-                    },
                     components: {
                         indicators: {
                             type: "gpii.qssWidget.baseStepper.indicators",
@@ -162,56 +142,6 @@
             }
         }
     });
-
-    /**
-     * A custom function specific only for the mouse speed stepper.
-     * Either increases or decreases the current setting's value (depending on the
-     * `stepMultiplier` parameter) with the `divisibleBy` amount specified in the
-     * setting's schema. It also takes care that the new value of the setting does
-     * not become bigger/smaller than the maximum/minimum allowed value for the
-     * setting.
-     * The difference from the original one (gpii.qssWidget.baseStepper.makeRestrictedStep)
-     * is that handle the edge case in which the windows pointer speed cannot accept a value of 0.
-     * @param {Component} that - The `gpii.qssWidget.mouseSpeedStepper` instance.
-     * @param {Number} value - The initial value of the setting before the operation.
-     * @param {Object} schema - Describes the schema of the setting.
-     * @param {Number} schema.min - The minimum possible value for the setting.
-     * @param {Number} schema.max - The maximum possible value for the setting.
-     * @param {Number} schema.divisibleBy - The amount which is added or subtracted
-     * from the setting's value every time this function is invoked.
-     * @param {Number} stepMultiplier - a basic numeric step multiplier, if its 1 there
-     * will be no change in the step size, -1 will reverse it, and everything else
-     * will act as a real multiplier (2 for 2x as an example)
-     * subtracted from or added to the setting's value.
-     * @return {Boolean} Whether there was a change in the setting's value.
-     */
-    gpii.qssWidget.mouse.makeRestrictedStep = function (that, value, schema, stepMultiplier) {
-        var step = schema.divisibleBy * stepMultiplier,
-            restrictedValue;
-
-        if (value === schema.min && stepMultiplier === -1) {
-            // handle edge case specific only to mouse speed steppper
-            restrictedValue = 2;
-        } else {
-            value = parseFloat( (value - step).toPrecision(3) );
-
-            // Handle not given min and max
-            restrictedValue = value;
-        }
-
-        if (fluid.isValue(schema.max)) {
-            restrictedValue = Math.min(restrictedValue, schema.max);
-        }
-
-        if (fluid.isValue(schema.min)) {
-            restrictedValue = Math.max(restrictedValue, schema.min);
-        }
-
-        that.applier.change("value", restrictedValue, null, "fromWidget");
-
-        // Whether a bound was hit
-        return value < 0 || value > schema.max;
-    };
 
     /**
      * Represents the QSS mouse toggle widget.
