@@ -272,7 +272,6 @@
                     }
                 }
             },
-            // TODO send data from the main process
             channelListener: {
                 type: "gpii.psp.channelListener",
                 options: {
@@ -330,20 +329,30 @@
     });
 
     /**
-     *
+     * Adds the required style to the sideCart button
+     * @param  {jQuery} container - jQuery instance of the sideCart's button
+     * @param  {Object} setting - Object containing sideCart content data
+     * @param  {Object} styles - A hash containing CSS classes for the different buttons
      */
     gpii.psp.qssWidget.applySideCartButtonStyles = function (container, setting, styles) {
+        // removing the default classes
         container.removeClass(styles.openLinkIcon + " " + styles.openSidePanel + " " + styles.closeSidePanel);
 
         if (setting.sideCart || setting.sideCartWithSettings) {
+            // we have content in the sideCart
             container.addClass(styles.openSidePanel);
         } else {
+            // we don't have content
             container.addClass(styles.openLinkIcon);
         }
     };
 
     /**
-     *
+     * Picks the right button name based on the sideCart content
+     * @param  {Object} setting - Object containing sideCart content data
+     * @param  {String} learnMoreMessage - text for the Learn More button
+     * @param  {String} helpAndMoreMessage - text for Help & More button
+     * @return {String} - returns string for the button's name
      */
     gpii.psp.qssWidget.getSideCartButtonLabel = function (setting, learnMoreMessage, helpAndMoreMessage) {
         if (setting.sideCart || setting.sideCartWithSettings) {
@@ -354,29 +363,35 @@
     };
 
     /**
-     *
+     * Does the right kind of action when the sideCart button is clicked, if its a Learn More type
+     * just opens an url, if not opens/closes the sideCart panel itself
+     * @param  {Component} sidePanelButton - instance of the sideCart button
+     * @param  {Component} qssWidget - instance of the qssWidget
+     * @param  {jQuery} sideCartContainer - instance of the sideCart container
+     * @param  {Object} styles - A hash containing CSS classes for the different buttons
      */
     gpii.psp.qssWidget.openSideCartActivated = function (sidePanelButton, qssWidget, sideCartContainer, styles) {
-        // If there is no side panel content use button as a link.
-        if (!qssWidget.model.setting.sideCart) {
+        if (qssWidget.model.setting.sideCart) {
+            // remove all of the default classes
+            sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
+
+            if (sideCartContainer.hasClass(styles.hideSidePanel)) {
+                // showing the panel
+                sideCartContainer.removeClass(styles.hideSidePanel);
+                sidePanelButton.container.addClass(styles.closeSidePanel);
+                sidePanelButton.applier.change("label", "Hide", null, "fromWidget");
+            } else {
+                // hiding the panel
+                sideCartContainer.addClass(styles.hideSidePanel);
+                sidePanelButton.container.addClass(styles.openSidePanel);
+                sidePanelButton.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
+            }
+        } else {
+            // If there is no side panel content use button as a link.
             if (qssWidget.model.setting.learnMoreLink) {
                 gpii.psp.openUrlExternally(qssWidget.model.setting.learnMoreLink);
             }
-            return;
         }
-
-        sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
-
-        if (sideCartContainer.hasClass(styles.hideSidePanel)) {
-            sideCartContainer.removeClass(styles.hideSidePanel);
-            sidePanelButton.container.addClass(styles.closeSidePanel);
-            sidePanelButton.applier.change("label", "Hide", null, "fromWidget");
-        } else {
-            sideCartContainer.addClass(styles.hideSidePanel);
-            sidePanelButton.container.addClass(styles.openSidePanel);
-            sidePanelButton.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
-        }
-
     };
 
 

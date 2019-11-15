@@ -1,5 +1,5 @@
 /**
- * The QSS Translate Tools widget
+ * The grade that handles widget's sideCart content
  *
  * The button is only informational and it simply have text and links on it.
  * Copyright 2017 Raising the Floor - International
@@ -11,8 +11,6 @@
  * You may obtain a copy of the License at
  * https://github.com/GPII/universal/blob/master/LICENSE.txt
  */
-
-/* global fluid */
 
 "use strict";
 (function (fluid) {
@@ -45,12 +43,17 @@
         }
     });
 
+    /**
+     * Adds the appropriate data in the sideCart based on the data available and the siteconfig's
+     * osSettingsAvailable variable. If there is data in sideCartWithSettings and osSettingsAvailable
+     * is true we are showing that, if not the base sideCart message is displayed.
+     * @param  {Component} that - The instance of the widget
+     */
     gpii.qssWidget.sideCart.getSideCartMessage = function (that) {
-        if (that.model.osSettingsAvailable) {
+        if (that.model.osSettingsAvailable && that.model.setting.sideCartWithSettings !== "") {
             that.applier.change("sideCartContent", that.model.setting.sideCartWithSettings, null, "fromWidget");
         } else {
             that.applier.change("sideCartContent", that.model.setting.sideCart, null, "fromWidget");
         }
     };
-
 })(fluid);
