@@ -105,7 +105,7 @@
         },
 
         styles: {
-            hideSidePanel: "fl-hide-sidecart-panel",
+            hideSidePanel: "fl-hide-sidecart",
             openSidePanel: "btn-icon-open",
             closeSidePanel: "btn-icon-close",
             openLinkIcon: "btn-icon-link"
@@ -179,7 +179,7 @@
                         "onCreate.hideSidePanel": {
                             this: "{qssWidget}.dom.sideCart",
                             method: "addClass",
-                            args: ["fl-hide-sidecart-panel"]
+                            args: ["{qssWidget}.options.styles.hideSidePanel"]
                         }
                     },
                     components: {

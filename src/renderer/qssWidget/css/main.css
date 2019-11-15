@@ -46,25 +46,37 @@ body {
     background: none;
     overflow-y: hidden;
 }
-
-.fl-widget-content {
+.fl-widget-holder {
+    display: flex;
+    justify-content: center;
     width: 148px;
-    padding: 10px 10px 0 10px;
+    padding: 10px 10px 35px 10px;
     border: 1px solid #002957;
     background: white;
+    overflow-y: hidden;
+}
+.fl-widget-content {
+    overflow-y: overlay;
 }
 
-.fl-sidecart-panel {
+.fl-sidecart-holder {
+    display: flex;
+    justify-content: center;
     width: 109px;
     margin-top: 15px;
-    padding: 10px 10px 30px 10px;
+    padding: 10px 10px 35px 10px;
     border: 1px solid #002957;
     border-left: none;
     background: #eee;
+    overflow-y: hidden;
 }
 
-.fl-sidecart-panel ul {
+.fl-sidecart-holder ul {
     padding-left: 15px;
+}
+
+.fl-qssWidget-sidecart {
+    overflow-y: overlay;
 }
 
 .fl-sidecart-button {
@@ -104,7 +116,7 @@ body {
     background-image: url(../../../assets/link-external.svg);
 }
 
-.fl-hide-sidecart-panel {
+.fl-hide-sidecart {
     display: none;
 }
 
@@ -147,7 +159,6 @@ body {
 .fl-qssWidget .fl-qssWidget-learnMoreLink {
     position: absolute;
     width: auto;
-    right: 11px;
     bottom: 10px;
 
     padding: 3px 8px;
