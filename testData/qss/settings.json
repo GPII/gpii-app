@@ -256,22 +256,22 @@
         "messageKey": "launch-documorph"
     }, {
         "id": "color-vision",
-        "path": "http://registry\\.gpii\\.net/common/colorVision",
+        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.colorFilters.FilterType",
         "schema": {
             "type": "string",
             "keys": [
-                "standard-colors",
-                "green-weak",
-                "red-weak",
-                "tritanomaly"
+                0,
+                4,
+                5,
+                6
             ],
-            "default": "standard-colors",
+            "default": 0,
             "closeOnSelect": false
         },
         "buttonTypes": ["largeButton", "settingButton"],
-        "tabindex": 0,
+        "tabindex": 225,
         "messageKey": "common-colorVision",
-        "value": "standard-colors",
+        "value": 0,
         "styles": {
             "regular-contrast": {
                 "background": "#ffffff",
