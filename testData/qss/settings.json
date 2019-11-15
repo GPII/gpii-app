@@ -255,6 +255,32 @@
         "tabindex": 220,
         "messageKey": "launch-documorph"
     }, {
+        "id": "color-vision",
+        "path": "http://registry\\.gpii\\.net/common/colorVision",
+        "schema": {
+            "type": "string",
+            "keys": [
+                "standard-colors",
+                "green-weak",
+                "red-weak",
+                "tritanomaly"
+            ],
+            "default": "standard-colors",
+            "closeOnSelect": false
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 0,
+        "messageKey": "common-colorVision",
+        "value": "standard-colors",
+        "styles": {
+            "regular-contrast": {
+                "background": "#ffffff",
+                "color": "#0073bd",
+                "border-color": "#0073bd"
+            }
+        },
+        "learnMoreLink": "https://morphic.world/help/qsshelp#color-vision"
+    }, {
         "id": "separator",
         "path": "separator",
         "schema": {

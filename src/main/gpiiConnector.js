@@ -765,6 +765,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
         "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
         "http://registry\\.gpii\\.net/common/volume": { value: gpii.app.getVolumeValue() },
+        "http://registry\\.gpii\\.net/common/colorVision": {value: "standard-colors" },
         // use the initial value of the language as default setting
         "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" }
     }
