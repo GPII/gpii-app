@@ -25,7 +25,6 @@ body {
     box-sizing: border-box;
 
     display: flex;
-    /*flex-direction: column;*/
     
     background-color: #ffffff;
     color: #19294c;
@@ -36,7 +35,6 @@ body {
     overflow-y: overlay;
 }
 
-/* EXPERIMENTAL */
 .fl-qssWidget {
     display: flex;
     justify-content: center;
@@ -159,10 +157,9 @@ body {
 .fl-qssWidget .fl-qssWidget-learnMoreLink {
     position: absolute;
     width: auto;
-    bottom: 10px;
+    bottom: 20px;
 
     padding: 3px 8px;
-    margin: 10px 0;
     border: 1px solid white;
 
     color: #002957;
