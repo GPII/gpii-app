@@ -17,7 +17,7 @@
     var gpii = fluid.registerNamespace("gpii");
 
     /**
-     * Represents the QSS Translate Tools widget.
+     * Represents the sideCart extension of the widget
      */
     fluid.defaults("gpii.qssWidget.sideCart", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
