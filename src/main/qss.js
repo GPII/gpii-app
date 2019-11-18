@@ -618,7 +618,8 @@ gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, l
 
 gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath, siteConfig) {
     var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
-        loadedSettings = availableSettings; // by default we are getting all of the buttons
+        loadedSettings = availableSettings, // by default we are getting all of the buttons
+        multipleir = 1000;
 
     if (gpii.app.hasButtonList(siteConfig)) { // checking if we have a valid button list in the siteConfig
         // filtering the buttons based on buttonList array
@@ -626,27 +627,53 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
     }
 
     fluid.each(loadedSettings, function (loadedSetting) {
-        // Resolve dynamic settings, where the function grade is identified by the 'type' field.
-        loadedSetting.schema = fluid.transform(loadedSetting.schema, function (schemaItem) {
-            var togo;
-            if (schemaItem && schemaItem.type) {
-                // Call the function, and use the result as the value.
-                var result = fluid.invokeGradedFunction(schemaItem.type);
-                togo = schemaItem.path ? fluid.get(result, schemaItem.path) : result;
-            } else {
-                togo = schemaItem;
+        if (gpii.app.hasSecondarySettings(loadedSetting)) {
+
+            fluid.each(loadedSetting.settings, function (nestedSetting) {
+                if (fluid.isValue(nestedSetting.schema.min)) {
+                    // Appling rounding on the minimum value and guarantees that a value is a multiple of the step.
+                    nestedSetting.schema.min = Math.ceil((nestedSetting.schema.min - 1 / multipleir) / nestedSetting.schema.divisibleBy) * nestedSetting.schema.divisibleBy;
+                }
+
+                if (fluid.isValue(nestedSetting.schema.max)) {
+                    // Appling rounding on the maximum value and guarantees that a value is a multiple of the step.
+                    nestedSetting.schema.max = Math.floor((nestedSetting.schema.max + 1 / multipleir) / nestedSetting.schema.divisibleBy) * nestedSetting.schema.divisibleBy;
+                }
+            });
+
+        } else {
+            // Resolve dynamic settings, where the function grade is identified by the 'type' field.
+            loadedSetting.schema = fluid.transform(loadedSetting.schema, function (schemaItem) {
+                var togo;
+                if (schemaItem && schemaItem.type) {
+                    // Call the function, and use the result as the value.
+                    var result = fluid.invokeGradedFunction(schemaItem.type);
+                    togo = schemaItem.path ? fluid.get(result, schemaItem.path) : result;
+                } else {
+                    togo = schemaItem;
+                }
+                return togo;
+            });
+
+            if (fluid.isValue(loadedSetting.schema.min)) {
+                // Appling rounding on the minimum value and guarantees that a value is a multiple of the step.
+                loadedSetting.schema.min = Math.ceil((loadedSetting.schema.min - 1 / multipleir) / loadedSetting.schema.divisibleBy) * loadedSetting.schema.divisibleBy;
             }
-            return togo;
-        });
 
-        var imageAsset = loadedSetting.schema.image;
-        if (imageAsset) {
-            loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);
-        }
+            if (fluid.isValue(loadedSetting.schema.max)) {
+                // Appling rounding on the maximum value and guarantees that a value is a multiple of the step.
+                loadedSetting.schema.max = Math.floor((loadedSetting.schema.max + 1 / multipleir) / loadedSetting.schema.divisibleBy) * loadedSetting.schema.divisibleBy;
+            }
 
-        var helpImageAsset = loadedSetting.schema.helpImage;
-        if (helpImageAsset) {
-            loadedSetting.schema.helpImage = assetsManager.resolveAssetPath(helpImageAsset);
+            var imageAsset = loadedSetting.schema.image;
+            if (imageAsset) {
+                loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);
+            }
+
+            var helpImageAsset = loadedSetting.schema.helpImage;
+            if (helpImageAsset) {
+                loadedSetting.schema.helpImage = assetsManager.resolveAssetPath(helpImageAsset);
+            }
         }
     });
 

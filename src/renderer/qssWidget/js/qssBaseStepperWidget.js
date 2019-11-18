@@ -193,21 +193,6 @@
 
 
     /**
-     * Appling rounding on the minimum and maximum value and guarantees that a restricted value is a multiple of the step.
-     * @param {SettingSchema} schema - Describes the schema of the setting.
-     * @return {Object} - The adjusted min and max values.
-     */
-    gpii.qssWidget.baseStepper.adjustSchemaValue = function (schema) {
-        var newMultipleir = 1000,
-            adjustedSchema = {};
-
-        adjustedSchema.min = Math.ceil((schema.min - 1 / newMultipleir) / schema.divisibleBy) * schema.divisibleBy;
-        adjustedSchema.max = Math.floor((schema.max + 1 / newMultipleir) / schema.divisibleBy) * schema.divisibleBy;
-
-        return adjustedSchema;
-    };
-
-    /**
      * Invoked whenever the value of the setting has reached its upper or lower
      * bound and an attempt is made to go beyond that bound. In that case an
      * error tone is played. If at least `specialErrorBoundHitTries` number of
@@ -276,8 +261,7 @@
      * @return {Boolean} Whether there was a change in the setting's value.
      */
     gpii.qssWidget.baseStepper.makeRestrictedStep = function (that, value, schema, stepMultiplier, previousValue) {
-        var adjustedSchema = gpii.qssWidget.baseStepper.adjustSchemaValue(schema),
-            restrictedValue,
+        var restrictedValue,
             isChanged;
 
         if (value === 0 && previousValue !== undefined) {
@@ -291,11 +275,11 @@
             restrictedValue = value;
 
             if (fluid.isValue(schema.max)) {
-                restrictedValue = Math.min(restrictedValue, adjustedSchema.max);
+                restrictedValue = Math.min(restrictedValue, schema.max);
             }
 
             if (fluid.isValue(schema.min)) {
-                restrictedValue = Math.max(restrictedValue, adjustedSchema.min);
+                restrictedValue = Math.max(restrictedValue, schema.min);
             }
             isChanged = value !== restrictedValue;
         }
@@ -416,21 +400,19 @@
     gpii.qssWidget.baseStepper.getIndicatorsList = function (setting) {
         if (fluid.isValue(setting)) {
 
-
             if (!Number.isInteger(setting.schema.min) || !Number.isInteger(setting.schema.max)) {
                 return [];
             }
 
-            var adjustedSchema = gpii.qssWidget.baseStepper.adjustSchemaValue(setting.schema),
-                indicators = [],
+            var indicators = [],
                 indicatorValue;
 
             // Handle specific edge case applicable only for the mouse speed stepper.
             // Can be used also in cases where the stepper indicators need to be horizontally located.
             if (setting.id === "mouseSpeed") {
                 for (
-                    indicatorValue = adjustedSchema.min;
-                    indicatorValue <= adjustedSchema.max;
+                    indicatorValue = setting.schema.min;
+                    indicatorValue <= setting.schema.max;
                     indicatorValue = parseFloat((indicatorValue + setting.schema.divisibleBy).toPrecision(2))
                 ) {
                     indicators.push({
@@ -441,8 +423,8 @@
                 }
             } else {
                 for (
-                    indicatorValue = adjustedSchema.max;
-                    indicatorValue >= adjustedSchema.min;
+                    indicatorValue = setting.schema.max;
+                    indicatorValue >= setting.schema.min;
                     indicatorValue = parseFloat((indicatorValue - setting.schema.divisibleBy).toPrecision(2))
                 ) {
                     indicators.push({
