@@ -215,12 +215,12 @@
     gpii.qssWidget.mouseWidgetToggle.toggleModel = function (that, toggleWidget, event) {
         if (toggleWidget.model.setting.schema.mapOff || toggleWidget.model.setting.schema.mapOn) {
             if (that.model.enabled) {
-                toggleWidget.model.setting.value = toggleWidget.model.setting.schema.mapOff;
+                toggleWidget.applier.change("value", toggleWidget.model.setting.schema.mapOff, null, "fromWidget");
             } else {
-                toggleWidget.model.setting.value = toggleWidget.model.setting.schema.mapOn;
+                toggleWidget.applier.change("value", toggleWidget.model.setting.schema.mapOn, null, "fromWidget");
             }
         } else {
-            toggleWidget.model.setting.value = !that.model.enabled;
+            toggleWidget.applier.change("value", !that.model.enabled, null, "fromWidget");
         }
 
         event.fire(toggleWidget.model.setting);
