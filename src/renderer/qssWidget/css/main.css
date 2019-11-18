@@ -47,14 +47,12 @@ body {
 .fl-widget-holder {
     display: flex;
     justify-content: center;
+    position: relative;
     width: 148px;
     padding: 10px 10px 35px 10px;
     border: 1px solid #002957;
     background: white;
     overflow-y: hidden;
-}
-.fl-widget-content {
-    overflow-y: overlay;
 }
 
 .fl-sidecart-holder {
@@ -80,7 +78,7 @@ body {
 .fl-sidecart-button {
     width: auto;
     position: absolute;
-    bottom: 20px;
+    bottom: 15px;
     padding: 3px 8px;
     background: none;
     border: 1px solid silver;
@@ -99,11 +97,6 @@ body {
     background: url(../../../assets/arrow-right.svg) no-repeat right;
     padding-right: 16px;
     text-decoration: none;
-}
-
-/* additional states for the sidecart button */
-.fl-sidecart-button.btn-icon-close {
-    right: 140px;
 }
 
 .fl-sidecart-button.btn-icon-close .fl-btnLabel {
@@ -132,10 +125,12 @@ body {
 }
 
 .fl-qssWidget .fl-titlebar .fl-closeBtn {
-    border: 1px solid white;
-
-    font-size: 13px;
+    position: absolute;
+    top: 1px;
+    right: 1px;
     padding: 2px;
+    border: 1px solid white;
+    font-size: 13px;
     line-height: 10px;
     cursor: pointer;
 }
