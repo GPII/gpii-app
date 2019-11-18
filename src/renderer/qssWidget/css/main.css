@@ -78,7 +78,7 @@ body {
 .fl-sidecart-button {
     width: auto;
     position: absolute;
-    bottom: 15px;
+    bottom: 7px;
     padding: 3px 8px;
     background: none;
     border: 1px solid silver;
@@ -210,6 +210,7 @@ body {
 }
 
 .fl-qssWidget-arrow:after {
+    top: -2px;
     border-width: 11px;
     border-top-color: #ffffff;
     margin-left: -11px;
