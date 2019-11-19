@@ -162,7 +162,7 @@
     /**
      * Invoked whenever the user has activated the "switch" UI element (either
      * by clicking on it or pressing "Space" or "Enter"). What this function
-     * does is to change the `enabled` model property to its opposite value and update settings.
+     * does is to update model value and update settings.
      * @param {Component} that - The `gpii.psp.widgets.volume.switchButton` instance.
      * @param {Component} volumeWidget - The `gpii.psp.widgets.volume` instance.
      * @param {Component} stepper - The `gpii.psp.widgets.volumeStepper instance.
@@ -174,24 +174,22 @@
         }
 
         if (volumeWidget.model.setting.value !== 0) {
-            volumeWidget.model.setting.previousValue = volumeWidget.model.setting.value;
-            stepper.model.previousValue = volumeWidget.model.setting.value;
+            volumeWidget.applier.change("previousValue", volumeWidget.model.setting.value, null, "fromWidget");
+            stepper.applier.change("previousValue", volumeWidget.model.setting.value, null, "fromWidget");
             that.applier.change("previousValue", volumeWidget.model.setting.value, null, "fromWidget");
         }
 
         if (!that.model.enabled && volumeWidget.model.setting.value !== 0) {
-            volumeWidget.model.setting.value = 0;
-            volumeWidget.model.value = 0;
-            stepper.model.value = 0;
+            volumeWidget.applier.change("value", 0, null, "fromWidget");
+            stepper.applier.change("value", 0, null, "fromWidget");
+
         } else {
-            volumeWidget.model.setting.value = volumeWidget.model.setting.previousValue;
-            volumeWidget.model.value = volumeWidget.model.setting.previousValue;
-            stepper.model.value = volumeWidget.model.setting.previousValue;
+            volumeWidget.applier.change("value", volumeWidget.model.previousValue, null, "fromWidget");
+            stepper.applier.change("value", volumeWidget.model.previousValue, null, "fromWidget");
+
         }
 
         // update the volume setting
         event.fire(volumeWidget.model.setting);
-
-        that.applier.change("enabled", !that.model.enabled, null, "fromWidget");
     };
 })(fluid);
