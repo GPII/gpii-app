@@ -30,7 +30,7 @@ body {
     background-color: #ffffff;
     color: #19294c;
 
-    font: normal 9px "Open Sans", "Sans-Serif";
+    font: normal 9px "Segoe UI", "Sans-Serif";
 
     overflow-x: hidden;
     overflow-y: overlay;
@@ -94,7 +94,7 @@ body {
     margin-right: 5px;
     vertical-align: middle;
 
-    background-image: url("../../psp/icons/info.svg");
+    background-image: url("../../../assets/info.svg");
     background-size: 15px 15px;
 }
 
@@ -130,4 +130,3 @@ body {
     border-top-color: #ffffff;
     margin-left: -9px;
 }
-

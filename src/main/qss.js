@@ -51,8 +51,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         // paths might be needed for some reason
         settingPaths: {
             language: "http://registry\\.gpii\\.net/common/language",
-            volume: "http://registry\\.gpii\\.net/common/volume",
-            psp: "psp"
+            volume: "http://registry\\.gpii\\.net/common/volume"
         },
 
         settingMessagesPrefix: "gpii_app_qss_settings",
@@ -117,9 +116,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         onActivePreferenceSetAltered: null,
         onUndoRequired: null,
         onResetAllRequired: null,
-        onSaveRequired: null,
-        onQssPspToggled: null,
-        onQssPspClose: null
+        onSaveRequired: null
     },
 
     listeners: {
@@ -255,7 +252,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssWidget",
             options: {
                 model: {
-                    scaleFactor: "{qssWrapper}.model.scaleFactor"
+                    scaleFactor: "{qssWrapper}.model.scaleFactor",
+                    lastEnvironmentalLoginGpiiKey: "{qssWrapper}.model.lastEnvironmentalLoginGpiiKey"
                 },
                 listeners: {
                     onQssWidgetSettingAltered: {
@@ -404,9 +402,8 @@ gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, 
 };
 
 /**
- * Whenever a button in the QSS is focused, hides the QSS widget and the PSP in case
- * the setting for the newly focused button is different from the QSS widget's setting
- * (or the setting for the PSP button respectively).
+ * Whenever a button in the QSS is focused, hides the QSS widget in case
+ * the setting for the newly focused button is different from the QSS widget's setting.
  * @param {Component} that - The `gpii.app.qss` instance.
  * @param {Component} qssWidget - The `gpii.app.qssWidget` instance.
  * @param {Object} setting - the setting for the newly focused QSS button.
@@ -414,10 +411,6 @@ gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, 
 gpii.app.qss.hideQssMenus = function (that, qssWidget, setting) {
     if (setting.path !== qssWidget.model.setting.path) {
         qssWidget.hide();
-    }
-
-    if (setting.path !== that.options.pspButtonPath) {
-        that.events.onQssPspClose.fire();
     }
 };
 
@@ -908,9 +901,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
         }
     },
     siteConfig: "{qssWrapper}.options.siteConfig",
-    pspButtonPath: "psp",
     events: {
-        onQssPspClose: "{qssWrapper}.events.onQssPspClose",
         onUndoIndicatorChanged: null,
 
         onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
@@ -952,8 +943,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
         },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
         "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",
-        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
-        "{channelListener}.events.onQssPspToggled": "{qssWrapper}.events.onQssPspToggled"
+        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired"
     }
 });
 

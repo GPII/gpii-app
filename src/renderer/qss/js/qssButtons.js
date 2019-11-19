@@ -98,10 +98,13 @@
 
         styles: {
             activated: "fl-activated",
+            disabledButton: "fl-qss-disabled",
             smallButton: "fl-qss-smallButton",
             largeButton: "fl-qss-largeButton",
             settingButton: "fl-qss-settingButton",
-            closeButton: "fl-qss-closeButton"
+            closeButton: "fl-qss-closeButton",
+            separator: "fl-qss-separator",
+            separatorVisible: "fl-qss-separator-visible"
         },
 
         attrs: {
@@ -235,6 +238,10 @@
         fluid.each(buttonTypes, function (buttonType) {
             if (styles[buttonType]) {
                 container.addClass(styles[buttonType]);
+            }
+            // adding the button id, if there is any in the schema
+            if (that.model.item.id) {
+                container.addClass("fl-qss-btnId-" + that.model.item.id);
             }
         });
     };
@@ -409,7 +416,8 @@
     });
 
     /**
-     * Represent a disabled button. These are buttons that cannot be interacted with (event not focusable).
+     * Represent a disabled button. These are buttons that cannot be interacted
+     * with (event not focusable).
      */
     fluid.defaults("gpii.qss.disabledButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
@@ -429,6 +437,33 @@
                 this: "{that}.container",
                 method: "addClass",
                 args: ["{that}.options.styles.disabled"]
+            }
+        },
+        invokers: {
+            // Override button activation behaviour
+            activate: {
+                funcName: "fluid.identity"
+            }
+        }
+    });
+
+    /**
+     * Represents a separator type button. These are buttons that cannot be
+     * interacted with (event not focusable).
+     */
+    fluid.defaults("gpii.qss.separatorButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+
+        styles: {
+            disabled: "fl-qss-separator",
+            focusable: "fl-focusable"
+        },
+
+        listeners: {
+            "onCreate.removeButtonStyles": {
+                this: "{that}.container",
+                method: "removeClass",
+                args: ["{that}.options.styles.focusable"]
             }
         },
         invokers: {

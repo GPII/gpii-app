@@ -58,12 +58,11 @@ gpii.tests.shortcutsManager.testLocalShortcutOperations = function (shortcutsMan
     var localEventName = "onLocalShortcut",
         localShortcutAccelerator = "Ctrl+Z",
         missingLocalEventName = "onMissingLocalEvent",
-        dialogGradeName = "gpii.app.psp",
         nonExistingGradeName = "gpii.app.nonExistingComponent",
         nonDialogGradeName = "gpii.app.factsManager";
 
     jqUnit.expectFrameworkDiagnostic("An error is thrown if a local shortcut doesn't have an associated event", function () {
-        shortcutsManager.registerLocalShortcut(localShortcutAccelerator, missingLocalEventName, dialogGradeName);
+        shortcutsManager.registerLocalShortcut(localShortcutAccelerator, missingLocalEventName);
     }, "ShortcutsManager: Missing shortcut event - " + missingLocalEventName);
 
     jqUnit.expectFrameworkDiagnostic("An error is thrown if a local shortcut is registered for an unspecified window", function () {
@@ -78,10 +77,10 @@ gpii.tests.shortcutsManager.testLocalShortcutOperations = function (shortcutsMan
         shortcutsManager.registerLocalShortcut(localShortcutAccelerator, localEventName, nonDialogGradeName);
     }, "ShortcutsManager: Target window either missing or not of `gpii.app.dialog` grade - " + nonDialogGradeName);
 
-    shortcutsManager.registerLocalShortcut(localShortcutAccelerator, localEventName, dialogGradeName);
+    shortcutsManager.registerLocalShortcut(localShortcutAccelerator, localEventName);
     jqUnit.assert("Local shortcut registered successfully");
 
-    shortcutsManager.deregisterLocalShortcut(localShortcutAccelerator, dialogGradeName);
+    shortcutsManager.deregisterLocalShortcut(localShortcutAccelerator);
     jqUnit.assert("Local shortcut deregistered successfully");
 
     jqUnit.expectFrameworkDiagnostic("An error is thrown if a local shortcut is deregistered for a non-existing component", function () {

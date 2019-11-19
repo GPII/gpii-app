@@ -23,6 +23,7 @@
         fs = require("fs");
 
     fluid.registerNamespace("gpii.psp");
+    fluid.registerNamespace("gpii.windows");
 
     /**
      * An implementation of the modulation operation which resolves the
@@ -85,18 +86,58 @@
         ipcRenderer.removeAllListeners(messageChannel);
     };
 
-    /*
+    /**
+     * A custom function for handling activation of the "Quick Folders" QSS button.
+     * opens a provided url in the default browser using electron's shell
+     * @param {String} siteUrl - cloud folder's url
+     * @param {Boolean} alwaysUseChrome - true to use chrome, rather than the default browser.
+     * @param {Boolean} forceFullScreen - the function requires the browser to be open maximized
+     */
+    gpii.windows.openUrl = function (siteUrl, alwaysUseChrome, forceFullScreen) {
+        if (fluid.isValue(siteUrl)) {
+            if (alwaysUseChrome) {
+                var command =
+                    // Check chrome is installed
+                    "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe\" /ve"
+                    // If so, run chrome
+                    + " && start chrome \"" + siteUrl.replace(/"/g, "%22") + "\"";
+                if (forceFullScreen) {
+                    // adding the full screen option for Chrome as well
+                    command += " --start-fullscreen";
+                }
+                child_process.exec(command, function (err) {
+                    if (err) {
+                        // It failed, so use the default browser.
+                        shell.openExternal(siteUrl);
+                    }
+                });
+            } else {
+                // we have the url, opening it in the default browser
+                shell.openExternal(siteUrl);
+            }
+        } else {
+            // there is no value in the config, sending the warning
+            fluid.log(fluid.logLevel.WARN, "Service Buttons (openUrl): Cannot find a proper url path [siteConfig.qss]");
+        }
+    };
+
+    /**
      * A custom function for handling opening of an .exe file.
      * @param {String} executablePath - path to executable file
+     * @param {Boolean} forceFullScreen - the function requires the application to be open maximized
      * @return {Boolean} - returns `true` on successfully executed file
      */
-    gpii.psp.launchExecutable = function (executablePath) {
+    gpii.windows.launchExecutable = function (executablePath, forceFullScreen) {
         try {
             var fileProperties = fs.statSync(executablePath);
             // Check that the file is executable
             if (fileProperties.mode === parseInt("0100666", 8)) {
                 try {
                     child_process.exec("\"" + executablePath + "\"");
+                    if (forceFullScreen) {
+                        console.log("gpii.windows.launchExecutable ====");
+                        console.log("forceFullScreen: true");
+                    }
                     return true;
                 } catch (err) {
                     fluid.log(fluid.logLevel.WARN, "launchExecutable: Cannot execute - " + executablePath);
@@ -106,6 +147,24 @@
             }
         } catch (err) {
             fluid.log(fluid.logLevel.WARN, "launchExecutable: Invalid or missing path - " + executablePath);
+        }
+        return false;
+    };
+
+    /**
+     * A custom function for handling executing the Snipping Tool command.
+     * we are using different and simplified version of the launchExecutable because
+     * the command its not a real path to executable file, and we cannot escaped with
+     * quotes either.
+     * @param {String} command - path to executable file
+     * @return {Boolean} - returns `true` on successfully executed command
+     */
+    gpii.windows.openSnippingTool = function (command) {
+        try {
+            child_process.exec(command);
+            return true;
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "openSnippingTool: Cannot start the snipping tool!");
         }
         return false;
     };

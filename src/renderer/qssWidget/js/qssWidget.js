@@ -57,7 +57,9 @@
             screenCapture: ".flc-qssScreenCaptureWidget",
             openUSB: ".flc-qssOpenUSBWidget",
             volume: ".flc-qssVolumeWidget",
-            office: ".flc-qssOfficeWidget"
+            office: ".flc-qssOfficeWidget",
+            mySavedSettings: ".flc-qssMySavedSettingsWidget",
+            translateTools: ".flc-qssTranslateToolsWidget"
         },
 
         /**
@@ -71,7 +73,9 @@
             "screenCapture": "gpii.qssWidget.screenCapture",
             "openUSB": "gpii.qssWidget.openUSB",
             "volume": "gpii.qssWidget.volume",
-            "office": "gpii.qssWidget.office"
+            "office": "gpii.qssWidget.office",
+            "mySavedSettings": "gpii.qssWidget.mySavedSettings",
+            "translateTools": "gpii.qssWidget.translateTools"
         },
 
         events: {
@@ -93,7 +97,9 @@
             onQssUnmountUsbRequested: null,
 
             // Volume & Mute related event
-            onQssGetVolumeRequested: null
+            onQssGetVolumeRequested: null,
+            onQssReApplyPreferencesRequired: null,
+            onQssGetEnvironmentalLoginKeyRequested: null
         },
 
         sounds: {},
@@ -132,6 +138,7 @@
                     }
                 },
                 options: {
+                    lastEnvironmentalLoginGpiiKey: "{qssWidget}.options.lastEnvironmentalLoginGpiiKey",
                     sounds: "{qssWidget}.options.sounds",
                     siteConfig: "{qssWidget}.options.siteConfig",
                     activationParams: "{arguments}.1",
@@ -232,6 +239,8 @@
                         onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
                         // Volume button
                         onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
+                        onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
+                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested"
                         onMetric:                        "{qssWidget}.events.onMetric",
                         onMetricState:                   "{qssWidget}.events.onMetricState"
                     }

@@ -137,7 +137,7 @@ gpii.tests.settingsBroker.testBrokerAfterKeyOut = function (settingsBroker) {
 
 gpii.tests.settingsBroker.testDefs = {
     name: "Settings broker integration tests",
-    expect: 27,
+    expect: 23,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -205,21 +205,8 @@ gpii.tests.settingsBroker.testDefs = {
     }, {
         func: "{that}.app.settingsBroker.enqueue",
         args: [manualSettingChange]
-    }, { // When the PSP is closed...
-        func: "{that}.app.psp.events.onClosed.fire"
-    }, { // ..."manualRestart" pending changes are applied...
-        event: "{that}.app.settingsBroker.events.onSettingApplied",
-        listener: "gpii.tests.settingsBroker.testApplyPendingChanges",
-        args: [manualSettingChange, "{arguments}.0"]
-    }, { // ...whereas "OSRestart" pending changes are reverted...
-        event: "{that}.app.settingsBroker.events.onSettingApplied",
-        listener: "gpii.tests.settingsBroker.testUndoPendingChanges",
-        args: [osSettingChange, "{arguments}.0"]
-    }, { // ...and again there will be no changes left in the queue.
-        changeEvent: "{that}.app.settingsBroker.applier.modelChanged",
-        path: "pendingChanges",
-        listener: "gpii.tests.settingsBroker.testNoPendingChanges",
-        args: ["{that}.app.settingsBroker"]
+    }, {
+        func: "{that}.app.settingsBroker.applyPendingChanges"
     }, { // Enqueue a manual setting change...
         func: "{that}.app.settingsBroker.enqueue",
         args: [manualSettingChange]

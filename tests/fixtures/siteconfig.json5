@@ -1,9 +1,7 @@
 {
     hideQssSaveButton: false,
     qssScaleFactor: 0.85,
-    pspScaleFactor: 0.85,
     closeQssOnClickOutside: true,
-    closePspOnClickOutside: true,
     openQssShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
     qssMorePanel: {
     	defaultWidth: 600,

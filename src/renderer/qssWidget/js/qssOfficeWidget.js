@@ -42,7 +42,7 @@
             setting: {
                 func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{change}.value"],
-                includeSource: "settingAlter"
+                includeSource: "fromWidget"
             }
         },
         selectors: {
@@ -223,15 +223,15 @@
 
         if (currentValue === commands.allTrueCommand) {
             // pre-fill the states with true
-            office.applier.change("states", gpii.qssWidget.office.fillStates(schemaKeys, true), false, "settingAlter");
+            office.applier.change("states", gpii.qssWidget.office.fillStates(schemaKeys, true), false, "fromWidget");
         } else if (currentValue === commands.allFalseCommand) {
             // pre-fill the states with false
-            office.applier.change("states", gpii.qssWidget.office.fillStates(schemaKeys, false), false, "settingAlter");
+            office.applier.change("states", gpii.qssWidget.office.fillStates(schemaKeys, false), false, "fromWidget");
         } else {
             // pre-fill the states with false first
             var newStates = gpii.qssWidget.office.fillStates(schemaKeys, false);
             // now change only the selected key using the current value as a key
-            office.applier.change("states", gpii.qssWidget.office.changeState(newStates, currentValue, true), false, "settingAlter");
+            office.applier.change("states", gpii.qssWidget.office.changeState(newStates, currentValue, true), false, "fromWidget");
         }
 
         // checks the required checkboxes
@@ -263,7 +263,7 @@
         var newStates = gpii.qssWidget.office.changeState(office.model.states, key, !office.model.states[key]);
 
         // apply the change to the state
-        office.applier.change("states", newStates, false, "settingAlter");
+        office.applier.change("states", newStates, false, "fromWidget");
 
         // visually checks the selected option
         if (newStates[key]) {
@@ -274,7 +274,7 @@
 
         // applying the value
         var commandToUse = gpii.qssWidget.office.getCommand(newStates, office.model.availableCommands);
-        repeater.applier.change("value", commandToUse, null, "settingAlter");
+        repeater.applier.change("value", commandToUse, null, "fromWidget");
     };
 
     /**

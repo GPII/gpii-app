@@ -9,40 +9,10 @@
 
     "gpii_app_qssWrapper_restartWarningNotification": "To see the %settingTitle change, you may need to restart some applications.",
 
-    "gpii_psp_mainWindow_titlebarAppName": "Morphic Settings Panel",
-
-    "gpii_psp_signIn_signInHeader": "Nobody keyed in",
-
-    "gpii_psp_signIn_subtitleIntro": "Automatically set up any computer the way you want it.",
-
-    "gpii_psp_signIn_title": "Use your Morphic Key to key-in",
-    "gpii_psp_signIn_subtitle": "Or key-in with your account below",
-
-    "gpii_psp_signIn_emailTextInputLabel": "Email",
-    "gpii_psp_signIn_passwordInputLabel": "Password",
-    "gpii_psp_signIn_signInButton": "Sign in",
-    "gpii_psp_signIn_signUpButton": "Create an Account",
-    "gpii_psp_signIn_forgotPasswordButton": "Forgot Password?",
-
     "gpii_qssWidget_toggle_on": "On",
     "gpii_qssWidget_toggle_off": "Off",
     "gpii_qssWidget_volume_on": "Audio muted",
     "gpii_qssWidget_volume_off": "Audio on",
-
-    "gpii_psp_header_autosaveText": "Auto-save is on",
-    "gpii_psp_header_keyOut":"Sign out",
-
-    "gpii_psp_settingsPanel_emptyPrefSetHint": "When the features you select have settings, their controls will appear here.",
-
-    "gpii_psp_settingPresenter_osRestart": "To change this setting,\nWindows requires a restart.",
-    "gpii_psp_settingPresenter_osRestartRequired": "You changed this setting, which\nrequires Windows to restart.",
-
-    "gpii_psp_restartWarning_osName": "Windows",
-    "gpii_psp_restartWarning_osRestartText": "Windows needs to restart to apply your changes.",
-    "gpii_psp_restartWarning_restartText": "These applications will restart when this Morphic Settings panel closes: %solutions",
-    "gpii_psp_restartWarning_undo": "Undo Changes",
-    "gpii_psp_restartWarning_applyNow": "Apply changes now",
-    "gpii_psp_restartWarning_restartNow": "Restart Now",
 
     "gpii_psp_errorDialog_titlebarAppName": "Morphic Error",
 
@@ -53,8 +23,6 @@
     "gpii_psp_aboutDialog_version": "version %version",
     "gpii_psp_aboutDialog_morphicHome": "Go to Morphic home",
     "gpii_psp_aboutDialog_submitSuggestions": "Submit suggestions",
-
-    "gpii_psp_footer_help": "Help",
 
     "gpii_qss_toggleButtonPresenter_caption": "[now ON]",
     "gpii_qss_volumeButtonPresenter_caption": "(Audio Muted)",
@@ -86,5 +54,7 @@
     "gpii_qssWidget_openUSB_noUsbInserted": "There are no USB drives plugged into the computer. Insert your USB and try again.",
     "gpii_qssWidget_openUSB_ejectUsbDrives": "There are no USB drives active in the computer. It is safe to remove any drive in the computer",
     "gpii_qssWidget_openUSB_openUsbButtonLabel": "Open all USB drives",
-    "gpii_qssWidget_openUSB_ejectUsbButtonLabel": "Safely eject all USB drives"
+    "gpii_qssWidget_openUSB_ejectUsbButtonLabel": "Safely eject all USB drives",
+
+    "gpii_qssWidget_mySavedSettings_reApplyPreferencesButtonLabel": "Re-apply my preferences"
 }

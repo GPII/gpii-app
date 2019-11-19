@@ -34,12 +34,11 @@ fluid.defaults("gpii.app.gpiiConnector", {
          * Will be used in case the user does not have a keyboard shortcut of his own.
          */
         gpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
-        /* Whether the QSS and the PSP should be closed once their BrowserWindows lose
+        /* Whether the QSS should be closed once their BrowserWindows lose
          * focus. If there are different values specified in the siteconfig.json5, they will
          * be used instead.
          */
         closeQssOnBlur: false,
-        closePspOnBlur: true,
         disableRestartWarning: false,
         defaultSettingsData: null
     },
@@ -267,10 +266,9 @@ gpii.app.extractSettings = function (element) {
  */
 gpii.app.extractPreferencesData = function (message, defaultPreferences) {
     var value = message.value || {},
-        // Whether the PSP should be closed when the user clicks outside. The default
-        // value is `true` (in case this is not specified in the payload). Note that
+        // Whether the QSS should be closed when the user clicks outside. The default
+        // value is `false` (in case this is not specified in the payload). Note that
         // the latter will always be the case in the keyed out payload!
-        closePspOnBlur = fluid.isValue(value.closePspOnBlur) ? value.closePspOnBlur : defaultPreferences.closePspOnBlur,
         closeQssOnBlur = fluid.isValue(value.closeQssOnBlur) ? value.closeQssOnBlur : defaultPreferences.closeQssOnBlur,
         disableRestartWarning =
             fluid.isValue(value.disableRestartWarning) ?
@@ -303,7 +301,6 @@ gpii.app.extractPreferencesData = function (message, defaultPreferences) {
         sets: sets,
         activeSet: activeSet,
         settingGroups: settingGroups,
-        closePspOnBlur: closePspOnBlur,
         closeQssOnBlur: closeQssOnBlur,
         disableRestartWarning: disableRestartWarning,
         gpiiAppShortcut: gpiiAppShortcut
@@ -575,8 +572,6 @@ gpii.app.dev.gpiiConnector.decoratePreferences = function (systemLanguageListene
   * @property {String} activeSet - The path of the currently active preference set.
   * @property {SettingGroup[]} settingGroups - The setting groups
   * for the parsed message.
-  * @property {Boolean} closePspOnBlur - Whether the PSP should be closed when the user
-  * clicks outside of it or not.
   */
 
 
@@ -744,6 +739,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
                     funcName: "gpii.app.dev.gpiiConnector.qss.prepareMessageForQss",
                     args: [
                         "{that}",
+                        "{that}.options.defaultQssSettingValues",
                         "{arguments}.0" // message
                     ]
                 }
@@ -761,51 +757,19 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
                 "{arguments}.0"
             ]
         }
+    },
+
+    // The "original" values of the QSS settings. These are to be provided from the core
+    // in the future.
+    defaultQssSettingValues: {
+        "http://registry\\.gpii\\.net/common/DPIScale": { value: 0 },
+        "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
+        "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
+        "http://registry\\.gpii\\.net/common/volume": { value: gpii.app.getVolumeValue() },
+        // use the initial value of the language as default setting
+        "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" }
     }
 });
-
-/**
- * An object containing information the default setting's location
- * @typedef {Object} defaultSetting
- * @property {Boolean} relativePath - true if the path should be joined with %appdata%
- * @property {String} fileLocation - path to file's location
- */
-
-/**
- * Retrieves synchronously the default QSS settings from a file on the local machine
- * folder. These are to be provided from the core in the future.
- * @param {defaultSetting} defaultSettings - data of the file's location
- * @return {Object[]} An array of the loaded settings
- */
-gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettings) {
-    // by default we are assuming the the fileLocation is absolute path
-    var compiledPath = defaultSettings.fileLocation;
-    if (defaultSettings.relativePath) {
-        // if the path is relative we join if to %appdata%
-        compiledPath = gpii.app.compileAppDataPath(defaultSettings.fileLocation);
-    }
-
-    if (gpii.app.checkIfFileExists(compiledPath)) {
-        // file exists, so we try to load it
-        var loadedSettings = fluid.require(compiledPath),
-            result = {};
-
-        if (fluid.isValue(loadedSettings.contexts["gpii-default"].preferences)) {
-            // the structure matches our assumption, going through the nodes and collect the data
-            fluid.each(loadedSettings.contexts["gpii-default"].preferences, function (value, path) {
-                var fixedPath = path.replace(/\./g, "\\."),
-                    fixedValue = value;
-
-                result[fixedPath] = { "value": fixedValue };
-            });
-        }
-
-        return result;
-    } else {
-        fluid.log(fluid.logLevel.WARN, "loadDefaultSettings: Cannot find the settings file - " + compiledPath);
-        return [];
-    }
-};
 
 /**
  * Decorate the PSP channel message with QSS specific property so that it looks similar
@@ -815,12 +779,12 @@ gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettings) 
  * In case it is needed (it's a full preference set update after a snapset or active set change), it
  * also populates with QSS settings that are missing using a predefined set of default values.
  * @param {Component} that - The instance of `gpii.app.dev.gpiiComponent` component
+ * @param {Object} defaultQssSettingValues - The default QSS settings in the format - <path>: <value>
  * @param {Object} message - The raw PSP channel message
  * @return {Object} The decorated PSP channel message
  */
-gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, message) {
-    var loadedSettings = gpii.app.dev.gpiiConnector.qss.loadDefaultSettings(that.options.defaultPreferences.defaultSettingsData),
-        payload = message.payload || {};
+gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQssSettingValues, message) {
+    var payload = message.payload || {};
 
     if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {
         var value = payload.value || {},
@@ -828,10 +792,11 @@ gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, message) {
 
         // leave only QSS settings
         // Note that settings that doesn't have specific values such as "App / Text Zoom" will not receive setting updates
-        var qssSettingControls = fluid.filterKeys(channelSettingControls, fluid.keys(loadedSettings));
+        var qssSettingControls = fluid.filterKeys(channelSettingControls, fluid.keys(defaultQssSettingValues));
 
         // add missing setting values if needed
-        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, loadedSettings, qssSettingControls, value);
+        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, that.options.defaultQssSettingValues, qssSettingControls, value);
+
         value.qssSettingControls = qssSettingControls;
     }
 

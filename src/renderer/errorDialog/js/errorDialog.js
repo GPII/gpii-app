@@ -76,7 +76,7 @@
             label: null
         },
 
-        invokers: {
+        listeners: {
             onClick: {
                 func: "{channelNotifier}.events.onErrorDialogButtonClicked.fire",
                 /* Simply identify a button by its label */
