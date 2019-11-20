@@ -241,7 +241,6 @@
                         onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
                         onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
                         onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested",
-                        onLearnMoreClicked:              "{qssWidget}.events.onLearnMoreClicked",
                         onMetric:                        "{qssWidget}.events.onMetric",
                         onMetricState:                   "{qssWidget}.events.onMetricState"
                     }

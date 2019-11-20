@@ -252,11 +252,18 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
                 mouse: "{arguments}.2.type"
             } ]
         },
-        "{channelListener}.events.onQssButtonMouseEnter": {
+        "{channelListener}.events.onQssButtonMouseEnter": [{
+            namespace: "metric",
+            func: "{eventLog}.metrics.uiMetric",
+            args: [ "mouse-over", {
+                id:"{arguments}.0.path",
+                qss: true
+            } ]
+        }, {
             namespace: "metric-state",
             func: "{eventLog}.setState",
             args: [ "hover", "{arguments}.0.path" ]
-        },
+        }],
         "{channelListener}.events.onQssButtonMouseLeave": {
             namespace: "metric-state",
             func: "{eventLog}.setState",
