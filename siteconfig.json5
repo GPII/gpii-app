@@ -192,6 +192,7 @@
         // true to disable capturing key/mouse timings
         disableInput: false
     },
+
     autoLogin: {
         blockedUsers: ["admin*", "guest*", "student*", "visitor*", "volunteer*"],
         userIdSource: "username"

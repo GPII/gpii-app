@@ -102,6 +102,14 @@
             "onMouseLeave.metricsState": {
                 func: "{that}.setState",
                 args: ["{that}.hoverState"]
+            },
+            "onMouseEnter.metric": {
+                func: "{that}.metric",
+                args: ["mouse-enter", { id : "@expand:{that}.getMetricsID()" }]
+            },
+            "onMouseLeave.metric": {
+                func: "{that}.metric",
+                args: ["mouse-leave", { id : "@expand:{that}.getMetricsID()" }]
             }
         }
     });
