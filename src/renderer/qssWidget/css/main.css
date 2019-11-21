@@ -67,8 +67,12 @@ body {
     overflow-y: hidden;
 }
 
-.fl-sidecart-holder ul {
+.fl-sidecart-holder ul, .fl-sidecart-holder ol {
     padding-left: 15px;
+}
+.fl-sidecart-holder img.full {
+    display: block;
+    width: 100%;
 }
 
 .fl-qssWidget-sidecart {
