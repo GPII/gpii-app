@@ -142,5 +142,17 @@
     "gpii_app_qss_settings_url-customize-qss": {
         "tooltip": "<p>Open the web tool to customize quickstrip's buttons.</p>",
         "title": "Customize Quickstrip"
+    },
+    "gpii_app_qss_settings_common-colorVision": {
+        "tooltip": "<p>Change the colors displayed on the screen to make things easier to view or distinguish.</p>",
+        "title": "Color Vision",
+        "tip": "<p>Color Vision Filters</p><p>Shifts colors to help those with some form of color blindness distinguish colors.</p>",
+        "footerTip": "<p>Pick an option that makes the nine colors below more distinct.</p><center><img height=64 src='../../assets/color-vision-wheel.png'></img></center>",
+        "enum": [
+            "Standard colors",
+            "Red-Green (Green weak)",
+            "Red-Green (Red weak)",
+            "Blue-Yellow (Tritanomaly)"
+        ]
     }
 }
