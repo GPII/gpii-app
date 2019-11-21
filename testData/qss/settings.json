@@ -12,7 +12,7 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 100,
         "messageKey": "common-language",
-        "learnMoreLink": "https://morphic.world/help/qsshelp#language",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#language",
         "value": "en-US",
         "restartWarning": true
     }, {
@@ -45,7 +45,7 @@
         "tabindex": 110,
         "messageKey": "common-DPIScale",
         "value": 0,
-        "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#screenzoom"
     }, {
         "id": "text-zoom",
         "path": "appTextZoom",
@@ -59,7 +59,7 @@
         "tabindex": 120,
         "messageKey": "appTextZoom",
         "value": 0,
-        "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#textzoom"
     }, {
         "id": "volume",
         "path": "http://registry\\.gpii\\.net/common/volume",
@@ -69,14 +69,13 @@
             "max": 1,
             "divisibleBy": 0.02,
             "previousValue": 0.5,
-            "image": "volume-mute.svg",
-            "helpImage": "volumeMute.png"
+            "image": "volume-mute.svg"
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 125,
         "messageKey": "common-volume",
         "value": 0.5,
-        "learnMoreLink": "https://morphic.world/help/qsshelp#volume"
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#volume-mute"
 
     }, {
         "id": "screen-capture",
@@ -92,7 +91,7 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 130,
         "messageKey": "screenCapture",
-        "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#screen-capture",
         "value": ""
     }, {
         "id": "snipping-tool",
@@ -117,7 +116,7 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 135,
         "messageKey": "officeSimplification",
-        "learnMoreLink": "https://morphic.world/help/qsshelp#office-simplification",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#office-simplification",
         "value": "StandardSet"
     }, {
         "id": "high-contrast",
@@ -176,7 +175,7 @@
                 "border-color": "transparent"
             }
         },
-        "learnMoreLink": "https://morphic.world/help/qsshelp#contrast"
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#contrast"
     }, {
         "id": "mouse",
         "path": "mouse",
@@ -303,7 +302,7 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 210,
         "messageKey": "usb-open",
-        "learnMoreLink": "https://morphic.world/help/qsshelp#usb-open"
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#open-usb"
     }, {
         "id": "launch-documorph",
         "path": "launch-documorph",
@@ -313,6 +312,32 @@
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 220,
         "messageKey": "launch-documorph"
+    }, {
+        "id": "color-vision",
+        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.colorFilters.FilterType",
+        "schema": {
+            "type": "string",
+            "keys": [
+                0,
+                4,
+                5,
+                6
+            ],
+            "default": 0,
+            "closeOnSelect": false
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 225,
+        "messageKey": "common-colorVision",
+        "value": 0,
+        "styles": {
+            "regular-contrast": {
+                "background": "#ffffff",
+                "color": "#0073bd",
+                "border-color": "#0073bd"
+            }
+        },
+        "learnMoreLink": "https://morphic.world/help/qsshelp#color-vision"
     }, {
         "id": "separator",
         "path": "separator",
@@ -360,7 +385,8 @@
         "id": "service-saved-settings",
         "path": "mySavedSettings",
         "schema": {
-            "type": "mySavedSettings"
+            "type": "mySavedSettings",
+            "sideCar": false
         },
         "buttonTypes": ["smallButton"],
         "tabindex": 310,
