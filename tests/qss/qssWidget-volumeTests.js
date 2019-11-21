@@ -23,7 +23,7 @@ var clickVolumeBtn           = "jQuery(\".fl-qss-btnId-volume\").click()",
     checkIfVolumeButtonImage = "jQuery('.fl-qss-btnId-volume > .flc-qss-btnImage').is(':visible')",
     checkIfVolumeButtonTitle = "jQuery('.fl-qss-btnId-volume > .flc-qss-btnLabel').is(':visible')",
     clickVolumeSwitchBtn     = "jQuery('.flc-volumeSwitch > .flc-switchUI-control').click()",
-    clickVolumeStepperIncBtn = "jQuery('.flc-volumeStepper .flc-qssVolumeStepperWidget-incBtn').click()",
+    clickVolumeStepperIncBtn = "jQuery('.flc-volumeStepper .flc-qssStepperWidget-incBtn').click()",
     clickCloseBtn            = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 function getVolumeWidgetBtnText() {

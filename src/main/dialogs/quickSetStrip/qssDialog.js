@@ -211,7 +211,8 @@ fluid.defaults("gpii.app.qss", {
 
 /**
  * Represents a group of setting data from which we using only the buttonTypes array
- * @typedef {Object} ButtonList
+ * @typedef {Object} ButtonDefinition
+ * @property {ButtonDefinition[]} [settings] The nested setting of the button if has one.
  * @property {String} [path] the path of the prefererence set.
  * @property {SettingSchema} schema.
  * @property {Array} [buttonTypes] array from diffent button types.
@@ -227,7 +228,7 @@ fluid.defaults("gpii.app.qss", {
  * the BrowserWindow.
  * @param {Object} options - Component options object containing information for buttons
  * @param {Number} modelScaleFactor - Predefined scale factor setting in siteconfig
- * @param {ButtonList[]} buttons - The list of QSS buttons
+ * @param {ButtonDefinition[]} buttons - The list of QSS buttons
  * @return {Number} - The total scaled size of the QSS's button
  */
 gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, buttons) {
