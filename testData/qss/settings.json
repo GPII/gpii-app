@@ -301,7 +301,8 @@
         "id": "service-saved-settings",
         "path": "mySavedSettings",
         "schema": {
-            "type": "mySavedSettings"
+            "type": "mySavedSettings",
+            "sideCar": false
         },
         "buttonTypes": ["smallButton"],
         "tabindex": 310,

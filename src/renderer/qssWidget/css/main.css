@@ -99,6 +99,10 @@ body {
     text-decoration: none;
 }
 
+.fl-sidecart-button.btn-icon-close {
+    right: 10px;
+}
+
 .fl-sidecart-button.btn-icon-close .fl-btnLabel {
     background-image: url(../../../assets/arrow-left.svg);
 }
@@ -112,7 +116,7 @@ body {
 }
 
 .fl-qssWidget-tip {
-    padding-bottom: 15px;
+    padding-bottom: 10px;
 }
 
 .fl-qssWidget::-webkit-scrollbar {
