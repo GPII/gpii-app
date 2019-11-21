@@ -136,6 +136,8 @@
             "Red-Green (Green weak)",
             "Red-Green (Red weak)",
             "Blue-Yellow (Tritanomaly)"
-        ]
+        ],
+        "sideCart": "<p></p>",
+        "sideCartWithSettings": "<p>In addition to the Windows color vision options presented in the panel to the left, there are also several grayscale options provided in Windows setting.</p><p>Here is the link to take you directly to the full set of Color Vision Options in Windows Settings:</p><ul><li><a href='ms-settings:easeofaccess-colorfilter'>Color Vision Settings</a></li></ul>"
     }
 }
