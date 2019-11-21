@@ -227,3 +227,7 @@ body {
     border-top-color: #ffffff;
     margin-left: -11px;
 }
+
+.fl-qssMouseWidget {
+    width: 145px;
+}

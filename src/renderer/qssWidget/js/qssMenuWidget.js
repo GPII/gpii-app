@@ -31,7 +31,7 @@
             disabled: false,
             setting: {},
             messages: {
-                footerTip: "{that}.model.setting.widget.footerTip",
+                footerTip: "{that}.model.setting.widget.footerTip"
             }
         },
         modelListeners: {

@@ -119,7 +119,9 @@
     "gpii_app_qss_settings_common-mouse": {
         "tooltip": "<p>Change Windows Mouse setting.</p><p>Works in all applications.</p>",
         "title": "Adjust Mouse",
-        "tip": "<p>Adjust Mouse</p>"
+        "tip": "<p>Adjust Mouse</p>",
+        "sideCart": "<p></p>",
+        "sideCartWithSettings": "<p>We have provided some of the most commonly used Windows Mouse settings here.</p><p>Microsoft also provides other mouse settings. The following links will  take you directly to the key additional Mouse settings in the Windows Setting screens.</p><ul><li><a href='ms-settings:mousetouchpad'>Mouse button and scroll modes</a></li><li><a href='ms-settings:easeofaccess-mouse'>Mouse Keys</a></li><li><a href='ms-settings:devices-touchpad'>Touchpad sensitivity</a> (if your computer has a touchpad)</li><li><a href='ms-settings:easeofaccess-cursorandpointersize'>Cursor and pointer size, color, and touch feedback</a></li></ul>"
     },
     "gpii_app_qss_settings_windows-swapMouseButtons": {
         "title": "Swap mouse buttons"
@@ -163,6 +165,8 @@
             "Red-Green (Green weak)",
             "Red-Green (Red weak)",
             "Blue-Yellow (Tritanomaly)"
-        ]
+        ],
+        "sideCart": "<p></p>",
+        "sideCartWithSettings": "<p>In addition to the Windows color vision options presented in the panel to the left, there are also several grayscale options provided in Windows setting.</p><p>Here is the link to take you directly to the full set of Color Vision Options in Windows Settings:</p><ul><li><a href='ms-settings:easeofaccess-colorfilter'>Color Vision Settings</a></li></ul>"
     }
 }
