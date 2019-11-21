@@ -60,7 +60,9 @@
             office: ".flc-qssOfficeWidget",
             mouse: ".flc-qssMouseWidget",
             translateTools: ".flc-qssTranslateToolsWidget",
-            mySavedSettings: ".flc-qssMySavedSettingsWidget"
+            mySavedSettings: ".flc-qssMySavedSettingsWidget",
+            sideCart: ".flc-sidecart-panel",
+            sideCartButton: ".flc-sidecart-button"
         },
 
         /**
@@ -104,6 +106,12 @@
             onQssGetEnvironmentalLoginKeyRequested: null
         },
 
+        styles: {
+            hideSidePanel: "fl-hide-sidecart",
+            openSidePanel: "btn-icon-open",
+            closeSidePanel: "btn-icon-close",
+            openLinkIcon: "btn-icon-link"
+        },
         sounds: {},
 
         components: {
@@ -149,27 +157,11 @@
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
                             extendedTip: "{qssWidget}.model.setting.extendedTip",
-                            switchTitle: "{qssWidget}.model.setting.switchTitle",
-                            learnMore: "{qssWidget}.model.messages.learnMore"
+                            switchTitle: "{qssWidget}.model.setting.switchTitle"
                         }
                     },
                     selectors: {
-                        tip: ".flc-qssWidget-tip",
-                        learnMoreLink: ".flc-qssWidget-learnMoreLink"
-                    },
-                    components: {
-                        learnMoreLink: {
-                            type: "gpii.psp.qssWidget.learnMoreLink",
-                            container: "{that}.dom.learnMoreLink",
-                            options: {
-                                model: {
-                                    setting: "{qssWidget}.model.setting",
-                                    messages: {
-                                        learnMore: "{qssWidget}.model.messages.learnMore"
-                                    }
-                                }
-                            }
-                        }
+                        tip: ".flc-qssWidget-tip"
                     },
                     events: {
                         onNotificationRequired:   "{qssWidget}.events.onQssWidgetNotificationRequired",
@@ -185,6 +177,73 @@
                             func: "{that}.events.onQssWidgetCreated.fire",
                             args: [null],
                             priority: "last"
+                        },
+                        "onCreate.hideSidePanel": {
+                            this: "{qssWidget}.dom.sideCart",
+                            method: "addClass",
+                            args: ["{qssWidget}.options.styles.hideSidePanel"]
+                        }
+                    },
+                    components: {
+                        openSideCartButton: {
+                            type: "gpii.psp.widgets.button",
+                            container: "{qssWidget}.dom.sideCartButton",
+                            options: {
+                                model: {
+                                    label: {
+                                        expander: {
+                                            funcName: "gpii.psp.qssWidget.getSideCartButtonLabel",
+                                            args: ["{qssWidget}.model.setting", "{qssWidget}.model.messages.learnMore", "{qssWidget}.model.messages.helpAndMoreOptions"]
+                                        }
+                                    }
+                                },
+                                listeners: {
+                                    "onCreate.applyStyles": {
+                                        funcName: "gpii.psp.qssWidget.applySideCartButtonStyles",
+                                        args: [
+                                            "{that}.container",
+                                            "{qssWidget}.model.setting",
+                                            "{qssWidget}.options.styles"
+                                        ]
+                                    },
+                                    onClick: {
+                                        funcName: "gpii.psp.qssWidget.openSideCartActivated",
+                                        args: [
+                                            "{that}",
+                                            "{qssWidget}",
+                                            "{sideCart}.container",
+                                            "{qssWidget}.options.styles"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            sideCart: {
+                type: "gpii.qssWidget.sideCart",
+                container: "{qssWidget}.dom.sideCart",
+                options: {
+                    model: {
+                        setting: "{qssWidget}.model.setting",
+                        osSettingsAvailable: "{qssWidget}.options.siteConfig.osSettingsAvailable"
+                    },
+                    selectors: {
+                        learnMoreLink: ".flc-qssWidget-learnMoreLink"
+                    },
+                    components: {
+                        learnMoreLink: {
+                            type: "gpii.psp.qssWidget.learnMoreLink",
+                            container: "{that}.dom.learnMoreLink",
+                            options: {
+                                model: {
+                                    setting: "{qssWidget}.model.setting",
+                                    messages: {
+                                        learnMore: "{qssWidget}.model.messages.learnMore"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -215,7 +274,6 @@
                     }
                 }
             },
-            // TODO send data from the main process
             channelListener: {
                 type: "gpii.psp.channelListener",
                 options: {
@@ -271,6 +329,73 @@
             }
         }
     });
+
+    /**
+     * Adds the required style to the sideCart button
+     * @param  {jQuery} container - jQuery instance of the sideCart's button
+     * @param  {Object} setting - Object containing sideCart content data
+     * @param  {Object} styles - A hash containing CSS classes for the different buttons
+     */
+    gpii.psp.qssWidget.applySideCartButtonStyles = function (container, setting, styles) {
+        // removing the default classes
+        container.removeClass(styles.openLinkIcon + " " + styles.openSidePanel + " " + styles.closeSidePanel);
+
+        if (setting.sideCart || setting.sideCartWithSettings) {
+            // we have content in the sideCart
+            container.addClass(styles.openSidePanel);
+        } else {
+            // we don't have content
+            container.addClass(styles.openLinkIcon);
+        }
+    };
+
+    /**
+     * Picks the right button name based on the sideCart content
+     * @param  {Object} setting - Object containing sideCart content data
+     * @param  {String} learnMoreMessage - text for the Learn More button
+     * @param  {String} helpAndMoreMessage - text for Help & More button
+     * @return {String} - returns string for the button's name
+     */
+    gpii.psp.qssWidget.getSideCartButtonLabel = function (setting, learnMoreMessage, helpAndMoreMessage) {
+        if (setting.sideCart || setting.sideCartWithSettings) {
+            return helpAndMoreMessage;
+        }
+
+        return learnMoreMessage;
+    };
+
+    /**
+     * Does the right kind of action when the sideCart button is clicked, if its a Learn More type
+     * just opens an url, if not opens/closes the sideCart panel itself
+     * @param  {Component} sidePanelButton - instance of the sideCart button
+     * @param  {Component} qssWidget - instance of the qssWidget
+     * @param  {jQuery} sideCartContainer - instance of the sideCart container
+     * @param  {Object} styles - A hash containing CSS classes for the different buttons
+     */
+    gpii.psp.qssWidget.openSideCartActivated = function (sidePanelButton, qssWidget, sideCartContainer, styles) {
+        if (qssWidget.model.setting.sideCart) {
+            // remove all of the default classes
+            sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
+
+            if (sideCartContainer.hasClass(styles.hideSidePanel)) {
+                // showing the panel
+                sideCartContainer.removeClass(styles.hideSidePanel);
+                sidePanelButton.container.addClass(styles.closeSidePanel);
+                sidePanelButton.applier.change("label", "Hide", null, "fromWidget");
+            } else {
+                // hiding the panel
+                sideCartContainer.addClass(styles.hideSidePanel);
+                sidePanelButton.container.addClass(styles.openSidePanel);
+                sidePanelButton.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
+            }
+        } else {
+            // If there is no side panel content use button as a link.
+            if (qssWidget.model.setting.learnMoreLink) {
+                gpii.psp.openUrlExternally(qssWidget.model.setting.learnMoreLink);
+            }
+        }
+    };
+
 
     /**
      * Fires the appropriate event which is communicated to the main process to
@@ -372,7 +497,7 @@
      */
     gpii.qssWidget.calculateHeight = function (container, parentContainer, heightListenerContainer) {
         var baseHeight = container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight,
-            heightFix = 12; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
+            heightFix = 55; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
         return baseHeight + heightFix;
     };
 

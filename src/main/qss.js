@@ -835,6 +835,18 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
             translatedSetting.widget.footerTip = message.footerTip;
         }
 
+        if (fluid.isValue(message.sideCart)) {
+            translatedSetting.sideCart = message.sideCart;
+        } else {
+            translatedSetting.sideCart = "";
+        }
+
+        if (fluid.isValue(message.sideCartWithSettings)) {
+            translatedSetting.sideCartWithSettings = message.sideCartWithSettings;
+        } else {
+            translatedSetting.sideCartWithSettings = "";
+        }
+
         translatedSetting.schema.title = message.title;
         if (message["enum"]) {
             translatedSetting.schema["enum"] = message["enum"];

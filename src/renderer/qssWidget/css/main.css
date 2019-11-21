@@ -25,7 +25,6 @@ body {
     box-sizing: border-box;
 
     display: flex;
-    flex-direction: column;
     
     background-color: #ffffff;
     color: #19294c;
@@ -34,6 +33,90 @@ body {
 
     overflow-x: hidden;
     overflow-y: overlay;
+}
+
+.fl-qssWidget {
+    display: flex;
+    justify-content: center;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    background: none;
+    overflow-y: hidden;
+}
+.fl-widget-holder {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    width: 148px;
+    padding: 10px 10px 35px 10px;
+    border: 1px solid #002957;
+    background: white;
+    overflow-y: hidden;
+}
+
+.fl-sidecart-holder {
+    display: flex;
+    justify-content: center;
+    width: 109px;
+    margin-top: 15px;
+    padding: 10px 10px 35px 10px;
+    border: 1px solid #002957;
+    border-left: none;
+    background: #eee;
+    overflow-y: hidden;
+}
+
+.fl-sidecart-holder ul {
+    padding-left: 15px;
+}
+
+.fl-qssWidget-sidecart {
+    overflow-y: overlay;
+}
+
+.fl-sidecart-button {
+    width: auto;
+    position: absolute;
+    bottom: 7px;
+    padding: 3px 8px;
+    background: none;
+    border: 1px solid silver;
+    color: #002957;
+    cursor: pointer;
+    font-size: 9px;
+}
+
+.fl-sidecart-button:focus,
+.fl-sidecart-button:active {
+    color: #000000;
+    outline: none;
+}
+
+.fl-sidecart-button .fl-btnLabel {
+    background: url(../../../assets/arrow-right.svg) no-repeat right;
+    padding-right: 16px;
+    text-decoration: none;
+}
+
+.fl-sidecart-button.btn-icon-close {
+    right: 10px;
+}
+
+.fl-sidecart-button.btn-icon-close .fl-btnLabel {
+    background-image: url(../../../assets/arrow-left.svg);
+}
+
+.fl-sidecart-button.btn-icon-link .fl-btnLabel {
+    background-image: url(../../../assets/link-external.svg);
+}
+
+.fl-hide-sidecart {
+    display: none;
+}
+
+.fl-qssWidget-tip {
+    padding-bottom: 10px;
 }
 
 .fl-qssWidget::-webkit-scrollbar {
@@ -47,11 +130,11 @@ body {
 
 .fl-qssWidget .fl-titlebar .fl-closeBtn {
     position: absolute;
-    top: 3px;
-    right: 5px;
-    border: 1px solid transparent;
-
-    font-size: 10px;
+    top: 1px;
+    right: 1px;
+    padding: 2px;
+    border: 1px solid white;
+    font-size: 13px;
     line-height: 10px;
     cursor: pointer;
 }
@@ -75,11 +158,15 @@ body {
 }
 
 .fl-qssWidget .fl-qssWidget-learnMoreLink {
-    margin: 10px 0;
-    border: 1px solid transparent;
+    position: absolute;
+    width: auto;
+    bottom: 20px;
 
-    color: #000000;
-    text-decoration: underline;
+    padding: 3px 8px;
+    border: 1px solid white;
+
+    color: #002957;
+    text-decoration: none;
     text-align: center;
     cursor: pointer;
 }
@@ -89,17 +176,18 @@ body {
     outline: none;
 }
 
-.fl-qssWidget .fl-qssWidget-learnMoreLink:before {
+.fl-qssWidget .fl-qssWidget-learnMoreLink:after {
     content: "";
 
     display: inline-block;
-    width: 15px;
-    height: 15px;
-    margin-right: 5px;
+    width: 13px;
+    height: 13px;
+    margin-left: 5px;
     vertical-align: middle;
 
-    background-image: url("../../../assets/info.svg");
-    background-size: 15px 15px;
+    background-image: url("../../../assets/link-external.svg");
+    background-size: 13px 13px;
+    background-repeat: no-repeat;
 }
 
 .fl-qssWidget-arrow {
@@ -112,7 +200,7 @@ body {
     content: "";
 
     position: absolute;
-    top: -2px;
+    top: -1px;
     left: 50%;
     width: 0;
     height: 0;
@@ -130,7 +218,8 @@ body {
 }
 
 .fl-qssWidget-arrow:after {
-    border-width: 9px;
+    top: -2px;
+    border-width: 11px;
     border-top-color: #ffffff;
-    margin-left: -9px;
+    margin-left: -11px;
 }
