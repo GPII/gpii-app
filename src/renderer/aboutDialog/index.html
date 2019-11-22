@@ -2,14 +2,14 @@
     <head>
         <title>About Morphic</title>
         <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
-        <link rel="stylesheet" href="../psp/css/button.css">
+        <link rel="stylesheet" href="../common/css/button.css">
         <link rel="stylesheet" href="../common/css/dialog.css">
         <link rel="stylesheet" href="../common/css/titlebar.css">
 
         <script type="text/javascript" src="../../../node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
         <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
 
-        <script type="text/javascript" src="../psp/js/widgets.js"></script>
+        <script type="text/javascript" src="../common/js/widgets.js"></script>
         <script type="text/javascript" src="../common/js/titlebar.js"></script>
         <script type="text/javascript" src="../common/js/elementInteractionListeners.js"></script>
         <script type="text/javascript" src="js/aboutDialog.js"></script>
@@ -41,8 +41,8 @@
                         </div>
                         <div class="flc-contentLinks">
                             <ul>
-                                <li><a target="_blank" href="https://morphic.world">Go to Morphic home</a></li>
-                                <li><a target="_blank" href="mailto:suggestions@morphic.world">Submit suggestions</a></li>
+                                <li><a class="flc-morphicHome" target="_blank"></a></li>
+                                <li><a class="flc-submitSuggestions" target="_blank"></a></li>
                             </ul>
                         </div>
                         <!-- See GPII-3430 -->

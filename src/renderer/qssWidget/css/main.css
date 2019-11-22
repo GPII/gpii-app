@@ -1,0 +1,132 @@
+body {
+    margin: 0;
+    overflow: hidden;
+
+    background-color: transparent;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 3px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #19294c;
+    box-shadow: none;
+}
+
+.fl-qssWidget {
+    height: calc(100% - 12px);
+    padding: 10px;
+    border: 2px solid #002957;
+    border-radius: 5px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    
+    background-color: #ffffff;
+    color: #19294c;
+
+    font: normal 9px "Segoe UI", "Sans-Serif";
+
+    overflow-x: hidden;
+    overflow-y: overlay;
+}
+
+.fl-qssWidget::-webkit-scrollbar {
+    width: 6px;
+}
+
+.fl-qssWidget::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.fl-qssWidget .fl-titlebar .fl-closeBtn {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    border: 1px solid transparent;
+
+    font-size: 10px;
+    line-height: 10px;
+    cursor: pointer;
+}
+
+.fl-qssWidget .fl-titlebar .fl-closeBtn:focus,
+.fl-qssWidget .fl-titlebar .fl-closeBtn:active {
+    color: #000000;
+    outline: none;
+}
+
+.fl-qssWidget .fl-focused {
+    outline: none !important;
+}
+
+.fl-qssWidget .fl-highlighted {
+    border: 1px solid #ff0000 !important;
+}
+
+.fl-qssWidget .fl-qssWidget-learnMoreLink {
+    margin: 10px 0;
+    border: 1px solid transparent;
+
+    color: #000000;
+    text-decoration: underline;
+    text-align: center;
+    cursor: pointer;
+}
+
+.fl-qssWidget .fl-qssWidget-learnMoreLink:focus,
+.fl-qssWidget .fl-qssWidget-learnMoreLink:active {
+    outline: none;
+}
+
+.fl-qssWidget .fl-qssWidget-learnMoreLink:before {
+    content: "";
+
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    vertical-align: middle;
+
+    background-image: url("../../../assets/info.svg");
+    background-size: 15px 15px;
+}
+
+.fl-qssWidget-arrow {
+    position: relative;
+    height: 12px;
+}
+
+.fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow:after {
+    content: "";
+
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    width: 0;
+    height: 0;
+
+    border: solid transparent;
+    border-bottom: none;
+
+    pointer-events: none;
+}
+
+.fl-qssWidget-arrow:before {
+    border-width: 12px;
+    border-top-color: #002957;
+    margin-left: -12px;
+}
+
+.fl-qssWidget-arrow:after {
+    border-width: 9px;
+    border-top-color: #ffffff;
+    margin-left: -9px;
+}

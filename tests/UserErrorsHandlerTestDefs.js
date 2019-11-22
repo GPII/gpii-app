@@ -22,7 +22,7 @@ require("./testUtils.js");
 
 fluid.registerNamespace("gpii.tests.userErrorsHandler.testDefs");
 
-var invalidUser = "asdasd_";
+var randomUser = "asdasd_";
 var expectedDialogOptionsProperties = ["title", "subhead", "details", "errCode"];
 
 gpii.tests.userErrorsHandler.assertErrorDialogOptions = function (dialogOptions) {
@@ -35,17 +35,21 @@ gpii.tests.userErrorsHandler.assertErrorDialogOptions = function (dialogOptions)
         });
 };
 
+function clickCloseBtn() {
+    jQuery(".flc-closeBtn").click();
+}
+
 gpii.tests.userErrorsHandler.testDefs = {
     name: "User errors handler integration tests",
     expect: 5,
     config: {
-        configName: "gpii.tests.dev.config",
+        configName: "gpii.tests.dev.missingPrefsServer.config",
         configPath: "tests/configs"
     },
     gradeNames: ["gpii.test.common.testCaseHolder"],
     sequence: [{ // When an error is fired...
         func: "{that}.app.keyIn",
-        args: invalidUser
+        args: randomUser // Invalid key ins are now a non-error, but ours will fail because the prefs server isn't reachable.
     }, { // ... an error dialog should be shown with the proper values.
         event: "{that}.app.dialogManager.error.events.onDialogCreate",
         listener: "gpii.tests.userErrorsHandler.assertErrorDialogOptions",
@@ -53,16 +57,14 @@ gpii.tests.userErrorsHandler.testDefs = {
             "{arguments}.0"
         ]
     }, { // Wait for the error dialog to be shown.
-        event: "{that gpii.app.errorDialog.channel}.events.onErrorDialogCreated",
-        listener: "fluid.identity"
-    }, { // Clicking the close button in the error dialog...
-        func: "gpii.test.executeJavaScript",
+        event: "{that gpii.app.errorDialog}.events.onDialogReady",
+        listener: "gpii.test.invokeFunctionInWebContents",
         args: [
             "{that}.app.dialogManager.error.dialog.dialog",
-            "jQuery(\".flc-closeBtn\").click()"
+            clickCloseBtn
         ]
     }, { // ... results in the error dialog being hidden.
-        event: "{that}.app.dialogManager.error.dialog.dialogChannel.events.onErrorDialogClosed",
+        event: "{that}.app.dialogManager.error.dialog.events.onDialogHidden",
         listener: "jqUnit.assertFalse",
         args: [
             "The error dialog is closed when its close button is clicked",

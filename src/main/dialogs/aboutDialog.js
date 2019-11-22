@@ -24,16 +24,24 @@ var gpii = fluid.registerNamespace("gpii");
  * Component that represents the About dialog
  */
 fluid.defaults("gpii.app.aboutDialog", {
-    gradeNames: ["gpii.app.dialog", "gpii.app.scaledDialog"],
+    gradeNames: ["gpii.app.dialog"],
 
-    scaleFactor: 1,
-    defaultWidth: 400,
-    defaultHeight: 250,
+    siteConfig: {
+        urls: {
+            morphicHome: "https://morphic.world",
+            submitSuggestions: "mailto:suggestions@morphic.world"
+        }
+    },
 
     config: {
+        attrs: {
+            width: 400,
+            height: 250
+        },
         params: {
             userListeners: ["USB", "NFC", "Fingerprint", "Webcam & Voice"],
-            version: "@expand:gpii.app.getVersion()"
+            version: "@expand:gpii.app.getVersion()",
+            urls: "{that}.options.siteConfig.urls"
         },
         fileSuffixPath: "aboutDialog/index.html"
     },

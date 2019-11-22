@@ -28,21 +28,19 @@ require("../basic/centeredDialog.js");
  * changes) or the status of the "Save" operation.
  */
 fluid.defaults("gpii.app.qssNotification", {
-    gradeNames: ["gpii.app.centeredDialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
-
-    scaleFactor: 1,
-    defaultWidth: 350,
-    defaultHeight: 200,
+    gradeNames: ["gpii.app.centeredDialog", "gpii.app.blurrable"],
 
     config: {
         attrs: {
+            width: 225,
+            height: 140,
             alwaysOnTop: true,
             transparent: false
         },
         fileSuffixPath: "qssNotification/index.html"
     },
 
-    linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssNotification"],
+    linkedWindowsGrades: ["gpii.app.qssNotification"],
 
     events: {
         onQssNotificationShown: null
@@ -81,6 +79,10 @@ fluid.defaults("gpii.app.qssNotification", {
                 "{that}",
                 "{arguments}.0" // notificationParams
             ]
+        },
+        handleBlur: {
+            funcName: "gpii.app.qssNotification.handleBlur",
+            args: ["{that}"]
         }
     }
 });
@@ -109,6 +111,20 @@ gpii.app.qssNotification.close = function (qssNotification) {
  */
 gpii.app.qssNotification.show = function (that, notificationParams) {
     that.channelNotifier.events.onQssNotificationShown.fire(notificationParams);
-    that.applier.change("isShown", true);
+
     that.focusOnClose = notificationParams.focusOnClose;
+    that.applier.change("closeOnBlur", notificationParams.closeOnBlur);
+
+    that.applier.change("isShown", true);
+};
+
+/**
+ * Handles the blur event for the QSS notification. The latter will be closed depending
+ * on the value of the `closeOnBlur` model property.
+ * @param {Component} that - The `gpii.app.qssNotification` instance.
+ */
+gpii.app.qssNotification.handleBlur = function (that) {
+    if (that.model.closeOnBlur) {
+        that.hide();
+    }
 };

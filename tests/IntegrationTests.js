@@ -28,9 +28,10 @@ gpii.loadTestingSupport();
 
 require("./DialogManagerTestDefs.js");
 require("./IntegrationTestDefs.js");
-require("./QssTestDefs.js");
+require("./qss/QssTestDefs.js");
 require("./SequentialDialogsTestDefs.js");
 require("./SettingsBrokerTestDefs.js");
+require("./StorageTestDefs.js");
 require("./SurveysConnectorTestDefs.js");
 require("./SurveyTriggerManagerTestsDefs.js");
 require("./ShortcutsManagerTestDefs.js");
@@ -38,7 +39,6 @@ require("./UserErrorsHandlerTestDefs.js");
 require("./SiteConfigurationHandlerTestDefs.js");
 require("./WebviewTestDefs.js");
 require("./GpiiConnectorTestDefs.js");
-require("./PspTestDefs.js");
 require("./TimerTestDefs.js");
 
 // TODO: Review this following CI run.
@@ -50,15 +50,15 @@ fluid.registerNamespace("gpii.tests.app");
  * Preceding items for every test sequence.
  */
 gpii.tests.app.startSequence = [
-    { // This sequence point is required because of a QUnit bug - it defers the start of sequence by 13ms "to avoid any current callbacks" in its words
-        func: "{testEnvironment}.events.constructServer.fire"
-    },
-    { // Before the actual tests commence, the PSP application must be fully functional. The `onPSPReady` event guarantees that.
-        event: "{that gpii.app}.events.onPSPReady",
-        listener: "fluid.identity"
+    {
+        // Fire our "combined startup" event to ensure that all services are set up in the correct order before the
+        // tests are run.
+        task:        "{testEnvironment}.startup",
+        resolve:     "fluid.log",
+        resolveArgs: ["Combined startup successful."]
     },
     {
-        event: "{testEnvironment}.events.noUserLoggedIn",
+        event: "{testEnvironment}.events.startupComplete",
         listener: "fluid.identity"
     }
 ];
@@ -80,6 +80,18 @@ gpii.tests.app.endSequence = [];
  */
 gpii.tests.app.testsDistributions = {};
 
+
+/**
+ * Used to disable the system language listener and set a fixed language.
+ */
+fluid.defaults("gpii.tests.app.mockedSystemLanguageListener", {
+    gradeNames: ["fluid.modelComponent"],
+
+    model: {
+        installedLanguages: {},
+        configuredLanguage: "en-US"
+    }
+});
 
 /**
  * Attach instances that are needed in test cases.
@@ -114,6 +126,18 @@ gpii.tests.app.testDefToCaseHolder = function (configurationName, testDefIn) {
     return testDef;
 };
 
+gpii.tests.app.constructServerAsPromise = function (testEnvironment) {
+    var constructionPromise = fluid.promise();
+
+    testEnvironment.events.serverConstructed.addListener(function () {
+        constructionPromise.resolve();
+    });
+
+    testEnvironment.events.constructServer.fire();
+
+    return constructionPromise;
+};
+
 // Also a fork from kettle
 // See: https://issues.fluidproject.org/browse/KETTLE-60
 gpii.tests.app.testDefToServerEnvironment = function (testDef) {
@@ -129,7 +153,53 @@ gpii.tests.app.testDefToServerEnvironment = function (testDef) {
             },
             distributeOptions: gpii.tests.app.testsDistributions,
             events: {
-                noUserLoggedIn: null
+                pspStarted:     null,
+                noUserLoggedIn: null,
+                serverConstructed: {
+                    events: {
+                        pspStarted:     "pspStarted",
+                        noUserLoggedIn: "noUserLoggedIn"
+                    }
+                },
+
+                combinedStartup: null,
+                startupComplete: null
+            },
+            invokers: {
+                startup: {
+                    funcName: "fluid.promise.fireTransformEvent",
+                    args:     ["{that}.events.combinedStartup"]
+                }
+            },
+            listeners: {
+                // TODO: Review other test suites and see if this pattern should be stored somewhere more general.
+                "combinedStartup.log": {
+                    priority: "first",
+                    funcName: "fluid.log",
+                    args: ["Beginning combined chained startup."]
+                },
+                "combinedStartup.startCouch": {
+                    priority: "after:log",
+                    func: "{testEnvironment}.tests.configuration.harness.startup"
+                },
+                "combinedStartup.constructServer": {
+                    priority: "after:startCouch",
+                    funcName: "gpii.tests.app.constructServerAsPromise",
+                    args: ["{testEnvironment}"]
+                },
+                "combinedStartup.fireEvent": {
+                    priority: "last",
+                    func: "{that}.events.startupComplete.fire"
+                },
+                // TODO: Remove these when possible.
+                "pspStarted.log": {
+                    funcName: "fluid.log",
+                    args: ["PSP Started"]
+                },
+                "noUserLoggedIn.log": {
+                    funcName: "fluid.log",
+                    args: ["No User Logged in"]
+                }
             }
         }
     };
@@ -159,17 +229,17 @@ if (gpii.tests.app.isInstrumented) {
 gpii.tests.app.bootstrapServer([
     fluid.copy(gpii.tests.app.testDefs),
     fluid.copy(gpii.tests.dev.testDefs),
-    fluid.copy(gpii.tests.psp.testDefs),
     fluid.copy(gpii.tests.timer.testDefs),
     fluid.copy(gpii.tests.dialogManager.testDefs),
     fluid.copy(gpii.tests.qss.testDefs),
     fluid.copy(gpii.tests.sequentialDialogs.testDefs),
-    fluid.copy(gpii.tests.shortcutsManager.testDefs),
+    //fluid.copy(gpii.tests.shortcutsManager.testDefs), // NOT OK
     fluid.copy(gpii.tests.settingsBroker.testDefs),
     fluid.copy(gpii.tests.surveys.dynamicSurveyConnectorTestDefs),
     fluid.copy(gpii.tests.surveyTriggerManager.testDefs),
     fluid.copy(gpii.tests.siteConfigurationHandler.testDefs),
+    fluid.copy(gpii.tests.storage.testDefs),
     fluid.copy(gpii.tests.userErrorsHandler.testDefs),
-    fluid.copy(gpii.tests.gpiiConnector.testDefs),
+    fluid.copy(gpii.tests.gpiiConnector.testDefs),  // should be changed to match the new specification
     fluid.copy(gpii.tests.webview.testDefs)
 ]);

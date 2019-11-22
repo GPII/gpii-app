@@ -30,21 +30,38 @@
 
         defaultHandlerGrade: "gpii.qss.buttonPresenter",
         handlerGrades: {
-            "boolean":  "gpii.qss.toggleButtonPresenter",
-            "number":   "gpii.qss.widgetButtonPresenter",
-            "string":   "gpii.qss.widgetButtonPresenter",
-            "close":    "gpii.qss.closeButtonPresenter",
-            "psp":      "gpii.qss.keyInButtonPresenter",
-            "save":     "gpii.qss.saveButtonPresenter",
-            "undo":     "gpii.qss.undoButtonPresenter",
-            "resetAll": "gpii.qss.resetAllButtonPresenter",
-            "more":     "gpii.qss.moreButtonPresenter",
-            "disabled": "gpii.qss.disabledButtonPresenter"
+            "boolean":           "gpii.qss.toggleButtonPresenter",
+            "number":            "gpii.qss.widgetButtonPresenter",
+            "string":            "gpii.qss.widgetButtonPresenter",
+            "close":             "gpii.qss.closeButtonPresenter",
+            "mySavedSettings":   "gpii.qss.mySavedSettingsButtonPresenter",
+            "save":              "gpii.qss.saveButtonPresenter",
+            "undo":              "gpii.qss.undoButtonPresenter",
+            "resetAll":          "gpii.qss.resetAllButtonPresenter",
+            "more":              "gpii.qss.moreButtonPresenter",
+            "openUSB":           "gpii.qss.widgetButtonPresenter",
+            "office":            "gpii.qss.widgetButtonPresenter",
+            "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
+            "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
+            "volume":            "gpii.qss.volumeButtonPresenter",
+            "snipping-tool":     "gpii.qss.snippingToolPresenter",
+            "disabled":          "gpii.qss.disabledButtonPresenter",
+            // custom button grades
+            "custom-launch-app": "gpii.qss.customLaunchAppPresenter",
+            "custom-open-url":   "gpii.qss.customOpenUrlPresenter",
+            "custom-keys":       "gpii.qss.customKeysPresenter",
+            // separator grade
+            "separator":         "gpii.qss.separatorButtonPresenter",
+            // url based buttons
+            "url-google-drive":  "gpii.qss.urlGoogleDrivePresenter",
+            "url-one-drive":     "gpii.qss.urlOneDrivePresenter",
+            "url-dropbox":       "gpii.qss.urlDropboxPresenter",
+            "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
         },
 
         dynamicContainerMarkup: {
             container:
-                "<div class=\"%containerClass fl-focusable\" tabindex=\"0\">" +
+                "<div class=\"%containerClass fl-focusable\">" +
                 "</div>",
             containerClassPrefix: "fl-qss-button"
         },
@@ -67,8 +84,7 @@
             onMorePanelRequired: null,
             onUndoRequired: null,
             onResetAllRequired: null,
-            onSaveRequired: null,
-            onPSPOpen: null
+            onSaveRequired: null
         },
 
         invokers: {
@@ -116,7 +132,8 @@
                 options: {
                     model: {
                         settings: "{translatedQss}.model.settings"
-                    }
+                    },
+                    siteConfig: "{translatedQss}.options.siteConfig"
                 }
             }
         }
@@ -134,10 +151,15 @@
             settings: []
         },
 
+        selectors: {
+            logo: ".flc-qss-logo"
+        },
+
         events: {
             onQssOpen: null,
             onQssClosed: null,
-            onQssWidgetToggled: null
+            onQssWidgetToggled: null,
+            onQssLogoToggled: null
         },
 
         defaultFocusButtonType: "psp",
@@ -152,6 +174,12 @@
                     "{that}.options.defaultFocusButtonType",
                     "{arguments}.0" // params
                 ]
+            },
+
+            onQssLogoToggled: {
+                this: "{that}.dom.logo",
+                method: "toggle",
+                args: ["{arguments}.0"]
             }
         },
 
@@ -170,7 +198,7 @@
                 }
             },
             focusManager: {
-                type: "gpii.qss.horizontalFocusManager",
+                type: "gpii.qss.qssFocusManager",
                 container: "{qss}.container"
             },
             channelListener: {
@@ -180,6 +208,7 @@
                         // Add events from the main process to be listened for
                         onQssOpen: "{qss}.events.onQssOpen",
                         onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
+                        onQssLogoToggled: "{qss}.events.onQssLogoToggled",
                         onSettingUpdated: null,
                         onIsKeyedInChanged: null,
 
@@ -217,7 +246,10 @@
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
-                        onQssPspOpen: "{quickSetStripList}.events.onPSPOpen"
+
+                        // Custom buttons events
+                        onQssStartProcess: null,
+                        onQssExecuteKeySequence: null
                     }
                 }
             }

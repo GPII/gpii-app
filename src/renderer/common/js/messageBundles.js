@@ -18,7 +18,8 @@
 "use strict";
 
 (function (fluid) {
-    var ipcRenderer = require("electron").ipcRenderer;
+    var electron = require("electron"),
+        ipcRenderer = electron.ipcRenderer;
 
     var gpii = fluid.registerNamespace("gpii");
 
@@ -40,6 +41,13 @@
             }
         },
 
+        listeners: {
+            "onCreate.fetchLocale": {
+                funcName: "gpii.psp.messageBundles.fetchCurrentLocale",
+                args: ["{that}"]
+            }
+        },
+
         components: {
             localeChannel: {
                 type: "gpii.psp.messageBundles.channel",
@@ -54,6 +62,17 @@
             }
         }
     });
+
+    /**
+     * Retrieves the current locale from the main process using the current
+     * BrowserWindow object as a global variable holder.
+     * @param {Component} that - The gpii.psp.messageBundles instance
+     */
+    gpii.psp.messageBundles.fetchCurrentLocale = function (that) {
+        var locale = electron.remote.getCurrentWindow().locale;
+
+        that.updateLocale(locale);
+    };
 
     /**
      * A simple component that attaches a listener for `onLocaleChanged` IPC message
@@ -80,6 +99,7 @@
      */
     gpii.psp.messageBundles.channel.register = function (events) {
         ipcRenderer.on("onLocaleChanged", function (event, locale) {
+            fluid.log("Locale changed: ", locale);
             events.onLocaleChanged.fire(locale);
         });
     };

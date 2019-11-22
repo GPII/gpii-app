@@ -17,10 +17,13 @@
 "use strict";
 (function (fluid, jQuery) {
     var gpii = fluid.registerNamespace("gpii"),
-        shell = require("electron").shell;
-
+        shell = require("electron").shell,
+        ipcRenderer = require("electron").ipcRenderer,
+        child_process = require("child_process"),
+        fs = require("fs");
 
     fluid.registerNamespace("gpii.psp");
+    fluid.registerNamespace("gpii.windows");
 
     /**
      * An implementation of the modulation operation which resolves the
@@ -40,6 +43,130 @@
      */
     gpii.psp.openUrlExternally = function (url) {
         shell.openExternal(url);
+    };
+
+
+    /**
+     * Executes the file from the shareXPath with the combination of the command
+     * @param {String} command - shareX command, example: "Morphic: Capture entire screen to desktop"
+     * @param {String} shareXPath - the path and executable name, example: "C:\\sharex-portable\\sharex.exe"
+     * @return {Boolean} - returns true on successful command execution
+     */
+    gpii.psp.execShareXCommand = function (command, shareXPath) {
+        // creates the command line, it should looks something like:
+        // "C:\\sharex-portable\\sharex.exe" -workflow "Morphic: Capture entire screen to desktop"
+        var commandToExecute = "\"" + shareXPath + "\" -workflow \"" + command + "\"";
+
+        try {
+            child_process.exec(commandToExecute);
+            return true;
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "execShareXCommand: Cannot execute - " + commandToExecute);
+        }
+        return false;
+    };
+
+    /**
+     * Registers an IPC listener event and executes the provided function on result
+     * @param {String} messageChannel - The channel to which the message should be sent.
+     * @param {Function} funcExec - handle to the function to be executed
+     */
+    gpii.psp.registerIpcListener = function (messageChannel, funcExec) {
+        ipcRenderer.on(messageChannel, function (event, result) {
+            // execute the function when the result arrives
+            funcExec(result);
+        });
+    };
+
+    /**
+     * Clears all of the IPC event listeners
+     * @param {String} messageChannel - The channel to which the message should be sent.
+     */
+    gpii.psp.removeIpcAllListeners = function (messageChannel) {
+        ipcRenderer.removeAllListeners(messageChannel);
+    };
+
+    /**
+     * A custom function for handling activation of the "Quick Folders" QSS button.
+     * opens a provided url in the default browser using electron's shell
+     * @param {String} siteUrl - cloud folder's url
+     * @param {Boolean} alwaysUseChrome - true to use chrome, rather than the default browser.
+     * @param {Boolean} forceFullScreen - the function requires the browser to be open maximized
+     */
+    gpii.windows.openUrl = function (siteUrl, alwaysUseChrome, forceFullScreen) {
+        if (fluid.isValue(siteUrl)) {
+            if (alwaysUseChrome) {
+                var command =
+                    // Check chrome is installed
+                    "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe\" /ve"
+                    // If so, run chrome
+                    + " && start chrome \"" + siteUrl.replace(/"/g, "%22") + "\"";
+                if (forceFullScreen) {
+                    // adding the full screen option for Chrome as well
+                    command += " --start-fullscreen";
+                }
+                child_process.exec(command, function (err) {
+                    if (err) {
+                        // It failed, so use the default browser.
+                        shell.openExternal(siteUrl);
+                    }
+                });
+            } else {
+                // we have the url, opening it in the default browser
+                shell.openExternal(siteUrl);
+            }
+        } else {
+            // there is no value in the config, sending the warning
+            fluid.log(fluid.logLevel.WARN, "Service Buttons (openUrl): Cannot find a proper url path [siteConfig.qss]");
+        }
+    };
+
+    /**
+     * A custom function for handling opening of an .exe file.
+     * @param {String} executablePath - path to executable file
+     * @param {Boolean} forceFullScreen - the function requires the application to be open maximized
+     * @return {Boolean} - returns `true` on successfully executed file
+     */
+    gpii.windows.launchExecutable = function (executablePath, forceFullScreen) {
+        try {
+            var fileProperties = fs.statSync(executablePath);
+            // Check that the file is executable
+            if (fileProperties.mode === parseInt("0100666", 8)) {
+                try {
+                    child_process.exec("\"" + executablePath + "\"");
+                    if (forceFullScreen) {
+                        console.log("gpii.windows.launchExecutable ====");
+                        console.log("forceFullScreen: true");
+                    }
+                    return true;
+                } catch (err) {
+                    fluid.log(fluid.logLevel.WARN, "launchExecutable: Cannot execute - " + executablePath);
+                }
+            } else {
+                fluid.log(fluid.logLevel.WARN, "launchExecutable: File is not executable - " + executablePath);
+            }
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "launchExecutable: Invalid or missing path - " + executablePath);
+        }
+        return false;
+    };
+
+    /**
+     * A custom function for handling executing the Snipping Tool command.
+     * we are using different and simplified version of the launchExecutable because
+     * the command its not a real path to executable file, and we cannot escaped with
+     * quotes either.
+     * @param {String} command - path to executable file
+     * @return {Boolean} - returns `true` on successfully executed command
+     */
+    gpii.windows.openSnippingTool = function (command) {
+        try {
+            child_process.exec(command);
+            return true;
+        } catch (err) {
+            fluid.log(fluid.logLevel.WARN, "openSnippingTool: Cannot start the snipping tool!");
+        }
+        return false;
     };
 
     /**
@@ -62,6 +189,24 @@
             event.preventDefault();
             gpii.psp.openUrlExternally(this.href);
         });
+    };
+
+    /**
+     * Returns the DOM element (wrapped in a jQuery object) corresponding to the
+     * `widgetGrade` which is provided. The last part of the widget grade name (i.e.
+     * everything after the last dot) is the key of the selector which should be
+     * located in the DOM.
+     * @param {jQuery} domElement - jQuery DOM element.
+     * @param {String} widgetGrade - A grade name for the widget component.
+     * @return {jQuery} The jQuery element representing the element in the DOM or
+     * `undefined` if there is no such element.
+     */
+    gpii.psp.widgetGradeToSelectorName = function (domElement, widgetGrade) {
+        if (widgetGrade) {
+            var lastDotIndex = widgetGrade.lastIndexOf("."),
+                selector = widgetGrade.substring(lastDotIndex + 1);
+            return domElement.locate(selector);
+        }
     };
 
     /**
@@ -88,6 +233,12 @@
      */
     fluid.defaults("gpii.psp.selectorsTextRenderer", {
         enableRichText: false,
+
+        model: {
+            messages: null,
+            // list of values to be used for messages interpolation
+            values: null
+        },
         modelListeners: {
             // Any change means that the whole view should be re-rendered
             // messages are a default option as it is most likely that
@@ -95,8 +246,10 @@
             "messages": {
                 funcName: "{that}.renderText",
                 args: [
-                    "{that}.model.messages"
-                ]
+                    "{that}.model.messages",
+                    "{that}.model.values"
+                ],
+                namespace: "renderText"
             }
         },
         invokers: {

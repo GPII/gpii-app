@@ -24,25 +24,28 @@ require("../basic/centeredDialog.js");
  * in the QSS.
  */
 fluid.defaults("gpii.app.qssMorePanel", {
-    gradeNames: ["gpii.app.centeredDialog", "gpii.app.scaledDialog", "gpii.app.blurrable"],
+    gradeNames: ["gpii.app.centeredDialog", "gpii.app.blurrable"],
 
     // Configuration which may differ depending on the machine on which the app is deployed
     siteConfig: {
-        defaultWidth: 600,
-        defaultHeight: 450,
+        defaultWidth: 400,
+        defaultHeight: 300,
         alwaysOnTop: true,
         movable: true,
-        resizable: true
+        resizable: true,
+
+        urls: {
+            moreInfo: "http://morphic.world/more"
+        }
     },
 
     linkedWindowsGrades: ["gpii.app.qss", "gpii.app.qssMorePanel"],
 
-    scaleFactor: 1,
-    defaultWidth: "{that}.options.siteConfig.defaultWidth",
-    defaultHeight: "{that}.options.siteConfig.defaultHeight",
-
     config: {
         attrs: {
+            width: "{that}.options.siteConfig.defaultWidth",
+            height: "{that}.options.siteConfig.defaultHeight",
+
             icon: {
                 expander: {
                     funcName: "fluid.module.resolvePath",
@@ -61,6 +64,9 @@ fluid.defaults("gpii.app.qssMorePanel", {
             destroyOnClose: true,
             minimizable: false,
             maximizable: false
+        },
+        params: {
+            urls: "{that}.options.siteConfig.urls"
         },
         fileSuffixPath: "qssMorePanel/index.html"
     },

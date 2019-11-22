@@ -18,7 +18,6 @@ var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
-require("./dialogs/basic/scaledDialog.js");
 require("./dialogs/quickSetStrip/qssDialog.js");
 require("./dialogs/quickSetStrip/qssTooltipDialog.js");
 require("./dialogs/quickSetStrip/qssWidgetDialog.js");
@@ -47,31 +46,69 @@ fluid.defaults("gpii.app.qssWrapper", {
          * The list of hidden settings. These settings are removed from the QSS settings
          * and a placeholder is left at their place.
          */
-        hiddenSettings: []
+        hiddenSettings: [],
+
+        // paths might be needed for some reason
+        settingPaths: {
+            language: "http://registry\\.gpii\\.net/common/language",
+            volume: "http://registry\\.gpii\\.net/common/volume"
+        },
+
+        settingMessagesPrefix: "gpii_app_qss_settings",
+
+        languageOptionLabelTemplate:  {
+            currentLanguageGroup: "%native",
+            genericLanguage: "%native · %local"
+        },
+        // This language should always be positioned on top of the
+        // language setting choices
+        systemDefaultLanguage: "en-US"
     },
 
-    settingsPath: "%gpii-app/testData/qss/settings.json",
+    settingsFixturePath: "%gpii-app/testData/qss/settings.json",
     loadedSettings: {
         expander: {
             funcName: "gpii.app.qssWrapper.loadSettings",
             args: [
-                "{that}",
-                "{that}.options.settingOptions",
                 "{assetsManager}",
-                "{that}.options.settingsPath"
+                "{systemLanguageListener}.model.installedLanguages",
+                "{messageBundles}.model.locale",
+                "{messageBundles}.model.messages",
+                "{that}.options.settingOptions",
+                "{that}.options.settingsFixturePath",
+                "{that}.options.siteConfig"
             ]
         }
     },
 
     settingMessagesPrefix: "gpii_app_qss_settings",
 
-    scaleFactor: 1,
+    siteConfig: {
+        scaleFactor: 1,
+        urls: {
+            account: "http://morphic.world/account"
+        },
+        messages: {
+            keyedOut: "To save your settings you need to setup a Morphic Account."
+        }
+    },
 
     model: {
+        messages: {
+            restartWarningNotification: null
+        },
+
         isKeyedIn: false,
+        keyedInUserToken: null,
+        notificationShown: false, // used to check if the notification is already shown
         settings: "{that}.options.loadedSettings",
 
-        closeQssOnBlur: false
+
+        scaleFactor: "{that}.options.siteConfig.scaleFactor",
+
+        // user preferences
+        closeQssOnBlur: false,
+        disableRestartWarning: false
     },
 
     events: {
@@ -79,9 +116,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         onActivePreferenceSetAltered: null,
         onUndoRequired: null,
         onResetAllRequired: null,
-        onSaveRequired: null,
-        onQssPspOpen: null,
-        onQssPspClose: null
+        onSaveRequired: null
     },
 
     listeners: {
@@ -106,12 +141,22 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{gpii.app.qss}",
                 "{arguments}.0"
             ]
+        },
+        "onCreate": {
+            funcName: "gpii.app.qssWrapper.showQssOnStart",
+            args: ["{that}.options.siteConfig.showQssOnStart", "{gpii.app.qss}"]
         }
     },
 
     modelListeners: {
+        "keyedInUserToken": {
+            this: "{qssNotification}",
+            method: "hide",
+            excludeSource: "init"
+        },
+
         "{messageBundles}.model.locale": {
-            func: "{that}.applySettingsTranslations",
+            func: "{that}.updateSettingTranslations",
             excludeSource: "init"
         },
 
@@ -129,6 +174,10 @@ fluid.defaults("gpii.app.qssWrapper", {
                 funcName: "gpii.app.qssWidget.updateIfMatching",
                 args: ["{qssWidget}", "{change}.value"],
                 excludeSource: ["init", "qssWidget"]
+            }, {
+                funcName: "{that}.showRestartWarningNotification",
+                args: ["{change}.value"],
+                excludeSource: ["init"]
             }
         ]
     },
@@ -150,6 +199,13 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{arguments}.1"  // notUndoable
             ]
         },
+        getSetting: {
+            funcName: "gpii.app.qssWrapper.getSetting",
+            args: [
+                "{that}.model.settings",
+                "{arguments}.0" // settingPath
+            ]
+        },
         alterSetting: {
             funcName: "gpii.app.qssWrapper.alterSetting",
             args: [
@@ -158,12 +214,29 @@ fluid.defaults("gpii.app.qssWrapper", {
                 "{arguments}.1" // source
             ]
         },
-        applySettingsTranslations: {
-            funcName: "gpii.app.qssWrapper.applySettingsTranslations",
+        showRestartWarningNotification: {
+            funcName: "gpii.app.qssWrapper.showRestartWarningNotification",
+            args: [
+                "{that}",
+                "{qss}",
+                "{qssNotification}",
+                "{arguments}.0" // updatedSetting
+            ]
+        },
+        updateSettingTranslations: {
+            funcName: "gpii.app.qssWrapper.updateSettingTranslations",
             args: [
                 "{that}",
                 "{messageBundles}.model.messages",
                 "{that}.model.settings"
+            ]
+        },
+        updateLanguageSettingOptions: {
+            funcName: "gpii.app.qssWrapper.updateLanguageSettingOptions",
+            args: [
+                "{that}",
+                "{messageBundles}.model.locale",
+                "{systemLanguageListener}.model.installedLanguages"
             ]
         }
     },
@@ -178,7 +251,10 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssWidget: {
             type: "gpii.app.qssWidget",
             options: {
-                scaleFactor: "{qssWrapper}.options.scaleFactor",
+                model: {
+                    scaleFactor: "{qssWrapper}.model.scaleFactor",
+                    lastEnvironmentalLoginGpiiKey: "{qssWrapper}.model.lastEnvironmentalLoginGpiiKey"
+                },
                 listeners: {
                     onQssWidgetSettingAltered: {
                         func: "{qssWrapper}.alterSetting",
@@ -190,7 +266,8 @@ fluid.defaults("gpii.app.qssWrapper", {
                     onQssWidgetNotificationRequired: {
                         func: "{qssNotification}.show",
                         args: [{
-                            description: "{arguments}.0",
+                            description: "{arguments}.0.description",
+                            closeOnBlur: "{arguments}.0.closeOnBlur",
                             focusOnClose: "{that}.dialog"
                         }]
                     }
@@ -207,21 +284,31 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssTooltip: {
             type: "gpii.app.qssTooltipDialog",
             options: {
-                scaleFactor: "{qssWrapper}.options.scaleFactor",
                 model: {
-                    isKeyedIn: "{qssWrapper}.model.isKeyedIn"
+                    isKeyedIn: "{qssWrapper}.model.isKeyedIn",
+                    scaleFactor: "{qssWrapper}.model.scaleFactor"
                 },
                 listeners: {
-                    // TODO list events for a method
                     "{gpii.app.qss}.channelListener.events.onQssButtonMouseEnter": [{
                         func: "{that}.hide"
                     }, {
-                        func: "{that}.showIfPossible",
+                        func: "gpii.app.qssWrapper.showTooltipIfPossible",
                         args: [
+                            "{qssWrapper}",
+                            "{that}",
                             "{arguments}.0", // setting
                             "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
                         ]
                     }],
+                    "{gpii.app.qss}.channelListener.events.onQssButtonFocused": {
+                        func: "gpii.app.qssWrapper.showTooltipIfPossible",
+                        args: [
+                            "{qssWrapper}",
+                            "{that}",
+                            "{arguments}.0", // setting
+                            "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
+                        ]
+                    },
 
                     "{gpii.app.qss}.events.onDialogHidden": {
                         func: "{that}.hide"
@@ -244,17 +331,50 @@ fluid.defaults("gpii.app.qssWrapper", {
         qssNotification: {
             type: "gpii.app.qssNotification",
             options: {
-                scaleFactor: "{qssWrapper}.options.scaleFactor"
+                model: {
+                    scaleFactor: "{qssWrapper}.model.scaleFactor"
+                }
             }
         },
         qssMorePanel: {
             type: "gpii.app.qssMorePanel",
             options: {
-                scaleFactor: "{qssWrapper}.options.scaleFactor"
+                model: {
+                    scaleFactor: "{qssWrapper}.model.scaleFactor"
+                }
             }
         }
     }
 });
+
+
+/**
+ * Shows a notification to the user in case the changed setting requires applications
+ * to be restarted in order to be fully applied (restartWarning),
+ * and in case the user hasn't disabled such (restartWarning) notificaions.
+ * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
+ * @param {Component} qss - The `gpii.app.qssDialog` instance.
+ * @param {Component} qssNotification - The `gpii.app.qssNotification` instance.
+ * @param {Object} updatedSetting - The `gpii.app.qssNotification` instance.
+ */
+gpii.app.qssWrapper.showRestartWarningNotification = function (that, qss, qssNotification, updatedSetting) {
+    // The notification is shown only once, and only if it's not a keyIn event
+    if (!that.model.notificationShown && !that.model.isKeyedIn) {
+
+        that.model.notificationShown = true;
+        if (updatedSetting.restartWarning && !that.model.disableRestartWarning) {
+            var description = fluid.stringTemplate(that.model.messages.restartWarningNotification, {
+                settingTitle: updatedSetting.schema.title
+            });
+
+            qssNotification.show({
+                description: description,
+                closeOnBlur: false,
+                focusOnClose: qss.dialog
+            });
+        }
+    }
+};
 
 /**
  * Notifies the `gpii.pspChannel` to trigger preferences save and shows a confirmation message.
@@ -269,16 +389,21 @@ gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, 
     var saveButtonClickCount = pspChannel.model.saveButtonClickCount || 0;
     pspChannel.applier.change("saveButtonClickCount", saveButtonClickCount + 1, null, "PSP");
 
+    description = fluid.stringTemplate(description, {
+        accountUrl: that.options.siteConfig.urls.account,
+        messageKeyedOut: that.options.siteConfig.messages.keyedOut
+    });
+
     qssNotification.show({
         description: description,
-        focusOnClose: qss.dialog
+        focusOnClose: qss.dialog,
+        closeOnBlur: true
     });
 };
 
 /**
- * Whenever a button in the QSS is focused, hides the QSS widget and the PSP in case
- * the setting for the newly focused button is different from the QSS widget's setting
- * (or the setting for the PSP button respectively).
+ * Whenever a button in the QSS is focused, hides the QSS widget in case
+ * the setting for the newly focused button is different from the QSS widget's setting.
  * @param {Component} that - The `gpii.app.qss` instance.
  * @param {Component} qssWidget - The `gpii.app.qssWidget` instance.
  * @param {Object} setting - the setting for the newly focused QSS button.
@@ -286,10 +411,6 @@ gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, 
 gpii.app.qss.hideQssMenus = function (that, qssWidget, setting) {
     if (setting.path !== qssWidget.model.setting.path) {
         qssWidget.hide();
-    }
-
-    if (setting.path !== that.options.pspButtonPath) {
-        that.events.onQssPspClose.fire();
     }
 };
 
@@ -356,19 +477,141 @@ gpii.app.qssWrapper.updateSettings = function (that, settings, notUndoable) {
 };
 
 /**
+ * Returns the primary subtag of a language code e.g. if the locale is "en-US"
+ * the primary part would be "en".
+ * @param {String} locale - A language code in the format: "code-region"
+ * @return {String} The primary language subtag
+ */
+gpii.app.qssWrapper.getPrimaryLanguage = function (locale) {
+    return locale && locale.split("-")[0];
+};
+
+/**
+ * Generates a language setting option label out of a provided language metadata.
+ * @param {String} languageOptionLabelTemplate - The template for every language label
+ * @param {Object} languageMetadata - The language metadata that includes different labels
+ * for the language
+ * @param {String} languageMetadata.native - The name of the language in its native form
+ * @param {String} languageMetadata.local - The name of the language in the currently applied language
+ * @param {String} languageMetadata.english - The name of the of the language in English
+ * @return {String} The desired language label
+ */
+gpii.app.qssWrapper.getLanguageLabel = function (languageOptionLabelTemplate, languageMetadata) {
+    languageMetadata.local = languageMetadata.local || languageMetadata.english;
+
+    // Native labels might be coming in full lowercase
+    languageMetadata["native"] = gpii.flowManager.capitalizeFirstLetter(languageMetadata["native"]);
+
+    var systemPrimaryLang = gpii.app.qssWrapper.getPrimaryLanguage(languageMetadata.currentLocale),
+        currentPrimaryLang = gpii.app.qssWrapper.getPrimaryLanguage(languageMetadata.code);
+
+    /*
+     * We wouldn't want to display both the native representation
+     * and the main language as they are redundant
+     */
+    return systemPrimaryLang === currentPrimaryLang ?
+        fluid.stringTemplate(languageOptionLabelTemplate.currentLanguageGroup, languageMetadata) :
+        fluid.stringTemplate(languageOptionLabelTemplate.genericLanguage, languageMetadata);
+};
+
+
+/**
+ * Generates a list of language labels out of the provided languages metadata.
+ * @param {Object} settingOptions - The QSS settings specific options
+ * @param {String} settingOptions.languageOptionLabelTemplate - The template for every language label
+ * @param {String} locale - The current OS locale
+ * @param {Object[]} installedLanguages - A list of all languages metadata
+ * @return {String[]} The list of labels
+ */
+gpii.app.qssWrapper.buildLanguageLabels = function (settingOptions, locale, installedLanguages) {
+    return installedLanguages.map(function (languageMetadata) {
+        languageMetadata.currentLocale = locale;
+
+        return gpii.app.qssWrapper.getLanguageLabel(
+            settingOptions.languageOptionLabelTemplate,
+            languageMetadata
+        );
+    });
+};
+
+
+
+/**
+ * Applies special order to the languages metadata that is to be used for generating
+ * the language options.
+ * The languages are sorted in ascending order according to their English names;
+ * The current default language is positioned on top of the list.
+ * @param {Object} settingOptions - The options specific to settings
+ * @param {Object[]} languagesMetadata - The list of languages metadata for all installed languages
+ * @return {Object[]} The ordered metadata
+ */
+gpii.app.qssWrapper.orderLanguagesMetadata = function (settingOptions, languagesMetadata) {
+    // sort by their english labels in ascending order
+    languagesMetadata.sort(function (a, b) { return a.english > b.english; });
+
+    // Move the default language at the top
+    var systemDefaultLanguageIdx = languagesMetadata.findIndex(function (lang) {
+        return lang.code.toLowerCase() === settingOptions.systemDefaultLanguage.toLowerCase();
+    });
+    if ( systemDefaultLanguageIdx > -1 ) {
+        var language = languagesMetadata.splice(systemDefaultLanguageIdx, 1);
+        languagesMetadata.unshift(language[0]);
+    }
+
+    return languagesMetadata;
+};
+
+
+/**
+ * Updates the given language setting so that it contains a proper list of options. The list includes
+ * only languages that are currently installed on the machine.
+ * @param {Object} settingOptions - The QSS settings specific options
+ * @param {Object} locale - The QSS settings specific options
+ * @param {Object[]} installedLanguages - The languages that are currently installed in the OS
+ * @param {Object} languageSetting - The language setting that is to be populated with language keys and labels
+ */
+gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, locale, installedLanguages, languageSetting) {
+    if (fluid.isValue(languageSetting)) {
+        // move default language to the top of the list
+        var languagesMetadata = fluid.values(installedLanguages);
+
+        var orderedLanguagesMetadata = gpii.app.qssWrapper.orderLanguagesMetadata(settingOptions, languagesMetadata);
+
+        // keep the order but generate readable labels
+        var orderedLangLabels = gpii.app.qssWrapper.buildLanguageLabels(settingOptions, locale, orderedLanguagesMetadata);
+        var orderedLangCodes = orderedLanguagesMetadata.map(function (language) { return language.code; });
+
+        languageSetting.schema.keys = orderedLangCodes;
+        languageSetting.schema["enum"] = orderedLangLabels;
+
+        fluid.log("populateLanguageSettingOptions - decorate language setting: ", locale, installedLanguages, languageSetting);
+    }
+};
+
+/**
  * Retrieves synchronously the QSS settings from a file on the local machine
  * and resolves any assets that they reference with respect to the `gpii-app`
  * folder.
- * It also applies any other mutations to the settings, such as hiding.
- * @param {Component} that - The instance of `gpii.app.qssWrapper` component
- * @param {Object} settingOptions - The options for setting mutations
+ * It also applies any other mutations to the settings, such as hiding and translations.
  * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
- * @param {String} settingsPath - The path to the file containing the QSS
+ * @param {Object[]} installedLanguages - The languages that are currently installed on the OS
+ * @param {Object} locale - The current OS language
+ * @param {Object} messageBundles - The available message bundles
+ * @param {Object} settingOptions - The options for setting mutations
+ * @param {String} settingsFixturePath - The path to the file containing the QSS
  * settings with respect to the `gpii-app` folder.
+ * @param {Object} siteConfig - instance of the siteConfig object
  * @return {Object[]} An array of the loaded settings
  */
-gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager, settingsPath) {
-    var loadedSettings = fluid.require(settingsPath);
+
+gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath, siteConfig) {
+    var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
+        loadedSettings = availableSettings; // by default we are getting all of the buttons
+
+    if (gpii.app.hasButtonList(siteConfig)) { // checking if we have a valid button list in the siteConfig
+        // filtering the buttons based on buttonList array
+        loadedSettings = gpii.app.filterButtonList(siteConfig.buttonList, availableSettings);
+    }
 
     fluid.each(loadedSettings, function (loadedSetting) {
         // Resolve dynamic settings, where the function grade is identified by the 'type' field.
@@ -388,7 +631,33 @@ gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager
         if (imageAsset) {
             loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);
         }
+
+        var helpImageAsset = loadedSetting.schema.helpImage;
+        if (helpImageAsset) {
+            loadedSetting.schema.helpImage = assetsManager.resolveAssetPath(helpImageAsset);
+        }
     });
+
+    // more dynamic loading
+    var languageSetting = fluid.find_if(loadedSettings, function (setting) {
+        return setting.path === settingOptions.settingPaths.language;
+    });
+
+    var volumeSetting = fluid.find_if(loadedSettings, function (setting) {
+        return setting.path === settingOptions.settingPaths.volume;
+    });
+
+    // we double check if this setting exists because can be disabled via siteConfig's buttonList
+    if (fluid.isValue(languageSetting)) {
+        gpii.app.qssWrapper.populateLanguageSettingOptions(settingOptions, locale, installedLanguages, languageSetting);
+        // sync the language value as well
+        languageSetting.value = locale;
+    }
+
+    // we double check if this setting exists because can be disabled via siteConfig's buttonList
+    if (fluid.isValue(volumeSetting)) {
+        volumeSetting.value = gpii.windows.nativeSettingsHandler.GetVolume().value;
+    }
 
     /*
      * Hide settings
@@ -412,13 +681,34 @@ gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager
                          */
                         type: "disabled",
                         title: ""
-                    }
+                    },
+                    // Preserve the styling of the corresponding QSS button
+                    buttonTypes: loadedSettings[settingToHideIdx].buttonTypes
                 };
             }
         });
     }
 
+    /*
+     * Translations
+     */
+    loadedSettings = gpii.app.qssWrapper.applySettingTranslations(settingOptions, messageBundles, loadedSettings);
+
+
     return loadedSettings;
+};
+
+
+/**
+ * Find a QSS setting by its path.
+ * @param {Object[]} settings - The QSS settings list
+ * @param {String} path - The path of the searched setting
+ * @return {Object} The desired QSS setting
+ */
+gpii.app.qssWrapper.getSetting = function (settings, path) {
+    return fluid.find_if(settings, function (setting) {
+        return setting.path === path;
+    });
 };
 
 /**
@@ -430,12 +720,14 @@ gpii.app.qssWrapper.loadSettings = function (that, settingOptions, assetsManager
  * @param {String} [source] - The source of the update.
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
-    var settingIndex = that.model.settings.findIndex(function (setting) {
-        return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
-    });
+    if (fluid.isValue(updatedSetting)) { // adding a check just in case of some missteps
+        var settingIndex = that.model.settings.findIndex(function (setting) {
+            return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
+        });
 
-    if (settingIndex !== -1) {
-        that.applier.change("settings." + settingIndex, updatedSetting, null, source);
+        if (settingIndex !== -1) {
+            that.applier.change("settings." + settingIndex, updatedSetting, null, source);
+        }
     }
 };
 
@@ -451,15 +743,107 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
  * button.
  */
 gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
-    var scaleFactor = qss.options.scaleFactor,
+    var scaleFactor = qss.model.scaleFactor,
         offsetLeft = scaleFactor * buttonElemMetrics.offsetLeft,
-        buttonWidth = scaleFactor * buttonElemMetrics.width,
-        buttonHeight = scaleFactor * buttonElemMetrics.height;
+        offsetTop = scaleFactor * buttonElemMetrics.offsetTop,
+        buttonWidth = scaleFactor * buttonElemMetrics.width;
 
     return {
-        x: qss.width - offsetLeft - buttonWidth / 2,
-        y: buttonHeight
+        x: qss.model.width - offsetLeft - buttonWidth / 2,
+        y: qss.model.height - offsetTop
     };
+};
+
+/**
+ * Translate the given setting by updating its text properties with the passed messages.
+ * @param {Object} qssSettingMessages - The QSS settings messages. Currently, a qss setting
+ * has the following messages: title, tooltip, [tip], [enum], [footerTip]
+ * @param {Object} setting - The setting to be applied messages to
+ * @return {Object} A translated copy of the QSS setting
+ */
+gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, setting) {
+    var translatedSetting = fluid.copy(setting);
+
+    var message = qssSettingMessages[translatedSetting.messageKey];
+
+    if (message) {
+        translatedSetting.tooltip = message.tooltip;
+        translatedSetting.tip = message.tip;
+        translatedSetting.extendedTip = message.extendedTip;
+        translatedSetting.switchTitle = message.switchTitle;
+
+        if (fluid.isValue(message.footerTip)) {
+            translatedSetting.widget = translatedSetting.widget || {};
+            translatedSetting.widget.footerTip = message.footerTip;
+        }
+
+        translatedSetting.schema.title = message.title;
+        if (message["enum"]) {
+            translatedSetting.schema["enum"] = message["enum"];
+        }
+    }
+
+    return translatedSetting;
+};
+
+/**
+ * Apply translations to all settings using the existing messages "mega" bundle. A translated QSS setting is a setting
+ * with all its text properties updated with the current locale messages. A translation is notified trough the changeApplier.
+ * N.B. - this function updates given objects in place
+ * @param {Object} settingOptions - Specific options for the QSS settings
+ * @param {Object} messageBundles - Messages for the current locale
+ * @param {Object[]} qssSettingControls - The list of QSS settings to be applied translations to
+ * @return {Object[]} The QSS settings with updated translations
+ */
+gpii.app.qssWrapper.applySettingTranslations = function (settingOptions, messageBundles, qssSettingControls) {
+    var qssSettingMessagesGroup = settingOptions.settingMessagesPrefix,
+        qssSettingMessages = messageBundles[qssSettingMessagesGroup];
+
+    fluid.log("qssWrapper#applySettingTranslations: ", messageBundles);
+
+    // Straight forward translations
+    var translatedSettings = qssSettingControls.map(function (setting) {
+        return gpii.app.qssWrapper.applySettingTranslation(qssSettingMessages, setting);
+    });
+
+    return translatedSettings;
+};
+
+/**
+ * Updates setting translations corresponding to a change in the locale.
+ * @param {Component} that - The `gpii.app.qssWrapper` instance
+ * @param {Object} messageBundles - Messages for the current locale
+ * @param {Object[]} qssSettingControls - The list of QSS settings to be applied translations to
+ */
+gpii.app.qssWrapper.updateSettingTranslations = function (that, messageBundles, qssSettingControls) {
+    fluid.log("qssWrapper#updateSettingTranslations: ", messageBundles);
+
+    var translatedSettings = gpii.app.qssWrapper.applySettingTranslations(
+        that.options.settingOptions,
+        messageBundles,
+        qssSettingControls
+    );
+
+    // save settings with translations
+    fluid.each(translatedSettings, function (setting) {
+        that.alterSetting(setting, "gpii.app.undoStack.notUndoable");
+    });
+};
+
+/**
+ * Updates the language setting options. They can change dynamically as the OS currently
+ * installed languages are displayed as options.
+ * @param {Component} that - The gpii.app.qssWrapper` instance
+ * @param {String} locale - The current locale for the OS
+ * @param {Object[]} installedLanguages - Currently installed languages
+ */
+gpii.app.qssWrapper.updateLanguageSettingOptions = function (that, locale, installedLanguages) {
+    var languageSetting = fluid.copy(that.getSetting(that.options.settingOptions.settingPaths.language));
+    gpii.app.qssWrapper.populateLanguageSettingOptions(that.options.settingOptions, locale, installedLanguages, languageSetting);
+
+    fluid.log("qssWrapper#updateLanguageSettingOptions: ", languageSetting);
+
+    that.alterSetting(languageSetting, "gpii.app.undoStack.notUndoable");
 };
 
 /**
@@ -475,56 +859,54 @@ gpii.app.qssWidget.updateIfMatching = function (qssWidget, updatedSetting) {
 };
 
 /**
+ * Shows the tooltip in case all constrains for displaying are met.
+ * @param {Component} qssWrapper - The `gpii.app.qssWrapper` instance
+ * @param {Component} qssTooltip - The `gpii.app.qssTooltip` instance
+ * @param {Object} setting - The setting for whose button a tooltip needs to be shown.
+ * @param {Object} btnOffset - An object containing metrics for the QSS button.
+ */
+gpii.app.qssWrapper.showTooltipIfPossible = function (qssWrapper, qssTooltip, setting, btnOffset) {
+    if (!qssWrapper.qssWidget.model.isShown) {
+        qssTooltip.showIfPossible(setting, btnOffset);
+    }
+};
+
+/**
+ * Shows the QSS if the flag is set to true
+ * @param {Boolean} showQssOnStart - true/false flag
+ * @param {Component} qss - The `gpii.app.qssDialog` instance
+ */
+gpii.app.qssWrapper.showQssOnStart = function (showQssOnStart, qss) {
+    // auto-show the QSS only if the flag is set to true
+    if (showQssOnStart) {
+        // showing it
+        qss.show();
+    }
+};
+
+/**
  * Configuration for using the `gpii.app.qss` in the QSS wrapper component.
  */
 fluid.defaults("gpii.app.qssInWrapper", {
     gradeNames: "gpii.app.qss",
     model: {
         isKeyedIn: "{qssWrapper}.model.isKeyedIn",
-
-        closeQssOnBlur: "{qssWrapper}.model.closeQssOnBlur"
+        closeQssOnBlur: "{qssWrapper}.model.closeQssOnBlur",
+        scaleFactor: "{qssWrapper}.model.scaleFactor",
+        settings: "{qssWrapper}.model.settings"
     },
     config: {
         params: {
             settings: "{qssWrapper}.model.settings"
         }
     },
-    scaleFactor: "{qssWrapper}.options.scaleFactor",
-    pspButtonPath: "psp",
+    siteConfig: "{qssWrapper}.options.siteConfig",
     events: {
-        onQssPspClose: "{qssWrapper}.events.onQssPspClose",
         onUndoIndicatorChanged: null,
 
         onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
     },
     listeners: {
-        onDialogReady: {
-            funcName: "{qssWrapper}.applySettingsTranslations"
-        },
-        "{channelListener}.events.onQssButtonFocused": [{
-            func: "{qssTooltip}.showIfPossible",
-            args: [
-                "{arguments}.0", // setting
-                "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)"  // btnCenterOffset
-            ]
-        }, {
-            funcName: "gpii.app.qss.hideQssMenus",
-            args: [
-                "{that}",
-                "{qssWidget}",
-                "{arguments}.0" // setting
-            ]
-        }],
-        "{channelListener}.events.onQssButtonActivated": [{
-            func: "{qssWidget}.toggle",
-            args: [
-                "{arguments}.0", // setting
-                "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)",  // btnCenterOffset
-                "{arguments}.2"  // activationParams
-            ]
-        }, {
-            func: "{qssNotification}.hide"
-        }],
         onQssSettingAltered: {
             func: "{qssWrapper}.alterSetting",
             args: [
@@ -532,10 +914,27 @@ fluid.defaults("gpii.app.qssInWrapper", {
                 "qss"
             ]
         },
+        "{channelListener}.events.onQssButtonFocused": {
+            funcName: "gpii.app.qss.hideQssMenus",
+            args: [
+                "{that}",
+                "{qssWidget}",
+                "{arguments}.0" // setting
+            ]
+        },
+        "{channelListener}.events.onQssButtonActivated": {
+            func: "{qssWidget}.toggle",
+            args: [
+                "{arguments}.0", // setting
+                "@expand:gpii.app.qssWrapper.getButtonPosition({gpii.app.qss}, {arguments}.1)",  // btnCenterOffset
+                "{arguments}.2"  // activationParams
+            ]
+        },
         "{channelListener}.events.onQssNotificationRequired": {
             func: "{qssNotification}.show",
             args: [{
-                description: "{arguments}.0",
+                description: "{arguments}.0.description",
+                closeOnBlur: "{arguments}.0.closeOnBlur",
                 focusOnClose: "{that}.dialog"
             }] // notificationParams
         },
@@ -544,8 +943,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
         },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
         "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",
-        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
-        "{channelListener}.events.onQssPspOpen": "{qssWrapper}.events.onQssPspOpen"
+        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired"
     }
 });
 
@@ -589,54 +987,3 @@ fluid.defaults("gpii.app.undoInWrapper", {
         }
     }
 });
-
-/**
- * Translate the given setting by updating its text properties with the passed messages.
- * @param {Component} that  - The instance of `gpii.app.qssWrapper` component
- * @param {Object} qssSettingMessages - The QSS settings messages. Currently, a qss setting
- * has the following messages: title, tooltip, [tip], [enum], [footerTip]
- * @param {Object} setting - The setting to be applied messages to
- * @return {Object} A translated copy of the QSS setting
- */
-gpii.app.qssWrapper.applySettingTranslation = function (that, qssSettingMessages, setting) {
-    var translatedSetting = fluid.copy(setting);
-
-    var message = qssSettingMessages[translatedSetting.messageKey];
-
-    if (message) {
-        translatedSetting.tooltip = message.tooltip;
-        translatedSetting.tip = message.tip;
-        if (translatedSetting.widget) {
-            translatedSetting.widget.footerTip = message.footerTip;
-        }
-
-        translatedSetting.schema.title = message.title;
-        if (message["enum"]) {
-            translatedSetting.schema["enum"] = message["enum"];
-        }
-    }
-
-    return translatedSetting;
-};
-
-/**
- * Apply translations to all settings using the existing messages "mega" bundle. A translated QSS setting is a setting
- * with all its text properties updated with the current locale messages. A translation is notified trough the changeApplier.
- * @param {Component} that - The `gpii.app.qssWrapper` instance
- * @param {Object} messagesBundle - Messages for the current locale
- * @param {Object[]} qssSettingControls - The list of QSS settings to be applied translations to
- */
-gpii.app.qssWrapper.applySettingsTranslations = function (that, messagesBundle, qssSettingControls) {
-    var qssSettingMessagesGroup = that.options.settingMessagesPrefix,
-        qssSettingMessages = messagesBundle[qssSettingMessagesGroup];
-
-    fluid.each(qssSettingControls, function (setting) {
-        var translatedSetting = gpii.app.qssWrapper.applySettingTranslation(
-            that,
-            qssSettingMessages,
-            setting
-        );
-
-        that.alterSetting(translatedSetting, "gpii.app.undoStack.notUndoable");
-    });
-};

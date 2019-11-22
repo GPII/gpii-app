@@ -24,7 +24,7 @@ require("./assetsManager.js");
 require("./common/utils.js");
 require("./common/ws.js");
 require("./dialogs/dialogManager.js");
-require("./dialogs/psp.js");
+require("./storage.js");
 require("./factsManager.js");
 require("./gpiiConnector.js");
 require("./menu.js");
@@ -35,6 +35,7 @@ require("./siteConfigurationHandler.js");
 require("./surveys/surveyManager.js");
 require("./tray.js");
 require("./userErrorsHandler.js");
+require("./metrics.js");
 
 // enhance the normal require to work with .json5 files
 require("json5/lib/register");
@@ -70,8 +71,10 @@ fluid.defaults("gpii.app", {
             sets: [],
             activeSet: null,
             settingGroups: [],
-            closePspOnBlur: null,
-            closeQssOnBlur: null
+
+            // user settings
+            closeQssOnBlur: null,
+            disableRestartWarning: null
         },
         theme: "{that}.options.defaultTheme"
     },
@@ -131,6 +134,9 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        storage: {
+            type: "gpii.app.storage"
+        },
         gpiiConnector: {
             type: "gpii.app.gpiiConnector",
             createOnEvent: "onGPIIReady",
@@ -175,16 +181,32 @@ fluid.defaults("gpii.app", {
             type: "gpii.windows.appZoom",
             createOnEvent: "onPSPPrerequisitesReady"
         },
+        systemLanguageListener: {
+            type: "gpii.windows.language",
+            options: {
+                model: {
+                    configuredLanguage: "{messageBundles}.model.locale"
+                },
+                modelListeners: {
+                    configuredLanguage: {
+                        funcName: "fluid.log",
+                        args: ["Language change: ", "{change}.value"]
+                    }
+                }
+            }
+        },
         qssWrapper: {
             type: "gpii.app.qssWrapper",
             createOnEvent: "onPSPPrerequisitesReady",
             options: {
                 appTextZoomPath: "appTextZoom",
                 model: {
+                    lastEnvironmentalLoginGpiiKey : "{lifecycleManager}.model.lastEnvironmentalLoginGpiiKey",
                     isKeyedIn: "{app}.model.isKeyedIn",
                     keyedInUserToken: "{app}.model.keyedInUserToken",
 
-                    closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur"
+                    closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur",
+                    disableRestartWarning: "{app}.model.preferences.disableRestartWarning"
                 },
                 listeners: {
                     "{gpiiConnector}.events.onQssSettingsUpdate": {
@@ -194,6 +216,9 @@ fluid.defaults("gpii.app", {
                     "{settingsBroker}.events.onSettingApplied": "{that}.events.onSettingUpdated"
                 },
                 modelListeners: {
+                    "{systemLanguageListener}.model.installedLanguages": {
+                        funcName: "{that}.updateLanguageSettingOptions"
+                    },
                     "settings.*": {
                         funcName: "gpii.app.onQssSettingAltered",
                         args: [
@@ -219,10 +244,6 @@ fluid.defaults("gpii.app", {
                     }
                 }
             }
-        },
-        psp: {
-            type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady"
         },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
@@ -258,9 +279,9 @@ fluid.defaults("gpii.app", {
                         ]
                     },
                     /*
-                     * A local shortcut (registered for the QSS, QSS widget and PSP) isn't fully sufficient for handling
+                     * A local shortcut (registered for the QSS and QSS widget) isn't fully sufficient for handling
                      * the closing of the tooltip as but it's the best sane that can be done. For example,
-                     * in case the QSS loses focus and neither of the related windows (PSP and qssWidget)
+                     * in case the QSS loses focus and neither of the related windows (qssWidget)
                      * is focused the tooltip will be hidden but hovering
                      * a button afterwards will show the tooltip again. In that case the tooltip won't be
                      * closable with "Esc" because we're using only a local shortcut.
@@ -272,7 +293,7 @@ fluid.defaults("gpii.app", {
                         args: [
                             "{that}.options.shortcutAccelerators.closeQssTooltip",
                             "onCloseQssTooltipShortcut",
-                            ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.psp"]
+                            ["gpii.app.qss", "gpii.app.qssWidget"]
                         ]
                     },
 
@@ -299,9 +320,6 @@ fluid.defaults("gpii.app", {
                 model: {
                     isKeyedIn: "{gpii.app}.model.isKeyedIn"
                 },
-                events: {
-                    onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
-                },
                 listeners: {
                     onTrayIconClicked: {
                         func: "{qssWrapper}.qss.toggle"
@@ -311,7 +329,12 @@ fluid.defaults("gpii.app", {
         },
         factsManager: {
             type: "gpii.app.factsManager",
-            createOnEvent: "onPSPPrerequisitesReady"
+            createOnEvent: "onPSPPrerequisitesReady",
+            options: {
+                model: {
+                    interactionsCount: "{storage}.model.interactionsCount"
+                }
+            }
         }
     },
     events: {
@@ -323,7 +346,9 @@ fluid.defaults("gpii.app", {
             }
         },
         onGPIIReady: null,
+
         onAppReady: null,
+
         onPSPChannelConnected: null,
         onPSPReady: null,
 
@@ -363,12 +388,14 @@ fluid.defaults("gpii.app", {
             this: "{that}.events.onPSPReady",
             method: "fire",
             priority: "last"
-        },
-        "{lifecycleManager}.events.onDestroy": {
-            listener: "{that}.keyOut",
-            priority: "first",
-            namespace: "beforeExit"
         }
+
+        // Disabled per: https://github.com/GPII/gpii-app/pull/100#issuecomment-471778768
+        //"{lifecycleManager}.events.onDestroy": {
+        //    listener: "{that}.keyOut",
+        //    priority: "first",
+        //    namespace: "beforeExit"
+        //}
     },
     invokers: {
         updateKeyedInUserToken: {
@@ -395,6 +422,14 @@ fluid.defaults("gpii.app", {
             funcName: "gpii.app.resetAllToStandard",
             args: ["{that}", "{qssWrapper}.qss"]
         },
+        // Re-apply the last environmental login
+        reApplyPreferences: {
+            func: "{lifecycleManager}.replayEnvironmentalLogin"
+        },
+        getEnvironmentalLoginKey: {
+            funcName: "gpii.app.getEnvironmentalLoginKey",
+            args: ["{lifecycleManager}.model.lastEnvironmentalLoginGpiiKey", "{arguments}.0", "{arguments}.1"]
+        },
         exit: {
             funcName: "gpii.app.exit",
             args: "{that}"
@@ -402,6 +437,16 @@ fluid.defaults("gpii.app", {
     },
     defaultTheme: "white"
 });
+
+/**
+ * Get the Gpii key name of the last environmental login.
+ * @param {String} lastEnvironmentalLoginGpiiKey - Gpii key name of the last environmental login.
+ * @param {Object} browserWindow - An Electron `BrowserWindow` object.
+ * @param {String} messageChannel - The channel to which the message should be sent.
+ */
+gpii.app.getEnvironmentalLoginKey = function (lastEnvironmentalLoginGpiiKey, browserWindow, messageChannel) {
+    gpii.app.notifyWindow(browserWindow, messageChannel, lastEnvironmentalLoginGpiiKey);
+};
 
 /**
  * Changes the keyboard shortcut for opening the GPII app. The previously registered
@@ -561,7 +606,7 @@ gpii.app.handleSessionStop = function (that, keyedOutUserToken) {
     var currentKeyedInUserToken = that.model.keyedInUserToken;
 
     if (keyedOutUserToken !== currentKeyedInUserToken) {
-        console.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
+        fluid.log("Warning: The keyed out user token does NOT match the current keyed in user token.");
     } else {
         that.updateKeyedInUserToken(null);
     }
@@ -581,7 +626,6 @@ gpii.app.windowMessage = function (that, hwnd, msg, wParam, lParam, result) {
     // https://msdn.microsoft.com/library/aa376889
     var WM_QUERYENDSESSION = 0x11;
     if (msg === WM_QUERYENDSESSION) {
-        console.log("SHUTDOWN");
         fluid.log(fluid.logLevel.FATAL, "System shutdown detected.");
         that.exit();
         result.value = 0;

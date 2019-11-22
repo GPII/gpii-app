@@ -54,10 +54,7 @@
             item: {
                 value: null
             },
-            value: "{that}.model.item.value",
-            messages: {
-                notification: null
-            }
+            value: "{that}.model.item.value"
         },
 
         modelRelay: {
@@ -75,19 +72,20 @@
         },
 
         modelListeners: {
-            value: [{
+            value: {
                 funcName: "{that}.events.onSettingAltered.fire",
                 args: ["{that}.model.item", "{change}.value"],
                 excludeSource: ["init", "gpii.psp.repeater.itemUpdate"]
-            }, {
-                funcName: "gpii.qss.buttonPresenter.showNotification",
-                args: ["{that}", "{list}"],
-                excludeSource: "init"
-            }],
+            },
             title: {
                 this: "{that}.dom.title",
                 method: "text",
                 args: ["{change}.value"]
+            },
+            "item.tabindex": {
+                this: "{that}.container",
+                method: "attr",
+                args: ["tabindex", "{change}.value"]
             }
         },
 
@@ -99,7 +97,14 @@
         },
 
         styles: {
-            activated: "fl-activated"
+            activated: "fl-activated",
+            disabledButton: "fl-qss-disabled",
+            smallButton: "fl-qss-smallButton",
+            largeButton: "fl-qss-largeButton",
+            settingButton: "fl-qss-settingButton",
+            closeButton: "fl-qss-closeButton",
+            separator: "fl-qss-separator",
+            separatorVisible: "fl-qss-separator-visible"
         },
 
         attrs: {
@@ -128,6 +133,10 @@
             "onCreate.renderImage": {
                 funcName: "gpii.qss.buttonPresenter.renderImage",
                 args: ["{that}", "{that}.dom.image"]
+            },
+            "onCreate.addButtonTypesStyles": {
+                funcName: "gpii.qss.buttonPresenter.addButtonTypesStyles",
+                args: ["{that}", "{that}.container"]
             },
 
             "{focusManager}.events.onElementFocused": {
@@ -221,6 +230,21 @@
             }
         }
     });
+
+    gpii.qss.buttonPresenter.addButtonTypesStyles = function (that, container) {
+        var buttonTypes = that.model.item.buttonTypes,
+            styles = that.options.styles;
+
+        fluid.each(buttonTypes, function (buttonType) {
+            if (styles[buttonType]) {
+                container.addClass(styles[buttonType]);
+            }
+            // adding the button id, if there is any in the schema
+            if (that.model.item.id) {
+                container.addClass("fl-qss-btnId-" + that.model.item.id);
+            }
+        });
+    };
 
     /**
      * Returns the title (label) of the button depending on whether there is a
@@ -352,33 +376,16 @@
     };
 
     /**
-     * When the value of the QSS button's setting changes, fires an event that a notification
-     * must be shown to the user.
-     * @param {Component} that - The `gpii.qss.buttonPresenter` instance.
-     * @param {Component} qssList - The `gpii.qss.list` instance.
-     */
-    gpii.qss.buttonPresenter.showNotification = function (that, qssList) {
-        if (that.model.item.restartWarning) {
-            var notification = fluid.stringTemplate(that.model.messages.notification, {
-                settingTitle: that.model.item.schema.title
-            });
-            qssList.events.onNotificationRequired.fire(notification);
-        }
-    };
-
-    /**
      * Returns the metrics of a given element. These can be used for positioning the QSS
      * button's tooltip or the QSS widget.
      * @param {jQuery} target - The DOM element for which positioning
      * metrics are needed.
-     * @return {Object} {{width: Number, height: Number, offsetLeft: Number}}
+     * @return {Object} {{offsetTop: Number, offsetLeft: Number, width: Number}}
      */
     gpii.qss.buttonPresenter.getElementMetrics = function (target) {
-        var borderWidth = target.outerHeight() - target.innerHeight();
-
         return {
+            offsetTop:  target.offset().top,
             offsetLeft: target.offset().left,
-            height:     target.outerHeight() - borderWidth / 2,
             width:      target.outerWidth()
         };
     };
@@ -409,7 +416,8 @@
     });
 
     /**
-     * Represent a disabled button. These are buttons that cannot be interacted with (event not focusable).
+     * Represent a disabled button. These are buttons that cannot be interacted
+     * with (event not focusable).
      */
     fluid.defaults("gpii.qss.disabledButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
@@ -429,6 +437,33 @@
                 this: "{that}.container",
                 method: "addClass",
                 args: ["{that}.options.styles.disabled"]
+            }
+        },
+        invokers: {
+            // Override button activation behaviour
+            activate: {
+                funcName: "fluid.identity"
+            }
+        }
+    });
+
+    /**
+     * Represents a separator type button. These are buttons that cannot be
+     * interacted with (event not focusable).
+     */
+    fluid.defaults("gpii.qss.separatorButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+
+        styles: {
+            disabled: "fl-qss-separator",
+            focusable: "fl-focusable"
+        },
+
+        listeners: {
+            "onCreate.removeButtonStyles": {
+                this: "{that}.container",
+                method: "removeClass",
+                args: ["{that}.options.styles.focusable"]
             }
         },
         invokers: {

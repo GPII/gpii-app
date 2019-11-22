@@ -41,6 +41,15 @@ try {
     exit 1
 }
 try {
+    $couchdb = Join-Path $originalBuildScriptPath "CouchDB.ps1"
+    Write-OutPut "Running windows script: $couchdb"
+    iwr "$windowsBootstrapURL/CouchDB.ps1" -UseBasicParsing -OutFile $couchdb
+    Invoke-Expression $couchdb
+} catch {
+    Write-OutPut "CouchDB.ps1 FAILED"
+    exit 1
+}
+try {
     $npm = Join-Path $originalBuildScriptPath "Npm.ps1"
     Write-OutPut "Running windows script: $npm"
     iwr "$windowsBootstrapURL/Npm.ps1" -UseBasicParsing -OutFile $npm

@@ -1,41 +1,35 @@
 [
     {
+        "id": "language",
         "path": "http://registry\\.gpii\\.net/common/language",
         "schema": {
             "type": "string",
-            "title": "Language",
-            "keys": [
-                "en-US",
-                "hy-AM",
-                "zh-CN",
-                "zh-TW",
-                "ko-KR",
-                "ru-RU",
-                "es-ES"
-            ],
-            "enum": [
-                "English",
-                "Հայերէն · Armenian",
-                "简体中文 · Chinese (Simplified)",
-                "繁体中文 · Chinese (Traditional)",
-                "한국어 · Korean",
-                "Ру́сский · Russian",
-                "Español · Spanish"
-            ],
             "image": "language.svg",
+            "enum": [],
+            "keys": [],
             "default": "en-US"
         },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 100,
         "messageKey": "common-language",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#language",
         "value": "en-US",
-        "tip": "<p>Changes Language of Windows</p><p>Works in Windows and programs that support Windows language settings.</p><ul><li>Does not change the language in documents or files.</li><li>May need to restart some programs.</li></ul>",
-        "tooltip": "<p>Change Windows language setting.</p><p>Works for menus, etc. in Windows, Edge, and many other applications that have Language Packs installed.</p>",
-        "restartWarning": true,
-        "learnMoreLink": "https://morphic.world/help/qsshelp#language"
+        "restartWarning": true
     }, {
+        "id": "translate-tools",
+        "path": "translate-tools",
+        "schema": {
+            "type": "translateTools"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 103,
+        "messageKey": "translate-tools",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#translate"
+    }, {
+        "id": "screen-zoom",
         "path": "http://registry\\.gpii\\.net/common/DPIScale",
         "schema": {
             "type": "number",
-            "title": "Screen Zoom",
             "min": {
                 "type": "gpii.windows.display.getScreenDpi",
                 "path": "minimum"
@@ -47,58 +41,102 @@
             "divisibleBy": 1,
             "default": 0
         },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 110,
         "messageKey": "common-DPIScale",
         "value": 0,
-        "tip": "<p>Zooms everything on the screen</p><p>Amount of Zoom up and down differs by computer.</p>",
-        "tooltip": "<p>Change whole screen to make everything larger/smaller.</p><p>Works for everything.</p>",
-        "widget": {
-            "footerTip": ""
-        },
         "learnMoreLink": "https://morphic.world/help/qsshelp#screenzoom"
     }, {
+        "id": "text-zoom",
         "path": "appTextZoom",
         "schema": {
             "type": "number",
-            "title": "App / Text Zoom",
             "min": null,
             "max": null,
             "divisibleBy": 1
         },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 120,
         "messageKey": "appTextZoom",
         "value": 0,
-        "tip": "<p>Zooms one application.</p><p>Works in many applications</p><p>-- for the Window on top.</p><p>(Not a setting so won't Save.)</p>",
-        "tooltip": "<p>Change text size.</p><p>Works in Windows, Edge, Chrome, Firefox, Microsoft Office, and many other applications.</p>",
-        "widget": {
-            "footerTip": "You can also use the “CTRL” key, plus SCROLL (wheel or gesture) to do App/Text Zoom without using Morphic."
-        },
         "learnMoreLink": "https://morphic.world/help/qsshelp#textzoom"
     }, {
+        "id": "volume",
+        "path": "http://registry\\.gpii\\.net/common/volume",
+        "schema": {
+            "type": "volume",
+            "min": 0,
+            "max": 1,
+            "divisibleBy": 0.02,
+            "previousValue": 0.5,
+            "image": "volume-mute.svg",
+            "helpImage": "volumeMute.png"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 125,
+        "messageKey": "common-volume",
+        "value": 0.5,
+        "learnMoreLink": "https://morphic.world/help/qsshelp#volume"
+
+    }, {
+        "id": "screen-capture",
+        "path": "screenCapture",
+        "schema": {
+            "type": "screenCapture",
+            "keys": [
+                "Morphic: Capture region to clipboard",
+                "Morphic: Capture region to desktop"
+            ],
+            "default": ""
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 130,
+        "messageKey": "screenCapture",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#screen-capture",
+        "value": ""
+    }, {
+        "id": "snipping-tool",
+        "path": "snipping-tool",
+        "schema": {
+            "type": "snipping-tool"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 131,
+        "messageKey": "snipping-tool"
+    }, {
+        "id": "office-simplification",
+        "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.office.word-ribbon",
+        "schema": {
+            "type": "office",
+            "keys": [
+                "Basics+StandardSet",
+                "Essentials+StandardSet"
+            ],
+            "default": "StandardSet"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 135,
+        "messageKey": "officeSimplification",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#office-simplification",
+        "value": "StandardSet"
+    }, {
+        "id": "high-contrast",
         "path": "http://registry\\.gpii\\.net/common/highContrastTheme",
         "schema": {
             "type": "string",
-            "title": "High / Low Contrast",
             "keys": [
                 "regular-contrast",
                 "black-white",
                 "white-black",
                 "yellow-black",
                 "black-yellow",
-                "grey-black",
                 "grey-white",
                 "black-brown"
             ],
-            "enum": [
-                "Regular contrast",
-                "Black on white",
-                "White on black",
-                "Yellow on black",
-                "Black on yellow",
-                "Light on dark grey",
-                "Grey on white",
-                "Black on brown"
-            ],
             "default": "regular-contrast"
         },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 140,
         "messageKey": "common-highContrastTheme",
         "value": "regular-contrast",
         "styles": {
@@ -125,12 +163,7 @@
             "black-yellow": {
                 "background-color": "#ffff00",
                 "color": "#000000",
-                "border": "2px dashed #6c6c6c"
-            },
-            "grey-black": {
-                "background-color": "#222222",
-                "color": "#888888",
-                "border-color": "transparent"
+                "border": "1px dashed #6c6c6c"
             },
             "grey-white": {
                 "background-color": "#ffffff",
@@ -143,75 +176,154 @@
                 "border-color": "transparent"
             }
         },
-        "tip": "<p>Changes contrast & colors</p><p>Works in Chrome, Windows and apps that support Windows contrast themes.  (May need to restart some programs)</p>",
-        "tooltip": "<p>Change the contrast between the text and background color, so text is easier to read.</p><p>Contrast changes will affect Windows, Edge, Chrome, and some other applications.</p>",
         "learnMoreLink": "https://morphic.world/help/qsshelp#contrast"
     }, {
+        "id": "read-aloud",
         "path": "http://registry\\.gpii\\.net/common/selfVoicing/enabled",
         "schema": {
-            "title": "Read Aloud",
-            "description": "Whether to enable/disable self voicing",
             "type": "boolean",
+            "helpImage": "readAloud.png",
             "default": false
         },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 150,
         "messageKey": "common-selfVoicing-enabled",
         "value": false,
-        "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>"
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud"
     }, {
+        "id": "url-google-drive",
+        "path": "url-google-drive",
+        "schema": {
+            "type": "url-google-drive"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 160,
+        "messageKey": "url-google-drive"
+    }, {
+        "id": "url-one-drive",
+        "path": "url-one-drive",
+        "schema": {
+            "type": "url-one-drive"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 170,
+        "messageKey": "url-one-drive"
+    }, {
+        "id": "url-dropbox",
+        "path": "url-dropbox",
+        "schema": {
+            "type": "url-dropbox"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 180,
+        "messageKey": "url-dropbox"
+    }, {
+        "id": "url-customize-qss",
+        "path": "url-customize-qss",
+        "schema": {
+            "type": "url-customize-qss"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 190,
+        "messageKey": "url-customize-qss"
+    }, {
+        "id": "cloud-folder-open",
+        "path": "cloud-folder-open",
+        "schema": {
+            "type": "cloud-folder-open"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 200,
+        "messageKey": "cloud-folder-open"
+    }, {
+        "id": "usb-open",
+        "path": "openUSB",
+        "schema": {
+            "type": "openUSB"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 210,
+        "messageKey": "usb-open",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#usb-open"
+    }, {
+        "id": "launch-documorph",
+        "path": "launch-documorph",
+        "schema": {
+            "type": "launch-documorph"
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 220,
+        "messageKey": "launch-documorph"
+    }, {
+        "id": "separator",
+        "path": "separator",
+        "schema": {
+            "type": "separator",
+            "title": ""
+        },
+        "buttonTypes": ["separator"]
+    }, {
+        "id": "separator-visible",
+        "path": "separator",
+        "schema": {
+            "type": "separator",
+            "title": ""
+        },
+        "buttonTypes": ["separator", "separatorVisible"]
+    }, {
+        "id": "service-more",
         "path": "more",
         "schema": {
-            "type": "more",
-            "title": "MORE...\n\n(& HELP)"
+            "type": "more"
         },
-        "messageKey": "more",
-        "tooltip": "<p>More options for changing the settings on this computer.</p>"
+        "buttonTypes": ["largeButton"],
+        "tabindex": 230,
+        "messageKey": "more"
     }, {
+        "id": "service-save",
         "path": "save",
         "schema": {
-            "type": "save",
-            "title": "Save"
+            "type": "save"
         },
-        "messageKey": "save",
-        "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>"
+        "buttonTypes": ["smallButton"],
+        "tabindex": 300,
+        "messageKey": "save"
     }, {
+        "id": "service-undo",
         "path": "undo",
         "schema": {
-            "type": "undo",
-            "title": "Undo",
-            "image": "undo.svg"
+            "type": "undo"
         },
-        "messageKey": "undo",
-        "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>"
+        "buttonTypes": ["smallButton"],
+        "tabindex": 320,
+        "messageKey": "undo"
     }, {
+        "id": "service-saved-settings",
+        "path": "mySavedSettings",
+        "schema": {
+            "type": "mySavedSettings"
+        },
+        "buttonTypes": ["smallButton"],
+        "tabindex": 310,
+        "messageKey": "mySavedSettings",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#mysavedsettings"
+    }, {
+        "id": "service-reset-all",
         "path": "resetAll",
         "schema": {
-            "type": "resetAll",
-            "title": "Reset All to Standard"
+            "type": "resetAll"
         },
-        "messageKey": "resetAll",
-        "tooltip": "<p>Resets computer to standard settings</p><p>(does not affect personal saved settings)</p>"
+        "buttonTypes": ["smallButton"],
+        "tabindex": 330,
+        "messageKey": "resetAll"
     }, {
-        "path": "psp",
-        "schema": {
-            "type": "psp",
-            "title": {
-                "keyedIn": "Morphic Settings Panel",
-                "keyedOut": "Sign In"
-            }
-        },
-        "messageKey": "psp",
-        "tooltip": {
-            "keyedIn": "<p>Opens Morphic Settings Panel</p><p>Where you can quickly adjust often-changed settings of yours.</p>",
-            "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
-        }
-    }, {
+        "id": "service-close",
         "path": "close",
         "schema": {
-            "type": "close",
-            "title": "Close",
-            "image": "close.svg"
+            "type": "close"
         },
-        "messageKey": "close",
-        "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=20 src='../../icons/TaskTrayIcon_outline.svg'></img></p>"
+        "buttonTypes": ["closeButton"],
+        "tabindex": 340,
+        "messageKey": "close"
     }
 ]

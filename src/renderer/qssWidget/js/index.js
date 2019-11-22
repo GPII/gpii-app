@@ -21,7 +21,7 @@
         windowParams = electron.remote.getCurrentWindow().params;
 
     jQuery(function () {
-        gpii.psp.translatedQssWidget(".flc-qssWidget", {
+        gpii.psp.translatedQssWidget("body", {
             params: windowParams
         });
     });

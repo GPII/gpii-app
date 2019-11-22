@@ -69,12 +69,17 @@ fluid.defaults("gpii.tests.app.instrumentedDialog", {
 
 /**
  * Attach flag to that BrowserWindow object that specify whether the DOM of the
- * window is fully initialized. This is needed as `webContents.executeJavaScript`
+ * window is fully initialized. This is needed as `webContents.executeJavaScriptInWebContents`
  * can only be used in case the DOM is ready.
  * @param {Component} dialog - The BrowserWindows instance
  */
 gpii.tests.app.domStateListener = function (dialog) {
     dialog.domReady = false;
+
+    dialog.webContents.on("did-fail-load", function (e) {
+        fluid.log("RendererCoverage: Problem loading the dialog: ", dialog.grade, e);
+        dialog.loadFail = e;
+    });
 
     dialog.webContents.on("dom-ready", function () {
         dialog.domReady = true;
@@ -110,6 +115,8 @@ gpii.tests.app.instrumentedDialog.disableCleanUpDestruction = function (that) {
  * @param {Component} that - The `gpii.app.dialog` instance
  */
 gpii.tests.app.instrumentedDialog.disableWindowDestruction = function (that) {
+    // XXX used for debugging purposes
+    // If this is to be remove, ensure all `grade` usages are cleared as well
     that.dialog.grade = that.options.gradeNames.slice(-2)[0];
 
     if (that.options.config.destroyOnClose) {
@@ -153,10 +160,11 @@ gpii.tests.app.sendRendererCoverage = function () {
  * Send the coverage collecting code to the specified `BrowserWindow`. Note that the code is sent
  * as a string. Refer to `gpii.tests.app.sendRendererCoverage` for details.
  * @param {Component} dialog - The `BrowserWindow` instance
+ * @return {Promise} - The promise for the executed script
  */
 gpii.tests.app.instrumentedDialog.requestDialogCoverage = function (dialog) {
     var sendCoverageCommand = gpii.test.toIIFEString(gpii.tests.app.sendRendererCoverage);
-    gpii.test.executeJavaScript(dialog, sendCoverageCommand);
+    return gpii.test.executeJavaScriptInWebContents(dialog, sendCoverageCommand);
 };
 
 /**
@@ -166,7 +174,7 @@ gpii.tests.app.instrumentedDialog.requestDialogCoverage = function (dialog) {
  * the predefined socket - "coverageReportSuccess".
  *
  * NOTE that the coverage data is collected by executing a command sent from the main process - `gpii.tests.app.sendRendererCoverage`.
- * For more details refer to gpii.test.executeJavaScript.
+ * For more details refer to gpii.test.executeJavaScriptInWebContents.
  *
  * @return {Promise} A promise that is resolved once all the BrowserWindows have repoted their coverage back to the
  * coverage server.
@@ -177,46 +185,35 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
     var activeDialogs = BrowserWindow.getAllWindows();
     var awaitingDialogReports = activeDialogs.length;
 
-    fluid.log("Collect coverage from active dialogs: ", activeDialogs.length);
-
-    fluid.each(activeDialogs, function (dialog) {
-        /*
-         * It might be the case that a test sequence has finished execution before all BrowserWindows have been fully
-         * initialized. In that case we should wait for the BrowserWindows to be ready.
-         */
-        if (dialog.domReady) {
-            gpii.tests.app.instrumentedDialog.requestDialogCoverage(dialog);
-        } else {
-            dialog.webContents.on(
-                "dom-ready",
-                function () {
-                    gpii.tests.app.instrumentedDialog.requestDialogCoverage(dialog);
-                }
-            );
-        }
-    });
-
-    /*
-     * Wait for all of the BrowserWindows to report their coverage successfully.
+    /**
+     * The main mechanism for waiting all dialogs to report their coverage successfully.
+     * It uses the initial number of dialogs and awaits each of the dialogs to notify back
+     * success on providing coverage data.
+     * @param {Object} event - An `Electron` IPC event
+     * @param {Object} event.sender - The `webContents` of the BrowserWindow that
+     * have sent the event
      */
-    ipcMain.on("coverageReportSuccess", function (event) {
+    function progressCoverageReport(event) {
+        // One less dialog to go...
         awaitingDialogReports--;
 
-
         var responseDialog = BrowserWindow.fromWebContents(event.sender);
-        // XXX DEV
-        console.log("Report collected: ", awaitingDialogReports, responseDialog.grade);
 
-        // dummy way to filter only the first occurrence
-        var isFirst = true;
-        activeDialogs = activeDialogs.filter( function (dialog) {
-            if (dialog.grade === responseDialog.grade && isFirst) {
-                isFirst = false;
-                return false;
-            }
-            return true;
-        } );
-        console.log("Still awating: ", activeDialogs.map( function (d) { return d.grade; } ));
+        /*
+         * Debug loggers
+         */
+        if (responseDialog) {
+            fluid.log("RendererCoverage: Report collected: ", awaitingDialogReports, responseDialog.grade);
+
+            // remove the first occurrence of processed dialogs
+            activeDialogs.splice(
+                activeDialogs.findIndex( function (dialog) { return dialog.grade === responseDialog.grade; }),
+                1
+            );
+            fluid.log("RendererCoverage: Still awating: ", activeDialogs.map( function (d) { return d.grade; } ));
+        } else {
+            fluid.log("RendererCoverage: Coverage - dialog already destroyed");
+        }
         /*
          * Ensure the "BrowserWindow" is destroyed after its coverage is collected and its wrapping
          * component has been already destroyed as it won't be needed anymore.
@@ -231,7 +228,50 @@ gpii.tests.app.instrumentedDialog.requestCoverage = function () {
             promise.resolve();
             ipcMain.removeAllListeners("coverageReportSuccess");
         }
+    }
+
+
+    fluid.log("RendererCoverage: Collect coverage from active dialogs: ", activeDialogs.length);
+    fluid.each(activeDialogs, function (dialog) {
+        function success() {
+            fluid.log("RendererCoverage: Coverage collection triggered successfully for dialog: " + dialog.grade);
+        }
+        function reject(error) {
+            /*
+             * There might be some simple error in the reqestCoverage script.
+             * This log will be useful for debugging.
+             */
+            fluid.log("RendererCoverage: Coverage collection error for dialog: " + dialog.grade);
+            // stop program execution
+            fluid.fail(error);
+        }
+
+
+        /*
+         * It might be the case that a test sequence has finished execution before all BrowserWindows have been fully
+         * initialized. In that case we should wait for the BrowserWindows to be ready.
+         */
+        if (dialog.loadFail) {
+            // don't stop because of a single failure
+            progressCoverageReport({});
+        } else if (dialog.domReady) {
+            gpii.tests.app.instrumentedDialog.requestDialogCoverage(dialog)
+                .then(success, reject);
+        } else {
+            dialog.webContents.on(
+                "dom-ready",
+                function () {
+                    gpii.tests.app.instrumentedDialog.requestDialogCoverage(dialog)
+                        .then(success, reject);
+                }
+            );
+        }
     });
+
+    /*
+     * Wait for all of the BrowserWindows to report that they have successfully had their coverage collected.
+     */
+    ipcMain.on("coverageReportSuccess", progressCoverageReport);
 
     return promise;
 };
