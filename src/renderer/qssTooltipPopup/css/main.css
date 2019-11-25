@@ -1,5 +1,6 @@
 body {
     background-color: transparent;
+    overflow: hidden;
 }
 
 .fl-qssTooltip {
@@ -62,3 +63,40 @@ body {
     margin: -1px 1px 0 0;
     border-top-color: #000000;
 }
+
+/* Arrow on the left: BEGIN */
+.fl-arrow-left .fl-qssTooltip-content {
+    border-radius: 10px 10px 10px 3px;
+}
+.fl-arrow-left .fl-footer-arrow .fl-arrow,
+.fl-arrow-left .fl-footer-arrow .fl-arrow-border {
+    float: left;
+}
+
+.fl-arrow-left .fl-footer-arrow .fl-arrow {
+    margin: -2px -16px 0 -17px;
+}
+
+.fl-arrow-left .fl-footer-arrow .fl-arrow-border {
+    margin: -1px 1px 0 16px;
+}
+/* Arrow on the left: END */
+
+/* Arrow in the center: BEGIN */
+.fl-arrow-center .fl-qssTooltip-content {
+    border-radius: 10px;
+}
+.fl-arrow-center .fl-footer-arrow .fl-arrow,
+.fl-arrow-center .fl-footer-arrow .fl-arrow-border {
+    float: none;
+    margin: 0 auto;
+}
+
+.fl-arrow-center .fl-footer-arrow .fl-arrow {
+    margin-top: -10px;
+}
+
+.fl-arrow-center .fl-footer-arrow .fl-arrow-border {
+    margin-top: -1px;
+}
+/* Arrow in the center: END */
