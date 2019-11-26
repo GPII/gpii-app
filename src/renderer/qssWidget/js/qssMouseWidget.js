@@ -176,14 +176,13 @@
                             singleTransform: {
                                 type: "fluid.transforms.valueMapper",
                                 defaultInput: "{mouseWidgetToggle}.model.value",
-                                match: {
-                                    500: false,
-                                    5000: true,
-                                    0: false,
-                                    1: true,
-                                    false: false,
-                                    true: true
-                                }
+                                match: [{
+                                    inputValue: "{mouseWidgetToggle}.model.setting.schema.mapOff",
+                                    outputValue: false
+                                }, {
+                                    inputValue: "{mouseWidgetToggle}.model.setting.schema.mapOn",
+                                    outputValue: true
+                                }]
                             }
                         }
                     },

@@ -226,6 +226,8 @@
                 "path": "http://registry\\.gpii\\.net/common/cursorSize",
                 "schema": {
                     "type": "boolean",
+                    "mapOn": true,
+                    "mapOff": false,
                     "default": false
                 },
                 "value": false,
