@@ -36,7 +36,7 @@
         enableRichText: true,
 
         modelListeners: {
-            "setting.sideCar": {
+            "setting": {
                 funcName: "gpii.qssWidget.sideCar.getSideCarMessage",
                 args: ["{that}"]
             }
