@@ -30,7 +30,7 @@
         "title": "Chrome Read Aloud",
         "tip": "<p>Turns on and adjusts Read Aloud mode in Chrome</p>",
         "extendedTip": "<p>To use Read Aloud</p><ol><li>Open web page in Chrome <img height=12 src='../../icons/chrome.svg'></li><li>Select / highlight text</li><li>Click Play button that pops up</li></ol>",
-        "sideCart": "<p>On this menu you can turn on the Read Aloud function installed in the <b>Chrome Browser</b>. When Read Aloud is turned on:</p><ol><li>Select / Highlight text in Chrome</li><li>Click Play button that pops up</li></ol><p>NOTE: when you first turn on read aloud you may have to refresh open pages first.</p><p><b>Microsoft Edge</b> browser also has a Read Aloud mode.  It is always on. To use it:</p><ol><li>Open the Edge browser</li><li>Right-click a webpage and choose “Read Aloud” from the menu</li></ol><p>A Read Aloud toolbar will appear in Edge where you can control the reading.</p><p>Microsoft Word and OneNote also have read aloud features. You can <a href='https://www.google.com/url?q=https://morphic.zendesk.com/hc/en-us/articles/360030418393-Chrome-Read-Aloud&sa=D&ust=1574340730177000&usg=AFQjCNG6iWIfYimZFWZXt7lVmpH851yv4A'>learn more about read aloud</a> on the Morphic knowledge base.</p>"
+        "sideCar": "<p>On this menu you can turn on the Read Aloud function installed in the <b>Chrome Browser</b>. When Read Aloud is turned on:</p><ol><li>Select / Highlight text in Chrome</li><li>Click Play button that pops up</li></ol><p>NOTE: when you first turn on read aloud you may have to refresh open pages first.</p><p><b>Microsoft Edge</b> browser also has a Read Aloud mode.  It is always on. To use it:</p><ol><li>Open the Edge browser</li><li>Right-click a webpage and choose “Read Aloud” from the menu</li></ol><p>A Read Aloud toolbar will appear in Edge where you can control the reading.</p><p>Microsoft Word and OneNote also have read aloud features. You can <a href='https://www.google.com/url?q=https://morphic.zendesk.com/hc/en-us/articles/360030418393-Chrome-Read-Aloud&sa=D&ust=1574340730177000&usg=AFQjCNG6iWIfYimZFWZXt7lVmpH851yv4A'>learn more about read aloud</a> on the Morphic knowledge base.</p>"
     },
     "gpii_app_qss_settings_common-highContrastTheme": {
         "tooltip": "<p>Change the contrast between the text and background color, so text is easier to read.</p><p>Contrast changes will affect Windows, Edge, Chrome, and some other applications.</p>",
@@ -45,36 +45,35 @@
             "Gray on white",
             "Black on brown"
         ],
-        "sideCart": "<p>On this menu you can change to light mode, dark mode, or a variety of high and low contrast choices.</p><p>Not all applications support all settings. You may also need to restart some applications to see an effect.</p>",
-        "sideCartWithSettings": "<p>On this menu you can change to light mode, dark mode, or a variety of high and low contrast choices.</p><p>Not all applications support all settings. You may also need to restart some applications to see an effect.</p><p>Here are links to take you directly to the full set of Contrast tools in Windows Settings:</p><ul><li><a href='ms-settings:colors'>Windows Color Settings</a> - change color mode and accent colors</li><li><a href='ms-settings:easeofaccess-highcontrast'>Windows High contrast Settings</a> - customize colors for the high contrast mode</li></ul><p>NOTE: Only the high or low contrast settings  on the left will work in Chrome.</p><p>NOTE: Currently Morphic only saves the contrast settings in the list to the left.</p>"
+        "sideCar": "<p>On this menu you can change to light mode, dark mode, or a variety of high and low contrast choices.</p><p>Not all applications support all settings. You may also need to restart some applications to see an effect.</p>",
+        "sideCarWithSettings": "<p>On this menu you can change to light mode, dark mode, or a variety of high and low contrast choices.</p><p>Not all applications support all settings. You may also need to restart some applications to see an effect.</p><p>Here are links to take you directly to the full set of Contrast tools in Windows Settings:</p><ul><li><a href='ms-settings:colors'>Windows Color Settings</a> - change color mode and accent colors</li><li><a href='ms-settings:easeofaccess-highcontrast'>Windows High contrast Settings</a> - customize colors for the high contrast mode</li></ul><p>NOTE: Only the high or low contrast settings  on the left will work in Chrome.</p><p>NOTE: Currently Morphic only saves the contrast settings in the list to the left.</p>"
     },
     "gpii_app_qss_settings_common-DPIScale": {
         "tooltip": "<p>Change whole screen to make everything larger/smaller.</p><p>Works for everything.</p>",
         "title": "Screen Zoom",
         "tip": "<p>Zooms everything on the screen</p><p>Amount of Zoom up and down differs by computer.</p>",
         "footerTip": "",
-        "sideCart": "<p></p>",
-        "sideCartWithSettings": "<p>Screen Zoom uses the Windows Screen Scale feature to let you make things larger or smaller on screen to match your preferences.</p><p>Windows also provides other ways to change the screen size or zoom parts of the interface. Use these links to go to the appropriate places in Windows Settings:</p><ul><li><a href='ms-settings:display'>Display settings</a></li><li><a href='ms-settings:display-advanced'>Advanced display settings</a> (only available on devices that support advanced settings)</li><li><a href='ms-settings:easeofaccess-display'>Ease of access display settings</a></li></ul>"
+        "sideCarWithSettings": "<p>Screen Zoom uses the Windows Screen Scale feature to let you make things larger or smaller on screen to match your preferences.</p><p>Windows also provides other ways to change the screen size or zoom parts of the interface. Use these links to go to the appropriate places in Windows Settings:</p><ul><li><a href='ms-settings:display'>Display settings</a></li><li><a href='ms-settings:display-advanced'>Advanced display settings</a> (only available on devices that support advanced settings)</li><li><a href='ms-settings:easeofaccess-display'>Ease of access display settings</a></li></ul>"
     },
     "gpii_app_qss_settings_appTextZoom": {
         "tooltip": "<p>Changes text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
         "title": "Zoom Top Window",
         "tip": "<p>Zoom Top Window</p><p>Note: Not all windows zoom.</p>",
         "footerTip": "<a href=\"https://morphic.world/basics/learn-more-about-quickstrip#textzoom\">Want a faster way to zoom a window?</a>",
-        "sideCart": "<p>The “Top Window Zoom” buttons are provided to make zooming the text in many application Windows easy.</p><p>But there are even faster ways to do this that do not require you to open the QuickStrip at all. Again, they do not work in all applications but they work in many.</p><ul><li>You can hold CTRL down and use the scrollwheel on your mouse to zoom in/out</li><li>Hold the CTRL key down and use the + and - keys on keyboard to zoom in/out</li></ul>"
+        "sideCar": "<p>The “Top Window Zoom” buttons are provided to make zooming the text in many application Windows easy.</p><p>But there are even faster ways to do this that do not require you to open the QuickStrip at all. Again, they do not work in all applications but they work in many.</p><ul><li>You can hold CTRL down and use the scrollwheel on your mouse to zoom in/out</li><li>Hold the CTRL key down and use the + and - keys on keyboard to zoom in/out</li></ul>"
     },
     "gpii_app_qss_settings_common-language": {
         "tooltip": "<p>Change Language of Menus & Ribbons.</p><p>Works in Windows, Edge, Office and other programs with language packs installed.</p>",
         "title": "Language of Menus",
         "tip": "<p>Change Language of Menus/Ribbons</p><p>Works in Windows, and other apps that support Windows language settings.</p><ul><li>Does not translate documents etc.</li><li>You may need to restart some apps to see change.</li></ul>",
-        "sideCart": "<p>The language choices in the list are the Microsoft languages approved by your IT department for this site.</p><p>To add another language to the list - see your IT department.</p><p>(On personal and home machines - a SETUP Tool will be available to select the languages for you computer)</p>"
+        "sideCar": "<p>The language choices in the list are the Microsoft languages approved by your IT department for this site.</p><p>To add another language to the list - see your IT department.</p><p>(On personal and home machines - a SETUP Tool will be available to select the languages for you computer)</p>"
     },
     "gpii_app_qss_settings_usb-open": {
         "tooltip": "<p>Open and safely Eject all USB flash drives plugged into the computer.</p>",
         "title": "Open & Eject USB",
         "tip": "<p>Your USB Drive</p><p>Insert a USB drive and open it with the button below.</p>",
         "footerTip": "<p>When you are done, prevent data loss by ejecting USB drives safely.</p><ol><li>Close all documents opened from the USB drive and</li><li>Then use the button below to safely eject the USB drives</li></ol>",
-        "sideCart": "<p>On this menu you can open all of the USB drives plugged into your computer with one click.</p><p>When you are done with your USB drives, use this menu again to eject your drives safely. This will help keep your data safe.</p>"
+        "sideCar": "<p>On this menu you can open all of the USB drives plugged into your computer with one click.</p><p>When you are done with your USB drives, use this menu again to eject your drives safely. This will help keep your data safe.</p>"
     },
     "gpii_app_qss_settings_screenCapture": {
         "tooltip": "<p>Screen Capture.</p><p>Take pictures of all or part of the screen.</p>",
@@ -84,7 +83,7 @@
             "Make COPY to PASTE into doc, email, etc.",
             "Take PICTURE and save to desktop"
         ],
-        "sideCart": "<p>This Screen capture tool uses the open source software ShareX to capture settings with high precision.</p><p>ShareX has many other features available. Open ShareX by pressing the Windows key and typing <b>ShareX</b>.</p><p>Microsoft also has a built in screen capture tool called Snipping Tool that you can call up  by pressing <b>WinKey+Shift+S</b>.</p>"
+        "sideCar": "<p>This Screen capture tool uses the open source software ShareX to capture settings with high precision.</p><p>ShareX has many other features available. Open ShareX by pressing the Windows key and typing <b>ShareX</b>.</p><p>Microsoft also has a built in screen capture tool called Snipping Tool that you can call up  by pressing <b>WinKey+Shift+S</b>.</p>"
     },
     "gpii_app_qss_settings_cloud-folder-open": {
         "tooltip": "<p>The Quick Folder has commonly requested documents, web pages, and other resources.</p>",
@@ -98,14 +97,14 @@
             "Basic (Morphic)",
             "Essentials (Morphic)"
         ],
-        "sideCart": "<p>You can also create your own custom Microsoft Word Ribbons on your own computer.</p><p>To create a customized ribbon right click on the right edge of the ribbon bar and select “Customize Ribbons”. Further instructions are available on the <a href='https://www.google.com/url?q=https://support.office.com/en-us/article/customize-the-ribbon-in-office-00f24ca7-6021-48d3-9514-a31a460ecb31&sa=D&ust=1574340730194000&usg=AFQjCNEyLvVGOvdz2uB4jPJnVlZVVybieQ'>Microsoft Office support site</a>.</p><p>NOTE: User customized ribbons are not currently captured and saved by Morphic.</p>"
+        "sideCar": "<p>You can also create your own custom Microsoft Word Ribbons on your own computer.</p><p>To create a customized ribbon right click on the right edge of the ribbon bar and select “Customize Ribbons”. Further instructions are available on the <a href='https://www.google.com/url?q=https://support.office.com/en-us/article/customize-the-ribbon-in-office-00f24ca7-6021-48d3-9514-a31a460ecb31&sa=D&ust=1574340730194000&usg=AFQjCNEyLvVGOvdz2uB4jPJnVlZVVybieQ'>Microsoft Office support site</a>.</p><p>NOTE: User customized ribbons are not currently captured and saved by Morphic.</p>"
     },
     "gpii_app_qss_settings_common-volume": {
         "tooltip": "<p>Adjusts Windows Volume and provides Mute on/off.</p>",
         "title": "Volume & Mute",
         "tip": "<p>Volume and Mute</p>",
         "switchTitle": "Mute all audio",
-        "sideCart": "<p>A quicker and easier way to change the volume is to just click on the speaker icon on the system tray (near the clock at the bottom of the screen).</p><img src='../../assets/volumeMute.png' alt='volumeMute' class='full'>"
+        "sideCar": "<p>A quicker and easier way to change the volume is to just click on the speaker icon on the system tray (near the clock at the bottom of the screen).</p><img src='../../assets/volumeMute.png' alt='volumeMute' class='full'>"
     },
     "gpii_app_qss_settings_launch-documorph": {
         "tooltip": "<p>Converts documents into more accessible forms.</p>",

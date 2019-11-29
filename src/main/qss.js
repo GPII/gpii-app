@@ -772,21 +772,24 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
         translatedSetting.extendedTip = message.extendedTip;
         translatedSetting.switchTitle = message.switchTitle;
 
+        // footerTip
+        translatedSetting.widget = translatedSetting.widget || {};
         if (fluid.isValue(message.footerTip)) {
-            translatedSetting.widget = translatedSetting.widget || {};
             translatedSetting.widget.footerTip = message.footerTip;
         }
 
-        if (fluid.isValue(message.sideCart)) {
-            translatedSetting.sideCart = message.sideCart;
+        // sideCar
+        if (fluid.isValue(message.sideCar)) {
+            translatedSetting.sideCar = message.sideCar;
         } else {
-            translatedSetting.sideCart = "";
+            translatedSetting.sideCar = "";
         }
 
-        if (fluid.isValue(message.sideCartWithSettings)) {
-            translatedSetting.sideCartWithSettings = message.sideCartWithSettings;
+        // sideCar (with osSettingsAvailable set to true)
+        if (fluid.isValue(message.sideCarWithSettings) && message.sideCarWithSettings !== "") {
+            translatedSetting.sideCarWithSettings = message.sideCarWithSettings;
         } else {
-            translatedSetting.sideCartWithSettings = "";
+            translatedSetting.sideCarWithSettings = "";
         }
 
         translatedSetting.schema.title = message.title;
