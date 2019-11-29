@@ -386,6 +386,13 @@
         }
     });
 
+    /**
+     * Represents the data for each indicator element
+     * @typedef {Object} IndicatorData
+     * @property {Integer} [indicatorValue] numeric value of the indicator
+     * @property {Boolean} [isSelected] true if the current indicator is selected
+     * @property {Boolean} [isRecommended] true if this is the default indicator
+     */
 
     /**
      * Generates the different indicators' data based on a setting .
@@ -394,7 +401,7 @@
      * Note that items will be recomputed every time the setting changes but only items that
      * need to be re-rendered will do so (changeApplier merges the values).
      * @param {ButtonDefinition} setting - The setting for which indicators must be created
-     * @return {Object[]} - The list of data for each indicator element. In case no indicators
+     * @return {IndicatorData[]} - The list of data for each indicator element. In case no indicators
      * can be generated an empty array is returned
      */
     gpii.qssWidget.baseStepper.getIndicatorsList = function (setting) {
