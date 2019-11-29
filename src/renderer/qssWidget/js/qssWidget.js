@@ -355,10 +355,11 @@
      * @return {String} - returns string for the button's name
      */
     gpii.psp.qssWidget.getSideCarButtonLabel = function (setting, learnMoreMessage, helpAndMoreMessage) {
+        // if there is sideCar (with or without settings) we are showing the appropriate label
         if (setting.sideCar || setting.sideCarWithSettings) {
             return helpAndMoreMessage;
         }
-
+        // by default we are showing the label for the external help link
         return learnMoreMessage;
     };
 
@@ -371,7 +372,7 @@
      * @param  {Object} styles - A hash containing CSS classes for the different buttons
      */
     gpii.psp.qssWidget.openSideCarActivated = function (sidePanelButton, qssWidget, sideCarContainer, styles) {
-        if (qssWidget.model.setting.sideCar) {
+        if (qssWidget.model.setting.sideCar || qssWidget.model.setting.sideCarWithSettings) {
             // remove all of the default classes
             sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
 
@@ -379,11 +380,13 @@
                 // showing the panel
                 sideCarContainer.removeClass(styles.hideSidePanel);
                 sidePanelButton.container.addClass(styles.closeSidePanel);
-                sidePanelButton.applier.change("label", "Hide", null, "fromWidget");
+                // changing button's label
+                sidePanelButton.applier.change("label", qssWidget.model.messages.hideSideCar, null, "fromWidget");
             } else {
                 // hiding the panel
                 sideCarContainer.addClass(styles.hideSidePanel);
                 sidePanelButton.container.addClass(styles.openSidePanel);
+                // changing button's label
                 sidePanelButton.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
             }
         } else {
