@@ -258,20 +258,21 @@ gpii.app.expect = function (dataObject, expectedKeys, warningSend, warningTitle)
 gpii.app.generateCustomButton = function (buttonData) {
     var serviceButtonTypeApp = "custom-launch-app",
         serviceButtonTypeWeb = "custom-open-url",
+        serviceButtonTypeKey = "custom-keys",
         titleAppNotFound = "Program not found",
         titleUrlInvalid = "Invalid URL",
+        titleNoKeyData = "No Key Data",
         disabledStyle = "disabledButton",
         data = false;
 
     // we need to have the data, with all required fields:
     // buttonId, buttonName, buttonType, buttonData
     if (gpii.app.expect(buttonData, ["buttonId", "buttonName", "buttonType", "buttonData"], true, "generateCustomButton")) {
-        var buttonType = buttonData.buttonType === "APP" ? serviceButtonTypeApp : serviceButtonTypeWeb;
         data = {
             "id": buttonData.buttonId,
-            "path": buttonType,
+            "path": serviceButtonTypeWeb, // default
             "schema": {
-                "type": buttonType,
+                "type": serviceButtonTypeWeb,
                 "title": buttonData.buttonName,
                 "fullScreen": false
             },
@@ -286,6 +287,9 @@ gpii.app.generateCustomButton = function (buttonData) {
             data.schema.fullScreen = true;
         }
         if (buttonData.buttonType === "APP") {
+            // APP type button
+            data.path = serviceButtonTypeApp;
+            data.schema.type = serviceButtonTypeApp;
             // checks if the file exists and its executable
             if (gpii.app.checkExecutable(buttonData.buttonData)) {
                 // adding the application's path
@@ -296,7 +300,21 @@ gpii.app.generateCustomButton = function (buttonData) {
                 // disables the button
                 data.buttonTypes.push(disabledStyle);
             }
+        } else if (buttonData.buttonType === "KEY") {
+            // KEY type button
+            data.path = serviceButtonTypeKey;
+            data.schema.type = serviceButtonTypeKey;
+            if (fluid.isValue(buttonData.buttonData)) {
+                // adding the key sequence data to the schema
+                data.schema.keyData = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleNoKeyData;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
         } else {
+            // WEB type button
             // adding the http if its missing
             if (buttonData.buttonData.indexOf("https://") === -1 && buttonData.buttonData.indexOf("http://") === -1) {
                 buttonData.buttonData = "http://" + buttonData.buttonData;
@@ -542,4 +560,20 @@ gpii.app.startProcess = function (process, fullScreen) {
     }
     // executing the process
     gpii.windows.startProcess(process, arg, options);
+};
+
+/**
+ * Executes the key sequence using the sendKeys command, documentation
+ * https://github.com/stegru/windows/blob/GPII-4135/gpii/node_modules/gpii-userInput/README.md
+ * @param  {String} keyData - string with key combinations
+ * @return {Boolean} true if there is a keyData to be execute, false otherwise
+ */
+gpii.app.executeKeySequence = function (keyData) {
+    if (fluid.isValue(keyData)) {
+        gpii.windows.sendKeys.send(keyData);
+        return true;
+    } else {
+        fluid.log(fluid.logLevel.WARN, "executeKeySequence: Empty or invalid keyData");
+    }
+    return false;
 };

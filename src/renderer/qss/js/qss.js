@@ -50,6 +50,7 @@
             // custom button grades
             "custom-launch-app": "gpii.qss.customLaunchAppPresenter",
             "custom-open-url":   "gpii.qss.customOpenUrlPresenter",
+            "custom-keys":       "gpii.qss.customKeysPresenter",
             // separator grade
             "separator":         "gpii.qss.separatorButtonPresenter",
             // url based buttons
@@ -248,7 +249,8 @@
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
 
                         // Custom buttons events
-                        onQssStartProcess: null
+                        onQssStartProcess: null,
+                        onQssExecuteKeySequence: null
                     }
                 }
             }
