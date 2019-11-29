@@ -21,6 +21,7 @@ require("./waitDialog.js");
 require("./surveyDialog.js");
 require("./errorDialog.js");
 require("./aboutDialog.js");
+require("./promotionWindowDialog.js");
 require("../common/utils.js");
 
 
@@ -164,6 +165,14 @@ fluid.defaults("gpii.app.dialogManager", {
         },
         aboutDialog: {
             type: "gpii.app.aboutDialog",
+            options: {
+                model: {
+                    scaleFactor: "{dialogManager}.model.scaleFactor"
+                }
+            }
+        },
+        promotionWindow: {
+            type: "gpii.app.promotionWindowDialog",
             options: {
                 model: {
                     scaleFactor: "{dialogManager}.model.scaleFactor"
