@@ -40,6 +40,11 @@
     "gpii_qssWidget_volumeStepper_upperBoundError": "Това е най-високата настройка",
     "gpii_qssWidget_volumeStepper_lowerBoundError": "Това е най-ниската настройка",
 
+    "gpii_qssWidget_mouse_incrementButton": "По-бързо",
+    "gpii_qssWidget_mouse_decrementButton": "По-бавно",
+    "gpii_qssWidget_mouse_upperBoundError": "Това е най-бързата скорост",
+    "gpii_qssWidget_mouse_lowerBoundError": "Това е най-бавната скорост",
+
     "gpii_qssWidget_openUSB_noUsbInserted": "В компютъра не са включени USB устройства. Поставете USB и опитайте отново.",
     "gpii_qssWidget_openUSB_ejectUsbDrives": "В компютъра няма активни USB устройства. Безопасно е да премахнете всяко устройство в компютъра",
     "gpii_qssWidget_openUSB_openUsbButtonLabel": "Отвори всички USB устройства",

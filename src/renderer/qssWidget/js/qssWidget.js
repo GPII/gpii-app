@@ -61,7 +61,8 @@
             translateTools: ".flc-qssTranslateToolsWidget",
             mySavedSettings: ".flc-qssMySavedSettingsWidget",
             sideCar: ".flc-sidecar-panel",
-            sideCarButton: ".flc-sidecar-button"
+            sideCarButton: ".flc-sidecar-button",
+            mouse: ".flc-qssMouseWidget"
         },
 
         /**
@@ -76,8 +77,9 @@
             "openUSB": "gpii.qssWidget.openUSB",
             "volume": "gpii.qssWidget.volume",
             "office": "gpii.qssWidget.office",
-            "mySavedSettings": "gpii.qssWidget.mySavedSettings",
-            "translateTools": "gpii.qssWidget.translateTools"
+            "mouse": "gpii.qssWidget.mouse",
+            "translateTools": "gpii.qssWidget.translateTools",
+            "mySavedSettings": "gpii.qssWidget.mySavedSettings"
         },
 
         events: {

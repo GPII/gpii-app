@@ -79,3 +79,47 @@
     top: 4px;
     font-size: 9px;
 }
+
+/* Mouse Widget Toggle specific alterations */
+.fl-qssMouseWidgetToggle {
+    margin-bottom: 10px;
+}
+.fl-qssMouseWidgetToggle .fl-qssToggleWidget-settingTitle {
+    margin: 0 !important;
+    width: 50%;
+    float: left;
+    text-align: left;
+    font-weight: bold;
+    line-height: 110%;
+    font-size: 8.5px;
+}
+.fl-qssMouseWidgetToggle .fl-switchUI-control {
+    width: 34px;
+}
+.fl-qssMouseWidgetToggle .fl-switchUI-control .fl-switchUILabel {
+    font-size: 8.5px;
+}
+.fl-qssMouseWidgetToggle .fl-switchUI {
+    margin-top: 0;
+}
+.fl-qssMouseWidgetToggle .fl-switchUI .fl-switchUI-control[aria-checked=true] .fl-switchUI-controlKnob {
+    left: 14px;
+}
+
+/* Adding the option to have a toggle icon associated to the switchUI */
+.fl-qssMouseWidgetToggle.fl-qssMouseWidgetToggle-icon-offset {
+    margin-top: 30px;
+}
+.fl-qssMouseWidgetToggle .fl-switchUI-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    margin: -30px 0 0 0;
+}
+/* Swap Mouse buttons specific icon classes based on the switchUI-icon class */
+.fl-qssMouseWidgetToggle .fl-mouseButton-icon {
+    background: url(../../../assets/mouse-swap-left.svg);
+}
+.fl-qssMouseWidgetToggle .fl-switchUI .fl-switchUI-control[aria-checked=true] .fl-mouseButton-icon {
+    background: url(../../../assets/mouse-swap-right.svg);
+}
