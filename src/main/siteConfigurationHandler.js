@@ -95,6 +95,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",
             target: "{app tray}.options.trayType"
+        },
+        distributeAutoLogin: {
+            record: "{that}.options.siteConfig.autoLogin",
+            target: "{/ gpii.windows.userListeners.windowsLogin}.options.config"
         }
     }
 });
