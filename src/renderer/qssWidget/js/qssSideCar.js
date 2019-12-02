@@ -47,7 +47,7 @@
      * Adds the appropriate data in the sideCar based on the data available and the siteconfig's
      * osSettingsAvailable variable. If there is data in sideCarWithSettings and osSettingsAvailable
      * is true we are showing that, if not the base sideCar message is displayed.
-     * @param  {Component} that - The instance of the widget
+     * @param {gpii.qssWidget.sideCar} that - The instance of the widget
      */
     gpii.qssWidget.sideCar.getSideCarMessage = function (that) {
         if (that.model.osSettingsAvailable && that.model.setting.sideCarWithSettings !== "") {

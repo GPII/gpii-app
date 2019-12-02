@@ -779,18 +779,10 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
         }
 
         // sideCar
-        if (fluid.isValue(message.sideCar)) {
-            translatedSetting.sideCar = message.sideCar;
-        } else {
-            translatedSetting.sideCar = "";
-        }
+        translatedSetting.sideCar = message.sideCar || "";
 
         // sideCar (with osSettingsAvailable set to true)
-        if (fluid.isValue(message.sideCarWithSettings) && message.sideCarWithSettings !== "") {
-            translatedSetting.sideCarWithSettings = message.sideCarWithSettings;
-        } else {
-            translatedSetting.sideCarWithSettings = "";
-        }
+        translatedSetting.sideCarWithSettings = message.sideCarWithSettings || "";
 
         translatedSetting.schema.title = message.title;
         if (message["enum"]) {
