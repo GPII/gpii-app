@@ -6,4 +6,4 @@
 * [app.testing.metrics](app.testing.metrics.json) (*default*): Testing, with metrics.
 * [app.metrics](app.metrics.json): Metrics only.
 * [app.dev](app.dev.json): Development (includes metrics).
-* [app.disable.dev](app.disable.json): Disable morphic (it doesn't run).
+* [app.disable](app.disable.json): Disable morphic (it doesn't run).
