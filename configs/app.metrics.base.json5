@@ -1,0 +1,15 @@
+// Start the collection of metrics
+{
+    "type": "gpii.appMetricsBase",
+    "options": {
+        "distributeOptions": {
+            "metricsOptions": {
+                "record": {
+                    gradeNames: ["gpii.windowsMetrics", "gpii.metrics.lifecycle"],
+                    logDestination: "tcp://127.0.0.1:51481"
+                },
+                "target": "{that gpii.eventLog}.options"
+            }
+        }
+    }
+}

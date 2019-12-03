@@ -1,0 +1,12 @@
+// This disables Morphic (it quits when it starts).
+{
+    "type": "gpii.app.disable",
+    "options": {
+        "gradeNames": ["fluid.component"],
+        "listeners": {
+            "onCreate.die": {
+                "funcName": "gpii.app.performQuit"
+            }
+        }
+    }
+}

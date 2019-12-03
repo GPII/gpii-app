@@ -18,7 +18,7 @@
 
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
-var qssSettingsCount = 21;
+var qssSettingsCount = 22;
 
 var clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
