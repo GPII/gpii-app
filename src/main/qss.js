@@ -619,25 +619,27 @@ gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, l
 gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath, siteConfig) {
     var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
         loadedSettings = availableSettings, // by default we are getting all of the buttons
-        multipleir = 1000;
+        multiplier = 1000; // the precision multiplier should match the one used in the qssBaseStepperWidget
 
     if (gpii.app.hasButtonList(siteConfig)) { // checking if we have a valid button list in the siteConfig
         // filtering the buttons based on buttonList array
         loadedSettings = gpii.app.filterButtonList(siteConfig.buttonList, availableSettings);
     }
 
+    // the multiplier used through all of the calculations below it's there because we have too small of values
+    // and with this multiplier we are trying to avoid rounding errors when comparing values with the bounds
     fluid.each(loadedSettings, function (loadedSetting) {
         if (gpii.app.hasSecondarySettings(loadedSetting)) {
 
             fluid.each(loadedSetting.settings, function (nestedSetting) {
                 if (fluid.isValue(nestedSetting.schema.min)) {
                     // Appling rounding on the minimum value and guarantees that a value is a multiple of the step.
-                    nestedSetting.schema.min = Math.ceil((nestedSetting.schema.min - 1 / multipleir) / nestedSetting.schema.divisibleBy) * nestedSetting.schema.divisibleBy;
+                    nestedSetting.schema.min = Math.ceil((nestedSetting.schema.min - 1 / multiplier) / nestedSetting.schema.divisibleBy) * nestedSetting.schema.divisibleBy;
                 }
 
                 if (fluid.isValue(nestedSetting.schema.max)) {
                     // Appling rounding on the maximum value and guarantees that a value is a multiple of the step.
-                    nestedSetting.schema.max = Math.floor((nestedSetting.schema.max + 1 / multipleir) / nestedSetting.schema.divisibleBy) * nestedSetting.schema.divisibleBy;
+                    nestedSetting.schema.max = Math.floor((nestedSetting.schema.max + 1 / multiplier) / nestedSetting.schema.divisibleBy) * nestedSetting.schema.divisibleBy;
                 }
             });
 
@@ -657,12 +659,12 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
 
             if (fluid.isValue(loadedSetting.schema.min)) {
                 // Appling rounding on the minimum value and guarantees that a value is a multiple of the step.
-                loadedSetting.schema.min = Math.ceil((loadedSetting.schema.min - 1 / multipleir) / loadedSetting.schema.divisibleBy) * loadedSetting.schema.divisibleBy;
+                loadedSetting.schema.min = Math.ceil((loadedSetting.schema.min - 1 / multiplier) / loadedSetting.schema.divisibleBy) * loadedSetting.schema.divisibleBy;
             }
 
             if (fluid.isValue(loadedSetting.schema.max)) {
                 // Appling rounding on the maximum value and guarantees that a value is a multiple of the step.
-                loadedSetting.schema.max = Math.floor((loadedSetting.schema.max + 1 / multipleir) / loadedSetting.schema.divisibleBy) * loadedSetting.schema.divisibleBy;
+                loadedSetting.schema.max = Math.floor((loadedSetting.schema.max + 1 / multiplier) / loadedSetting.schema.divisibleBy) * loadedSetting.schema.divisibleBy;
             }
 
             var imageAsset = loadedSetting.schema.image;

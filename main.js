@@ -96,6 +96,6 @@ fluid.onUncaughtException.addListener(function () {
 
 
 kettle.config.loadConfig({
-    configName: kettle.config.getConfigName("app.testing"),
+    configName: kettle.config.getConfigName("app.testing.metrics"),
     configPath: kettle.config.getConfigPath("%gpii-app/configs")
 });
