@@ -175,5 +175,8 @@
     autoLogin: {
         blockedUsers: ["admin*", "guest*", "student*", "visitor*", "volunteer*"],
         userIdSource: "username"
-    }
+    },
+
+    // Metrics switch (read by the service): "<morphic>:<metrics>"
+    metricsSwitch: "on:on" // (eg, "on:on"=both on (default), "off:on"=metrics only)
 }
