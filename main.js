@@ -61,6 +61,7 @@ app.on("second-instance", function (event, commandLine) {
 
         var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
         qssWrapper.qss.show();
+
         if (reset) {
             setTimeout(function () {
                 // GPII-3455: Call this in another execution stack, to allow electron to free some things, otherwise an
