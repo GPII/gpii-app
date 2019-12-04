@@ -228,12 +228,12 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
     gradeNames: ["fluid.component"],
     listeners: {
         "onCreate.logSite": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "site-id", "{siteConfigurationHandler}.options.siteConfig.site" ]
         },
         "{channelListener}.events.onQssButtonFocused": [{
             namespace: "metric",
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "button-focused", {
                 buttonPath: "{arguments}.0.path"
             } ]
@@ -245,7 +245,7 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
         }],
         "{channelListener}.events.onQssButtonActivated": {
             namespace: "metrics",
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "button-activated", {
                 buttonPath: "{arguments}.0.path",
                 key: "{arguments}.2.key",
@@ -254,7 +254,7 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
         },
         "{channelListener}.events.onQssButtonMouseEnter": [{
             namespace: "metric",
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "mouse-over", {
                 id:"{arguments}.0.path",
                 qss: true
@@ -275,11 +275,11 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
             args: [ "focus" ]
         },
         "onDialogShown.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "qss-shown" ]
         },
         "onDialogHidden.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "qss-hidden" ]
         },
         "onDialogShown.logState": {
@@ -300,11 +300,11 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
             options: {
                 listeners: {
                     "{gpii.app}.tray.events.onTrayIconClicked": {
-                        func: "{eventLog}.metrics.uiMetric",
+                        func: "{eventLog}.uiMetric",
                         args: [ "tray-icon" ]
                     },
                     "{gpii.app}.tray.events.onTrayIconMenuShown": {
-                        func: "{eventLog}.metrics.uiMetric",
+                        func: "{eventLog}.uiMetric",
                         args: [ "button-activated", {
                             buttonPath: "{arguments}.0.path",
                             key: "{arguments}.2.key",
@@ -322,27 +322,27 @@ fluid.defaults("gpii.app.metrics.qssWidget", {
     gradeNames: ["fluid.component"],
     listeners: {
         "onQssWidgetSettingAltered.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: ["setting-changed", {
                 path: "{arguments}.0.path",
                 value: "{arguments}.0.value"
             }]
         },
         "onDialogShown.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "widget-shown", {
                 path: "{that}.model.setting.path"
             } ]
         },
         "onDialogHidden.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "widget-hidden", {
                 path: "{that}.model.setting.path"
             } ]
         },
         "{channelListener}.events.onMetric": {
             namespace: "metric",
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "{arguments}.0", "{arguments}.1" ]
         },
         "{channelListener}.events.onMetricState": {
@@ -358,13 +358,13 @@ fluid.defaults("gpii.app.metrics.qssTooltipDialog", {
     gradeNames: ["fluid.component"],
     listeners: {
         "onDialogShown.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "tooltip-shown", {
                 path: "{that}.model.setting.path"
             } ]
         },
         "onDialogHidden.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "tooltip-hidden", {
                 path: "{that}.model.setting.path"
             } ]
@@ -377,13 +377,13 @@ fluid.defaults("gpii.app.metrics.qssNotification", {
     gradeNames: ["fluid.component"],
     listeners: {
         "onQssNotificationShown.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: ["notification-shown", {
                 description: "{arguments}.0.description"
             }]
         },
         "onDialogHidden.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: ["notification-hidden"]
         }
     }
@@ -394,16 +394,16 @@ fluid.defaults("gpii.app.metrics.errorDialog", {
     gradeNames: ["fluid.component"],
     listeners: {
         "onDialogShown.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: ["error-shown", {errCode: "{that}.options.config.params.errCode"}]
         },
         "onDialogHidden.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: ["error-hidden", {errCode: "{that}.options.config.params.errCode"}]
         },
         "{channelListener}.events.onMetric": {
             namespace: "metric",
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: ["{arguments}.0", "{arguments}.1"]
         },
         "{channelListener}.events.onMetricState": {
@@ -419,11 +419,11 @@ fluid.defaults("gpii.app.metrics.morePanel", {
     gradeNames: ["fluid.component"],
     listeners: {
         "onDialogShown.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: ["more-shown"]
         },
         "onDialogHidden.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: ["more-hidden"]
         }
     }
