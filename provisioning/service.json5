@@ -35,12 +35,12 @@
     "gpiiConfig": {
         "env": "NODE_ENV",
         // Morphic + metrics:
-        "on:on": "app.testing.metrics",
+        "on:on": "app.production.metrics",
         // No metrics or morphic:
         "off:off": "app.disable",
         // Metrics only:
         "off:on": "app.metrics",
         // No metrics:
-        "on:off": "app.testing"
+        "on:off": "app.production"
     }
 }
