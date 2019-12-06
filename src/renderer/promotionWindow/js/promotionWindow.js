@@ -26,11 +26,43 @@
     fluid.defaults("gpii.psp.promotionWindow", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
-        model: {},
+        model: {
+            messages: {
+                content: null,
+                error: null
+            }
+        },
 
         selectors: {
-            title: ".flc-contentTitle"
+            title: ".flc-contentTitle",
+            content: ".flc-content"
+        },
+
+        modelListeners: {
+            "messages.content": {
+                this: "{that}.dom.content",
+                method: "html",
+                args: ["{change}.value"]
+            }
+        },
+
+        listeners: {
+            "onCreate.getContent": {
+                funcName: "gpii.psp.promotionWindow.getContent",
+                args: ["{that}"]
+            }
         }
     });
+
+    /** TODO
+     * @param {gpii.psp.promotionWindow} that - The instance of the widget.
+     */
+    gpii.psp.promotionWindow.getContent = function (that) {
+        gpii.windows.getWebContent(that.model.url).then(function (contentData) {
+            that.applier.change("messages.content", contentData, null, "fromWidget");
+        }, function () {
+            that.applier.change("messages.content", that.model.messages.error, null, "fromWidget");
+        });
+    };
 
 })(fluid);

@@ -32,8 +32,8 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
 
     config: {
         attrs: {
-            width: 300,
-            height: 200
+            width: 400,
+            height: 300
         },
         params: {
             promoContentUrl: "{that}.options.siteConfig.promoContentUrl"

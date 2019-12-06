@@ -26,7 +26,7 @@
         gradeNames: ["gpii.psp.messageBundles", "fluid.viewComponent", "gpii.psp.linksInterceptor"],
 
         components: {
-            aboutDialog: {
+            promotionWindow: {
                 type: "gpii.psp.promotionWindow",
                 container: "{translatedPromotionWindow}.container",
                 options: {

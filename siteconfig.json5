@@ -167,7 +167,7 @@
     },
 
     promotionWindow: {
-        promoContentUrl: "http://morphic.world/"
+        promoContentUrl: "http://www.goldenorbs.com/promo/promo-window.html"
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format

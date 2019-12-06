@@ -20,6 +20,7 @@
         shell = require("electron").shell,
         ipcRenderer = require("electron").ipcRenderer,
         child_process = require("child_process"),
+        http = require("http"),
         fs = require("fs");
 
     fluid.registerNamespace("gpii.psp");
@@ -167,6 +168,32 @@
             fluid.log(fluid.logLevel.WARN, "openSnippingTool: Cannot start the snipping tool!");
         }
         return false;
+    };
+
+    /**
+     * Retrieves web content from a remote location.
+     * @param {String} url - The URL of the content to be retrieved.
+     * @return {Promise} A promise that will be resolved/rejected when the request is finished.
+     */
+    gpii.windows.getWebContent = function (url) {
+        var togo = fluid.promise();
+
+        var request = http.request(url, function (res) {
+            var data = "";
+            res.on("data", function (chunk) {
+                data += chunk;
+            });
+            res.on("end", function () {
+                togo.resolve(data);
+            });
+        });
+        request.on("error", function (err) {
+            fluid.log(fluid.logLevel.WARN, err);
+            togo.reject();
+        });
+        request.end();
+
+        return togo;
     };
 
     /**
