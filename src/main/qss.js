@@ -832,10 +832,17 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
             translatedSetting.switchTitle = message.switchTitle;
         }
 
+        // footerTip
+        translatedSetting.widget = translatedSetting.widget || {};
         if (fluid.isValue(message.footerTip)) {
-            translatedSetting.widget = translatedSetting.widget || {};
             translatedSetting.widget.footerTip = message.footerTip;
         }
+
+        // sideCar
+        translatedSetting.sideCar = message.sideCar || "";
+
+        // sideCar (with osSettingsAvailable set to true)
+        translatedSetting.sideCarWithSettings = message.sideCarWithSettings || "";
 
         translatedSetting.schema.title = message.title;
         if (message["enum"]) {
