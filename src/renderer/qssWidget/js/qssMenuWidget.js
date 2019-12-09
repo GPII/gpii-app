@@ -204,8 +204,7 @@
      */
     gpii.qssWidget.menu.updateValue = function (that, menu, container, value, keyboardEvent, closeOnSelect) {
         // we are closing the menu by default
-        var closeNow = (fluid.isValue(closeOnSelect) && closeOnSelect === false) ? false : true;
-
+        var closeNow = closeOnSelect !== false;
 
         if (!that.model.disabled && that.model.value !== value) {
             that.applier.change("value", value, null, "fromWidget");
