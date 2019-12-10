@@ -64,7 +64,8 @@ fluid.defaults("gpii.app.qssWidget", {
             lastEnvironmentalLoginGpiiKey: "{that}.model.lastEnvironmentalLoginGpiiKey"
         },
         attrs: {
-            width: 170,
+            width: 300,
+            widthWithoutSidecar: 170,
             height: 255,
             alwaysOnTop: true
         },
@@ -269,18 +270,22 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
 gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
     activationParams = activationParams || {};
 
+    var scaleFactor = that.model.scaleFactor,
+        // we assume that the widget have a sideCar by default
+        hasSideCar = setting.schema.sideCar !== false,
+        // using the width if there is sideCar, and widthWithoutSidecar otherwise
+        // in both cases using the scaleFactor as well
+        width = scaleFactor * (hasSideCar ? that.options.config.attrs.width : that.options.config.attrs.widthWithoutSidecar),
+        // adding the scaleFactor
+        height = scaleFactor * that.options.config.attrs.height;
+
     gpii.app.applier.replace(that.applier, "setting", setting);
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
     // store the offset so that the widget can be positioned correctly when
     // the renderer process sends the corresponding message
-    var offset = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics);
-    that.applier.change("offset", offset);
-
-    var scaleFactor = that.model.scaleFactor,
-        height = that.options.config.attrs.height;
-    that.setRestrictedSize(that.model.width, scaleFactor * height);
-
+    that.applier.change("offset", gpii.app.qssWidget.getWidgetPosition(that, elementMetrics));
+    that.setRestrictedSize(width, height);
     that.shouldShow = true;
 };
 
