@@ -27,13 +27,27 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
     gradeNames: ["gpii.app.dialog"],
 
     siteConfig: {
-        promoContentUrl: null
+        promoContentUrl: null,
+        width: 200,
+        height: 200,
+        resizable: false,
+        movable: false,
+        skipTaskbar: false,
+        frame: false,
+        transparent: false,
+        alwaysOnTop: false
     },
 
     config: {
         attrs: {
-            width: 400,
-            height: 300
+            width: "{that}.options.siteConfig.width",
+            height: "{that}.options.siteConfig.height",
+            resizable: "{that}.options.siteConfig.resizable",
+            movable: "{that}.options.siteConfig.resizable.movable",
+            skipTaskbar: "{that}.options.siteConfig.resizable.skipTaskbar",
+            frame: "{that}.options.siteConfig.resizable.frame",
+            transparent: "{that}.options.siteConfig.transparent",
+            alwaysOnTop: "{that}.options.siteConfig.alwaysOnTop"
         },
         params: {
             promoContentUrl: "{that}.options.siteConfig.promoContentUrl"

@@ -167,7 +167,15 @@
     },
 
     promotionWindow: {
-        promoContentUrl: "http://www.goldenorbs.com/promo/promo-window.html"
+        promoContentUrl: "http://www.goldenorbs.com/promo/promo-window.html",
+        width: 400,
+        height: 400,
+        resizable: true,
+        movable: true,
+        skipTaskbar: true,
+        frame: true,
+        transparent: false,
+        alwaysOnTop: true
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
