@@ -32,12 +32,10 @@
                 error: null
             }
         },
-
         selectors: {
             title: ".flc-contentTitle",
             content: ".flc-content"
         },
-
         modelListeners: {
             "messages.content": {
                 this: "{that}.dom.content",
@@ -45,7 +43,6 @@
                 args: ["{change}.value"]
             }
         },
-
         listeners: {
             "onCreate.getContent": {
                 funcName: "gpii.psp.promotionWindow.getContent",

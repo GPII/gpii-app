@@ -38,6 +38,8 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         alwaysOnTop: false
     },
 
+    closeDelay: 5000,
+
     config: {
         attrs: {
             width: "{that}.options.siteConfig.width",
@@ -55,9 +57,16 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         fileSuffixPath: "promotionWindow/index.html"
     },
 
+    events: {
+        delayedClose: null
+    },
     listeners: {
         "onCreate": {
-            func: "{that}.show"
+            funcName: "{that}.show"
+        },
+        "delayedClose": {
+            funcName: "{closeTimer}.start",
+            args: ["{that}.options.closeDelay"]
         }
     },
 
@@ -72,6 +81,16 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         // notify for i18n events
         channelNotifier: {
             type: "gpii.app.channelNotifier"
+        },
+        closeTimer: {
+            type: "gpii.app.timer",
+            options: {
+                listeners: {
+                    "onTimerFinished": {
+                        funcName: "{promotionWindowDialog}.close"
+                    }
+                }
+            }
         }
     }
 });
