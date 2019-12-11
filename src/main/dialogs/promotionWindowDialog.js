@@ -38,7 +38,8 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         alwaysOnTop: false
     },
 
-    closeDelay: 5000,
+    closeDelay: 10000,
+    showDelay: 5000,
 
     config: {
         attrs: {
@@ -61,8 +62,9 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         delayedClose: null
     },
     listeners: {
-        "onCreate": {
-            funcName: "{that}.show"
+        "onCreate.delayedShow": {
+            funcName: "{showTimer}.start",
+            args: ["{that}.options.showDelay"]
         },
         "delayedClose": {
             funcName: "{closeTimer}.start",
@@ -88,6 +90,16 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
                 listeners: {
                     "onTimerFinished": {
                         funcName: "{promotionWindowDialog}.close"
+                    }
+                }
+            }
+        },
+        showTimer: {
+            type: "gpii.app.timer",
+            options: {
+                listeners: {
+                    "onTimerFinished": {
+                        funcName: "{promotionWindowDialog}.show"
                     }
                 }
             }
