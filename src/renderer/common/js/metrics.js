@@ -33,6 +33,10 @@
             "switch": {
                 target: "{that gpii.psp.widgets.switch}.options.gradeNames",
                 record: "gpii.psp.metrics"
+            },
+            "office": {
+                target: "{that gpii.qssWidget.office}.options.gradeNames",
+                record: "gpii.psp.metrics.office"
             }
         },
         events: {
@@ -41,6 +45,20 @@
         },
         members: {
             componentType: "dialog"
+        }
+    });
+
+    fluid.defaults("gpii.psp.metrics.office", {
+        modelListeners: {
+            setting: {
+                func: "{channelNotifier}.events.onMetric.fire",
+                args: ["office-change", {
+                    id: "{change}.value.path",
+                    value: "{change}.value.value",
+                    oldValue: "{change}.oldValue.value"
+                }],
+                includeSource: "fromWidget"
+            }
         }
     });
 
