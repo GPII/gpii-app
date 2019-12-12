@@ -35,11 +35,13 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         skipTaskbar: false,
         frame: false,
         transparent: false,
-        alwaysOnTop: false
+        alwaysOnTop: false,
+        closeDelay: 0,
+        showDelay: 0
     },
 
-    closeDelay: 10000,
-    showDelay: 5000,
+    closeDelay: "{that}.options.siteConfig.closeDelay",
+    showDelay: "{that}.options.siteConfig.showDelay",
 
     config: {
         attrs: {
