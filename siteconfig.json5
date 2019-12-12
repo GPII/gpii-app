@@ -179,7 +179,11 @@
         // 0 will not close the window
         closeDelay: 0,
         // use 0 for no show delay
-        showDelay: 0
+        showDelay: 0,
+        offset: {
+            x: 0,
+            y: 0
+        }
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format

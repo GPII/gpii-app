@@ -64,9 +64,9 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         delayedClose: null
     },
     listeners: {
-        "onCreate.delayedShow": {
-            funcName: "{showTimer}.start",
-            args: ["{that}.options.showDelay"]
+        "onCreate.showWindow": {
+            funcName: "gpii.app.promotionWindowDialog.show",
+            args: ["{that}", "{showTimer}", "{that}.options.siteConfig.offset.x", "{that}.options.siteConfig.offset.y"]
         },
         "delayedClose": {
             funcName: "{closeTimer}.start",
@@ -108,3 +108,10 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         }
     }
 });
+
+gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY) {
+    if (offsetX || offsetY) {
+        that.setPosition(offsetX, offsetY);
+    }
+    timer.start(that.options.showDelay);
+};
