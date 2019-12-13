@@ -12,6 +12,7 @@ https://github.com/GPII/universal/blob/master/LICENSE.txt
 "use strict";
 
 var app = require("electron").app;
+var os  = require("os");
 
 // Perform this check early, do avoid any delay.
 var singleInstance = app.requestSingleInstanceLock();
@@ -61,7 +62,15 @@ app.on("second-instance", function (event, commandLine) {
 // this module is loaded relatively slowly
 // it also loads gpii-universal
 // NOTE: if the OS-specific support package was not loaded successfully, the require(".../index.js") function will throw an exception
-require("gpii-windows/index.js");
+switch(os.platform()) {
+case "win32":
+    require("gpii-windows/index.js");
+    break;
+default:
+    // use the no-os stubs if the host is not running a supported OS
+    require("gpii-no-os/index.js");
+    break;
+}
 
 require("./index.js");
 

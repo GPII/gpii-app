@@ -35,6 +35,7 @@
         "shelljs": "0.8.2"
     },
     "optionalDependencies": {
+        "gpii-no-os": "git+https://github.com/GPII/gpii-no-os.git",
         "gpii-windows": "0.3.0-dev.20191204T181313Z.b920f98.GPII-4253"
     },
     "scripts": {
