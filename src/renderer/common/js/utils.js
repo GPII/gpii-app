@@ -20,8 +20,9 @@
         shell = require("electron").shell,
         ipcRenderer = require("electron").ipcRenderer,
         child_process = require("child_process"),
-        http = require("http"),
-        fs = require("fs");
+        request = require("request"),
+        fs = require("fs"),
+        path = require("path");
 
     fluid.registerNamespace("gpii.psp");
     fluid.registerNamespace("gpii.windows");
@@ -171,6 +172,15 @@
     };
 
     /**
+     * A custom function for retrieving a file extension.
+     * @param {String} file - path to the file.
+     * @return {String} - returns the file extension.
+     */
+    gpii.windows.getFileExtension = function (file) {
+        return path.extname(file);
+    };
+
+    /**
      * Retrieves web content from a remote location.
      * @param {String} url - The URL of the content to be retrieved.
      * @return {Promise} A promise that will be resolved/rejected when the request is finished.
@@ -178,21 +188,14 @@
     gpii.windows.getWebContent = function (url) {
         var togo = fluid.promise();
 
-        var request = http.request(url, function (res) {
-            var data = "";
-            res.on("data", function (chunk) {
-                data += chunk;
-            });
-            res.on("end", function () {
-                togo.resolve(data);
-            });
+        request(url, function (error, response, body) {
+            if (error || response.statusCode !== 200) {
+                fluid.log(fluid.logLevel.WARN, error);
+                togo.reject();
+            } else {
+                togo.resolve(body);
+            }
         });
-        request.on("error", function (err) {
-            fluid.log(fluid.logLevel.WARN, err);
-            togo.reject();
-        });
-        request.end();
-
         return togo;
     };
 

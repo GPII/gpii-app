@@ -32,21 +32,18 @@
                 error: null
             }
         },
+
+        enableRichText: true,
+
         selectors: {
             title: ".flc-contentTitle",
-            content: ".flc-content"
-        },
-        modelListeners: {
-            "messages.content": {
-                this: "{that}.dom.content",
-                method: "html",
-                args: ["{change}.value"]
-            }
+            content: ".flc-content",
+            image: ".flc-image"
         },
         listeners: {
             "onCreate.getContent": {
                 funcName: "gpii.psp.promotionWindow.getContent",
-                args: ["{that}"]
+                args: ["{that}", "{that}.dom.content", "{that}.dom.image"]
             }
         }
     });
@@ -54,12 +51,18 @@
     /** TODO
      * @param {gpii.psp.promotionWindow} that - The instance of the widget.
      */
-    gpii.psp.promotionWindow.getContent = function (that) {
-        gpii.windows.getWebContent(that.model.url).then(function (contentData) {
-            that.applier.change("messages.content", contentData, null, "fromWidget");
-        }, function () {
-            that.applier.change("messages.content", that.model.messages.error, null, "fromWidget");
-        });
+    gpii.psp.promotionWindow.getContent = function (that, contentContainer, imageContainer) {
+        var fileExtension = gpii.windows.getFileExtension(that.model.url);
+
+        if (fileExtension === ".html" || !fileExtension) {
+            gpii.windows.getWebContent(that.model.url).then(function (contentData) {
+                contentContainer.append(contentData);
+            }, function () {
+                that.applier.change("messages.content", that.model.messages.error, null, "fromWidget");
+            });
+        } else if (fileExtension === ".png" || fileExtension === ".jpg" || fileExtension === ".svg") {
+            imageContainer.attr("src", that.model.url);
+        }
     };
 
 })(fluid);
