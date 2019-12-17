@@ -43,7 +43,18 @@
         listeners: {
             "onCreate.getContent": {
                 funcName: "gpii.psp.promotionWindow.getContent",
-                args: ["{that}", "{that}.dom.content", "{that}.dom.image"]
+                args: ["{that}", "{that}.dom.content", "{that}.dom.image", "{channelNotifier}.events.onPromotionWindowShow"]
+            }
+        },
+
+        components: {
+            channelNotifier: {
+                type: "gpii.psp.channelNotifier",
+                options: {
+                    events: {
+                        onPromotionWindowShow: null
+                    }
+                }
             }
         }
     });
@@ -51,17 +62,18 @@
     /** TODO
      * @param {gpii.psp.promotionWindow} that - The instance of the widget.
      */
-    gpii.psp.promotionWindow.getContent = function (that, contentContainer, imageContainer) {
+    gpii.psp.promotionWindow.getContent = function (that, contentContainer, imageContainer, event) {
         var fileExtension = gpii.windows.getFileExtension(that.model.url);
-
         if (fileExtension === ".html" || !fileExtension) {
             gpii.windows.getWebContent(that.model.url).then(function (contentData) {
                 contentContainer.append(contentData);
+                event.fire();
             }, function () {
                 that.applier.change("messages.content", that.model.messages.error, null, "fromWidget");
             });
         } else if (fileExtension === ".png" || fileExtension === ".jpg" || fileExtension === ".svg") {
             imageContainer.attr("src", that.model.url);
+            event.fire();
         }
     };
 
