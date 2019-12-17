@@ -54,7 +54,7 @@
                     model: {
                         label: "{openUSB}.model.messages.openUsbButtonLabel"
                     },
-                    invokers: {
+                    listeners: {
                         onClick: {
                             funcName: "gpii.qssWidget.openUSB.openUsbActivated",
                             args: [
@@ -73,7 +73,7 @@
                     model: {
                         label: "{openUSB}.model.messages.ejectUsbButtonLabel"
                     },
-                    invokers: {
+                    listeners: {
                         onClick: {
                             funcName: "gpii.qssWidget.openUSB.ejectUsbActivated",
                             args: [
@@ -141,7 +141,7 @@
     };
 
     /**
-     * Fire onQssOpenUsbRequested when the openUsbButton is presed.
+     * Fire onQssOpenUsbRequested when the openUsbButton is pressed.
      * @param {Component} openUSB - The `gpii.qssWidget.openUSB` instance
      * @param {fluid.event} mountUsbEvent - the onQssOpenUsbRequested event
      * @param {String} messageChannel - The channel to which the message should be sent.

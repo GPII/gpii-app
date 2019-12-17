@@ -30,7 +30,7 @@ Import-Module $bootstrapModule -Verbose -Force
 # # Run all the windows provisioning scripts
 # ############
 # TODO: Create function for downloading scripts and executing them.
-$windowsBootstrapURL = "https://raw.githubusercontent.com/javihernandez/windows/GPII-3744/provisioning"
+$windowsBootstrapURL = "https://raw.githubusercontent.com/GPII/windows/master/provisioning"
 try {
     $choco = Join-Path $originalBuildScriptPath "Chocolatey.ps1"
     Write-OutPut "Running windows script: $choco"

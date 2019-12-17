@@ -16,8 +16,6 @@
 
 "use strict";
 (function (fluid) {
-    var gpii = fluid.registerNamespace("gpii");
-
     /**
      * Represents the QSS Translate Tools widget.
      */
