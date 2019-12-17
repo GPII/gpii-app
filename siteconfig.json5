@@ -79,8 +79,8 @@
         // }
 
         // Separator buttons: Use can use any combination of the separators, even one after another:
-        // - "separator" // Use separator for invisible separator
-        // - "separator-visible" // Use separator-visible for a gray separator (same size as the invisible one)
+        // - "separator", or "|" // Use separator for invisible separator
+        // - "separator-visible", or "||" // Use separator-visible for a gray separator (same size as the invisible one)
 
         buttonList: [
             {
@@ -106,7 +106,7 @@
                 "popupText": "<p>Open Reddit in a web browser.</p>",
                 "description": "The full description of the button..."
             },
-            "separator",
+            "|",
             "language",
             "translate-tools",
             "screen-zoom",
@@ -121,12 +121,12 @@
             "launch-documorph",
             "cloud-folder-open",
             "usb-open",
-            "separator",
+            "|",
             "url-google-drive",
             "url-one-drive",
             "url-dropbox",
             "url-customize-qss",
-            "separator-visible",
+            "||",
             "service-more",
             "service-save",
             "service-undo",
