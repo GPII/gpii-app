@@ -62,6 +62,42 @@
         }
     });
 
+    fluid.defaults("gpii.qss.metrics", {
+        distributeOptions: {
+            "clickable": {
+                target: "{that gpii.qss.buttonPresenter}.options.gradeNames",
+                record: "gpii.qss.buttonPresenter.metrics"
+            }
+        }
+    });
+
+    // Capture the activation of buttons on the QSS.
+    fluid.defaults("gpii.qss.buttonPresenter.metrics", {
+        listeners: {
+            "onClicked.metrics": {
+                func: "{channelNotifier}.events.onMetric.fire",
+                args: ["button-activated", {
+                    buttonPath: "{that}.model.item.path",
+                    mouse: "click"
+                }]
+            },
+            "onSpacebarPressed.metrics": {
+                func: "{channelNotifier}.events.onMetric.fire",
+                args: ["button-activated", {
+                    buttonPath: "{that}.model.item.path",
+                    key: "Spacebar"
+                }]
+            },
+            "onEnterPressed.metrics": {
+                func: "{channelNotifier}.events.onMetric.fire",
+                args: ["button-activated", {
+                    buttonPath: "{that}.model.item.path",
+                    key: "Enter"
+                }]
+            }
+        }
+    });
+
     fluid.defaults("gpii.psp.metrics.qssWidget", {
         gradeNames: ["gpii.psp.metrics.dialog"],
         members: {
