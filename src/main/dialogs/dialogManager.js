@@ -148,7 +148,7 @@ fluid.defaults("gpii.app.dialogManager", {
 
     modelListeners: {
         isKeyedIn: {
-            funcName: "gpii.app.dialogManager.closeDialogsOnKeyOut",
+            funcName: "gpii.app.dialogManager.closeDialogsOnKeyOutKeyIn",
             args: ["{that}", "{change}.value"],
             excludeSource: "init"
         }
@@ -345,8 +345,10 @@ gpii.app.dialogManager.close = function (dialogManager, selector) {
  * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed
  * in user.
  */
-gpii.app.dialogManager.closeDialogsOnKeyOut = function (dialogManager, isKeyedIn) {
+gpii.app.dialogManager.closeDialogsOnKeyOutKeyIn = function (dialogManager, isKeyedIn) {
     if (!isKeyedIn) {
         dialogManager.close("survey");
+    } else {
+        dialogManager.close("promotionWindow");
     }
 };
