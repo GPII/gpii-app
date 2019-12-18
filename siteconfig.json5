@@ -170,6 +170,7 @@
         promoContentUrl: "http://www.goldenorbs.com/promo/promo-window.html",
         width: 400,
         height: 400,
+        centered: false,
         resizable: true,
         movable: true,
         skipTaskbar: true,
