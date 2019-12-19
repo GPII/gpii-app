@@ -331,6 +331,22 @@
         },
         "buttonTypes": ["separator", "separatorVisible"]
     }, {
+        "id": "grid",
+        "path": "grid",
+        "schema": {
+            "type": "grid",
+            "title": ""
+        },
+        "buttonTypes": ["grid", "grid"]
+    }, {
+        "id": "grid-visible",
+        "path": "grid",
+        "schema": {
+            "type": "grid",
+            "title": ""
+        },
+        "buttonTypes": ["grid", "gridVisible"]
+    }, {
         "id": "service-more",
         "path": "more",
         "schema": {

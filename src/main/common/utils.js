@@ -340,17 +340,17 @@ gpii.app.generateCustomButton = function (buttonData) {
  * @return {String} if shortcut is found returns the real name of the button, if not
  * returns the provided buttonName instead
  */
-gpii.app.buttonListShortcuts = function(buttonName) {
+gpii.app.buttonListShortcuts = function (buttonName) {
     var shortcuts = ["|", "||", "-", "x"], // shortcuts
         buttons = ["separator", "separator-visible", "grid", "grid-visible"], // standart names
         buttonIndex = shortcuts.indexOf(buttonName);
 
-    if (buttonIndex != -1) {
+    if (buttonIndex !== -1) {
         return buttons[buttonIndex];
     }
 
     return buttonName;
-}
+};
 
 /**
  * Filters the full button list based on the provided array of `id` attributes
