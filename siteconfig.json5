@@ -20,6 +20,7 @@
     // Configuration options for the QSS window
     qss: {
         // Whether a user can open Settings pages and Control Panels of the operating system
+        // this is used to show different data in the sideCar container
         osSettingsAvailable: true,
 
         // Determines if the QSS will be shown automatically on Morphic's startup

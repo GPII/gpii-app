@@ -55,7 +55,7 @@ body {
     overflow-y: hidden;
 }
 
-.fl-sidecart-holder {
+.fl-sidecar-holder {
     display: flex;
     justify-content: center;
     width: 109px;
@@ -67,19 +67,20 @@ body {
     overflow-y: hidden;
 }
 
-.fl-sidecart-holder ul, .fl-sidecart-holder ol {
+.fl-sidecar-holder ul, .fl-sidecar-holder ol {
     padding-left: 15px;
 }
-.fl-sidecart-holder img.full {
+
+.fl-sidecar-holder img.full {
     display: block;
     width: 100%;
 }
 
-.fl-qssWidget-sidecart {
+.fl-qssWidget-sidecar {
     overflow-y: overlay;
 }
 
-.fl-sidecart-button {
+.fl-sidecar-button {
     width: auto;
     position: absolute;
     bottom: 7px;
@@ -91,31 +92,31 @@ body {
     font-size: 9px;
 }
 
-.fl-sidecart-button:focus,
-.fl-sidecart-button:active {
+.fl-sidecar-button:focus,
+.fl-sidecar-button:active {
     color: #000000;
     outline: none;
 }
 
-.fl-sidecart-button .fl-btnLabel {
+.fl-sidecar-button .fl-btnLabel {
     background: url(../../../assets/arrow-right.svg) no-repeat right;
     padding-right: 16px;
     text-decoration: none;
 }
 
-.fl-sidecart-button.btn-icon-close {
+.fl-sidecar-button.btn-icon-close {
     right: 10px;
 }
 
-.fl-sidecart-button.btn-icon-close .fl-btnLabel {
+.fl-sidecar-button.btn-icon-close .fl-btnLabel {
     background-image: url(../../../assets/arrow-left.svg);
 }
 
-.fl-sidecart-button.btn-icon-link .fl-btnLabel {
+.fl-sidecar-button.btn-icon-link .fl-btnLabel {
     background-image: url(../../../assets/link-external.svg);
 }
 
-.fl-hide-sidecart {
+.fl-hide-sidecar {
     display: none;
 }
 

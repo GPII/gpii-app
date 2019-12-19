@@ -832,6 +832,7 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
             translatedSetting.switchTitle = message.switchTitle;
         }
 
+        // footerTip
         translatedSetting.widget = translatedSetting.widget || {};
         if (fluid.isValue(message.footerTip)) {
             translatedSetting.widget.footerTip = message.footerTip;
@@ -839,17 +840,11 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
             translatedSetting.widget.footerTip = "";
         }
 
-        if (fluid.isValue(message.sideCart)) {
-            translatedSetting.sideCart = message.sideCart;
-        } else {
-            translatedSetting.sideCart = "";
-        }
+        // sideCar
+        translatedSetting.sideCar = message.sideCar || "";
 
-        if (fluid.isValue(message.sideCartWithSettings)) {
-            translatedSetting.sideCartWithSettings = message.sideCartWithSettings;
-        } else {
-            translatedSetting.sideCartWithSettings = "";
-        }
+        // sideCar (with osSettingsAvailable set to true)
+        translatedSetting.sideCarWithSettings = message.sideCarWithSettings || "";
 
         translatedSetting.schema.title = message.title;
         if (message["enum"]) {

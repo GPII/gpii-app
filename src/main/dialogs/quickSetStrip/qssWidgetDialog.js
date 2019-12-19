@@ -275,7 +275,7 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
 
     var scaleFactor = that.model.scaleFactor,
         // we assume that the widget have a sideCar by default
-        hasSideCar = (fluid.isValue(setting.schema.sideCar) && setting.schema.sideCar === false) ? false : true,
+        hasSideCar = setting.schema.sideCar !== false,
         // using the width if there is sideCar, and widthWithoutSidecar otherwise
         // in both cases using the scaleFactor as well
         width = scaleFactor * (hasSideCar ? that.options.config.attrs.width : that.options.config.attrs.widthWithoutSidecar),
