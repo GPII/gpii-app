@@ -116,7 +116,8 @@ fluid.defaults("gpii.app.qssWrapper", {
         onActivePreferenceSetAltered: null,
         onUndoRequired: null,
         onResetAllRequired: null,
-        onSaveRequired: null
+        onSaveRequired: null,
+        onMetric: null
     },
 
     listeners: {
@@ -1023,7 +1024,8 @@ fluid.defaults("gpii.app.qssInWrapper", {
         },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
         "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",
-        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired"
+        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
+        "{channelListener}.events.onMetric": "{qssWrapper}.events.onMetric"
     }
 });
 

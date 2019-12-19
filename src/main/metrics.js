@@ -174,6 +174,19 @@ tray-icon: The tray icon was clicked
     }
 }
 
+
+office-change: When one of the simplification buttons have been clicked.
+{
+  "module": "metrics.app",
+  "event": "office-change",
+  "data": {
+    "id": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.office.word-ribbon",
+    "oldValue": "Basics+StandardSet",
+    "value": "Basics+Essentials+StandardSet"
+  },
+}
+
+
 */
 
 
