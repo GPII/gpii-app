@@ -77,12 +77,16 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
             type: "gpii.app.channelListener",
             options: {
                 events: {
-                    onPromotionWindowShow: null
+                    onPromotionWindowShow: null,
+                    onCloseClicked: null
                 },
                 listeners: {
                     onPromotionWindowShow: {
                         funcName: "gpii.app.promotionWindowDialog.show",
                         args: ["{promotionWindowDialog}", "{showTimer}", "{promotionWindowDialog}.options.siteConfig.offset.x", "{promotionWindowDialog}.options.siteConfig.offset.y"]
+                    },
+                    onCloseClicked: {
+                        funcName: "{promotionWindowDialog}.close"
                     }
                 }
             }

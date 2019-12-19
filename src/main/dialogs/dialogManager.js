@@ -340,7 +340,7 @@ gpii.app.dialogManager.close = function (dialogManager, selector) {
 
 /**
  * A function responsible for closing all dialogs which need to be closed
- * whenever the user keyes out of the PSP.
+ * whenever the user keyes out or keyes in.
  * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
  * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed
  * in user.

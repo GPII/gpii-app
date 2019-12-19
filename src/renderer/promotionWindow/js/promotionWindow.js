@@ -38,12 +38,18 @@
         selectors: {
             title: ".flc-contentTitle",
             content: ".flc-content",
-            image: ".flc-image"
+            image: ".flc-image",
+            closeBtn: ".flc-closeBtn"
         },
         listeners: {
             "onCreate.getContent": {
                 funcName: "gpii.psp.promotionWindow.getContent",
                 args: ["{that}", "{that}.dom.content", "{that}.dom.image", "{channelNotifier}.events.onPromotionWindowShow"]
+            },
+            "onCreate.addClickHandler": {
+                this: "{that}.dom.closeBtn",
+                method: "click",
+                args: ["{channelNotifier}.events.onCloseClicked.fire"]
             }
         },
 
@@ -52,7 +58,8 @@
                 type: "gpii.psp.channelNotifier",
                 options: {
                     events: {
-                        onPromotionWindowShow: null
+                        onPromotionWindowShow: null,
+                        onCloseClicked: null
                     }
                 }
             }
