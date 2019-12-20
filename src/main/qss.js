@@ -80,6 +80,20 @@ fluid.defaults("gpii.app.qssWrapper", {
             ]
         }
     },
+    moreSettings: {
+        expander: {
+            funcName: "gpii.app.qssWrapper.loadMoreSettings",
+            args: [
+                "{assetsManager}",
+                "{systemLanguageListener}.model.installedLanguages",
+                "{messageBundles}.model.locale",
+                "{messageBundles}.model.messages",
+                "{that}.options.settingOptions",
+                "{that}.options.settingsFixturePath",
+                "{that}.options.siteConfig"
+            ]
+        }
+    },
 
     settingMessagesPrefix: "gpii_app_qss_settings",
 
@@ -102,7 +116,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         keyedInUserToken: null,
         notificationShown: false, // used to check if the notification is already shown
         settings: "{that}.options.loadedSettings",
-
+        moreSettings: "{that}.options.moreSettings",
 
         scaleFactor: "{that}.options.siteConfig.scaleFactor",
 
@@ -615,7 +629,6 @@ gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, l
  * @param {Object} siteConfig - instance of the siteConfig object
  * @return {Object[]} An array of the loaded settings
  */
-
 gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath, siteConfig) {
     var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
         loadedSettings = availableSettings, // by default we are getting all of the buttons
@@ -737,6 +750,38 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
 
 
     return loadedSettings;
+};
+
+/**
+ * Retrieves synchronously the QSS settings from a file on the local machine
+ * and resolves any assets that they reference with respect to the `gpii-app`
+ * folder.
+ * It also applies any other mutations to the settings, such as hiding and translations.
+ * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
+ * @param {Object[]} installedLanguages - The languages that are currently installed on the OS
+ * @param {Object} locale - The current OS language
+ * @param {Object} messageBundles - The available message bundles
+ * @param {Object} settingOptions - The options for setting mutations
+ * @param {String} settingsFixturePath - The path to the file containing the QSS
+ * settings with respect to the `gpii-app` folder.
+ * @param {Object} siteConfig - instance of the siteConfig object
+ * @return {Object[]} An array of the loaded settings
+ */
+
+gpii.app.qssWrapper.loadMoreSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath, siteConfig) {
+    var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
+        morePanelSettings = []; // by default the more panel is empty
+
+    if (gpii.app.hasMorePanelList(siteConfig)) { // checking if we have a valid button list in the siteConfig
+        var options = gpii.app.getMorePanelOptions(siteConfig);
+        morePanelSettings = gpii.app.filterButtonList(gpii.app.prepareMorePanelList(siteConfig.morePanelList, options.rows, options.cols, options.fill), availableSettings);
+        console.log(morePanelSettings);
+
+        // TODO: Here we need to use the same functionality as in gpii.app.qssWrapper.loadSettings() to prepare the data
+        // maybe it will be better all of it to be moved into new function in utils and to used in the both places
+    }
+
+    return morePanelSettings;
 };
 
 

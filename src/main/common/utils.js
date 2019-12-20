@@ -201,6 +201,33 @@ gpii.app.hasButtonList = function (siteConfig) {
 };
 
 /**
+ * Checks if the morePanelList attribute exists in the siteConfig object
+ * @param {Object} siteConfig - instance of the siteConfig object
+ * @return {Boolean} - `true` if there is button list found
+ */
+gpii.app.hasMorePanelList = function (siteConfig) {
+    return fluid.isValue(siteConfig.morePanelList);
+};
+
+/**
+ * Returns the very simple object with the More Panel options
+ * @param {Object} siteConfig - instance of the siteConfig object
+ * @return {Object} - object contains only rows, cols, and fill element got either
+ * from the siteConfig.morePanelOptions, or just the default options
+ */
+gpii.app.getMorePanelOptions = function (siteConfig) {
+    var defaultRows = 3,
+        defaultCols = 10,
+        defaultFill = "x";
+
+    return {
+        "rows": (siteConfig.morePanelOptions && siteConfig.morePanelOptions.rows) ? siteConfig.morePanelOptions.rows : defaultRows,
+        "cols": (siteConfig.morePanelOptions && siteConfig.morePanelOptions.cols) ? siteConfig.morePanelOptions.cols : defaultCols,
+        "fill": (siteConfig.morePanelOptions && siteConfig.morePanelOptions.fill) ? siteConfig.morePanelOptions.fill : defaultFill
+    };
+};
+
+/**
  * Looks for a `id` and matches it to the provided string
  * return empty array when there is no button found
  * @param {String} buttonId - the `id` of the button
@@ -408,6 +435,30 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     });
 
     return matchedList.concat(afterList);
+};
+
+/**
+ * The function gets the current qss.morePanelList data and makes a proper list for rendering
+ * it will auto-fill any empty rows, or end of cols with the `fill` grid element
+ * @param  {Array} morePanelList - simple array with the desired buttons
+ * @param  {Integer} rows - number of desired rows
+ * @param  {Integer} cols - number of desred cols
+ * @param  {String} fill - the id of the grid element - "x" for filled one, and "-" for invisible
+ * @return {Array} - simple array with filled spaces
+ */
+gpii.app.prepareMorePanelList = function (morePanelList, rows, cols, fill) {
+    var result = [],
+        row, col;
+
+    for (row = 0; row < rows; row++) {
+        for (col = 0; col < cols; col++) {
+            // gets the buttonId if any, or not fills with the filler grid element
+            var buttonId = (morePanelList[row] && morePanelList[row][col]) ? morePanelList[row][col] : fill;
+            result.push(buttonId);
+        }
+    }
+
+    return result;
 };
 
 /**

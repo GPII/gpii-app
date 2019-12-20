@@ -87,29 +87,6 @@
         // - "grid-visible", or "x" // For visible gray grid space (same size as the invisible one)
 
         buttonList: [
-            {
-                "buttonId": "MakeYourOwn",
-                "buttonName": "Task Manager",
-                "buttonType": "KEY",
-                "buttonData": "^+{Escape}",
-                "popupText": "<p>Executes Ctrl+Shift+Esc combination, which opens Windows Task Manager.</p>"
-            }, {
-                "buttonId": "MakeYourOwn",
-                "buttonName": "Launch Notepad",
-                "buttonType": "APP",
-                "buttonData": "C:\\Windows\\system32\\notepad.exe",
-                "fullScreen": true,
-                "popupText": "<p>Launch the Notepad application.</p>",
-                "description": "The full description of the button..."
-            }, {
-                "buttonId": "MakeYourOwn",
-                "buttonName": "Open Reddit",
-                "buttonType": "WEB",
-                "buttonData": "www.reddit.com",
-                "fullScreen": true,
-                "popupText": "<p>Open Reddit in a web browser.</p>",
-                "description": "The full description of the button..."
-            },
             "language",
             "translate-tools",
             "screen-zoom",
@@ -124,16 +101,56 @@
             "launch-documorph",
             "cloud-folder-open",
             "usb-open",
-            "url-google-drive",
-            "url-one-drive",
-            "url-dropbox",
-            "url-customize-qss",
             "service-more",
             "service-save",
             "service-undo",
             "service-saved-settings",
             "service-reset-all",
             "service-close"
+        ],
+
+        morePanelOptions: {
+            rows: 3, // how many rows will be used
+            cols: 10, // how many cols will be used
+            fill: "x" // which grid element to use to auto-fill the empty rows and cols
+        },
+
+        morePanelList: [
+            [ // first row of buttons
+                // in our case can be just empty, it will be filled up with grid elements automatically
+            ],
+            [ // second row of buttons
+                "x",
+                {
+                    "buttonId": "MakeYourOwn",
+                    "buttonName": "Task Manager",
+                    "buttonType": "KEY",
+                    "buttonData": "^+{Escape}",
+                    "popupText": "<p>Executes Ctrl+Shift+Esc combination, which opens Windows Task Manager.</p>"
+                }, {
+                    "buttonId": "MakeYourOwn",
+                    "buttonName": "Launch Notepad",
+                    "buttonType": "APP",
+                    "buttonData": "C:\\Windows\\system32\\notepad.exe",
+                    "fullScreen": true,
+                    "popupText": "<p>Launch the Notepad application.</p>",
+                    "description": "The full description of the button..."
+                }, {
+                    "buttonId": "MakeYourOwn",
+                    "buttonName": "Open Reddit",
+                    "buttonType": "WEB",
+                    "buttonData": "www.reddit.com",
+                    "fullScreen": true,
+                    "popupText": "<p>Open Reddit in a web browser.</p>",
+                    "description": "The full description of the button..."
+                },
+                "x",
+                "url-google-drive",
+                "url-one-drive",
+                "url-dropbox",
+                "url-customize-qss"
+            ]
+            // the rest of the rows have no data, so it will be filled up with grid elements automatically
         ]
     },
 
