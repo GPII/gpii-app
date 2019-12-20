@@ -16,8 +16,7 @@
 
     "gpii_psp_errorDialog_titlebarAppName": "Morphic Error",
 
-    "gpii_psp_promotionWindow_title": "Morphic",
-    "gpii_psp_promotionWindow_error": "Something went wrong.",
+    "gpii_psp_promotionWindow_title": "",
 
     "gpii_psp_aboutDialog_titlebarAppName": "About Morphic",
     "gpii_psp_aboutDialog_title": "Morphic",

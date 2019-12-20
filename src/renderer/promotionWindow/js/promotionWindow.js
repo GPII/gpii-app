@@ -66,21 +66,23 @@
         }
     });
 
-    /** TODO
+    /**
+     * Retrieving the url from siteConfig file and display content according to the file extension.
      * @param {gpii.psp.promotionWindow} that - The instance of the widget.
+     * @param {jQuery} contentContainer - The DOM element representing the content container.
+     * @param {jQuery} imageContainer - The DOM element representing the image container.
+     * @param {fluid.event} event - The onPromotionWindowShow event.
      */
     gpii.psp.promotionWindow.getContent = function (that, contentContainer, imageContainer, event) {
         var fileExtension = gpii.windows.getFileExtension(that.model.url);
-        if (fileExtension === ".html" || !fileExtension) {
+        if (fileExtension === ".png" || fileExtension === ".jpg" || fileExtension === ".svg") {
+            imageContainer.attr("src", that.model.url);
+            event.fire();
+        } else {
             gpii.windows.getWebContent(that.model.url).then(function (contentData) {
                 contentContainer.append(contentData);
                 event.fire();
-            }, function () {
-                that.applier.change("messages.content", that.model.messages.error, null, "fromWidget");
             });
-        } else if (fileExtension === ".png" || fileExtension === ".jpg" || fileExtension === ".svg") {
-            imageContainer.attr("src", that.model.url);
-            event.fire();
         }
     };
 

@@ -114,9 +114,14 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
     }
 });
 
-    /**
-     * TODO
-     */
+/**
+ * TODO
+ * @param {gpii.app.promotionWindowDialog} that - The instance of the widget.
+ * @param {Component} timer - An instance of `gpii.app.timer` used for showing
+ * the widget with a delay.
+ * @param {Number} offsetX - The x offset from the right edge of the screen.
+ * @param {Number} offsetY - The y offset from the bottom edge of the screen.
+ */
 gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY) {
     var centeredPosition = gpii.browserWindow.computeCentralWindowPosition(that.options.siteConfig.width, that.options.siteConfig.height);
 

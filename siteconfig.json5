@@ -171,10 +171,10 @@
         width: 400,
         height: 400,
         centered: false,
-        resizable: true,
-        movable: true,
+        resizable: false,
+        movable: false,
         skipTaskbar: true,
-        frame: true,
+        frame: false,
         transparent: false,
         alwaysOnTop: true,
         // 0 will not close the window
