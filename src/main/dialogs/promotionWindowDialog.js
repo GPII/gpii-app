@@ -83,7 +83,12 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
                 listeners: {
                     onPromotionWindowShow: {
                         funcName: "gpii.app.promotionWindowDialog.show",
-                        args: ["{promotionWindowDialog}", "{showTimer}", "{promotionWindowDialog}.options.siteConfig.offset.x", "{promotionWindowDialog}.options.siteConfig.offset.y"]
+                        args: [
+                            "{promotionWindowDialog}",
+                            "{showTimer}",
+                            "{promotionWindowDialog}.options.siteConfig.offset.x",
+                            "{promotionWindowDialog}.options.siteConfig.offset.y"
+                        ]
                     },
                     onCloseClicked: {
                         funcName: "{promotionWindowDialog}.close"
@@ -115,7 +120,12 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
 });
 
 /**
- * TODO
+ * Shows the promotion window dialog. The '{promotionWindowDialog}.show' function
+ * is invoked through the 'showTimer' component. If a delay is not specified
+ * the promotion dialog will be shown without delay. This function also set the position
+ * of the promotion dialog with given 'x' and 'y' offset. If offset 'x' and 'y' are not given
+ * the window will be displayed with the default position (0, 0). If the 'centered' option
+ * is specified, the dialog will be positioned in the center of the screen.
  * @param {gpii.app.promotionWindowDialog} that - The instance of the widget.
  * @param {Component} timer - An instance of `gpii.app.timer` used for showing
  * the widget with a delay.

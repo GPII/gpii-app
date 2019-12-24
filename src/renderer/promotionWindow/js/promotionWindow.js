@@ -1,8 +1,7 @@
 /**
  * The Promotion window dialog
  *
- * TODO
- *
+ * Represents the Promotion Window dialog.
  * Copyright 2017 Raising the Floor - International
  *
  * Licensed under the New BSD license. You may not use this file except in
@@ -21,15 +20,15 @@
 
 
     /**
-        TODO
+     * A component representing the promotion window dialog. Takes care of initializing
+     * the necessary DOM elements and handling user interaction.
      */
     fluid.defaults("gpii.psp.promotionWindow", {
         gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer"],
 
         model: {
             messages: {
-                content: null,
-                error: null
+                content: null
             }
         },
 
@@ -44,7 +43,12 @@
         listeners: {
             "onCreate.getContent": {
                 funcName: "gpii.psp.promotionWindow.getContent",
-                args: ["{that}", "{that}.dom.content", "{that}.dom.image", "{channelNotifier}.events.onPromotionWindowShow"]
+                args: [
+                    "{that}",
+                    "{that}.dom.content",
+                    "{that}.dom.image",
+                    "{channelNotifier}.events.onPromotionWindowShow"
+                ]
             },
             "onCreate.addClickHandler": {
                 this: "{that}.dom.closeBtn",
