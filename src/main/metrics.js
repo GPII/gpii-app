@@ -269,7 +269,7 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
             namespace: "metric",
             func: "{eventLog}.uiMetric",
             args: [ "mouse-over", {
-                id:"{arguments}.0.path",
+                path:"{arguments}.0.path",
                 qss: true
             } ]
         }, {
@@ -338,7 +338,7 @@ fluid.defaults("gpii.app.metrics.qssWidget", {
             func: "{eventLog}.uiMetric",
             args: ["setting-changed", {
                 path: "{arguments}.0.path",
-                value: "{arguments}.0.value"
+                newValue: "{arguments}.0.value"
             }]
         },
         "onDialogShown.metrics": {
