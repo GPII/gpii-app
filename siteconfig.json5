@@ -187,7 +187,7 @@
 
     // Configuration options for the dialog manager
     dialogManager: {
-        showErrorDialog: false
+        showErrorDialog: true
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
