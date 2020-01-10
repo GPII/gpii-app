@@ -17,6 +17,10 @@
 }
 
 .fl-titlebar .fl-closeBtn {
+    position: absolute;
+    top: 6px;
+    right: 9px;
+    
     line-height: 20px;
     font-size: 20px;
     font-weight: bold;
