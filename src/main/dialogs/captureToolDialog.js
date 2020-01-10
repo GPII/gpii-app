@@ -176,11 +176,11 @@ fluid.defaults("gpii.app.captureTool", {
  *     - installedSolutions.json
  *     - settingsCapture.json
  *
- * @param {gpii.app.diagnosticsCollector} diagnosticsCollector = An instance of `gpii.app.diagnosticsCollector`
+ * @param {gpii.app.diagnosticsCollector} diagnosticsCollector - An instance of `gpii.app.diagnosticsCollector`
+ * @param {gpii.settingsDir} settingsDir - An instance of the `gpii.settingsDir` component from gpii-universal.
  */
-gpii.app.captureTool.logCaptureDiagnostics = function (diagnosticsCollector) {
-    var settingsDirComponent = gpii.settingsDir();
-    var gpiiSettingsDir = settingsDirComponent.getGpiiSettingsDir();
+gpii.app.captureTool.logCaptureDiagnostics = function (diagnosticsCollector, settingsDir) {
+    var gpiiSettingsDir = settingsDir.getGpiiSettingsDir();
 
     var startupTime = Date.now();
     var captureDirName = gpiiSettingsDir + "/capture-diagnostics-" + gpii.journal.formatTimestamp(startupTime);

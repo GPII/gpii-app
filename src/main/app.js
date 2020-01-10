@@ -106,6 +106,9 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
+        settingsDir: {
+            type: "gpii.settingsDir"
+        },
         configurationHandler: {
             type: "gpii.app.siteConfigurationHandler"
         },
