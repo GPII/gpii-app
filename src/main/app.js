@@ -258,8 +258,8 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-        captureToolUtils: {
-            type: "gpii.app.captureToolUtils",
+        diagnosticsCollector: {
+            type: "gpii.app.diagnosticsCollector",
             createOnEvent: "onPSPPrerequisitesReady"
         },
         shortcutsManager: {

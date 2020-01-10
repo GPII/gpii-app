@@ -28,33 +28,43 @@ require("./basic/offScreenHidable.js");
 
 require("../../../node_modules/gpii-universal/gpii/node_modules/solutionsRegistry/src/js/SolutionsUtils.js");
 
-fluid.defaults("gpii.app.captureToolUtils", {
+fluid.defaults("gpii.app.diagnosticsCollector", {
     gradeNames: ["fluid.component"],
     events: {
         onCollectDiagnostics: null
     },
     listeners: {
-        onCollectDiagnostics: [{
+        "onCollectDiagnostics.getSolutionsPromise": {
             funcName: "gpii.flowManager.getSolutionsPromise",
             args: [ "{flowManager}.solutionsRegistryDataSource", null]
-        }, {
-            funcName: "gpii.app.captureToolUtils.collectPayload",
-            args: ["{arguments}.0", "{arguments}.1", "solutions"]
-        }, {
-            func: "{flowManager}.capture.getInstalledSolutions"
-        }, {
-            funcName: "gpii.app.captureToolUtils.collectPayload",
-            args: ["{arguments}.0", "{arguments}.1", "installedSolutions"]
-        }, {
-            func: "{flowManager}.capture.getSystemSettingsCapture"
-        }, {
-            funcName: "gpii.app.captureToolUtils.collectPayload",
-            args: ["{arguments}.0", "{arguments}.1", "settingsCapture"]
-        }]
+        },
+        "onCollectDiagnostics.collectSolutionsPayload": {
+            funcName: "gpii.app.diagnosticsCollector.collectPayload",
+            args: ["{arguments}.0", "{arguments}.1", "solutions"],
+            priority: "after:getSolutionsPromise"
+        },
+        "onCollectDiagnostics.getInstalledSolutions": {
+            func: "{flowManager}.capture.getInstalledSolutions",
+            priority: "after:collectSolutionsPayload"
+        },
+        "onCollectDiagnostics.collectInstalledSolutionsPayload": {
+            funcName: "gpii.app.diagnosticsCollector.collectPayload",
+            args: ["{arguments}.0", "{arguments}.1", "installedSolutions"],
+            priority: "after:getInstalledSolutions"
+        },
+        "onCollectDiagnostics.getSystemSettingsCapture": {
+            func: "{flowManager}.capture.getSystemSettingsCapture",
+            priority: "after:collectInstalledSolutionsPayload"
+        },
+        "onCollectDiagnostics.collectSystemSettingsCapturePayload": {
+            funcName: "gpii.app.diagnosticsCollector.collectPayload",
+            args: ["{arguments}.0", "{arguments}.1", "settingsCapture"],
+            priority: "after:getSystemSettingsCapture"
+        }
     }
 });
 
-gpii.app.captureToolUtils.collectPayload = function (value, options, keyName) {
+gpii.app.diagnosticsCollector.collectPayload = function (value, options, keyName) {
     options[keyName] = value;
     return options;
 };
@@ -163,9 +173,9 @@ fluid.defaults("gpii.app.captureTool", {
  *     - installedSolutions.json
  *     - settingsCapture.json
  *
- * @param {gpii.app.captureToolUtils} captureToolUtils = An instance of `gpii.app.captureToolUtils`
+ * @param {gpii.app.diagnosticsCollector} diagnosticsCollector = An instance of `gpii.app.diagnosticsCollector`
  */
-gpii.app.captureTool.logCaptureDiagnostics = function (captureToolUtils) {
+gpii.app.captureTool.logCaptureDiagnostics = function (diagnosticsCollector) {
     var settingsDirComponent = gpii.settingsDir();
     var gpiiSettingsDir = settingsDirComponent.getGpiiSettingsDir();
 
@@ -181,7 +191,7 @@ gpii.app.captureTool.logCaptureDiagnostics = function (captureToolUtils) {
 
     if (dailogPromise === 1) {
         fs.mkdirSync(captureDirName);
-        gpii.app.captureTool.generateDiagnostics(captureToolUtils).then(
+        gpii.app.captureTool.generateDiagnostics(diagnosticsCollector).then(
             function (data) {
                 // 0. Solutions
                 fs.appendFileSync(captureDirName + "/solutions.json", JSON.stringify(data.solutions, null, 4));
@@ -209,8 +219,8 @@ gpii.app.captureTool.logCaptureDiagnostics = function (captureToolUtils) {
  *
  * Returns a promise containing these.
  */
-gpii.app.captureTool.generateDiagnostics = function (captureToolUtils) {
-    return fluid.promise.fireTransformEvent(captureToolUtils.events.onCollectDiagnostics, {});
+gpii.app.captureTool.generateDiagnostics = function (diagnosticsCollector) {
+    return fluid.promise.fireTransformEvent(diagnosticsCollector.events.onCollectDiagnostics, {});
 };
 
 gpii.app.captureTool.init = function (that, flowManager) {
