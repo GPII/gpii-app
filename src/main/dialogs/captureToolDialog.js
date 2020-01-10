@@ -192,6 +192,9 @@ gpii.app.captureTool.logCaptureDiagnostics = function (diagnosticsCollector, set
         message: "Select 'Run Capture' to run the capture diagnostics and store them to disk.\n\n  After capture they will be stored in:\n" + captureDirName
     });
 
+    // The promise returned from electrons prompt dialog will equal 1 if the user clicked ok,
+    // rather than cancel/close/etc.
+    // https://electronjs.org/docs/api/dialog#dialogshowmessageboxbrowserwindow-options
     if (dialogPromise === 1) {
         fs.mkdirSync(captureDirName);
         gpii.app.captureTool.generateDiagnostics(diagnosticsCollector).then(
