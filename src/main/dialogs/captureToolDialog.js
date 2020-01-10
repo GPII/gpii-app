@@ -31,6 +31,9 @@ require("../../../node_modules/gpii-universal/gpii/node_modules/solutionsRegistr
 fluid.defaults("gpii.app.diagnosticsCollector", {
     gradeNames: ["fluid.component"],
     events: {
+        // This is a pseudoevent that will be called to start the transforming
+        // promise chain. Usually from a button or menu on the capture tool portions
+        // of the gpii-app.
         onCollectDiagnostics: null
     },
     listeners: {
