@@ -244,7 +244,7 @@ gpii.app.captureTool.init = function (that, flowManager) {
                             runningSolutions[solutionId] = solutionEntry;
                         }
                     } catch (err) {
-                        fluid.log("Exception trying to look up", solutionEntry.isRunning);
+                        fluid.log("Exception trying to look up", solutionEntry, " Error: ", err);
                     }
                 });
                 event.sender.send("sendingRunningSolutions", runningSolutions);
