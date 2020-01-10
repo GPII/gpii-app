@@ -23,7 +23,7 @@
             path: "%ProgramData%\\Morphic\\siteConfig.json5",
             // Get the URL from the secrets file
             url: "${siteConfigUrl}"
-        }],
+        }]
     },
     "siteConfigFile": [
         "%ProgramData%\\Morphic\\siteConfig.json5",
