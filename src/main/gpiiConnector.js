@@ -467,6 +467,7 @@ gpii.app.dev.gpiiConnector.decoratePreferences = function (systemLanguageListene
  * number.
  * @property {String[]} [enum] An array of the values which a "string" type setting
  * can have.
+ * @property {String} [default] The default value of the setting.
  */
 
 
@@ -766,7 +767,11 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
         "http://registry\\.gpii\\.net/common/volume": { value: gpii.app.getVolumeValue() },
         // use the initial value of the language as default setting
-        "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" }
+        "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" },
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed": { value: 10 },
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons": { value: 0 },
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.DoubleClickTime": { value: 500 },
+        "http://registry\\.gpii\\.net/common/cursorSize": { value: false }
     }
 });
 

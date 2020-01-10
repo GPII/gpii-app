@@ -15,7 +15,7 @@
         "electron-localshortcut": "3.1.0",
         "gpii-express": "1.0.15",
         "gpii-handlebars": "sgithens/gpii-handlebars#GPII-3640",
-        "gpii-windows": "sgithens/windows#50f3bd1a929272e32b1c57812f311f8e4562b9ec",
+        "gpii-windows": "sgithens/windows#GPII-1908-amalgamated",
         "infusion": "3.0.0-dev.20190328T144119Z.ec44dbfab",
         "nan": "2.10.0",
         "node-jqunit": "1.1.8",
@@ -38,6 +38,9 @@
         "nyc": "13.0.1",
         "rimraf": "2.6.2",
         "shelljs": "0.8.2"
+    },
+    "optionalDependencies": {
+        "gpii-windows": "0.3.0-dev.20191204T181313Z.b920f98.GPII-4253"
     },
     "scripts": {
         "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",

@@ -475,6 +475,30 @@ gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
 };
 
 /**
+ * Looks into secondary data's `settings` value and compare the values with the
+ * provided old value
+ * @param {Object} value - The setting which has been altered via the QSS or
+ * its widget.
+ * @param {Object} oldValue - The previous value of the altered setting.
+ */
+
+gpii.app.getSecondarySettingsChanges = function (value, oldValue) {
+    return fluid.find_if(value.settings, function (setting, key) {
+        return !fluid.model.diff(setting, oldValue.settings[key]);
+    });
+};
+
+/**
+ * Checks if the button has a secondary settings
+ * @param {Object} button - The setting which has been altered via the QSS or
+ * its widget.
+ * @return {Boolean} Return true if the button has a secondary settings.
+ */
+gpii.app.hasSecondarySettings = function (button) {
+    return fluid.isValue(button.settings);
+};
+
+/**
  * Simple file function to check a path to the executable file
  * @param {String} executablePath - path to executable file
  * @return {Boolean} - returns `true` when the file exists and its executable
