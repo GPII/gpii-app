@@ -151,6 +151,24 @@
             items: []
         },
 
+        settings: {
+            expander: {
+                funcName: "gpii.psp.repeater.filterSettings",
+                args: ["{that}.model.items"]
+            }
+        },
+
+        morePanelSettings: {
+            expander: {
+                funcName: "gpii.psp.repeater.filterMoreSettings",
+                args: ["{that}.model.items"]
+            }
+        },
+
+        selectors: {
+            morePanel: ".flc-quickSetStrip-more"
+        },
+
         handlerType: null,
 
         invokers: {
@@ -228,6 +246,29 @@
             }
         }
     });
+
+    gpii.psp.repeater.filterSettings = function (settings) {
+        var filteredSetting = [];
+        fluid.each(settings, function (setting) {
+
+            if (fluid.isValue(setting.schema) && !setting.schema.morePanel) {
+                filteredSetting.push(setting);
+            }
+        });
+
+        return filteredSetting;
+    };
+
+    gpii.psp.repeater.filterMoreSettings = function (settings) {
+        var filteredSetting = [];
+        fluid.each(settings, function (setting) {
+            if (fluid.isValue(setting.schema) && setting.schema.morePanel) {
+                filteredSetting.push(setting);
+            }
+        });
+
+        return filteredSetting;
+    };
 
     /**
      * Notifies the `gpii.psp.repeater` component for changes  in its element handlers.

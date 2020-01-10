@@ -80,20 +80,6 @@ fluid.defaults("gpii.app.qssWrapper", {
             ]
         }
     },
-    moreSettings: {
-        expander: {
-            funcName: "gpii.app.qssWrapper.loadMoreSettings",
-            args: [
-                "{assetsManager}",
-                "{systemLanguageListener}.model.installedLanguages",
-                "{messageBundles}.model.locale",
-                "{messageBundles}.model.messages",
-                "{that}.options.settingOptions",
-                "{that}.options.settingsFixturePath",
-                "{that}.options.siteConfig"
-            ]
-        }
-    },
 
     settingMessagesPrefix: "gpii_app_qss_settings",
 
@@ -116,7 +102,6 @@ fluid.defaults("gpii.app.qssWrapper", {
         keyedInUserToken: null,
         notificationShown: false, // used to check if the notification is already shown
         settings: "{that}.options.loadedSettings",
-        moreSettings: "{that}.options.moreSettings",
 
         scaleFactor: "{that}.options.siteConfig.scaleFactor",
 
@@ -632,16 +617,32 @@ gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, l
 gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath, siteConfig) {
     var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
         loadedSettings = availableSettings, // by default we are getting all of the buttons
+        morePanelSettings = [], // by default the more panel is empty
         multiplier = 1000; // the precision multiplier should match the one used in the qssBaseStepperWidget
 
+    var mergeSettings = {};
     if (gpii.app.hasButtonList(siteConfig)) { // checking if we have a valid button list in the siteConfig
         // filtering the buttons based on buttonList array
         loadedSettings = gpii.app.filterButtonList(siteConfig.buttonList, availableSettings);
     }
 
+    if (gpii.app.hasMorePanelList(siteConfig)) { // checking if we have a valid button list in the siteConfig
+        var options = gpii.app.getMorePanelOptions(siteConfig);
+        morePanelSettings = gpii.app.filterButtonList(gpii.app.prepareMorePanelList(siteConfig.morePanelList, options.rows, options.cols, options.fill), availableSettings);
+    }
+
+    fluid.each(morePanelSettings, function (loadedSetting) {
+        loadedSetting.schema.morePanel = true;
+    });
+
+    mergeSettings = loadedSettings.concat(morePanelSettings);
+    // console.log(mergeSettings);
+
+
+
     // the multiplier used through all of the calculations below it's there because we have too small of values
     // and with this multiplier we are trying to avoid rounding errors when comparing values with the bounds
-    fluid.each(loadedSettings, function (loadedSetting) {
+    fluid.each(mergeSettings, function (loadedSetting) {
         if (gpii.app.hasSecondarySettings(loadedSetting)) {
 
             fluid.each(loadedSetting.settings, function (nestedSetting) {
@@ -693,11 +694,11 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
     });
 
     // more dynamic loading
-    var languageSetting = fluid.find_if(loadedSettings, function (setting) {
+    var languageSetting = fluid.find_if(mergeSettings, function (setting) {
         return setting.path === settingOptions.settingPaths.language;
     });
 
-    var volumeSetting = fluid.find_if(loadedSettings, function (setting) {
+    var volumeSetting = fluid.find_if(mergeSettings, function (setting) {
         return setting.path === settingOptions.settingPaths.volume;
     });
 
@@ -718,14 +719,14 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
      */
     if (settingOptions.hiddenSettings) {
         fluid.each(settingOptions.hiddenSettings, function (hiddenSettingPath) {
-            var settingToHideIdx = loadedSettings.findIndex(function (setting) {
+            var settingToHideIdx = mergeSettings.findIndex(function (setting) {
                 return setting.path === hiddenSettingPath;
             });
 
             if (settingToHideIdx > -1) {
                 // Ensure there isn't any metadata left for the button
                 // Make the button a placeholder (a button in hidden state)
-                loadedSettings[settingToHideIdx] = {
+                mergeSettings[settingToHideIdx] = {
                     path: null,
                     schema: {
                         /*
@@ -737,7 +738,7 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
                         title: ""
                     },
                     // Preserve the styling of the corresponding QSS button
-                    buttonTypes: loadedSettings[settingToHideIdx].buttonTypes
+                    buttonTypes: mergeSettings[settingToHideIdx].buttonTypes
                 };
             }
         });
@@ -746,44 +747,11 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
     /*
      * Translations
      */
-    loadedSettings = gpii.app.qssWrapper.applySettingTranslations(settingOptions, messageBundles, loadedSettings);
+    mergeSettings = gpii.app.qssWrapper.applySettingTranslations(settingOptions, messageBundles, mergeSettings);
 
 
-    return loadedSettings;
+    return mergeSettings;
 };
-
-/**
- * Retrieves synchronously the QSS settings from a file on the local machine
- * and resolves any assets that they reference with respect to the `gpii-app`
- * folder.
- * It also applies any other mutations to the settings, such as hiding and translations.
- * @param {Component} assetsManager - The `gpii.app.assetsManager` instance.
- * @param {Object[]} installedLanguages - The languages that are currently installed on the OS
- * @param {Object} locale - The current OS language
- * @param {Object} messageBundles - The available message bundles
- * @param {Object} settingOptions - The options for setting mutations
- * @param {String} settingsFixturePath - The path to the file containing the QSS
- * settings with respect to the `gpii-app` folder.
- * @param {Object} siteConfig - instance of the siteConfig object
- * @return {Object[]} An array of the loaded settings
- */
-
-gpii.app.qssWrapper.loadMoreSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath, siteConfig) {
-    var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
-        morePanelSettings = []; // by default the more panel is empty
-
-    if (gpii.app.hasMorePanelList(siteConfig)) { // checking if we have a valid button list in the siteConfig
-        var options = gpii.app.getMorePanelOptions(siteConfig);
-        morePanelSettings = gpii.app.filterButtonList(gpii.app.prepareMorePanelList(siteConfig.morePanelList, options.rows, options.cols, options.fill), availableSettings);
-        console.log(morePanelSettings);
-
-        // TODO: Here we need to use the same functionality as in gpii.app.qssWrapper.loadSettings() to prepare the data
-        // maybe it will be better all of it to be moved into new function in utils and to used in the both places
-    }
-
-    return morePanelSettings;
-};
-
 
 /**
  * Find a QSS setting by its path.
@@ -1062,7 +1030,9 @@ fluid.defaults("gpii.app.qssInWrapper", {
             }] // notificationParams
         },
         "{channelListener}.events.onQssMorePanelRequired": {
-            func: "{qssMorePanel}.toggle"
+            // func: "{qssMorePanel}.toggle"
+            func: "{that}.setBounds",
+            args: [null, 256]
         },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
         "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",

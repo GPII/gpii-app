@@ -89,14 +89,11 @@
         buttonList: [
             "language",
             "translate-tools",
-            "screen-zoom",
             "text-zoom",
             "screen-capture",
             "snipping-tool",
             "office-simplification",
-            "high-contrast",
             "mouse",
-            "read-aloud",
             "volume",
             "launch-documorph",
             "cloud-folder-open",
@@ -148,6 +145,9 @@
                 "url-google-drive",
                 "url-one-drive",
                 "url-dropbox",
+                "screen-zoom",
+                "high-contrast",
+                "read-aloud",
                 "url-customize-qss"
             ]
             // the rest of the rows have no data, so it will be filled up with grid elements automatically
