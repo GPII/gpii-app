@@ -187,12 +187,12 @@ gpii.app.captureTool.logCaptureDiagnostics = function (diagnosticsCollector, set
 
     fluid.log("Capture Diagnostics directory is: ", captureDirName);
 
-    var dailogPromise = electron.dialog.showMessageBox({
+    var dialogPromise = electron.dialog.showMessageBox({
         buttons: ["Cancel", "Run Capture"],
         message: "Select 'Run Capture' to run the capture diagnostics and store them to disk.\n\n  After capture they will be stored in:\n" + captureDirName
     });
 
-    if (dailogPromise === 1) {
+    if (dialogPromise === 1) {
         fs.mkdirSync(captureDirName);
         gpii.app.captureTool.generateDiagnostics(diagnosticsCollector).then(
             function (data) {
