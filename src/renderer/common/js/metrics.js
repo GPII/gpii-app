@@ -53,8 +53,8 @@
             setting: {
                 func: "{channelNotifier}.events.onMetric.fire",
                 args: ["office-change", {
-                    id: "{change}.value.path",
-                    value: "{change}.value.value",
+                    path: "{change}.value.path",
+                    newValue: "{change}.value.value",
                     oldValue: "{change}.oldValue.value"
                 }],
                 includeSource: "fromWidget"
@@ -124,8 +124,8 @@
         members: {
             metricsID: "@expand:fluid.identity({that}.container.selectorName)",
             componentType: "field",
-            hoverState: "@expand:fluid.add({that}.componentType,-hover)",
-            focusState: "@expand:fluid.add({that}.componentType,-focus)"
+            hoverState: "@expand:fluid.add({that}.componentType,_hover)",
+            focusState: "@expand:fluid.add({that}.componentType,_focus)"
         },
         invokers: {
             metric: {
@@ -187,7 +187,7 @@
             }
         }
 
-        return that.metricsID;
+        return that.metricsID.toString();
     };
 
     gpii.psp.metrics.getWidgetMetricsID = function (that) {
@@ -204,12 +204,12 @@
      */
     gpii.psp.metrics.addFocusHandlers = function (that, container) {
         container.on("focus", function () {
-            that.setState(that.componentType + "-focus", that.getMetricsID());
-            that.metric(that.componentType + "-focus", {id: that.getMetricsID()});
+            that.setState(that.componentType + "_focus", that.getMetricsID());
+            that.metric(that.componentType + "_focus", {id: that.getMetricsID()});
         });
         container.on("blur", function () {
-            that.metric(that.componentType + "-unfocus", {id: that.getMetricsID()});
-            that.setState(that.componentType + "-focus");
+            that.metric(that.componentType + "_unfocus", {id: that.getMetricsID()});
+            that.setState(that.componentType + "_focus");
         });
     };
 
@@ -225,7 +225,7 @@
             that.metric("link-click", {
                 widget: that.getMetricsID(),
                 link: eventObject.target.href,
-                id: eventObject.target.id,
+                target: eventObject.target.id,
                 text: eventObject.target.innerText,
                 eventType: eventObject.type
             });

@@ -25,7 +25,7 @@
             // Get the URL from the secrets file
             //url: "${siteConfigUrl}"
             url: "https://raw.githubusercontent.com/javihernandez/morphic-siteConfigs/master/onOffSwitchTesting/siteconfig_standard.json5"
-        }],
+        }]
     },
     "siteConfigFile": [
         "%ProgramData%\\Morphic\\siteConfig.json5",
