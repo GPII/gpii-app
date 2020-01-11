@@ -19,6 +19,8 @@
 "use strict";
 
 var fluid = require("infusion");
+var gpii = fluid.registerNamespace("gpii");
+fluid.registerNamespace("gpii.app.metrics");
 
 /*
 
@@ -256,15 +258,6 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
             func: "{eventLog}.setState",
             args: [ "focus", "{arguments}.0.path" ]
         }],
-        "{channelListener}.events.onQssButtonActivated": {
-            namespace: "metrics",
-            func: "{eventLog}.uiMetric",
-            args: [ "button-activated", {
-                buttonPath: "{arguments}.0.path",
-                key: "{arguments}.2.key",
-                mouse: "{arguments}.2.type"
-            } ]
-        },
         "{channelListener}.events.onQssButtonMouseEnter": [{
             namespace: "metric",
             func: "{eventLog}.uiMetric",
@@ -330,6 +323,10 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
     }
 });
 
+gpii.app.metrics.asString = function (object) {
+    return (object && object !== 0) ? object.toString() : "";
+};
+
 /** Mix-in grade to provide metrics for QSS widgets */
 fluid.defaults("gpii.app.metrics.qssWidget", {
     gradeNames: ["fluid.component"],
@@ -338,7 +335,8 @@ fluid.defaults("gpii.app.metrics.qssWidget", {
             func: "{eventLog}.uiMetric",
             args: ["setting-changed", {
                 path: "{arguments}.0.path",
-                newValue: "{arguments}.0.value"
+                // Needs to always be a string.
+                setTo: "@expand:gpii.app.metrics.asString({arguments}.0.value)"
             }]
         },
         "onDialogShown.metrics": {
