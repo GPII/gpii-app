@@ -26,7 +26,11 @@
      * the `defaultHandlerGrade` will be used for its presenter.
      */
     fluid.defaults("gpii.qss.list", {
-        gradeNames: ["gpii.psp.repeater"],
+        gradeNames: ["fluid.viewComponent"],
+
+        selectors: {
+            morePanel: ".flc-quickSetStrip-more"
+        },
 
         defaultHandlerGrade: "gpii.qss.buttonPresenter",
         handlerGrades: {
@@ -62,6 +66,20 @@
             "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
         },
 
+        settings: {
+            expander: {
+                funcName: "gpii.qss.list.filterSettings",
+                args: ["{that}.model.items"]
+            }
+        },
+
+        morePanelSettings: {
+            expander: {
+                funcName: "gpii.qss.list.filterMoreSettings",
+                args: ["{that}.model.items"]
+            }
+        },
+
         dynamicContainerMarkup: {
             container:
                 "<div class=\"%containerClass fl-focusable\">" +
@@ -87,19 +105,117 @@
             onMorePanelRequired: null,
             onUndoRequired: null,
             onResetAllRequired: null,
-            onSaveRequired: null
+            onSaveRequired: null,
+            onQssClosed: null,
+            onUndoIndicatorChanged: null
         },
 
-        invokers: {
-            getHandlerType: {
-                funcName: "gpii.qss.list.getHandlerType",
-                args: [
-                    "{that}",
-                    "{arguments}.0" // item
-                ]
+        components: {
+            qssStripRepeater: {
+                type: "gpii.psp.repeater",
+                container: "{gpii.qss.list}.container",
+                options: {
+                    defaultHandlerGrade: "{gpii.qss.list}.options.defaultHandlerGrade",
+                    handlerGrades: "{gpii.qss.list}.options.handlerGrades",
+                    model: {
+                        items: "{gpii.qss.list}.options.settings"
+                        // items: "{gpii.qss.list}.model.items"
+                    },
+                    dynamicContainerMarkup: "{gpii.qss.list}.options.dynamicContainerMarkup",
+                    markup: "{gpii.qss.list}.options.markup",
+                    events: {
+                        onUndoIndicatorChanged: "{gpii.qss.list}.events.onUndoIndicatorChanged",
+                        onButtonFocusRequired: "{gpii.qss.list}.events.onButtonFocusRequired",
+
+                        onButtonFocused: "{gpii.qss.list}.events.onButtonFocused",
+                        onButtonActivated: "{gpii.qss.list}.events.onButtonActivated",
+                        onButtonMouseEnter: "{gpii.qss.list}.events.onButtonMouseEnter",
+                        onButtonMouseLeave: "{gpii.qss.list}.events.onButtonMouseLeave",
+
+                        onSettingAltered: "{gpii.qss.list}.events.onSettingAltered",
+                        onNotificationRequired: "{gpii.qss.list}.events.onNotificationRequired",
+                        onMorePanelRequired: "{gpii.qss.list}.events.onMorePanelRequired",
+                        onUndoRequired: "{gpii.qss.list}.events.onUndoRequired",
+                        onResetAllRequired: "{gpii.qss.list}.events.onResetAllRequired",
+                        onSaveRequired: "{gpii.qss.list}.events.onSaveRequired",
+                        onQssClosed: "{gpii.qss.list}.events.onQssClosed"
+                    },
+                    invokers: {
+                        getHandlerType: {
+                            funcName: "gpii.qss.list.getHandlerType",
+                            args: [
+                                "{that}",
+                                "{arguments}.0" // item
+                            ]
+                        }
+                    }
+                }
+            },
+            qssMorePanelRepeater: {
+                type: "gpii.psp.repeater",
+                container: "{gpii.qss.list}.dom.morePanel",
+                options: {
+                    defaultHandlerGrade: "{gpii.qss.list}.options.defaultHandlerGrade",
+                    handlerGrades: "{gpii.qss.list}.options.handlerGrades",
+                    model: {
+                        items: "{gpii.qss.list}.options.morePanelSettings"
+                        // items: "{gpii.qss.list}.model.items"
+                    },
+                    dynamicContainerMarkup: "{gpii.qss.list}.options.dynamicContainerMarkup",
+                    markup: "{gpii.qss.list}.options.markup",
+                    events: {
+                        onUndoIndicatorChanged: "{gpii.qss.list}.events.onUndoIndicatorChanged",
+                        onButtonFocusRequired: "{gpii.qss.list}.events.onButtonFocusRequired",
+
+                        onButtonFocused: "{gpii.qss.list}.events.onButtonFocused",
+                        onButtonActivated: "{gpii.qss.list}.events.onButtonActivated",
+                        onButtonMouseEnter: "{gpii.qss.list}.events.onButtonMouseEnter",
+                        onButtonMouseLeave: "{gpii.qss.list}.events.onButtonMouseLeave",
+
+                        onSettingAltered: "{gpii.qss.list}.events.onSettingAltered",
+                        onNotificationRequired: "{gpii.qss.list}.events.onNotificationRequired",
+                        onMorePanelRequired: "{gpii.qss.list}.events.onMorePanelRequired",
+                        onUndoRequired: "{gpii.qss.list}.events.onUndoRequired",
+                        onResetAllRequired: "{gpii.qss.list}.events.onResetAllRequired",
+                        onSaveRequired: "{gpii.qss.list}.events.onSaveRequired",
+                        onQssClosed: "{gpii.qss.list}.events.onQssClosed"
+                    },
+                    invokers: {
+                        getHandlerType: {
+                            funcName: "gpii.qss.list.getHandlerType",
+                            args: [
+                                "{that}",
+                                "{arguments}.0" // item
+                            ]
+                        }
+                    }
+                }
             }
         }
     });
+
+    gpii.qss.list.filterSettings = function (settings) {
+        var filteredSetting = [];
+        fluid.each(settings, function (setting) {
+
+            if (fluid.isValue(setting.schema) && !setting.schema.morePanel) {
+                filteredSetting.push(setting);
+            }
+        });
+
+        return filteredSetting;
+    };
+
+    gpii.qss.list.filterMoreSettings = function (settings) {
+        var filteredSetting = [];
+        fluid.each(settings, function (setting) {
+            if (fluid.isValue(setting.schema) && setting.schema.morePanel) {
+                filteredSetting.push(setting);
+            }
+        });
+
+        return filteredSetting;
+    };
 
     /**
      * Returns the correct handler type (a grade inheriting from `gpii.qss.buttonPresenter`)

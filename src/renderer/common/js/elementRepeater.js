@@ -151,24 +151,6 @@
             items: []
         },
 
-        settings: {
-            expander: {
-                funcName: "gpii.psp.repeater.filterSettings",
-                args: ["{that}.model.items"]
-            }
-        },
-
-        morePanelSettings: {
-            expander: {
-                funcName: "gpii.psp.repeater.filterMoreSettings",
-                args: ["{that}.model.items"]
-            }
-        },
-
-        selectors: {
-            morePanel: ".flc-quickSetStrip-more"
-        },
-
         handlerType: null,
 
         invokers: {
@@ -198,6 +180,14 @@
                     item:  "{source}",
                     handlerType: "@expand:{repeater}.getHandlerType({that}.options.item)",
 
+                    listeners: {
+                        "onCreate": {
+                            funcName: "gpii.psp.repeater.log",
+                            args: [
+                                "{that}.model.item"
+                            ],
+                        }
+                    },
                     modelListeners: {
                         /*
                          * Simulate bi-directional binding for items as using `dynamicComponent` corrupts this binding
@@ -247,27 +237,8 @@
         }
     });
 
-    gpii.psp.repeater.filterSettings = function (settings) {
-        var filteredSetting = [];
-        fluid.each(settings, function (setting) {
-
-            if (fluid.isValue(setting.schema) && !setting.schema.morePanel) {
-                filteredSetting.push(setting);
-            }
-        });
-
-        return filteredSetting;
-    };
-
-    gpii.psp.repeater.filterMoreSettings = function (settings) {
-        var filteredSetting = [];
-        fluid.each(settings, function (setting) {
-            if (fluid.isValue(setting.schema) && setting.schema.morePanel) {
-                filteredSetting.push(setting);
-            }
-        });
-
-        return filteredSetting;
+    gpii.psp.repeater.log = function (item) {
+        // console.log(item.length);
     };
 
     /**

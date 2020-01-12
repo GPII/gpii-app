@@ -141,13 +141,12 @@
                     "popupText": "<p>Open Reddit in a web browser.</p>",
                     "description": "The full description of the button..."
                 },
-                "x",
+                "read-aloud",
                 "url-google-drive",
                 "url-one-drive",
                 "url-dropbox",
                 "screen-zoom",
                 "high-contrast",
-                "read-aloud",
                 "url-customize-qss"
             ]
             // the rest of the rows have no data, so it will be filled up with grid elements automatically
