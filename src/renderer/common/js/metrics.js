@@ -114,6 +114,12 @@
             "onQssWidgetCreated.metric": {
                 funcName: "gpii.psp.metrics.addTipLinkHandlers",
                 args: ["{that}", "{that}.container"]
+            },
+            "onSideCarToggled.metric": {
+                func: "{channelNotifier}.events.onMetric.fire",
+                args: ["widget-sidecar", {
+                    state: "{arguments}.0"
+                }]
             }
         }
     });
