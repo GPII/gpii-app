@@ -15,7 +15,6 @@
 var fs = require("fs"),
     fluid = require("infusion"),
     electron = require("electron"),
-    ipcMain = electron.ipcMain,
     gpii = fluid.registerNamespace("gpii");
 
 require("../common/utils.js");
@@ -118,8 +117,8 @@ fluid.defaults("gpii.app.captureTool", {
             funcName: "gpii.app.captureTool.updateRenderModel",
             args: ["{that}", "{arguments}.0", "{arguments}.1"]
         },
-        testPspChannel: {
-            funcName: "gpii.app.captureTool.testPspChannel",
+        savePreferences: {
+            funcName: "gpii.app.captureTool.savePreferences",
             args: ["{that}", "{pspChannel}", "{flowManager}", "{arguments}.0"]
         },
         generateDiagnostics: {
@@ -128,13 +127,9 @@ fluid.defaults("gpii.app.captureTool", {
         }
     },
     listeners: {
-        onCreate: [
+        "onCreate.show": [
             {
                 func: "{that}.show"
-            },
-            {
-                funcName: "gpii.app.captureTool.init",
-                args: ["{that}", "{flowManager}"]
             }
         ]
     },
@@ -160,6 +155,55 @@ fluid.defaults("gpii.app.captureTool", {
             func: "{that}.updateRenderModel",
             excludeSource: "init",
             args: ["{pspChannel}.model.preferences", "{change}"]
+        }
+    },
+    components: {
+        channelNotifier: {
+            type: "gpii.app.channelNotifier",
+            options: {
+                events: {
+                    sendingInstalledSolutions: null,
+                    sendingRunningSolutions: null,
+                    sendingAllSolutionsCapture: null,
+                    modelUpdate: null,
+                    saveCapturedPreferences: null
+                }
+            }
+        },
+        channelListener: {
+            type: "gpii.app.channelListener",
+            options: {
+                events: {
+                    getInstalledSolutions: null,
+                    getAllSolutionsCapture: null,
+                    captureDoneButton: null,
+                    modelUpdate: null,
+                    saveCapturedPreferences: null
+                },
+                listeners: {
+                    getInstalledSolutions: {
+                        // func: "{aboutDialog}.hide"
+                        funcName: "gpii.app.captureTool.channelGetInstalledSolutions",
+                        args: ["{captureTool}.channelNotifier", "{flowManager}", "{arguments}"]
+                    },
+                    getAllSolutionsCapture: {
+                        funcName: "gpii.app.captureTool.channelGetAllSolutionsCapture",
+                        args: ["{captureTool}.channelNotifier", "{flowManager}", "{arguments}.0"]
+                    },
+                    captureDoneButton: {
+                        funcName: "gpii.app.captureTool.channelCaptureDoneButton",
+                        args: ["{captureTool}"]
+                    },
+                    modelUpdate: {
+                        funcName: "gpii.app.captureTool.channelModelUpdate",
+                        args: ["{captureTool}.channelNotifier", "{captureTool}", "{flowManager}"]
+                    },
+                    saveCapturedPreferences: {
+                        funcName: "{captureTool}.savePreferences",
+                        args: ["{arguments}.0"]
+                    }
+                }
+            }
         }
     }
 });
@@ -229,69 +273,59 @@ gpii.app.captureTool.generateDiagnostics = function (diagnosticsCollector) {
     return fluid.promise.fireTransformEvent(diagnosticsCollector.events.onCollectDiagnostics, {});
 };
 
-gpii.app.captureTool.init = function (that, flowManager) {
-    ipcMain.on("getInstalledSolutions", function (event /*, arg */) {
-        flowManager.capture.getInstalledSolutions().then(
-            function (data) {
-                event.sender.send("sendingInstalledSolutions", data);
-                var runningSolutions = {};
-                fluid.each(data, function (solutionEntry, solutionId) {
-                    try {
-                        fluid.log("ABOUT TO CHECK PROCESS FOR: ", solutionId);
-                        var isRunningState = gpii.processReporter.handleIsRunning(solutionEntry);
-                        fluid.log("RUNNING STATE: ", isRunningState);
-                        if (isRunningState) {
-                            runningSolutions[solutionId] = solutionEntry;
-                        }
-                    } catch (err) {
-                        fluid.log("Exception trying to look up", solutionEntry, " Error: ", err);
+gpii.app.captureTool.channelGetInstalledSolutions = function (channelNotifier, flowManager) {
+    flowManager.capture.getInstalledSolutions().then(
+        function (data) {
+            channelNotifier.events.sendingInstalledSolutions.fire(data);
+            var runningSolutions = {};
+            fluid.each(data, function (solutionEntry, solutionId) {
+                try {
+                    fluid.log("ABOUT TO CHECK PROCESS FOR: ", solutionId);
+                    var isRunningState = gpii.processReporter.handleIsRunning(solutionEntry);
+                    fluid.log("RUNNING STATE: ", isRunningState);
+                    if (isRunningState) {
+                        runningSolutions[solutionId] = solutionEntry;
                     }
-                });
-                event.sender.send("sendingRunningSolutions", runningSolutions);
-            },
-            function (err) {
-                event.sender.send("sendingInstalledSolutions", {isError: true, message: err});
-            }
-        );
-    });
-
-    ipcMain.on("getAllSolutionsCapture", function (event, arg) {
-        var options = {};
-        if (arg.solutionsList) {
-            options.solutionsList = arg.solutionsList;
+                } catch (err) {
+                    fluid.log("Exception trying to look up", solutionEntry, " Error: ", err);
+                }
+            });
+            channelNotifier.events.sendingRunningSolutions.fire(runningSolutions);
+        },
+        function (err) {
+            channelNotifier.events.sendingInstalledSolutions.fire({isError: true, message: err});
         }
-        flowManager.capture.getSystemSettingsCapture(options).then(
-            function (data) {
-                event.sender.send("sendingAllSolutionsCapture", data);
-            },
-            function (err) {
-                event.sender.send("sendingAllSolutionsCapture", {isError: true, message: err});
-            }
-        );
-    });
+    );
+};
 
-    ipcMain.on("captureDoneButton", function (/*event, arg*/) {
-        that.close();
-    });
+gpii.app.captureTool.channelGetAllSolutionsCapture = function (channelNotifier, flowManager, arg) {
+    var options = {};
+    if (arg.solutionsList) {
+        options.solutionsList = arg.solutionsList;
+    }
+    flowManager.capture.getSystemSettingsCapture(options).then(
+        function (data) {
+            channelNotifier.events.sendingAllSolutionsCapture.fire(data);
+        },
+        function (err) {
+            channelNotifier.events.sendingAllSolutionsCapture.fire({isError: true, message: err});
+        }
+    );
+};
 
-    ipcMain.on("modelUpdate", function (event /*, arg */) {
-        event.sender.send("modelUpdate", {
-            isKeyedIn: that.model.isKeyedIn,
-            keyedInUserToken: that.model.keyedInUserToken,
-            preferences: flowManager.pspChannel.model.preferences
-        });
-    });
+gpii.app.captureTool.channelCaptureDoneButton = function (captureDialog) {
+    captureDialog.close();
+};
 
-    ipcMain.on("saveCapturedPreferences", function (event, arg) {
-        that.testPspChannel(arg);
+gpii.app.captureTool.channelModelUpdate = function (channelNotifier, captureTool, flowManager) {
+    channelNotifier.events.modelUpdate.fire({
+        isKeyedIn: captureTool.model.isKeyedIn,
+        keyedInUserToken: captureTool.model.keyedInUserToken,
+        preferences: flowManager.pspChannel.model.preferences
     });
 };
 
-gpii.app.captureTool.testPspChannel = function (that, pspChannel, flowManager, options) {
-    // console.log("Capturing using cloudURL: ", flowManager.settingsDataSource.options.cloudURL);
-    // console.log("BEFORE Take a look at PSP Channel Model: ", flowManager.pspChannel.model);
-    // console.log("These are the save options: ", options);
-
+gpii.app.captureTool.savePreferences = function (that, pspChannel, flowManager, options) {
     var payload = {
         contexts: {}
     };

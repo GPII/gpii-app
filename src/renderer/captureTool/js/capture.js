@@ -9,7 +9,8 @@
 
     // TODO Ultimately these should be relocated to a JSON5 file, probably in
     // universal so they can be used by any application or reporting utility
-    // that needs to present the results to a human.
+    // that needs to present the results to a human. This would all be a part
+    // of the "Presentation Registry" to be used across tools.
     gpii.captureTool.appOrdering = [
         "com.microsoft.windows.language",
         "com.microsoft.windows.screenDPI",
@@ -143,28 +144,10 @@
 
         },
         modelListeners: {
-            "whatToCapture": [{
-                funcName: "console.log",
-                args: ["What To Capture: ", "{that}.model.whatToCapture"]
-            }
-            ],
             "solutionsToCapture": [{
-                funcName: "console.log",
-                args: ["Specific solutions to capture: ", "{that}.model.solutionsToCapture"]
-            }, {
                 func: "{that}.updateNumAppsSelected"
             }],
-            "prefsSetName": {
-                funcName: "console.log",
-                args: ["PrefSet Name: ", "{that}.model.prefsSetName"]
-            },
             "isKeyedIn": [
-                {
-                    // funcName: "{that}.render",
-                    // args: ["{that}.model.currentPage"]
-                    funcName: "console.log",
-                    args: ["Key In/Out", "{change}.value", "{that}.model.keyedInUserToken"]
-                },
                 {
                     funcName: "gpii.captureTool.watchKeyInOut",
                     args: ["{that}", "{that}.model.currentPage", "{change}.value"]
@@ -181,17 +164,22 @@
             ],
             "showDefaultSettings": [
                 {
-                    func: "{that}.updateCapturedSettingsToRender",
-                    args: ["{change}.value"]
-                },
-                {
-                    func: "{that}.render",
-                    args: ["{that}.model.currentPage"]
-                },
-                {
                     // Currently, it's a bit dicey as to replaying the binder
                     // when the options change.
+                    namespace: "clearAllSettingsToKeepButton",
                     func: "{that}.clearAllSettingsToKeepButton"
+                },
+                {
+                    namespace: "updateCapturedSettingsToRender",
+                    func: "{that}.updateCapturedSettingsToRender",
+                    args: ["{change}.value"],
+                    priority: "after:clearAllSettingsToKeepButton"
+                },
+                {
+                    namespace: "render",
+                    func: "{that}.render",
+                    args: ["{that}.model.currentPage"],
+                    priority: "after:updateCapturedSettingsToRender"
                 }
             ],
             "capturedSettingsToRender": [
@@ -388,19 +376,19 @@
             },
             onSolutionHeaderToKeepCheck: {
                 funcName: "gpii.captureTool.onSolutionHeaderToKeepCheck",
-                args: ["{that}", "{arguments}.0"]
+                args: ["{that}", "{arguments}.0.currentTarget"] // event.currentTarget
             },
             onHideShowSolution: {
                 funcName: "gpii.captureTool.onHideShowSolution",
-                args: ["{that}", "{arguments}.0"]
+                args: ["{that}", "{arguments}.0.currentTarget"] // event.currentTarget
             },
             onHideShowNumSettingLink: {
                 funcName: "gpii.captureTool.onHideShowNumSettingLink",
-                args: ["{that}", "{arguments}.0"]
+                args: ["{arguments}.0.currentTarget"] // event.currentTarget
             },
             onSelectPrefssetDropdown: {
                 funcName: "gpii.captureTool.onSelectPrefssetDropdown",
-                args: ["{that}", "{arguments}.0"]
+                args: ["{that}", "{arguments}.0.currentTarget"] // event.currentTarget
             }
         }
     });
@@ -422,7 +410,7 @@
         var togo = {};
         fluid.each(mergedCapture, function (capturedSolution, solutionID) {
             if (!that.model.installedSolutions[solutionID]) {
-                console.log("The solutionID is missing for this installedSolution: ", solutionID);
+                fluid.log("The solutionID is missing for this installedSolution: ", solutionID);
                 return;
             }
 
@@ -453,20 +441,13 @@
         fluid.stableSort(orderedInstalledSolutions, function (a, b) {
             var idx = gpii.captureTool.appOrdering;
             function idxOrEnd(i) {
-                return idx.indexOf(i) === -1 ? idx.length + 1 : idx.indexOf(i);
+                var locI = idx.indexOf(i);
+                return locI === -1 ? idx.length : locI;
             }
 
             var idxA = idxOrEnd(a.id);
             var idxB = idxOrEnd(b.id);
-            if (idxA < idxB) {
-                return -1;
-            }
-            else if (idxA > idxB) {
-                return 1;
-            }
-            else {
-                return 0;
-            }
+            return idxA - idxB;
         });
         return orderedInstalledSolutions;
     };
@@ -481,7 +462,6 @@
      * default entry.
      */
     gpii.captureTool.determineDefaultPrefsSet = function (preferences) {
-        console.log("Determine defaults from: ", preferences);
         if (!preferences || !preferences.contexts) {
             return {
                 prefSetId: "",
@@ -525,13 +505,20 @@
             var finalSettings = gpii.captureTool.annotateSettingsCapture(that, arg);
 
             // Remove any solutions with zero settings per UX Review
-            fluid.each(finalSettings, function (item, key) {
-                // Is it safe to modify an object during iteration with fluid.each?
+            fluid.remove_if(finalSettings, function (item, key) {
                 if (!item.numberOfSettings || item.numberOfSettings === 0) {
-                    delete finalSettings[key];
-                    console.log("Removing solution with zero settings: ", key);
+                    fluid.log("Removing solution with zero settings: ", key);
+                    return true;
                 }
             });
+
+            // fluid.each(finalSettings, function (item, key) {
+            //     // Is it safe to modify an object during iteration with fluid.each?
+            //     if (!item.numberOfSettings || item.numberOfSettings === 0) {
+            //         delete finalSettings[key];
+            //         fluid.log("Removing solution with zero settings: ", key);
+            //     }
+            // });
 
             that.fullChange("capturedSettings", finalSettings);
             that.fullChange("currentPage", "3_what_to_keep");
@@ -540,7 +527,6 @@
         });
 
         ipcRenderer.on("modelUpdate", function (event, arg) {
-            console.log("Model Update IPC 231", arg);
             var transaction = that.applier.initiate();
             transaction.fireChangeRequest({ path: "isKeyedIn", value: arg.isKeyedIn});
             transaction.fireChangeRequest({ path: "keyedInUserToken", value: arg.keyedInUserToken});
@@ -667,7 +653,7 @@
             that.saveCapturedPreferences();
         }
         else {
-            console.log("Not sure what the next page is...");
+            fluid.log("Unable to determine nextButton page in the Capture Tool workflow...");
         }
     };
 
@@ -696,7 +682,7 @@
             that.render("4_save_choose_prefsset");
         }
         else {
-            console.log("Not sure what the next page is...");
+            fluid.log("Unable to determine backButton page in the Capture Tool workflow...");
         }
     };
 
@@ -804,9 +790,9 @@
         });
     };
 
-    gpii.captureTool.onSolutionHeaderToKeepCheck = function (that, event) {
-        var solutionId = event.currentTarget.value;
-        var checkVal = event.currentTarget.checked;
+    gpii.captureTool.onSolutionHeaderToKeepCheck = function (that, currentTarget) {
+        var solutionId = currentTarget.value;
+        var checkVal = currentTarget.checked;
 
         var curSettings = fluid.copy(that.model.settingsToKeep);
         var solutionData = fluid.find(that.model.capturedSettingsToRender, function (item) {
@@ -831,32 +817,32 @@
         that.applier.change("settingsToKeep", curSettings);
     };
 
-    gpii.captureTool.onHideShowNumSettingLink = function (vhat, event) {
-        var solutionId = event.currentTarget.dataset.solution;
+    gpii.captureTool.onHideShowNumSettingLink = function (currentTarget) {
+        var solutionId = currentTarget.dataset.solution;
         var button = $(".flc-hideshow-solution[data-solution='" + solutionId + "']");
         button.click();
     };
 
-    gpii.captureTool.onHideShowSolution = function (that, event) {
-        var solutionId = event.currentTarget.dataset.solution;
-        var hideShow = event.currentTarget.dataset.show;
+    gpii.captureTool.onHideShowSolution = function (that, currentTarget) {
+        var solutionId = currentTarget.dataset.solution;
+        var hideShow = currentTarget.dataset.show;
         if (hideShow === true || hideShow === "true") {
             $("#flc-settings-for-" + solutionId.replace(/\./g, "\\.")).toggle(hideShow);
-            event.currentTarget.dataset.show = false;
-            event.currentTarget.value = "Show Settings";
+            currentTarget.dataset.show = false;
+            currentTarget.value = "Show Settings";
         }
         else {
             $("#flc-settings-for-" + solutionId.replace(/\./g, "\\.")).toggle(hideShow);
-            event.currentTarget.dataset.show = true;
-            event.currentTarget.value = "Hide Settings";
+            currentTarget.dataset.show = true;
+            currentTarget.value = "Hide Settings";
         }
 
     };
 
-    gpii.captureTool.onSelectPrefssetDropdown = function (that, event) {
+    gpii.captureTool.onSelectPrefssetDropdown = function (that, currentTarget) {
         var curSelected = that.locate("currentlySelectedPrefset");
-        curSelected[0].innerHTML = event.currentTarget.innerHTML;
-        var curTarget = $(event.currentTarget);
+        curSelected[0].innerHTML = currentTarget.innerHTML;
+        var curTarget = $(currentTarget);
         that.applier.change("prefsSetSaveType", curTarget.data("type"));
         that.applier.change("selectedPrefsSet", curTarget.data("prefsset-id"));
         that.applier.change("selectedPrefsSetName", curTarget.data("prefsset-name"));
@@ -904,7 +890,7 @@
                             renderVal = renderVal.value;
                         }
                         else {
-                            console.log("Third Case");
+                            fluid.log("Nothing to process for SPI or windows settings cleanup.");
                         }
 
                         curRenderSetting.settingLabel = curSchema.title;
