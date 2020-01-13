@@ -53,6 +53,8 @@
             "custom-keys":       "gpii.qss.customKeysPresenter",
             // separator grade
             "separator":         "gpii.qss.separatorButtonPresenter",
+            // grid grade
+            "grid":              "gpii.qss.gridButtonPresenter",
             // url based buttons
             "url-google-drive":  "gpii.qss.urlGoogleDrivePresenter",
             "url-one-drive":     "gpii.qss.urlOneDrivePresenter",
