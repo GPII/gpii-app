@@ -324,7 +324,7 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
 });
 
 gpii.app.metrics.asString = function (object) {
-    return (object && object !== 0) ? object.toString() : "";
+    return fluid.isValue(object) ? object.toString() : "";
 };
 
 /** Mix-in grade to provide metrics for QSS widgets */
