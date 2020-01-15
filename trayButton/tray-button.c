@@ -35,6 +35,7 @@
 #define BUTTON_CLASS L"GPII-TrayButton"
 #define GPII_CLASS L"gpii-message-window"
 #define BUTTON_MESSAGE L"GPII-TrayButton-Message"
+#define BUTTON_POSITION_MESSAGE L"GPII-TrayButtonPos-Message"
 
 // Commands sent from GPII
 #define GPII_COMMAND_ICON    1
@@ -66,7 +67,7 @@
 /** Current state of the button */
 int buttonState = STATE_NORMAL;
 /** last known window sizes */
-RECT taskRect = { 0 }, notifyRect = { 0 }, trayClient = { 0 };
+RECT taskRect = { 0 }, notifyRect = { 0 }, trayClient = { 0 }, windowRect = { 0 };
 
 HWND buttonWindow = null;
 HWND tooltipWindow = null;
@@ -84,6 +85,7 @@ WCHAR *iconFileHC = null;
 /** WM_SHELLHOOKMESSAGE */
 UINT shellMessage = 0;
 UINT gpiiMessage = 0;
+UINT gpiiPositionMessage = 0;
 HANDLE gpiiWindow = null;
 
 /** true if the button destruction is intentional */
@@ -301,6 +303,19 @@ BOOL positionTrayWindows(BOOL force)
 	} else {
 		KillTimer(buttonWindow, TIMER_RESIZE);
 	}
+
+	if (changed) {
+		// Inform gpii about the new position.
+		RECT currentRect;
+		GetWindowRect(buttonWindow, &currentRect);
+		if (!EqualRect(&windowRect, &currentRect)) {
+			windowRect = currentRect;
+			sendToGpii(gpiiPositionMessage,
+				MAKELONG(windowRect.left, windowRect.top),
+				MAKELONG(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+		}
+	}
+
 	return changed;
 }
 
@@ -785,6 +800,7 @@ int CALLBACK WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmd, int show)
 
 	// Used to communicate with GPII
 	gpiiMessage = RegisterWindowMessage(BUTTON_MESSAGE);
+	gpiiPositionMessage = RegisterWindowMessage(BUTTON_POSITION_MESSAGE);
 
 	// See if there's already an instance
 	HANDLE existing = FindWindowEx(getTaskbarWindow(), null, BUTTON_CLASS, null);

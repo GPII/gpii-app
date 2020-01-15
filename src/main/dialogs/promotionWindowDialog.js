@@ -87,7 +87,8 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
                             "{promotionWindowDialog}",
                             "{showTimer}",
                             "{promotionWindowDialog}.options.siteConfig.offset.x",
-                            "{promotionWindowDialog}.options.siteConfig.offset.y"
+                            "{promotionWindowDialog}.options.siteConfig.offset.y",
+                            "{tray}"
                         ]
                     },
                     onCloseClicked: {
@@ -132,7 +133,11 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
  * @param {Number} offsetX - The x offset from the right edge of the screen.
  * @param {Number} offsetY - The y offset from the bottom edge of the screen.
  */
-gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY) {
+gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, tray) {
+    console.log("===== gpii.app.promotionWindowDialog.show: tray.getIconBounds()");
+    console.log(tray.getIconBounds());
+    console.log("=======================");
+    
     var centeredPosition = gpii.browserWindow.computeCentralWindowPosition(that.options.siteConfig.width, that.options.siteConfig.height);
 
     if (that.options.siteConfig.centered) {
