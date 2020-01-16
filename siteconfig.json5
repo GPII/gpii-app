@@ -175,7 +175,7 @@
         movable: false,
         skipTaskbar: true,
         frame: false,
-        transparent: false,
+        transparent: true,
         alwaysOnTop: true,
         // 0 will not close the window
         closeDelay: 0,
