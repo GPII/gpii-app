@@ -80,7 +80,14 @@
         }
     });
 
+    /**
+     * Changes the view depending on the lastEnvironmentalLoginGpiiKey key
+     * @param  {jQuery} autoKeyInView - DOM element for the autoKey in view
+     * @param  {jQuery} tip - DOM element for the tip at the bottom
+     * @param  {String} lastEnvironmentalLoginGpiiKey - contains the string of the last key used for the auto-keyin
+     */
     gpii.qssWidget.mySavedSettings.toggleView = function (autoKeyInView, tip, lastEnvironmentalLoginGpiiKey) {
+        // show the option to re-apply the preferences if there is auto-keyin option enabled
         if (!lastEnvironmentalLoginGpiiKey) {
             autoKeyInView.hide();
             tip.show();

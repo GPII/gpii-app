@@ -167,6 +167,67 @@
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#readaloud",
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>"
     }, {
+        "id": "mouse",
+        "path": "mouse",
+        "schema": {
+            "type": "mouse"
+        },
+        "settings": {
+            "mouseSpeed": {
+                "id": "mouseSpeed",
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed",
+                "schema": {
+                    "type": "number",
+                    "default": 10,
+                    "min": 1,
+                    "max": 20,
+                    "divisibleBy": 2
+                },
+                "value": 10,
+                "messageKey": "windows-mouseSpeed"
+            },
+            "swapMouseButtons": {
+                "id": "swapMouseButtons",
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons",
+                "schema": {
+                    "type": "boolean",
+                    "mapOn": 1,
+                    "mapOff": 0,
+                    "default": 0
+                },
+                "value": 0,
+                "messageKey": "windows-swapMouseButtons"
+            },
+            "easierDoubleClick": {
+                "id": "easierDoubleClick",
+                "path": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.DoubleClickTime",
+                "schema": {
+                    "type": "boolean",
+                    "mapOn": 5000,
+                    "mapOff": 500,
+                    "default": 500
+                },
+                "value": 500,
+                "messageKey": "windows-easierDoubleClick"
+            },
+            "largerMousePointer": {
+                "id": "largerMousePointer",
+                "path": "http://registry\\.gpii\\.net/common/cursorSize",
+                "schema": {
+                    "type": "boolean",
+                    "mapOn": true,
+                    "mapOff": false,
+                    "default": false
+                },
+                "value": false,
+                "messageKey": "windows-largerMousePointer"
+            }
+        },
+        "buttonTypes": ["largeButton", "settingButton"],
+        "tabindex": 60,
+        "messageKey": "common-mouse",
+        "learnMoreLink": "https://morphic.world/help/qsshelp#mouse"
+    }, {
         "id": "screen-capture",
         "path": "screenCapture",
         "schema": {
