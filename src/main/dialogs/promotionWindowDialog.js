@@ -134,16 +134,25 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
  * @param {Number} offsetY - The y offset from the bottom edge of the screen.
  */
 gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, tray) {
-    console.log("===== gpii.app.promotionWindowDialog.show: tray.getIconBounds()");
-    console.log(tray.getIconBounds());
-    console.log("=======================");
-    
-    var centeredPosition = gpii.browserWindow.computeCentralWindowPosition(that.options.siteConfig.width, that.options.siteConfig.height);
+    if (that.options.siteConfig.positionByTrayIcon) {
+        // getting the tray position only when it's required (siteConfig > positionByTrayIcon)
+        var trayPosition = tray.getIconBounds(),
+            screen = require("electron").screen,
+            displaySize = { width: screen.getPrimaryDisplay().workAreaSize.width, height: screen.getPrimaryDisplay().workAreaSize.height },
+            offset = {x: (displaySize.width - trayPosition.x) - (trayPosition.width / 2), y: (displaySize.height - trayPosition.y) + (trayPosition.height / 2)};
+        console.log("===== gpii.app.promotionWindowDialog.show: tray.getIconBounds()");
+        console.log(trayPosition, displaySize, offset);
+        console.log("=======================");
 
-    if (that.options.siteConfig.centered) {
+        that.setPosition(offset.x, offset.y);
+    } else if (that.options.siteConfig.centered) {
+        // centering the promo window
+        var centeredPosition = gpii.browserWindow.computeCentralWindowPosition(that.options.siteConfig.width, that.options.siteConfig.height);
         that.setPosition(centeredPosition.x, centeredPosition.y);
     } else if (offsetX || offsetY) {
+        // setting the manual offset possition
         that.setPosition(offsetX, offsetY);
     }
+
     timer.start(that.options.showDelay);
 };

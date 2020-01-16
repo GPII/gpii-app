@@ -184,7 +184,10 @@
         offset: {
             x: 0,
             y: 0
-        }
+        },
+        // this option will position the promo window just above the tray icon
+        // if its set to true will overwrite the manual `offset` and `centered` options
+        positionByTrayIcon: true
     },
 
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
