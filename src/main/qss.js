@@ -636,9 +636,6 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
     });
 
     mergeSettings = loadedSettings.concat(morePanelSettings);
-    // console.log(mergeSettings);
-
-
 
     // the multiplier used through all of the calculations below it's there because we have too small of values
     // and with this multiplier we are trying to avoid rounding errors when comparing values with the bounds

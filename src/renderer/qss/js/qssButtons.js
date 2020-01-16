@@ -329,7 +329,6 @@
             applyKeyboardHighlight = that.options.applyKeyboardHighlight;
 
         focusManager.focusElement(container, isKeyPressed && applyKeyboardHighlight);
-        console.log(that.model.item);
         qssList.events.onButtonActivated.fire(that.model.item, metrics, activationParams);
     };
 

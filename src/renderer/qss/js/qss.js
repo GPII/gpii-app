@@ -68,7 +68,7 @@
 
         settings: {
             expander: {
-                funcName: "gpii.qss.list.filterSettings",
+                funcName: "gpii.qss.list.filterQssSettings",
                 args: ["{that}.model.items"]
             }
         },
@@ -108,6 +108,13 @@
             onSaveRequired: null,
             onQssClosed: null,
             onUndoIndicatorChanged: null
+        },
+
+        modelListeners: {
+            "items": {
+                func: "gpii.qss.list.filterSettings",
+                args: ["{qssStripRepeater}", "{qssMorePanelRepeater}", "{that}.model.items"]
+            }
         },
 
         components: {
@@ -194,7 +201,23 @@
         }
     });
 
-    gpii.qss.list.filterSettings = function (settings) {
+    gpii.qss.list.filterSettings = function (qssStripRepeater, qssMorePanelRepeater, items) {
+        var qssStripItems = [],
+            morePanelItems = [];
+        fluid.each(items, function (setting) {
+
+            if (fluid.isValue(setting.schema) && !setting.schema.morePanel) {
+                qssStripItems.push(setting);
+            } else {
+                morePanelItems.push(setting);
+            }
+        });
+
+        qssStripRepeater.applier.change("items", qssStripItems, null, "gpii.qss.list");
+        qssMorePanelRepeater.applier.change("items", morePanelItems, null, "gpii.qss.list");
+    };
+
+    gpii.qss.list.filterQssSettings = function (settings) {
         var filteredSetting = [];
         fluid.each(settings, function (setting) {
 

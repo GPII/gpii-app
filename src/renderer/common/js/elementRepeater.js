@@ -179,15 +179,6 @@
                     index: "{sourcePath}",
                     item:  "{source}",
                     handlerType: "@expand:{repeater}.getHandlerType({that}.options.item)",
-
-                    listeners: {
-                        "onCreate": {
-                            funcName: "gpii.psp.repeater.log",
-                            args: [
-                                "{that}.model.item"
-                            ],
-                        }
-                    },
                     modelListeners: {
                         /*
                          * Simulate bi-directional binding for items as using `dynamicComponent` corrupts this binding
@@ -236,10 +227,6 @@
             }
         }
     });
-
-    gpii.psp.repeater.log = function (item) {
-        // console.log(item.length);
-    };
 
     /**
      * Notifies the `gpii.psp.repeater` component for changes  in its element handlers.

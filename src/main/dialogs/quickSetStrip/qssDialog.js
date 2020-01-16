@@ -242,12 +242,20 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
     var buttonsWidth = closeButtonWidth + buttonWidth;
     // check the type of the previous button, if the current is small
     // in the future, we might have the case that there aren't two small sequential buttons
-    for (var i = 1; i < buttons.length; i++) {
-        if (!buttons[i].buttonTypes.includes(qssButtonTypes.smallButton) ||
-            !buttons[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
-            buttons[i].path !== qssButtonTypes.closeButton
+
+    var filteredSetting = [];
+
+    fluid.each(buttons, function (button) {
+        if (fluid.isValue(button.schema) && !button.schema.morePanel) {
+            filteredSetting.push(button);
+        }
+    });
+    for (var i = 1; i < filteredSetting.length; i++) {
+        if (!filteredSetting[i].buttonTypes.includes(qssButtonTypes.smallButton) ||
+            !filteredSetting[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
+            filteredSetting[i].path !== qssButtonTypes.closeButton
         ) {
-            if (separatorIds.includes(buttons[i].buttonTypes[0])) {
+            if (separatorIds.includes(filteredSetting[i].buttonTypes[0])) {
                 // this is separator type button, which is slimmer that the others
                 buttonsWidth += separatorWidth;
             } else {
