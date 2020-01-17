@@ -30,6 +30,7 @@
     "gpii_qss_volumeButtonPresenter_caption": "(Звукът е изключен)",
 
     "gpii_psp_qssWidget_learnMore": "Научи повече...",
+    "gpii_psp_qssWidget_helpAndMoreOptions": "Помощ & разширени опции",
 
     "gpii_qss_saveButtonPresenter_notification": {
         "keyedOut": "За да запазите вашите настройки трябва да си създадете Morphic акаунт. Отидете на <a href=\"%accountUrl\">%accountUrl</a>.",
@@ -40,6 +41,11 @@
     "gpii_qssWidget_volumeStepper_decrementButton": "По-тихо",
     "gpii_qssWidget_volumeStepper_upperBoundError": "Това е най-високата настройка",
     "gpii_qssWidget_volumeStepper_lowerBoundError": "Това е най-ниската настройка",
+
+    "gpii_qssWidget_mouse_incrementButton": "По-бързо",
+    "gpii_qssWidget_mouse_decrementButton": "По-бавно",
+    "gpii_qssWidget_mouse_upperBoundError": "Това е най-бързата скорост",
+    "gpii_qssWidget_mouse_lowerBoundError": "Това е най-бавната скорост",
 
     "gpii_qssWidget_openUSB_noUsbInserted": "В компютъра не са включени USB устройства. Поставете USB и опитайте отново.",
     "gpii_qssWidget_openUSB_ejectUsbDrives": "В компютъра няма активни USB устройства. Безопасно е да премахнете всяко устройство в компютъра",

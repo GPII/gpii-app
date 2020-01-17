@@ -36,10 +36,9 @@
         },
 
         modelListeners: {
-            value: {
+            item: {
                 funcName: "gpii.qss.settingButtonPresenter.updateChangeIndicator",
-                args: ["{that}", "{that}.model.item", "{change}.value"],
-                namespace: "changeIndicator"
+                args: ["{that}", "{that}.model.item"]
             }
         }
     });
@@ -49,14 +48,26 @@
      * on whether the changes to the setting can be undone and whether the new value of
      * the setting is the same as its default one.
      * @param {Component} that - The `gpii.qss.settingButtonPresenter` instance.
-     * @param {Object} setting - The setting object corresponding to this QSS button.
-     * @param {Any} value - The new value of the `setting`.
+     * @param {ButtonDefinition} setting - The setting object corresponding to this QSS button
      */
-    gpii.qss.settingButtonPresenter.updateChangeIndicator = function (that, setting, value) {
+    gpii.qss.settingButtonPresenter.updateChangeIndicator = function (that, setting) {
+        var defaultValue,
+            shouldShow = false;
+
+        // Check if the button have secondary settings
+        if (fluid.isValue(setting.settings)) {
+            fluid.each(setting.settings, function (nestedSetting) {
+                var defaultValue = nestedSetting.schema["default"];
+                if ((fluid.isValue(defaultValue) && !fluid.model.diff(nestedSetting.value, defaultValue)) && shouldShow === false) {
+                    shouldShow = true;
+                }
+            });
+        } else {
+            defaultValue = setting.schema["default"];
+            shouldShow = fluid.isValue(defaultValue) && !fluid.model.diff(setting.value, defaultValue);
+        }
         // The dot should be shown if the setting has a default value and the new value of the
         // setting is different from that value.
-        var defaultValue = setting.schema["default"],
-            shouldShow = fluid.isValue(defaultValue) && !fluid.model.diff(value, defaultValue);
         that.toggleIndicator(shouldShow);
     };
 

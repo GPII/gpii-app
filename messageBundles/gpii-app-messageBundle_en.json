@@ -42,16 +42,23 @@
     },
 
     "gpii_psp_qssWidget_learnMore": "Help / Learn more",
+    "gpii_psp_qssWidget_helpAndMoreOptions": "Help & More options",
+    "gpii_psp_qssWidget_hideSideCar": "Hide",
 
     "gpii_qssWidget_stepper_incrementButton": "Larger",
     "gpii_qssWidget_stepper_decrementButton": "Smaller",
     "gpii_qssWidget_stepper_upperBoundError": "This is the highest setting",
     "gpii_qssWidget_stepper_lowerBoundError": "This is the lowest setting",
 
-    "gpii_qssWidget_volumeStepper_incrementButton": "Louder",
-    "gpii_qssWidget_volumeStepper_decrementButton": "Quieter",
-    "gpii_qssWidget_volumeStepper_upperBoundError": "This is highest setting",
-    "gpii_qssWidget_volumeStepper_lowerBoundError": "This is lowest setting",
+    "gpii_qssWidget_volume_incrementButton": "Louder",
+    "gpii_qssWidget_volume_decrementButton": "Quieter",
+    "gpii_qssWidget_volume_upperBoundError": "This is highest setting",
+    "gpii_qssWidget_volume_lowerBoundError": "This is lowest setting",
+
+    "gpii_qssWidget_mouse_incrementButton": "Faster",
+    "gpii_qssWidget_mouse_decrementButton": "Slower",
+    "gpii_qssWidget_mouse_upperBoundError": "This is fastest speed",
+    "gpii_qssWidget_mouse_lowerBoundError": "This is slowest speed",
 
     "gpii_qssWidget_openUSB_noUsbInserted": "There are no USB drives plugged into the computer. Insert your USB and try again.",
     "gpii_qssWidget_openUSB_ejectUsbDrives": "There are no USB drives active in the computer. It is safe to remove any drive in the computer",
