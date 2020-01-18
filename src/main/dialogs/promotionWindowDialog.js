@@ -138,11 +138,10 @@ gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, t
         // getting the tray position only when it's required (siteConfig > positionByTrayIcon)
         var trayPosition = tray.getIconBounds(),
             screen = require("electron").screen,
-            displaySize = { width: screen.getPrimaryDisplay().workAreaSize.width, height: screen.getPrimaryDisplay().workAreaSize.height },
-            offset = {x: (displaySize.width - trayPosition.x) - (trayPosition.width / 2), y: (displaySize.height - trayPosition.y) + (trayPosition.height / 2)};
-        console.log("===== gpii.app.promotionWindowDialog.show: tray.getIconBounds()");
-        console.log(trayPosition, displaySize, offset);
-        console.log("=======================");
+            taskBarHeight = screen.getPrimaryDisplay().bounds.height - screen.getPrimaryDisplay().workAreaSize.height,
+            scaleFactor = screen.getPrimaryDisplay().scaleFactor,
+            displaySize = { width: screen.getPrimaryDisplay().workAreaSize.width, height: screen.getPrimaryDisplay().workAreaSize.height - taskBarHeight},
+            offset = { x: displaySize.width - ((trayPosition.x + (trayPosition.width / 2)) / scaleFactor), y: displaySize.height - ((trayPosition.y - (trayPosition.height / 2)) / scaleFactor) };
 
         that.setPosition(offset.x, offset.y);
     } else if (that.options.siteConfig.centered) {
