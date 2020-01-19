@@ -132,6 +132,8 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
  * the widget with a delay.
  * @param {Number} offsetX - The x offset from the right edge of the screen.
  * @param {Number} offsetY - The y offset from the bottom edge of the screen.
+ * @param {Number} offsetY - The y offset from the bottom edge of the screen.
+ * @param {Component} tray - The `gpii.app.tray` instance.
  */
 gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, tray) {
     if (that.options.siteConfig.positionByTrayIcon) {

@@ -172,19 +172,27 @@
     },
 
     promotionWindow: {
+        // URL from where the content to be downloaded
         promoContentUrl: "http://www.goldenorbs.com/promo/promo-window.html",
         width: 400,
         height: 400,
+        // Show window in the center of the screen
         centered: false,
+        // Whether window is resizable
         resizable: false,
+        // Whether window is movable
         movable: false,
+        // Whether to show the window in taskbar
         skipTaskbar: true,
+        // Whether to to create a Frameless Window
         frame: false,
+        // Makes the window transparent. Not works if resizable is set to true
         transparent: true,
+        // Whether the window should always stay on top of other windows
         alwaysOnTop: true,
-        // 0 will not close the window
+        // Defines the close delay of the window in milliseconds. 0 will not close the window
         closeDelay: 0,
-        // use 0 for no show delay
+        // Defines the show delay of the window in milliseconds. Use 0 for no show delay
         showDelay: 0,
         offset: {
             x: 0,
