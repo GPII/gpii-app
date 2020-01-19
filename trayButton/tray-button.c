@@ -283,14 +283,14 @@ BOOL positionTrayWindows(BOOL force)
 			0, 0,
 			taskRect.right - taskRect.left,
 			taskRect.bottom - taskRect.top,
-			SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOREPOSITION);
+			SWP_NOACTIVATE | SWP_NOMOVE);
 
 		// Move the button between the tasks and notification area
-		SetWindowPos(buttonWindow, 0,
+		SetWindowPos(buttonWindow, HWND_TOP,
 			buttonRect.left, buttonRect.top,
 			buttonRect.right - buttonRect.left,
 			buttonRect.bottom - buttonRect.top,
-			SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOREPOSITION);
+			SWP_NOACTIVATE | SWP_SHOWWINDOW);
 
 		redraw();
 	}
@@ -834,7 +834,7 @@ int CALLBACK WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmd, int show)
 
 		// Create the button window
 		buttonWindow = CreateWindowEx(
-			WS_EX_TRANSPARENT,
+			WS_EX_TOOLWINDOW,
 			BUTTON_CLASS,
 			BUTTON_CLASS,
 			WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS | WS_TABSTOP,
