@@ -151,7 +151,7 @@
     gpii.qss.moreButtonPresenter.activate = function (that, qssList, activationParams) {
         that.notifyButtonActivated(activationParams);
         qssList.events.onMorePanelRequired.fire();
-        qssList.qssMorePanelRepeater.container.show();
+        qssList.qssMorePanelRepeater.container.css("display", "flex");
     };
 
 

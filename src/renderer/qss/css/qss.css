@@ -6,13 +6,6 @@ body {
 }
 
 .fl-qss {
-    display: flex;
-    height: 100%;
-
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-content: flex-end;
-
     border: 1px solid #002957;
 }
 
@@ -188,4 +181,21 @@ body {
 
     -webkit-mask-size: 100% 100%;
     mask-size: 100% 100%;
+}
+
+/* More Panel changes */
+.fl-quickSetStrip-main {
+    display: flex;
+    height: 68px;
+
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-end;
+}
+.fl-quickSetStrip-more {
+    display: none;
+    width: 590px;
+    height: 180px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
 }

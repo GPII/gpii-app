@@ -23,7 +23,7 @@
     },
     "gpii_app_qss_settings_more": {
         "tooltip": "<p>More options for changing the settings on this computer.</p>",
-        "title": "MORE...\n\n(& HELP)"
+        "title": "More Buttons (& Help)"
     },
     "gpii_app_qss_settings_common-selfVoicing-enabled": {
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>",

@@ -93,7 +93,6 @@
             "screen-capture",
             "snipping-tool",
             "office-simplification",
-            "mouse",
             "volume",
             "launch-documorph",
             "cloud-folder-open",
@@ -114,9 +113,8 @@
 
         morePanelList: [
             [ // first row of buttons
-                // in our case can be just empty, it will be filled up with grid elements automatically
-            ],
-            [ // second row of buttons
+                "x",
+                "x",
                 "x",
                 {
                     "buttonId": "MakeYourOwn",
@@ -140,16 +138,29 @@
                     "fullScreen": true,
                     "popupText": "<p>Open Reddit in a web browser.</p>",
                     "description": "The full description of the button..."
-                },
+                }
+            ],
+            [ // second row of buttons
+                "x",
+                "x",
+                "x",
+                "x",
                 "read-aloud",
+                "screen-zoom",
+                "high-contrast"
+            ],
+            [ // third row of buttons
+                "x",
+                "x",
+                "mouse",
+                "x",
+                "x",
+                "x",
+                "url-customize-qss",
                 "url-google-drive",
                 "url-one-drive",
-                "url-dropbox",
-                "screen-zoom",
-                "high-contrast",
-                "url-customize-qss"
+                "url-dropbox"
             ]
-            // the rest of the rows have no data, so it will be filled up with grid elements automatically
         ]
     },
 

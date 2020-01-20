@@ -29,7 +29,8 @@
         gradeNames: ["fluid.viewComponent"],
 
         selectors: {
-            morePanel: ".flc-quickSetStrip-more"
+            morePanel: ".flc-quickSetStrip-more",
+            mainPanel: ".flc-quickSetStrip-main"
         },
 
         defaultHandlerGrade: "gpii.qss.buttonPresenter",
@@ -69,14 +70,14 @@
         settings: {
             expander: {
                 funcName: "gpii.qss.list.filterQssSettings",
-                args: ["{that}.model.items"]
+                args: ["{that}.model.items", false]
             }
         },
 
         morePanelSettings: {
             expander: {
-                funcName: "gpii.qss.list.filterMoreSettings",
-                args: ["{that}.model.items"]
+                funcName: "gpii.qss.list.filterQssSettings",
+                args: ["{that}.model.items", true]
             }
         },
 
@@ -120,7 +121,7 @@
         components: {
             qssStripRepeater: {
                 type: "gpii.psp.repeater",
-                container: "{gpii.qss.list}.container",
+                container: "{gpii.qss.list}.dom.mainPanel",
                 options: {
                     defaultHandlerGrade: "{gpii.qss.list}.options.defaultHandlerGrade",
                     handlerGrades: "{gpii.qss.list}.options.handlerGrades",
@@ -201,39 +202,39 @@
         }
     });
 
+    /**
+     * Using the filterQssSettings to add the items to the main and the more button
+     * @param  {qssStripRepeater} qssStripRepeater     [description]
+     * @param  {qssMorePanelRepeater} qssMorePanelRepeater [description]
+     * @param  {Object[]} items - all available buttons found in settings.json
+     */
     gpii.qss.list.filterSettings = function (qssStripRepeater, qssMorePanelRepeater, items) {
-        var qssStripItems = [],
-            morePanelItems = [];
-        fluid.each(items, function (setting) {
-
-            if (fluid.isValue(setting.schema) && !setting.schema.morePanel) {
-                qssStripItems.push(setting);
-            } else {
-                morePanelItems.push(setting);
-            }
-        });
+        var qssStripItems = gpii.qss.list.filterQssSettings(items, false),
+            morePanelItems = gpii.qss.list.filterQssSettings(items, true);
 
         qssStripRepeater.applier.change("items", qssStripItems, null, "gpii.qss.list");
         qssMorePanelRepeater.applier.change("items", morePanelItems, null, "gpii.qss.list");
     };
 
-    gpii.qss.list.filterQssSettings = function (settings) {
+    /**
+     * Filter the settings object between the main and more panels using the
+     * setting.schema.morePanel key
+     * @param  {Object[]} settings - all available buttons found in settings.json
+     * @param  {Boolean} morePanel - to be in the main or the main panel
+     * @return {Object[]} - same structure as the settings, but filtered result
+     */
+    gpii.qss.list.filterQssSettings = function (settings, morePanel) {
         var filteredSetting = [];
+
         fluid.each(settings, function (setting) {
-
-            if (fluid.isValue(setting.schema) && !setting.schema.morePanel) {
-                filteredSetting.push(setting);
-            }
-        });
-
-        return filteredSetting;
-    };
-
-    gpii.qss.list.filterMoreSettings = function (settings) {
-        var filteredSetting = [];
-        fluid.each(settings, function (setting) {
-            if (fluid.isValue(setting.schema) && setting.schema.morePanel) {
-                filteredSetting.push(setting);
+            if (setting.schema) {
+                if (morePanel) {
+                    if (setting.schema.morePanel) {
+                        filteredSetting.push(setting);
+                    }
+                } else if (!setting.schema.morePanel) {
+                    filteredSetting.push(setting);
+                }
             }
         });
 
