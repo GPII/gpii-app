@@ -359,7 +359,7 @@ gpii.app.trayButton.windowMessage = function (that, hwnd, msg, wParam) {
     if (msg === that.trayButtonMessage) {
         switch (wParam) {
         case gpii.app.trayButton.notifications.click:
-            that.events.onTrayIconClicked.fire();
+            process.nextTick(that.events.onTrayIconClicked.fire);
             break;
 
         case gpii.app.trayButton.notifications.showMenu:

@@ -139,6 +139,10 @@
     // Whether to hide the QSS when a user clicks outside of it
     closeQssOnClickOutside: true,
 
+    // Make the QSS dock to the bottom of the screen, so application windows are positioned above it.
+    // This is ignored if closeQssOnClickOutside is true
+    appBarQss: false,
+
     // Whether to disable the displaying of notifications that suggest some
     // applications may need to be restarted in order for a changed setting to be
     // fully applied. An example for such setting is `Language`.

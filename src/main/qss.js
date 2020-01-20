@@ -108,6 +108,7 @@ fluid.defaults("gpii.app.qssWrapper", {
 
         // user preferences
         closeQssOnBlur: false,
+        appBarQss: false,
         disableRestartWarning: false
     },
 
@@ -970,6 +971,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
     model: {
         isKeyedIn: "{qssWrapper}.model.isKeyedIn",
         closeQssOnBlur: "{qssWrapper}.model.closeQssOnBlur",
+        appBarQss: "{qssWrapper}.model.appBarQss",
         scaleFactor: "{qssWrapper}.model.scaleFactor",
         settings: "{qssWrapper}.model.settings"
     },

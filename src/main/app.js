@@ -74,6 +74,7 @@ fluid.defaults("gpii.app", {
 
             // user settings
             closeQssOnBlur: null,
+            appBarQss: null,
             disableRestartWarning: null
         },
         theme: "{that}.options.defaultTheme"

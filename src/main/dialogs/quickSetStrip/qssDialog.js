@@ -49,7 +49,9 @@ fluid.defaults("gpii.app.qss", {
         // Whether the Morphic logo is currently shown
         isLogoShown: true,
         // Whether blurring should be respected by the dialog
-        closeQssOnBlur: null
+        closeQssOnBlur: null,
+        // Make the window consume the desktop work area.
+        appBarQss: null
     },
 
     modelListeners: {
@@ -63,6 +65,13 @@ fluid.defaults("gpii.app.qss", {
             args: ["{change}.value"],
             // it is shown at first
             excludeSource: "init"
+        },
+        isShown: {
+            funcName: "gpii.app.qss.appBarUpdate",
+            args: ["{that}", "{appBar}", "{that}.dialog", "{change}.value", "{that}.model.closeQssOnBlur"],
+            namespace: "appBar",
+            priority: "before:impl"
+            //excludeSource: "init"
         }
     },
 
@@ -171,6 +180,37 @@ fluid.defaults("gpii.app.qss", {
                     onQssExecuteKeySequence: {
                         funcName: "gpii.app.executeKeySequence",
                         args: ["{arguments}.0"]
+                    }
+                }
+            }
+        },
+        appBar: {
+            type: "gpii.windows.appBar",
+            options: {
+                invokers: {
+                    getNativeWindowHandle: {
+                        this: "{qss}.dialog",
+                        method: "getNativeWindowHandle"
+                    },
+                    hookWindowMessage: {
+                        this: "{qss}.dialog",
+                        method: "hookWindowMessage",
+                        args: ["{arguments}.0", "{arguments}.1"]
+                    },
+                    unhookWindowMessage: {
+                        this: "{qss}.dialog",
+                        method: "unhookWindowMessage",
+                        args: ["{arguments}.0", "{arguments}.1"]
+                    }
+                },
+                listeners: {
+                    "onCreate.init": {
+                        funcName: "gpii.app.qss.appBarInit",
+                        args: ["{that}"],
+                        priority: "first"
+                    },
+                    onPositionChange: {
+                        funcName: "{qss}.setBounds"
                     }
                 }
             }
@@ -343,5 +383,50 @@ gpii.app.qss.show = function (that, params) {
 gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
     if (closeQssOnBlur && !tray.isMouseOver()) {
         that.hide();
+    }
+};
+
+/**
+ * Initialisation for the QSS being an App Bar.
+ * @param {Component} appBar The gpii.windows.appBar instance.
+ */
+gpii.app.qss.appBarInit = function (appBar) {
+
+    if (!appBar.getPrimaryDisplay) {
+        appBar.getPrimaryDisplay = electron.screen.getPrimaryDisplay;
+    }
+
+    // Override so that the vertical window positioning calculations are relative to the taskbar top (or screen bottom),
+    // rather than the work area, because this dialog will be outside of the work area.
+    electron.screen.getPrimaryDisplay = function () {
+        var display = appBar.getPrimaryDisplay.apply(electron.screen);
+        if (appBar.enabled) {
+            display.workArea.height = appBar.getWorkAreaBottom() / display.scaleFactor - display.workArea.y;
+            display.workAreaSize.height = display.workArea.height;
+        }
+        return display;
+    };
+};
+
+/**
+ * The visibility of the QSS is changing, and the size of the work area needs to be adjusted accordingly.
+ *
+ * @param {Component} qss The gpii.app.qss instance.
+ * @param {Component} appBar The gpii.windows.appBar instance.
+ * @param {BrowserWindow} dialog The BrowserWindow for the QSS.
+ * @param {Boolean} shown `true` if the QSS is being shown, and the work area should be consumed.
+ * @param {Boolean} closeQssOnBlur `true` if the QSS will be closed when unfocused, disabling this feature.
+ */
+gpii.app.qss.appBarUpdate = function (qss, appBar, dialog, shown, closeQssOnBlur) {
+    if (shown && !closeQssOnBlur) {
+        // Ignore changes to the work area while adjusting it, so the QSS doesn't flicker or move around needlessly.
+        qss.ignoreWorkArea = true;
+        setTimeout(function () {
+            qss.ignoreWorkArea = false;
+        }, 3000);
+        appBar.enable();
+    } else {
+        qss.ignoreWorkArea = false;
+        appBar.disable();
     }
 };
