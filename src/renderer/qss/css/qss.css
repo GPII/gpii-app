@@ -192,10 +192,15 @@ body {
     flex-wrap: wrap;
     align-content: flex-end;
 }
+
 .fl-quickSetStrip-more {
     display: none;
     width: 590px;
     height: 180px;
     flex-wrap: wrap;
     margin-bottom: 10px;
+}
+
+.fl-qss-btnId-service-more.fl-activated {
+    background-color: #008145;
 }

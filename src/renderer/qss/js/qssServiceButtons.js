@@ -128,6 +128,9 @@
      */
     fluid.defaults("gpii.qss.moreButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
+        model: {
+            isShown: false
+        },
         invokers: {
             activate: {
                 funcName: "gpii.qss.moreButtonPresenter.activate",
@@ -149,9 +152,16 @@
      * of the button (e.g. which key was used to activate the button).
      */
     gpii.qss.moreButtonPresenter.activate = function (that, qssList, activationParams) {
-        that.notifyButtonActivated(activationParams);
-        qssList.events.onMorePanelRequired.fire();
-        qssList.qssMorePanelRepeater.container.css("display", "flex");
+        that.applier.change("isShown", !that.model.isShown, null, "gpii.qss.moreButtonPresenter");
+        that.container.toggleClass(that.options.styles.activated, that.model.isShown);
+        if (that.model.isShown) {
+            that.notifyButtonActivated(activationParams);
+            qssList.events.onMorePanelRequired.fire();
+            qssList.qssMorePanelRepeater.container.css("display", "flex");
+        } else {
+            qssList.events.onMorePanelClosed.fire();
+            qssList.qssMorePanelRepeater.container.css("display", "none");
+        }
     };
 
 

@@ -1031,6 +1031,10 @@ fluid.defaults("gpii.app.qssInWrapper", {
             func: "{that}.setBounds",
             args: [null, 310]
         },
+        "{channelListener}.events.onMorePanelClosed": {
+            func: "{that}.setBounds",
+            args: [null, "{that}.options.config.attrs.height"]
+        },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
         "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",
         "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired"
