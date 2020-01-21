@@ -79,8 +79,7 @@ fluid.defaults("gpii.app.tray", {
         isMouseOver: {
             funcName: "gpii.app.isMouseOverTray",
             args: ["{that}"]
-        },
-        getIconBounds: "fluid.notImplemented"
+        }
     }
 });
 
