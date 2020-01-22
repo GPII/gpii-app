@@ -26,7 +26,7 @@
  */
 fluid.defaults("gpii.binder.bindMarkupEvents", {
     mergePolicy: {
-        decorators: "noexpand"
+        markupEventBindings: "noexpand"
     },
     events: {
         onDomBind: null,
