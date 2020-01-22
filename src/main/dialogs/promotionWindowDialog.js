@@ -128,12 +128,11 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
  * the window will be displayed with the default position (0, 0). If the 'centered' option
  * is specified, the dialog will be positioned in the center of the screen.
  * @param {gpii.app.promotionWindowDialog} that - The instance of the widget.
- * @param {Component} timer - An instance of `gpii.app.timer` used for showing
+ * @param {gpii.app.timer} timer - An instance of `gpii.app.timer` used for showing
  * the widget with a delay.
- * @param {Number} offsetX - The x offset from the right edge of the screen.
- * @param {Number} offsetY - The y offset from the bottom edge of the screen.
- * @param {Number} offsetY - The y offset from the bottom edge of the screen.
- * @param {Component} tray - The `gpii.app.tray` instance.
+ * @param {Integer} offsetX - The x offset from the right edge of the screen.
+ * @param {Integer} offsetY - The y offset from the bottom edge of the screen.
+ * @param {gpii.app.tray} tray - The `gpii.app.tray` instance.
  */
 gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, tray) {
     if (that.options.siteConfig.positionByTrayIcon) {
@@ -145,6 +144,7 @@ gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, t
             displaySize = { width: screen.getPrimaryDisplay().workAreaSize.width, height: screen.getPrimaryDisplay().workAreaSize.height - taskBarHeight},
             offset = { x: displaySize.width - ((trayPosition.x + (trayPosition.width / 2)) / scaleFactor), y: displaySize.height - ((trayPosition.y - (trayPosition.height / 2)) / scaleFactor) };
 
+        // setting the position next to the tray icon
         that.setPosition(offset.x, offset.y);
     } else if (that.options.siteConfig.centered) {
         // centering the promo window

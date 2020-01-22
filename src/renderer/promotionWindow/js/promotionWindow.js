@@ -18,7 +18,6 @@
 (function (fluid) {
     var gpii = fluid.registerNamespace("gpii");
 
-
     /**
      * A component representing the promotion window dialog. Takes care of initializing
      * the necessary DOM elements and handling user interaction.
@@ -35,7 +34,6 @@
         enableRichText: true,
 
         selectors: {
-            title: ".flc-contentTitle",
             content: ".flc-content",
             image: ".flc-image",
             closeBtn: ".flc-closeBtn"
@@ -78,11 +76,15 @@
      * @param {fluid.event} event - The onPromotionWindowShow event.
      */
     gpii.psp.promotionWindow.getContent = function (that, contentContainer, imageContainer, event) {
+        // getting the file extension of the promo data
         var fileExtension = gpii.windows.getFileExtension(that.model.url);
+
         if (fileExtension === ".png" || fileExtension === ".jpg" || fileExtension === ".svg") {
+            // this is just an image, assigning the source to the url
             imageContainer.attr("src", that.model.url);
             event.fire();
         } else {
+            // its a web page, loading the content into our container
             gpii.windows.getWebContent(that.model.url).then(function (contentData) {
                 contentContainer.append(contentData);
                 event.fire();
