@@ -182,7 +182,6 @@ fluid.defaults("gpii.app.captureTool", {
                 },
                 listeners: {
                     getInstalledSolutions: {
-                        // func: "{aboutDialog}.hide"
                         funcName: "gpii.app.captureTool.channelGetInstalledSolutions",
                         args: ["{captureTool}.channelNotifier", "{flowManager}", "{arguments}"]
                     },

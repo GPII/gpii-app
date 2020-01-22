@@ -1,7 +1,6 @@
 "use strict";
 (function (fluid) {
-    var gpii = fluid.registerNamespace("gpii"),
-        ipcRenderer = require("electron").ipcRenderer;
+    var gpii = fluid.registerNamespace("gpii");
     fluid.registerNamespace("gpii.psp");
     fluid.registerNamespace("gpii.captureTool");
 
@@ -164,8 +163,6 @@
             ],
             "showDefaultSettings": [
                 {
-                    // Currently, it's a bit dicey as to replaying the binder
-                    // when the options change.
                     namespace: "clearAllSettingsToKeepButton",
                     func: "{that}.clearAllSettingsToKeepButton"
                 },
@@ -292,9 +289,11 @@
                 args: ["1_ready_to_capture"],
                 priority: "last"
             },
-            "onCreate.setupIPC": {
-                func: "gpii.captureTool.setupIPC",
-                args: ["{that}"]
+            "onCreate.channelGetInstalledSolutions": {
+                func: "{that}.channelNotifier.events.getInstalledSolutions.fire"
+            },
+            "onCreate.channelModelUpdate": {
+                func: "{that}.channelNotifier.events.modelUpdate.fire"
             }
         },
         invokers: {
@@ -389,6 +388,49 @@
             onSelectPrefssetDropdown: {
                 funcName: "gpii.captureTool.onSelectPrefssetDropdown",
                 args: ["{that}", "{arguments}.0.currentTarget"] // event.currentTarget
+            }
+        },
+        components: {
+            channelListener: {
+                type: "gpii.psp.channelListener",
+                options: {
+                    events: {
+                        sendingInstalledSolutions: null,
+                        sendingRunningSolutions: null,
+                        sendingAllSolutionsCapture: null,
+                        modelUpdate: null
+                    },
+                    listeners: {
+                        sendingInstalledSolutions: {
+                            funcName: "gpii.captureTool.channelSendingInstalledSolutions",
+                            args: ["{gpii.captureTool}", "{arguments}.0"]
+                        },
+                        sendingRunningSolutions: {
+                            funcName: "gpii.captureTool.channelSendingRunningSolutions",
+                            args: ["{gpii.captureTool}", "{arguments}.0"]
+                        },
+                        sendingAllSolutionsCapture: {
+                            funcName: "gpii.captureTool.channelSendingAllSolutionsCapture",
+                            args: ["{gpii.captureTool}", "{arguments}.0"]
+                        },
+                        modelUpdate: {
+                            funcName: "gpii.captureTool.channelModelUpdate",
+                            args: ["{gpii.captureTool}", "{arguments}.0"]
+                        }
+                    }
+                }
+            },
+            channelNotifier: {
+                type: "gpii.psp.channelNotifier",
+                options: {
+                    events: {
+                        getInstalledSolutions: null,
+                        getAllSolutionsCapture: null,
+                        modelUpdate: null,
+                        captureDoneButton: null,
+                        saveCapturedPreferences: null
+                    }
+                }
             }
         }
     });
@@ -490,56 +532,41 @@
         }
     };
 
-    gpii.captureTool.setupIPC = function (that) {
-        ipcRenderer.on("sendingInstalledSolutions", function (event, arg) {
-            that.fullChange("installedSolutions", arg);
-            var orderedInstalledSolutions = gpii.captureTool.createArrayFromSolutionsHash(arg);
-            that.fullChange("orderedInstalledSolutions", orderedInstalledSolutions);
+    gpii.captureTool.channelSendingInstalledSolutions = function (that, data) {
+        that.fullChange("installedSolutions", data);
+        var orderedInstalledSolutions = gpii.captureTool.createArrayFromSolutionsHash(data);
+        that.fullChange("orderedInstalledSolutions", orderedInstalledSolutions);
+    };
+
+    gpii.captureTool.channelSendingRunningSolutions = function (that, data) {
+        that.fullChange("runningSolutions", data);
+    };
+
+    gpii.captureTool.channelSendingAllSolutionsCapture = function (that, data) {
+        var finalSettings = gpii.captureTool.annotateSettingsCapture(that, data);
+
+        // Remove any solutions with zero settings per UX Review
+        fluid.remove_if(finalSettings, function (item, key) {
+            if (!item.numberOfSettings || item.numberOfSettings === 0) {
+                fluid.log("Removing solution with zero settings: ", key);
+                return true;
+            }
         });
 
-        ipcRenderer.on("sendingRunningSolutions", function (event, arg) {
-            that.fullChange("runningSolutions", arg);
-        });
+        that.fullChange("capturedSettings", finalSettings);
+        that.fullChange("currentPage", "3_what_to_keep");
+        that.applier.change("captureDone", true);
+    };
 
-        ipcRenderer.on("sendingAllSolutionsCapture", function (event, arg) {
-            var finalSettings = gpii.captureTool.annotateSettingsCapture(that, arg);
-
-            // Remove any solutions with zero settings per UX Review
-            fluid.remove_if(finalSettings, function (item, key) {
-                if (!item.numberOfSettings || item.numberOfSettings === 0) {
-                    fluid.log("Removing solution with zero settings: ", key);
-                    return true;
-                }
-            });
-
-            // fluid.each(finalSettings, function (item, key) {
-            //     // Is it safe to modify an object during iteration with fluid.each?
-            //     if (!item.numberOfSettings || item.numberOfSettings === 0) {
-            //         delete finalSettings[key];
-            //         fluid.log("Removing solution with zero settings: ", key);
-            //     }
-            // });
-
-            that.fullChange("capturedSettings", finalSettings);
-            that.fullChange("currentPage", "3_what_to_keep");
-            that.applier.change("captureDone", true);
-
-        });
-
-        ipcRenderer.on("modelUpdate", function (event, arg) {
-            var transaction = that.applier.initiate();
-            transaction.fireChangeRequest({ path: "isKeyedIn", value: arg.isKeyedIn});
-            transaction.fireChangeRequest({ path: "keyedInUserToken", value: arg.keyedInUserToken});
-            transaction.fireChangeRequest({ path: "preferences", value: arg.preferences});
-            // TODO: This update should potentially be a model listener on preferences
-            transaction.fireChangeRequest({ path: "defaultPrefsSet",
-                value: gpii.captureTool.determineDefaultPrefsSet(arg.preferences)});
-            transaction.commit();
-        });
-
-        // Get initial keyin state and solutions metadata
-        ipcRenderer.send("getInstalledSolutions", "Please please!");
-        ipcRenderer.send("modelUpdate");
+    gpii.captureTool.channelModelUpdate = function (that, data) {
+        var transaction = that.applier.initiate();
+        transaction.fireChangeRequest({ path: "isKeyedIn", value: data.isKeyedIn});
+        transaction.fireChangeRequest({ path: "keyedInUserToken", value: data.keyedInUserToken});
+        transaction.fireChangeRequest({ path: "preferences", value: data.preferences});
+        // TODO: This update should potentially be a model listener on preferences
+        transaction.fireChangeRequest({ path: "defaultPrefsSet",
+            value: gpii.captureTool.determineDefaultPrefsSet(data.preferences)});
+        transaction.commit();
     };
 
     gpii.captureTool.loadTemplate = function (templateName) {
@@ -599,13 +626,13 @@
         // Clear any previous capture
         that.applier.change("capturedSettings", {}, "DELETE");
 
-        ipcRenderer.send("getAllSolutionsCapture", options);
+        that.channelNotifier.events.getAllSolutionsCapture.fire(options);
     };
 
     gpii.captureTool.nextButton = function (that, currentPage) {
         if (currentPage === "1_sign_in") { // Currently not used with UX redesign
             that.applier.change("currentPage", "2_what_to_capture");
-            ipcRenderer.send("getInstalledSolutions", "Please please!");
+            that.channel.notifier.events.getInstalledSolutions.fire();
             that.render("2_what_to_capture");
         }
         // This is the version of the start page without username/password login
@@ -669,8 +696,6 @@
         else if (currentPage === "4_save_choose_prefsset") {
             that.applier.change("currentPage", "3_what_to_keep");
             that.render("3_what_to_keep");
-            // Currently, it's a bit dicey as to replaying the binder
-            // when the options change.
             that.clearAllSettingsToKeepButton();
         }
         else if (currentPage === "4_save_name") {
@@ -686,8 +711,8 @@
         }
     };
 
-    gpii.captureTool.doneButton = function (/* that */) {
-        ipcRenderer.send("captureDoneButton", "Done button clicked!");
+    gpii.captureTool.doneButton = function (that) {
+        that.channelNotifier.events.captureDoneButton.fire();
     };
 
     gpii.captureTool.selectAllSolutionsButton = function (that) {
@@ -717,7 +742,7 @@
             name: that.model.prefsSetName,
             preferences: that.model.preferencesToKeep
         };
-        ipcRenderer.send("saveCapturedPreferences", {
+        that.channelNotifier.events.saveCapturedPreferences.fire({
             prefSetId: that.model.prefsSetId, //needs to be simplified... nospaces etc.
             prefSetPayload: prefSetPayload
         });
