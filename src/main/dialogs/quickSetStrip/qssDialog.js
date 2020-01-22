@@ -210,6 +210,11 @@ fluid.defaults("gpii.app.qss", {
     }
 });
 
+gpii.app.qss.computeQssHeight = function (that, height) {
+    var scaledQssHeight = height * that.model.scaleFactor;
+    that.setBounds(null, scaledQssHeight);
+};
+
 /**
  * Represents a group of setting data from which we using only the buttonTypes array
  * @typedef {Object} ButtonDefinition

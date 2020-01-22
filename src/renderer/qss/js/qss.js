@@ -128,7 +128,6 @@
                     handlerGrades: "{gpii.qss.list}.options.handlerGrades",
                     model: {
                         items: "{gpii.qss.list}.options.settings"
-                        // items: "{gpii.qss.list}.model.items"
                     },
                     dynamicContainerMarkup: "{gpii.qss.list}.options.dynamicContainerMarkup",
                     markup: "{gpii.qss.list}.options.markup",
@@ -144,6 +143,7 @@
                         onSettingAltered: "{gpii.qss.list}.events.onSettingAltered",
                         onNotificationRequired: "{gpii.qss.list}.events.onNotificationRequired",
                         onMorePanelRequired: "{gpii.qss.list}.events.onMorePanelRequired",
+                        onMorePanelClosed: "{gpii.qss.list}.events.onMorePanelClosed",
                         onUndoRequired: "{gpii.qss.list}.events.onUndoRequired",
                         onResetAllRequired: "{gpii.qss.list}.events.onResetAllRequired",
                         onSaveRequired: "{gpii.qss.list}.events.onSaveRequired",
@@ -168,7 +168,6 @@
                     handlerGrades: "{gpii.qss.list}.options.handlerGrades",
                     model: {
                         items: "{gpii.qss.list}.options.morePanelSettings"
-                        // items: "{gpii.qss.list}.model.items"
                     },
                     dynamicContainerMarkup: "{gpii.qss.list}.options.dynamicContainerMarkup",
                     markup: "{gpii.qss.list}.options.markup",
@@ -183,12 +182,9 @@
 
                         onSettingAltered: "{gpii.qss.list}.events.onSettingAltered",
                         onNotificationRequired: "{gpii.qss.list}.events.onNotificationRequired",
-                        onMorePanelRequired: "{gpii.qss.list}.events.onMorePanelRequired",
-                        onMorePanelClosed: "{gpii.qss.list}.events.onMorePanelClosed",
                         onUndoRequired: "{gpii.qss.list}.events.onUndoRequired",
                         onResetAllRequired: "{gpii.qss.list}.events.onResetAllRequired",
-                        onSaveRequired: "{gpii.qss.list}.events.onSaveRequired",
-                        onQssClosed: "{gpii.qss.list}.events.onQssClosed"
+                        onSaveRequired: "{gpii.qss.list}.events.onSaveRequired"
                     },
                     invokers: {
                         getHandlerType: {
