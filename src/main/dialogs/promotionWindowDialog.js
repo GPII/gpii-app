@@ -150,9 +150,10 @@ gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, t
         // centering the promo window
         var centeredPosition = gpii.browserWindow.computeCentralWindowPosition(that.options.siteConfig.width, that.options.siteConfig.height);
         that.setPosition(centeredPosition.x, centeredPosition.y);
-    } else if (offsetX || offsetY) {
-        // setting the manual offset possition
-        that.setPosition(offsetX, offsetY);
+    } else {
+        // setting the manual offset possition or if there is none then
+        // positioning it bottom-right (0:0)
+        that.setPosition(offsetX || 0, offsetY || 0);
     }
 
     timer.start(that.options.showDelay);
