@@ -402,5 +402,14 @@
         "buttonTypes": ["closeButton"],
         "tabindex": 340,
         "messageKey": "close"
+    }, {
+        "id": "service-close-more",
+        "path": "close-more-panel",
+        "schema": {
+            "type": "close-more-panel"
+        },
+        "buttonTypes": ["closeButton"],
+        "tabindex": 350,
+        "messageKey": "closeMorePanel"
     }
 ]

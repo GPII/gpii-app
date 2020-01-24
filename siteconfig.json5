@@ -155,11 +155,11 @@
                 "mouse",
                 "x",
                 "x",
-                "x",
                 "url-customize-qss",
                 "url-google-drive",
                 "url-one-drive",
-                "url-dropbox"
+                "url-dropbox",
+                "service-close-more"
             ]
         ]
     },

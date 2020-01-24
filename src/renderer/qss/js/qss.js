@@ -39,6 +39,7 @@
             "number":            "gpii.qss.widgetButtonPresenter",
             "string":            "gpii.qss.widgetButtonPresenter",
             "close":             "gpii.qss.closeButtonPresenter",
+            "close-more-panel":  "gpii.qss.closeMorePanelButtonPresenter",
             "mySavedSettings":   "gpii.qss.mySavedSettingsButtonPresenter",
             "save":              "gpii.qss.saveButtonPresenter",
             "undo":              "gpii.qss.undoButtonPresenter",
