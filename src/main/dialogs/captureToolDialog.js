@@ -25,8 +25,6 @@ require("./basic/centeredDialog.js");
 require("./basic/resizable.js");
 require("./basic/offScreenHidable.js");
 
-require("../../../node_modules/gpii-universal/gpii/node_modules/solutionsRegistry/src/js/SolutionsUtils.js");
-
 fluid.defaults("gpii.app.diagnosticsCollector", {
     gradeNames: ["fluid.component"],
     events: {

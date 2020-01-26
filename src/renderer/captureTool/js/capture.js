@@ -4,8 +4,6 @@
     fluid.registerNamespace("gpii.psp");
     fluid.registerNamespace("gpii.captureTool");
 
-    var remoteFluid = require("electron").remote.getGlobal("fluid");
-
     // TODO Ultimately these should be relocated to a JSON5 file, probably in
     // universal so they can be used by any application or reporting utility
     // that needs to present the results to a human. This would all be a part
@@ -925,7 +923,7 @@
 
                         // Remove default values if checkbox is not enabled
                         if (showDefaultSettings.length === 0) {
-                            var defaultVal = remoteFluid.invokeGlobalFunction("gpii.universal.solutionsRegistry.findDefaultValue", [curSchema]);
+                            var defaultVal = gpii.captureTool.findDefaultValue(curSchema);
                             if (defaultVal.hasDefault && defaultVal["default"] === settingVal) {
                                 // Remove this setting by going on to the next item before we
                                 // add it to the list.
@@ -1021,5 +1019,91 @@
             that.applier.change("currentPage", "4_save_choose_prefsset");
             that.render("4_save_choose_prefsset");
         }
+    };
+
+    /**
+     * This function will take a schema from a supported setting in the solutions
+     * registry and return metadata on it's default value, including the type of
+     * the default value. The function will always return a block of json in order
+     * to avoid any ambiguities for a situation where the default value is perhaps
+     * `null`. A key `hasDefault` will be `true` or `false` to communicate this.
+     * If the schema does have a default value, then the properties `type` and
+     * `default` can also be included. Note that there may not always be a `type`
+     * that can be included, the inclusion of this in the return if optional and
+     * will be included if a `type` is declared.
+     *
+     * This is NOT meant to be an exhaustive coverage of all the possible ways
+     * default values can be set for any JSON Schema. We merely want to cover the
+     * cases in use in the solutions registry, focussing on single primitive values,
+     * and situations where we next one level deep due to a requirement of having a
+     * `properties` entry in the schema.
+     *
+     * @param {Object} schema - Schema to search for a default value. This is what
+     * would be in the solutions registry under `supportedSettings` and a
+     * configuration. An example from the Windows Mouse Keys MaxSpeed setting is:
+     * ```json
+     * {
+     *     "title": "Mouse keys speed",
+     *     "description": "Speed of mouse keys",
+     *     "type": "number",
+     *     "multipleOf": 10,
+     *     "default": 80
+     * }
+     * ```
+     * @return {Object} Always returns a json block. For the example above the
+     * return value would be:
+     * ```json
+     * {
+     *     "hasDefault": true,
+     *     "type": "number",
+     *     "default": 80
+     * }
+     * ```
+     * If a default value cannot be detected the return payload will be:
+     * ```json
+     * {
+     *     "hasDefault": false
+     * }
+     * ```
+     */
+    gpii.captureTool.findDefaultValue = function (schema) {
+        var togo;
+
+        // 1. The most simple, and hopefull case is that there is a top level
+        //    default value.
+        if (schema["default"] !== undefined) {
+            togo = {
+                hasDefault: true,
+                default: schema["default"]
+            };
+            if (schema.type) {
+                togo.type = schema.type;
+            }
+        }
+        // 2. Sometimes we have a properties structure that can be interogated, example:
+        // "properties": {
+        //    "path": { "type":  "string"},
+        //     "value": {
+        //         "type": "string",
+        //         "default": "%SystemRoot%\\Web\\Wallpaper\\Windows\\img0.jpg"
+        //     }
+        // }
+        else if (schema.properties && schema.properties.value && schema.properties.value["default"] !== undefined) {
+            togo = {
+                hasDefault: true,
+                default: schema.properties.value["default"]
+            };
+            if (schema.properties.value.type) {
+                togo.type = schema.properties.value.type;
+            }
+        }
+        // We cannot find a default value for our simplified usage of json schema...
+        else {
+            togo = {
+                hasDefault: false
+            };
+        }
+
+        return togo;
     };
 })(fluid);
