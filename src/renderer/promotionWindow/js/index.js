@@ -32,7 +32,8 @@
                 options: {
                     model: {
                         url: "{translatedPromotionWindow}.model.url",
-                        showPromotionWindow: "{translatedPromotionWindow}.model.showPromotionWindow"
+                        showPromotionWindow: "{translatedPromotionWindow}.model.showPromotionWindow",
+                        showCloseButton: "{translatedPromotionWindow}.model.showCloseButton"
                     }
                 }
             }
@@ -43,7 +44,8 @@
         gpii.psp.translatedPromotionWindow(".fl-dialog", {
             model: {
                 url: windowInitialParams.promoContentUrl,
-                showPromotionWindow: windowInitialParams.showPromotionWindow
+                showPromotionWindow: windowInitialParams.showPromotionWindow,
+                showCloseButton: windowInitialParams.showCloseButton
             }
         });
     });

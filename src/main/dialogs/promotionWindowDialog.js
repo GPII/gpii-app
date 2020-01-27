@@ -29,6 +29,7 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
     siteConfig: {
         promoContentUrl: null,
         showPromotionWindow: null,
+        showCloseButton: null,
         width: 200,
         height: 200,
         centered: false,
@@ -58,7 +59,8 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         },
         params: {
             promoContentUrl: "{that}.options.siteConfig.promoContentUrl",
-            showPromotionWindow: "{that}.options.siteConfig.showPromotionWindow"
+            showPromotionWindow: "{that}.options.siteConfig.showPromotionWindow",
+            showCloseButton: "{that}.options.siteConfig.showCloseButton"
         },
         fileSuffixPath: "promotionWindow/index.html"
     },

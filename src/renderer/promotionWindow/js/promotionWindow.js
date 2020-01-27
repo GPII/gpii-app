@@ -45,6 +45,7 @@
                     "{that}",
                     "{that}.dom.content",
                     "{that}.dom.image",
+                    "{that}.dom.closeBtn",
                     "{channelNotifier}.events.onPromotionWindowShow"
                 ]
             },
@@ -70,14 +71,20 @@
 
     /**
      * Retrieving the url from siteConfig file and display content according to the file extension.
+     * Also shows the close button if option is specified in the site config.
      * @param {gpii.psp.promotionWindow} that - The instance of the widget.
      * @param {jQuery} contentContainer - The DOM element representing the content container.
      * @param {jQuery} imageContainer - The DOM element representing the image container.
+     * @param {jQuery} closeBtnContainer - The DOM element representing the close button container.
      * @param {fluid.event} event - The onPromotionWindowShow event.
      */
-    gpii.psp.promotionWindow.getContent = function (that, contentContainer, imageContainer, event) {
+    gpii.psp.promotionWindow.getContent = function (that, contentContainer, imageContainer, closeBtnContainer, event) {
         // show the window only if the `showPromotionWindow` is set to true
         if (that.model.showPromotionWindow) {
+            // show the close button if specified in site config file
+            if (that.model.showCloseButton) {
+                closeBtnContainer.show();
+            }
             // getting the file extension of the promo data
             var fileExtension = gpii.windows.getFileExtension(that.model.url);
 
