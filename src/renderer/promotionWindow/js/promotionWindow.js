@@ -76,19 +76,22 @@
      * @param {fluid.event} event - The onPromotionWindowShow event.
      */
     gpii.psp.promotionWindow.getContent = function (that, contentContainer, imageContainer, event) {
-        // getting the file extension of the promo data
-        var fileExtension = gpii.windows.getFileExtension(that.model.url);
+        // show the window only if the `showPromotionWindow` is set to true
+        if (that.model.showPromotionWindow) {
+            // getting the file extension of the promo data
+            var fileExtension = gpii.windows.getFileExtension(that.model.url);
 
-        if (fileExtension === ".png" || fileExtension === ".jpg" || fileExtension === ".svg") {
-            // this is just an image, assigning the source to the url
-            imageContainer.attr("src", that.model.url);
-            event.fire();
-        } else {
-            // its a web page, loading the content into our container
-            gpii.windows.getWebContent(that.model.url).then(function (contentData) {
-                contentContainer.append(contentData);
+            if (fileExtension === ".png" || fileExtension === ".jpg" || fileExtension === ".svg") {
+                // this is just an image, assigning the source to the url
+                imageContainer.attr("src", that.model.url);
                 event.fire();
-            });
+            } else {
+                // its a web page, loading the content into our container
+                gpii.windows.getWebContent(that.model.url).then(function (contentData) {
+                    contentContainer.append(contentData);
+                    event.fire();
+                });
+            }
         }
     };
 

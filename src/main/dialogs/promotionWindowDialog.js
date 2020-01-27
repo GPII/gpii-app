@@ -28,6 +28,7 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
 
     siteConfig: {
         promoContentUrl: null,
+        showPromotionWindow: null,
         width: 200,
         height: 200,
         centered: false,
@@ -48,7 +49,6 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         attrs: {
             width: "{that}.options.siteConfig.width",
             height: "{that}.options.siteConfig.height",
-            centered: "{that}.options.siteConfig.centered",
             resizable: "{that}.options.siteConfig.resizable",
             movable: "{that}.options.siteConfig.resizable.movable",
             skipTaskbar: "{that}.options.siteConfig.resizable.skipTaskbar",
@@ -57,7 +57,8 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
             alwaysOnTop: "{that}.options.siteConfig.alwaysOnTop"
         },
         params: {
-            promoContentUrl: "{that}.options.siteConfig.promoContentUrl"
+            promoContentUrl: "{that}.options.siteConfig.promoContentUrl",
+            showPromotionWindow: "{that}.options.siteConfig.showPromotionWindow"
         },
         fileSuffixPath: "promotionWindow/index.html"
     },

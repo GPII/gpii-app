@@ -178,6 +178,7 @@
 
         // IMPORTANT: in order to disable the promotion window set `promoContentUrl` to false
         promoContentUrl: false,
+        showPromotionWindow: false,
         width: 400,
         height: 400,
         // Show window in the center of the screen
