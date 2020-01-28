@@ -189,7 +189,7 @@
      * @param {gpii.qss.list} qssList - The `gpii.qss.list` instance.
      */
     gpii.qss.moreButtonPresenter.applyStylesOnClose = function (that, qssList) {
-        qssList.qssMorePanelRepeater.container.css("display", "none");
+        qssList.qssMorePanel.container.css("display", "none");
         that.container.toggleClass(that.options.styles.activated, false);
     };
 
@@ -206,7 +206,7 @@
             that.notifyButtonActivated(activationParams);
             that.container.toggleClass(that.options.styles.activated, true);
             qssList.events.onMorePanelRequired.fire();
-            qssList.qssMorePanelRepeater.container.css("display", "flex");
+            qssList.qssMorePanel.container.css("display", "block");
         } else {
             qssList.events.onMorePanelClosed.fire();
         }

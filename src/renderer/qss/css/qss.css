@@ -194,11 +194,22 @@ body {
 }
 
 .fl-quickSetStrip-more {
+    position: relative;
     display: none;
     width: 590px;
-    height: 180px;
+    height: 345px;
+}
+
+.fl-quickSetStrip-more-button-grid {
+    display: flex;
     flex-wrap: wrap;
-    margin-bottom: 10px;
+}
+
+a.fl-quickSetStrip-more-close {
+    position: absolute;
+    display: inline-block;
+    top: 10px;
+    right: 10px;
 }
 
 .fl-qss-btnId-service-more.fl-activated {

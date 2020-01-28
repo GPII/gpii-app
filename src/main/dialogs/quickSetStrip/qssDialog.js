@@ -75,7 +75,7 @@ fluid.defaults("gpii.app.qss", {
             height: 64,
 
             alwaysOnTop: true,
-            transparent: false
+            transparent: true
         },
         params: {
             settings: "{that}.model.settings",

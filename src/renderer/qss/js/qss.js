@@ -30,6 +30,7 @@
 
         selectors: {
             morePanel: ".flc-quickSetStrip-more",
+            morePanelGrid: ".flc-quickSetStrip-more-button-grid",
             mainPanel: ".flc-quickSetStrip-main"
         },
 
@@ -161,9 +162,13 @@
                     }
                 }
             },
+            qssMorePanel: {
+                type: "fluid.viewComponent",
+                container: "{gpii.qss.list}.dom.morePanel",
+            },
             qssMorePanelRepeater: {
                 type: "gpii.psp.repeater",
-                container: "{gpii.qss.list}.dom.morePanel",
+                container: "{gpii.qss.list}.dom.morePanelGrid",
                 options: {
                     defaultHandlerGrade: "{gpii.qss.list}.options.defaultHandlerGrade",
                     handlerGrades: "{gpii.qss.list}.options.handlerGrades",
