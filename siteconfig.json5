@@ -179,5 +179,5 @@
     trayType: ["gpii.app.trayButton"],
 
     // URL to the reset to standard profile. If no provided, the system will use a fallback one
-    resetToStandardProfileUrl: "https://raw.githubusercontent.com/GPII/universal/master/testData/defaultSettings/defaultSettings.win32.json5"
+    resetToStandardProfileUrl: "https://raw.githubusercontent.com/cindyli/universal/GPII-4296/testData/defaultSettings/defaultSettings.win32.json5"
 }
