@@ -8,15 +8,13 @@
         <link rel="stylesheet" href="../qss/css/qss.css">
         <link rel="stylesheet" href="./css/captureDialogue.css">
 
-        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/node_modules/infusion/src/lib/jquery/core/js/jquery.js"></script>
-
         <!-- https://stackoverflow.com/questions/22658015/bootstrap-throws-uncaught-error-bootstraps-javascript-requires-jquery -->
         <script>
             window.jQuery = window.$ = require('jquery');
         </script>
 
         <script type="text/javascript" src="../../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/node_modules/infusion/dist/infusion-all.js"></script>
+        <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
 
         <script type="text/javascript" src="../common/js/elementRepeater.js"></script>
         <script type="text/javascript" src="../common/js/elementInteractionListeners.js"></script>
@@ -28,6 +26,8 @@
         <script type="text/javascript" src="../../shared/utils.js"></script>
         <script type="text/javascript" src="../../shared/channelUtils.js"></script>
 
+        <script type="text/javascript" src="../../../node_modules/markdown-it/dist/markdown-it.js"></script>
+
         <script type="text/javascript" src="../../../node_modules/gpii-binder/src/js/binder.js"></script>
         <script type="text/javascript" src="../../../node_modules/gpii-binder/src/js/transforms.js"></script>
 
@@ -36,12 +36,22 @@
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/equals.js"></script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/helper.js"></script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/jsonify.js"></script>
-        <!-- <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/md-common.js"></script> -->
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/md-common.js"></script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/messageHelper.js"></script>
+        <!-- This is pretty wild, looking in to the root cause. Currently documented here as FLUID-6452: -->
+        <!-- https://issues.fluidproject.org/browse/FLUID-6452                                           -->
+        <script>
+            var Handlebars = require("Handlebars");
+            var requireBackup = require;
+            require = undefined;
+        </script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/renderer.js"></script>
+        <script>
+            require = requireBackup;
+        </script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/ajaxCapable.js"></script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/hasRequiredOptions.js"></script>
-        <!-- <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/md-client.js"></script> -->
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/md-client.js"></script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/renderer.js"></script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/templateAware.js"></script>
         <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/templateFormControl.js"></script>
