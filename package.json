@@ -13,9 +13,7 @@
         "electron": "3.0.2",
         "electron-edge-js": "8.3.8",
         "electron-localshortcut": "3.1.0",
-        "gpii-express": "1.0.15",
         "gpii-handlebars": "1.1.4",
-        "gpii-windows": "sgithens/windows#GPII-1908-amalgamated",
         "infusion": "3.0.0-dev.20190328T144119Z.ec44dbfab",
         "markdown-it": "^8.4.2",
         "nan": "2.10.0",
@@ -24,7 +22,8 @@
         "ref-struct": "1.1.0",
         "request": "2.88.0",
         "winstrap": "0.5.12",
-        "ws": "6.1.2"
+        "ws": "6.1.2",
+        "gpii-express": "1.0.15"
     },
     "devDependencies": {
         "electron-packager": "8.5.1",
@@ -40,7 +39,9 @@
         "rimraf": "2.6.2",
         "shelljs": "0.8.2"
     },
-    "optionalDependencies": {},
+    "optionalDependencies": {
+        "gpii-windows": "sgithens/windows#GPII-1908-amalgamated"
+    },
     "scripts": {
         "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
         "dev": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron . ./configs app.dev",
