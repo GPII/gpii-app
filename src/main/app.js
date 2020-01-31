@@ -104,9 +104,6 @@ fluid.defaults("gpii.app", {
         machineId: "@expand:{that}.installID.getMachineID()"
     },
     components: {
-        configurationHandler: {
-            type: "gpii.app.siteConfigurationHandler"
-        },
         userErrorHandler: {
             type: "gpii.app.userErrorsHandler",
             options: {
@@ -641,7 +638,7 @@ gpii.app.windowMessage = function (that, hwnd, msg, wParam, lParam, result) {
 // broadcasting directly to "components" block which probably would destroy GPII.
 
 fluid.defaults("gpii.appWrapper", {
-    gradeNames: ["fluid.component"],
+    gradeNames: ["gpii.app.siteConfigurationHandler"],
     components: {
         app: {
             type: "gpii.app"
