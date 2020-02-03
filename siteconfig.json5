@@ -158,8 +158,8 @@
                 "url-customize-qss",
                 "url-google-drive",
                 "url-one-drive",
-                "url-dropbox",
-                "service-close-more"
+                "url-dropbox"
+                //"service-close-more"
             ]
         ]
     },

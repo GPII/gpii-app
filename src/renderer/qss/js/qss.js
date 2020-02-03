@@ -164,7 +164,7 @@
             },
             qssMorePanel: {
                 type: "fluid.viewComponent",
-                container: "{gpii.qss.list}.dom.morePanel",
+                container: "{gpii.qss.list}.dom.morePanel"
             },
             qssMorePanelRepeater: {
                 type: "gpii.psp.repeater",
