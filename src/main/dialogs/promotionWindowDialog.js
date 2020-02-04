@@ -45,6 +45,8 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
 
     closeDelay: "{that}.options.siteConfig.closeDelay",
     showDelay: "{that}.options.siteConfig.showDelay",
+    // some delay, because of slow rearranging of windows taskbar
+    repositionDelay: 1900,
 
     config: {
         attrs: {
@@ -66,12 +68,17 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
     },
 
     events: {
-        delayedClose: null
+        delayedClose: null,
+        onRepositioningRequired: null
     },
     listeners: {
         "delayedClose": {
             funcName: "{closeTimer}.start",
             args: ["{that}.options.closeDelay"]
+        },
+        onRepositioningRequired: {
+            funcName: "{repositionWindowTimeout}.start",
+            args: ["{that}.options.repositionDelay"]
         }
     },
 
@@ -85,14 +92,7 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
                 },
                 listeners: {
                     onPromotionWindowShow: {
-                        funcName: "gpii.app.promotionWindowDialog.show",
-                        args: [
-                            "{promotionWindowDialog}",
-                            "{showTimer}",
-                            "{promotionWindowDialog}.options.siteConfig.offset.x",
-                            "{promotionWindowDialog}.options.siteConfig.offset.y",
-                            "{tray}"
-                        ]
+                        funcName: "{promotionWindowDialog}.showPromotionWindow"
                     },
                     onCloseClicked: {
                         funcName: "{promotionWindowDialog}.close"
@@ -104,7 +104,7 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
             type: "gpii.app.timer",
             options: {
                 listeners: {
-                    "onTimerFinished": {
+                    onTimerFinished: {
                         funcName: "{promotionWindowDialog}.close"
                     }
                 }
@@ -114,14 +114,73 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
             type: "gpii.app.timer",
             options: {
                 listeners: {
-                    "onTimerFinished": {
+                    onTimerFinished: {
                         funcName: "{promotionWindowDialog}.show"
                     }
                 }
             }
+        },
+        repositionWindowTimeout: {
+            type: "gpii.app.timer",
+            options: {
+                listeners: {
+                    onTimerFinished: {
+                        funcName: "{promotionWindowDialog}.repositionPromotionWindow"
+                    }
+                }
+            }
+        }
+    },
+    invokers: {
+        showPromotionWindow: {
+            funcName: "gpii.app.promotionWindowDialog.show",
+            args: [
+                "{promotionWindowDialog}",
+                "{showTimer}",
+                "{promotionWindowDialog}.options.siteConfig.offset.x",
+                "{promotionWindowDialog}.options.siteConfig.offset.y",
+                "{tray}"
+            ]
+        },
+        repositionPromotionWindow: {
+            funcName: "gpii.app.promotionWindowDialog.repositionPromotionWindow",
+            args: [
+                "{promotionWindowDialog}",
+                "{tray}",
+                "{promotionWindowDialog}.options.siteConfig.offset.x",
+                "{promotionWindowDialog}.options.siteConfig.offset.y"
+            ]
         }
     }
 });
+
+
+/**
+ * Repositioning the promotion window dialog when is necessary.
+ * @param {gpii.app.promotionWindowDialog} that - The instance of the widget.
+ * @param {gpii.app.tray} tray - The `gpii.app.tray` instance.
+ * @param {Integer} offsetX - The x offset from the right edge of the screen.
+ * @param {Integer} offsetY - The y offset from the bottom edge of the screen.
+ */
+gpii.app.promotionWindowDialog.repositionPromotionWindow = function (that, tray, offsetX, offsetY) {
+    if (that.options.siteConfig.positionByTrayIcon) {
+        var trayPosition = tray.getIconBounds(),
+            screen = require("electron").screen,
+            taskBarHeight = screen.getPrimaryDisplay().bounds.height - screen.getPrimaryDisplay().workAreaSize.height,
+            scaleFactor = screen.getPrimaryDisplay().scaleFactor,
+            displaySize = { width: screen.getPrimaryDisplay().workAreaSize.width, height: screen.getPrimaryDisplay().workAreaSize.height - taskBarHeight},
+            offset = { x: displaySize.width - ((trayPosition.x + (trayPosition.width / 2)) / scaleFactor), y: displaySize.height - ((trayPosition.y - (trayPosition.height / 2)) / scaleFactor) };
+
+        // setting the position next to the tray icon
+        that.setPosition(offset.x, offset.y);
+    } else if (that.options.siteConfig.centered) {
+        // recentering the promo window
+        var centeredPosition = gpii.browserWindow.computeCentralWindowPosition(that.options.siteConfig.width, that.options.siteConfig.height);
+        that.setPosition(centeredPosition.x, centeredPosition.y);
+    } else {
+        that.setPosition(offsetX || 0, offsetY || 0);
+    }
+};
 
 /**
  * Shows the promotion window dialog. The '{promotionWindowDialog}.show' function
