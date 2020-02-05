@@ -65,40 +65,6 @@
     };
 
     /**
-     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Close More Panel"
-     * QSS button.
-     */
-    fluid.defaults("gpii.qss.closeMorePanelButtonPresenter", {
-        gradeNames: ["gpii.qss.buttonPresenter"],
-        attrs: {
-            "aria-label": "Close More Panel" // screen reader text for the button
-        },
-        invokers: {
-            activate: {
-                funcName: "gpii.qss.closeMorePanelButtonPresenter.activate",
-                args: [
-                    "{that}",
-                    "{list}",
-                    "{arguments}.0" // activationParams
-                ]
-            }
-        }
-    });
-
-    /**
-     * A custom function for handling activation of the "Close More Panel" QSS button. Reuses the generic
-     * `notifyButtonActivated` invoker.
-     * @param {gpii.qss.closeMorePanelButtonPresenter} that - The `gpii.qss.closeMorePanelButtonPresenter` instance.
-     * @param {gpii.qss.list} qssList - The `gpii.qss.list` instance.
-     * @param {Object} activationParams - An object containing parameter's for the activation
-     * of the button (e.g. which key was used to activate the button).
-     */
-    gpii.qss.closeMorePanelButtonPresenter.activate = function (that, qssList, activationParams) {
-        that.notifyButtonActivated(activationParams);
-        qssList.events.onMorePanelClosed.fire();
-    };
-
-    /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "Save"
      * QSS button.
      */

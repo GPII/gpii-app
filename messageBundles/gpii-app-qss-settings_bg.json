@@ -3,10 +3,6 @@
         "tooltip": "<p>Close Morphic QuickStrip</p><p>You can reopen it using the Morphic Icon (below) <img height=12 src='../../icons/TaskTrayIcon_outline.svg'></img></p>",
         "title": "×"
     },
-    "gpii_app_qss_settings_closeMorePanel": {
-        "tooltip": "<p>Затвори Morphic More Panel</p>",
-        "title": "×"
-    },
     "gpii_app_qss_settings_undo": {
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>",
         "title": "Undo"

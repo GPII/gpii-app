@@ -31,7 +31,8 @@
         selectors: {
             morePanel: ".flc-quickSetStrip-more",
             morePanelGrid: ".flc-quickSetStrip-more-button-grid",
-            mainPanel: ".flc-quickSetStrip-main"
+            mainPanel: ".flc-quickSetStrip-main",
+            closeMorePanelBtn: ".flc-quickSetStrip-more-close"
         },
 
         defaultHandlerGrade: "gpii.qss.buttonPresenter",
@@ -40,7 +41,6 @@
             "number":            "gpii.qss.widgetButtonPresenter",
             "string":            "gpii.qss.widgetButtonPresenter",
             "close":             "gpii.qss.closeButtonPresenter",
-            "close-more-panel":  "gpii.qss.closeMorePanelButtonPresenter",
             "mySavedSettings":   "gpii.qss.mySavedSettingsButtonPresenter",
             "save":              "gpii.qss.saveButtonPresenter",
             "undo":              "gpii.qss.undoButtonPresenter",
@@ -145,7 +145,6 @@
                         onSettingAltered: "{gpii.qss.list}.events.onSettingAltered",
                         onNotificationRequired: "{gpii.qss.list}.events.onNotificationRequired",
                         onMorePanelRequired: "{gpii.qss.list}.events.onMorePanelRequired",
-                        onMorePanelClosed: "{gpii.qss.list}.events.onMorePanelClosed",
                         onUndoRequired: "{gpii.qss.list}.events.onUndoRequired",
                         onResetAllRequired: "{gpii.qss.list}.events.onResetAllRequired",
                         onSaveRequired: "{gpii.qss.list}.events.onSaveRequired",
@@ -200,6 +199,18 @@
                                 "{arguments}.0" // item
                             ]
                         }
+                    }
+                }
+            },
+            closeMorePanelBtn: {
+                type: "gpii.psp.widgets.button",
+                container: "{that}.dom.closeMorePanelBtn",
+                options: {
+                    attrs: {
+                        "aria-label": "Close More Panel"
+                    },
+                    listeners: {
+                        "onClick": "{gpii.qss.list}.events.onMorePanelClosed.fire"
                     }
                 }
             }
