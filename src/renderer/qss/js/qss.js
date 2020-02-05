@@ -113,7 +113,10 @@
             onQssClosed: null,
             onUndoIndicatorChanged: null
         },
-
+        listeners: {
+            onResetAllRequired: "{gpii.qss.list}.events.onMorePanelClosed.fire",
+            onQssClosed: "{gpii.qss.list}.events.onMorePanelClosed.fire"
+        },
         modelListeners: {
             "items": {
                 func: "gpii.qss.list.filterSettings",
