@@ -173,13 +173,14 @@
     },
 
     promotionWindow: {
+        // IMPORTANT: in order to show the promotion window set `showPromotionWindow` to true
+        // and add url to `promoContentUrl`
+        showPromotionWindow: false,
         // URL from where the content to be downloaded
         // if the url points to image file (png/jpg/svg) then will add the image inside the window
         // if its just a web page then will load the content inside
-
-        // IMPORTANT: in order to disable the promotion window set `promoContentUrl` to false
         promoContentUrl: false,
-        showPromotionWindow: false,
+        // Size of the promo window that will be displayed (this will scape with the screen zoom DPI)
         width: 400,
         height: 400,
         // Show window in the center of the screen
@@ -200,6 +201,9 @@
         closeDelay: 0,
         // Defines the show delay of the window in milliseconds. Use 0 for no show delay
         showDelay: 0,
+        // You can pick whatever X and Y coordinates you want the promo window to appear
+        // important notice, X: 0 and Y: 0 point to the bottom-right part of the screen
+        // in order this option to work you need to have `centered` and `positionByTrayIcon` set to false
         offset: {
             x: 0,
             y: 0
