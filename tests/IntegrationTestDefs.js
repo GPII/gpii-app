@@ -95,9 +95,9 @@ gpii.tests.app.testDefs = {
 
 fluid.registerNamespace("gpii.tests.dev");
 
-var prefSetsInDevStartIdx = 6;
+var prefSetsInDevStartIdx = 8;
 gpii.tests.dev.testMultiContextKeyedIn = function (tray, menuTemplate, activeSetIdx) {
-    gpii.tests.app.testItem(menuTemplate[1], "Keyed in with Multiple Contexts");
+    gpii.tests.app.testItem(menuTemplate[3], "Keyed in with Multiple Contexts");
     gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx], "Default preferences");
     gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 1], "bright");
     gpii.tests.app.testItem(menuTemplate[prefSetsInDevStartIdx + 2], "noise");
@@ -137,20 +137,24 @@ gpii.tests.dev.testKeyInList = function (item) {
 };
 
 gpii.tests.dev.testMenu = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 8);
+    gpii.tests.app.testTemplateExists(menuTemplate, 10);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
-    gpii.tests.dev.testKeyInList(menuTemplate[3]);
-    gpii.tests.app.testItem(menuTemplate[4], "About...");
-    gpii.tests.app.testItem(menuTemplate[6], "Reset Morphic");
-    gpii.tests.app.testItem(menuTemplate[7], "Exit GPII");
+    gpii.tests.app.testItem(menuTemplate[1], "Capture Tool");
+    gpii.tests.app.testItem(menuTemplate[2], "Capture Diagnostics");
+    gpii.tests.dev.testKeyInList(menuTemplate[5]);
+    gpii.tests.app.testItem(menuTemplate[6], "About...");
+    gpii.tests.app.testItem(menuTemplate[8], "Reset Morphic");
+    gpii.tests.app.testItem(menuTemplate[9], "Exit GPII");
 };
 // Expected behavior after GPII-3826
 gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 9);
+    gpii.tests.app.testTemplateExists(menuTemplate, 11);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
-    gpii.tests.dev.testKeyInList(menuTemplate[4]);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[7]);
-    gpii.tests.app.testItem(menuTemplate[8], "Exit GPII");
+    gpii.tests.app.testItem(menuTemplate[1], "Capture Tool");
+    gpii.tests.app.testItem(menuTemplate[2], "Capture Diagnostics");
+    gpii.tests.dev.testKeyInList(menuTemplate[6]);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[3], menuTemplate[9]);
+    gpii.tests.app.testItem(menuTemplate[10], "Exit GPII");
 };
 
 gpii.tests.dev.testTrayTooltip = function (tray, activePrefSet) {
@@ -181,10 +185,10 @@ gpii.tests.dev.testTrayKeyedIn = function (tray, activePrefSet) {
 };
 
 gpii.tests.dev.testMultiPrefSetMenu = function (tray, menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 9);
+    gpii.tests.app.testTemplateExists(menuTemplate, 11);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
-    gpii.tests.app.testItem(menuTemplate[7], "Reset Morphic");
-    gpii.tests.app.testItem(menuTemplate[8], "Exit GPII");
+    gpii.tests.app.testItem(menuTemplate[9], "Reset Morphic");
+    gpii.tests.app.testItem(menuTemplate[10], "Exit GPII");
 };
 
 gpii.tests.dev.testChangedActivePrefSetMenu = function (tray, menuTemplate, prefSetClickedIdx) {
@@ -210,7 +214,7 @@ fluid.registerNamespace("gpii.tests.dev.testDefs");
 // TODO: Should this derive from the above app tests?
 gpii.tests.dev.testDefs = {
     name: "GPII application dev config integration tests",
-    expect: 152,
+    expect: 164,
     config: {
         configName: "gpii.tests.dev.config",
         configPath: "tests/configs"
@@ -253,7 +257,7 @@ gpii.tests.dev.testDefs = {
         args: ["{that}.app.tray", "{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMultiPrefSetMenu"
     }, { // simulate choosing different pref set
-        func: "{that}.app.tray.menu.model.menuTemplate.7.click"
+        func: "{that}.app.tray.menu.model.menuTemplate.9.click"
     }, {
         func: "{that}.app.keyOut"
     }, {

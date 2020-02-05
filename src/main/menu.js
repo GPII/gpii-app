@@ -103,8 +103,8 @@ fluid.defaults("gpii.app.menuInAppDev", {
                 func: "gpii.app.menu.generateMenuTemplate",
                 args: [
                     "{that}.model.showQSS",
-                    "{that}.model.showCaptureTool",
-                    "{that}.model.captureToolDiagnostics",
+                    "{that}.options.showCaptureTool",
+                    "{that}.options.captureToolDiagnostics",
                     "{that}.model.keyedInSnapset",
                     "{that}.options.locales",
                     "{that}.options.themes",
@@ -162,6 +162,16 @@ fluid.defaults("gpii.app.menuInAppDev", {
         "onExit.performExit": {
             listener: "{app}.exit"
         }
+    },
+
+    showCaptureTool: {
+        label: "Capture Tool",
+        click: "onCaptureTool"
+    },
+
+    captureToolDiagnostics: {
+        label: "Capture Diagnostics",
+        click: "onCaptureDiagnostics"
     },
 
     locales: {
@@ -391,28 +401,6 @@ fluid.defaults("gpii.app.menu", {
                 excludeSource: "init"
             }
         },
-        "showCaptureTool": {
-            target: "showCaptureTool",
-            singleTransform: {
-                type: "fluid.transforms.free",
-                func: "gpii.app.menu.getSimpleMenuItem",
-                args: ["Capture Tool", "onCaptureTool"]
-            },
-            forward: {
-                excludeSource: "init"
-            }
-        },
-        "captureToolDiagnostics": {
-            target: "captureToolDiagnostics",
-            singleTransform: {
-                type: "fluid.transforms.free",
-                func: "gpii.app.menu.getSimpleMenuItem",
-                args: ["Capture Diagnostics", "onCaptureDiagnostics"]
-            },
-            forward: {
-                excludeSource: "init"
-            }
-        },
         "preferenceSetsMenuItems": {
             target: "preferenceSetsMenuItems",
             singleTransform: {
@@ -431,8 +419,6 @@ fluid.defaults("gpii.app.menu", {
                 func: "gpii.app.menu.generateMenuTemplate",
                 args: [
                     "{that}.model.showQSS",
-                    "{that}.model.showCaptureTool",
-                    "{that}.model.captureToolDiagnostics",
                     "{that}.model.keyedInSnapset",
                     "{that}.model.showAbout",
                     "@expand:gpii.app.menu.getSeparatorItem()",
