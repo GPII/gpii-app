@@ -28,6 +28,14 @@
     fluid.defaults("gpii.qss.list", {
         gradeNames: ["fluid.viewComponent"],
 
+        model: {
+            messages: {
+                infoBlock: null,
+                buttonBlock1: null,
+                buttonBlock2: null
+            }
+        },
+
         selectors: {
             morePanel: ".flc-quickSetStrip-more",
             morePanelGrid: ".flc-quickSetStrip-more-button-grid",
@@ -166,7 +174,23 @@
             },
             qssMorePanel: {
                 type: "fluid.viewComponent",
-                container: "{gpii.qss.list}.dom.morePanel"
+                container: "{gpii.qss.list}.dom.morePanel",
+                options: {
+                    gradeNames: "gpii.psp.selectorsTextRenderer",
+                    enableRichText: true,
+                    selectors: {
+                        infoBlock: ".flc-info-block",
+                        buttonBlock1: ".flc-button-block-1",
+                        buttonBlock2: ".flc-button-block-2"
+                    },
+                    model: {
+                        messages: {
+                            infoBlock: "{list}.model.messages.infoBlock",
+                            buttonBlock1: "{list}.model.messages.buttonBlock1",
+                            buttonBlock2: "{list}.model.messages.buttonBlock2"
+                        }
+                    }
+                }
             },
             qssMorePanelRepeater: {
                 type: "gpii.psp.repeater",
