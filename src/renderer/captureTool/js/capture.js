@@ -899,7 +899,7 @@
     gpii.captureTool.updateCapturedSettingsToRender = function (that, showDefaultSettings) {
         var togo = {};
         fluid.each(that.model.capturedSettings, function (appData, appId) {
-            if (appData.numberOfSettings >= 0) { // sgithens DEMO_TOGGLE
+            if (appData.numberOfSettings >= 0) {
                 togo[appId] = fluid.copy(appData);
                 togo[appId].renderSettings = {};
                 fluid.each(togo[appId].settings, function (settingVal, settingKey) {
