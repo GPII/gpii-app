@@ -1100,7 +1100,7 @@
         //         "default": "%SystemRoot%\\Web\\Wallpaper\\Windows\\img0.jpg"
         //     }
         // }
-        else if (schema.properties && schema.properties.value && schema.properties.value["default"] !== undefined) {
+        else if (fluid.get(schema, "properties.value.default") !== undefined) {
             togo = {
                 hasDefault: true,
                 default: schema.properties.value["default"]
