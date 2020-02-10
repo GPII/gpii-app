@@ -74,7 +74,7 @@ fluid.defaults("gpii.app.qss", {
             // the width will be computed once component loads up
             height: 64,
 
-            alwaysOnTop: true,
+            alwaysOnTop: false,
             transparent: true
         },
         params: {
