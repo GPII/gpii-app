@@ -78,6 +78,10 @@
                 func: "{channelNotifier}.events.onMetric.fire",
                 args: ["button-activated", {
                     buttonPath: "{that}.model.item.path",
+                    buttonTitle: "{that}.model.title",
+                    buttonUrl: "{that}.model.item.schema.url",
+                    buttonFile: "{that}.model.item.schema.filepath",
+                    buttonKeys: "{that}.model.item.schema.keyData",
                     mouse: "click"
                 }]
             },
