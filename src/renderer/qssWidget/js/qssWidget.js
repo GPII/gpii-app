@@ -88,6 +88,8 @@
             // It can be used to access the main events and utils from them
             // Usage: {channelNotifier}.events.onQssWidgetHideQssRequested
 
+            onSideCarActivated: null,
+            onSideCarClosed: null,
             onWidgetClosed: null,
             onQssWidgetHideQssRequested: null,
             onSettingUpdated: null,
@@ -288,6 +290,8 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
+                        onSideCarActivated:              "{qssWidget}.events.onSideCarActivated",
+                        onSideCarClosed:                 "{qssWidget}.events.onSideCarClosed",
                         onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
                         onQssWidgetHideQssRequested:     "{qssWidget}.events.onQssWidgetHideQssRequested",
                         onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
@@ -379,12 +383,16 @@
             sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
 
             if (sideCarContainer.hasClass(styles.hideSidePanel)) {
+                qssWidget.events.onSideCarActivated.fire();
+
                 // showing the panel
                 sideCarContainer.removeClass(styles.hideSidePanel);
                 sidePanelButton.container.addClass(styles.closeSidePanel);
                 // changing button's label
                 sidePanelButton.applier.change("label", qssWidget.model.messages.hideSideCar, null, "fromWidget");
             } else {
+                qssWidget.events.onSideCarClosed.fire();
+
                 // hiding the panel
                 sideCarContainer.addClass(styles.hideSidePanel);
                 sidePanelButton.container.addClass(styles.openSidePanel);

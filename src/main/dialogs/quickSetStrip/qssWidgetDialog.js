@@ -64,8 +64,8 @@ fluid.defaults("gpii.app.qssWidget", {
             lastEnvironmentalLoginGpiiKey: "{that}.model.lastEnvironmentalLoginGpiiKey"
         },
         attrs: {
-            width: 300,
-            widthWithoutSidecar: 170,
+            width: 170,
+            widthWithSidecar: 300,
             height: 255,
             alwaysOnTop: true
         },
@@ -102,6 +102,8 @@ fluid.defaults("gpii.app.qssWidget", {
             type: "gpii.app.channelListener",
             options: {
                 events: {
+                    onSideCarActivated: null,
+                    onSideCarClosed: null,
                     onQssWidgetClosed: null,
                     onQssWidgetHideQssRequested: null,
                     onQssWidgetHeightChanged: "{qssWidget}.events.onContentHeightChanged",
@@ -117,6 +119,14 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssGetEnvironmentalLoginKeyRequested: null
                 },
                 listeners: {
+                    onSideCarActivated: {
+                        func: "gpii.app.qssWidget.resizeWidget",
+                        args: ["{qssWidget}", true]
+                    },
+                    onSideCarClosed: {
+                        func: "gpii.app.qssWidget.resizeWidget",
+                        args: ["{qssWidget}", false]
+                    },
                     onQssWidgetClosed: [{
                         func: "{qssWidget}.hide"
                     }, {
@@ -215,6 +225,16 @@ fluid.defaults("gpii.app.qssWidget", {
 });
 
 /**
+ * Resizing the widget when the sidecar is opened or closed.
+ * @param {gpii.app.qssWidget} that - The instance of the qssWidget.
+ * @param {Boolean} sideCar - `true` when sidecar is open.
+ */
+gpii.app.qssWidget.resizeWidget = function (that, sideCar) {
+    var width = that.model.scaleFactor * (sideCar ? that.options.config.attrs.widthWithSidecar : that.options.config.attrs.width);
+    that.setRestrictedSize(width, null);
+};
+
+/**
  * Called whenever a QSS button is activated. Determines whether the QSS dialog
  * should be shown or hidden.
  * @param {Component} that - The `gpii.app.qssWidget` instance
@@ -271,12 +291,8 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     activationParams = activationParams || {};
 
     var scaleFactor = that.model.scaleFactor,
-        // we assume that the widget have a sideCar by default
-        hasSideCar = setting.schema.sideCar !== false,
-        // using the width if there is sideCar, and widthWithoutSidecar otherwise
-        // in both cases using the scaleFactor as well
-        width = scaleFactor * (hasSideCar ? that.options.config.attrs.width : that.options.config.attrs.widthWithoutSidecar),
         // adding the scaleFactor
+        width = scaleFactor * that.options.config.attrs.width,
         height = scaleFactor * that.options.config.attrs.height;
 
     gpii.app.applier.replace(that.applier, "setting", setting);
