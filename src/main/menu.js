@@ -103,8 +103,10 @@ fluid.defaults("gpii.app.menuInAppDev", {
                 func: "gpii.app.menu.generateMenuTemplate",
                 args: [
                     "{that}.model.showQSS",
-                    "{that}.options.showCaptureTool",
-                    "{that}.options.captureToolDiagnostics",
+                    // "{that}.options.showCaptureTool",
+                    // "{that}.options.captureToolDiagnostics",
+                    "{that}.model.showCaptureTool",
+                    "{that}.model.showCaptureDiagnostics",
                     "{that}.model.keyedInSnapset",
                     "{that}.options.locales",
                     "{that}.options.themes",
@@ -401,6 +403,28 @@ fluid.defaults("gpii.app.menu", {
                 excludeSource: "init"
             }
         },
+        "showCaptureTool": {
+            target: "showCaptureTool",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getSimpleMenuItem",
+                args: ["Capture Tool", "onCaptureTool"]
+            },
+            forward: {
+                excludeSource: "init"
+            }
+        },
+        "showCaptureDiagnostics": {
+            target: "showCaptureDiagnostics",
+            singleTransform: {
+                type: "fluid.transforms.free",
+                func: "gpii.app.menu.getSimpleMenuItem",
+                args: ["Capture Tool Diagnostics", "onCaptureDiagnostics"]
+            },
+            forward: {
+                excludeSource: "init"
+            }
+        },
         "preferenceSetsMenuItems": {
             target: "preferenceSetsMenuItems",
             singleTransform: {
@@ -419,6 +443,8 @@ fluid.defaults("gpii.app.menu", {
                 func: "gpii.app.menu.generateMenuTemplate",
                 args: [
                     "{that}.model.showQSS",
+                    "{that}.model.showCaptureTool",
+                    "{that}.model.showCaptureDiagnostics",
                     "{that}.model.keyedInSnapset",
                     "{that}.model.showAbout",
                     "@expand:gpii.app.menu.getSeparatorItem()",
