@@ -34,23 +34,23 @@ fluid.defaults("gpii.app.diagnosticsCollector", {
         onCollectDiagnostics: null
     },
     listeners: {
-        "onCollectDiagnostics.getSolutionsPromise": {
-            funcName: "gpii.flowManager.getSolutionsPromise",
+        "onCollectDiagnostics.getSolutions": {
+            funcName: "gpii.flowManager.getSolutions",
             args: [ "{flowManager}.solutionsRegistryDataSource", null]
         },
         "onCollectDiagnostics.collectSolutionsPayload": {
             funcName: "gpii.app.diagnosticsCollector.collectPayload",
             args: ["{arguments}.0", "{arguments}.1", "solutions"],
-            priority: "after:getSolutionsPromise"
+            priority: "after:getSolutions"
         },
-        "onCollectDiagnostics.getInstalledSolutions": {
-            func: "{flowManager}.capture.getInstalledSolutions",
+        "onCollectDiagnostics.getInstalledSolutionsForCurrentDevice": {
+            func: "{flowManager}.capture.getInstalledSolutionsForCurrentDevice",
             priority: "after:collectSolutionsPayload"
         },
         "onCollectDiagnostics.collectInstalledSolutionsPayload": {
             funcName: "gpii.app.diagnosticsCollector.collectPayload",
             args: ["{arguments}.0", "{arguments}.1", "installedSolutions"],
-            priority: "after:getInstalledSolutions"
+            priority: "after:getInstalledSolutionsForCurrentDevice"
         },
         "onCollectDiagnostics.getSystemSettingsCapture": {
             func: "{flowManager}.capture.getSystemSettingsCapture",
@@ -271,7 +271,7 @@ gpii.app.captureTool.generateDiagnostics = function (diagnosticsCollector) {
 };
 
 gpii.app.captureTool.channelGetInstalledSolutions = function (channelNotifier, flowManager) {
-    flowManager.capture.getInstalledSolutions().then(
+    flowManager.capture.getInstalledSolutionsForCurrentDevice().then(
         function (data) {
             channelNotifier.events.sendingInstalledSolutions.fire(data);
             var runningSolutions = {};
