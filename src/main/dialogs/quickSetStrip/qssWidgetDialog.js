@@ -225,13 +225,22 @@ fluid.defaults("gpii.app.qssWidget", {
 });
 
 /**
- * Resizing the widget when the sidecar is opened or closed.
+ * Resizing and repositioning the widget when the sidecar is opened or closed.
  * @param {gpii.app.qssWidget} that - The instance of the qssWidget.
  * @param {Boolean} sideCar - `true` when sidecar is open.
  */
 gpii.app.qssWidget.resizeWidget = function (that, sideCar) {
+    var offset = (that.options.config.attrs.widthWithSidecar / 2) - that.model.offset.x;
     var width = that.model.scaleFactor * (sideCar ? that.options.config.attrs.widthWithSidecar : that.options.config.attrs.width);
-    that.setRestrictedSize(width, null);
+    var isOffScreen = that.model.offset.x < that.options.config.attrs.width / 2;
+    if (!sideCar) {
+        that.applier.change("offset", { x: that.model.widgetPosition.x, y: that.model.widgetPosition.y });
+    } else if (isOffScreen) {
+        that.applier.change("offset", { x: that.model.offset.x - offset, y: that.model.offset.y });
+    } else {
+        that.applier.change("offset", { x: that.model.offset.x - that.options.config.attrs.width, y: that.model.offset.y });
+    }
+    that.setBounds(width, null, that.model.offset.x, null);
 };
 
 /**
@@ -301,6 +310,7 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     // store the offset so that the widget can be positioned correctly when
     // the renderer process sends the corresponding message
     that.applier.change("offset", gpii.app.qssWidget.getWidgetPosition(that, elementMetrics));
+    that.applier.change("widgetPosition", gpii.app.qssWidget.getWidgetPosition(that, elementMetrics));
     that.setRestrictedSize(width, height);
     that.shouldShow = true;
 };
