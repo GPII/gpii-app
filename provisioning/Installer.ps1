@@ -108,9 +108,13 @@ Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
 md (Join-Path $installerDir "output")
 md (Join-Path $installerDir "temp")
 
-Invoke-Environment "C:\Program Files (x86)\Microsoft Visual C++ Build Tools\vcbuildtools_msbuild.bat"
+# For Microsoft's build tools, we will accept any version >=15.0 and <16.0 (i.e. VS2017)
+$visualStudioVersion = "[15.0,16.0)"
+
+$vsmsbuildcmd = Get-VsMSBuildCmd $visualStudioVersion
+Invoke-Environment vsmsbuildcmd
 $setupDir = Join-Path $installerDir "setup"
-$msbuild = Get-MSBuild "4.0"
+$msbuild = Get-MSBuild $visualStudioVersion
 Invoke-Command $msbuild "setup.msbuild" $setupDir
 
 # Copy the installer into the c:/vagrant folder
