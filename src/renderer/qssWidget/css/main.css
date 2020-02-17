@@ -18,32 +18,35 @@ body {
 }
 
 .fl-qssWidget {
-    height: calc(100% - 12px);
-    padding: 10px;
-    border: 2px solid #002957;
-    border-radius: 5px;
-    box-sizing: border-box;
-
     display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    flex-direction: row;
+
+    height: calc(100% - 12px);
+    padding: 0;
+
+    border: none;
+    border-radius: 0;
     
-    background-color: #ffffff;
+    background: none;
     color: #19294c;
 
     font: normal 9px "Segoe UI", "Sans-Serif";
 
     overflow-x: hidden;
-    overflow-y: overlay;
-}
-
-.fl-qssWidget {
-    display: flex;
-    justify-content: center;
-    border: none;
-    border-radius: 0;
-    padding: 0;
-    background: none;
     overflow-y: hidden;
 }
+
+.fl-qssWidget.horizontal-reverse {
+    flex-direction: row-reverse;
+}
+
+.fl-qssWidget.horizontal-reverse .fl-sidecar-holder {
+    border: 1px solid #002957;
+    border-right: none;
+}
+
 .fl-widget-holder {
     display: flex;
     justify-content: center;
