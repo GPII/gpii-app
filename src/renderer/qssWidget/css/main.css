@@ -38,11 +38,11 @@ body {
     overflow-y: hidden;
 }
 
-.fl-qssWidget.horizontal-reverse {
+.horizontal-reverse .fl-qssWidget {
     flex-direction: row-reverse;
 }
 
-.fl-qssWidget.horizontal-reverse .fl-sidecar-holder {
+.horizontal-reverse .fl-qssWidget .fl-sidecar-holder {
     border: 1px solid #002957;
     border-right: none;
 }

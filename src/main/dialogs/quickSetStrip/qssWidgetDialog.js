@@ -94,7 +94,8 @@ fluid.defaults("gpii.app.qssWidget", {
             type: "gpii.app.channelNotifier",
             options: {
                 events: {
-                    onSettingUpdated: "{qssWidget}.events.onSettingUpdated"
+                    onSettingUpdated: "{qssWidget}.events.onSettingUpdated",
+                    onReverseSidecar: null
                 }
             }
         },
@@ -230,17 +231,16 @@ fluid.defaults("gpii.app.qssWidget", {
  * @param {Boolean} sideCar - `true` when sidecar is open.
  */
 gpii.app.qssWidget.resizeWidget = function (that, sideCar) {
-    var offset = (that.options.config.attrs.widthWithSidecar / 2) - that.model.offset.x;
     var width = that.model.scaleFactor * (sideCar ? that.options.config.attrs.widthWithSidecar : that.options.config.attrs.width);
     var isOffScreen = that.model.offset.x < that.options.config.attrs.width / 2;
     if (!sideCar) {
-        that.applier.change("offset", { x: that.model.widgetPosition.x, y: that.model.widgetPosition.y });
+        that.applier.change("offset", { x: that.model.widgetPosition.x, y: that.model.offset.y });
     } else if (isOffScreen) {
-        that.applier.change("offset", { x: that.model.offset.x - offset, y: that.model.offset.y });
+        that.channelNotifier.events.onReverseSidecar.fire();
     } else {
         that.applier.change("offset", { x: that.model.offset.x - that.options.config.attrs.width, y: that.model.offset.y });
     }
-    that.setBounds(width, null, that.model.offset.x, null);
+    that.setBounds(width, that.model.height, that.model.offset.x, that.model.offset.y);
 };
 
 /**

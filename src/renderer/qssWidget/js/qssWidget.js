@@ -112,7 +112,8 @@
             hideSidePanel: "fl-hide-sidecar",
             openSidePanel: "btn-icon-open",
             closeSidePanel: "btn-icon-close",
-            openLinkIcon: "btn-icon-link"
+            openLinkIcon: "btn-icon-link",
+            reverseSidecar: "horizontal-reverse"
         },
         sounds: {},
 
@@ -281,7 +282,15 @@
                 options: {
                     events: {
                         // Add events from the main process to be listened for
-                        onSettingUpdated: "{qssWidget}.events.onSettingUpdated"
+                        onSettingUpdated: "{qssWidget}.events.onSettingUpdated",
+                        onReverseSidecar: null
+                    },
+                    listeners: {
+                        onReverseSidecar: {
+                            this: "{qssWidget}.container",
+                            method: "addClass",
+                            args: ["{qssWidget}.options.styles.reverseSidecar"]
+                        }
                     }
                 }
             },
@@ -321,7 +330,12 @@
             }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: ["{that}"]
-            }]
+            }],
+            onQssWidgetCreated: {
+                this: "{qssWidget}.container",
+                method: "removeClass",
+                args: ["{qssWidget}.options.styles.reverseSidecar"]
+            }
         },
         invokers: {
             close: {
