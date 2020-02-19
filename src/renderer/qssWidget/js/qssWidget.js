@@ -113,7 +113,13 @@
             openSidePanel: "btn-icon-open",
             closeSidePanel: "btn-icon-close",
             openLinkIcon: "btn-icon-link",
-            reverseSidecar: "horizontal-reverse"
+            reverseSidecar: "horizontal-reverse",
+            arrowStyles: {
+                centerArrow: "fl-qssWidget-arrow-center",
+                leftArrow: "fl-qssWidget-arrow-left",
+                rightArrow: "fl-qssWidget-arrow-right",
+                tightRightArrow: "fl-qssWidget-arrow-tight-right"
+            }
         },
         sounds: {},
 
@@ -283,13 +289,18 @@
                     events: {
                         // Add events from the main process to be listened for
                         onSettingUpdated: "{qssWidget}.events.onSettingUpdated",
-                        onReverseSidecar: null
+                        onReverseSidecar: null,
+                        onArrowChange: null
                     },
                     listeners: {
                         onReverseSidecar: {
                             this: "{qssWidget}.container",
                             method: "addClass",
                             args: ["{qssWidget}.options.styles.reverseSidecar"]
+                        },
+                        onArrowChange: {
+                            funcName: "gpii.psp.qssWidget.changeArrowPosition",
+                            args: ["{qssWidget}.container", "{qssWidget}.options.styles.arrowStyles", "{arguments}.0"]
                         }
                     }
                 }
@@ -331,11 +342,14 @@
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: ["{that}"]
             }],
-            onQssWidgetCreated: {
+            onQssWidgetCreated: [{
                 this: "{qssWidget}.container",
                 method: "removeClass",
                 args: ["{qssWidget}.options.styles.reverseSidecar"]
-            }
+            }, {
+                funcName: "gpii.psp.qssWidget.changeArrowPosition",
+                args: ["{qssWidget}.container", "{qssWidget}.options.styles.arrowStyles", null]
+            }]
         },
         invokers: {
             close: {
@@ -347,6 +361,28 @@
             }
         }
     });
+
+    /**
+     * Applies the new arrow direction class on the widget's root dom element
+     * @param  {jQuery} container - jQuery instance of the QSS widget
+     * @param  {Object} arrowStyles - A hash containing CSS classes for the different arrow positions
+     * @param  {String} position - The new direction of the arrow
+     */
+    gpii.psp.qssWidget.changeArrowPosition = function (container, arrowStyles, position) {
+        // removing any possible arrow classes
+        container.removeClass(arrowStyles.centerArrow + " " + arrowStyles.leftArrow + " " + arrowStyles.rightArrow + " " + arrowStyles.tightRightArrow);
+
+        if (position === "left") {
+            container.addClass(arrowStyles.leftArrow);
+        } else if (position === "right") {
+            container.addClass(arrowStyles.rightArrow);
+        } else if (position === "tight-right") {
+            container.addClass(arrowStyles.tightRightArrow);
+        } else {
+            // default positon
+            container.addClass(arrowStyles.centerArrow);
+        }
+    };
 
     /**
      * Adds the required style to the sideCar button

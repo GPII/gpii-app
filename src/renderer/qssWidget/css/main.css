@@ -209,7 +209,6 @@ body {
 
     position: absolute;
     top: -1px;
-    left: 50%;
     width: 0;
     height: 0;
 
@@ -217,6 +216,26 @@ body {
     border-bottom: none;
 
     pointer-events: none;
+}
+
+.fl-qssWidget-arrow-left .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-left .fl-qssWidget-arrow:after {
+    left: 73px;
+}
+
+.fl-qssWidget-arrow-center .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-center .fl-qssWidget-arrow:after {
+    left: 85px;
+}
+
+.fl-qssWidget-arrow-right .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-right .fl-qssWidget-arrow:after {
+    left: 215px;
+}
+
+.fl-qssWidget-arrow-tight-right .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-tight-right .fl-qssWidget-arrow:after {
+    left: 265px;
 }
 
 .fl-qssWidget-arrow:before {
