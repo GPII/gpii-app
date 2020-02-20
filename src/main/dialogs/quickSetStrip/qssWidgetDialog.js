@@ -308,15 +308,20 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
  * of the QSS dialog (e.g. whether the activation occurred via keyboard)
  */
 gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
-    var widgetPosition = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics),
-        arrowPosition;
-
     activationParams = activationParams || {};
 
     var scaleFactor = that.model.scaleFactor,
         // adding the scaleFactor
         width = scaleFactor * that.options.config.attrs.width,
-        height = scaleFactor * that.options.config.attrs.height;
+        height = scaleFactor * that.options.config.attrs.height,
+        arrowPosition;
+
+    // Handles the case of closing the widget with open sideCar (width needs to be correctly calculated)
+    if (width !== that.model.width && fluid.isValue(that.model.widgetPosition)) {
+        that.model.width = width;
+    }
+
+    var widgetPosition = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics);
 
     gpii.app.applier.replace(that.applier, "setting", setting);
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
