@@ -632,6 +632,9 @@
         else if (that.model.whatToCapture === "chooseapps") {
             options.solutionsList = that.model.solutionsToCapture;
         }
+        else {
+            options.solutionsList = fluid.keys(that.model.installedSolutions);
+        }
 
         // Clear any previous capture
         that.applier.change("capturedSettings", {}, "DELETE");
@@ -780,10 +783,13 @@
             var appUri = "http://registry.gpii.net/applications/" + appId;
             var settingId = appSettingPair[1];
             var settingValue = that.model.capturedPreferences[appUri][settingId];
-            if (!togo[appUri]) {
-                togo[appUri] = {};
+            // TODO Document or clean up this mess. We are passing in the appId again now, since we will
+            // use gpii.lifecycleManager.transformSettingsToPrefs to transform these in to
+            // preferences before the final save.
+            if (!togo[appId]) {
+                togo[appId] = {};
             }
-            togo[appUri][settingId] = settingValue;
+            togo[appId][settingId] = settingValue;
         });
         that.fullChange("preferencesToKeep", togo);
     };

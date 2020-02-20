@@ -78,7 +78,8 @@ fluid.defaults("gpii.app.captureTool", {
     model: {
         isKeyedIn: false,
         keyedInUserToken: null,
-        preferences: {}
+        preferences: {},
+        flatSolutionsRegistry: {}
     },
     /*
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
@@ -122,12 +123,22 @@ fluid.defaults("gpii.app.captureTool", {
         generateDiagnostics: {
             funcName: "gpii.app.captureTool.generateDiagnostics",
             args: ["{that}", "{flowManager}"]
-        }
+        },
+        getSolutions: {
+            funcName: "gpii.flowManager.getSolutions",
+            args: [ "{flowManager}.solutionsRegistryDataSource", null]
+        },
     },
     listeners: {
         "onCreate.show": [
             {
                 func: "{that}.show"
+            }
+        ],
+        "onCreate.setSolutions": [
+            {
+                funcName: "gpii.app.captureTool.setSolutions",
+                args: ["{that}"]
             }
         ]
     },
@@ -185,7 +196,7 @@ fluid.defaults("gpii.app.captureTool", {
                     },
                     getAllSolutionsCapture: {
                         funcName: "gpii.app.captureTool.channelGetAllSolutionsCapture",
-                        args: ["{captureTool}.channelNotifier", "{flowManager}", "{arguments}.0"]
+                        args: ["{captureTool}", "{captureTool}.channelNotifier", "{flowManager}", "{arguments}.0"]
                     },
                     captureDoneButton: {
                         funcName: "gpii.app.captureTool.channelCaptureDoneButton",
@@ -204,6 +215,18 @@ fluid.defaults("gpii.app.captureTool", {
         }
     }
 });
+
+gpii.app.captureTool.setSolutions = function (that) {
+    that.getSolutions().then(function (data) {
+        var flattenedSolReg = {};
+        fluid.each(data.solutions, function (osSolutions, osKey) {
+            fluid.each(osSolutions, function (solution, solutionId) {
+                flattenedSolReg[solutionId] = solution;
+            });
+        });
+        that.applier.change("flatSolutionsRegistry", flattenedSolReg);
+    });
+};
 
 /**
  * This function will create a set of diagnostic log dumps and files for analyzing
@@ -295,19 +318,47 @@ gpii.app.captureTool.channelGetInstalledSolutions = function (channelNotifier, f
     );
 };
 
-gpii.app.captureTool.channelGetAllSolutionsCapture = function (channelNotifier, flowManager, arg) {
+gpii.app.captureTool.channelGetAllSolutionsCapture = function (that, channelNotifier, flowManager, arg) {
     var options = {};
     if (arg.solutionsList) {
         options.solutionsList = arg.solutionsList;
     }
-    flowManager.capture.getSystemSettingsCapture(options).then(
-        function (data) {
-            channelNotifier.events.sendingAllSolutionsCapture.fire(data);
-        },
-        function (err) {
-            channelNotifier.events.sendingAllSolutionsCapture.fire({isError: true, message: err});
-        }
-    );
+
+    // Due to the unknown stability of some settings handlers, we are invoking the system capture
+    // on each solution individually, so if one fails the capture will still proceed.
+    var capturePromises = [];
+    fluid.each(options.solutionsList, function (solutionId) {
+        var nextPromise = fluid.promise();
+        flowManager.capture.getSystemSettingsCapture({
+            solutionsList: [solutionId]
+        }).then(
+            function (data) {
+                nextPromise.resolve(data);
+            },
+            function (err) {
+                nextPromise.resolve({
+                    solutionId: {
+                        isError: true,
+                        message: err
+                    }
+                });
+            }
+        );
+
+        capturePromises.push(nextPromise);
+    });
+
+    var result = fluid.promise.sequence(capturePromises);
+    result.then(function(data) {
+        var togo = {};
+        fluid.each(data, function (value) {
+            fluid.each(value, function (solPayload, solId) {
+                togo[solId] = solPayload;
+            });
+        });
+
+        channelNotifier.events.sendingAllSolutionsCapture.fire(togo);
+    });
 };
 
 gpii.app.captureTool.channelCaptureDoneButton = function (captureDialog) {
@@ -328,6 +379,10 @@ gpii.app.captureTool.savePreferences = function (that, pspChannel, flowManager, 
     };
 
     payload.contexts[options.prefSetId] = options.prefSetPayload;
+
+    var prefsTogo = gpii.lifecycleManager.transformSettingsToPrefs(options.prefSetPayload.preferences, that.model.flatSolutionsRegistry);
+
+    payload.contexts[options.prefSetId].preferences = prefsTogo;
 
     flowManager.savePreferences(that.model.keyedInUserToken, payload);
 };
