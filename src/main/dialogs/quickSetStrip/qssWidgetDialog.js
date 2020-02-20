@@ -236,9 +236,11 @@ gpii.app.qssWidget.resizeWidget = function (that, sideCar) {
         isOffScreen = that.model.offset.x < that.options.config.attrs.width,
         arrowPosition = "default";
 
-    if (!sideCar) {
+    if (!sideCar && that.model.offset.x > 0) {
         that.applier.change("offset", { x: that.model.widgetPosition.x, y: that.model.offset.y });
-    } else if (isOffScreen && that.model.offset.x < 0) {
+    } else if (!sideCar && that.model.offset.x < 0) {
+        arrowPosition = "right-closed";
+    }  else if (isOffScreen && that.model.offset.x < 0) {
         arrowPosition = "tight-right";
         that.channelNotifier.events.onReverseSidecar.fire();
     } else if (isOffScreen && that.model.offset.x > 0) {
@@ -306,6 +308,9 @@ gpii.app.qssWidget.getWidgetPosition = function (that, btnCenterOffset) {
  * of the QSS dialog (e.g. whether the activation occurred via keyboard)
  */
 gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationParams) {
+    var widgetPosition = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics),
+        arrowPosition;
+
     activationParams = activationParams || {};
 
     var scaleFactor = that.model.scaleFactor,
@@ -316,10 +321,16 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     gpii.app.applier.replace(that.applier, "setting", setting);
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
+    // adjusting arrow position when the widget button is too close to the end of the screen
+    if (widgetPosition.x < 0) {
+        arrowPosition = "right-closed";
+        that.channelNotifier.events.onArrowChange.fire(arrowPosition);
+    }
+
     // store the offset so that the widget can be positioned correctly when
     // the renderer process sends the corresponding message
-    that.applier.change("offset", gpii.app.qssWidget.getWidgetPosition(that, elementMetrics));
-    that.applier.change("widgetPosition", gpii.app.qssWidget.getWidgetPosition(that, elementMetrics));
+    that.applier.change("offset", widgetPosition);
+    that.applier.change("widgetPosition", widgetPosition);
     that.setRestrictedSize(width, height);
     that.shouldShow = true;
 };

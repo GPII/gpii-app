@@ -238,6 +238,12 @@ body {
     left: 265px;
 }
 
+/* Arrow position without sidecar */
+.fl-qssWidget-arrow-right-closed .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-right-closed .fl-qssWidget-arrow:after {
+    left: 135px;
+}
+
 .fl-qssWidget-arrow:before {
     border-width: 12px;
     border-top-color: #002957;

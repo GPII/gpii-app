@@ -118,7 +118,8 @@
                 centerArrow: "fl-qssWidget-arrow-center",
                 leftArrow: "fl-qssWidget-arrow-left",
                 rightArrow: "fl-qssWidget-arrow-right",
-                tightRightArrow: "fl-qssWidget-arrow-tight-right"
+                tightRightArrow: "fl-qssWidget-arrow-tight-right",
+                rightArrowClosed: "fl-qssWidget-arrow-right-closed"
             }
         },
         sounds: {},
@@ -370,7 +371,7 @@
      */
     gpii.psp.qssWidget.changeArrowPosition = function (container, arrowStyles, position) {
         // removing any possible arrow classes
-        container.removeClass(arrowStyles.centerArrow + " " + arrowStyles.leftArrow + " " + arrowStyles.rightArrow + " " + arrowStyles.tightRightArrow);
+        container.removeClass(arrowStyles.centerArrow + " " + arrowStyles.leftArrow + " " + arrowStyles.rightArrow + " " + arrowStyles.tightRightArrow + " " + arrowStyles.rightArrowClosed);
 
         if (position === "left") {
             container.addClass(arrowStyles.leftArrow);
@@ -378,6 +379,8 @@
             container.addClass(arrowStyles.rightArrow);
         } else if (position === "tight-right") {
             container.addClass(arrowStyles.tightRightArrow);
+        } else if (position === "right-closed") {
+            container.addClass(arrowStyles.rightArrowClosed);
         } else {
             // default positon
             container.addClass(arrowStyles.centerArrow);
