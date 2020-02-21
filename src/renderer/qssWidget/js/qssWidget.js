@@ -290,11 +290,11 @@
                     events: {
                         // Add events from the main process to be listened for
                         onSettingUpdated: "{qssWidget}.events.onSettingUpdated",
-                        onReverseSidecar: null,
+                        onReverseSideCar: null,
                         onArrowChange: null
                     },
                     listeners: {
-                        onReverseSidecar: {
+                        onReverseSideCar: {
                             this: "{qssWidget}.container",
                             method: "addClass",
                             args: ["{qssWidget}.options.styles.reverseSidecar"]

@@ -210,6 +210,11 @@ fluid.defaults("gpii.app.qss", {
     }
 });
 
+/**
+ * Calculates the height of the QSS strip
+ * @param {gpii.app.qssInWrapper} that - instance of the qssInWrapper
+ * @param {Integer} height - the desired height of the QSS
+ */
 gpii.app.qss.computeQssHeight = function (that, height) {
     var scaledQssHeight = height * that.model.scaleFactor;
     that.setBounds(null, scaledQssHeight);

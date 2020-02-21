@@ -984,6 +984,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
         settings: "{qssWrapper}.model.settings"
     },
     config: {
+        morePanelHeight: 510,
         params: {
             settings: "{qssWrapper}.model.settings"
         }
@@ -1027,9 +1028,11 @@ fluid.defaults("gpii.app.qssInWrapper", {
             }] // notificationParams
         },
         "{channelListener}.events.onQssMorePanelRequired": {
-            // func: "{qssMorePanel}.toggle"
             func: "{that}.setBounds",
-            args: [null, 510]
+            args: [
+                null, // width
+                "{that}.options.config.morePanelHeight" // height
+            ]
         },
         "{channelListener}.events.onMorePanelClosed": {
             func: "gpii.app.qss.computeQssHeight",

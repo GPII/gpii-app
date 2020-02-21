@@ -87,16 +87,25 @@
         // - "grid-visible", or "x" // For visible gray grid space (same size as the invisible one)
 
         buttonList: [
+            {
+                "buttonId": "MakeYourOwn",
+                "buttonName": "Task Manager",
+                "buttonType": "KEY",
+                "buttonData": "^+{Escape}",
+                "popupText": "<p>Executes Ctrl+Shift+Esc combination, which opens Windows Task Manager.</p>"
+            },
+            "||",
             "language",
-            "translate-tools",
+            "screen-zoom",
             "text-zoom",
-            "screen-capture",
+            "high-contrast",
             "snipping-tool",
-            "office-simplification",
             "volume",
             "launch-documorph",
             "cloud-folder-open",
+            "read-aloud",
             "usb-open",
+            "||",
             "service-more",
             "service-save",
             "service-undo",
@@ -113,16 +122,9 @@
 
         morePanelList: [
             [ // first row of buttons
-                "x",
-                "x",
-                "x",
+            ],
+            [ // second row of buttons
                 {
-                    "buttonId": "MakeYourOwn",
-                    "buttonName": "Task Manager",
-                    "buttonType": "KEY",
-                    "buttonData": "^+{Escape}",
-                    "popupText": "<p>Executes Ctrl+Shift+Esc combination, which opens Windows Task Manager.</p>"
-                }, {
                     "buttonId": "MakeYourOwn",
                     "buttonName": "Launch Notepad",
                     "buttonType": "APP",
@@ -138,30 +140,17 @@
                     "fullScreen": true,
                     "popupText": "<p>Open Reddit in a web browser.</p>",
                     "description": "The full description of the button..."
-                }
-            ],
-            [ // second row of buttons
-                "x",
-                "x",
-                "x",
-                "x",
-                "x",
-                "x",
-                "read-aloud",
-                "mouse",
-                "screen-zoom",
-                "high-contrast"
-            ],
-            [ // third row of buttons
-                "x",
-                "x",
-                "x",
-                "x",
-                "x",
+                },
+                "screen-capture",
                 "url-customize-qss",
                 "url-google-drive",
                 "url-one-drive",
-                "url-dropbox"
+                "url-dropbox",
+                "translate-tools",
+                "office-simplification",
+                "mouse"
+            ],
+            [ // third row of buttons
             ]
         ]
     },
