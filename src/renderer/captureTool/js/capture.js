@@ -122,6 +122,9 @@
                     title: "Checkbook Balancer"
                 }
             },
+
+            solutionsWithErrors: {},
+
             // The capturedSettingsToRender are generated from the capturedSettings and
             // add all the metadata needed by the handlebars template to render them for the
             // user
@@ -460,9 +463,15 @@
      */
     gpii.captureTool.annotateSettingsCapture = function (that, mergedCapture) {
         var togo = {};
+        var solutionsWithErrors = [];
         fluid.each(mergedCapture, function (capturedSolution, solutionID) {
             if (!that.model.installedSolutions[solutionID]) {
                 fluid.log("The solutionID is missing for this installedSolution: ", solutionID);
+                return;
+            }
+
+            if (capturedSolution.isError) {
+                solutionsWithErrors.push(solutionID);
                 return;
             }
 
@@ -472,6 +481,7 @@
                 numberOfSettings: Object.keys(capturedSolution).length
             };
         });
+        that.applier.change("solutionsWithErrors", solutionsWithErrors);
         return togo;
     };
 

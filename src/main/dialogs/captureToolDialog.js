@@ -336,12 +336,13 @@ gpii.app.captureTool.channelGetAllSolutionsCapture = function (that, channelNoti
                 nextPromise.resolve(data);
             },
             function (err) {
-                nextPromise.resolve({
-                    solutionId: {
-                        isError: true,
-                        message: err
-                    }
-                });
+                var errTogo = {};
+                errTogo[solutionId] = {
+                    isError: true,
+                    message: err
+                };
+                fluid.log(fluid.logLevel.WARN, "Error capturing solution " + solutionId + ": " + err);
+                nextPromise.resolve(errTogo);
             }
         );
 

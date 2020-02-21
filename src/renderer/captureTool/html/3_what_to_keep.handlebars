@@ -7,6 +7,16 @@
         The capture tool found {{currentNumberOfTotalSettingsToRender}} settings in the {{capturedSettingsToRender.length}} applications. Look at each application's settings
         and decide which settings you want to keep.
     </p>
+    {{#if solutionsWithErrors}}
+    <div class="alert alert-danger" role="alert">
+        <span>There was an error capturing the following solutions.</span>
+        <ul>
+        {{#each solutionsWithErrors}}
+            <li>{{this}}</li>
+        {{/each}}
+        </ul>
+    </div>
+    {{/if}}
     <hr/>
     <div>
         <span><span class="flc-num-settings-selected">0</span> settings selected</span>
