@@ -35,7 +35,7 @@ var multiPrefSetsFixture = {
     "type":"ADD",
     "value":{
         "userToken":"context1",
-        "activeContextName":"gpii-default",
+        "activePrefsSetName":"gpii-default",
         "settingGroups": [
             {
                 "solutionName": "Magnifier",
