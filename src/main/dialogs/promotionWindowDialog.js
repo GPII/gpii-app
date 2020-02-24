@@ -53,9 +53,9 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
             width: "{that}.options.siteConfig.width",
             height: "{that}.options.siteConfig.height",
             resizable: "{that}.options.siteConfig.resizable",
-            movable: "{that}.options.siteConfig.resizable.movable",
-            skipTaskbar: "{that}.options.siteConfig.resizable.skipTaskbar",
-            frame: "{that}.options.siteConfig.resizable.frame",
+            movable: "{that}.options.siteConfig.movable",
+            skipTaskbar: "{that}.options.siteConfig.skipTaskbar",
+            frame: "{that}.options.siteConfig.frame",
             transparent: "{that}.options.siteConfig.transparent",
             alwaysOnTop: "{that}.options.siteConfig.alwaysOnTop"
         },
@@ -72,7 +72,7 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
         onRepositioningRequired: null
     },
     listeners: {
-        "delayedClose": {
+        delayedClose: {
             funcName: "{closeTimer}.start",
             args: ["{that}.options.closeDelay"]
         },
@@ -125,7 +125,8 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
             options: {
                 listeners: {
                     onTimerFinished: {
-                        funcName: "{promotionWindowDialog}.repositionPromotionWindow"
+                        funcName: "{promotionWindowDialog}.showPromotionWindow",
+                        args: [true]
                     }
                 }
             }
@@ -139,48 +140,13 @@ fluid.defaults("gpii.app.promotionWindowDialog", {
                 "{showTimer}",
                 "{promotionWindowDialog}.options.siteConfig.offset.x",
                 "{promotionWindowDialog}.options.siteConfig.offset.y",
-                "{tray}"
-            ]
-        },
-        repositionPromotionWindow: {
-            funcName: "gpii.app.promotionWindowDialog.repositionPromotionWindow",
-            args: [
-                "{promotionWindowDialog}",
                 "{tray}",
-                "{promotionWindowDialog}.options.siteConfig.offset.x",
-                "{promotionWindowDialog}.options.siteConfig.offset.y"
+                "{arguments}.0"
             ]
         }
     }
 });
 
-
-/**
- * Repositioning the promotion window dialog when is necessary.
- * @param {gpii.app.promotionWindowDialog} that - The instance of the widget.
- * @param {gpii.app.tray} tray - The `gpii.app.tray` instance.
- * @param {Integer} offsetX - The x offset from the right edge of the screen.
- * @param {Integer} offsetY - The y offset from the bottom edge of the screen.
- */
-gpii.app.promotionWindowDialog.repositionPromotionWindow = function (that, tray, offsetX, offsetY) {
-    if (that.options.siteConfig.positionByTrayIcon) {
-        var trayPosition = tray.getIconBounds(),
-            screen = require("electron").screen,
-            taskBarHeight = screen.getPrimaryDisplay().bounds.height - screen.getPrimaryDisplay().workAreaSize.height,
-            scaleFactor = screen.getPrimaryDisplay().scaleFactor,
-            displaySize = { width: screen.getPrimaryDisplay().workAreaSize.width, height: screen.getPrimaryDisplay().workAreaSize.height - taskBarHeight},
-            offset = { x: displaySize.width - ((trayPosition.x + (trayPosition.width / 2)) / scaleFactor), y: displaySize.height - ((trayPosition.y - (trayPosition.height / 2)) / scaleFactor) };
-
-        // setting the position next to the tray icon
-        that.setPosition(offset.x, offset.y);
-    } else if (that.options.siteConfig.centered) {
-        // recentering the promo window
-        var centeredPosition = gpii.browserWindow.computeCentralWindowPosition(that.options.siteConfig.width, that.options.siteConfig.height);
-        that.setPosition(centeredPosition.x, centeredPosition.y);
-    } else {
-        that.setPosition(offsetX || 0, offsetY || 0);
-    }
-};
 
 /**
  * Shows the promotion window dialog. The '{promotionWindowDialog}.show' function
@@ -189,14 +155,16 @@ gpii.app.promotionWindowDialog.repositionPromotionWindow = function (that, tray,
  * of the promotion dialog with given 'x' and 'y' offset. If offset 'x' and 'y' are not given
  * the window will be displayed with the default position (0, 0). If the 'centered' option
  * is specified, the dialog will be positioned in the center of the screen.
+ * The same function will be invoked when repositioning of the promotion window dialog is required.
  * @param {gpii.app.promotionWindowDialog} that - The instance of the widget.
  * @param {gpii.app.timer} timer - An instance of `gpii.app.timer` used for showing
  * the widget with a delay.
  * @param {Integer} offsetX - The x offset from the right edge of the screen.
  * @param {Integer} offsetY - The y offset from the bottom edge of the screen.
  * @param {gpii.app.tray} tray - The `gpii.app.tray` instance.
+ * @param {Boolean} reposition - Whether need only reposition of the window.
  */
-gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, tray) {
+gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, tray, reposition) {
     if (that.options.siteConfig.positionByTrayIcon) {
         // getting the tray position only when it's required (siteConfig > positionByTrayIcon)
         var trayPosition = tray.getIconBounds(),
@@ -218,5 +186,7 @@ gpii.app.promotionWindowDialog.show = function (that, timer, offsetX, offsetY, t
         that.setPosition(offsetX || 0, offsetY || 0);
     }
 
-    timer.start(that.options.showDelay);
+    if (!reposition) {
+        timer.start(that.options.showDelay);
+    }
 };
