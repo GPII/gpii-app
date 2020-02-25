@@ -58,6 +58,10 @@ body {
     overflow-y: hidden;
 }
 
+.fl-widget-content {
+    height: calc(100% - 45px);
+}
+
 .fl-sidecar-holder {
     display: flex;
     justify-content: center;
