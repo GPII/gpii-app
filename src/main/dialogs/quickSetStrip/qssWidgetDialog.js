@@ -239,10 +239,16 @@ gpii.app.qssWidget.resizeWidget = function (that, sideCar) {
     if (!sideCar && that.model.offset.x > 0) { // no sideCar, the window is not too close to the right edge
         // moving the widget's position
         that.applier.change("offset", { x: that.model.widgetPosition.x, y: that.model.offset.y });
+    } else if (!sideCar && isOffScreen && that.model.setting.path === "mySavedSettings") { // special case for my saved settings
+        arrowPosition = "right-mySavedSettings";
     } else if (!sideCar && that.model.offset.x < 0) { // no sideCar, the window is to the most right
         // only the arrow moves
         arrowPosition = "right-closed";
-    }  else if (isOffScreen && that.model.offset.x < 0) { // with sideCar, and the window already outside of the screen
+    }  else if (isOffScreen && that.model.setting.path === "mySavedSettings") { // special case for my saved settings with sideCar
+        // the arrow moves and the sideCar is reversed on the left
+        arrowPosition = "right-mySavedSettings-sideCar";
+        that.channelNotifier.events.onReverseSideCar.fire();
+    } else if (isOffScreen && that.model.offset.x < 0) { // with sideCar, and the window already outside of the screen
         // the arrow moves and the sideCar is reversed on the left
         arrowPosition = "tight-right";
         that.channelNotifier.events.onReverseSideCar.fire();
@@ -333,8 +339,10 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     gpii.app.applier.replace(that.applier, "setting", setting);
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
-    // adjusting arrow position when the widget button is too close to the end of the screen
-    if (widgetPosition.x < 0) {
+    if (widgetPosition.x < 0 && that.model.setting.path === "mySavedSettings") { // special case for my saved settings
+        arrowPosition = "right-mySavedSettings";
+        that.channelNotifier.events.onArrowChange.fire(arrowPosition);
+    } else if (widgetPosition.x < 0) { // adjusting arrow position when the widget button is too close to the end of the screen
         arrowPosition = "right-closed";
         that.channelNotifier.events.onArrowChange.fire(arrowPosition);
     }

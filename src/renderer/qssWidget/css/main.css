@@ -244,6 +244,18 @@ body {
     left: 135px;
 }
 
+/* Arrow position for my saved settings button */
+.fl-qssWidget-arrow-right-mySavedSettings .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-right-mySavedSettings .fl-qssWidget-arrow:after {
+    left: 112px;
+}
+
+/* Arrow position for my saved settings button with opened sidecar */
+.fl-qssWidget-arrow-right-mySavedSettingsSideCar .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-right-mySavedSettingsSideCar .fl-qssWidget-arrow:after {
+    left: 242px;
+}
+
 .fl-qssWidget-arrow:before {
     border-width: 12px;
     border-top-color: #002957;

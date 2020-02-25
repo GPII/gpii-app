@@ -119,7 +119,9 @@
                 leftArrow: "fl-qssWidget-arrow-left",
                 rightArrow: "fl-qssWidget-arrow-right",
                 tightRightArrow: "fl-qssWidget-arrow-tight-right",
-                rightArrowClosed: "fl-qssWidget-arrow-right-closed"
+                rightArrowClosed: "fl-qssWidget-arrow-right-closed",
+                rightArrowMySavedSettings: "fl-qssWidget-arrow-right-mySavedSettings",
+                rightArrowMySavedSettingsSideCar: "fl-qssWidget-arrow-right-mySavedSettingsSideCar"
             }
         },
         sounds: {},
@@ -371,7 +373,7 @@
      */
     gpii.psp.qssWidget.changeArrowPosition = function (container, arrowStyles, position) {
         // removing any possible arrow classes
-        container.removeClass(arrowStyles.centerArrow + " " + arrowStyles.leftArrow + " " + arrowStyles.rightArrow + " " + arrowStyles.tightRightArrow + " " + arrowStyles.rightArrowClosed);
+        container.removeClass(arrowStyles.centerArrow + " " + arrowStyles.leftArrow + " " + arrowStyles.rightArrow + " " + arrowStyles.tightRightArrow + " " + arrowStyles.rightArrowClosed + " " + arrowStyles.rightArrowMySavedSettings + " " + arrowStyles.rightArrowMySavedSettingsSideCar);
 
         if (position === "left") {
             container.addClass(arrowStyles.leftArrow);
@@ -381,6 +383,10 @@
             container.addClass(arrowStyles.tightRightArrow);
         } else if (position === "right-closed") {
             container.addClass(arrowStyles.rightArrowClosed);
+        } else if (position === "right-mySavedSettings") {
+            container.addClass(arrowStyles.rightArrowMySavedSettings);
+        } else if (position === "right-mySavedSettings-sideCar") {
+            container.addClass(arrowStyles.rightArrowMySavedSettingsSideCar);
         } else {
             // default positon
             container.addClass(arrowStyles.centerArrow);
