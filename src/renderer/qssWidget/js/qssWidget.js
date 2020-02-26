@@ -567,7 +567,7 @@
      */
     gpii.qssWidget.calculateHeight = function (container, parentContainer, heightListenerContainer) {
         var baseHeight = container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight,
-            heightFix = 55; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
+            heightFix = 12; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
         return baseHeight + heightFix;
     };
 
