@@ -384,7 +384,13 @@
             },
             focusManager: {
                 type: "gpii.qss.qssFocusManager",
-                container: "{qss}.container"
+                container: "{qss}.container",
+                options: {
+                    events: {
+                        onMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
+                        onMorePanelClosed: "{quickSetStripList}.events.onMorePanelClosed"
+                    }
+                }
             },
             channelListener: {
                 type: "gpii.psp.channelListener",
