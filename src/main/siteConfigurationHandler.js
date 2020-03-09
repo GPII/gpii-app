@@ -30,8 +30,11 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.siteConfigurationHandler", {
     gradeNames: ["fluid.component"],
 
-    siteConfigPath: "%gpii-app/siteconfig.json5",
-    siteConfig: "@expand:fluid.require({that}.options.siteConfigPath)",
+    siteConfigPath: [
+        process.env.ProgramData + "/Morphic/siteconfig.json5",
+        "%gpii-app/siteconfig.json5"
+    ],
+    siteConfig: "@expand:{that}.requireFirst({that}.options.siteConfigPath)",
 
     saveSettingPath: "save",
 
@@ -84,6 +87,14 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.disableRestartWarning",
             target: "{app gpiiConnector}.options.defaultPreferences.disableRestartWarning"
         },
+        distributeDefaultLanguageGpiiConnector: {
+            record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
+            target: "{app gpiiConnector}.options.defaultPreferences.systemDefaultLanguage"
+        },
+        distributeDefaultSettingsPath: {
+            record: "{that}.options.siteConfig.defaultSettingsData",
+            target: "{app gpiiConnector}.options.defaultPreferences.defaultSettingsData"
+        },
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
             target: "{app surveyConnector}.options.config.surveyTriggersUrl"
@@ -92,10 +103,26 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.aboutDialog",
             target: "{app aboutDialog}.options.siteConfig"
         },
+        distributeDialogManagerConfig: {
+            record: "{that}.options.siteConfig.dialogManager",
+            target: "{app dialogManager}.options.siteConfig"
+        },
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",
             target: "{app tray}.options.trayType"
+        },
+        distributeMetrics: {
+            record: "{that}.options.siteConfig.metrics",
+            target: "{/ gpii.app.metrics}.options.siteConfig"
+        },
+        distributeAutoLogin: {
+            record: "{that}.options.siteConfig.autoLogin",
+            target: "{/ gpii.windows.userListeners.windowsLogin}.options.config"
         }
+    },
+
+    invokers: {
+        requireFirst: "gpii.app.siteConfigurationHandler.requireFirst"
     }
 });
 
@@ -107,4 +134,32 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
  */
 gpii.app.siteConfigurationHandler.getSaveDistribution = function (saveSettingPath, shouldHideSaveButton) {
     return shouldHideSaveButton ? [saveSettingPath] : [];
+};
+
+/**
+ * Requires the first successfully required file in the given array. Used to load a file and provide a fall-back
+ * location if it doesn't exist.
+ *
+ * @param {Array<String>} files The files to attempt to require. Only the first successful file is required.
+ * @return {Object} The loaded module from the first successful required file.
+ */
+gpii.app.siteConfigurationHandler.requireFirst = function (files) {
+    var firstError;
+    var togo = fluid.find(fluid.makeArray(files), function (file) {
+        try {
+            fluid.log(fluid.logLevel.WARN, "Reading site config from " + file);
+            return fluid.require(file);
+        } catch (e) {
+            fluid.log(fluid.logLevel.WARN, "Unable to read site config from " + file + ": " + e.message);
+            if (!firstError) {
+                firstError = e;
+            }
+        }
+    });
+
+    // If nothing gets loaded, then re-throw the first error.
+    if (!togo && firstError) {
+        throw firstError;
+    }
+    return togo;
 };

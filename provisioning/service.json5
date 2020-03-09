@@ -1,0 +1,46 @@
+// Service configuration for production.
+{
+    "processes": {
+        "gpii": {
+            "command": "morphic-app.exe",
+            "ipc": "gpii",
+            "autoRestart": true,
+            "disabled": false,
+            env: {
+                NODE_ENV: "app.production",
+                GPII_CLOUD_URL: "https://flowmanager.prd.gcp.gpii.net"
+            }
+        }
+    },
+    "logging": {
+        "level": "DEBUG"
+    },
+    "secretFile": "%ProgramData%\\Morphic Credentials\\secret.txt",
+    "autoUpdate": {
+        "enabled": true,
+        "lastUpdatesFile": "%ProgramData%\\Morphic\\last-updates.json5",
+        "files": [{
+            // Auto-update the site config.
+            path: "%ProgramData%\\Morphic\\siteConfig.json5",
+            // Get the URL from the secrets file
+            //url: "${siteConfigUrl}"
+            url: "https://raw.githubusercontent.com/javihernandez/morphic-siteConfigs/master/onOffSwitchTesting/siteconfig_standard.json5"
+        }]
+    },
+    "siteConfigFile": [
+        "%ProgramData%\\Morphic\\siteConfig.json5",
+        "%ProgramFiles(x86)%\\Morphic\\windows\\resources\\app\\siteConfig.json5",
+        "%ProgramFiles%\\Morphic\\windows\\resources\\app\\siteConfig.json5"
+    ],
+    "gpiiConfig": {
+        "env": "NODE_ENV",
+        // Morphic + metrics:
+        "on:on": "app.production.metrics",
+        // No metrics or morphic:
+        "off:off": "app.disable",
+        // Metrics only:
+        "off:on": "app.metrics",
+        // No metrics:
+        "on:off": "app.production"
+    }
+}

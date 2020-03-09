@@ -37,7 +37,8 @@
      * the necessary DOM elements and handling user interaction.
      */
     fluid.defaults("gpii.psp.qssNotification", {
-        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable", "gpii.psp.linksInterceptor"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.selectorsTextRenderer", "gpii.psp.heightObservable",
+            "gpii.psp.linksInterceptor", "gpii.psp.metrics.dialog"],
 
         model: {
             messages: {
@@ -76,7 +77,9 @@
                 options: {
                     events: {
                         onQssNotificationHeightChanged: "{qssNotification}.events.onHeightChanged",
-                        onQssNotificationClosed: "{qssNotification}.events.onQssNotificationClosed"
+                        onQssNotificationClosed: "{qssNotification}.events.onQssNotificationClosed",
+                        onMetric: "{qssNotification}.events.onMetric",
+                        onMetricState: "{qssNotification}.events.onMetricState"
                     }
                 }
             },

@@ -39,7 +39,8 @@ fluid.defaults("gpii.app.gpiiConnector", {
          * be used instead.
          */
         closeQssOnBlur: false,
-        disableRestartWarning: false
+        disableRestartWarning: false,
+        defaultSettingsData: null
     },
 
     events: {
@@ -739,7 +740,6 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
                     funcName: "gpii.app.dev.gpiiConnector.qss.prepareMessageForQss",
                     args: [
                         "{that}",
-                        "{that}.options.defaultQssSettingValues",
                         "{arguments}.0" // message
                     ]
                 }
@@ -766,6 +766,7 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
         "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
         "http://registry\\.gpii\\.net/common/volume": { value: gpii.app.getVolumeValue() },
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.colorFilters.FilterType": {value: 0 },
         // use the initial value of the language as default setting
         "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" },
         "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed": { value: 10 },
@@ -776,6 +777,56 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
 });
 
 /**
+ * An object containing information the default setting's location
+ * @typedef {Object} defaultSetting
+ * @property {Boolean} relativePath - true if the path should be joined with %appdata%
+ * @property {String} fileLocation - path to file's location
+ */
+
+/**
+ * Retrieves synchronously the default QSS settings from a file on the local machine
+ * folder. These are to be provided from the core in the future.
+ * @param {defaultSetting} defaultSettings - data of the file's location
+ * @return {Object[]} An array of the loaded settings
+ */
+gpii.app.dev.gpiiConnector.qss.loadDefaultSettings = function (defaultSettings) {
+    // by default we are assuming the the fileLocation is absolute path
+    var compiledPath = defaultSettings.fileLocation;
+    if (defaultSettings.relativePath) {
+        // if the path is relative we join if to %appdata%
+        compiledPath = gpii.app.compileAppDataPath(defaultSettings.fileLocation);
+    }
+
+    if (gpii.app.checkIfFileExists(compiledPath)) {
+        // file exists, so we try to load it
+        var loadedSettings = fluid.require(compiledPath),
+            result = {};
+
+        if (fluid.isValue(loadedSettings.contexts["gpii-default"].preferences)) {
+            // the structure matches our assumption, going through the nodes and collect the data
+            fluid.each(loadedSettings.contexts["gpii-default"].preferences, function (value, path) {
+                var fixedPath = path.replace(/\./g, "\\.");
+                if (!fluid.isPlainObject(value)) {
+                    var fixedValue = value;
+                    result[fixedPath] = { "value": fixedValue };
+                } else {
+                    fluid.each(value, function (v, k) {
+                        var longPath = fixedPath.concat(".", k);
+                        result[longPath] = { "value": v };
+                    });
+                }
+            });
+        }
+
+        return result;
+    } else {
+        console.log("loadDefaultSettings: Cannot find the settings file - " + compiledPath);
+        fluid.log(fluid.logLevel.WARN, "loadDefaultSettings: Cannot find the settings file - " + compiledPath);
+        return [];
+    }
+};
+
+/**
  * Decorate the PSP channel message with QSS specific property so that it looks similar
  * to what it will look like in the future with core improvements on QSS functionality.
  * The property is populated using data from the incoming "Preference Update" message, sent for the PSP. It extracts
@@ -783,12 +834,12 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
  * In case it is needed (it's a full preference set update after a snapset or active set change), it
  * also populates with QSS settings that are missing using a predefined set of default values.
  * @param {Component} that - The instance of `gpii.app.dev.gpiiComponent` component
- * @param {Object} defaultQssSettingValues - The default QSS settings in the format - <path>: <value>
  * @param {Object} message - The raw PSP channel message
  * @return {Object} The decorated PSP channel message
  */
-gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQssSettingValues, message) {
-    var payload = message.payload || {};
+gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, message) {
+    var loadedSettings = gpii.app.dev.gpiiConnector.qss.loadDefaultSettings(that.options.defaultPreferences.defaultSettingsData),
+        payload = message.payload || {};
 
     if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {
         var value = payload.value || {},
@@ -796,11 +847,10 @@ gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQss
 
         // leave only QSS settings
         // Note that settings that doesn't have specific values such as "App / Text Zoom" will not receive setting updates
-        var qssSettingControls = fluid.filterKeys(channelSettingControls, fluid.keys(defaultQssSettingValues));
+        var qssSettingControls = fluid.filterKeys(channelSettingControls, fluid.keys(loadedSettings));
 
         // add missing setting values if needed
-        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, that.options.defaultQssSettingValues, qssSettingControls, value);
-
+        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, loadedSettings, qssSettingControls, value);
         value.qssSettingControls = qssSettingControls;
     }
 

@@ -471,6 +471,27 @@ gpii.app.ejectUSB = function (browserWindow, messageChannel, messages) {
 };
 
 /**
+ * Check if a file exists.
+ * @param {String} file to the file.
+ * @return {Boolean} `true` if the file exists.
+ */
+gpii.app.checkIfFileExists = function (file) {
+    return fs.existsSync(file);
+};
+
+/**
+ * Uses environment's %appdata% variable and combines it with the data from the site config
+ * the result should be something like:
+ * C:\Users\vagrant\AppData\Roaming\gpii\defaultSettings.json5
+ * @param {String} fileLocation - path to the file's location
+ * @return {String} - file location path joined with %appdata%
+ */
+gpii.app.compileAppDataPath = function (fileLocation) {
+    var path = require("path");
+    return path.join(process.env.appdata, fileLocation);
+};
+
+/**
  * Get the actual volume value. If there are an error or no value return the default
  * volume value
  * @param {Object} browserWindow - An Electron `BrowserWindow` object.

@@ -44,17 +44,34 @@ app.disableHardwareAcceleration();
 // the second one will be closed and the callback provided to `app.makeSingleInstance`
 // in the first instance will be triggered enabling it to show the PSP `BrowserWindow`.
 app.on("second-instance", function (event, commandLine) {
-    var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
-    qssWrapper.qss.show();
-    if (commandLine.indexOf("--reset") > -1) {
-        setTimeout(function () {
-            // GPII-3455: Call this in another execution stack, to allow electron to free some things, otherwise an
-            // error of a COM object being accessed in the wrong thread is raised - but that doesn't appear to be
-            // the case. Originally, nextTick was used to escape this strange state. However, since upgrading to
-            // Electron 3 it stopped working but a zero timeout does.
-            var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
-            gpiiApp.resetAllToStandard();
-        }, 0);
+    if (commandLine.indexOf("--shutdown") > -1) {
+        // Shutdown GPII in a way which causes the service to not restart it.
+        fluid.log("Received a shutdown request");
+        var service = fluid.queryIoCSelector(fluid.rootComponent, "gpii.windows.service.requestSender")[0];
+        var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
+        service.closing().then(gpiiApp.exit, gpiiApp.exit);
+    } else {
+        var reset = commandLine.indexOf("--reset") > -1;
+
+        // Log this metric
+        var eventLog = fluid.queryIoCSelector(fluid.rootComponent, "gpii.eventLog")[0];
+        if (eventLog) {
+            eventLog.logEvent("startup", reset ? "reset" : "open", {commandLine: commandLine});
+        }
+
+        var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
+        qssWrapper.qss.show();
+
+        if (reset) {
+            setTimeout(function () {
+                // GPII-3455: Call this in another execution stack, to allow electron to free some things, otherwise an
+                // error of a COM object being accessed in the wrong thread is raised - but that doesn't appear to be
+                // the case. Originally, nextTick was used to escape this strange state. However, since upgrading to
+                // Electron 3 it stopped working but a zero timeout does.
+                var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
+                gpiiApp.resetAllToStandard();
+            }, 0);
+        }
     }
 });
 
@@ -81,6 +98,6 @@ fluid.onUncaughtException.addListener(function () {
 
 
 kettle.config.loadConfig({
-    configName: kettle.config.getConfigName("app.testing"),
+    configName: kettle.config.getConfigName("app.testing.metrics"),
     configPath: kettle.config.getConfigPath("%gpii-app/configs")
 });

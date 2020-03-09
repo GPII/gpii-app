@@ -87,7 +87,8 @@
             onMorePanelRequired: null,
             onUndoRequired: null,
             onResetAllRequired: null,
-            onSaveRequired: null
+            onSaveRequired: null,
+            onMetric: null
         },
 
         invokers: {
@@ -147,7 +148,7 @@
      * the `focusManager` and the channels for communication with the main process.
      */
     fluid.defaults("gpii.qss", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.qss.metrics"],
 
         model: {
             isKeyedIn: false,
@@ -249,6 +250,8 @@
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
+
+                        onMetric: null,
 
                         // Custom buttons events
                         onQssStartProcess: null,
