@@ -537,6 +537,11 @@ gpii.app.dialog.handleShownStateChange = function (that, isShown, showInactive) 
  * @param {Number} offsetY - The y offset from the bottom edge of the screen.
  */
 gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX, offsetY) {
+    // applies scale factor to the `more panel` height
+    if (fluid.isValue(height) && that.options.config.morePanelHeight === height) {
+        height = that.model.scaleFactor * height;
+    }
+
     // As default use currently set values
     offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
     offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;
