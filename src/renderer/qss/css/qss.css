@@ -201,8 +201,7 @@ body {
 .fl-quickSetStrip-more {
     display: none;
     position: relative;
-    width: 590px;
-    flex-grow: 1; /* grow to fill the whole windows */
+    width: 596px;
     padding: 5px 5px 10px 5px;
 
     background: #fff;
@@ -215,7 +214,30 @@ body {
 .fl-quickSetStrip-more-button-grid {
     display: flex;
     flex-wrap: wrap;
-    margin-top: 10px;
+    margin-top: 7px;
+    max-height: 177px;
+    overflow-y: auto;
+}
+
+.fl-quickSetStrip-more-button-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.fl-quickSetStrip-more-button-grid::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 3px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #19294c;
+    box-shadow: none;
 }
 
 .fl-more-closeButton {

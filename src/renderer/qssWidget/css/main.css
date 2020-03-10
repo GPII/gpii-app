@@ -239,13 +239,13 @@ body {
 
 .fl-qssWidget-arrow-tight-right .fl-qssWidget-arrow:before,
 .fl-qssWidget-arrow-tight-right .fl-qssWidget-arrow:after {
-    left: 265px;
+    left: 260px;
 }
 
 /* Arrow position without sidecar */
 .fl-qssWidget-arrow-right-closed .fl-qssWidget-arrow:before,
 .fl-qssWidget-arrow-right-closed .fl-qssWidget-arrow:after {
-    left: 135px;
+    left: 130px;
 }
 
 /* Arrow position for my saved settings button */
