@@ -3,6 +3,14 @@ body {
     overflow: hidden;
 }
 
+.fl-qss {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
 .fl-qss-logo {
     width: 90px;
     margin: 0 11px 0 16px;
@@ -179,10 +187,9 @@ body {
 
 /* More Panel changes */
 .fl-quickSetStrip-main {
-    clear: both;
     display: flex;
-    height: 62px;
-    
+    width: calc(100% - 2px); /* compensate the borders from the both sides */
+    flex-basis: 62px;
     flex-direction: column;
     flex-wrap: wrap;
     align-content: flex-end;
@@ -192,12 +199,11 @@ body {
 }
 
 .fl-quickSetStrip-more {
-    float: right;
-    position: relative;
     display: none;
+    position: relative;
     width: 590px;
-    height: 352px;
-    padding: 5px;
+    flex-grow: 1; /* grow to fill the whole windows */
+    padding: 5px 5px 10px 5px;
 
     background: #fff;
     border: 1px solid #002957;
