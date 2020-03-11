@@ -118,9 +118,13 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssUnmountUsbRequested: null,
                     onQssGetVolumeRequested: null,
                     onQssReApplyPreferencesRequired: null,
-                    onQssGetEnvironmentalLoginKeyRequested: null
+                    onQssGetEnvironmentalLoginKeyRequested: null,
+                    onMorePanelClosed: null
                 },
                 listeners: {
+                    onMorePanelClosed: {
+                        func: "{qssWidget}.hide"
+                    },
                     onSideCarActivated: {
                         func: "gpii.app.qssWidget.resizeWidget",
                         args: ["{qssWidget}", true]
