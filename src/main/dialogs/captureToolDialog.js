@@ -53,7 +53,8 @@ fluid.defaults("gpii.app.diagnosticsCollector", {
             priority: "after:getInstalledSolutionsForCurrentDevice"
         },
         "onCollectDiagnostics.getSystemSettingsCapture": {
-            func: "{flowManager}.capture.getSystemSettingsCapture",
+            funcName: "gpii.app.diagnosticsCollector.getSystemSettingsCapture",
+            args: ["{flowManager}", "{arguments}.1"],
             priority: "after:collectInstalledSolutionsPayload"
         },
         "onCollectDiagnostics.collectSystemSettingsCapturePayload": {
@@ -63,6 +64,11 @@ fluid.defaults("gpii.app.diagnosticsCollector", {
         }
     }
 });
+
+gpii.app.diagnosticsCollector.getSystemSettingsCapture = function (flowManager, options) {
+    var solutionIds = fluid.keys(options.installedSolutions);
+    return gpii.app.captureTool.safelyGetSolutionsCapture(flowManager, solutionIds);
+};
 
 gpii.app.diagnosticsCollector.collectPayload = function (value, options, keyName) {
     options[keyName] = value;
@@ -127,7 +133,7 @@ fluid.defaults("gpii.app.captureTool", {
         getSolutions: {
             funcName: "gpii.flowManager.getSolutions",
             args: [ "{flowManager}.solutionsRegistryDataSource", null]
-        },
+        }
     },
     listeners: {
         "onCreate.show": [
@@ -219,7 +225,7 @@ fluid.defaults("gpii.app.captureTool", {
 gpii.app.captureTool.setSolutions = function (that) {
     that.getSolutions().then(function (data) {
         var flattenedSolReg = {};
-        fluid.each(data.solutions, function (osSolutions, osKey) {
+        fluid.each(data.solutions, function (osSolutions) {
             fluid.each(osSolutions, function (solution, solutionId) {
                 flattenedSolReg[solutionId] = solution;
             });
@@ -318,16 +324,12 @@ gpii.app.captureTool.channelGetInstalledSolutions = function (channelNotifier, f
     );
 };
 
-gpii.app.captureTool.channelGetAllSolutionsCapture = function (that, channelNotifier, flowManager, arg) {
-    var options = {};
-    if (arg.solutionsList) {
-        options.solutionsList = arg.solutionsList;
-    }
-
+gpii.app.captureTool.safelyGetSolutionsCapture = function (flowManager, solutionsList) {
+    var promTogo = fluid.promise();
     // Due to the unknown stability of some settings handlers, we are invoking the system capture
     // on each solution individually, so if one fails the capture will still proceed.
     var capturePromises = [];
-    fluid.each(options.solutionsList, function (solutionId) {
+    fluid.each(solutionsList, function (solutionId) {
         var nextPromise = fluid.promise();
         flowManager.capture.getSystemSettingsCapture({
             solutionsList: [solutionId]
@@ -350,15 +352,30 @@ gpii.app.captureTool.channelGetAllSolutionsCapture = function (that, channelNoti
     });
 
     var result = fluid.promise.sequence(capturePromises);
-    result.then(function(data) {
+    result.then(function (data) {
         var togo = {};
         fluid.each(data, function (value) {
             fluid.each(value, function (solPayload, solId) {
                 togo[solId] = solPayload;
             });
         });
+        promTogo.resolve(togo);
+    });
 
-        channelNotifier.events.sendingAllSolutionsCapture.fire(togo);
+    return promTogo;
+};
+
+gpii.app.captureTool.channelGetAllSolutionsCapture = function (that, channelNotifier, flowManager, arg) {
+    var options = {
+        solutionsList: []
+    };
+    if (arg.solutionsList) {
+        options.solutionsList = arg.solutionsList;
+    }
+
+    var result = gpii.app.captureTool.safelyGetSolutionsCapture(flowManager, options.solutionsList);
+    result.then(function (data) {
+        channelNotifier.events.sendingAllSolutionsCapture.fire(data);
     });
 };
 
