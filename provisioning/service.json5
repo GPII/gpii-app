@@ -17,7 +17,7 @@
     },
     "secretFile": "%ProgramData%\\Morphic Credentials\\secret.txt",
     "autoUpdate": {
-        "enabled": true,
+        "enabled": false,
         "lastUpdatesFile": "%ProgramData%\\Morphic\\last-updates.json5",
         "files": [{
             // Auto-update the site config.
