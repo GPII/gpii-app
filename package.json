@@ -35,7 +35,7 @@
         "shelljs": "0.8.2"
     },
     "optionalDependencies": {
-        "gpii-windows": "stegru/windows#62529a8b8affd697c64e38dd4ddf1acf22a451f7"
+        "gpii-windows": "GPII/windows#83af4e86ee618d9796d95ef187bd7a222db553d1"
     },
     "scripts": {
         "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
