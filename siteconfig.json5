@@ -116,7 +116,7 @@
 
         morePanelOptions: {
             rows: 3, // how many rows will be used
-            cols: 10, // how many cols will be used
+            cols: 10, // how many cols will be used (minimum 5, maximum 15)
             fill: "x" // which grid element to use to auto-fill the empty rows and cols
         },
 

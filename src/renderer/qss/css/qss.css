@@ -212,8 +212,6 @@ body {
 }
 
 .fl-quickSetStrip-more-button-grid {
-    display: flex;
-    flex-wrap: wrap;
     margin-top: 7px;
     max-height: 177px;
     overflow-y: auto;
@@ -239,6 +237,22 @@ body {
     background-color: #19294c;
     box-shadow: none;
 }
+
+.fl-quickSetStrip-more-button-grid .fl-qss-button {
+    float: right;
+}
+
+.fl-quickSetStrip-more-button-grid .break-5:nth-child(5n+1)   { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-6:nth-child(6n+1)   { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-7:nth-child(7n+1)   { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-8:nth-child(8n+1)   { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-9:nth-child(9n+1)   { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-10:nth-child(10n+1) { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-11:nth-child(11n+1) { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-12:nth-child(12n+1) { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-13:nth-child(13n+1) { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-14:nth-child(14n+1) { clear: both; }
+.fl-quickSetStrip-more-button-grid .break-15:nth-child(15n+1) { clear: both; }
 
 .fl-more-closeButton {
     position: absolute;
