@@ -239,7 +239,7 @@ body {
 }
 
 .fl-quickSetStrip-more-button-grid .fl-qss-button {
-    float: right;
+    float: left;
 }
 
 .fl-quickSetStrip-more-button-grid .break-5:nth-child(5n+1)   { clear: both; }
