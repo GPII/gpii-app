@@ -210,21 +210,15 @@ gpii.app.hasMorePanelList = function (siteConfig) {
 };
 
 /**
- * Returns the very simple object with the More Panel options
+ * Returns the number of rows of buttons for the More Panel
  * @param {Object} siteConfig - instance of the siteConfig object
- * @return {Object} - object contains only rows, cols, and fill element got either
- * from the siteConfig.morePanelOptions, or just the default options
+ * @return {Integer} - number of rows of buttons for the More Panel,
+ * just counts the rows of the siteConfig.morePanelList array
  */
-gpii.app.getMorePanelOptions = function (siteConfig) {
-    var defaultRows = 3,
-        defaultCols = 10,
-        defaultFill = "x";
+gpii.app.getMorePanelRows = function (siteConfig) {
+    var defaultRows = 0;
 
-    return {
-        "rows": (siteConfig.morePanelOptions && siteConfig.morePanelOptions.rows) ? siteConfig.morePanelOptions.rows : defaultRows,
-        "cols": (siteConfig.morePanelOptions && siteConfig.morePanelOptions.cols) ? siteConfig.morePanelOptions.cols : defaultCols,
-        "fill": (siteConfig.morePanelOptions && siteConfig.morePanelOptions.fill) ? siteConfig.morePanelOptions.fill : defaultFill
-    };
+    return (siteConfig.morePanelList && siteConfig.morePanelList.length > 0) ? siteConfig.morePanelList.length : defaultRows;
 };
 
 /**
