@@ -167,21 +167,6 @@
     // The shortcut that open the QSS. For posible values refer to: https://electronjs.org/docs/api/accelerator
     openQssShortcut: "Shift+Ctrl+AltOrOption+SuperOrCmd+M",
 
-    // Configuration options for the QSS More panel
-    qssMorePanel: {
-        // These are default values. The actual dimensions of the QSS more panel
-        // are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
-        defaultWidth: 600,
-        defaultHeight: 450,
-        movable: true,
-        resizable: true,
-        alwaysOnTop: true,
-
-        urls: {
-            moreInfo: "http://morphic.world/more"
-        }
-    },
-
     // Configuration options for the About dialog
     aboutDialog: {
         urls: {

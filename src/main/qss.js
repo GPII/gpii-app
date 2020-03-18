@@ -22,12 +22,11 @@ require("./dialogs/quickSetStrip/qssDialog.js");
 require("./dialogs/quickSetStrip/qssTooltipDialog.js");
 require("./dialogs/quickSetStrip/qssWidgetDialog.js");
 require("./dialogs/quickSetStrip/qssNotificationDialog.js");
-require("./dialogs/quickSetStrip/qssMorePanel.js");
 require("./common/undoStack.js");
 
 /**
  * A component which coordinates the operation of all QSS related components
- * (the QSS itself and its widget, tooltip, notification and "More" dialogs,
+ * (the QSS itself and its widget, tooltip and notification dialogs,
  * as well as the undo stack). It also takes care of loading the QSS settings
  * from a local configuration file.
  */
@@ -329,14 +328,6 @@ fluid.defaults("gpii.app.qssWrapper", {
         },
         qssNotification: {
             type: "gpii.app.qssNotification",
-            options: {
-                model: {
-                    scaleFactor: "{qssWrapper}.model.scaleFactor"
-                }
-            }
-        },
-        qssMorePanel: {
-            type: "gpii.app.qssMorePanel",
             options: {
                 model: {
                     scaleFactor: "{qssWrapper}.model.scaleFactor"
