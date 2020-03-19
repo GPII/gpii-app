@@ -76,6 +76,7 @@
             "url-dropbox":       "gpii.qss.urlDropboxPresenter",
             "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
         },
+        eventDelay: 10,
 
         settings: {
             expander: {
@@ -122,8 +123,8 @@
             onUndoIndicatorChanged: null
         },
         listeners: {
-            onResetAllRequired: "{gpii.qss.list}.events.onMorePanelClosed.fire",
-            onQssClosed: "{gpii.qss.list}.events.onMorePanelClosed.fire"
+            onResetAllRequired: "{list}.events.onMorePanelClosed.fire",
+            onQssClosed: "{list}.events.onMorePanelClosed.fire"
         },
         modelListeners: {
             "items": {
@@ -135,31 +136,31 @@
         components: {
             qssStripRepeater: {
                 type: "gpii.psp.repeater",
-                container: "{gpii.qss.list}.dom.mainPanel",
+                container: "{list}.dom.mainPanel",
                 options: {
-                    defaultHandlerGrade: "{gpii.qss.list}.options.defaultHandlerGrade",
-                    handlerGrades: "{gpii.qss.list}.options.handlerGrades",
+                    defaultHandlerGrade: "{list}.options.defaultHandlerGrade",
+                    handlerGrades: "{list}.options.handlerGrades",
                     model: {
-                        items: "{gpii.qss.list}.options.settings"
+                        items: "{list}.options.settings"
                     },
-                    dynamicContainerMarkup: "{gpii.qss.list}.options.dynamicContainerMarkup",
-                    markup: "{gpii.qss.list}.options.markup",
+                    dynamicContainerMarkup: "{list}.options.dynamicContainerMarkup",
+                    markup: "{list}.options.markup",
                     events: {
-                        onUndoIndicatorChanged: "{gpii.qss.list}.events.onUndoIndicatorChanged",
-                        onButtonFocusRequired: "{gpii.qss.list}.events.onButtonFocusRequired",
+                        onUndoIndicatorChanged: "{list}.events.onUndoIndicatorChanged",
+                        onButtonFocusRequired: "{list}.events.onButtonFocusRequired",
 
-                        onButtonFocused: "{gpii.qss.list}.events.onButtonFocused",
-                        onButtonActivated: "{gpii.qss.list}.events.onButtonActivated",
-                        onButtonMouseEnter: "{gpii.qss.list}.events.onButtonMouseEnter",
-                        onButtonMouseLeave: "{gpii.qss.list}.events.onButtonMouseLeave",
+                        onButtonFocused: "{list}.events.onButtonFocused",
+                        onButtonActivated: "{list}.events.onButtonActivated",
+                        onButtonMouseEnter: "{list}.events.onButtonMouseEnter",
+                        onButtonMouseLeave: "{list}.events.onButtonMouseLeave",
 
-                        onSettingAltered: "{gpii.qss.list}.events.onSettingAltered",
-                        onNotificationRequired: "{gpii.qss.list}.events.onNotificationRequired",
-                        onMorePanelRequired: "{gpii.qss.list}.events.onMorePanelRequired",
-                        onUndoRequired: "{gpii.qss.list}.events.onUndoRequired",
-                        onResetAllRequired: "{gpii.qss.list}.events.onResetAllRequired",
-                        onSaveRequired: "{gpii.qss.list}.events.onSaveRequired",
-                        onQssClosed: "{gpii.qss.list}.events.onQssClosed"
+                        onSettingAltered: "{list}.events.onSettingAltered",
+                        onNotificationRequired: "{list}.events.onNotificationRequired",
+                        onMorePanelRequired: "{list}.events.onMorePanelRequired",
+                        onUndoRequired: "{list}.events.onUndoRequired",
+                        onResetAllRequired: "{list}.events.onResetAllRequired",
+                        onSaveRequired: "{list}.events.onSaveRequired",
+                        onQssClosed: "{list}.events.onQssClosed"
                     },
                     invokers: {
                         getHandlerType: {
@@ -174,7 +175,7 @@
             },
             qssMorePanel: {
                 type: "fluid.viewComponent",
-                container: "{gpii.qss.list}.dom.morePanel",
+                container: "{list}.dom.morePanel",
                 options: {
                     gradeNames: "gpii.psp.selectorsTextRenderer",
                     enableRichText: true,
@@ -194,29 +195,29 @@
             },
             qssMorePanelRepeater: {
                 type: "gpii.psp.repeater",
-                container: "{gpii.qss.list}.dom.morePanelGrid",
+                container: "{list}.dom.morePanelGrid",
                 options: {
-                    defaultHandlerGrade: "{gpii.qss.list}.options.defaultHandlerGrade",
-                    handlerGrades: "{gpii.qss.list}.options.handlerGrades",
+                    defaultHandlerGrade: "{list}.options.defaultHandlerGrade",
+                    handlerGrades: "{list}.options.handlerGrades",
                     model: {
-                        items: "{gpii.qss.list}.options.morePanelSettings"
+                        items: "{list}.options.morePanelSettings"
                     },
-                    dynamicContainerMarkup: "{gpii.qss.list}.options.dynamicContainerMarkup",
-                    markup: "{gpii.qss.list}.options.markup",
+                    dynamicContainerMarkup: "{list}.options.dynamicContainerMarkup",
+                    markup: "{list}.options.markup",
                     events: {
-                        onUndoIndicatorChanged: "{gpii.qss.list}.events.onUndoIndicatorChanged",
-                        onButtonFocusRequired: "{gpii.qss.list}.events.onButtonFocusRequired",
+                        onUndoIndicatorChanged: "{list}.events.onUndoIndicatorChanged",
+                        onButtonFocusRequired: "{list}.events.onButtonFocusRequired",
 
-                        onButtonFocused: "{gpii.qss.list}.events.onButtonFocused",
-                        onButtonActivated: "{gpii.qss.list}.events.onButtonActivated",
-                        onButtonMouseEnter: "{gpii.qss.list}.events.onButtonMouseEnter",
-                        onButtonMouseLeave: "{gpii.qss.list}.events.onButtonMouseLeave",
+                        onButtonFocused: "{list}.events.onButtonFocused",
+                        onButtonActivated: "{list}.events.onButtonActivated",
+                        onButtonMouseEnter: "{list}.events.onButtonMouseEnter",
+                        onButtonMouseLeave: "{list}.events.onButtonMouseLeave",
 
-                        onSettingAltered: "{gpii.qss.list}.events.onSettingAltered",
-                        onNotificationRequired: "{gpii.qss.list}.events.onNotificationRequired",
-                        onUndoRequired: "{gpii.qss.list}.events.onUndoRequired",
-                        onResetAllRequired: "{gpii.qss.list}.events.onResetAllRequired",
-                        onSaveRequired: "{gpii.qss.list}.events.onSaveRequired"
+                        onSettingAltered: "{list}.events.onSettingAltered",
+                        onNotificationRequired: "{list}.events.onNotificationRequired",
+                        onUndoRequired: "{list}.events.onUndoRequired",
+                        onResetAllRequired: "{list}.events.onResetAllRequired",
+                        onSaveRequired: "{list}.events.onSaveRequired"
                     },
                     invokers: {
                         getHandlerType: {
@@ -237,7 +238,38 @@
                         "aria-label": "Close More Panel"
                     },
                     listeners: {
-                        "onClick": "{gpii.qss.list}.events.onMorePanelClosed.fire"
+                        onClick: "{list}.events.onMorePanelClosed.fire"
+                    }
+                }
+            },
+            windowKeyListener: {
+                type: "fluid.component",
+                options: {
+                    gradeNames: "gpii.app.keyListener",
+                    target: {
+                        expander: {
+                            funcName: "jQuery",
+                            args: [window]
+                        }
+                    },
+                    events: {
+                        onEscapePressed: null
+                    },
+                    listeners: {
+                        onEscapePressed: {
+                            funcName: "{list}.eventTimeout.start",
+                            args: ["{list}.options.eventDelay"]
+                        }
+                    }
+                }
+            },
+            eventTimeout: {
+                type: "gpii.app.timer",
+                options: {
+                    listeners: {
+                        onTimerFinished: {
+                            func: "{list}.events.onMorePanelClosed.fire"
+                        }
                     }
                 }
             }
@@ -388,7 +420,7 @@
                 options: {
                     events: {
                         onMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
-                        onMorePanelClosed: "{quickSetStripList}.events.onMorePanelClosed"
+                        onMorePanelClosed: "{list}.events.onMorePanelClosed"
                     }
                 }
             },
@@ -434,7 +466,7 @@
                         onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered",
                         onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired",
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
-                        onMorePanelClosed: "{quickSetStripList}.events.onMorePanelClosed",
+                        onMorePanelClosed: "{list}.events.onMorePanelClosed",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
