@@ -15,7 +15,13 @@ var app = require("electron").app;
 
 // Perform this check early, do avoid any delay.
 var singleInstance = app.requestSingleInstanceLock();
-if (!singleInstance) {
+if (singleInstance) {
+    // These command-line options are to signal an already running instance.
+    if (process.argv.includes("--shutdown") || process.argv.includes("--reset")) {
+        app.quit();
+        return;
+    }
+} else {
     // The event handler of second-instance (below) will be called in the original instance.
     console.log("Another instance of Morphic is running");
     app.quit();
