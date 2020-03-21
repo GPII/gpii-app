@@ -47,7 +47,7 @@ body {
     user-select: none;
 }
 
-/* This kind of button is used just as invisible separator */
+/* Separator type buttons */
 .fl-qss-button.fl-qss-separator {
     padding: 3px 0;
     background: none;
@@ -55,9 +55,18 @@ body {
     width: 5px;
 }
 
-/* This kind of button is used just as visible separator */
-.fl-qss-button.fl-qss-separator-visible {
+/* Grid type buttons */
+.fl-qss-button.fl-qss-grid {
+    padding: 3px 0;
+    background: none;
+    cursor: auto;
+}
+
+/* Handling the visible separators and grid */
+.fl-qss-button.fl-qss-separator-visible, .fl-qss-button.fl-qss-separator-visible:hover,
+.fl-qss-button.fl-qss-grid-visible, .fl-qss-button.fl-qss-grid-visible:hover {
     background: #a7a9ad !important;
+    filter: brightness(100%);
 }
 
 .fl-qss-button.fl-qss-largeButton {
@@ -164,7 +173,7 @@ body {
 
 .fl-qss-button .fl-qss-btnImage {
     display: block;
-    width: 44px;
+    width: 50px;
     height: 18px;
     margin-top: -5px;
     margin-bottom: 3px;

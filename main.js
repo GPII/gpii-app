@@ -72,8 +72,9 @@ app.on("second-instance", function (event, commandLine) {
     }
 });
 
-// this module is loaded relatively slow
+// this module is loaded relatively slowly
 // it also loads gpii-universal
+// NOTE: if the OS-specific support package was not loaded successfully, the require(".../index.js") function will throw an exception
 require("gpii-windows/index.js");
 
 require("./index.js");

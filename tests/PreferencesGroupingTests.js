@@ -70,7 +70,7 @@ var settingGroupsFixture = {
         "type":"ADD",
         "value":{
             "userToken":"snapset_1a",
-            "activeContextName":"gpii-default",
+            "activePrefsSetName":"gpii-default",
             "settingControls":{
                 "http://registry\\.gpii\\.net/common/magnification":{
                     "value":2,
