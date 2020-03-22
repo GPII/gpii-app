@@ -233,7 +233,7 @@
             "{repeater}.model.value": [{
                 funcName: "gpii.qssWidget.screenCapture.presenter.animateActivation",
                 args: ["{change}.value", "{that}.model.item", "{that}.container", "{that}.options.styles"],
-                includeSource: "settingAlter"
+                includeSource: "fromWidget"
             }]
         },
         events: {

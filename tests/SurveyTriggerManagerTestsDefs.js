@@ -216,12 +216,14 @@ var sessionTimerTriggerHandlersSequence = [
             "The timer is started again as a result of a QSS setting modification",
             "@expand:{that}.app.surveyManager.surveyTriggerManager.triggerHandler.conditionHandler.isActive()"
         ]
-    }, { // Showing the PSP...
-        func: "{that}.app.psp.show"
+    }, { // Simulate closing of the QSS
+        func: "{that}.app.qssWrapper.qss.hide"
+    }, { // When the QSS is opened again...
+        func: "{that}.app.tray.events.onTrayIconClicked.fire"
     }, { // ...will make the session lucky again (as the interactions count becomes 4)
         func: "jqUnit.assertTrue",
         args: [
-            "Opening the PSP will make the session lucky",
+            "Opening the QSS will make the session lucky",
             "{that}.app.surveyManager.surveyTriggerManager.triggerHandler.conditionHandler.model.isLuckySession"
         ]
     }, { // Update a setting in the QSS

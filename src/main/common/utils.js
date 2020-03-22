@@ -14,10 +14,11 @@
  */
 "use strict";
 
-var os            = require("os");
-var fluid         = require("infusion");
-var electron      = require("electron");
-var child_process = require("child_process");
+var os = require("os"),
+    fluid = require("infusion"),
+    electron = require("electron"),
+    child_process = require("child_process"),
+    fs = require("fs");
 
 var gpii = fluid.registerNamespace("gpii");
 fluid.registerNamespace("gpii.app");
@@ -220,6 +221,138 @@ gpii.app.findButtonById = function (buttonId, availableButtons) {
 };
 
 /**
+ * Looks for the specified key list into the data object and returns true only
+ * if ALL of the keys are matched. It sends fluid warning if required
+ * @param {Object} dataObject - a generic data object
+ * @param {Array} expectedKeys - array list of expected keys to exists
+ * @param {Boolean} warningSend - (optional) true if want to send fluid warnings
+ * @param {String} warningTitle - (optional) description of the warnings
+ * @return {Boolean} - returns true if all of the keys are matched
+ */
+gpii.app.expect = function (dataObject, expectedKeys, warningSend, warningTitle) {
+    var result = true;
+
+    if (dataObject && expectedKeys && fluid.isValue(dataObject) && fluid.isValue(expectedKeys)) {
+        fluid.each(expectedKeys, function (key) {
+            if (typeof dataObject[key] === "undefined") {
+                // we have at least one missing key
+                result = false;
+                // sending the warning if needed
+                if (warningSend) {
+                    fluid.log(fluid.logLevel.WARN, (warningTitle ? warningTitle : "gpii.app.expect") + ": missing expected key [" + key + "]");
+                }
+            }
+        });
+    } else {
+        // we have a missing data object, or keys
+        result = false;
+    }
+    return result;
+};
+
+/**
+ * Generates the proper service button schema for the custom button
+ * @param {Object} buttonData - a simple data object with the values needed for the custom button
+ * @return {Object|Boolean} - data object constructed exactly as every other in the settings.json or false
+ */
+gpii.app.generateCustomButton = function (buttonData) {
+    var serviceButtonTypeApp = "custom-launch-app",
+        serviceButtonTypeWeb = "custom-open-url",
+        serviceButtonTypeKey = "custom-keys",
+        titleAppNotFound = "Program not found",
+        titleUrlInvalid = "Invalid URL",
+        titleNoKeyData = "No Key Data",
+        disabledStyle = "disabledButton",
+        data = false;
+
+    // we need to have the data, with all required fields:
+    // buttonId, buttonName, buttonType, buttonData
+    if (gpii.app.expect(buttonData, ["buttonId", "buttonName", "buttonType", "buttonData"], true, "generateCustomButton")) {
+        data = {
+            "id": buttonData.buttonId,
+            "path": serviceButtonTypeWeb, // default
+            "schema": {
+                "type": serviceButtonTypeWeb,
+                "title": buttonData.buttonName,
+                "fullScreen": false
+            },
+            "buttonTypes": ["largeButton", "settingButton"]
+        };
+        if (fluid.isValue(buttonData.popupText)) {
+            // adding the tooltip text as well
+            data.tooltip = buttonData.popupText;
+        }
+        if (fluid.isValue(buttonData.fullScreen) && buttonData.fullScreen) {
+            // adding the full screen option if there is one
+            data.schema.fullScreen = true;
+        }
+        if (buttonData.buttonType === "APP") {
+            // APP type button
+            data.path = serviceButtonTypeApp;
+            data.schema.type = serviceButtonTypeApp;
+            // checks if the file exists and its executable
+            if (gpii.app.checkExecutable(buttonData.buttonData)) {
+                // adding the application's path
+                data.schema.filepath = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleAppNotFound;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
+        } else if (buttonData.buttonType === "KEY") {
+            // KEY type button
+            data.path = serviceButtonTypeKey;
+            data.schema.type = serviceButtonTypeKey;
+            if (fluid.isValue(buttonData.buttonData)) {
+                // adding the key sequence data to the schema
+                data.schema.keyData = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleNoKeyData;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
+        } else {
+            // WEB type button
+            // adding the http if its missing
+            if (buttonData.buttonData.indexOf("https://") === -1 && buttonData.buttonData.indexOf("http://") === -1) {
+                buttonData.buttonData = "http://" + buttonData.buttonData;
+            }
+            // checking if the url looks valid
+            if (gpii.app.checkUrl(buttonData.buttonData)) {
+                // adding the web page's url
+                data.schema.url = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleUrlInvalid;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
+        }
+    }
+    return data;
+};
+
+/**
+ * Tries to match the shortcut name and if found returns the real name of the button
+ * @param  {String} buttonName - the id of the button
+ * @return {String} if shortcut is found returns the real name of the button, if not
+ * returns the provided buttonName instead
+ */
+gpii.app.buttonListShortcuts = function (buttonName) {
+    var shortcuts = ["|", "||", "-", "x"], // shortcuts
+        buttons = ["separator", "separator-visible", "grid", "grid-visible"], // standart names
+        buttonIndex = shortcuts.indexOf(buttonName);
+
+    if (buttonIndex !== -1) {
+        return buttons[buttonIndex];
+    }
+
+    return buttonName;
+};
+
+/**
  * Filters the full button list based on the provided array of `id` attributes
  * @param {Array} siteConfigButtonList - basic array of strings
  * @param {Object[]} availableButtons - all available buttons found in settings.json
@@ -231,18 +364,32 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     * All of the buttons that don't have `id` at all, they are added at the end of the list
     * starting tabindex, adding +10 of each new item.
     */
-    var matchedList = [],
+    var nonTabindex = ["separator", "separator-visible", "grid", "grid-visible"],
+        matchedList = [],
         afterList = [],
         tabindex = 100;
 
     // creating the matchedList
     // looking for `id` and if matches adding it
     fluid.each(siteConfigButtonList, function (buttonId) {
-        var matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
-        if (matchedButton !== false) {
-            // adding the proper tabindex
-            matchedButton.tabindex = tabindex;
-            tabindex += 10; // increasing the tabindex
+        var matchedButton = false;
+
+        // replace the buttonId if its a shortcut
+        buttonId = gpii.app.buttonListShortcuts(buttonId);
+
+        if (typeof buttonId === "object") {
+            // this is custom button
+            matchedButton = gpii.app.generateCustomButton(buttonId);
+        } else {
+            matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
+        }
+        if (matchedButton) {
+            // the separators and grid elements don't need tabindex
+            if (!nonTabindex.includes(buttonId)) {
+                // adding the proper tabindex
+                matchedButton.tabindex = tabindex;
+                tabindex += 10; // increasing the tabindex
+            }
             // adding button to the matched ones
             matchedList.push(matchedButton);
         }
@@ -346,4 +493,108 @@ gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
         fluid.log(fluid.logLevel.WARN, err);
         return defaultVolumeValue;
     }
+};
+
+/**
+ * Looks into secondary data's `settings` value and compare the values with the
+ * provided old value
+ * @param {Object} value - The setting which has been altered via the QSS or
+ * its widget.
+ * @param {Object} oldValue - The previous value of the altered setting.
+ */
+
+gpii.app.getSecondarySettingsChanges = function (value, oldValue) {
+    return fluid.find_if(value.settings, function (setting, key) {
+        return !fluid.model.diff(setting, oldValue.settings[key]);
+    });
+};
+
+/**
+ * Checks if the button has a secondary settings
+ * @param {Object} button - The setting which has been altered via the QSS or
+ * its widget.
+ * @return {Boolean} Return true if the button has a secondary settings.
+ */
+gpii.app.hasSecondarySettings = function (button) {
+    return fluid.isValue(button.settings);
+};
+
+/**
+ * Simple file function to check a path to the executable file
+ * @param {String} executablePath - path to executable file
+ * @return {Boolean} - returns `true` when the file exists and its executable
+ */
+gpii.app.checkExecutable = function (executablePath) {
+    try {
+        var fileProperties = fs.statSync(executablePath);
+        // Check that the file is executable
+        if (fileProperties.mode === parseInt("0100666", 8)) {
+            // returns true only if the file exists and its executable
+            return true;
+        } else {
+            fluid.log(fluid.logLevel.WARN, "checkExecutable: File is not executable - " + executablePath);
+        }
+    } catch (err) {
+        fluid.log(fluid.logLevel.WARN, "checkExecutable: Invalid or missing path - " + executablePath);
+    }
+    // returns false in any other case
+    return false;
+};
+
+/**
+ * Simple function to try to validate the url - posted by Ajay A and contributed to Devshed:
+ * https://www.quora.com/What-is-the-best-way-to-validate-for-a-URL-in-JavaScript
+ * @param {String} url - browser's url
+ * @return {Boolean} - returns `true` when the url looks valid
+ */
+gpii.app.checkUrl = function (url) {
+    // validating the url
+    var pattern = new RegExp("^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name and extension
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?" + // port
+        "(\\/[-a-z\\d%@_.~+&:]*)*" + // path
+        "(\\?[;&a-z\\d%@_.,~+&:=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$", "i"); // fragment locator
+    if (!pattern.test(url)) {
+        fluid.log(fluid.logLevel.WARN, "checkUrl: Invalid button url - " + url);
+    } else {
+        // returns true only if the url is valid
+        return true;
+    }
+    // returns false in any other case
+    return false;
+};
+
+/**
+ * Starting a new process with the gpii.windows.startProfcess
+ * @param {String} process - file path to the process executable
+ * @param {Boolean} fullScreen - true/false if the process to be maximized by default
+ */
+gpii.app.startProcess = function (process, fullScreen) {
+    var arg = "", // by default all of the arguments are empty, reserved for future
+        options = {}; // no options by default
+
+    if (fullScreen) {
+        // we are adding the maximized option when the full screen is requested
+        options.windowState = "maximized";
+    }
+    // executing the process
+    gpii.windows.startProcess(process, arg, options);
+};
+
+/**
+ * Executes the key sequence using the sendKeys command, documentation
+ * https://github.com/stegru/windows/blob/GPII-4135/gpii/node_modules/gpii-userInput/README.md
+ * @param  {String} keyData - string with key combinations
+ * @return {Boolean} true if there is a keyData to be execute, false otherwise
+ */
+gpii.app.executeKeySequence = function (keyData) {
+    if (fluid.isValue(keyData)) {
+        gpii.windows.sendKeys.send(keyData);
+        return true;
+    } else {
+        fluid.log(fluid.logLevel.WARN, "executeKeySequence: Empty or invalid keyData");
+    }
+    return false;
 };

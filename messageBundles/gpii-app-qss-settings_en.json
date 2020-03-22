@@ -8,22 +8,18 @@
         "title": "Undo"
     },
     "gpii_app_qss_settings_resetAll": {
-        "tooltip": "<p>Reset to the standard settings for this computer</p><p>(does not affect personal saved settings)</p>",
+        "tooltip": "<p>Resets to the standard settings for this computer</p><p>(and signs you out of Morphic but does not change your saved settings)</p>",
         "title": "Reset to Standard"
     },
     "gpii_app_qss_settings_save": {
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>",
         "title": "Save"
     },
-    "gpii_app_qss_settings_psp": {
-        "tooltip": {
-            "keyedIn": "<p>Opens Morphic Settings Panel</p><p>Where you can quickly adjust often-changed settings of yours.</p>",
-            "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
-        },
-        "title": {
-            "keyedIn": " ",
-            "keyedOut": " "
-        }
+    "gpii_app_qss_settings_mySavedSettings": {
+        "tooltip": "<p>My Saved Settings</p>",
+        "title": "My Saved Settings",
+        "tip": "<p>My Saved Settings</p>",
+        "footerTip": "<ul><li>To apply your saved settings, insert a Morphic USB key.</li><li>To re-apply them, remove and then reinsert the Morphic Key.</li></ul>"
     },
     "gpii_app_qss_settings_more": {
         "tooltip": "<p>More options for changing the settings on this computer.</p>",
@@ -33,7 +29,8 @@
         "tooltip": "<p>Turn “Select to Read Aloud” extension in Chrome browser on/off.</p>",
         "title": "Chrome Read Aloud",
         "tip": "<p>Turns on and adjusts Read Aloud mode in Chrome</p>",
-        "extendedTip": "<p>To use Read Aloud</p><ol><li>Open web page in Chrome <img height=12 src='../../icons/chrome.svg'></li><li>Select / highlight text</li><li>Click Play button that pops up</li></ol>"
+        "extendedTip": "<p>To use Read Aloud</p><ol><li>Open web page in Chrome <img height=12 src='../../icons/chrome.svg'></li><li>Select / highlight text</li><li>Click Play button that pops up</li></ol>",
+        "sideCar": "<p>On this menu you can turn on the Read Aloud function installed in the <b>Chrome Browser</b>. When Read Aloud is turned on:</p><ol><li>Select / Highlight text in Chrome</li><li>Click Play button that pops up</li></ol><p>NOTE: when you first turn on read aloud you may have to refresh open pages first.</p><p><b>Microsoft Edge</b> browser also has a Read Aloud mode.  It is always on. To use it:</p><ol><li>Open the Edge browser</li><li>Right-click a webpage and choose “Read Aloud” from the menu</li></ol><p>A Read Aloud toolbar will appear in Edge where you can control the reading.</p><p>Microsoft Word and OneNote also have read aloud features. You can <a href='https://morphic.zendesk.com/hc/en-us/articles/360030418393-Chrome-Read-Aloud'>learn more about read aloud</a> on the Morphic knowledge base.</p>"
     },
     "gpii_app_qss_settings_common-highContrastTheme": {
         "tooltip": "<p>Change the contrast between the text and background color, so text is easier to read.</p><p>Contrast changes will affect Windows, Edge, Chrome, and some other applications.</p>",
@@ -47,30 +44,36 @@
             "Black on yellow",
             "Gray on white",
             "Black on brown"
-        ]
+        ],
+        "sideCar": "<p>On this menu you can change to light mode, dark mode, or a variety of high and low contrast choices.</p><p>Not all applications support all settings. You may also need to restart some applications to see an effect.</p>",
+        "sideCarWithSettings": "<p>On this menu you can change to light mode, dark mode, or a variety of high and low contrast choices.</p><p>Not all applications support all settings. You may also need to restart some applications to see an effect.</p><p>Here are links to take you directly to the full set of Contrast tools in Windows Settings:</p><ul><li><a href='ms-settings:colors'>Windows Color Settings</a> - change color mode and accent colors</li><li><a href='ms-settings:easeofaccess-highcontrast'>Windows High contrast Settings</a> - customize colors for the high contrast mode</li></ul><p>NOTE: Only the high or low contrast settings  on the left will work in Chrome.</p><p>NOTE: Currently Morphic only saves the contrast settings in the list to the left.</p>"
     },
     "gpii_app_qss_settings_common-DPIScale": {
         "tooltip": "<p>Change whole screen to make everything larger/smaller.</p><p>Works for everything.</p>",
         "title": "Screen Zoom",
         "tip": "<p>Zooms everything on the screen</p><p>Amount of Zoom up and down differs by computer.</p>",
-        "footerTip": ""
+        "footerTip": "",
+        "sideCarWithSettings": "<p>Screen Zoom uses the Windows Screen Scale feature to let you make things larger or smaller on screen to match your preferences.</p><p>Windows also provides other ways to change the screen size or zoom parts of the interface. Use these links to go to the appropriate places in Windows Settings:</p><ul><li><a href='ms-settings:display'>Display settings</a></li><li><a href='ms-settings:display-advanced'>Advanced display settings</a> (only available on devices that support advanced settings)</li><li><a href='ms-settings:easeofaccess-display'>Ease of access display settings</a></li></ul>"
     },
     "gpii_app_qss_settings_appTextZoom": {
         "tooltip": "<p>Changes text size.</p><p>Works with many applications including Edge, Chrome, Firefox, Microsoft Office, and more.</p>",
         "title": "Zoom Top Window",
         "tip": "<p>Zoom Top Window</p><p>Note: Not all windows zoom.</p>",
-        "footerTip": "<a href=\"https://morphic.world/basics/learn-more-about-quickstrip#textzoom\">Want a faster way to zoom a window?</a>"
+        "footerTip": "<a href=\"https://morphic.world/basics/learn-more-about-quickstrip#textzoom\">Want a faster way to zoom a window?</a>",
+        "sideCar": "<p>The “Top Window Zoom” buttons are provided to make zooming the text in many application Windows easy.</p><p>But there are even faster ways to do this that do not require you to open the QuickStrip at all. Again, they do not work in all applications but they work in many.</p><ul><li>You can hold CTRL down and use the scrollwheel on your mouse to zoom in/out</li><li>Hold the CTRL key down and use the + and - keys on keyboard to zoom in/out</li></ul>"
     },
     "gpii_app_qss_settings_common-language": {
         "tooltip": "<p>Change Language of Menus & Ribbons.</p><p>Works in Windows, Edge, Office and other programs with language packs installed.</p>",
         "title": "Language of Menus",
-        "tip": "<p>Change Language of Menus/Ribbons</p><p>Works in Windows, and other apps that support Windows language settings.</p><ul><li>Does not translate documents etc.</li><li>You may need to restart some apps to see change.</li></ul>"
+        "tip": "<p>Change Language of Menus/Ribbons</p><p>Works in Windows, and other apps that support Windows language settings.</p><ul><li>Does not translate documents etc.</li><li>You may need to restart some apps to see change.</li></ul>",
+        "sideCar": "<p>The language choices in the list are the Microsoft languages approved by your IT department for this site.</p><p>To add another language to the list - see your IT department.</p><p>(On personal and home machines - a SETUP Tool will be available to select the languages for you computer)</p>"
     },
     "gpii_app_qss_settings_usb-open": {
         "tooltip": "<p>Open and safely Eject all USB flash drives plugged into the computer.</p>",
         "title": "Open & Eject USB",
         "tip": "<p>Your USB Drive</p><p>Insert a USB drive and open it with the button below.</p>",
-        "footerTip": "<p>When you are done, prevent data loss by ejecting USB drives safely.</p><ol><li>Close all documents opened from the USB drive and</li><li>Then use the button below to safely eject the USB drives</li></ol>"
+        "footerTip": "<p>When you are done, prevent data loss by ejecting USB drives safely.</p><ol><li>Close all documents opened from the USB drive and</li><li>Then use the button below to safely eject the USB drives</li></ol>",
+        "sideCar": "<p>On this menu you can open all of the USB drives plugged into your computer with one click.</p><p>When you are done with your USB drives, use this menu again to eject your drives safely. This will help keep your data safe.</p>"
     },
     "gpii_app_qss_settings_screenCapture": {
         "tooltip": "<p>Screen Capture.</p><p>Take pictures of all or part of the screen.</p>",
@@ -79,7 +82,8 @@
         "enum": [
             "Make COPY to PASTE into doc, email, etc.",
             "Take PICTURE and save to desktop"
-        ]
+        ],
+        "sideCar": "<p>This Screen capture tool uses the open source software ShareX to capture settings with high precision.</p><p>ShareX has many other features available. Open ShareX by pressing the Windows key and typing <b>ShareX</b>.</p><p>Microsoft also has a built in screen capture tool called Snipping Tool that you can call up  by pressing <b>WinKey+Shift+S</b>.</p>"
     },
     "gpii_app_qss_settings_cloud-folder-open": {
         "tooltip": "<p>The Quick Folder has commonly requested documents, web pages, and other resources.</p>",
@@ -92,22 +96,61 @@
         "enum": [
             "Basic (Morphic)",
             "Essentials (Morphic)"
-        ]
+        ],
+        "sideCar": "<p>You can also create your own custom Microsoft Word Ribbons on your own computer.</p><p>To create a customized ribbon right click on the right edge of the ribbon bar and select “Customize Ribbons”. Further instructions are available on the <a href='https://support.office.com/en-us/article/customize-the-ribbon-in-office-00f24ca7-6021-48d3-9514-a31a460ecb31'>Microsoft Office support site</a>.</p><p>NOTE: User customized ribbons are not currently captured and saved by Morphic.</p>"
     },
     "gpii_app_qss_settings_common-volume": {
         "tooltip": "<p>Adjusts Windows Volume and provides Mute on/off.</p>",
         "title": "Volume & Mute",
         "tip": "<p>Volume and Mute</p>",
-        "extendedTip": "You can also change the volume using the speaker icon on the system tray (near the clock at the bottom of the screen).",
-        "switchTitle": "Mute all audio"
+        "switchTitle": "Mute all audio",
+        "sideCar": "<p>A quicker and easier way to change the volume is to just click on the speaker icon on the system tray (near the clock at the bottom of the screen).</p><img src='../../assets/volumeMute.png' alt='volumeMute' class='full'>"
     },
     "gpii_app_qss_settings_launch-documorph": {
         "tooltip": "<p>Converts documents into more accessible forms.</p>",
         "title": "Docu- Morph"
     },
-        "gpii_app_qss_settings_translate-tools": {
+    "gpii_app_qss_settings_translate-tools": {
         "tooltip": "<p>Tools to translate text, documents, web pages, or live speech.</p>",
         "title": "Translate Tools",
-        "tip": "<p>Translate Tools</p>To translate <b>text, documents, web pages</b> or <b>live speech</b>, try one of the following free services or apps.<br /><br /><i>Links are for convenience. No endorsement or privacy guarantee.</i><br /><br /><b>Microsoft Word 365</b> has a Translator in its <b>Review</b> ribbon<br /><br /><b>Web based & Apps</b><br /><ul><li><a href='https://www.onlinedoctranslator.com/translationform'>DocTranslator</a>  - <b>Docs</b></li><li><a href='https://translate.google.com/'>Google</a>  - <b>Web, Text, Docs</b></li><li><a href='https://www.bing.com/translator'>Microsoft Bing</a>  - <b>Web, Text</b></li><li><a href='http://www.online-translator.com/'>PROMT</a>  - <b>Web</b></li><li><a href='http://www.reverso.net/text_translation.aspx'>Reverso</a>  - <b>Web</b></li><li><a href='https://www.translatelive.com/'>Translate Live</a>  - <b>Live Speech</b></li><li><a href='https://www.microsoft.com/en-us/translator/'>Microsoft Translator APP</a>  - <b>Web, Text, Live Speech, StreetSigns</b></li></ul><br /><b>NOTE:</b> There are also plug-ins and built-in translation features for different browsers."
+        "tip": "<p>Translate Tools</p>To translate <b>text, documents, web pages</b> or <b>live speech</b>, try one of the following free services or apps.<br /><br /><i>Links are for convenience. No endorsement or privacy guarantee.</i><br /><br /><b>Microsoft Word 365</b> has a Translator in its <b>Review</b> ribbon<br /><br /><b>Web based & Apps</b><br /><ul><li><a href='https://translate.google.com/' class=\"fl-focusable\">Google</a>  - <b>Web, Text, Docs</b></li><li><a href='https://www.bing.com/translator' class=\"fl-focusable\">Microsoft Bing</a>  - <b>Web, Text</b></li><li><a href='http://www.online-translator.com/' class=\"fl-focusable\">PROMT</a>  - <b>Web</b></li><li><a href='http://www.reverso.net/text_translation.aspx' class=\"fl-focusable\">Reverso</a>  - <b>Web</b></li><li><a href='https://www.translatelive.com/' class=\"fl-focusable\">Translate Live</a>  - <b>Live Speech</b></li><li><a href='https://www.microsoft.com/en-us/translator/' class=\"fl-focusable\">Microsoft Translator APP</a>  - <b>Web, Text, Live Speech, StreetSigns</b></li></ul><br /><b>NOTE:</b> There are also plug-ins and built-in translation features for different browsers."
+    },
+    "gpii_app_qss_settings_common-mouse": {
+        "tooltip": "<p>Change Windows Mouse setting.</p><p>Works in all applications.</p>",
+        "title": "Adjust Mouse",
+        "tip": "<p>Adjust Mouse</p>",
+        "sideCarWithSettings": "<p>We have provided some of the most commonly used Windows Mouse settings here.</p><p>Microsoft also provides other mouse settings. The following links will  take you directly to the key additional Mouse settings in the Windows Setting screens.</p><ul><li><a href='ms-settings:mousetouchpad'>Mouse button and scroll modes</a></li><li><a href='ms-settings:easeofaccess-mouse'>Mouse Keys</a></li><li><a href='ms-settings:devices-touchpad'>Touchpad sensitivity</a> (if your computer has a touchpad)</li><li><a href='ms-settings:easeofaccess-cursorandpointersize'>Cursor and pointer size, color, and touch feedback</a></li></ul>"
+    },
+    "gpii_app_qss_settings_windows-swapMouseButtons": {
+        "title": "Swap mouse buttons"
+    },
+    "gpii_app_qss_settings_windows-easierDoubleClick": {
+        "title": "Easier Double Click"
+    },
+    "gpii_app_qss_settings_windows-largerMousePointer": {
+        "title": "Larger Mouse Pointer"
+    },
+    "gpii_app_qss_settings_windows-mouseSpeed": {
+        "title": "Mouse speed"
+    },
+    "gpii_app_qss_settings_url-google-drive": {
+        "tooltip": "<p>Opens Google Drive in the browser.</p>",
+        "title": "My Google Drive"
+    },
+    "gpii_app_qss_settings_url-one-drive": {
+        "tooltip": "<p>Opens One Drive in the browser.</p>",
+        "title": "My One Drive"
+    },
+    "gpii_app_qss_settings_url-dropbox": {
+        "tooltip": "<p>Opens Dropbox in the browser.</p>",
+        "title": "My Dropbox"
+    },
+    "gpii_app_qss_settings_snipping-tool": {
+        "tooltip": "<p>Start the Windows Snipping Tool.</p>",
+        "title": "Screen Snip"
+    },
+    "gpii_app_qss_settings_url-customize-qss": {
+        "tooltip": "<p>Open the web tool to customize quickstrip's buttons.</p>",
+        "title": "Customize Quickstrip"
     }
 }

@@ -43,7 +43,13 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
     model: {
         isKeyedIn: false,
         setting: null,
-        tooltip: null
+        tooltip: null,
+        arrowDirection: "right",
+        availableDirections: {
+            defaultDirection: "right",
+            leftDirection: "left",
+            centerDirection: "center"
+        }
     },
 
     modelRelay: {
@@ -91,7 +97,8 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
             funcName: "gpii.app.qssTooltipDialog.show",
             args: [
                 "{that}",
-                "{arguments}.0"
+                "{arguments}.0",
+                "{channelNotifier}.events.onTooltipArrowDirection"
             ]
         }
     },
@@ -103,7 +110,8 @@ fluid.defaults("gpii.app.qssTooltipDialog", {
                 events: {
                     // update message in the tooltip
                     // expect this message to be translated
-                    onTooltipUpdated: null
+                    onTooltipUpdated: null,
+                    onTooltipArrowDirection: null
                 },
                 modelListeners: {
                     "{qssTooltipDialog}.model.tooltip": {
@@ -157,12 +165,30 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
  * the screen.
  */
 gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) {
-    var arrowWidth = that.options.arrowWidth,
-        scaleFactor = that.model.scaleFactor;
+    var screen = require("electron").screen, // used to get the current screen size
+        availableDirections = that.model.availableDirections,
+        arrowDirection = availableDirections.defaultDirection, // default tooltip arrow direction
+        arrowWidth = that.options.arrowWidth,
+        scaleFactor = that.model.scaleFactor,
+        tooltipWidth = that.options.config.attrs.width * scaleFactor, // current tooltip width
+        screenWidth = screen.getPrimaryDisplay().workAreaSize.width, // current screen size
+        offsetX = btnCenterOffset.x - scaleFactor * arrowWidth / 2; // calculate the offset
 
+    // checking if the offset is too big and the tooltip will show off screen
+    if (offsetX + tooltipWidth > screenWidth) {
+        // setting the offset to fit the screen
+        offsetX = screenWidth - tooltipWidth;
+        // changing the arrow to be in the center
+        arrowDirection = availableDirections.centerDirection;
+    } else {
+        arrowDirection = availableDirections.defaultDirection;
+    }
+
+    // return the calculated offsets and arrow direction
     return {
-        offsetX: btnCenterOffset.x - scaleFactor * arrowWidth / 2,
-        offsetY: btnCenterOffset.y
+        offsetX: offsetX,
+        offsetY: btnCenterOffset.y,
+        direction: arrowDirection
     };
 };
 
@@ -171,14 +197,18 @@ gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) 
  * @param {Component} that - The `gpii.app.qssTooltipDialog` instance.
  * @param {Object} btnCenterOffset - An object containing metrics for the QSS
  * button.
+ * @param {fluid.event} arrowDirectionEvent - The onTooltipArrowDirection event.
  */
-gpii.app.qssTooltipDialog.show = function (that, btnCenterOffset) {
-    var offset = gpii.app.qssTooltipDialog.getTooltipPosition(that, btnCenterOffset);
+gpii.app.qssTooltipDialog.show = function (that, btnCenterOffset, arrowDirectionEvent) {
+    var offsetAndDirection = gpii.app.qssTooltipDialog.getTooltipPosition(that, btnCenterOffset);
 
     that.dialog.setAlwaysOnTop(true);
 
     // reposition window properly
-    that.setPosition(offset.offsetX, offset.offsetY);
+    that.setPosition(offsetAndDirection.offsetX, offsetAndDirection.offsetY);
+
+    // apply the new arrow direction
+    arrowDirectionEvent.fire(offsetAndDirection.direction);
 
     // Trigger the showing mechanism
     that.applier.change("isShown", true);

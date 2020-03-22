@@ -36,6 +36,7 @@ fluid.defaults("gpii.app.qss", {
         logoWidth: 117,
         // The width of a single button together with its left margin
         buttonWidth: 59,
+        separatorWidth: 10,
         closeButtonWidth: 29
     },
     qssButtonTypes: {
@@ -93,7 +94,7 @@ fluid.defaults("gpii.app.qss", {
         onUndoIndicatorChanged: null
     },
 
-    linkedWindowsGrades: ["gpii.app.psp", "gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
+    linkedWindowsGrades: ["gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
 
     components: {
         channelNotifier: {
@@ -145,7 +146,11 @@ fluid.defaults("gpii.app.qss", {
                     onQssUndoRequired: null,
                     onQssResetAllRequired: null,
                     onQssSaveRequired: null,
-                    onQssPspToggled: null
+                    onQssPspToggled: null,
+
+                    // Custom buttons events
+                    onQssStartProcess: null,
+                    onQssExecuteKeySequence: null
                 },
 
                 listeners: {
@@ -155,6 +160,17 @@ fluid.defaults("gpii.app.qss", {
                     onQssSettingAltered: {
                         funcName: "fluid.log",
                         args: ["QSS Dialog: Setting altered QSS - ", "{arguments}.0.path", "{arguments}.0.value"]
+                    },
+                    onQssStartProcess: {
+                        funcName: "gpii.app.startProcess",
+                        args: [
+                            "{arguments}.0",
+                            "{arguments}.1"
+                        ]
+                    },
+                    onQssExecuteKeySequence: {
+                        funcName: "gpii.app.executeKeySequence",
+                        args: ["{arguments}.0"]
                     }
                 }
             }
@@ -195,7 +211,8 @@ fluid.defaults("gpii.app.qss", {
 
 /**
  * Represents a group of setting data from which we using only the buttonTypes array
- * @typedef {Object} ButtonList
+ * @typedef {Object} ButtonDefinition
+ * @property {ButtonDefinition[]} [settings] The nested setting of the button if has one.
  * @property {String} [path] the path of the prefererence set.
  * @property {SettingSchema} schema.
  * @property {Array} [buttonTypes] array from diffent button types.
@@ -211,12 +228,14 @@ fluid.defaults("gpii.app.qss", {
  * the BrowserWindow.
  * @param {Object} options - Component options object containing information for buttons
  * @param {Number} modelScaleFactor - Predefined scale factor setting in siteconfig
- * @param {ButtonList[]} buttons - The list of QSS buttons
+ * @param {ButtonDefinition[]} buttons - The list of QSS buttons
  * @return {Number} - The total scaled size of the QSS's button
  */
 gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, buttons) {
-    var qssButtonTypes   = options.qssButtonTypes,
+    var separatorIds = ["separator", "separator-visible"],
+        qssButtonTypes   = options.qssButtonTypes,
         buttonWidth      = options.dialogContentMetrics.buttonWidth,
+        separatorWidth   = options.dialogContentMetrics.separatorWidth,
         closeButtonWidth = options.dialogContentMetrics.closeButtonWidth;
 
     // start off with the first button size and the constant close button
@@ -228,7 +247,13 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
             !buttons[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
             buttons[i].path !== qssButtonTypes.closeButton
         ) {
-            buttonsWidth += buttonWidth;
+            if (separatorIds.includes(buttons[i].buttonTypes[0])) {
+                // this is separator type button, which is slimmer that the others
+                buttonsWidth += separatorWidth;
+            } else {
+                // standart button width
+                buttonsWidth += buttonWidth;
+            }
         }
     }
 

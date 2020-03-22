@@ -34,12 +34,11 @@ fluid.defaults("gpii.app.gpiiConnector", {
          * Will be used in case the user does not have a keyboard shortcut of his own.
          */
         gpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
-        /* Whether the QSS and the PSP should be closed once their BrowserWindows lose
+        /* Whether the QSS should be closed once their BrowserWindows lose
          * focus. If there are different values specified in the siteconfig.json5, they will
          * be used instead.
          */
         closeQssOnBlur: false,
-        closePspOnBlur: true,
         disableRestartWarning: false
     },
 
@@ -79,7 +78,7 @@ fluid.defaults("gpii.app.gpiiConnector", {
         },
         updateActivePrefSet: {
             funcName: "gpii.app.gpiiConnector.updateActivePrefSet",
-            args: ["{that}", "{arguments}.0"] // newPrefSet
+            args: ["{that}", "{arguments}.0"] // newPrefsSet
         }
     }
 });
@@ -118,11 +117,11 @@ gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
 
     fluid.log("gpiiConnector: Alter setting - ", setting);
 
-    gpiiConnector.send({
-        path: ["settingControls", setting.path, "value"],
-        type: "ADD",
-        value: setting.value
-    });
+    var settingChanges = {
+        type: "modelChanged"
+    };
+    fluid.set(settingChanges, ["value", "settingControls", setting.path, "value"], setting.value);
+    gpiiConnector.send(settingChanges);
 };
 
 
@@ -213,14 +212,14 @@ gpii.app.gpiiConnector.handleRawChannelMessage = function (gpiiConnector, messag
 /**
  * Sends an active set change request to GPII.
  * @param {Object} gpiiConnector - The `gpii.app.gpiiConnector` instance
- * @param {String} newPrefSet - The path of the new preference set
+ * @param {String} newPrefsSet - The path of the new preference set
  */
-gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefSet) {
-    gpiiConnector.send({
-        path: ["activeContextName"],
-        type: "ADD",
-        value: newPrefSet
-    });
+gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefsSet) {
+    var prefsSetChange = {
+        type: "modelChanged"
+    };
+    fluid.set(prefsSetChange, ["value", "activePrefsSetName"], newPrefsSet);
+    gpiiConnector.send(prefsSetChange);
 };
 
 /**
@@ -266,10 +265,9 @@ gpii.app.extractSettings = function (element) {
  */
 gpii.app.extractPreferencesData = function (message, defaultPreferences) {
     var value = message.value || {},
-        // Whether the PSP should be closed when the user clicks outside. The default
-        // value is `true` (in case this is not specified in the payload). Note that
+        // Whether the QSS should be closed when the user clicks outside. The default
+        // value is `false` (in case this is not specified in the payload). Note that
         // the latter will always be the case in the keyed out payload!
-        closePspOnBlur = fluid.isValue(value.closePspOnBlur) ? value.closePspOnBlur : defaultPreferences.closePspOnBlur,
         closeQssOnBlur = fluid.isValue(value.closeQssOnBlur) ? value.closeQssOnBlur : defaultPreferences.closeQssOnBlur,
         disableRestartWarning =
             fluid.isValue(value.disableRestartWarning) ?
@@ -280,7 +278,7 @@ gpii.app.extractPreferencesData = function (message, defaultPreferences) {
         contexts = preferences.contexts,
         gpiiKey = value.gpiiKey,
         sets = [],
-        activeSet = value.activeContextName || null,
+        activeSet = value.activePrefsSetName || null,
         settingGroups = [];
 
     if (contexts) {
@@ -302,7 +300,6 @@ gpii.app.extractPreferencesData = function (message, defaultPreferences) {
         sets: sets,
         activeSet: activeSet,
         settingGroups: settingGroups,
-        closePspOnBlur: closePspOnBlur,
         closeQssOnBlur: closeQssOnBlur,
         disableRestartWarning: disableRestartWarning,
         gpiiAppShortcut: gpiiAppShortcut
@@ -470,6 +467,7 @@ gpii.app.dev.gpiiConnector.decoratePreferences = function (systemLanguageListene
  * number.
  * @property {String[]} [enum] An array of the values which a "string" type setting
  * can have.
+ * @property {String} [default] The default value of the setting.
  */
 
 
@@ -574,8 +572,6 @@ gpii.app.dev.gpiiConnector.decoratePreferences = function (systemLanguageListene
   * @property {String} activeSet - The path of the currently active preference set.
   * @property {SettingGroup[]} settingGroups - The setting groups
   * for the parsed message.
-  * @property {Boolean} closePspOnBlur - Whether the PSP should be closed when the user
-  * clicks outside of it or not.
   */
 
 
@@ -771,7 +767,11 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
         "http://registry\\.gpii\\.net/common/volume": { value: gpii.app.getVolumeValue() },
         // use the initial value of the language as default setting
-        "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" }
+        "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" },
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed": { value: 10 },
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons": { value: 0 },
+        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.DoubleClickTime": { value: 500 },
+        "http://registry\\.gpii\\.net/common/cursorSize": { value: false }
     }
 });
 
@@ -831,7 +831,7 @@ gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) 
         // the type of update in the future
         that.previousState = {
             gpiiKey: value.gpiiKey,
-            activeSet: value.activeContextName
+            activeSet: value.activePrefsSetName
         };
     }
 };
