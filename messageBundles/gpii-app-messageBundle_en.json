@@ -27,10 +27,6 @@
     "gpii_qss_toggleButtonPresenter_caption": "[now ON]",
     "gpii_qss_volumeButtonPresenter_caption": "(Audio Muted)",
 
-    "gpii_psp_qssMorePanel_title": "More",
-    "gpii_psp_qssMorePanel_details": "Watch this space for more Morphic buttons, as well as additional features to help you tune the computer to your specific needs and preferences",
-    "gpii_psp_qssMorePanel_link": "For more information on Morphic go to <a target=\"_blank\" href=\"%moreInfoUrl\">%moreInfoUrl</a>",
-
     "gpii_psp_qssNotification_title": "Morphic Notification",
     "gpii_psp_qssNotification_dismissButtonLabel": "OK",
 
@@ -63,5 +59,9 @@
     "gpii_qssWidget_openUSB_openUsbButtonLabel": "Open all USB drives",
     "gpii_qssWidget_openUSB_ejectUsbButtonLabel": "Safely eject all USB drives",
 
-    "gpii_qssWidget_mySavedSettings_reApplyPreferencesButtonLabel": "Re-apply my preferences"
+    "gpii_qssWidget_mySavedSettings_reApplyPreferencesButtonLabel": "Re-apply my preferences",
+
+    "gpii_qss_list_infoBlock": "<p>Tell me more about</p><ul><li><a class='fl-focusable' href='#' tabindex='1'>Morphic and what it is</a></li><li><a class='fl-focusable' href='#' tabindex='2'>How to create or edit my own preferences</a></li><li><a class='fl-focusable' href='#' tabindex='3'>How to make a new key</a></li><li><a class='fl-focusable' href='#' tabindex='4'>How to use this in home</a></li><li><a class='fl-focusable' href='#' tabindex='5'>How to convert my documents</a></li><li><a class='fl-focusable' href='#' tabindex='6'>Other frequently asked questions (FAQ)</a></li><li><a class='fl-focusable' href='#' tabindex='7'>Other help topics</a></li></ul><br><ul><li><a class='fl-focusable' href='#' tabindex='8'>Help me with ____________________________</a></li></ul>",
+    "gpii_qss_list_buttonBlock1": "<h3>Things to try</h3><button class='fl-qss-more-button fl-focusable' tabindex='9'>Button 1</button><button class='fl-qss-more-button fl-focusable' tabindex='10'>Button 2</button><button class='fl-qss-more-button fl-focusable' tabindex='11'>Button 3</button><button class='fl-qss-more-button fl-focusable' tabindex='12'>Button 4</button>",
+    "gpii_qss_list_buttonBlock2": "<h3>Managing Settings</h3><button class='fl-qss-more-button fl-focusable' tabindex='13'>Button 5</button><button class='fl-qss-more-button fl-focusable' tabindex='14'>Button 6</button><button class='fl-qss-more-button fl-focusable' tabindex='15'>Button 7</button><button class='fl-qss-more-button fl-focusable' tabindex='16'>Button 8</button>"
 }

@@ -71,10 +71,6 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
             target: "{app qssTooltipDialog}.options.showDelay"
         },
-        distributeQssMorePanelConfig: {
-            record: "{that}.options.siteConfig.qssMorePanel",
-            target: "{app qssMorePanel}.options.siteConfig"
-        },
         distributeQssClickOutside: {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
             target: "{app gpiiConnector}.options.defaultPreferences.closeQssOnBlur"

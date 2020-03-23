@@ -64,8 +64,8 @@ fluid.defaults("gpii.app.qssWidget", {
             lastEnvironmentalLoginGpiiKey: "{that}.model.lastEnvironmentalLoginGpiiKey"
         },
         attrs: {
-            width: 300,
-            widthWithoutSidecar: 170,
+            width: 170,
+            widthWithSideCar: 300,
             height: 255,
             alwaysOnTop: true
         },
@@ -94,7 +94,9 @@ fluid.defaults("gpii.app.qssWidget", {
             type: "gpii.app.channelNotifier",
             options: {
                 events: {
-                    onSettingUpdated: "{qssWidget}.events.onSettingUpdated"
+                    onSettingUpdated: "{qssWidget}.events.onSettingUpdated",
+                    onReverseSideCar: null,
+                    onArrowChange: null
                 }
             }
         },
@@ -102,6 +104,8 @@ fluid.defaults("gpii.app.qssWidget", {
             type: "gpii.app.channelListener",
             options: {
                 events: {
+                    onSideCarActivated: null,
+                    onSideCarClosed: null,
                     onQssWidgetClosed: null,
                     onQssWidgetHideQssRequested: null,
                     onQssWidgetHeightChanged: "{qssWidget}.events.onContentHeightChanged",
@@ -117,9 +121,21 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssGetEnvironmentalLoginKeyRequested: null,
                     onLearnMoreClicked: null,
                     onMetric: null,
-                    onMetricState: null
+                    onMetricState: null,
+                    onMorePanelClosed: null
                 },
                 listeners: {
+                    onMorePanelClosed: {
+                        func: "{qssWidget}.hide"
+                    },
+                    onSideCarActivated: {
+                        func: "gpii.app.qssWidget.resizeWidget",
+                        args: ["{qssWidget}", true]
+                    },
+                    onSideCarClosed: {
+                        func: "gpii.app.qssWidget.resizeWidget",
+                        args: ["{qssWidget}", false]
+                    },
                     onQssWidgetClosed: [{
                         func: "{qssWidget}.hide"
                     }, {
@@ -218,6 +234,45 @@ fluid.defaults("gpii.app.qssWidget", {
 });
 
 /**
+ * Resizing and repositioning the widget when the sideCar is opened or closed.
+ * @param {gpii.app.qssWidget} that - The instance of the qssWidget.
+ * @param {Boolean} sideCar - `true` when sideCar is open.
+ */
+gpii.app.qssWidget.resizeWidget = function (that, sideCar) {
+    var width = that.model.scaleFactor * (sideCar ? that.options.config.attrs.widthWithSideCar : that.options.config.attrs.width),
+        isOffScreen = that.model.offset.x < that.options.config.attrs.width,
+        arrowPosition = "default";
+
+    if (!sideCar && that.model.offset.x > 0) { // no sideCar, the window is not too close to the right edge
+        // moving the widget's position
+        that.applier.change("offset", { x: that.model.widgetPosition.x, y: that.model.offset.y });
+    } else if (!sideCar && isOffScreen && that.model.setting.path === "mySavedSettings") { // special case for my saved settings
+        arrowPosition = "right-mySavedSettings";
+    } else if (!sideCar && that.model.offset.x < 0) { // no sideCar, the window is to the most right
+        // only the arrow moves
+        arrowPosition = "right-closed";
+    }  else if (isOffScreen && that.model.setting.path === "mySavedSettings") { // special case for my saved settings with sideCar
+        // the arrow moves and the sideCar is reversed on the left
+        arrowPosition = "right-mySavedSettings-sideCar";
+        that.channelNotifier.events.onReverseSideCar.fire();
+    } else if (isOffScreen && that.model.offset.x < 0) { // with sideCar, and the window already outside of the screen
+        // the arrow moves and the sideCar is reversed on the left
+        arrowPosition = "tight-right";
+        that.channelNotifier.events.onReverseSideCar.fire();
+    } else if (isOffScreen && that.model.offset.x > 0) { // width sideCar, the window is very close to the right edge of the screen
+        // the arrow moves and the sideCar is reversed on the left
+        arrowPosition = "right";
+        that.channelNotifier.events.onReverseSideCar.fire();
+    } else { // with sideCar, the window is not too close to the right edge
+        // the arrow and the widget moves to a new position
+        arrowPosition = "left";
+        that.applier.change("offset", { x: that.model.offset.x - that.options.config.attrs.width, y: that.model.offset.y });
+    }
+    that.channelNotifier.events.onArrowChange.fire(arrowPosition);
+    that.setBounds(width, that.model.height, that.model.offset.x, that.model.offset.y);
+};
+
+/**
  * Called whenever a QSS button is activated. Determines whether the QSS dialog
  * should be shown or hidden.
  * @param {Component} that - The `gpii.app.qssWidget` instance
@@ -274,20 +329,35 @@ gpii.app.qssWidget.show = function (that, setting, elementMetrics, activationPar
     activationParams = activationParams || {};
 
     var scaleFactor = that.model.scaleFactor,
-        // we assume that the widget have a sideCar by default
-        hasSideCar = setting.schema.sideCar !== false,
-        // using the width if there is sideCar, and widthWithoutSidecar otherwise
-        // in both cases using the scaleFactor as well
-        width = scaleFactor * (hasSideCar ? that.options.config.attrs.width : that.options.config.attrs.widthWithoutSidecar),
         // adding the scaleFactor
-        height = scaleFactor * that.options.config.attrs.height;
+        width = scaleFactor * that.options.config.attrs.width,
+        height = scaleFactor * that.options.config.attrs.height,
+        arrowPosition;
+
+    // Handles the case of closing the widget with open sideCar,
+    // width needs to be fixed as every widget window opens with closed sideCar
+    if (that.model.width !== width && that.model.widgetPosition) {
+        that.model.width = width;
+    }
+
+    // Saving the widget's position as a backup data
+    var widgetPosition = gpii.app.qssWidget.getWidgetPosition(that, elementMetrics);
 
     gpii.app.applier.replace(that.applier, "setting", setting);
     that.channelNotifier.events.onSettingUpdated.fire(setting, activationParams);
 
+    if (widgetPosition.x < 0 && that.model.setting.path === "mySavedSettings") { // special case for my saved settings
+        arrowPosition = "right-mySavedSettings";
+        that.channelNotifier.events.onArrowChange.fire(arrowPosition);
+    } else if (widgetPosition.x < 0) { // adjusting arrow position when the widget button is too close to the end of the screen
+        arrowPosition = "right-closed";
+        that.channelNotifier.events.onArrowChange.fire(arrowPosition);
+    }
+
     // store the offset so that the widget can be positioned correctly when
     // the renderer process sends the corresponding message
-    that.applier.change("offset", gpii.app.qssWidget.getWidgetPosition(that, elementMetrics));
+    that.applier.change("offset", widgetPosition);
+    that.applier.change("widgetPosition", widgetPosition);
     that.setRestrictedSize(width, height);
     that.shouldShow = true;
 };

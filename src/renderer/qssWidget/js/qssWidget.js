@@ -88,6 +88,8 @@
             // It can be used to access the main events and utils from them
             // Usage: {channelNotifier}.events.onQssWidgetHideQssRequested
 
+            onSideCarActivated: null,
+            onSideCarClosed: null,
             onWidgetClosed: null,
             onQssWidgetHideQssRequested: null,
             onSettingUpdated: null,
@@ -111,7 +113,17 @@
             hideSidePanel: "fl-hide-sidecar",
             openSidePanel: "btn-icon-open",
             closeSidePanel: "btn-icon-close",
-            openLinkIcon: "btn-icon-link"
+            openLinkIcon: "btn-icon-link",
+            reverseSidecar: "horizontal-reverse",
+            arrowStyles: {
+                centerArrow: "fl-qssWidget-arrow-center",
+                leftArrow: "fl-qssWidget-arrow-left",
+                rightArrow: "fl-qssWidget-arrow-right",
+                tightRightArrow: "fl-qssWidget-arrow-tight-right",
+                rightArrowClosed: "fl-qssWidget-arrow-right-closed",
+                rightArrowMySavedSettings: "fl-qssWidget-arrow-right-mySavedSettings",
+                rightArrowMySavedSettingsSideCar: "fl-qssWidget-arrow-right-mySavedSettingsSideCar"
+            }
         },
         sounds: {},
 
@@ -281,7 +293,20 @@
                 options: {
                     events: {
                         // Add events from the main process to be listened for
-                        onSettingUpdated: "{qssWidget}.events.onSettingUpdated"
+                        onSettingUpdated: "{qssWidget}.events.onSettingUpdated",
+                        onReverseSideCar: null,
+                        onArrowChange: null
+                    },
+                    listeners: {
+                        onReverseSideCar: {
+                            this: "{qssWidget}.container",
+                            method: "addClass",
+                            args: ["{qssWidget}.options.styles.reverseSidecar"]
+                        },
+                        onArrowChange: {
+                            funcName: "gpii.psp.qssWidget.changeArrowPosition",
+                            args: ["{qssWidget}.container", "{qssWidget}.options.styles.arrowStyles", "{arguments}.0"]
+                        }
                     }
                 }
             },
@@ -290,6 +315,8 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
+                        onSideCarActivated:              "{qssWidget}.events.onSideCarActivated",
+                        onSideCarClosed:                 "{qssWidget}.events.onSideCarClosed",
                         onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
                         onQssWidgetHideQssRequested:     "{qssWidget}.events.onQssWidgetHideQssRequested",
                         onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
@@ -321,6 +348,14 @@
             }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: ["{that}"]
+            }],
+            onQssWidgetCreated: [{
+                this: "{qssWidget}.container",
+                method: "removeClass",
+                args: ["{qssWidget}.options.styles.reverseSidecar"]
+            }, {
+                funcName: "gpii.psp.qssWidget.changeArrowPosition",
+                args: ["{qssWidget}.container", "{qssWidget}.options.styles.arrowStyles", null]
             }]
         },
         invokers: {
@@ -333,6 +368,34 @@
             }
         }
     });
+
+    /**
+     * Applies the new arrow direction class on the widget's root dom element
+     * @param  {jQuery} container - jQuery instance of the QSS widget
+     * @param  {Object} arrowStyles - A hash containing CSS classes for the different arrow positions
+     * @param  {String} position - The new direction of the arrow
+     */
+    gpii.psp.qssWidget.changeArrowPosition = function (container, arrowStyles, position) {
+        // removing any possible arrow classes
+        container.removeClass(arrowStyles.centerArrow + " " + arrowStyles.leftArrow + " " + arrowStyles.rightArrow + " " + arrowStyles.tightRightArrow + " " + arrowStyles.rightArrowClosed + " " + arrowStyles.rightArrowMySavedSettings + " " + arrowStyles.rightArrowMySavedSettingsSideCar);
+
+        if (position === "left") {
+            container.addClass(arrowStyles.leftArrow);
+        } else if (position === "right") {
+            container.addClass(arrowStyles.rightArrow);
+        } else if (position === "tight-right") {
+            container.addClass(arrowStyles.tightRightArrow);
+        } else if (position === "right-closed") {
+            container.addClass(arrowStyles.rightArrowClosed);
+        } else if (position === "right-mySavedSettings") {
+            container.addClass(arrowStyles.rightArrowMySavedSettings);
+        } else if (position === "right-mySavedSettings-sideCar") {
+            container.addClass(arrowStyles.rightArrowMySavedSettingsSideCar);
+        } else {
+            // default positon
+            container.addClass(arrowStyles.centerArrow);
+        }
+    };
 
     /**
      * Adds the required style to the sideCar button
@@ -384,6 +447,8 @@
             sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
 
             if (sideCarContainer.hasClass(styles.hideSidePanel)) {
+                qssWidget.events.onSideCarActivated.fire();
+
                 // showing the panel
                 sideCarContainer.removeClass(styles.hideSidePanel);
                 sidePanelButton.container.addClass(styles.closeSidePanel);
@@ -391,6 +456,8 @@
                 sidePanelButton.applier.change("label", qssWidget.model.messages.hideSideCar, null, "fromWidget");
                 onToggled.fire("open");
             } else {
+                qssWidget.events.onSideCarClosed.fire();
+
                 // hiding the panel
                 sideCarContainer.addClass(styles.hideSidePanel);
                 sidePanelButton.container.addClass(styles.openSidePanel);
@@ -507,7 +574,7 @@
      */
     gpii.qssWidget.calculateHeight = function (container, parentContainer, heightListenerContainer) {
         var baseHeight = container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight,
-            heightFix = 55; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
+            heightFix = 12; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
         return baseHeight + heightFix;
     };
 

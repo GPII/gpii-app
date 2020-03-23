@@ -26,7 +26,22 @@
      * the `defaultHandlerGrade` will be used for its presenter.
      */
     fluid.defaults("gpii.qss.list", {
-        gradeNames: ["gpii.psp.repeater"],
+        gradeNames: ["fluid.viewComponent"],
+
+        model: {
+            messages: {
+                infoBlock: null,
+                buttonBlock1: null,
+                buttonBlock2: null
+            }
+        },
+
+        selectors: {
+            morePanel: ".flc-quickSetStrip-more",
+            morePanelGrid: ".flc-quickSetStrip-more-button-grid",
+            mainPanel: ".flc-quickSetStrip-main",
+            closeMorePanelBtn: ".flc-quickSetStrip-more-close"
+        },
 
         defaultHandlerGrade: "gpii.qss.buttonPresenter",
         handlerGrades: {
@@ -53,11 +68,28 @@
             "custom-keys":       "gpii.qss.customKeysPresenter",
             // separator grade
             "separator":         "gpii.qss.separatorButtonPresenter",
+            // grid grade
+            "grid":              "gpii.qss.gridButtonPresenter",
             // url based buttons
             "url-google-drive":  "gpii.qss.urlGoogleDrivePresenter",
             "url-one-drive":     "gpii.qss.urlOneDrivePresenter",
             "url-dropbox":       "gpii.qss.urlDropboxPresenter",
             "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
+        },
+        eventDelay: 10,
+
+        settings: {
+            expander: {
+                funcName: "gpii.qss.list.filterQssSettings",
+                args: ["{that}.model.items", false]
+            }
+        },
+
+        morePanelSettings: {
+            expander: {
+                funcName: "gpii.qss.list.filterQssSettings",
+                args: ["{that}.model.items", true]
+            }
         },
 
         dynamicContainerMarkup: {
@@ -83,22 +115,206 @@
             onSettingAltered: null,
             onNotificationRequired: null,
             onMorePanelRequired: null,
+            onMorePanelClosed: null,
             onUndoRequired: null,
             onResetAllRequired: null,
             onSaveRequired: null,
-            onMetric: null
+            onMetric: null,
+            onQssClosed: null,
+            onUndoIndicatorChanged: null
+        },
+        listeners: {
+            onResetAllRequired: "{list}.events.onMorePanelClosed.fire",
+            onQssClosed: "{list}.events.onMorePanelClosed.fire"
+        },
+        modelListeners: {
+            "items": {
+                func: "gpii.qss.list.filterSettings",
+                args: ["{qssStripRepeater}", "{qssMorePanelRepeater}", "{that}.model.items"]
+            }
         },
 
-        invokers: {
-            getHandlerType: {
-                funcName: "gpii.qss.list.getHandlerType",
-                args: [
-                    "{that}",
-                    "{arguments}.0" // item
-                ]
+        components: {
+            qssStripRepeater: {
+                type: "gpii.psp.repeater",
+                container: "{list}.dom.mainPanel",
+                options: {
+                    defaultHandlerGrade: "{list}.options.defaultHandlerGrade",
+                    handlerGrades: "{list}.options.handlerGrades",
+                    model: {
+                        items: "{list}.options.settings"
+                    },
+                    dynamicContainerMarkup: "{list}.options.dynamicContainerMarkup",
+                    markup: "{list}.options.markup",
+                    events: {
+                        onUndoIndicatorChanged: "{list}.events.onUndoIndicatorChanged",
+                        onButtonFocusRequired: "{list}.events.onButtonFocusRequired",
+
+                        onButtonFocused: "{list}.events.onButtonFocused",
+                        onButtonActivated: "{list}.events.onButtonActivated",
+                        onButtonMouseEnter: "{list}.events.onButtonMouseEnter",
+                        onButtonMouseLeave: "{list}.events.onButtonMouseLeave",
+
+                        onSettingAltered: "{list}.events.onSettingAltered",
+                        onNotificationRequired: "{list}.events.onNotificationRequired",
+                        onMorePanelRequired: "{list}.events.onMorePanelRequired",
+                        onUndoRequired: "{list}.events.onUndoRequired",
+                        onResetAllRequired: "{list}.events.onResetAllRequired",
+                        onSaveRequired: "{list}.events.onSaveRequired",
+                        onQssClosed: "{list}.events.onQssClosed"
+                    },
+                    invokers: {
+                        getHandlerType: {
+                            funcName: "gpii.qss.list.getHandlerType",
+                            args: [
+                                "{that}",
+                                "{arguments}.0" // item
+                            ]
+                        }
+                    }
+                }
+            },
+            qssMorePanel: {
+                type: "fluid.viewComponent",
+                container: "{list}.dom.morePanel",
+                options: {
+                    gradeNames: "gpii.psp.selectorsTextRenderer",
+                    enableRichText: true,
+                    selectors: {
+                        infoBlock: ".flc-info-block",
+                        buttonBlock1: ".flc-button-block-1",
+                        buttonBlock2: ".flc-button-block-2"
+                    },
+                    model: {
+                        messages: {
+                            infoBlock: "{list}.model.messages.infoBlock",
+                            buttonBlock1: "{list}.model.messages.buttonBlock1",
+                            buttonBlock2: "{list}.model.messages.buttonBlock2"
+                        }
+                    }
+                }
+            },
+            qssMorePanelRepeater: {
+                type: "gpii.psp.repeater",
+                container: "{list}.dom.morePanelGrid",
+                options: {
+                    defaultHandlerGrade: "{list}.options.defaultHandlerGrade",
+                    handlerGrades: "{list}.options.handlerGrades",
+                    model: {
+                        items: "{list}.options.morePanelSettings"
+                    },
+                    dynamicContainerMarkup: "{list}.options.dynamicContainerMarkup",
+                    markup: "{list}.options.markup",
+                    events: {
+                        onUndoIndicatorChanged: "{list}.events.onUndoIndicatorChanged",
+                        onButtonFocusRequired: "{list}.events.onButtonFocusRequired",
+
+                        onButtonFocused: "{list}.events.onButtonFocused",
+                        onButtonActivated: "{list}.events.onButtonActivated",
+                        onButtonMouseEnter: "{list}.events.onButtonMouseEnter",
+                        onButtonMouseLeave: "{list}.events.onButtonMouseLeave",
+
+                        onSettingAltered: "{list}.events.onSettingAltered",
+                        onNotificationRequired: "{list}.events.onNotificationRequired",
+                        onUndoRequired: "{list}.events.onUndoRequired",
+                        onResetAllRequired: "{list}.events.onResetAllRequired",
+                        onSaveRequired: "{list}.events.onSaveRequired"
+                    },
+                    invokers: {
+                        getHandlerType: {
+                            funcName: "gpii.qss.list.getHandlerType",
+                            args: [
+                                "{that}",
+                                "{arguments}.0" // item
+                            ]
+                        }
+                    }
+                }
+            },
+            closeMorePanelBtn: {
+                type: "gpii.psp.widgets.button",
+                container: "{that}.dom.closeMorePanelBtn",
+                options: {
+                    attrs: {
+                        "aria-label": "Close More Panel"
+                    },
+                    listeners: {
+                        onClick: "{list}.events.onMorePanelClosed.fire"
+                    }
+                }
+            },
+            windowKeyListener: {
+                type: "fluid.component",
+                options: {
+                    gradeNames: "gpii.app.keyListener",
+                    target: {
+                        expander: {
+                            funcName: "jQuery",
+                            args: [window]
+                        }
+                    },
+                    events: {
+                        onEscapePressed: null
+                    },
+                    listeners: {
+                        onEscapePressed: {
+                            funcName: "{list}.eventTimeout.start",
+                            args: ["{list}.options.eventDelay"]
+                        }
+                    }
+                }
+            },
+            eventTimeout: {
+                type: "gpii.app.timer",
+                options: {
+                    listeners: {
+                        onTimerFinished: {
+                            func: "{list}.events.onMorePanelClosed.fire"
+                        }
+                    }
+                }
             }
         }
     });
+
+    /**
+     * Using the filterQssSettings to add the items to the main and the more button
+     * @param  {qssStripRepeater} qssStripRepeater     [description]
+     * @param  {qssMorePanelRepeater} qssMorePanelRepeater [description]
+     * @param  {Object[]} items - all available buttons found in settings.json
+     */
+    gpii.qss.list.filterSettings = function (qssStripRepeater, qssMorePanelRepeater, items) {
+        var qssStripItems = gpii.qss.list.filterQssSettings(items, false),
+            morePanelItems = gpii.qss.list.filterQssSettings(items, true);
+
+        qssStripRepeater.applier.change("items", qssStripItems, null, "gpii.qss.list");
+        qssMorePanelRepeater.applier.change("items", morePanelItems, null, "gpii.qss.list");
+    };
+
+    /**
+     * Filter the settings object between the main and more panels using the
+     * setting.schema.morePanel key
+     * @param  {Object[]} settings - all available buttons found in settings.json
+     * @param  {Boolean} morePanel - to be in the main or the main panel
+     * @return {Object[]} - same structure as the settings, but filtered result
+     */
+    gpii.qss.list.filterQssSettings = function (settings, morePanel) {
+        var filteredSetting = [];
+
+        fluid.each(settings, function (setting) {
+            if (setting.schema) {
+                if (morePanel) {
+                    if (setting.schema.morePanel) {
+                        filteredSetting.push(setting);
+                    }
+                } else if (!setting.schema.morePanel) {
+                    filteredSetting.push(setting);
+                }
+            }
+        });
+
+        return filteredSetting;
+    };
 
     /**
      * Returns the correct handler type (a grade inheriting from `gpii.qss.buttonPresenter`)
@@ -201,7 +417,13 @@
             },
             focusManager: {
                 type: "gpii.qss.qssFocusManager",
-                container: "{qss}.container"
+                container: "{qss}.container",
+                options: {
+                    events: {
+                        onMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
+                        onMorePanelClosed: "{list}.events.onMorePanelClosed"
+                    }
+                }
             },
             channelListener: {
                 type: "gpii.psp.channelListener",
@@ -245,6 +467,7 @@
                         onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered",
                         onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired",
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
+                        onMorePanelClosed: "{list}.events.onMorePanelClosed",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",

@@ -104,7 +104,9 @@
             settingButton: "fl-qss-settingButton",
             closeButton: "fl-qss-closeButton",
             separator: "fl-qss-separator",
-            separatorVisible: "fl-qss-separator-visible"
+            separatorVisible: "fl-qss-separator-visible",
+            grid: "fl-qss-grid",
+            gridVisible: "fl-qss-grid-visible"
         },
 
         attrs: {
@@ -308,8 +310,10 @@
      * @param {Boolean} isShown - Whether the QSS widget has been shown or hidden.
      */
     gpii.qss.buttonPresenter.applyActivatedStyle = function (that, container, setting, isShown) {
-        var activatedClass = that.options.styles.activated;
-        container.toggleClass(activatedClass, isShown && that.model.item.path === setting.path);
+        if (that.typeName !== "gpii.qss.moreButtonPresenter") {
+            var activatedClass = that.options.styles.activated;
+            container.toggleClass(activatedClass, isShown && that.model.item.path === setting.path);
+        }
     };
 
     /**
@@ -456,6 +460,33 @@
 
         styles: {
             disabled: "fl-qss-separator",
+            focusable: "fl-focusable"
+        },
+
+        listeners: {
+            "onCreate.removeButtonStyles": {
+                this: "{that}.container",
+                method: "removeClass",
+                args: ["{that}.options.styles.focusable"]
+            }
+        },
+        invokers: {
+            // Override button activation behaviour
+            activate: {
+                funcName: "fluid.identity"
+            }
+        }
+    });
+
+    /**
+     * Represents a grid type button. These are buttons that cannot be
+     * interacted with (event not focusable).
+     */
+    fluid.defaults("gpii.qss.gridButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+
+        styles: {
+            disabled: "fl-qss-grid",
             focusable: "fl-focusable"
         },
 
