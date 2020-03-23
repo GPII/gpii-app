@@ -414,7 +414,7 @@
                 args: ["{that}", "{arguments}.0.currentTarget"] // event.currentTarget
             },
             onKeyinButton: {
-                funcName: "{that}.channelNotifier.events.keyinWithKey.fire",
+                func: "{that}.channelNotifier.events.keyinWithKey.fire",
                 args: ["{that}.model.keyinKey"]
             }
         },
