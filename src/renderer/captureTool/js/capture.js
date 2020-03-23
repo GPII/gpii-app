@@ -144,6 +144,8 @@
 
             // Page 4: Where to save the settings
 
+            keyinKey: "", // Optional key to use to key in to save with
+
             // For the select dropdown which prefset page:
             prefsSetSaveType: "existing", // Should be `existing` or `save-new`
             selectedPrefsSet: "gpii-default",
@@ -221,7 +223,8 @@
             prefsSetNameInput: "prefsSetName",
             solutionsToCaptureCheckbox: "solutionsToCapture",
             settingsToKeepCheckbox: "settingsToKeep",
-            toggleShowDefaultSettingsCheckbox: "showDefaultSettings"
+            toggleShowDefaultSettingsCheckbox: "showDefaultSettings",
+            keyinKeyInput: "keyinKey"
         },
         selectors: {
             initial: "#flc-captureWidgetInitial",
@@ -248,7 +251,11 @@
             captureAnimationLoopEllipsis: ".flc-capture-animation-loop-ellipsis",
             captureAnimationLoopTimer: ".flc-capture-animation-loop-timer",
             selectPrefssetDropdown: ".flc-select-prefset-dropdown",
-            currentlySelectedPrefset: ".flc-current-selected-prefset"
+            currentlySelectedPrefset: ".flc-current-selected-prefset",
+            // Key-in option on Page 4. Gives and input and button to key-in
+            // if no one is keyed in yet.
+            keyinKeyInput: "[name='fl-capture-keyinKey']",
+            keyinButton: ".flc-capture-keyin"
         },
         markupEventBindings: {
             nextButton: {
@@ -294,6 +301,10 @@
             selectPrefssetDropdown: {
                 method: "click",
                 args: "{that}.onSelectPrefssetDropdown"
+            },
+            keyinButton: {
+                method: "click",
+                args: "{that}.onKeyinButton"
             }
         },
         listeners: {
@@ -401,6 +412,10 @@
             onSelectPrefssetDropdown: {
                 funcName: "gpii.captureTool.onSelectPrefssetDropdown",
                 args: ["{that}", "{arguments}.0.currentTarget"] // event.currentTarget
+            },
+            onKeyinButton: {
+                funcName: "{that}.channelNotifier.events.keyinWithKey.fire",
+                args: ["{that}.model.keyinKey"]
             }
         },
         components: {
@@ -441,7 +456,8 @@
                         getAllSolutionsCapture: null,
                         modelUpdate: null,
                         captureDoneButton: null,
-                        saveCapturedPreferences: null
+                        saveCapturedPreferences: null,
+                        keyinWithKey: null
                     }
                 }
             }

@@ -193,7 +193,8 @@ fluid.defaults("gpii.app.captureTool", {
                     getAllSolutionsCapture: null,
                     captureDoneButton: null,
                     modelUpdate: null,
-                    saveCapturedPreferences: null
+                    saveCapturedPreferences: null,
+                    keyinWithKey: null
                 },
                 listeners: {
                     getInstalledSolutions: {
@@ -214,6 +215,10 @@ fluid.defaults("gpii.app.captureTool", {
                     },
                     saveCapturedPreferences: {
                         funcName: "{captureTool}.savePreferences",
+                        args: ["{arguments}.0"]
+                    },
+                    keyinWithKey: {
+                        func: "{gpii.app}.keyIn",
                         args: ["{arguments}.0"]
                     }
                 }

@@ -21,6 +21,15 @@
     border: thin solid #002957;
 }
 
+.btn.btn-primary.fl-capture-keyin {
+    border-radius: 5px;
+    background-color: #002957;
+}
+
+input#fl-capture-keyinKey {
+    margin-bottom: 2
+}
+
 /*
  * Flex containers
  */
