@@ -775,7 +775,7 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
                 });
 
             } else {
-                if (setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
+                if (setting.id !== "MakeYourOwn" && setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
 
                     // applying primary setting's change
                     that.applier.change("settings." + index, updatedSetting, null, source);
