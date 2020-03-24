@@ -149,7 +149,8 @@ var keyOutFixture = {
 
 var defaultPreferences = {
     gpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
-    closeQssOnBlur: false
+    closeQssOnBlur: false,
+    appBarQss: false
 };
 
 jqUnit.test("Parse empty message", function () {

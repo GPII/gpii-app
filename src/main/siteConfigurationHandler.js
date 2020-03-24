@@ -75,6 +75,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
             target: "{app gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
         },
+        distributeAppBarQss: {
+            record: "{that}.options.siteConfig.appBarQss",
+            target: "{app gpiiConnector}.options.defaultPreferences.appBarQss"
+        },
         distributeOpenQssShortcut: {
             record: "{that}.options.siteConfig.openQssShortcut",
             target: "{app gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
