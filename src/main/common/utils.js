@@ -633,13 +633,16 @@ gpii.app.checkUrl = function (url) {
 };
 
 /**
- * Starting a new process with the gpii.windows.startProfcess
+ * Starting a new process with the gpii.windows.startProcess. If there's already an instance of the executable running,
+ * then that is activated instead.
  * @param {String} process - file path to the process executable
  * @param {Boolean} fullScreen - true/false if the process to be maximized by default
  */
 gpii.app.startProcess = function (process, fullScreen) {
-    var arg = "", // by default all of the arguments are empty, reserved for future
-        options = {}; // no options by default
+    var arg = ""; // by default all of the arguments are empty, reserved for future
+    var options = {
+        activateRunning: true
+    };
 
     if (fullScreen) {
         // we are adding the maximized option when the full screen is requested
