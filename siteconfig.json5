@@ -188,6 +188,48 @@
         showErrorDialog: true
     },
 
+    promotionWindow: {
+        // IMPORTANT: in order to show the promotion window set `showPromotionWindow` to true
+        // and add url to `promoContentUrl`
+        showPromotionWindow: false,
+        // URL from where the content to be downloaded
+        // if the url points to image file (png/jpg/svg) then will add the image inside the window
+        // if its just a web page then will load the content inside
+        promoContentUrl: false,
+        // Size of the promo window that will be displayed (this will scape with the screen zoom DPI)
+        width: 400,
+        height: 400,
+        // Show window in the center of the screen
+        centered: false,
+        // Whether window is resizable
+        resizable: false,
+        // Whether window is movable
+        movable: false,
+        // Whether to show the window in taskbar
+        skipTaskbar: true,
+        // Whether to to create a Frameless Window
+        frame: false,
+        // Makes the window transparent. Not works if resizable is set to true
+        transparent: false,
+        // Whether the window should always stay on top of other windows
+        alwaysOnTop: false,
+        // Defines the close delay of the window in milliseconds. 0 will not close the window
+        closeDelay: 0,
+        // Defines the show delay of the window in milliseconds. Use 0 for no show delay
+        showDelay: 0,
+        // You can pick whatever X and Y coordinates you want the promo window to appear
+        // important notice, X: 0 and Y: 0 point to the bottom-right part of the screen
+        // in order this option to work you need to have `centered` and `positionByTrayIcon` set to false
+        offset: {
+            x: 0,
+            y: 0
+        },
+        // this option will position the promo window just above the tray icon
+        // if its set to true will overwrite the manual `offset` and `centered` options
+        positionByTrayIcon: true,
+        showCloseButton: false
+    },
+
     // URL to the the place serving the survey triggers data. Note that it should return triggers in JSON format
     surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
 
