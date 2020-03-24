@@ -354,13 +354,11 @@
         "id": "service-more",
         "path": "more",
         "schema": {
-            "type": "more",
-            "title": "MORE...\n\n(& HELP)"
+            "type": "more"
         },
         "buttonTypes": ["largeButton"],
         "tabindex": 200,
-        "messageKey": "more",
-        "tooltip": "<p>More options for changing the settings on this computer.</p>"
+        "messageKey": "more"
     }, {
         "id": "service-save",
         "path": "save",
@@ -383,6 +381,17 @@
         "tabindex": 220,
         "messageKey": "undo",
         "tooltip": "<p>Undo the last change you made in the Morphic QuickStrip.</p>"
+    }, {
+        "id": "service-saved-settings",
+        "path": "mySavedSettings",
+        "schema": {
+            "type": "mySavedSettings",
+            "sideCar": false
+        },
+        "buttonTypes": ["smallButton"],
+        "tabindex": 230,
+        "messageKey": "mySavedSettings",
+        "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#mysavedsettings"
     }, {
         "id": "service-reset-all",
         "path": "resetAll",
