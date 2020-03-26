@@ -207,6 +207,7 @@ fluid.defaults("gpii.app", {
                     keyedInUserToken: "{app}.model.keyedInUserToken",
 
                     closeQssOnBlur: "{app}.model.preferences.closeQssOnBlur",
+                    appBarQss: "{app}.model.preferences.appBarQss",
                     disableRestartWarning: "{app}.model.preferences.disableRestartWarning"
                 },
                 listeners: {
