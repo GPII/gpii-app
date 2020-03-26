@@ -78,7 +78,7 @@ fluid.defaults("gpii.app.gpiiConnector", {
         },
         updateActivePrefSet: {
             funcName: "gpii.app.gpiiConnector.updateActivePrefSet",
-            args: ["{that}", "{arguments}.0"] // newPrefSet
+            args: ["{that}", "{arguments}.0"] // newPrefsSet
         }
     }
 });
@@ -117,11 +117,11 @@ gpii.app.gpiiConnector.updateSetting = function (gpiiConnector, setting) {
 
     fluid.log("gpiiConnector: Alter setting - ", setting);
 
-    gpiiConnector.send({
-        path: ["settingControls", setting.path, "value"],
-        type: "ADD",
-        value: setting.value
-    });
+    var settingChanges = {
+        type: "modelChanged"
+    };
+    fluid.set(settingChanges, ["value", "settingControls", setting.path, "value"], setting.value);
+    gpiiConnector.send(settingChanges);
 };
 
 
@@ -212,14 +212,14 @@ gpii.app.gpiiConnector.handleRawChannelMessage = function (gpiiConnector, messag
 /**
  * Sends an active set change request to GPII.
  * @param {Object} gpiiConnector - The `gpii.app.gpiiConnector` instance
- * @param {String} newPrefSet - The path of the new preference set
+ * @param {String} newPrefsSet - The path of the new preference set
  */
-gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefSet) {
-    gpiiConnector.send({
-        path: ["activeContextName"],
-        type: "ADD",
-        value: newPrefSet
-    });
+gpii.app.gpiiConnector.updateActivePrefSet = function (gpiiConnector, newPrefsSet) {
+    var prefsSetChange = {
+        type: "modelChanged"
+    };
+    fluid.set(prefsSetChange, ["value", "activePrefsSetName"], newPrefsSet);
+    gpiiConnector.send(prefsSetChange);
 };
 
 /**
@@ -278,7 +278,7 @@ gpii.app.extractPreferencesData = function (message, defaultPreferences) {
         contexts = preferences.contexts,
         gpiiKey = value.gpiiKey,
         sets = [],
-        activeSet = value.activeContextName || null,
+        activeSet = value.activePrefsSetName || null,
         settingGroups = [];
 
     if (contexts) {
@@ -832,7 +832,7 @@ gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) 
         // the type of update in the future
         that.previousState = {
             gpiiKey: value.gpiiKey,
-            activeSet: value.activeContextName
+            activeSet: value.activePrefsSetName
         };
     }
 };
