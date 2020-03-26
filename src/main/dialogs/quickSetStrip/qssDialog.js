@@ -68,7 +68,7 @@ fluid.defaults("gpii.app.qss", {
         },
         isShown: {
             funcName: "gpii.app.qss.appBarUpdate",
-            args: ["{that}", "{appBar}", "{that}.dialog", "{change}.value", "{that}.model.closeQssOnBlur"],
+            args: ["{that}", "{appBar}", "{that}.dialog", "{change}.value", "{that}.model.appBarQss"],
             namespace: "appBar",
             priority: "before:impl"
             //excludeSource: "init"
@@ -460,10 +460,10 @@ gpii.app.qss.appBarInit = function (appBar) {
  * @param {Component} appBar The gpii.windows.appBar instance.
  * @param {BrowserWindow} dialog The BrowserWindow for the QSS.
  * @param {Boolean} shown `true` if the QSS is being shown, and the work area should be consumed.
- * @param {Boolean} closeQssOnBlur `true` if the QSS will be closed when unfocused, disabling this feature.
+ * @param {Boolean} appBarQss `true` if this feature is enabled.
  */
-gpii.app.qss.appBarUpdate = function (qss, appBar, dialog, shown, closeQssOnBlur) {
-    if (shown && !closeQssOnBlur) {
+gpii.app.qss.appBarUpdate = function (qss, appBar, dialog, shown, appBarQss) {
+    if (shown && appBarQss) {
         // Ignore changes to the work area while adjusting it, so the QSS doesn't flicker or move around needlessly.
         qss.ignoreWorkArea = true;
         setTimeout(function () {

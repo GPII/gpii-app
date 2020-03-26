@@ -167,8 +167,7 @@
     closeQssOnClickOutside: false,
 
     // Make the QSS dock to the bottom of the screen, so application windows are positioned above it.
-    // This is ignored if closeQssOnClickOutside is true
-    appBarQss: false,
+    appBarQss: true,
 
     // Whether to disable the displaying of notifications that suggest some
     // applications may need to be restarted in order for a changed setting to be
