@@ -1,4 +1,8 @@
 // Service configuration for production.
+//
+// For more information about the possible configuration options, check
+// https://github.com/GPII/windows/blob/master/gpii-service/README.md
+//
 {
     "processes": {
         "gpii": {
@@ -7,7 +11,8 @@
             "autoRestart": true,
             "disabled": false,
             env: {
-                //NODE_ENV: "app.testing"
+                NODE_ENV: "app.production",
+                GPII_CLOUD_URL: "https://flowmanager.stg.gcp.gpii.net"
             }
         }
     },
@@ -18,6 +23,8 @@
     "autoUpdate": {
         "enabled": false,
         "lastUpdatesFile": "%ProgramData%\\Morphic\\last-updates.json5",
+        "retries": 3,
+        "retryDelay": 5000,
         "files": [{
             // Auto-update the site config.
             path: "%ProgramData%\\Morphic\\siteConfig.json5",
@@ -33,12 +40,12 @@
     "gpii-config": {
         "env": "NODE_ENV",
         // Morphic + metrics:
-        "on:on": "app.testing.metrics",
+        "on:on": "app.production.metrics",
         // No metrics or morphic:
         "off:off": "app.disable",
         // Metrics only:
         "off:on": "app.metrics",
         // No metrics:
-        "on:off": "app.testing"
+        "on:off": "app.production"
     }
 }
