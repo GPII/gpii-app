@@ -214,7 +214,8 @@ fluid.defaults("gpii.app.qss", {
                         this: "{qss}.dialog",
                         method: "unhookWindowMessage",
                         args: ["{arguments}.0", "{arguments}.1"]
-                    }
+                    },
+                    getBarHeight: "{qss}.getQssPixelHeight"
                 },
                 listeners: {
                     "onCreate.init": {
@@ -258,6 +259,10 @@ fluid.defaults("gpii.app.qss", {
         fitToScreen: {
             funcName: "gpii.app.qss.fitToScreen",
             args: ["{that}"]
+        },
+        getQssPixelHeight: {
+            funcName: "gpii.app.qss.getQssPixelHeight",
+            args: ["{that}"]
         }
     }
 });
@@ -284,6 +289,26 @@ gpii.app.qss.bottleSettingUpdated = function (that, newSettings) {
 gpii.app.qss.computeQssHeight = function (that, height) {
     var scaledQssHeight = height * that.model.scaleFactor;
     that.setBounds(null, scaledQssHeight);
+};
+
+/**
+ * Calculates the height of the QSS strip
+ * @param {gpii.app.qssInWrapper} that - instance of the qssInWrapper
+ * @param {Integer} height - the desired height of the QSS
+ */
+gpii.app.qss.computeQssHeight = function (that, height) {
+    var scaledQssHeight = height * that.model.scaleFactor;
+    that.setBounds(null, scaledQssHeight);
+};
+
+/**
+ * Gets the actual height of the QSS, in physical pixels.
+ * @param {gpii.app.qssInWrapper} that - instance of the qssInWrapper
+ * @return {Number} The height of the QSS in physical pixels.
+ */
+gpii.app.qss.getQssPixelHeight = function (that) {
+    return Math.floor(Math.round(that.options.config.attrs.height * that.model.scaleFactor)
+        * electron.screen.getPrimaryDisplay().scaleFactor);
 };
 
 /**
