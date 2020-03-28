@@ -123,7 +123,8 @@ fluid.defaults("gpii.app.qssWidget", {
                 },
                 listeners: {
                     onMorePanelClosed: {
-                        func: "{qssWidget}.hide"
+                        funcName: "gpii.app.qssWidget.onMorePanelClosed",
+                        args: ["{qssWidget}"]
                     },
                     onSideCarActivated: {
                         func: "gpii.app.qssWidget.resizeWidget",
@@ -229,6 +230,17 @@ fluid.defaults("gpii.app.qssWidget", {
         }
     }
 });
+
+
+/**
+ * Closing the widget window from the More Panel grid when the More Panel itself it’s closed.
+ * @param {gpii.app.qssWidget} that - The instance of the qssWidget.
+ */
+gpii.app.qssWidget.onMorePanelClosed = function (that) {
+    if (fluid.isValue(that.model.setting.schema) && that.model.setting.schema.morePanel) {
+        that.hide();
+    }
+};
 
 /**
  * Resizing and repositioning the widget when the sideCar is opened or closed.
