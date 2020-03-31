@@ -32,7 +32,8 @@
             messages: {
                 infoBlock: null,
                 buttonBlock1: null,
-                buttonBlock2: null
+                buttonBlock2: null,
+                skipButtonLabel: null
             }
         },
 
@@ -261,8 +262,11 @@
                 type: "gpii.psp.widgets.button",
                 container: "{that}.dom.skipBtn",
                 options: {
+                    model: {
+                        label: "{list}.model.messages.skipButtonLabel",
+                    },
                     attrs: {
-                        "aria-label": "Skip to main buttons"
+                        "aria-label": "{list}.model.messages.skipButtonLabel"
                     },
                     listeners: {
                         onClick: {

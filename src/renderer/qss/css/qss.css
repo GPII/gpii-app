@@ -318,7 +318,7 @@ body {
     outline: none;
 }
 
-.flc-quickSetStrip-more-skip {
+.fl-quickSetStrip-more-skip {
     position: absolute;
     top: 15px;
     left: 134px;
@@ -329,7 +329,7 @@ body {
     border: none;
 }
 
-.flc-quickSetStrip-more-skip:focus {
+.fl-quickSetStrip-more-skip:focus {
     color: #405E81;
     border: 2px solid #ff0000;
     outline: none;
