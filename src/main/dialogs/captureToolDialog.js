@@ -113,7 +113,6 @@ fluid.defaults("gpii.app.captureTool", {
             minimizable: true,
             maximizable: true,
             autoHideMenuBar: true,
-            // titleBarStyle: "hidden"
             titleBarStyle: "default"
         }
     },
@@ -206,8 +205,7 @@ fluid.defaults("gpii.app.captureTool", {
                         args: ["{captureTool}", "{captureTool}.channelNotifier", "{flowManager}", "{arguments}.0"]
                     },
                     captureDoneButton: {
-                        funcName: "gpii.app.captureTool.channelCaptureDoneButton",
-                        args: ["{captureTool}"]
+                        func: "{captureTool}.close"
                     },
                     modelUpdate: {
                         funcName: "gpii.app.captureTool.channelModelUpdate",
@@ -382,10 +380,6 @@ gpii.app.captureTool.channelGetAllSolutionsCapture = function (that, channelNoti
     result.then(function (data) {
         channelNotifier.events.sendingAllSolutionsCapture.fire(data);
     });
-};
-
-gpii.app.captureTool.channelCaptureDoneButton = function (captureDialog) {
-    captureDialog.close();
 };
 
 gpii.app.captureTool.channelModelUpdate = function (channelNotifier, captureTool, flowManager) {

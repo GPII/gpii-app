@@ -69,8 +69,6 @@
                 pages: {
                     capturePage: "<p>placeholder</p>",
                     "1_ready_to_capture": "@expand:gpii.captureTool.loadTemplate(1_ready_to_capture)",
-                    "2_what_to_capture": "@expand:gpii.captureTool.loadTemplate(2_what_to_capture)",
-                    "2_which_applications": "@expand:gpii.captureTool.loadTemplate(2_which_applications)",
                     "3_capturing_settings": "@expand:gpii.captureTool.loadTemplate(3_capturing_settings)",
                     "3_what_to_keep": "@expand:gpii.captureTool.loadTemplate(3_what_to_keep)",
                     "4_save_choose_prefsset": "@expand:gpii.captureTool.loadTemplate(4_save_choose_prefsset)",
@@ -103,11 +101,6 @@
             // Populated based off the installed Solutions, will have the settings schemas keyed by:
             // appId -> settingId -> schema
             installedSolutionsSchemas: null,
-            // Possible values for this are:
-            // "everything", "running", "chooseapps"
-            whatToCapture: "everything",
-            runningSolutions: {},
-            solutionsToCapture: [],
 
             // Interstitial Capturing Page, with animated Morphic logo!
             // These 2 model values keep track of how long the capture has been running
@@ -158,9 +151,6 @@
 
         },
         modelListeners: {
-            "solutionsToCapture": [{
-                func: "{that}.updateNumAppsSelected"
-            }],
             "isKeyedIn": [
                 {
                     funcName: "gpii.captureTool.watchKeyInOut",
@@ -219,9 +209,7 @@
             }
         },
         bindings: {
-            whatToCaptureRadio: "whatToCapture",
             prefsSetNameInput: "prefsSetName",
-            solutionsToCaptureCheckbox: "solutionsToCapture",
             settingsToKeepCheckbox: "settingsToKeep",
             toggleShowDefaultSettingsCheckbox: "showDefaultSettings",
             keyinKeyInput: "keyinKey"
@@ -231,17 +219,12 @@
             nextButton: ".flc-capture-next",
             backButton: ".flc-capture-back",
             doneButton: ".flc-capture-done",
-            whatToCaptureRadio: "[name='fl-capture-whattocapture']",
             prefsSetNameInput: "[name='fl-capture-prefsetname']",
-            solutionsToCaptureCheckbox: "[name='fc-choose-app']",
             // This is the group header for each solutions set of settings
             solutionsSettingsToKeepCheckbox: "[name='fc-solutions-to-keep']",
             settingsToKeepCheckbox: "[name='fc-settings-to-keep']",
             toggleShowDefaultSettingsCheckbox: "[name='flc-toggle-show-default-settings']",
-            // These 2 select/clear all selectors are used on the "Which applications to Capture",
-            // and "Which settings to keep" pages
-            selectAllSolutionsButton: ".flc-select-all",
-            clearAllSolutionsButton: ".flc-clear-all",
+
             selectAllSettingsToKeepButton: ".flc-select-all-settings",
             clearAllSettingsToKeepButton: ".flc-clear-all-settings",
             numAppsSelectedDisplay: ".flc-num-apps-selected",
@@ -269,14 +252,6 @@
             doneButton: {
                 method: "click",
                 args: "{that}.doneButton"
-            },
-            selectAllSolutionsButton: {
-                method: "click",
-                args: "{that}.selectAllSolutionsButton"
-            },
-            clearAllSolutionsButton: {
-                method: "click",
-                args: "{that}.clearAllSolutionsButton"
             },
             selectAllSettingsToKeepButton: {
                 method: "click",
@@ -338,16 +313,7 @@
                 args: ["{that}", "{that}.model.currentPage"]
             },
             doneButton: {
-                funcName: "gpii.captureTool.doneButton",
-                args: ["{that}"]
-            },
-            selectAllSolutionsButton: {
-                funcName: "gpii.captureTool.selectAllSolutionsButton",
-                args: ["{that}"]
-            },
-            clearAllSolutionsButton: {
-                funcName: "gpii.captureTool.clearAllSolutionsButton",
-                args: ["{that}"]
+                func: "{that}.channelNotifier.events.captureDoneButton.fire"
             },
             selectAllSettingsToKeepButton: {
                 funcName: "gpii.captureTool.selectAllSettingsToKeepButton",
@@ -380,10 +346,6 @@
             fullChange: {
                 funcName: "gpii.captureTool.fullChange",
                 args: ["{that}.applier", "{arguments}.0", "{arguments}.1"]
-            },
-            updateNumAppsSelected: {
-                funcName: "gpii.captureTool.updateNumAppsSelected",
-                args: ["{that}"]
             },
             updateNumSettingsSelected: {
                 funcName: "gpii.captureTool.updateNumSettingsSelected",
@@ -651,16 +613,9 @@
         };
         setTimeout(captureAnimationLoop, 1000);
 
-        var options = {};
-        if (that.model.whatToCapture === "running") {
-            options.solutionsList = Object.keys(that.model.runningSolutions);
-        }
-        else if (that.model.whatToCapture === "chooseapps") {
-            options.solutionsList = that.model.solutionsToCapture;
-        }
-        else {
-            options.solutionsList = fluid.keys(that.model.installedSolutions);
-        }
+        var options = {
+            solutionsList: fluid.keys(that.model.installedSolutions)
+        };
 
         // Clear any previous capture
         that.applier.change("capturedSettings", {}, "DELETE");
@@ -676,18 +631,6 @@
         }
         // This is the version of the start page without username/password login
         else if (currentPage === "1_ready_to_capture") {
-            that.startCapture();
-        }
-        else if (currentPage === "2_what_to_capture") {
-            if (that.model.whatToCapture === "chooseapps") {
-                that.applier.change("currentPage", "2_which_applications");
-                that.render("2_which_applications");
-            }
-            else {
-                that.startCapture();
-            }
-        }
-        else if (currentPage === "2_which_applications") {
             that.startCapture();
         }
         else if (currentPage === "3_what_to_keep") {
@@ -748,18 +691,6 @@
         else {
             fluid.log("Unable to determine backButton page in the Capture Tool workflow...");
         }
-    };
-
-    gpii.captureTool.doneButton = function (that) {
-        that.channelNotifier.events.captureDoneButton.fire();
-    };
-
-    gpii.captureTool.selectAllSolutionsButton = function (that) {
-        that.fullChange("solutionsToCapture", Object.keys(that.model.installedSolutions));
-    };
-
-    gpii.captureTool.clearAllSolutionsButton = function (that) {
-        that.applier.change("solutionsToCapture", []);
     };
 
     gpii.captureTool.selectAllSettingsToKeepButton = function (that) {
@@ -1004,13 +935,6 @@
         });
         var orderedCapturedSettingsToRender = gpii.captureTool.createArrayFromSolutionsHash(togo);
         that.fullChange("capturedSettingsToRender", orderedCapturedSettingsToRender);
-    };
-
-    gpii.captureTool.updateNumAppsSelected = function (that) {
-        var el = that.locate("numAppsSelectedDisplay");
-        if (el && el.html) {
-            el.html(that.model.solutionsToCapture.length);
-        }
     };
 
     gpii.captureTool.updateNumSettingsSelected = function (that, settingsToKeep) {
