@@ -459,7 +459,7 @@
         defaultFocusButtonType: "psp",
 
         listeners: {
-            "onQssOpen": {
+            onQssOpen: {
                 funcName: "gpii.qss.onQssOpen",
                 args: [
                     "{quickSetStripList}",
@@ -469,11 +469,14 @@
                     "{arguments}.0" // params
                 ]
             },
-
             onQssLogoToggled: {
                 this: "{that}.dom.logo",
                 method: "toggle",
                 args: ["{arguments}.0"]
+            },
+            onQssWidgetToggled: {
+                funcName: "gpii.qss.onQssWidgetToggled",
+                args: ["{arguments}.0", "{arguments}.1", "{list}.events.onMorePanelClosed"]
             }
         },
 
@@ -563,6 +566,19 @@
             }
         }
     });
+
+
+    /**
+     * Closing the More Panel when a widget from the main QSS is opened.
+     * @param {Object} button - The button which has been activated.
+     * @param {Boolean} isShown - The state of the widget dialog.
+     * @param {fluid.event} event - The `onMorePanelClosed` event.
+     */
+    gpii.qss.onQssWidgetToggled = function (button, isShown, event) {
+        if (!button.schema.morePanel && isShown) {
+            event.fire();
+        }
+    };
 
     /**
      * Returns the index of the `setting` object in the `settings` array. Settings are identified

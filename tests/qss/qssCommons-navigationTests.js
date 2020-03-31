@@ -18,7 +18,7 @@
 
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
-var qssSettingsCount = 22;
+var qssSettingsCount = 23;
 
 var clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
@@ -91,20 +91,18 @@ gpii.tests.qss.navigationTests = [
     gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 1),
     gpii.tests.qss.pressKey("Tab", ["Shift"]),
     gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 2),
+    gpii.tests.qss.pressKey("Up"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 3),
+    gpii.tests.qss.pressKey("Down"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 2),
+    gpii.tests.qss.pressKey("Left"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 4),
     // This part of the test is commented because the button is disabled temporary (GPII-3773) and cannot be focused.
     // Some tests may be removed or parts of them re-used in the future.
     // gpii.tests.qss.pressKey("Up"),
-    // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 3),
-    // gpii.tests.qss.pressKey("Down"),
-    // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 2),
-    // gpii.tests.qss.pressKey("Left"),
     // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 4),
-    // gpii.tests.qss.pressKey("Up"),
-    // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 4),
-    // This part of the test is commented because the button is disabled temporary (GPII-3773) and cannot be focused.
-    // Some tests may be removed or parts of them re-used in the future.
-    // gpii.tests.qss.pressKey("Right"),
-    // gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 3),
+    gpii.tests.qss.pressKey("Right"),
+    gpii.tests.qss.assertFocusedElementIndex(qssSettingsCount - 2),
     // Manually clear the focused state in order to test the Arrow Left behavior when
     // there is no focused element.
     {
