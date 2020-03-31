@@ -263,7 +263,7 @@
                 container: "{that}.dom.skipBtn",
                 options: {
                     model: {
-                        label: "{list}.model.messages.skipButtonLabel",
+                        label: "{list}.model.messages.skipButtonLabel"
                     },
                     attrs: {
                         "aria-label": "{list}.model.messages.skipButtonLabel"
