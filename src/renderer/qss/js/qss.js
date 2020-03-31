@@ -40,7 +40,8 @@
             morePanel: ".flc-quickSetStrip-more",
             morePanelGrid: ".flc-quickSetStrip-more-button-grid",
             mainPanel: ".flc-quickSetStrip-main",
-            closeMorePanelBtn: ".flc-quickSetStrip-more-close"
+            closeMorePanelBtn: ".flc-quickSetStrip-more-close",
+            skipBtn: ".flc-quickSetStrip-more-skip"
         },
 
         defaultHandlerGrade: "gpii.qss.buttonPresenter",
@@ -77,6 +78,7 @@
             "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
         },
         eventDelay: 10,
+        focusElementDelay: 200,
 
         settings: {
             expander: {
@@ -124,12 +126,25 @@
         },
         listeners: {
             onResetAllRequired: "{list}.events.onMorePanelClosed.fire",
-            onQssClosed: "{list}.events.onMorePanelClosed.fire"
+            onQssClosed: "{list}.events.onMorePanelClosed.fire",
+            onMorePanelRequired: {
+                funcName: "gpii.qss.list.focusSkipButton",
+                args: [
+                    "{skipButton}.container",
+                    "{focusElementTimeout}",
+                    "{arguments}.0",
+                    "{that}.options.focusElementDelay"
+                ]
+            }
         },
         modelListeners: {
             "items": {
                 func: "gpii.qss.list.filterSettings",
-                args: ["{qssStripRepeater}", "{qssMorePanelRepeater}", "{that}.model.items"]
+                args: [
+                    "{qssStripRepeater}",
+                    "{qssMorePanelRepeater}",
+                    "{that}.model.items"
+                ]
             }
         },
 
@@ -242,6 +257,26 @@
                     }
                 }
             },
+            skipButton: {
+                type: "gpii.psp.widgets.button",
+                container: "{that}.dom.skipBtn",
+                options: {
+                    attrs: {
+                        "aria-label": "Skip to main buttons"
+                    },
+                    listeners: {
+                        onClick: {
+                            funcName: "gpii.qss.list.onClickSkipButton",
+                            args: [
+                                "{that}.container",
+                                "{list}.options.selectors.morePanelGrid",
+                                "{focusElementTimeout}",
+                                "{list}.options.focusElementDelay"
+                            ]
+                        }
+                    }
+                }
+            },
             windowKeyListener: {
                 type: "fluid.component",
                 options: {
@@ -272,15 +307,57 @@
                         }
                     }
                 }
+            },
+            focusElementTimeout: {
+                type: "gpii.app.timer",
+                options: {
+                    listeners: {
+                        onTimerFinished: {
+                            func: "{focusManager}.focusElement",
+                            args: [
+                                "{arguments}",
+                                true // applyHighlight
+                            ]
+                        }
+                    }
+                }
             }
         }
     });
 
+
     /**
-     * Using the filterQssSettings to add the items to the main and the more button
-     * @param  {qssStripRepeater} qssStripRepeater     [description]
-     * @param  {qssMorePanelRepeater} qssMorePanelRepeater [description]
-     * @param  {Object[]} items - all available buttons found in settings.json
+     * Focusing the `skipButton` when the `more panel` is opened via keyboard.
+     * @param {jQuery} skipButton - The jQuery object representing the container of the `skipButton`.
+     * @param {focusElementTimeout} focusElementTimeout - The gpii.app.timer instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the `more panel` button.
+     * @param {Number} focusDelay - The timeout duration in milliseconds.
+     */
+    gpii.qss.list.focusSkipButton = function (skipButton, focusElementTimeout, activationParams, focusDelay) {
+        if (fluid.get(activationParams, "key")) {
+            focusElementTimeout.start(focusDelay, skipButton);
+        }
+    };
+
+    /**
+     * Focusing the first button in the `more panel` grid when the skip button is activated.
+     * @param {jQuery} skipButtonContainer - The jQuery object representing the container of the `skipButton`.
+     * @param {String} morePanelGrid - The `morePanelGrid` selector.
+     * @param {focusElementTimeout} focusElementTimeout - The gpii.app.timer instance.
+     * @param {Number} focusDelay - The timeout duration in milliseconds.
+     */
+    gpii.qss.list.onClickSkipButton = function (skipButtonContainer, morePanelGrid, focusElementTimeout, focusDelay) {
+        var element = jQuery(morePanelGrid + " .fl-focusable")[0];
+
+        focusElementTimeout.start(focusDelay, [element]);
+    };
+
+    /**
+     * Using the filterQssSettings to add the items to the main and the more button.
+     * @param {qssStripRepeater} qssStripRepeater - The gpii.psp.repeater instance.
+     * @param {qssMorePanelRepeater} qssMorePanelRepeater - The gpii.psp.repeater instance.
+     * @param {Object[]} items - all available buttons found in settings.json.
      */
     gpii.qss.list.filterSettings = function (qssStripRepeater, qssMorePanelRepeater, items) {
         var qssStripItems = gpii.qss.list.filterQssSettings(items, false),
@@ -293,8 +370,8 @@
     /**
      * Filter the settings object between the main and more panels using the
      * setting.schema.morePanel key
-     * @param  {Object[]} settings - all available buttons found in settings.json
-     * @param  {Boolean} morePanel - to be in the main or the main panel
+     * @param {Object[]} settings - all available buttons found in settings.json
+     * @param {Boolean} morePanel - to be in the main or the main panel
      * @return {Object[]} - same structure as the settings, but filtered result
      */
     gpii.qss.list.filterQssSettings = function (settings, morePanel) {

@@ -308,3 +308,25 @@ body {
 .fl-button-block .fl-qss-more-button:hover {
     filter: brightness(95%);
 }
+
+.fl-button-block .fl-qss-more-button:focus {
+    border: 2px solid #ff0000;
+    outline: none;
+}
+
+.flc-quickSetStrip-more-skip {
+    position: absolute;
+    top: 15px;
+    left: 134px;
+    color: #eee;
+    border: 2px solid transparent;
+    font-size: 10px;
+    background: none;
+    border: none;
+}
+
+.flc-quickSetStrip-more-skip:focus {
+    color: #405E81;
+    border: 2px solid #ff0000;
+    outline: none;
+}
