@@ -224,12 +224,12 @@ body {
 
 .fl-qssWidget-arrow-left .fl-qssWidget-arrow:before,
 .fl-qssWidget-arrow-left .fl-qssWidget-arrow:after {
-    left: 73px;
+    left: 64px;
 }
 
 .fl-qssWidget-arrow-center .fl-qssWidget-arrow:before,
 .fl-qssWidget-arrow-center .fl-qssWidget-arrow:after {
-    left: 85px;
+    left: 84px;
 }
 
 .fl-qssWidget-arrow-right .fl-qssWidget-arrow:before,

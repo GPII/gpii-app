@@ -275,7 +275,7 @@ gpii.app.qssWidget.resizeWidget = function (that, sideCar) {
     } else { // with sideCar, the window is not too close to the right edge
         // the arrow and the widget moves to a new position
         arrowPosition = "left";
-        that.applier.change("offset", { x: that.model.offset.x - that.options.config.attrs.width, y: that.model.offset.y });
+        that.applier.change("offset", { x: that.model.offset.x - ((that.options.config.attrs.widthWithSideCar * that.model.scaleFactor) / 2), y: that.model.offset.y });
     }
     that.channelNotifier.events.onArrowChange.fire(arrowPosition);
     that.setBounds(width, that.model.height, that.model.offset.x, that.model.offset.y);
