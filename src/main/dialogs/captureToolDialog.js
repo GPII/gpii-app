@@ -117,13 +117,9 @@ fluid.defaults("gpii.app.captureTool", {
         }
     },
     invokers: {
-        updateRenderModel: {
-            funcName: "gpii.app.captureTool.updateRenderModel",
-            args: ["{that}", "{arguments}.0", "{arguments}.1"]
-        },
         savePreferences: {
             funcName: "gpii.app.captureTool.savePreferences",
-            args: ["{that}", "{pspChannel}", "{flowManager}", "{arguments}.0"]
+            args: ["{that}.model.flatSolutionsRegistry", "{that}.model.keyedInUserToken", "{flowManager}", "{arguments}.0"]
         },
         generateDiagnostics: {
             funcName: "gpii.app.captureTool.generateDiagnostics",
@@ -131,7 +127,7 @@ fluid.defaults("gpii.app.captureTool", {
         },
         getSolutions: {
             funcName: "gpii.flowManager.getSolutions",
-            args: [ "{flowManager}.solutionsRegistryDataSource", null]
+            args: ["{flowManager}.solutionsRegistryDataSource", null]
         }
     },
     listeners: {
@@ -166,9 +162,9 @@ fluid.defaults("gpii.app.captureTool", {
         // out and in again (this maybe be a different issue in using the channel).
         // "isKeyedIn": {
         "preferences": {
-            func: "{that}.updateRenderModel",
-            excludeSource: "init",
-            args: ["{pspChannel}.model.preferences", "{change}"]
+            func: "gpii.app.captureTool.channelModelUpdate",
+            args: ["{captureTool}.channelNotifier", "{captureTool}", "{flowManager}"],
+            excludeSource: "init"
         }
     },
     components: {
@@ -202,7 +198,7 @@ fluid.defaults("gpii.app.captureTool", {
                     },
                     getAllSolutionsCapture: {
                         funcName: "gpii.app.captureTool.channelGetAllSolutionsCapture",
-                        args: ["{captureTool}", "{captureTool}.channelNotifier", "{flowManager}", "{arguments}.0"]
+                        args: ["{captureTool}.channelNotifier", "{flowManager}", "{arguments}.0"]
                     },
                     captureDoneButton: {
                         func: "{captureTool}.close"
@@ -225,6 +221,15 @@ fluid.defaults("gpii.app.captureTool", {
     }
 });
 
+/**
+ * This function sets up the flat solutioins registry in the capture tool model.
+ * Essentially it just fetches the solutions registry (which is organized by operating
+ * system) and places all the solutions in a top level hash. This is then saved back
+ * to the model. This data is used for the `gpii.lifecycleManager.transformSettingsToPrefs`
+ * transform.
+ *
+ * @param {gpii.app.captureTool} that - Instance of the Capture Tool Dialog.
+ */
 gpii.app.captureTool.setSolutions = function (that) {
     that.getSolutions().then(function (data) {
         var flattenedSolReg = {};
@@ -302,6 +307,13 @@ gpii.app.captureTool.generateDiagnostics = function (diagnosticsCollector) {
     return fluid.promise.fireTransformEvent(diagnosticsCollector.events.onCollectDiagnostics, {});
 };
 
+/**
+ * Fetches the list of locally installed solutions and send them to the renderer
+ * on the `channelNotifier`.
+ *
+ * @param {gpii.app.channelNotifier} channelNotifier - The channel notifier to the renderer process.
+ * @param {gpii.flowManager.local} flowManager - The local flow manager.
+ */
 gpii.app.captureTool.channelGetInstalledSolutions = function (channelNotifier, flowManager) {
     flowManager.capture.getInstalledSolutionsForCurrentDevice().then(
         function (data) {
@@ -327,6 +339,18 @@ gpii.app.captureTool.channelGetInstalledSolutions = function (channelNotifier, f
     );
 };
 
+/**
+ * This performs the task of capturing solutions using the flow manager, one solution at a time.
+ * While the flow manager can handle capturing multiple solutions in one go, because there is a
+ * likelihood of unknown situations in the real world with solutions and settings handlers, we go
+ * one at a time such that if there is a failure or exception thrown in one solution, it only
+ * affects that solutions. It causes no real discernable notice in speed.
+ *
+ * @param {gpii.flowManager.local} flowManager - The local flow manager.
+ * @param {Array} solutionsList - Array of standard solution ID's.
+ * @return {fluid.promise} A promise resolving to the full settings capture of all the solutions
+ * in `solutionsList`.
+ */
 gpii.app.captureTool.safelyGetSolutionsCapture = function (flowManager, solutionsList) {
     var promTogo = fluid.promise();
     // Due to the unknown stability of some settings handlers, we are invoking the system capture
@@ -368,12 +392,19 @@ gpii.app.captureTool.safelyGetSolutionsCapture = function (flowManager, solution
     return promTogo;
 };
 
-gpii.app.captureTool.channelGetAllSolutionsCapture = function (that, channelNotifier, flowManager, arg) {
+/**
+ * Fetches the entire system capture and sends it to the renderer over the `channelNotifier`.
+ *
+ * @param {gpii.app.channelNotifier} channelNotifier - The channel notifier to the renderer process.
+ * @param {gpii.flowManager.local} flowManager - The local flow manager.
+ * @param {Object} args - Optional object contains an array `solutionsList` of solution ID's to capture.
+ */
+gpii.app.captureTool.channelGetAllSolutionsCapture = function (channelNotifier, flowManager, args) {
     var options = {
         solutionsList: []
     };
-    if (arg.solutionsList) {
-        options.solutionsList = arg.solutionsList;
+    if (args.solutionsList) {
+        options.solutionsList = args.solutionsList;
     }
 
     var result = gpii.app.captureTool.safelyGetSolutionsCapture(flowManager, options.solutionsList);
@@ -382,6 +413,13 @@ gpii.app.captureTool.channelGetAllSolutionsCapture = function (that, channelNoti
     });
 };
 
+/**
+ * Sends an update of key in status with username token and preferences up to the renderer process.
+ *
+ * @param {gpii.app.channelNotifier} channelNotifier - The channel notifier to the renderer process.
+ * @param {gpii.app.captureTool} captureTool - Instance of the Capture Tool Dialogue.
+ * @param {gpii.flowManager.local} flowManager - The local flow manager.
+ */
 gpii.app.captureTool.channelModelUpdate = function (channelNotifier, captureTool, flowManager) {
     channelNotifier.events.modelUpdate.fire({
         isKeyedIn: captureTool.model.isKeyedIn,
@@ -390,24 +428,27 @@ gpii.app.captureTool.channelModelUpdate = function (channelNotifier, captureTool
     });
 };
 
-gpii.app.captureTool.savePreferences = function (that, pspChannel, flowManager, options) {
+/**
+ * Uses the  local pspChannel flow manager to save the preferences to the cloud.
+ *
+ * @param {Object} flatSolutionsRegistry - Standard GPII solutions entries with solution ID's acting as the top level
+ * keys. (ie. All operating system solutions in one combined set).
+ * @param {String} keyedInUserToken - Token for keyed in user to save as.
+ * @param {gpii.flowManager.local} flowManager - The local flow manager.
+ * @param {Object} options - Data to be saved and any options.
+ * @param {String} options.prefSetId - Preference Set ID we are saving.
+ * @param {Object} options.preferences - Actual preferences being saved.
+ */
+gpii.app.captureTool.savePreferences = function (flatSolutionsRegistry, keyedInUserToken, flowManager, options) {
     var payload = {
         contexts: {}
     };
 
     payload.contexts[options.prefSetId] = options.prefSetPayload;
 
-    var prefsTogo = gpii.lifecycleManager.transformSettingsToPrefs(options.prefSetPayload.preferences, that.model.flatSolutionsRegistry);
+    var prefsTogo = gpii.lifecycleManager.transformSettingsToPrefs(options.prefSetPayload.preferences, flatSolutionsRegistry);
 
     payload.contexts[options.prefSetId].preferences = prefsTogo;
 
-    flowManager.savePreferences(that.model.keyedInUserToken, payload);
-};
-
-gpii.app.captureTool.updateRenderModel = function (that /* , preferences, change */ ) {
-    that.dialog.webContents.send("modelUpdate", {
-        isKeyedIn: that.model.isKeyedIn,
-        keyedInUserToken: that.model.keyedInUserToken,
-        preferences: that.model.preferences
-    });
+    flowManager.savePreferences(keyedInUserToken, payload);
 };
