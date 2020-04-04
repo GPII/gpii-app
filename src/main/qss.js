@@ -983,7 +983,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
         settings: "{qssWrapper}.model.settings"
     },
     config: {
-        morePanelHeight: 427,
+        morePanelHeight: 430,
         params: {
             settings: "{qssWrapper}.model.settings"
         }
