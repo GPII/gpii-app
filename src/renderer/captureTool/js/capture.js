@@ -227,7 +227,6 @@
 
             selectAllSettingsToKeepButton: ".flc-select-all-settings",
             clearAllSettingsToKeepButton: ".flc-clear-all-settings",
-            numAppsSelectedDisplay: ".flc-num-apps-selected",
             numSettingsSelectedDisplay: ".flc-num-settings-selected",
             hideShowSolutionButton: ".flc-hideshow-solution",
             hideShowNumSettingLink: ".flc-hideshow-numsetting-link",
@@ -243,15 +242,15 @@
         markupEventBindings: {
             nextButton: {
                 method: "click",
-                args: "{that}.nextButton"
+                args: "gpii.captureTool.nextButton({that}, {that}.model.currentPage)"
             },
             backButton: {
                 method: "click",
-                args: "{that}.backButton"
+                args: "gpii.captureTool.backButton({that}, {that}.model.currentPage)"
             },
             doneButton: {
                 method: "click",
-                args: "{that}.doneButton"
+                args: "{that}.channelNotifier.events.captureDoneButton.fire"
             },
             selectAllSettingsToKeepButton: {
                 method: "click",
@@ -263,23 +262,23 @@
             },
             solutionsSettingsToKeepCheckbox: {
                 method: "click",
-                args: "{that}.onSolutionHeaderToKeepCheck"
+                args: "gpii.captureTool.onSolutionHeaderToKeepCheck({that}, {arguments}.0.currentTarget)"
             },
             hideShowSolutionButton: {
                 method: "click",
-                args: "{that}.onHideShowSolution"
+                args: "gpii.captureTool.onHideShowSolution({that}, {arguments}.0.currentTarget)"
             },
             hideShowNumSettingLink: {
                 method: "click",
-                args: "{that}.onHideShowNumSettingLink"
+                args: "gpii.captureTool.onHideShowNumSettingLink({arguments}.0.currentTarget)"
             },
             selectPrefssetDropdown: {
                 method: "click",
-                args: "{that}.onSelectPrefssetDropdown"
+                args: "gpii.captureTool.onSelectPrefssetDropdown({that}, {arguments}.0.currentTarget)"
             },
             keyinButton: {
                 method: "click",
-                args: "{that}.onKeyinButton"
+                args: "{that}.channelNotifier.events.keyinWithKey.fire({that}.model.keyinKey)"
             }
         },
         listeners: {
@@ -303,17 +302,6 @@
             render: {
                 func: "{that}.renderMarkup",
                 args: ["initial", "{arguments}.0", "{that}.model"]
-            },
-            nextButton: {
-                funcName: "gpii.captureTool.nextButton",
-                args: ["{that}", "{that}.model.currentPage"]
-            },
-            backButton: {
-                funcName: "gpii.captureTool.backButton",
-                args: ["{that}", "{that}.model.currentPage"]
-            },
-            doneButton: {
-                func: "{that}.channelNotifier.events.captureDoneButton.fire"
             },
             selectAllSettingsToKeepButton: {
                 funcName: "gpii.captureTool.selectAllSettingsToKeepButton",
@@ -358,26 +346,6 @@
             updateInstalledSolutionsSchemas: {
                 funcName: "gpii.captureTool.updateInstalledSolutionsSchemas",
                 args: ["{that}"]
-            },
-            onSolutionHeaderToKeepCheck: {
-                funcName: "gpii.captureTool.onSolutionHeaderToKeepCheck",
-                args: ["{that}", "{arguments}.0.currentTarget"] // event.currentTarget
-            },
-            onHideShowSolution: {
-                funcName: "gpii.captureTool.onHideShowSolution",
-                args: ["{that}", "{arguments}.0.currentTarget"] // event.currentTarget
-            },
-            onHideShowNumSettingLink: {
-                funcName: "gpii.captureTool.onHideShowNumSettingLink",
-                args: ["{arguments}.0.currentTarget"] // event.currentTarget
-            },
-            onSelectPrefssetDropdown: {
-                funcName: "gpii.captureTool.onSelectPrefssetDropdown",
-                args: ["{that}", "{arguments}.0.currentTarget"] // event.currentTarget
-            },
-            onKeyinButton: {
-                func: "{that}.channelNotifier.events.keyinWithKey.fire",
-                args: ["{that}.model.keyinKey"]
             }
         },
         components: {
@@ -569,7 +537,7 @@
 
     gpii.captureTool.loadTemplate = function (templateName) {
         var resolvedPath = require("path").join(__dirname, "html", templateName + ".handlebars");
-        var finalTemplate = require("electron").remote.require("fs").readFileSync(resolvedPath) + "";    //require(resolvedPath);
+        var finalTemplate = require("electron").remote.require("fs").readFileSync(resolvedPath) + "";
         return finalTemplate;
     };
 
@@ -608,8 +576,6 @@
             else {
                 setTimeout(captureAnimationLoop, 1000);
             }
-
-
         };
         setTimeout(captureAnimationLoop, 1000);
 
@@ -713,7 +679,7 @@
             preferences: that.model.preferencesToKeep
         };
         that.channelNotifier.events.saveCapturedPreferences.fire({
-            prefSetId: that.model.prefsSetId, //needs to be simplified... nospaces etc.
+            prefSetId: that.model.prefsSetId,
             prefSetPayload: prefSetPayload
         });
     };
