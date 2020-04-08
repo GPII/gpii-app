@@ -17,6 +17,12 @@
 
         // The scaling factor for the QSS
         scaleFactor: 1.2,
+
+        // Determines if the close (X) button will be displayed on the QSS
+        // set to `true` if the button should be there, and `false` to hide it
+        showQssCloseButton: false,
+
+        // All of the url based settings
         urls: {
             account: "http://morphic.world/account",
             cloudFolder: "https://drive.google.com/drive/folders/11m-AKdP-0wjEBocpVtvnK8iE23P7hFTS",
@@ -87,7 +93,7 @@
         // - "grid-visible", or "x" // For visible gray grid space (same size as the invisible one)
 
         buttonList: [
-            {
+            /*{
                 "buttonId": "MakeYourOwn",
                 "buttonName": "Task Manager",
                 "buttonType": "KEY",
@@ -119,7 +125,7 @@
             "office-simplification",
             "high-contrast",
             "mouse",
-            "read-aloud",
+            "read-aloud",*/
             "volume",
             "launch-documorph",
             "cloud-folder-open",

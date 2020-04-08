@@ -619,11 +619,13 @@ gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, l
 gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath, siteConfig) {
     var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
         loadedSettings = availableSettings, // by default we are getting all of the buttons
+        buttonList = siteConfig.buttonList ? siteConfig.buttonList : [], // gets the full button list if exists
+        showQssCloseButton = siteConfig.showQssCloseButton ? siteConfig.showQssCloseButton : false, // gets the showQssCloseButton setting
         multiplier = 1000; // the precision multiplier should match the one used in the qssBaseStepperWidget
 
     if (gpii.app.hasButtonList(siteConfig)) { // checking if we have a valid button list in the siteConfig
         // filtering the buttons based on buttonList array
-        loadedSettings = gpii.app.filterButtonList(siteConfig.buttonList, availableSettings);
+        loadedSettings = gpii.app.filterButtonList(buttonList, showQssCloseButton ,availableSettings);
     }
 
     // the multiplier used through all of the calculations below it's there because we have too small of values

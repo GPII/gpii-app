@@ -355,16 +355,18 @@ gpii.app.buttonListShortcuts = function (buttonName) {
 /**
  * Filters the full button list based on the provided array of `id` attributes
  * @param {Array} siteConfigButtonList - basic array of strings
+ * @param {Boolean} siteConfigShowCloseButton - boolean with the option from qss > showQssCloseButton
  * @param {Object[]} availableButtons - all available buttons found in settings.json
  * @return {Object[]} - filtered version of available buttons (same structure)
  */
-gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
+gpii.app.filterButtonList = function (siteConfigButtonList, siteConfigShowCloseButton, availableButtons) {
     /**
     * These buttons are explicitly selected in the siteConfig, added in the same order.
     * All of the buttons that don't have `id` at all, they are added at the end of the list
     * starting tabindex, adding +10 of each new item.
     */
     var nonTabindex = ["separator", "separator-visible", "grid", "grid-visible"],
+        closeButtonId = "service-close",
         matchedList = [],
         afterList = [],
         tabindex = 100;
@@ -381,7 +383,13 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
             // this is custom button
             matchedButton = gpii.app.generateCustomButton(buttonId);
         } else {
-            matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
+            if (buttonId === closeButtonId) {
+                if (siteConfigShowCloseButton) {
+                    matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
+                }
+            } else {
+                matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
+            }
         }
         if (matchedButton) {
             // the separators and grid elements don't need tabindex
