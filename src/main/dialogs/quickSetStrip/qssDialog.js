@@ -253,7 +253,6 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
             buttons[i].path !== qssButtonTypes.closeButton
         ) {
             if (buttons[i].path !== qssButtonTypes.closeButton) {
-                console.log(buttons[i].path, qssButtonTypes.closeButton);
                 if (separatorIds.includes(buttons[i].buttonTypes[0])) {
                     // this is separator type button, which is slimmer that the others
                     buttonsWidth += separatorWidth;

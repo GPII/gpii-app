@@ -20,7 +20,7 @@
 
         // Determines if the close (X) button will be displayed on the QSS
         // set to `true` if the button should be there, and `false` to hide it
-        showQssCloseButton: false,
+        showQssCloseButton: true,
 
         // All of the url based settings
         urls: {
