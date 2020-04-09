@@ -47,6 +47,7 @@
             "mouse":             "gpii.qss.widgetButtonPresenter",
             "snipping-tool":     "gpii.qss.snippingToolPresenter",
             "disabled":          "gpii.qss.disabledButtonPresenter",
+            "unknown":           "gpii.qss.unknownButtonPresenter",
             // custom button grades
             "custom-launch-app": "gpii.qss.customLaunchAppPresenter",
             "custom-open-url":   "gpii.qss.customOpenUrlPresenter",

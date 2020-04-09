@@ -152,5 +152,10 @@
     "gpii_app_qss_settings_url-customize-qss": {
         "tooltip": "<p>Open the web tool to customize quickstrip's buttons.</p>",
         "title": "Customize Quickstrip"
+    },
+    "gpii_app_qss_settings_unknown-button": {
+        "tooltip": "<p>Button will not work here until Morphic is updated.</p>",
+        "title": "",
+        "tip": ""
     }
 }

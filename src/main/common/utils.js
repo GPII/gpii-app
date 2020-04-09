@@ -365,6 +365,7 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     * starting tabindex, adding +10 of each new item.
     */
     var nonTabindex = ["separator", "separator-visible", "grid", "grid-visible"],
+        disabledButtonTypes = ["largeButton", "settingButton", "unknownButton"],
         matchedList = [],
         afterList = [],
         tabindex = 100;
@@ -383,16 +384,25 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
         } else {
             matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
         }
-        if (matchedButton) {
-            // the separators and grid elements don't need tabindex
-            if (!nonTabindex.includes(buttonId)) {
-                // adding the proper tabindex
-                matchedButton.tabindex = tabindex;
-                tabindex += 10; // increasing the tabindex
-            }
-            // adding button to the matched ones
-            matchedList.push(matchedButton);
+        if (!matchedButton) {
+            matchedButton = {
+                id: buttonId,
+                schema: {
+                    type: "unknown"
+                },
+                path: "UNKNOWN-BUTTON-" + buttonId,
+                buttonTypes: disabledButtonTypes,
+                messageKey: "unknown-button"
+            };
         }
+        // the separators and grid elements don't need tabindex
+        if (!nonTabindex.includes(buttonId)) {
+            // adding the proper tabindex
+            matchedButton.tabindex = tabindex;
+            tabindex += 10; // increasing the tabindex
+        }
+        // adding button to the matched ones
+        matchedList.push(matchedButton);
     });
 
     // creating the afterList
