@@ -93,7 +93,7 @@
         // - "grid-visible", or "x" // For visible gray grid space (same size as the invisible one)
 
         buttonList: [
-            /*{
+            {
                 "buttonId": "MakeYourOwn",
                 "buttonName": "Task Manager",
                 "buttonType": "KEY",
@@ -125,7 +125,7 @@
             "office-simplification",
             "high-contrast",
             "mouse",
-            "read-aloud",*/
+            "read-aloud",
             "volume",
             "launch-documorph",
             "cloud-folder-open",
