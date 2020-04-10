@@ -256,64 +256,41 @@ gpii.app.expect = function (dataObject, expectedKeys, warningSend, warningTitle)
  * @return {Object|Boolean} - data object constructed exactly as every other in the settings.json or false
  */
 gpii.app.generateCustomButton = function (buttonData) {
-    var serviceButtonTypeApp = "custom-launch-app",
+    var allowedButtonTypes = ["WEB", "APP", "KEY"],
+        requiredButtonFields = ["buttonId", "buttonName", "buttonType", "buttonData"],
+        serviceButtonTypeApp = "custom-launch-app",
         serviceButtonTypeWeb = "custom-open-url",
         serviceButtonTypeKey = "custom-keys",
         titleAppNotFound = "Program not found",
         titleUrlInvalid = "Invalid URL",
         titleNoKeyData = "No Key Data",
         disabledStyle = "disabledButton",
+        customButtonTypes = ["largeButton", "settingButton"],
+        unknownButtonTypes = ["largeButton", "settingButton", "unknownButton"],
         data = false;
 
     // we need to have the data, with all required fields:
     // buttonId, buttonName, buttonType, buttonData
-    if (gpii.app.expect(buttonData, ["buttonId", "buttonName", "buttonType", "buttonData"], true, "generateCustomButton")) {
+    if (
+        gpii.app.expect(buttonData, requiredButtonFields, true, "generateCustomButton") &&
+        allowedButtonTypes.includes(buttonData.buttonType)
+    ) {
+        // predefines the button
         data = {
-            "id": buttonData.buttonId,
-            "path": serviceButtonTypeWeb, // default
-            "schema": {
-                "type": serviceButtonTypeWeb,
-                "title": buttonData.buttonName,
-                "fullScreen": false
+            id: buttonData.buttonId,
+            path: serviceButtonTypeWeb, // default
+            schema: {
+                type: serviceButtonTypeWeb,
+                title: buttonData.buttonName,
+                fullScreen: (buttonData.fullScreen ? buttonData.fullScreen : false)
             },
-            "buttonTypes": ["largeButton", "settingButton"]
+            tooltip: (buttonData.popupText ? buttonData.popupText : ""),
+            buttonTypes: customButtonTypes
         };
-        if (fluid.isValue(buttonData.popupText)) {
-            // adding the tooltip text as well
-            data.tooltip = buttonData.popupText;
-        }
-        if (fluid.isValue(buttonData.fullScreen) && buttonData.fullScreen) {
-            // adding the full screen option if there is one
-            data.schema.fullScreen = true;
-        }
-        if (buttonData.buttonType === "APP") {
-            // APP type button
-            data.path = serviceButtonTypeApp;
-            data.schema.type = serviceButtonTypeApp;
-            // checks if the file exists and its executable
-            if (gpii.app.checkExecutable(buttonData.buttonData)) {
-                // adding the application's path
-                data.schema.filepath = buttonData.buttonData;
-            } else {
-                // changes the button's title
-                data.schema.title = titleAppNotFound;
-                // disables the button
-                data.buttonTypes.push(disabledStyle);
-            }
-        } else if (buttonData.buttonType === "KEY") {
-            // KEY type button
-            data.path = serviceButtonTypeKey;
-            data.schema.type = serviceButtonTypeKey;
-            if (fluid.isValue(buttonData.buttonData)) {
-                // adding the key sequence data to the schema
-                data.schema.keyData = buttonData.buttonData;
-            } else {
-                // changes the button's title
-                data.schema.title = titleNoKeyData;
-                // disables the button
-                data.buttonTypes.push(disabledStyle);
-            }
-        } else {
+
+        // adds specific data based on the button type
+        switch (buttonData.buttonType) {
+        case "WEB":
             // WEB type button
             // adding the http if its missing
             if (buttonData.buttonData.indexOf("https://") === -1 && buttonData.buttonData.indexOf("http://") === -1) {
@@ -329,7 +306,50 @@ gpii.app.generateCustomButton = function (buttonData) {
                 // disables the button
                 data.buttonTypes.push(disabledStyle);
             }
+            break;
+        case "APP":
+            // APP type button
+            data.path = serviceButtonTypeApp;
+            data.schema.type = serviceButtonTypeApp;
+            // checks if the file exists and its executable
+            if (gpii.app.checkExecutable(buttonData.buttonData)) {
+                // adding the application's path
+                data.schema.filepath = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleAppNotFound;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
+            break;
+        case "KEY":
+            // KEY type button
+            data.path = serviceButtonTypeKey;
+            data.schema.type = serviceButtonTypeKey;
+            if (fluid.isValue(buttonData.buttonData)) {
+                // adding the key sequence data to the schema
+                data.schema.keyData = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleNoKeyData;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
+            break;
         }
+    } else {
+        // we are missing some of the required fields, so we are generating an unknown button
+        // generating the buttonId first (using buttonId if present, if not just random number 0 to 100)
+        var unknownButtonId = "Custom-" + (buttonData.buttonId ? buttonData.buttonId : Math.floor(Math.random() * 101));
+        data = {
+            id: unknownButtonId,
+            schema: {
+                type: "unknown"
+            },
+            path: "UNKNOWN-BUTTON-" + unknownButtonId,
+            buttonTypes: unknownButtonTypes,
+            messageKey: "unknown-button"
+        };
     }
     return data;
 };
@@ -365,7 +385,7 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     * starting tabindex, adding +10 of each new item.
     */
     var nonTabindex = ["separator", "separator-visible", "grid", "grid-visible"],
-        disabledButtonTypes = ["largeButton", "settingButton", "unknownButton"],
+        unknownButtonTypes = ["largeButton", "settingButton", "unknownButton"],
         matchedList = [],
         afterList = [],
         tabindex = 100;
@@ -391,7 +411,7 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
                     type: "unknown"
                 },
                 path: "UNKNOWN-BUTTON-" + buttonId,
-                buttonTypes: disabledButtonTypes,
+                buttonTypes: unknownButtonTypes,
                 messageKey: "unknown-button"
             };
         }
