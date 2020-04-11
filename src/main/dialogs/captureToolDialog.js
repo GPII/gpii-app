@@ -141,7 +141,21 @@ fluid.defaults("gpii.app.captureTool", {
                 funcName: "gpii.app.captureTool.setSolutions",
                 args: ["{that}"]
             }
-        ]
+        ],
+        "{flowManager}.events.preferencesSavedSuccess": [{
+            funcName: "console.log",
+            args: ["CaptureTool: Saved on the preferencesSavedSuccess"]
+        },
+        {
+            func: "{captureTool}.channelNotifier.events.preferencesSavedSuccess.fire"
+        }],
+        "{flowManager}.events.preferencesSavedError": [{
+            funcName: "console.log",
+            args: ["CaptureTool: Saved on the preferencesSavedError", "@expand:JSON.stringify({arguments}.0, null, 4)"]
+        },
+        {
+            func: "{captureTool}.channelNotifier.events.preferencesSavedError.fire"
+        }]
     },
     modelListeners: {
         // This is a little flimsy. Ideally we'd like to send over
@@ -176,7 +190,9 @@ fluid.defaults("gpii.app.captureTool", {
                     sendingRunningSolutions: null,
                     sendingAllSolutionsCapture: null,
                     modelUpdate: null,
-                    saveCapturedPreferences: null
+                    saveCapturedPreferences: null,
+                    preferencesSavedSuccess: null,
+                    preferencesSavedError: null
                 }
             }
         },

@@ -74,7 +74,8 @@
                     "4_save_choose_prefsset": "@expand:gpii.captureTool.loadTemplate(4_save_choose_prefsset)",
                     "4_confirm_update_prefsset": "@expand:gpii.captureTool.loadTemplate(4_confirm_update_prefsset)",
                     "4_save_name": "@expand:gpii.captureTool.loadTemplate(4_save_name)",
-                    "5_confirmation": "@expand:gpii.captureTool.loadTemplate(5_confirmation)"
+                    "5_confirmation": "@expand:gpii.captureTool.loadTemplate(5_confirmation)",
+                    "5_error_confirmation": "@expand:gpii.captureTool.loadTemplate(5_error_confirmation)"
                 },
                 partials: {
                     footer_location_partial: "@expand:gpii.captureTool.loadTemplate(footer_location_partial)",
@@ -356,7 +357,9 @@
                         sendingInstalledSolutions: null,
                         sendingRunningSolutions: null,
                         sendingAllSolutionsCapture: null,
-                        modelUpdate: null
+                        modelUpdate: null,
+                        preferencesSavedSuccess: null,
+                        preferencesSavedError: null
                     },
                     listeners: {
                         sendingInstalledSolutions: {
@@ -374,6 +377,24 @@
                         modelUpdate: {
                             funcName: "gpii.captureTool.channelModelUpdate",
                             args: ["{gpii.captureTool}", "{arguments}.0"]
+                        },
+                        "preferencesSavedSuccess.setPage": {
+                            func: "{gpii.captureTool}.applier.change",
+                            args: ["currentPage", "5_confirmation"]
+                        },
+                        "preferencesSavedSuccess.render": {
+                            func: "{gpii.captureTool}.render",
+                            args: ["5_confirmation"],
+                            priority: "after:setPage"
+                        },
+                        "preferencesSavedError.setPage": {
+                            func: "{gpii.captureTool}.applier.change",
+                            args: ["currentPage", "5_error_confirmation"]
+                        },
+                        "preferencesSavedError.render": {
+                            func: "{gpii.captureTool}.render",
+                            args: ["5_error_confirmation"],
+                            priority: "after:setPage"
                         }
                     }
                 }
@@ -614,17 +635,17 @@
             }
         }
         else if (currentPage === "4_confirm_update_prefsset") {
-            that.applier.change("currentPage", "5_confirmation");
+            // that.applier.change("currentPage", "5_confirmation");
             if (that.model.prefsSetSaveType === "existing") {
                 that.applier.change("prefsSetId", that.model.selectedPrefsSet);
                 that.applier.change("prefsSetName", that.model.selectedPrefsSetName);
             }
-            that.render("5_confirmation");
+            // that.render("5_confirmation");
             that.saveCapturedPreferences();
         }
         else if (currentPage === "4_save_name") {
-            that.applier.change("currentPage", "5_confirmation");
-            that.render("5_confirmation");
+            // that.applier.change("currentPage", "5_confirmation");
+            // that.render("5_confirmation");
             that.saveCapturedPreferences();
         }
         else {
