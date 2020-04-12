@@ -59,6 +59,8 @@
         // This uses the internal Windows 10 snipping tool
         snippingToolCommand: "start ms-screenclip:",
 
+        // Make the QSS dock to the bottom of the screen, so application windows are positioned above it.
+        appBarQss: true,
 
         // list of the desired list of buttons shown in QSS
         // it uses the `id` attribute found in settings.json items
@@ -139,9 +141,6 @@
 
     // Whether to hide the QSS when a user clicks outside of it
     closeQssOnClickOutside: true,
-
-    // Make the QSS dock to the bottom of the screen, so application windows are positioned above it.
-    appBarQss: true,
 
     // Whether to disable the displaying of notifications that suggest some
     // applications may need to be restarted in order for a changed setting to be
