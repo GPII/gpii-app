@@ -143,18 +143,19 @@ fluid.defaults("gpii.app.captureTool", {
             }
         ],
         "{flowManager}.events.preferencesSavedSuccess": [{
-            funcName: "console.log",
+            funcName: "fluid.log",
             args: ["CaptureTool: Saved on the preferencesSavedSuccess"]
         },
         {
             func: "{captureTool}.channelNotifier.events.preferencesSavedSuccess.fire"
         }],
         "{flowManager}.events.preferencesSavedError": [{
-            funcName: "console.log",
+            funcName: "fluid.log",
             args: ["CaptureTool: Saved on the preferencesSavedError", "@expand:JSON.stringify({arguments}.0, null, 4)"]
         },
         {
-            func: "{captureTool}.channelNotifier.events.preferencesSavedError.fire"
+            func: "{captureTool}.channelNotifier.events.preferencesSavedError.fire",
+            args: ["{arguments}.0"]
         }]
     },
     modelListeners: {

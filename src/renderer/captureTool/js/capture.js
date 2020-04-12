@@ -387,9 +387,14 @@
                             args: ["5_confirmation"],
                             priority: "after:setPage"
                         },
+                        "preferencesSavedError.logErrorInModel": {
+                            func: "{gpii.captureTool}.applier.change",
+                            args: ["preferencesSavedError", "@expand:JSON.stringify({arguments}.0, null, 4)"]
+                        },
                         "preferencesSavedError.setPage": {
                             func: "{gpii.captureTool}.applier.change",
-                            args: ["currentPage", "5_error_confirmation"]
+                            args: ["currentPage", "5_error_confirmation"],
+                            priority: "after:logErrorInModel"
                         },
                         "preferencesSavedError.render": {
                             func: "{gpii.captureTool}.render",
@@ -672,6 +677,10 @@
             that.render("4_save_choose_prefsset");
         }
         else if (currentPage === "4_confirm_update_prefsset") {
+            that.applier.change("currentPage", "4_save_choose_prefsset");
+            that.render("4_save_choose_prefsset");
+        }
+        else if (currentPage === "5_error_confirmation") {
             that.applier.change("currentPage", "4_save_choose_prefsset");
             that.render("4_save_choose_prefsset");
         }
