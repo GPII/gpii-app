@@ -178,5 +178,8 @@
     surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
 
     // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
-    trayType: ["gpii.app.trayButton"]
+    trayType: ["gpii.app.trayButton"],
+
+    // URL to the reset to standard profile. If no provided, the system will use a fallback one
+    resetToStandardProfileUrl: "https://raw.githubusercontent.com/GPII/universal/master/testData/defaultSettings/defaultSettings.win32.json5"
 }
