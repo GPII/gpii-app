@@ -35,7 +35,7 @@
         "shelljs": "0.8.2"
     },
     "optionalDependencies": {
-        "gpii-windows": "GPII/windows#63214600696b59636b4dfc0aa2266f43ffbdfdb8"
+        "gpii-windows": "GPII/windows#2d5edfbb164d6352ef81c70fa6961f9f278eab74"
     },
     "scripts": {
         "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
