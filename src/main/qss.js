@@ -51,8 +51,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         // paths might be needed for some reason
         settingPaths: {
             language: "http://registry\\.gpii\\.net/common/language",
-            volume: "http://registry\\.gpii\\.net/common/volume",
-            psp: "psp"
+            volume: "http://registry\\.gpii\\.net/common/volume"
         },
 
         settingMessagesPrefix: "gpii_app_qss_settings",
@@ -117,9 +116,7 @@ fluid.defaults("gpii.app.qssWrapper", {
         onActivePreferenceSetAltered: null,
         onUndoRequired: null,
         onResetAllRequired: null,
-        onSaveRequired: null,
-        onQssPspToggled: null,
-        onQssPspClose: null
+        onSaveRequired: null
     },
 
     listeners: {
@@ -255,7 +252,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             type: "gpii.app.qssWidget",
             options: {
                 model: {
-                    scaleFactor: "{qssWrapper}.model.scaleFactor"
+                    scaleFactor: "{qssWrapper}.model.scaleFactor",
+                    lastEnvironmentalLoginGpiiKey: "{qssWrapper}.model.lastEnvironmentalLoginGpiiKey"
                 },
                 listeners: {
                     onQssWidgetSettingAltered: {
@@ -404,9 +402,8 @@ gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, 
 };
 
 /**
- * Whenever a button in the QSS is focused, hides the QSS widget and the PSP in case
- * the setting for the newly focused button is different from the QSS widget's setting
- * (or the setting for the PSP button respectively).
+ * Whenever a button in the QSS is focused, hides the QSS widget in case
+ * the setting for the newly focused button is different from the QSS widget's setting.
  * @param {Component} that - The `gpii.app.qss` instance.
  * @param {Component} qssWidget - The `gpii.app.qssWidget` instance.
  * @param {Object} setting - the setting for the newly focused QSS button.
@@ -414,10 +411,6 @@ gpii.app.qssWrapper.saveSettings = function (that, pspChannel, qssNotification, 
 gpii.app.qss.hideQssMenus = function (that, qssWidget, setting) {
     if (setting.path !== qssWidget.model.setting.path) {
         qssWidget.hide();
-    }
-
-    if (setting.path !== that.options.pspButtonPath) {
-        that.events.onQssPspClose.fire();
     }
 };
 
@@ -444,10 +437,22 @@ gpii.app.qssWrapper.registerUndoableChange = function (that, oldValue) {
  * @param {Object} change - The change to be reverted.
  */
 gpii.app.undoStack.revertChange = function (qssWrapper, change) {
-    qssWrapper.alterSetting({
-        path:  change.path,
-        value: change.value
-    }, "gpii.app.undoStack.undo");
+    if (gpii.app.hasSecondarySettings(change)) {
+        // this change has secondary settings
+        fluid.each(change.settings, function (secondaryChange) {
+            // applying the secondary settings
+            qssWrapper.alterSetting({
+                path:  secondaryChange.path,
+                value: secondaryChange.value
+            }, "gpii.app.undoStack.undo");
+        });
+    } else {
+        // applying the primary settings
+        qssWrapper.alterSetting({
+            path:  change.path,
+            value: change.value
+        }, "gpii.app.undoStack.undo");
+    }
 };
 
 /**
@@ -613,35 +618,64 @@ gpii.app.qssWrapper.populateLanguageSettingOptions = function (settingOptions, l
 
 gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, locale, messageBundles, settingOptions, settingsFixturePath, siteConfig) {
     var availableSettings = fluid.require(settingsFixturePath), // list of all available buttons
-        loadedSettings = availableSettings; // by default we are getting all of the buttons
+        loadedSettings = availableSettings, // by default we are getting all of the buttons
+        multiplier = 1000; // the precision multiplier should match the one used in the qssBaseStepperWidget
 
     if (gpii.app.hasButtonList(siteConfig)) { // checking if we have a valid button list in the siteConfig
         // filtering the buttons based on buttonList array
         loadedSettings = gpii.app.filterButtonList(siteConfig.buttonList, availableSettings);
     }
 
+    // the multiplier used through all of the calculations below it's there because we have too small of values
+    // and with this multiplier we are trying to avoid rounding errors when comparing values with the bounds
     fluid.each(loadedSettings, function (loadedSetting) {
-        // Resolve dynamic settings, where the function grade is identified by the 'type' field.
-        loadedSetting.schema = fluid.transform(loadedSetting.schema, function (schemaItem) {
-            var togo;
-            if (schemaItem && schemaItem.type) {
-                // Call the function, and use the result as the value.
-                var result = fluid.invokeGradedFunction(schemaItem.type);
-                togo = schemaItem.path ? fluid.get(result, schemaItem.path) : result;
-            } else {
-                togo = schemaItem;
+        if (gpii.app.hasSecondarySettings(loadedSetting)) {
+
+            fluid.each(loadedSetting.settings, function (nestedSetting) {
+                if (fluid.isValue(nestedSetting.schema.min)) {
+                    // Appling rounding on the minimum value and guarantees that a value is a multiple of the step.
+                    nestedSetting.schema.min = Math.ceil((nestedSetting.schema.min - 1 / multiplier) / nestedSetting.schema.divisibleBy) * nestedSetting.schema.divisibleBy;
+                }
+
+                if (fluid.isValue(nestedSetting.schema.max)) {
+                    // Appling rounding on the maximum value and guarantees that a value is a multiple of the step.
+                    nestedSetting.schema.max = Math.floor((nestedSetting.schema.max + 1 / multiplier) / nestedSetting.schema.divisibleBy) * nestedSetting.schema.divisibleBy;
+                }
+            });
+
+        } else {
+            // Resolve dynamic settings, where the function grade is identified by the 'type' field.
+            loadedSetting.schema = fluid.transform(loadedSetting.schema, function (schemaItem) {
+                var togo;
+                if (schemaItem && schemaItem.type) {
+                    // Call the function, and use the result as the value.
+                    var result = fluid.invokeGradedFunction(schemaItem.type);
+                    togo = schemaItem.path ? fluid.get(result, schemaItem.path) : result;
+                } else {
+                    togo = schemaItem;
+                }
+                return togo;
+            });
+
+            if (fluid.isValue(loadedSetting.schema.min)) {
+                // Appling rounding on the minimum value and guarantees that a value is a multiple of the step.
+                loadedSetting.schema.min = Math.ceil((loadedSetting.schema.min - 1 / multiplier) / loadedSetting.schema.divisibleBy) * loadedSetting.schema.divisibleBy;
             }
-            return togo;
-        });
 
-        var imageAsset = loadedSetting.schema.image;
-        if (imageAsset) {
-            loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);
-        }
+            if (fluid.isValue(loadedSetting.schema.max)) {
+                // Appling rounding on the maximum value and guarantees that a value is a multiple of the step.
+                loadedSetting.schema.max = Math.floor((loadedSetting.schema.max + 1 / multiplier) / loadedSetting.schema.divisibleBy) * loadedSetting.schema.divisibleBy;
+            }
 
-        var helpImageAsset = loadedSetting.schema.helpImage;
-        if (helpImageAsset) {
-            loadedSetting.schema.helpImage = assetsManager.resolveAssetPath(helpImageAsset);
+            var imageAsset = loadedSetting.schema.image;
+            if (imageAsset) {
+                loadedSetting.schema.image = assetsManager.resolveAssetPath(imageAsset);
+            }
+
+            var helpImageAsset = loadedSetting.schema.helpImage;
+            if (helpImageAsset) {
+                loadedSetting.schema.helpImage = assetsManager.resolveAssetPath(helpImageAsset);
+            }
         }
     });
 
@@ -728,13 +762,26 @@ gpii.app.qssWrapper.getSetting = function (settings, path) {
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
     if (fluid.isValue(updatedSetting)) { // adding a check just in case of some missteps
-        var settingIndex = that.model.settings.findIndex(function (setting) {
-            return setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting);
-        });
 
-        if (settingIndex !== -1) {
-            that.applier.change("settings." + settingIndex, updatedSetting, null, source);
-        }
+        fluid.each(that.model.settings, function (setting, index) {
+            if (gpii.app.hasSecondarySettings(setting)) {
+
+                fluid.each(setting.settings, function (nestedSetting, key) {
+                    if (nestedSetting.path === updatedSetting.path && !fluid.model.diff(nestedSetting, updatedSetting)) {
+
+                        // applying the secondary setting's change
+                        that.applier.change("settings." + index + ".settings." + key, updatedSetting, null, source);
+                    }
+                });
+
+            } else {
+                if (setting.id !== "MakeYourOwn" && setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
+
+                    // applying primary setting's change
+                    that.applier.change("settings." + index, updatedSetting, null, source);
+                }
+            }
+        });
     }
 };
 
@@ -769,25 +816,49 @@ gpii.app.qssWrapper.getButtonPosition = function (qss, buttonElemMetrics) {
  * @return {Object} A translated copy of the QSS setting
  */
 gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, setting) {
-    var translatedSetting = fluid.copy(setting);
+    var translatedSetting = fluid.copy(setting),
+        message = qssSettingMessages[translatedSetting.messageKey];
 
-    var message = qssSettingMessages[translatedSetting.messageKey];
-
+    // translation of the main settings
     if (message) {
         translatedSetting.tooltip = message.tooltip;
         translatedSetting.tip = message.tip;
-        translatedSetting.extendedTip = message.extendedTip;
-        translatedSetting.switchTitle = message.switchTitle;
 
+        if (fluid.isValue(message.extendedTip)) {
+            translatedSetting.extendedTip = message.extendedTip;
+        }
+
+        if (fluid.isValue(message.switchTitle)) {
+            translatedSetting.switchTitle = message.switchTitle;
+        }
+
+        // footerTip
+        translatedSetting.widget = translatedSetting.widget || {};
         if (fluid.isValue(message.footerTip)) {
-            translatedSetting.widget = translatedSetting.widget || {};
             translatedSetting.widget.footerTip = message.footerTip;
         }
+
+        // sideCar
+        translatedSetting.sideCar = message.sideCar || "";
+
+        // sideCar (with osSettingsAvailable set to true)
+        translatedSetting.sideCarWithSettings = message.sideCarWithSettings || "";
 
         translatedSetting.schema.title = message.title;
         if (message["enum"]) {
             translatedSetting.schema["enum"] = message["enum"];
         }
+    }
+    // checking if we have secondary settings (looking for a `settings` node
+    if (fluid.isValue(translatedSetting.settings)) {
+        fluid.each(translatedSetting.settings, function (secondarySetting) {
+            var secondaryMessage = qssSettingMessages[secondarySetting.messageKey];
+            if (secondaryMessage && fluid.isValue(secondaryMessage.title)) {
+                // applying the title of the setting
+                // the secondary settings don't have any other translation part, only titles
+                secondarySetting.schema.title = secondaryMessage.title;
+            }
+        });
     }
 
     return translatedSetting;
@@ -908,9 +979,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
         }
     },
     siteConfig: "{qssWrapper}.options.siteConfig",
-    pspButtonPath: "psp",
     events: {
-        onQssPspClose: "{qssWrapper}.events.onQssPspClose",
         onUndoIndicatorChanged: null,
 
         onQssWidgetToggled: "{qssWidget}.events.onQssWidgetToggled"
@@ -952,8 +1021,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
         },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
         "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",
-        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
-        "{channelListener}.events.onQssPspToggled": "{qssWrapper}.events.onQssPspToggled"
+        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired"
     }
 });
 
