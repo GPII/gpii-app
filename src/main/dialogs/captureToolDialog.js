@@ -15,6 +15,7 @@
 var fs = require("fs"),
     fluid = require("infusion"),
     electron = require("electron"),
+    uuid = require("uuid"),
     gpii = fluid.registerNamespace("gpii");
 
 require("../common/utils.js");
@@ -460,6 +461,10 @@ gpii.app.captureTool.savePreferences = function (flatSolutionsRegistry, keyedInU
     var payload = {
         contexts: {}
     };
+
+    if (!options.prefSetId) {
+        options.prefSetId = uuid.v1();
+    }
 
     payload.contexts[options.prefSetId] = options.prefSetPayload;
 
