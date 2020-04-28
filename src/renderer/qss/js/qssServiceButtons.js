@@ -225,7 +225,9 @@
                 funcName: "gpii.windows.openUrl",
                 args: [
                     "{that}.model.item.schema.url", // using the url from the custom button's schema
-                    "{gpii.qss}.options.siteConfig.alwaysUseChrome", // Override the OS default browser.
+                    true, // Override the OS default browser to always use Chrome instead
+                    // if you want to use the value from site config this is:
+                    // "{gpii.qss}.options.siteConfig.alwaysUseChrome"
                     "{that}.model.item.schema.fullScreen" // using the fullScreen from the custom button's schema
                 ]
             }
