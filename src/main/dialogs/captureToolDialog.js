@@ -310,7 +310,7 @@ gpii.app.captureTool.logCaptureDiagnostics = function (diagnosticsCollector, set
                 electron.dialog.showMessageBox({
                     message: "There was a problem capturing the diagnostics:\n" + err
                 });
-                fluid.log("Error running capture diagnostics. ", err);
+                fluid.log("Capture Tool: Error running capture diagnostics. ", err);
             }
         );
     }
@@ -339,14 +339,13 @@ gpii.app.captureTool.channelGetInstalledSolutions = function (channelNotifier, f
             var runningSolutions = {};
             fluid.each(data, function (solutionEntry, solutionId) {
                 try {
-                    fluid.log("ABOUT TO CHECK PROCESS FOR: ", solutionId);
                     var isRunningState = gpii.processReporter.handleIsRunning(solutionEntry);
-                    fluid.log("RUNNING STATE: ", isRunningState);
+                    fluid.log("Capture Tool: Running State for: ", solutionId, " Is: ", isRunningState);
                     if (isRunningState) {
                         runningSolutions[solutionId] = solutionEntry;
                     }
                 } catch (err) {
-                    fluid.log("Exception trying to look up", solutionEntry, " Error: ", err);
+                    fluid.log("Capture Tool: Exception trying to look up", solutionEntry, " Error: ", err);
                 }
             });
             channelNotifier.events.sendingRunningSolutions.fire(runningSolutions);
