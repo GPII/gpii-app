@@ -55,7 +55,6 @@
                 "record": "gpii.tests.app.mockedSystemLanguageListener",
                 "target": "{that gpii.app}.options.components.systemLanguageListener.type"
             }
-        }//,
         // TODO: Remove this once we have everything working with out.
         // This cannot be done safely here if we expect to be able to run tests predictably once couch is available.
 //        "components": {
