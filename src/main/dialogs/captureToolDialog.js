@@ -357,11 +357,11 @@ gpii.app.captureTool.channelGetInstalledSolutions = function (channelNotifier, f
 };
 
 /**
- * This performs the task of capturing solutions using the flow manager, one solution at a time.
- * While the flow manager can handle capturing multiple solutions in one go, because there is a
- * likelihood of unknown situations in the real world with solutions and settings handlers, we go
- * one at a time such that if there is a failure or exception thrown in one solution, it only
- * affects that solutions. It causes no real discernable notice in speed.
+ * This performs the task of capturing solutions using the flow manager, issuing one call to the flowmanager
+ * for each solution. While the flow manager can handle capturing multiple solutions in one invocation, there is a
+ * likelihood of unknown situations in the real world with solutions and settings handlers, and a failure
+ * in one will cause a failure in the entire capture. Therefore we make one invocation per solution.
+ * It causes no real discernable difference in speed.
  *
  * @param {gpii.flowManager.local} flowManager - The local flow manager.
  * @param {String[]} solutionsList - Array of standard solution ID's.
@@ -372,8 +372,7 @@ gpii.app.captureTool.safelyGetSolutionsCapture = function (flowManager, solution
     var promTogo = fluid.promise();
     // Due to the unknown stability of some settings handlers, we are invoking the system capture
     // on each solution individually, so if one fails the capture will still proceed.
-    var capturePromises = [];
-    fluid.each(solutionsList, function (solutionId) {
+    var capturePromises = fluid.transform(fluid.copy(solutionsList), function (solutionId) {
         var nextPromise = fluid.promise();
         flowManager.capture.getSystemSettingsCapture({
             solutionsList: [solutionId]
@@ -391,8 +390,7 @@ gpii.app.captureTool.safelyGetSolutionsCapture = function (flowManager, solution
                 nextPromise.resolve(errTogo);
             }
         );
-
-        capturePromises.push(nextPromise);
+        return nextPromise;
     });
 
     var result = fluid.promise.sequence(capturePromises);
