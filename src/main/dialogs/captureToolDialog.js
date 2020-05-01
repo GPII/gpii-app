@@ -364,7 +364,7 @@ gpii.app.captureTool.channelGetInstalledSolutions = function (channelNotifier, f
  * affects that solutions. It causes no real discernable notice in speed.
  *
  * @param {gpii.flowManager.local} flowManager - The local flow manager.
- * @param {Array} solutionsList - Array of standard solution ID's.
+ * @param {String[]} solutionsList - Array of standard solution ID's.
  * @return {fluid.promise} A promise resolving to the full settings capture of all the solutions
  * in `solutionsList`.
  */
