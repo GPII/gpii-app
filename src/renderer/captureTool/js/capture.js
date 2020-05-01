@@ -50,9 +50,7 @@
         "net.gpii.uioPlus",
         "com.microsoft.windows.screenResolution",
         "net.opendirective.maavis",
-        "com.microsoft.windows.volumeControl",
-        "net.gpii.test.speechControl",
-        "net.gpii.explode"
+        "com.microsoft.windows.volumeControl"
     ];
 
     fluid.defaults("gpii.captureTool", {
