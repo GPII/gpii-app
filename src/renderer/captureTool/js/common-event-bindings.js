@@ -1,6 +1,12 @@
 "use strict";
 
 /**
+ * This work is currently being reviewed for inclusion in gpii-binder and being tracked
+ * here https://issues.gpii.net/browse/GPII-2933, with work in progress here:
+ * https://github.com/GPII/gpii-binder/pull/13. The work as it stands below satisfies the
+ * current requirements for the capture tool user interactions. Work in the above ticket
+ * and PR is adding support for more use cases and general robustness.
+ *
  * GPII Binder Markup Events Grade
  * This grade allows binding typical HTML events such as
  * mouse clicks and keypress events to selectors each time
