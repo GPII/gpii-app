@@ -44,6 +44,7 @@
             "cloud-folder-open": "gpii.qss.openCloudFolderPresenter",
             "launch-documorph":  "gpii.qss.launchDocuMorphPresenter",
             "volume":            "gpii.qss.volumeButtonPresenter",
+            "mouse":             "gpii.qss.widgetButtonPresenter",
             "snipping-tool":     "gpii.qss.snippingToolPresenter",
             "disabled":          "gpii.qss.disabledButtonPresenter",
             // custom button grades
@@ -52,6 +53,8 @@
             "custom-keys":       "gpii.qss.customKeysPresenter",
             // separator grade
             "separator":         "gpii.qss.separatorButtonPresenter",
+            // grid grade
+            "grid":              "gpii.qss.gridButtonPresenter",
             // url based buttons
             "url-google-drive":  "gpii.qss.urlGoogleDrivePresenter",
             "url-one-drive":     "gpii.qss.urlOneDrivePresenter",

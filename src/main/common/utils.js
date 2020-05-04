@@ -335,6 +335,24 @@ gpii.app.generateCustomButton = function (buttonData) {
 };
 
 /**
+ * Tries to match the shortcut name and if found returns the real name of the button
+ * @param  {String} buttonName - the id of the button
+ * @return {String} if shortcut is found returns the real name of the button, if not
+ * returns the provided buttonName instead
+ */
+gpii.app.buttonListShortcuts = function (buttonName) {
+    var shortcuts = ["|", "||", "-", "x"], // shortcuts
+        buttons = ["separator", "separator-visible", "grid", "grid-visible"], // standart names
+        buttonIndex = shortcuts.indexOf(buttonName);
+
+    if (buttonIndex !== -1) {
+        return buttons[buttonIndex];
+    }
+
+    return buttonName;
+};
+
+/**
  * Filters the full button list based on the provided array of `id` attributes
  * @param {Array} siteConfigButtonList - basic array of strings
  * @param {Object[]} availableButtons - all available buttons found in settings.json
@@ -346,7 +364,7 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     * All of the buttons that don't have `id` at all, they are added at the end of the list
     * starting tabindex, adding +10 of each new item.
     */
-    var separatorId = "separator",
+    var nonTabindex = ["separator", "separator-visible", "grid", "grid-visible"],
         matchedList = [],
         afterList = [],
         tabindex = 100;
@@ -356,15 +374,18 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     fluid.each(siteConfigButtonList, function (buttonId) {
         var matchedButton = false;
 
+        // replace the buttonId if its a shortcut
+        buttonId = gpii.app.buttonListShortcuts(buttonId);
+
         if (typeof buttonId === "object") {
             // this is custom button
             matchedButton = gpii.app.generateCustomButton(buttonId);
         } else {
             matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
         }
-        if (matchedButton !== false) {
-            // the separators don't need tabindex
-            if (buttonId !== separatorId) {
+        if (matchedButton) {
+            // the separators and grid elements don't need tabindex
+            if (!nonTabindex.includes(buttonId)) {
                 // adding the proper tabindex
                 matchedButton.tabindex = tabindex;
                 tabindex += 10; // increasing the tabindex
@@ -472,6 +493,30 @@ gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
         fluid.log(fluid.logLevel.WARN, err);
         return defaultVolumeValue;
     }
+};
+
+/**
+ * Looks into secondary data's `settings` value and compare the values with the
+ * provided old value
+ * @param {Object} value - The setting which has been altered via the QSS or
+ * its widget.
+ * @param {Object} oldValue - The previous value of the altered setting.
+ */
+
+gpii.app.getSecondarySettingsChanges = function (value, oldValue) {
+    return fluid.find_if(value.settings, function (setting, key) {
+        return !fluid.model.diff(setting, oldValue.settings[key]);
+    });
+};
+
+/**
+ * Checks if the button has a secondary settings
+ * @param {Object} button - The setting which has been altered via the QSS or
+ * its widget.
+ * @return {Boolean} Return true if the button has a secondary settings.
+ */
+gpii.app.hasSecondarySettings = function (button) {
+    return fluid.isValue(button.settings);
 };
 
 /**
