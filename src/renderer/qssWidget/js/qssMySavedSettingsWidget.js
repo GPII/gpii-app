@@ -62,7 +62,7 @@
                         label: "{mySavedSettings}.model.messages.reApplyPreferencesButtonLabel"
                     },
                     listeners: {
-                        "onClick": "{channelNotifier}.events.onQssReApplyPreferencesRequired.fire"
+                        "onClick.reApplyPreferences": "{channelNotifier}.events.onQssReApplyPreferencesRequired.fire"
                     }
                 }
             }
