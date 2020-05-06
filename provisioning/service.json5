@@ -7,7 +7,8 @@
             "autoRestart": true,
             "disabled": false,
             env: {
-                //NODE_ENV: "app.testing"
+                NODE_ENV: "app.production",
+                GPII_CLOUD_URL: "https://flowmanager.stg.gcp.gpii.net"
             }
         }
     },
@@ -22,23 +23,24 @@
             // Auto-update the site config.
             path: "%ProgramData%\\Morphic\\siteConfig.json5",
             // Get the URL from the secrets file
-            url: "${siteConfigUrl}"
-        }],
+            //url: "${siteConfigUrl}"
+            url: "https://raw.githubusercontent.com/GPII/gpii-app/master/siteconfig.json5"
+        }]
     },
     "siteConfigFile": [
         "%ProgramData%\\Morphic\\siteConfig.json5",
         "%ProgramFiles(x86)%\\Morphic\\windows\\resources\\app\\siteConfig.json5",
         "%ProgramFiles%\\Morphic\\windows\\resources\\app\\siteConfig.json5"
     ],
-    "gpii-config": {
+    "gpiiConfig": {
         "env": "NODE_ENV",
         // Morphic + metrics:
-        "on:on": "app.testing.metrics",
+        "on:on": "app.production.metrics",
         // No metrics or morphic:
         "off:off": "app.disable",
         // Metrics only:
         "off:on": "app.metrics",
         // No metrics:
-        "on:off": "app.testing"
+        "on:off": "app.production"
     }
 }

@@ -12,7 +12,7 @@
         "electron": "3.0.2",
         "electron-edge-js": "8.3.8",
         "electron-localshortcut": "3.1.0",
-        "gpii-windows": "stegru/windows#GPII-3853",
+        "gpii-windows": "stegru/windows#GPII-2338",
         "infusion": "3.0.0-dev.20190328T144119Z.ec44dbfab",
         "nan": "2.10.0",
         "node-jqunit": "1.1.8",
@@ -35,8 +35,12 @@
         "rimraf": "2.6.2",
         "shelljs": "0.8.2"
     },
+    "optionalDependencies": {
+        "gpii-windows": "stegru/windows#GPII-3853"
+    },
     "scripts": {
         "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
+        "service": "npm --prefix ./node_modules/gpii-windows/gpii-service run service-dev",
         "dev": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron . ./configs app.dev",
         "build": "electron ./scripts/compileMessageBundles.js && .\\trayButton\\build.cmd",
         "postinstall": "npm run build",

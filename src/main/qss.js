@@ -775,7 +775,7 @@ gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
                 });
 
             } else {
-                if (setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
+                if (setting.id !== "MakeYourOwn" && setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
 
                     // applying primary setting's change
                     that.applier.change("settings." + index, updatedSetting, null, source);
@@ -832,10 +832,17 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
             translatedSetting.switchTitle = message.switchTitle;
         }
 
+        // footerTip
+        translatedSetting.widget = translatedSetting.widget || {};
         if (fluid.isValue(message.footerTip)) {
-            translatedSetting.widget = translatedSetting.widget || {};
             translatedSetting.widget.footerTip = message.footerTip;
         }
+
+        // sideCar
+        translatedSetting.sideCar = message.sideCar || "";
+
+        // sideCar (with osSettingsAvailable set to true)
+        translatedSetting.sideCarWithSettings = message.sideCarWithSettings || "";
 
         translatedSetting.schema.title = message.title;
         if (message["enum"]) {
