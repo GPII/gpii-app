@@ -25,7 +25,7 @@ $node = Get-Command "node.exe" | Select -expandproperty Path
 $chocolatey = "$env:ChocolateyInstall\bin\choco.exe" -f $env:SystemDrive
 
 # Installing required choco packages.
-Invoke-Command $chocolatey "install wixtoolset -y"
+Invoke-Command $chocolatey "install wixtoolset --no-progress -y"
 refreshenv
 # The path to WIX can be found in $env:WIX env variable but looks like chocolatey's refreshenv
 # is not able to set such variable in this session. As a workaround, we ask the registry
@@ -34,7 +34,7 @@ $wixSetupPath = Join-Path (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Cont
 Add-Path $wixSetupPath $true
 refreshenv
 
-Invoke-Command $chocolatey "install msbuild.extensionpack -y"
+Invoke-Command $chocolatey "install msbuild.extensionpack --no-progress -y"
 refreshenv
 
 # If $installerDir exists delete it and clone current branch of installer.
