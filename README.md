@@ -52,3 +52,15 @@ the tests without collecting code coverage data, you can use commands like the f
 cd v:\
 npm run test:noCoverage
 ```
+
+### Starting the Morphic Windows Service
+
+Some operations may require the Morphic Windows Service to be running. The service can be started with the following:
+
+```bash
+cd c:\vagrant\
+npm run service
+```
+
+This will start the service in such a way that will allow instances of the GPII app to connect to it, in an untrusted
+manner.

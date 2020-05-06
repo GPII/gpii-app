@@ -104,6 +104,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.resetToStandardProfileUrl",
             target: "{that defaultSettingsLoader}.options.defaultSettingsUrl",
             priority: "after:flowManager.remoteDefaultSettings"
+        },
+        distributeAutoLogin: {
+            record: "{that}.options.siteConfig.autoLogin",
+            target: "{/ gpii.windows.userListeners.windowsLogin}.options.config"
         }
     }
 });
