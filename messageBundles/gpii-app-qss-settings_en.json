@@ -152,5 +152,18 @@
     "gpii_app_qss_settings_url-customize-qss": {
         "tooltip": "<p>Open the web tool to customize quickstrip's buttons.</p>",
         "title": "Customize Quickstrip"
+    },
+    "gpii_app_qss_settings_common-colorVision": {
+        "tooltip": "<p>Change the colors displayed on the screen to make things easier to view or distinguish.</p>",
+        "title": "Color Vision",
+        "tip": "<p>Color Vision Filters</p><p>Shifts colors to help those with some form of color blindness distinguish colors.</p>",
+        "footerTip": "<div class='colorWheelTip'><p>Pick an option that makes the nine colors below more distinct.</p><center><img height=64 src='../../assets/color-vision-wheel.png' /></center></div>",
+        "enum": [
+            "Standard colors",
+            "Red-Green (Green weak)",
+            "Red-Green (Red weak)",
+            "Blue-Yellow (Tritanomaly)"
+        ],
+        "sideCarWithSettings": "<p>In addition to the Windows color vision options presented in the panel to the left, there are also several grayscale options provided in Windows setting.</p><p>Here is the link to take you directly to the full set of Color Vision Options in Windows Settings:</p><ul><li><a href='ms-settings:easeofaccess-colorfilter'>Color Vision Settings</a></li></ul>"
     }
 }

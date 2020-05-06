@@ -100,10 +100,11 @@
             "text-zoom",
             "high-contrast",
             "snipping-tool",
+            "color-vision",
+            "read-aloud",
             "volume",
             "launch-documorph",
             "cloud-folder-open",
-            "read-aloud",
             "usb-open",
             "||",
             "service-more",
@@ -176,5 +177,10 @@
     trayType: ["gpii.app.trayButton"],
 
     // URL to the reset to standard profile. If no provided, the system will use a fallback one
-    resetToStandardProfileUrl: "https://raw.githubusercontent.com/GPII/universal/master/testData/defaultSettings/defaultSettings.win32.json5"
+    resetToStandardProfileUrl: "https://raw.githubusercontent.com/GPII/universal/master/testData/defaultSettings/defaultSettings.win32.json5",
+
+    autoLogin: {
+        blockedUsers: ["admin*", "guest*", "student*", "visitor*", "volunteer*"],
+        userIdSource: "username"
+    }
 }
