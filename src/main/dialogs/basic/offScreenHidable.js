@@ -138,7 +138,7 @@ gpii.app.dialog.offScreenHidable.moveFromDifferentDisplay = function (that) {
 gpii.app.dialog.offScreenHidable.moveToScreen = function (that, showInactive) {
     var screen = require("electron").screen;
     var relativeToPrimaryDisplay =
-        screen.getPrimaryDisplay().scaleFactor === screen.getDisplayMatching(that.dialog.getBounds()).scaleFactor;
+        gpii.app.getPrimaryDisplay().scaleFactor === screen.getDisplayMatching(that.dialog.getBounds()).scaleFactor;
 
     if (relativeToPrimaryDisplay) {
         // trigger a simple show operation

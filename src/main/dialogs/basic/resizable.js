@@ -163,7 +163,7 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
  * @return {Number} - The new scale factor.
  */
 gpii.app.resizable.computeScaleFactor = function (that) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+    var screenSize = gpii.app.getPrimaryDisplay().workAreaSize,
         extendedWidth = that.getExtendedWidth(),
         scaleFactor = (screenSize.width / extendedWidth) * that.model.scaleFactor;
 

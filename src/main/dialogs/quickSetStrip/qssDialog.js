@@ -14,8 +14,7 @@
  */
 "use strict";
 
-var fluid = require("infusion"),
-    electron = require("electron");
+var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
@@ -71,7 +70,6 @@ fluid.defaults("gpii.app.qss", {
             args: ["{that}", "{appBar}", "{that}.dialog", "{change}.value", "{that}.model.appBarQss"],
             namespace: "appBar",
             priority: "before:impl"
-            //excludeSource: "init"
         }
     },
 
@@ -271,7 +269,7 @@ gpii.app.qss.computeQssHeight = function (that, height) {
  */
 gpii.app.qss.getQssPixelHeight = function (that) {
     return Math.floor(Math.round(that.options.config.attrs.height * that.model.scaleFactor)
-        * electron.screen.getPrimaryDisplay().scaleFactor);
+        * gpii.app.getPrimaryDisplay().scaleFactor);
 };
 
 /**
@@ -333,7 +331,7 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
  * @param {Component} that - The `gpii.app.qss` component.
  */
 gpii.app.qss.fitToScreen = function (that) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+    var screenSize = gpii.app.getPrimaryDisplay().workAreaSize,
         qssButtonsWidth = gpii.app.qss.computeQssButtonsWidth(that.options, that.model.scaleFactor, that.model.settings),
         qssLogoWidth = that.options.dialogContentMetrics.logoWidth * that.model.scaleFactor;
 
@@ -416,21 +414,16 @@ gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
  * @param {Component} appBar The gpii.windows.appBar instance.
  */
 gpii.app.qss.appBarInit = function (appBar) {
-
-    if (!appBar.getPrimaryDisplay) {
-        appBar.getPrimaryDisplay = electron.screen.getPrimaryDisplay;
+    if (!gpii.app.getPrimaryDisplay.override) {
+        // Add an override to the display information, to ignore the space in the desktop consumed by the qss.
+        gpii.app.getPrimaryDisplay.override = function (display) {
+            if (appBar.enabled) {
+                display.workArea.height = appBar.getWorkAreaBottom() / display.scaleFactor - display.workArea.y;
+                display.workAreaSize.height = display.workArea.height;
+            }
+            return display;
+        };
     }
-
-    // Override so that the vertical window positioning calculations are relative to the taskbar top (or screen bottom),
-    // rather than the work area, because this dialog will be outside of the work area.
-    electron.screen.getPrimaryDisplay = function () {
-        var display = appBar.getPrimaryDisplay.apply(electron.screen);
-        if (appBar.enabled) {
-            display.workArea.height = appBar.getWorkAreaBottom() / display.scaleFactor - display.workArea.y;
-            display.workAreaSize.height = display.workArea.height;
-        }
-        return display;
-    };
 };
 
 /**
