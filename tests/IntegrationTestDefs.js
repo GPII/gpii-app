@@ -140,7 +140,7 @@ gpii.tests.dev.testMenu = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 10);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     gpii.tests.app.testItem(menuTemplate[1], "Capture Tool");
-    gpii.tests.app.testItem(menuTemplate[2], "Capture Diagnostics");
+    gpii.tests.app.testItem(menuTemplate[2], "Capture Tool Diagnostics");
     gpii.tests.dev.testKeyInList(menuTemplate[5]);
     gpii.tests.app.testItem(menuTemplate[6], "About...");
     gpii.tests.app.testItem(menuTemplate[8], "Reset Morphic");
@@ -151,7 +151,7 @@ gpii.tests.dev.testMenuSnapsetKeyedIn = function (menuTemplate) {
     gpii.tests.app.testTemplateExists(menuTemplate, 11);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
     gpii.tests.app.testItem(menuTemplate[1], "Capture Tool");
-    gpii.tests.app.testItem(menuTemplate[2], "Capture Diagnostics");
+    gpii.tests.app.testItem(menuTemplate[2], "Capture Tool Diagnostics");
     gpii.tests.dev.testKeyInList(menuTemplate[6]);
     gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[3], menuTemplate[9]);
     gpii.tests.app.testItem(menuTemplate[10], "Exit GPII");
