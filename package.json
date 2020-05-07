@@ -35,10 +35,11 @@
         "shelljs": "0.8.2"
     },
     "optionalDependencies": {
-        "gpii-windows": "0.3.0-dev.20191204T181313Z.b920f98.GPII-4253"
+        "gpii-windows": "0.3.0-dev.20200427T102955Z.2e04c69"
     },
     "scripts": {
         "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
+        "service": "npm --prefix ./node_modules/gpii-windows/gpii-service run service-dev",
         "dev": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron . ./configs app.dev",
         "build": "electron ./scripts/compileMessageBundles.js && .\\trayButton\\build.cmd",
         "postinstall": "npm run build",

@@ -78,9 +78,13 @@
         //      "description": "The full description of the button..." // optional description
         // }
 
-        // Separator buttons: Use can use any combination of the separators, even one after another:
-        // - "separator" // Use separator for invisible separator
-        // - "separator-visible" // Use separator-visible for a gray separator (same size as the invisible one)
+        // Separator buttons: Use any combination of the separators, even one after another:
+        // - "separator", or "|" // For invisible separator
+        // - "separator-visible", or "||" // For a gray separator (same size as the invisible one)
+
+        // Grid buttons: Same as the separators, but their size is the same as a normal button
+        // - "grid", or "-" // For invisible grid space
+        // - "grid-visible", or "x" // For visible gray grid space (same size as the invisible one)
 
         buttonList: [
             {
@@ -106,7 +110,6 @@
                 "popupText": "<p>Open Reddit in a web browser.</p>",
                 "description": "The full description of the button..."
             },
-            "separator",
             "language",
             "translate-tools",
             "screen-zoom",
@@ -115,18 +118,17 @@
             "snipping-tool",
             "office-simplification",
             "high-contrast",
+            "color-vision",
             "mouse",
             "read-aloud",
             "volume",
             "launch-documorph",
             "cloud-folder-open",
             "usb-open",
-            "separator",
             "url-google-drive",
             "url-one-drive",
             "url-dropbox",
             "url-customize-qss",
-            "separator-visible",
             "service-more",
             "service-save",
             "service-undo",
@@ -175,5 +177,13 @@
     surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
 
     // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
-    trayType: ["gpii.app.trayButton"]
+    trayType: ["gpii.app.trayButton"],
+
+    // URL to the reset to standard profile. If no provided, the system will use a fallback one
+    resetToStandardProfileUrl: "https://raw.githubusercontent.com/GPII/universal/master/testData/defaultSettings/defaultSettings.win32.json5",
+
+    autoLogin: {
+        blockedUsers: ["admin*", "guest*", "student*", "visitor*", "volunteer*"],
+        userIdSource: "username"
+    }
 }

@@ -151,7 +151,7 @@ gpii.tests.qss.mouseTests = [
         args: [
             "The mouse speed value is not changed once its lowest value has been reached",
             2,
-            "{that}.app.qssWrapper.model.settings.5.settings.mouseSpeed.value"
+            "{that}.app.qssWrapper.model.settings.6.settings.mouseSpeed.value"
         ]
     }, { // Clicking on the decrement button once again...
         func: "gpii.test.executeJavaScriptInWebContents",

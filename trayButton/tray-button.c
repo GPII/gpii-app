@@ -90,7 +90,7 @@ HANDLE gpiiWindow = null;
 BOOL die = false;
 
 #define log(FMT, ...) {wprintf(L ## FMT L"\n", __VA_ARGS__); fflush(stdout);}
-#define fail(FMT, ...) {wprintf(L ## FMT, __VA_ARGS__); wprintf(L" (win32:%u)\n", GetLastError()); fflush(stdout);}
+#define fail(FMT, ...) {wprintf(L"fail: " L ## FMT, __VA_ARGS__); wprintf(L"(win32:%u)\n", GetLastError()); fflush(stdout);}
 #ifdef _DEBUG
 # define debug(FMT, ...) log(FMT, __VA_ARGS__)
 #else
@@ -832,21 +832,33 @@ int CALLBACK WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmd, int show)
 		currentDpi = getDpi(taskbar);
 		checkHighContrast();
 
-		// Create the button window
-		buttonWindow = CreateWindowEx(
-			WS_EX_TRANSPARENT,
-			BUTTON_CLASS,
-			BUTTON_CLASS,
-			WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS | WS_TABSTOP,
-			0, 0, BUTTON_WIDTH, 40,
-			taskbar,
-			null,
-			0,
-			null);
+		DWORD lastError = 0;
+		do {
+			// Create the button window
+			buttonWindow = CreateWindowEx(
+				WS_EX_TRANSPARENT,
+				BUTTON_CLASS,
+				BUTTON_CLASS,
+				WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS | WS_TABSTOP,
+				0, 0, BUTTON_WIDTH, 40,
+				taskbar,
+				null,
+				0,
+				null);
 
-		if (!buttonWindow) {
-			fail("CreateWindowEx");
-		}
+			if (!buttonWindow) {
+				// Sometimes CreateWindowEx fails with ERROR_ACCESS_DENIED (can be reproduced if the start menu is open)
+				// Also, creating without a parent but using SetParent returns ERROR_INVALID_PARAMETER, under the same
+				// conditions.
+				DWORD thisError = GetLastError();
+				if (thisError != lastError) {
+					fail("CreateWindowEx (retrying)");
+					lastError = thisError;
+				}
+				Sleep(1000);
+			}
+			// Continue trying to create the window if it didn't succeed.
+		} while (!buttonWindow);
 
 		SetTimer(buttonWindow, TIMER_CHECK, TIMER_CHECK_DELAY, null);
 
