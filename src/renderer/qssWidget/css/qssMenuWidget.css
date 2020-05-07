@@ -147,5 +147,5 @@
 /* CSS specific for the color wheel footertip */
 .colorWheelTip {
     position: relative;
-    bottom: 50px;
+    bottom: 10px;
 }
