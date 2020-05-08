@@ -44,10 +44,10 @@ gpii.tests.app.testSnapset_1aKeyedIn = function (infoItem, keyoutItem) {
 };
 
 gpii.tests.app.testMenu = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 4);
+    gpii.tests.app.testTemplateExists(menuTemplate, 6);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
-    gpii.tests.app.testItem(menuTemplate[1], "About...");
-    gpii.tests.app.testItem(menuTemplate[3], "Reset Morphic");
+    gpii.tests.app.testItem(menuTemplate[3], "About...");
+    gpii.tests.app.testItem(menuTemplate[5], "Reset Morphic");
 };
 // Expected behavior after GPII-3826
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
