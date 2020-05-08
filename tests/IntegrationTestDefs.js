@@ -51,8 +51,8 @@ gpii.tests.app.testMenu = function (menuTemplate) {
 };
 // Expected behavior after GPII-3826
 gpii.tests.app.testMenuSnapsetKeyedIn = function (menuTemplate) {
-    gpii.tests.app.testTemplateExists(menuTemplate, 5);
-    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[1], menuTemplate[4]);
+    gpii.tests.app.testTemplateExists(menuTemplate, 7);
+    gpii.tests.app.testSnapset_1aKeyedIn(menuTemplate[3], menuTemplate[6]);
     gpii.tests.app.testItem(menuTemplate[0], "Open Morphic");
 };
 

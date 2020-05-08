@@ -52,7 +52,7 @@ fluid.defaults("gpii.app.menuInApp", {
             args: ["aboutDialog"]
         },
 
-        "onCaptureTool.showAbout": {
+        "onCaptureTool.openCaptureTool": {
             listener: "{gpii.app}.events.onOpenCaptureTool.fire"
         },
 
@@ -344,6 +344,7 @@ fluid.defaults("gpii.app.menu", {
         showAbout: null,
         showQSS: null,
         showCaptureTool: null,
+        showCaptureDiagnostics: null,
 
         messages: {
             about:      null,
