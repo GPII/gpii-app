@@ -77,11 +77,7 @@ gpii.tests.app.testDefs = {
         func: "{that}.app.keyIn",
         args: "snapset_1a"
     }, {
-        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        // XXX {{1}} as `keyedInUserToken` and `preferences` are updated at different times (token is first),
-        // if we have a listener for `menuTemplate` update, the `preferenceSetsMenuItems` update won't be present
-        // at the time of the event firing
-        path: "preferenceSetsMenuItems",
+        event: "{that}.app.events.onKeyedIn",
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.app.testMenuSnapsetKeyedIn"
     }, { // Test menu after key out
@@ -230,9 +226,7 @@ gpii.tests.dev.testDefs = {
         func: "{that}.app.keyIn",
         args: "snapset_1a"
     }, {
-        changeEvent: "{that}.app.tray.menu.applier.modelChanged",
-        // XXX {{1}}
-        path: "preferenceSetsMenuItems",
+        event: "{that}.app.events.onKeyedIn",
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMenuSnapsetKeyedIn"
     }, {
