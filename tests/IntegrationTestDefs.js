@@ -230,7 +230,9 @@ gpii.tests.dev.testDefs = {
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMenuSnapsetKeyedIn"
     }, {
-        func: "gpii.tests.dev.testTrayKeyedIn",
+        changeEvent: "{that}.app.tray.applier.modelChanged",
+        path: "tooltip",
+        listener: "gpii.tests.dev.testTrayKeyedIn",
         args: ["{that}.app.tray", "Default preferences"]
     }, { // Test menu after key out
         func: "{that}.app.keyOut"
