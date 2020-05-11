@@ -16,6 +16,8 @@
 
 "use strict";
 (function (fluid) {
+    var gpii = fluid.registerNamespace("gpii");
+
     /**
      * Represents the controller for the QSS tooltip that is used to provide
      * information about the current setting.
@@ -26,6 +28,11 @@
         model: {
             messages: {
                 tooltip: null
+            },
+            availableDirections: {
+                defaultDirection: "right",
+                leftDirection: "left",
+                centerDirection: "center"
             }
         },
 
@@ -47,16 +54,43 @@
                 type: "gpii.psp.channelListener",
                 options: {
                     listeners: {
-                        onTooltipUpdated: {
+                        onTooltipUpdated: { // handles the text change on tooltip show
                             func: "{qssTooltipPopup}.updateTooltip",
                             args: ["{arguments}.0"]
+                        },
+                        onTooltipArrowDirection: { // handles the change of the tooltip's arrow direction
+                            func: "gpii.qss.qssTooltipPopup.onTooltipArrowDirection",
+                            args: [
+                                "{arguments}.0",
+                                "{qssTooltipPopup}.model.availableDirections",
+                                "{qssTooltipPopup}.container"
+                            ]
                         }
                     },
                     events: {
-                        onTooltipUpdated: null
+                        onTooltipUpdated: null,
+                        onTooltipArrowDirection: null
                     }
                 }
             }
         }
     });
+
+    /**
+     * Applies the new arrow direction class on the tooltip's root dom element
+     * by default the arrow is on the right (by design), so we are only applying the change
+     * if the new direction its not right
+     * @param {String} arrowDirection - the new direction of the arrow
+     * @param {Object.<String, String>} availableDirections - all of the available directions
+     * @param {jQuery} tooltipRoot - the root container of the widget, we are applying the class there
+     */
+    gpii.qss.qssTooltipPopup.onTooltipArrowDirection = function (arrowDirection, availableDirections, tooltipRoot) {
+        // removing any possible classes
+        tooltipRoot.removeClass("fl-arrow-" + availableDirections.leftDirection);
+        tooltipRoot.removeClass("fl-arrow-" + availableDirections.centerDirection);
+        // applying the new class if its not the default one (which don't need a class)
+        if (arrowDirection !== availableDirections.defaultDirection) {
+            tooltipRoot.addClass("fl-arrow-" + arrowDirection);
+        }
+    };
 })(fluid);

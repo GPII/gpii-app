@@ -258,20 +258,21 @@ gpii.app.expect = function (dataObject, expectedKeys, warningSend, warningTitle)
 gpii.app.generateCustomButton = function (buttonData) {
     var serviceButtonTypeApp = "custom-launch-app",
         serviceButtonTypeWeb = "custom-open-url",
+        serviceButtonTypeKey = "custom-keys",
         titleAppNotFound = "Program not found",
         titleUrlInvalid = "Invalid URL",
+        titleNoKeyData = "No Key Data",
         disabledStyle = "disabledButton",
         data = false;
 
     // we need to have the data, with all required fields:
     // buttonId, buttonName, buttonType, buttonData
     if (gpii.app.expect(buttonData, ["buttonId", "buttonName", "buttonType", "buttonData"], true, "generateCustomButton")) {
-        var buttonType = buttonData.buttonType === "APP" ? serviceButtonTypeApp : serviceButtonTypeWeb;
         data = {
             "id": buttonData.buttonId,
-            "path": buttonType,
+            "path": serviceButtonTypeWeb, // default
             "schema": {
-                "type": buttonType,
+                "type": serviceButtonTypeWeb,
                 "title": buttonData.buttonName,
                 "fullScreen": false
             },
@@ -286,6 +287,9 @@ gpii.app.generateCustomButton = function (buttonData) {
             data.schema.fullScreen = true;
         }
         if (buttonData.buttonType === "APP") {
+            // APP type button
+            data.path = serviceButtonTypeApp;
+            data.schema.type = serviceButtonTypeApp;
             // checks if the file exists and its executable
             if (gpii.app.checkExecutable(buttonData.buttonData)) {
                 // adding the application's path
@@ -296,7 +300,21 @@ gpii.app.generateCustomButton = function (buttonData) {
                 // disables the button
                 data.buttonTypes.push(disabledStyle);
             }
+        } else if (buttonData.buttonType === "KEY") {
+            // KEY type button
+            data.path = serviceButtonTypeKey;
+            data.schema.type = serviceButtonTypeKey;
+            if (fluid.isValue(buttonData.buttonData)) {
+                // adding the key sequence data to the schema
+                data.schema.keyData = buttonData.buttonData;
+            } else {
+                // changes the button's title
+                data.schema.title = titleNoKeyData;
+                // disables the button
+                data.buttonTypes.push(disabledStyle);
+            }
         } else {
+            // WEB type button
             // adding the http if its missing
             if (buttonData.buttonData.indexOf("https://") === -1 && buttonData.buttonData.indexOf("http://") === -1) {
                 buttonData.buttonData = "http://" + buttonData.buttonData;
@@ -317,6 +335,24 @@ gpii.app.generateCustomButton = function (buttonData) {
 };
 
 /**
+ * Tries to match the shortcut name and if found returns the real name of the button
+ * @param  {String} buttonName - the id of the button
+ * @return {String} if shortcut is found returns the real name of the button, if not
+ * returns the provided buttonName instead
+ */
+gpii.app.buttonListShortcuts = function (buttonName) {
+    var shortcuts = ["|", "||", "-", "x"], // shortcuts
+        buttons = ["separator", "separator-visible", "grid", "grid-visible"], // standart names
+        buttonIndex = shortcuts.indexOf(buttonName);
+
+    if (buttonIndex !== -1) {
+        return buttons[buttonIndex];
+    }
+
+    return buttonName;
+};
+
+/**
  * Filters the full button list based on the provided array of `id` attributes
  * @param {Array} siteConfigButtonList - basic array of strings
  * @param {Object[]} availableButtons - all available buttons found in settings.json
@@ -328,7 +364,7 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     * All of the buttons that don't have `id` at all, they are added at the end of the list
     * starting tabindex, adding +10 of each new item.
     */
-    var separatorId = "separator",
+    var nonTabindex = ["separator", "separator-visible", "grid", "grid-visible"],
         matchedList = [],
         afterList = [],
         tabindex = 100;
@@ -338,15 +374,18 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     fluid.each(siteConfigButtonList, function (buttonId) {
         var matchedButton = false;
 
+        // replace the buttonId if its a shortcut
+        buttonId = gpii.app.buttonListShortcuts(buttonId);
+
         if (typeof buttonId === "object") {
             // this is custom button
             matchedButton = gpii.app.generateCustomButton(buttonId);
         } else {
             matchedButton = gpii.app.findButtonById(buttonId, availableButtons);
         }
-        if (matchedButton !== false) {
-            // the separators don't need tabindex
-            if (buttonId !== separatorId) {
+        if (matchedButton) {
+            // the separators and grid elements don't need tabindex
+            if (!nonTabindex.includes(buttonId)) {
                 // adding the proper tabindex
                 matchedButton.tabindex = tabindex;
                 tabindex += 10; // increasing the tabindex
@@ -457,6 +496,30 @@ gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
 };
 
 /**
+ * Looks into secondary data's `settings` value and compare the values with the
+ * provided old value
+ * @param {Object} value - The setting which has been altered via the QSS or
+ * its widget.
+ * @param {Object} oldValue - The previous value of the altered setting.
+ */
+
+gpii.app.getSecondarySettingsChanges = function (value, oldValue) {
+    return fluid.find_if(value.settings, function (setting, key) {
+        return !fluid.model.diff(setting, oldValue.settings[key]);
+    });
+};
+
+/**
+ * Checks if the button has a secondary settings
+ * @param {Object} button - The setting which has been altered via the QSS or
+ * its widget.
+ * @return {Boolean} Return true if the button has a secondary settings.
+ */
+gpii.app.hasSecondarySettings = function (button) {
+    return fluid.isValue(button.settings);
+};
+
+/**
  * Simple file function to check a path to the executable file
  * @param {String} executablePath - path to executable file
  * @return {Boolean} - returns `true` when the file exists and its executable
@@ -518,4 +581,20 @@ gpii.app.startProcess = function (process, fullScreen) {
     }
     // executing the process
     gpii.windows.startProcess(process, arg, options);
+};
+
+/**
+ * Executes the key sequence using the sendKeys command, documentation
+ * https://github.com/stegru/windows/blob/GPII-4135/gpii/node_modules/gpii-userInput/README.md
+ * @param  {String} keyData - string with key combinations
+ * @return {Boolean} true if there is a keyData to be execute, false otherwise
+ */
+gpii.app.executeKeySequence = function (keyData) {
+    if (fluid.isValue(keyData)) {
+        gpii.windows.sendKeys.send(keyData);
+        return true;
+    } else {
+        fluid.log(fluid.logLevel.WARN, "executeKeySequence: Empty or invalid keyData");
+    }
+    return false;
 };

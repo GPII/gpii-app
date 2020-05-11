@@ -6,6 +6,7 @@
     "mergeConfigs": [
         "%gpii-app/configs/app.base.json",
         "%flowManager/configs/gpii.flowManager.config.resetAtStart.base.json5",
+        "%flowManager/configs/gpii.flowManager.config.remoteDefaultSettings.base.json5",
         "%gpii-universal/gpii/configs/gpii.config.untrusted.production.dynamicDR.json5"
     ]
 }
