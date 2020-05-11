@@ -56,7 +56,13 @@
             toggle: ".flc-qssToggleWidget",
             screenCapture: ".flc-qssScreenCaptureWidget",
             openUSB: ".flc-qssOpenUSBWidget",
-            volume: ".flc-qssVolumeWidget"
+            volume: ".flc-qssVolumeWidget",
+            office: ".flc-qssOfficeWidget",
+            translateTools: ".flc-qssTranslateToolsWidget",
+            mySavedSettings: ".flc-qssMySavedSettingsWidget",
+            sideCar: ".flc-sidecar-panel",
+            sideCarButton: ".flc-sidecar-button",
+            mouse: ".flc-qssMouseWidget"
         },
 
         /**
@@ -69,7 +75,11 @@
             "boolean": "gpii.qssWidget.toggle",
             "screenCapture": "gpii.qssWidget.screenCapture",
             "openUSB": "gpii.qssWidget.openUSB",
-            "volume": "gpii.qssWidget.volume"
+            "volume": "gpii.qssWidget.volume",
+            "office": "gpii.qssWidget.office",
+            "mouse": "gpii.qssWidget.mouse",
+            "translateTools": "gpii.qssWidget.translateTools",
+            "mySavedSettings": "gpii.qssWidget.mySavedSettings"
         },
 
         events: {
@@ -88,9 +98,20 @@
 
             // USB related events
             onQssOpenUsbRequested: null,
-            onQssUnmountUsbRequested: null
+            onQssUnmountUsbRequested: null,
+
+            // Volume & Mute related event
+            onQssGetVolumeRequested: null,
+            onQssReApplyPreferencesRequired: null,
+            onQssGetEnvironmentalLoginKeyRequested: null
         },
 
+        styles: {
+            hideSidePanel: "fl-hide-sidecar",
+            openSidePanel: "btn-icon-open",
+            closeSidePanel: "btn-icon-close",
+            openLinkIcon: "btn-icon-link"
+        },
         sounds: {},
 
         components: {
@@ -127,6 +148,7 @@
                     }
                 },
                 options: {
+                    lastEnvironmentalLoginGpiiKey: "{qssWidget}.options.lastEnvironmentalLoginGpiiKey",
                     sounds: "{qssWidget}.options.sounds",
                     siteConfig: "{qssWidget}.options.siteConfig",
                     activationParams: "{arguments}.1",
@@ -135,27 +157,11 @@
                         messages: {
                             tip: "{qssWidget}.model.setting.tip",
                             extendedTip: "{qssWidget}.model.setting.extendedTip",
-                            switchTitle: "{qssWidget}.model.setting.switchTitle",
-                            learnMore: "{qssWidget}.model.messages.learnMore"
+                            switchTitle: "{qssWidget}.model.setting.switchTitle"
                         }
                     },
                     selectors: {
-                        tip: ".flc-qssWidget-tip",
-                        learnMoreLink: ".flc-qssWidget-learnMoreLink"
-                    },
-                    components: {
-                        learnMoreLink: {
-                            type: "gpii.psp.qssWidget.learnMoreLink",
-                            container: "{that}.dom.learnMoreLink",
-                            options: {
-                                model: {
-                                    setting: "{qssWidget}.model.setting",
-                                    messages: {
-                                        learnMore: "{qssWidget}.model.messages.learnMore"
-                                    }
-                                }
-                            }
-                        }
+                        tip: ".flc-qssWidget-tip"
                     },
                     events: {
                         onNotificationRequired:   "{qssWidget}.events.onQssWidgetNotificationRequired",
@@ -171,6 +177,73 @@
                             func: "{that}.events.onQssWidgetCreated.fire",
                             args: [null],
                             priority: "last"
+                        },
+                        "onCreate.hideSidePanel": {
+                            this: "{qssWidget}.dom.sideCar",
+                            method: "addClass",
+                            args: ["{qssWidget}.options.styles.hideSidePanel"]
+                        }
+                    },
+                    components: {
+                        openSideCarButton: {
+                            type: "gpii.psp.widgets.button",
+                            container: "{qssWidget}.dom.sideCarButton",
+                            options: {
+                                model: {
+                                    label: {
+                                        expander: {
+                                            funcName: "gpii.psp.qssWidget.getSideCarButtonLabel",
+                                            args: ["{qssWidget}.model.setting", "{qssWidget}.model.messages.learnMore", "{qssWidget}.model.messages.helpAndMoreOptions"]
+                                        }
+                                    }
+                                },
+                                listeners: {
+                                    "onCreate.applyStyles": {
+                                        funcName: "gpii.psp.qssWidget.applySideCarButtonStyles",
+                                        args: [
+                                            "{that}.container",
+                                            "{qssWidget}.model.setting",
+                                            "{qssWidget}.options.styles"
+                                        ]
+                                    },
+                                    onClick: {
+                                        funcName: "gpii.psp.qssWidget.openSideCarActivated",
+                                        args: [
+                                            "{that}",
+                                            "{qssWidget}",
+                                            "{sideCar}.container",
+                                            "{qssWidget}.options.styles"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            sideCar: {
+                type: "gpii.qssWidget.sideCar",
+                container: "{qssWidget}.dom.sideCar",
+                options: {
+                    model: {
+                        setting: "{qssWidget}.model.setting",
+                        osSettingsAvailable: "{qssWidget}.options.siteConfig.osSettingsAvailable"
+                    },
+                    selectors: {
+                        learnMoreLink: ".flc-qssWidget-learnMoreLink"
+                    },
+                    components: {
+                        learnMoreLink: {
+                            type: "gpii.psp.qssWidget.learnMoreLink",
+                            container: "{that}.dom.learnMoreLink",
+                            options: {
+                                model: {
+                                    setting: "{qssWidget}.model.setting",
+                                    messages: {
+                                        learnMore: "{qssWidget}.model.messages.learnMore"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -201,7 +274,6 @@
                     }
                 }
             },
-            // TODO send data from the main process
             channelListener: {
                 type: "gpii.psp.channelListener",
                 options: {
@@ -224,7 +296,11 @@
                         onQssWidgetCreated:              "{qssWidget}.events.onQssWidgetCreated",
                         // USB buttons
                         onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
-                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested"
+                        onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
+                        // Volume button
+                        onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
+                        onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
+                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested"
                     }
                 }
             }
@@ -253,6 +329,76 @@
             }
         }
     });
+
+    /**
+     * Adds the required style to the sideCar button
+     * @param  {jQuery} container - jQuery instance of the sideCar's button
+     * @param  {Object} setting - Object containing sideCar content data
+     * @param  {Object} styles - A hash containing CSS classes for the different buttons
+     */
+    gpii.psp.qssWidget.applySideCarButtonStyles = function (container, setting, styles) {
+        // removing the default classes
+        container.removeClass(styles.openLinkIcon + " " + styles.openSidePanel + " " + styles.closeSidePanel);
+
+        if (setting.sideCar || setting.sideCarWithSettings) {
+            // we have content in the sideCar
+            container.addClass(styles.openSidePanel);
+        } else {
+            // we don't have content
+            container.addClass(styles.openLinkIcon);
+        }
+    };
+
+    /**
+     * Picks the right button name based on the sideCar content
+     * @param  {Object} setting - Object containing sideCar content data
+     * @param  {String} learnMoreMessage - text for the Learn More button
+     * @param  {String} helpAndMoreMessage - text for Help & More button
+     * @return {String} - returns string for the button's name
+     */
+    gpii.psp.qssWidget.getSideCarButtonLabel = function (setting, learnMoreMessage, helpAndMoreMessage) {
+        // if there is sideCar (with or without settings) we are showing the appropriate label
+        if (setting.sideCar || setting.sideCarWithSettings) {
+            return helpAndMoreMessage;
+        }
+        // by default we are showing the label for the external help link
+        return learnMoreMessage;
+    };
+
+    /**
+     * Does the right kind of action when the sideCar button is clicked, if its a Learn More type
+     * just opens an url, if not opens/closes the sideCar panel itself
+     * @param  {Component} sidePanelButton - instance of the sideCar button
+     * @param  {Component} qssWidget - instance of the qssWidget
+     * @param  {jQuery} sideCarContainer - instance of the sideCar container
+     * @param  {Object} styles - A hash containing CSS classes for the different buttons
+     */
+    gpii.psp.qssWidget.openSideCarActivated = function (sidePanelButton, qssWidget, sideCarContainer, styles) {
+        if (qssWidget.model.setting.sideCar || qssWidget.model.setting.sideCarWithSettings) {
+            // remove all of the default classes
+            sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
+
+            if (sideCarContainer.hasClass(styles.hideSidePanel)) {
+                // showing the panel
+                sideCarContainer.removeClass(styles.hideSidePanel);
+                sidePanelButton.container.addClass(styles.closeSidePanel);
+                // changing button's label
+                sidePanelButton.applier.change("label", qssWidget.model.messages.hideSideCar, null, "fromWidget");
+            } else {
+                // hiding the panel
+                sideCarContainer.addClass(styles.hideSidePanel);
+                sidePanelButton.container.addClass(styles.openSidePanel);
+                // changing button's label
+                sidePanelButton.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
+            }
+        } else {
+            // If there is no side panel content use button as a link.
+            if (qssWidget.model.setting.learnMoreLink) {
+                gpii.psp.openUrlExternally(qssWidget.model.setting.learnMoreLink);
+            }
+        }
+    };
+
 
     /**
      * Fires the appropriate event which is communicated to the main process to
@@ -354,7 +500,7 @@
      */
     gpii.qssWidget.calculateHeight = function (container, parentContainer, heightListenerContainer) {
         var baseHeight = container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight,
-            heightFix = 12; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
+            heightFix = 55; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
         return baseHeight + heightFix;
     };
 

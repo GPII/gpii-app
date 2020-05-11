@@ -14,8 +14,8 @@ $projectDir = (Get-Item $provisioningDir).parent.FullName
 
 Import-Module (Join-Path $provisioningDir 'Provisioning.psm1') -Force
 
-$installerRepo = "https://github.com/javihernandez/gpii-wix-installer"
-$installerBranch = "GPII-3997"
+$installerRepo = "https://github.com/GPII/gpii-wix-installer"
+$installerBranch = "master"
 
 # Obtaining useful tools location.
 $installerDir = Join-Path $env:SystemDrive "installer" # a.k.a. C:\installer\
@@ -110,6 +110,24 @@ Invoke-Command "electron-packager.cmd" "$preStagingDir morphic-app --platform=wi
 # TODO: Try to avoid using the electron-packager directory name hardcoding it.
 $packagedAppDir = (Join-Path $packagerDir "morphic-app-win32-ia32")
 Copy-Item "$packagedAppDir\*" $stagingWindowsDir -Recurse
+
+# Build the Windows Service
+$serviceDir = $(Join-Path $preStagingDir "node_modules\gpii-windows\gpii-service")
+$serviceModules = (Join-Path $serviceDir "node_modules")
+
+# Perform a clean production build of the service.
+if (Test-Path -Path $serviceModules) {
+    rm $serviceModules -Recurse -Force
+}
+Invoke-Command "npm" "install --production" $serviceDir
+Invoke-Command "npm" "install pkg -g" $serviceDir
+
+# Compile the service into a single executable
+Copy-Item (Join-Path $provisioningDir "service.json5") (Join-Path $serviceDir "config\service.json5")
+Invoke-Command "pkg" "package.json --output $(Join-Path $stagingWindowsDir "morphic-service.exe")" $serviceDir
+# The service's dependencies get packaged and installed like everything else.
+Get-ChildItem "$serviceDir\*.node" -Recurse | Move-Item -Destination $stagingWindowsDir
+Get-ChildItem "$serviceDir\config\service.json5" -Recurse | Move-Item -Destination $stagingWindowsDir
 
 md (Join-Path $installerDir "output")
 md (Join-Path $installerDir "temp")

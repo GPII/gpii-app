@@ -543,10 +543,17 @@ gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX
     width    = fluid.isValue(width)   ? width : that.model.width;
     height   = fluid.isValue(height)  ? height : that.model.height;
 
+    var scaleFactor = that.model.scaleFactor,
+        mySavedSettingsMinHeight = 170;
     // apply restrictions
     if (restrictions.minHeight) {
-        var scaleFactor = that.model.scaleFactor;
         height = Math.max(height, scaleFactor * restrictions.minHeight);
+    }
+
+    // Because restriction of the minimum height, widgets with little content will have large empty spaces.
+    // This is a temporary solution for the "My saved settings" till the widget is filling with more content.
+    if (that.model.setting && that.model.setting.path === "mySavedSettings") {
+        height = Math.max(height / 2, scaleFactor * mySavedSettingsMinHeight);
     }
 
     var bounds = gpii.browserWindow.computeWindowBounds(width, height, offsetX, offsetY);

@@ -18,8 +18,6 @@
 .fl-qssMenuWidget .fl-qssMenuWidget-controls {
     position: relative;
     overflow: hidden;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 .fl-qssMenuWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
@@ -111,3 +109,43 @@
     margin: 0;
 }
 /* Specific version for the Screen Capture's widget: END */
+
+/* Specific version for the Office Simplification's widget: BEGIN */
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item {
+    border-color: white;
+    text-align: left;
+    margin-left: 15px;
+    color: #19294c;
+    font-weight: bold;
+}
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item:after {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    content: "";
+    cursor: pointer;
+
+    left: -15px;
+    width: 15px;
+    height: 15px;
+
+    background-color: black;
+    -webkit-mask: url("../../../assets/checkbox-unchecked.svg") 0 0/100% 100%;
+    mask: url("../../../assets/checkbox-unchecked.svg") 0 0/100% 100%;
+}
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-controls .fl-qssWidgetMenu-item[aria-checked=true]:after {
+    background-color: #008145;
+    -webkit-mask: url("../../../assets/checkbox-checked.svg") 0 0/100% 100%;
+    mask: url("../../../assets/checkbox-checked.svg") 0 0/100% 100%;
+}
+
+.fl-qssMenuWidget.fl-qssOfficeWidget .fl-qssMenuWidget-footerTip {
+    margin-top: 5px;
+}
+/* Specific version for the Office Simplification's widget: END */
+
+/* CSS specific for the color wheel footertip */
+.colorWheelTip {
+    position: relative;
+    bottom: 50px;
+}

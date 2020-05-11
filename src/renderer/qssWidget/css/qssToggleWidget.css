@@ -29,7 +29,7 @@
 }
 
 .fl-qssToggleWidget-settingTitle {
-    margin: 15px 0 10px 0;
+    margin: 10px 0 5px 0;
     text-align: center;
 }
 
@@ -80,70 +80,46 @@
     font-size: 9px;
 }
 
-/* Custom CSS just for the Volume Widget's steppers: BEGIN */
-.fl-qssVolumeWidget .fl-switchUI {
-    width: 100%;
-    text-align: center;
-    margin: 0 0 20px 0;
+/* Mouse Widget Toggle specific alterations */
+.fl-qssMouseWidgetToggle {
+    margin-bottom: 10px;
 }
-.fl-qssVolumeWidget .fl-qssToggleWidget-helpImage {
-    width: 100%;
+.fl-qssMouseWidgetToggle .fl-qssToggleWidget-settingTitle {
+    margin: 0 !important;
+    width: 50%;
+    float: left;
+    text-align: left;
+    font-weight: bold;
+    line-height: 110%;
+    font-size: 8.5px;
 }
-
-.fl-qssVolumeWidget .fl-switchUI-control {
-    left: 0;
-    width: 36px;
-    height: 29px;
-    border-radius: 3px;
-    text-align: center;
+.fl-qssMouseWidgetToggle .fl-switchUI-control {
+    width: 34px;
 }
-.fl-qssVolumeWidget .fl-switchUI-control:focus {
-    outline: 0 !important;
+.fl-qssMouseWidgetToggle .fl-switchUI-control .fl-switchUILabel {
+    font-size: 8.5px;
 }
-
-.fl-qssVolumeWidget .fl-switchUI-control[aria-checked=false] {
-    background: white;
-    border: 1.5px solid #002957;
+.fl-qssMouseWidgetToggle .fl-switchUI {
+    margin-top: 0;
 }
-
-.fl-qssVolumeWidget .fl-switchUI-control[aria-checked=true] {
-    background: #800000;
-    border: 1.5px solid #800000;
+.fl-qssMouseWidgetToggle .fl-switchUI .fl-switchUI-control[aria-checked=true] .fl-switchUI-controlKnob {
+    left: 14px;
 }
 
-.fl-qssVolumeWidget .fl-switchUI-control:after {
-    content: "";
+/* Adding the option to have a toggle icon associated to the switchUI */
+.fl-qssMouseWidgetToggle.fl-qssMouseWidgetToggle-icon-offset {
+    margin-top: 30px;
+}
+.fl-qssMouseWidgetToggle .fl-switchUI-icon {
+    width: 24px;
+    height: 24px;
     display: inline-block;
-    margin-top: 2px;
-    width: 23px;
-    height: 23px;
+    margin: -30px 0 0 0;
 }
-
-.fl-qssVolumeWidget .fl-switchUI-control[aria-checked=false]:after {
-    background-color: #002957;
-    -webkit-mask: url("../../../assets/volume-icon.svg") 0 0/100% 100%;
-    mask: url("../../../assets/volume-icon.svg") 50% 50%/80% 80%;
+/* Swap Mouse buttons specific icon classes based on the switchUI-icon class */
+.fl-qssMouseWidgetToggle .fl-mouseButton-icon {
+    background: url(../../../assets/mouse-swap-left.svg);
 }
-
-.fl-qssVolumeWidget .fl-switchUI-control[aria-checked=true]:after {
-    background-color: #fff;
-    -webkit-mask: url("../../../assets/volume-mute.svg") 0 0/100% 100%;
-    mask: url("../../../assets/volume-mute.svg") 50% 50%/80% 80%;
+.fl-qssMouseWidgetToggle .fl-switchUI .fl-switchUI-control[aria-checked=true] .fl-mouseButton-icon {
+    background: url(../../../assets/mouse-swap-right.svg);
 }
-
-.fl-qssVolumeWidget .fl-switchUI-control[aria-checked=true] .flc-switchUI-off {
-    display: none;
-}
-
-.fl-qssVolumeWidget .fl-switchUI-control[aria-checked=true] .flc-switchUI-on {
-    display: block;
-}
-
-.fl-qssVolumeWidget .fl-switchUI-control[aria-checked=false] .flc-switchUI-off {
-    display: block;
-}
-
-.fl-qssVolumeWidget .fl-switchUI-control[aria-checked=false] .flc-switchUI-on {
-    display: none;
-}
-/* Custom CSS just for the Volume and Brightness Widget's steppers: END */

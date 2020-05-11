@@ -24,7 +24,6 @@ require("./assetsManager.js");
 require("./common/utils.js");
 require("./common/ws.js");
 require("./dialogs/dialogManager.js");
-require("./dialogs/psp.js");
 require("./storage.js");
 require("./factsManager.js");
 require("./gpiiConnector.js");
@@ -74,7 +73,6 @@ fluid.defaults("gpii.app", {
             settingGroups: [],
 
             // user settings
-            closePspOnBlur: null,
             closeQssOnBlur: null,
             disableRestartWarning: null
         },
@@ -103,12 +101,10 @@ fluid.defaults("gpii.app", {
     defaultUserToken: "noUser",
     // prerequisites
     members: {
-        machineId: "@expand:{that}.installID.getMachineID()"
+        machineId: "@expand:{that}.installID.getMachineID()",
+        onPSPPrerequisitesReady: "@expand:fluid.promise()"
     },
     components: {
-        configurationHandler: {
-            type: "gpii.app.siteConfigurationHandler"
-        },
         userErrorHandler: {
             type: "gpii.app.userErrorsHandler",
             options: {
@@ -203,6 +199,7 @@ fluid.defaults("gpii.app", {
             options: {
                 appTextZoomPath: "appTextZoom",
                 model: {
+                    lastEnvironmentalLoginGpiiKey : "{lifecycleManager}.model.lastEnvironmentalLoginGpiiKey",
                     isKeyedIn: "{app}.model.isKeyedIn",
                     keyedInUserToken: "{app}.model.keyedInUserToken",
 
@@ -246,10 +243,6 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
-        psp: {
-            type: "gpii.app.pspInApp",
-            createOnEvent: "onPSPPrerequisitesReady"
-        },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -284,9 +277,9 @@ fluid.defaults("gpii.app", {
                         ]
                     },
                     /*
-                     * A local shortcut (registered for the QSS, QSS widget and PSP) isn't fully sufficient for handling
+                     * A local shortcut (registered for the QSS and QSS widget) isn't fully sufficient for handling
                      * the closing of the tooltip as but it's the best sane that can be done. For example,
-                     * in case the QSS loses focus and neither of the related windows (PSP and qssWidget)
+                     * in case the QSS loses focus and neither of the related windows (qssWidget)
                      * is focused the tooltip will be hidden but hovering
                      * a button afterwards will show the tooltip again. In that case the tooltip won't be
                      * closable with "Esc" because we're using only a local shortcut.
@@ -298,7 +291,7 @@ fluid.defaults("gpii.app", {
                         args: [
                             "{that}.options.shortcutAccelerators.closeQssTooltip",
                             "onCloseQssTooltipShortcut",
-                            ["gpii.app.qss", "gpii.app.qssWidget", "gpii.app.psp"]
+                            ["gpii.app.qss", "gpii.app.qssWidget"]
                         ]
                     },
 
@@ -324,9 +317,6 @@ fluid.defaults("gpii.app", {
             options: {
                 model: {
                     isKeyedIn: "{gpii.app}.model.isKeyedIn"
-                },
-                events: {
-                    onActivePreferenceSetAltered: "{psp}.events.onActivePreferenceSetAltered"
                 },
                 listeners: {
                     onTrayIconClicked: {
@@ -393,9 +383,12 @@ fluid.defaults("gpii.app", {
         },
 
         "onPSPPrerequisitesReady.notifyPSPReady": {
-            this: "{that}.events.onPSPReady",
-            method: "fire",
+            func: "{that}.events.onPSPReady.fire",
             priority: "last"
+        },
+        "onPSPPrerequisitesReady.resolvePromise": {
+            func: "{that}.onPSPPrerequisitesReady.resolve",
+            priority: "after:notifyPSPReady"
         }
 
         // Disabled per: https://github.com/GPII/gpii-app/pull/100#issuecomment-471778768
@@ -407,8 +400,8 @@ fluid.defaults("gpii.app", {
     },
     invokers: {
         updateKeyedInUserToken: {
-            changePath: "keyedInUserToken",
-            value: "{arguments}.0"
+            funcName: "gpii.app.updateKeyedInUserToken",
+            args: ["{that}", "{arguments}.0"]
         },
         updatePreferences: {
             changePath: "preferences",
@@ -428,7 +421,15 @@ fluid.defaults("gpii.app", {
         },
         resetAllToStandard: {
             funcName: "gpii.app.resetAllToStandard",
-            args: ["{that}", "{psp}", "{qssWrapper}.qss"]
+            args: ["{that}", "{qssWrapper}.qss"]
+        },
+        // Re-apply the last environmental login
+        reApplyPreferences: {
+            func: "{lifecycleManager}.replayEnvironmentalLogin"
+        },
+        getEnvironmentalLoginKey: {
+            funcName: "gpii.app.getEnvironmentalLoginKey",
+            args: ["{lifecycleManager}.model.lastEnvironmentalLoginGpiiKey", "{arguments}.0", "{arguments}.1"]
         },
         exit: {
             funcName: "gpii.app.exit",
@@ -437,6 +438,28 @@ fluid.defaults("gpii.app", {
     },
     defaultTheme: "white"
 });
+
+// Indicative fix for GPII-3818
+gpii.app.updateKeyedInUserToken = function (that, userToken) {
+    var updateFunc = function () {
+        that.applier.change("keyedInUserToken", userToken);
+    };
+    if (that.onPSPPrerequisitesReady.disposition) {
+        updateFunc();
+    } else {
+        that.onPSPPrerequisitesReady.then(updateFunc);
+    }
+};
+
+/**
+ * Get the Gpii key name of the last environmental login.
+ * @param {String} lastEnvironmentalLoginGpiiKey - Gpii key name of the last environmental login.
+ * @param {Object} browserWindow - An Electron `BrowserWindow` object.
+ * @param {String} messageChannel - The channel to which the message should be sent.
+ */
+gpii.app.getEnvironmentalLoginKey = function (lastEnvironmentalLoginGpiiKey, browserWindow, messageChannel) {
+    gpii.app.notifyWindow(browserWindow, messageChannel, lastEnvironmentalLoginGpiiKey);
+};
 
 /**
  * Changes the keyboard shortcut for opening the GPII app. The previously registered
@@ -487,6 +510,10 @@ gpii.app.onQssSettingAltered = function (settingsBroker, appZoom, setting, oldVa
         var direction = setting.value > setting.oldValue ? "increase" : "decrease";
         appZoom.sendZoom(direction);
     } else {
+        if (fluid.isValue(setting.settings)) {
+            // this setting has secondary values, getting the proper one
+            setting = gpii.app.getSecondarySettingsChanges(setting, oldValue);
+        }
         settingsBroker.applySetting(setting);
     }
 };
@@ -548,13 +575,11 @@ gpii.app.keyOut = function (lifecycleManager, token) {
  * Performs a reset of all settings to their standard values. It also closes
  * the QSS in case it is open.
  * @param {Component} that - The `gpii.app` instance.
- * @param {Component} psp - The `gpii.app.psp` instance.
  * @param {Component} qss - The `gpii.app.qss` instance.
  * @return {Promise} A promise that will be resolved or rejected when the reset
  * all operation completes.
  */
-gpii.app.resetAllToStandard = function (that, psp, qss) {
-    psp.hide();
+gpii.app.resetAllToStandard = function (that, qss) {
     qss.hide();
     return that.keyIn("reset");
 };
@@ -629,7 +654,7 @@ gpii.app.windowMessage = function (that, hwnd, msg, wParam, lParam, result) {
 // broadcasting directly to "components" block which probably would destroy GPII.
 
 fluid.defaults("gpii.appWrapper", {
-    gradeNames: ["fluid.component"],
+    gradeNames: ["gpii.app.siteConfigurationHandler"],
     components: {
         app: {
             type: "gpii.app"

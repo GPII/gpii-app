@@ -35,7 +35,7 @@ var multiPrefSetsFixture = {
     "type":"ADD",
     "value":{
         "userToken":"context1",
-        "activeContextName":"gpii-default",
+        "activePrefsSetName":"gpii-default",
         "settingGroups": [
             {
                 "solutionName": "Magnifier",
@@ -149,8 +149,7 @@ var keyOutFixture = {
 
 var defaultPreferences = {
     gpiiAppShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
-    closeQssOnBlur: false,
-    closePspOnBlur: true
+    closeQssOnBlur: false
 };
 
 jqUnit.test("Parse empty message", function () {

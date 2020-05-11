@@ -18,10 +18,11 @@
     margin: 0;
 }
 .fl-qssOpenUSBWidget-tip {
-    margin-bottom: 5px;
+    margin-bottom: 0;
+    padding-bottom: 5px;
 }
 .fl-qssOpenUSBWidget-footerTip {
-    margin: 15px 0 5px 0;
+    margin: 13px 0 5px 0;
 }
 .fl-qssOpenUSBWidget-footerTip p {
     margin: 0;

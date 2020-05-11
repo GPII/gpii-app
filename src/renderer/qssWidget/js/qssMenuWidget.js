@@ -29,19 +29,23 @@
         gradeNames: ["fluid.viewComponent", "gpii.psp.heightObservable", "gpii.psp.selectorsTextRenderer"],
         model: {
             disabled: false,
-            setting: {}
+            setting: {},
+            messages: {
+                footerTip: "{that}.model.setting.widget.footerTip"
+            }
         },
         modelListeners: {
             setting: {
                 func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
                 args: ["{change}.value"],
-                includeSource: "settingAlter"
+                includeSource: "fromWidget"
             }
         },
         selectors: {
             heightListenerContainer: ".flc-qssMenuWidget-controls",
             menuControlsWrapper: ".flc-qssMenuWidget-controlsWrapper",
-            menuControls: ".flc-qssMenuWidget-controls"
+            menuControls: ".flc-qssMenuWidget-controls",
+            footerTip: ".flc-qssMenuWidget-footerTip"
         },
         enableRichText: true,
         activationParams: {},
@@ -90,7 +94,8 @@
                                 "{menu}",
                                 "{that}.container",
                                 "{arguments}.0", // value
-                                "{arguments}.1" // keyboardEvent
+                                "{arguments}.1", // keyboardEvent
+                                "{menu}.model.setting.schema.closeOnSelect"
                             ]
                         }
                     },
@@ -195,16 +200,22 @@
      * @param {Any} value - The new value of the setting in the QSS menu.
      * @param {KeyboardEvent} keyboardEvent - The keyboard event (if any) that led to the
      * change in the setting's value.
+     * @param {Boolean} closeOnSelect - Flag to know if the menu must be closed on select
      */
-    gpii.qssWidget.menu.updateValue = function (that, menu, container, value, keyboardEvent) {
+    gpii.qssWidget.menu.updateValue = function (that, menu, container, value, keyboardEvent, closeOnSelect) {
+        // we are closing the menu by default
+        var closeNow = closeOnSelect !== false;
+
         if (!that.model.disabled && that.model.value !== value) {
-            that.applier.change("value", value, null, "settingAlter");
+            that.applier.change("value", value, null, "fromWidget");
 
-            // Disable interactions with the window as it is about to close
-            that.applier.change("disabled", true);
-            container.addClass(that.options.styles.disabled);
-
-            menu.close(keyboardEvent);
+            if (closeNow) {
+                // Disable interactions with the window as it is about to close
+                that.applier.change("disabled", true);
+                container.addClass(that.options.styles.disabled);
+                // Closing the widget
+                menu.close(keyboardEvent);
+            }
         }
     };
 
@@ -253,7 +264,7 @@
             }, {
                 funcName: "gpii.qssWidget.menu.presenter.animateActivation",
                 args: ["{change}.value", "{that}.model.item", "{that}.container", "{that}.options.styles"],
-                includeSource: "settingAlter"
+                includeSource: "fromWidget"
             }]
         },
         events: {

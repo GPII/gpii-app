@@ -15,15 +15,11 @@
         "tooltip": "<p>Save your preferences so you can use them on other computers that have Morphic installed.</p>",
         "title": "Запиши"
     },
-    "gpii_app_qss_settings_psp": {
-        "tooltip": {
-            "keyedIn": "<p>Opens Morphic Settings Panel</p><p>Where you can quickly adjust often-changed settings of yours.</p>",
-            "keyedOut": "<p>Opens Morphic Settings Panel</p><p>Where you can sign in to apply your saved personal settings.</p>"
-        },
-        "title": {
-            "keyedIn": " ",
-            "keyedOut": " "
-        }
+    "gpii_app_qss_settings_mySavedSettings": {
+        "tooltip": "<p>My Saved Settings</p>",
+        "title": "My Saved Settings",
+        "tip": "<p>My Saved Settings</p><ul><li>To apply your saved settings, insert a Morphic USB key.</li><li>To re-apply them, remove and then reinsert the Morphic Key.</li></ul>",
+        "footerTip": "<p><i>The button below will only work if you sign into Morphic automatically when you sign into this computer</i></p>"
     },
     "gpii_app_qss_settings_more": {
         "tooltip": "<p>More options for changing the settings on this computer.</p>",
@@ -76,6 +72,16 @@
         "tooltip": "<p>Отваря cloud базирана публична папка.</p>",
         "title": "Quick Folders"
     },
+    "gpii_app_qss_settings_officeSimplification": {
+        "tooltip": "<p>Опростяване на Microsoft Word.</p><p>Предоставя опростени менюта за Microsoft Word.</p>",
+        "title": "Опрости MS Word",
+        "tip": "<p>Опростяване на Microsoft Word</p><p>Morphic може да опрости менютата в (групите менюта горе-вляво в Word), с цел да направи прогрмата по-лека за хора, които не са свикнали.</p><ul><li>Избери един или повече профила, за да добавиш в Word</li></ul>",
+        "enum": [
+            "Simple (Morphic)",
+            "Essentials (Morphic)",
+            "Рестартирай Word"
+        ]
+    },
     "gpii_app_qss_settings_common-volume": {
         "tooltip": "<p>Регулира, включва и изключва силата на звука на Windows.</p>",
         "title": "Сила и изключване на звука",
@@ -86,5 +92,37 @@
     "gpii_app_qss_settings_launch-documorph": {
         "tooltip": "<p>Стартирай апликацията DocuMorph.</p>",
         "title": "Стартирай Docu Morph"
+    },
+    "gpii_app_qss_settings_url-google-drive": {
+        "tooltip": "<p>Отваря Google Drive във браузъра.</p>",
+        "title": "Моят Google Drive"
+    },
+    "gpii_app_qss_settings_url-one-drive": {
+        "tooltip": "<p>Отваря One Drive във браузъра.</p>",
+        "title": "Моят One Drive"
+    },
+    "gpii_app_qss_settings_url-dropbox": {
+        "tooltip": "<p>Отваря Dropbox във браузъра.</p>",
+        "title": "Моят Dropbox"
+    },
+    "gpii_app_qss_settings_snipping-tool": {
+        "tooltip": "<p>Стартирай инструмента за отрязване на екрана.</p>",
+        "title": "Screen Snip"
+    },
+    "gpii_app_qss_settings_url-customize-qss": {
+        "tooltip": "<p>Отваря уеб страница където да промените бутоните в лентата.</p>",
+        "title": "Промени бутоните"
+    },
+    "gpii_app_qss_settings_common-colorVision": {
+        "tooltip": "<p>Променя цветовете на екрана с цел да се отличават по-лесно.</p>",
+        "title": "Филтри Цветове",
+        "tip": "<p>Филтри Цветове</p><p>Променя нюансите на дадени цветове, за да станат по-ясни за хора с различните типове далтонизъм.</p>",
+        "footerTip": "<div class='colorWheelTip'><p>Избери опция, която прави цветовете по-отчетливи.</p><center><img height=64 src='../../assets/color-vision-wheel.png' /></center></div>",
+        "enum": [
+            "Стандартни цветове",
+            "Червено-Зелено (Слабо зелено)",
+            "Червено-Зелено (Слабо червено)",
+            "Синьо-Жълто (Тританомалия)"
+        ]
     }
 }

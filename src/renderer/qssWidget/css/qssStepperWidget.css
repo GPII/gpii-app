@@ -23,7 +23,12 @@
 
 
 .fl-qssWidget-footerTip {
-    color: #21932b;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.fl-qssWidget-footerTip a {
+    color: #000000;
 }
 
 .fl-qssWidget-tip p {
@@ -211,16 +216,58 @@
     margin-bottom: 15px;
 }
 
-/* Custom CSS just for the Volume Widget's steppers: BEGIN */
-.fl-qssVolumeWidget .fl-qssStepperWidget-controls .flc-qssStepperWidget-controls-buttons {
-    flex-basis: 74%;
-    padding-left: 13%;
-    padding-right: 13%;
-}
-
-.fl-qssVolumeWidget .fl-qssToggleWidget-settingTitle {
-    text-align: left;
+/* MouseSpeedStepper Widget specific alterations */
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-settingTitle {
     font-weight: bold;
+    line-height: 110%;
+    font-size: 8.5px;
 }
 
-/* Custom CSS just for the Volume and Brightness Widget's steppers: END */
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls {
+    display: block;
+    width: auto;
+    margin: 0 0 5px 0;
+}
+
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls .fl-qssMouseSpeedStepperWidget-controls-buttons {
+    display: flex;
+    flex-basis: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 5px;
+    padding: 0;
+}
+
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn {
+    font-size: 8.5px;
+    width: 49%;
+    min-width: auto;
+    min-height: 24px;
+}
+
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-controls .fl-qssStepperWidget-btn + .fl-qssStepperWidget-btn {
+    margin-top: 0;
+}
+
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-indicators {
+    margin-top: 2px;
+    flex-basis: auto;
+    flex-direction: row;
+}
+
+.fl-qssStepperWidget-controls .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator,
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator:first-child {
+    margin: 6px auto;
+}
+
+.fl-qssMouseSpeedStepperWidget .fl-qssStepperWidget-indicators .fl-qssStepperWidget-indicator[data-type="selected"] {
+    margin: 3px 0 0 0;
+}
+
+.fl-qssMouseSpeedStepperWidget .fl-icon {
+    display: none;
+}
+
+.fl-qssMouseWidgetToggle .fl-btnLabel {
+    font-size: 8.5px;
+}
