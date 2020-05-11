@@ -130,7 +130,10 @@ fluid.defaults("gpii.app.dialog", {
             alwaysOnTop: true,
             skipTaskbar: true,
             type: "toolbar",
-            resizable: false
+            resizable: false,
+            webPreferences: {
+                nodeIntegration: true
+            }
         },
         filePrefixPath: "src/renderer",
         fileSuffixPath: null,           // e.g. "waitDialog/index.html"

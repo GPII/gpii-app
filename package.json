@@ -9,17 +9,17 @@
     },
     "license": "BSD-3-Clause",
     "dependencies": {
-        "electron": "6.0.12",
-        "electron-edge-js": "12.4.0",
+        "electron": "7.2.4",
+        "electron-edge-js": "12.13.0",
         "electron-localshortcut": "3.1.0",
-        "gpii-windows": "javihernandez/windows#56b1e7f91a9414d431c5d9c86e6d0cfc770ff9bb",
+        "gpii-express": "1.0.15",
+        "gpii-windows": "javihernandez/windows#c95b5e03b8addafa8d6ff0d2e3ba2c3bb92131d0",
         "infusion": "3.0.0-dev.20190328T144119Z.ec44dbfab",
         "nan": "2.14.0",
         "node-jqunit": "1.1.8",
         "request": "2.88.0",
         "winstrap": "0.5.12",
-        "ws": "6.1.2",
-        "gpii-express": "1.0.15"
+        "ws": "6.1.2"
     },
     "devDependencies": {
         "electron-packager": "10.1.1",
