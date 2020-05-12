@@ -13,7 +13,6 @@
         "electron-edge-js": "12.13.0",
         "electron-localshortcut": "3.1.0",
         "gpii-express": "1.0.15",
-        "gpii-windows": "javihernandez/windows#c95b5e03b8addafa8d6ff0d2e3ba2c3bb92131d0",
         "infusion": "3.0.0-dev.20190328T144119Z.ec44dbfab",
         "nan": "2.14.0",
         "node-jqunit": "1.1.8",
@@ -36,7 +35,7 @@
         "shelljs": "0.8.2"
     },
     "optionalDependencies": {
-        "gpii-windows": "0.3.0-dev.20200427T102955Z.2e04c69"
+        "gpii-windows": "javihernandez/windows#c95b5e03b8addafa8d6ff0d2e3ba2c3bb92131d0"
     },
     "scripts": {
         "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
