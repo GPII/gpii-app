@@ -730,22 +730,6 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
     },
 
     events: {
-        // Simply ensure the message is in the state that is expected, as currently there aren't specific
-        // channel messages for the QSS in the core
-        prepareMessageForQss: {
-            event: "onMessageReceived",
-            args: {
-                expander: {
-                    funcName: "gpii.app.dev.gpiiConnector.qss.prepareMessageForQss",
-                    args: [
-                        "{that}",
-                        "{that}.options.defaultQssSettingValues",
-                        "{arguments}.0" // message
-                    ]
-                }
-            }
-        },
-
         onQssSettingsUpdate: null
     },
 
@@ -757,55 +741,8 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
                 "{arguments}.0"
             ]
         }
-    },
-
-    // The "original" values of the QSS settings. These are to be provided from the core
-    // in the future.
-    defaultQssSettingValues: {
-        "http://registry\\.gpii\\.net/common/DPIScale": { value: 0 },
-        "http://registry\\.gpii\\.net/common/highContrastTheme": { value: "regular-contrast" },
-        "http://registry\\.gpii\\.net/common/selfVoicing/enabled": { value: false },
-        "http://registry\\.gpii\\.net/common/volume": { value: gpii.app.getVolumeValue() },
-        // use the initial value of the language as default setting
-        "http://registry\\.gpii\\.net/common/language": { value: "{systemLanguageListener}.model.configuredLanguage" },
-        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.PointerSpeed": { value: 10 },
-        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.SwapMouseButtons": { value: 0 },
-        "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.windows\\.mouseSettings.DoubleClickTime": { value: 500 },
-        "http://registry\\.gpii\\.net/common/cursorSize": { value: false }
     }
 });
-
-/**
- * Decorate the PSP channel message with QSS specific property so that it looks similar
- * to what it will look like in the future with core improvements on QSS functionality.
- * The property is populated using data from the incoming "Preference Update" message, sent for the PSP. It extracts
- * settings that are updated in order to update their state in the QSS as well.
- * In case it is needed (it's a full preference set update after a snapset or active set change), it
- * also populates with QSS settings that are missing using a predefined set of default values.
- * @param {Component} that - The instance of `gpii.app.dev.gpiiComponent` component
- * @param {Object} defaultQssSettingValues - The default QSS settings in the format - <path>: <value>
- * @param {Object} message - The raw PSP channel message
- * @return {Object} The decorated PSP channel message
- */
-gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQssSettingValues, message) {
-    var payload = message.payload || {};
-
-    if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {
-        var value = payload.value || {},
-            channelSettingControls = value.settingControls || [];
-
-        // leave only QSS settings
-        // Note that settings that doesn't have specific values such as "App / Text Zoom" will not receive setting updates
-        var qssSettingControls = fluid.filterKeys(channelSettingControls, fluid.keys(defaultQssSettingValues));
-
-        // add missing setting values if needed
-        qssSettingControls = gpii.app.dev.gpiiConnector.qss.applySettingDefaults(that, that.options.defaultQssSettingValues, qssSettingControls, value);
-
-        value.qssSettingControls = qssSettingControls;
-    }
-
-    return message;
-};
 
 
 /**
@@ -817,15 +754,32 @@ gpii.app.dev.gpiiConnector.qss.prepareMessageForQss = function (that, defaultQss
 gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) {
     var payload = message.payload || {},
         value = payload.value || {},
-        qssSettingControls = value.qssSettingControls || {};
+        preferences = value.preferences || {},
+        settingGroups = value.settingGroups || [],
+        updateDefaultValues = false;
 
-    if (gpii.app.gpiiConnector.isPrefSetUpdate(payload)) {
-        fluid.log("gpiiConnector.qss Controls to be sent: ", value.qssSettingControls);
+    if (gpii.app.gpiiConnector.isPrefSetUpdate(payload) && fluid.isValue(settingGroups[0])) {
+        var settingControls = settingGroups[0].settingControls;
 
-        that.events.onQssSettingsUpdate.fire(
-            fluid.hashToArray(qssSettingControls, "path"), // set to the expected format
-            gpii.app.gpiiConnector.isFullPrefSetUpdate(that.previousState, value)
-        );
+        // update settings values with the default values from the PSP Channel when Morphic start or reset
+        if (!fluid.isValue(preferences.contexts)) {
+            fluid.each(settingControls, function (setting) {
+                if (fluid.isValue(setting.schema.default)) {
+                    setting.value = setting.schema.default;
+                }
+            });
+            updateDefaultValues = true;
+        }
+
+        fluid.log("gpiiConnector.qss Controls to be sent: ", settingControls);
+        setTimeout(function () {
+            that.events.onQssSettingsUpdate.fire(
+                fluid.hashToArray(settingControls, "path"), // set to the expected format
+                gpii.app.gpiiConnector.isFullPrefSetUpdate(that.previousState, value),
+                updateDefaultValues
+            );
+            console.log("distributeQssSettings");
+        }, 5000);
 
         // Update the state of the last Pref Set update, in order to determine
         // the type of update in the future
