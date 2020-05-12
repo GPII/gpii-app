@@ -768,17 +768,22 @@ gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) 
                     setting.value = setting.schema.default;
                 }
             });
+            // we need to overwrite the default values ONLY if we don't have preferences.contexts
+            // this is the occasion when there is no data (ie on launch, on reset, or keyIn)
             updateDefaultValues = true;
         }
 
         fluid.log("gpiiConnector.qss Controls to be sent: ", settingControls);
+
+        // temporary setTimeout because it didn't apply it properly on launch
+        // this MUST be solved prolery
         setTimeout(function () {
+            // updating the whole settings group with the data from payload.value.settingGroups[0].settingControls
             that.events.onQssSettingsUpdate.fire(
                 fluid.hashToArray(settingControls, "path"), // set to the expected format
                 gpii.app.gpiiConnector.isFullPrefSetUpdate(that.previousState, value),
                 updateDefaultValues
             );
-            console.log("distributeQssSettings");
         }, 5000);
 
         // Update the state of the last Pref Set update, in order to determine
