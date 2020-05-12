@@ -765,33 +765,32 @@ gpii.app.qssWrapper.getSetting = function (settings, path) {
  * @param {Object} updatedSetting - The new setting. The setting with the same path in
  * the QSS will be replaced.
  * @param {String} [source] - The source of the update.
- * @param {Boolean} updateDefaultValues - Whether or not the default values to be updated.
+ * @param {Boolean} updateDefaultValues - Whatever or not the default values to be overwritten.
  */
 gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source, updateDefaultValues) {
     if (fluid.isValue(updatedSetting)) { // adding a check just in case of some missteps
-
         fluid.each(that.model.settings, function (setting, index) {
             if (gpii.app.hasSecondarySettings(setting)) {
-
+                // SECONDARY settings
                 fluid.each(setting.settings, function (nestedSetting, key) {
                     if (nestedSetting.path === updatedSetting.path && !fluid.model.diff(nestedSetting, updatedSetting)) {
-
                         // applying the secondary setting's change
                         that.applier.change("settings." + index + ".settings." + key, updatedSetting, null, source);
 
                         if (updateDefaultValues) {
-                            // update default schema values
+                            // update default schema values on request
                             that.applier.change("settings." + index + ".settings." + key, {schema: {default: updatedSetting.value}}, null, source);
                         }
                     }
                 });
             } else {
+                // PRIMARY settings
                 if (setting.id !== "MakeYourOwn" && setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
                     // applying primary setting's change
                     that.applier.change("settings." + index, updatedSetting, null, source);
 
                     if (updateDefaultValues) {
-                        // update default schema values
+                        // update default schema values on request
                         that.applier.change("settings." + index, {schema: {default: updatedSetting.value}}, null, source);
                     }
                 }
@@ -847,11 +846,10 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
             translatedSetting.switchTitle = message.switchTitle;
         }
 
-        // footerTip
         translatedSetting.widget = translatedSetting.widget || {};
-        if (fluid.isValue(message.footerTip)) {
-            translatedSetting.widget.footerTip = message.footerTip;
-        }
+
+        // footerTip
+        translatedSetting.widget.footerTip = message.footerTip || "";
 
         // sideCar
         translatedSetting.sideCar = message.sideCar || "";

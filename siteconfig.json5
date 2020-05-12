@@ -118,6 +118,7 @@
             "snipping-tool",
             "office-simplification",
             "high-contrast",
+            "color-vision",
             "mouse",
             "read-aloud",
             "volume",
@@ -179,5 +180,11 @@
     trayType: ["gpii.app.trayButton"],
 
     // URL to the reset to standard profile. If no provided, the system will use a fallback one
-    resetToStandardProfileUrl: "http://goldenorbs.com/shared/testDefaultSettingsHighContrastBG.win32.json5"
+    // original: "https://raw.githubusercontent.com/GPII/universal/master/testData/defaultSettings/defaultSettings.win32.json5"
+    resetToStandardProfileUrl: "http://goldenorbs.com/shared/testDefaultSettingsHighContrastBG.win32.json5",
+
+    autoLogin: {
+        blockedUsers: ["admin*", "guest*", "student*", "visitor*", "volunteer*"],
+        userIdSource: "username"
+    }
 }
