@@ -103,7 +103,8 @@ fluid.defaults("gpii.app", {
     defaultUserToken: "noUser",
     // prerequisites
     members: {
-        machineId: "@expand:{that}.installID.getMachineID()"
+        machineId: "@expand:{that}.installID.getMachineID()",
+        onPSPPrerequisitesReady: "@expand:fluid.promise()"
     },
     components: {
         settingsDir: {
@@ -407,9 +408,12 @@ fluid.defaults("gpii.app", {
         },
 
         "onPSPPrerequisitesReady.notifyPSPReady": {
-            this: "{that}.events.onPSPReady",
-            method: "fire",
+            func: "{that}.events.onPSPReady.fire",
             priority: "last"
+        },
+        "onPSPPrerequisitesReady.resolvePromise": {
+            func: "{that}.onPSPPrerequisitesReady.resolve",
+            priority: "after:notifyPSPReady"
         }
 
         // Disabled per: https://github.com/GPII/gpii-app/pull/100#issuecomment-471778768
@@ -421,8 +425,8 @@ fluid.defaults("gpii.app", {
     },
     invokers: {
         updateKeyedInUserToken: {
-            changePath: "keyedInUserToken",
-            value: "{arguments}.0"
+            funcName: "gpii.app.updateKeyedInUserToken",
+            args: ["{that}", "{arguments}.0"]
         },
         updatePreferences: {
             changePath: "preferences",
@@ -459,6 +463,18 @@ fluid.defaults("gpii.app", {
     },
     defaultTheme: "white"
 });
+
+// Indicative fix for GPII-3818
+gpii.app.updateKeyedInUserToken = function (that, userToken) {
+    var updateFunc = function () {
+        that.applier.change("keyedInUserToken", userToken);
+    };
+    if (that.onPSPPrerequisitesReady.disposition) {
+        updateFunc();
+    } else {
+        that.onPSPPrerequisitesReady.then(updateFunc);
+    }
+};
 
 /**
  * Get the Gpii key name of the last environmental login.
