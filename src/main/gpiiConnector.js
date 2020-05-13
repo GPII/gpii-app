@@ -764,8 +764,8 @@ gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) 
         // update settings values with the default values from the PSP Channel when Morphic start or reset
         if (!fluid.isValue(preferences.contexts)) {
             fluid.each(settingControls, function (setting) {
-                if (fluid.isValue(setting.schema.default)) {
-                    setting.value = setting.schema.default;
+                if (fluid.isValue(setting.schema["default"])) {
+                    setting.value = setting.schema["default"];
                 }
             });
             // we need to overwrite the default values ONLY if we don't have preferences.contexts
