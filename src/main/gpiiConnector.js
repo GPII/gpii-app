@@ -729,6 +729,8 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         }
     },
 
+    eventDelay: 6000,
+
     events: {
         onQssSettingsUpdate: null
     },
@@ -740,6 +742,19 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
                 "{that}",
                 "{arguments}.0"
             ]
+        }
+    },
+
+    components: {
+        settingsUpdateTimeout: {
+            type: "gpii.app.timer",
+            options: {
+                listeners: {
+                    onTimerFinished: {
+                        func: "{gpii.app.dev.gpiiConnector.qss}.events.onQssSettingsUpdate.fire"
+                    }
+                }
+            }
         }
     }
 });
@@ -777,14 +792,14 @@ gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) 
 
         // temporary setTimeout because it didn't apply it properly on launch
         // this MUST be solved prolery
-        setTimeout(function () {
-            // updating the whole settings group with the data from payload.value.settingGroups[0].settingControls
-            that.events.onQssSettingsUpdate.fire(
+        // updating the whole settings group with the data from payload.value.settingGroups[0].settingControls
+        that.settingsUpdateTimeout.start(that.options.eventDelay,
+            [
                 fluid.hashToArray(settingControls, "path"), // set to the expected format
                 gpii.app.gpiiConnector.isFullPrefSetUpdate(that.previousState, value),
                 updateDefaultValues
-            );
-        }, 5000);
+            ]
+        );
 
         // Update the state of the last Pref Set update, in order to determine
         // the type of update in the future
