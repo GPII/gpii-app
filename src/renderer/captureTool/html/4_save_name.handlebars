@@ -1,0 +1,27 @@
+{{> page_header_partial pageHeader="4. Save"}}
+
+<p>
+    Give the Preference Set a name that will help you remember what is in it, or
+    how you expect to use it.
+</p>
+<p>
+    For example, if this is a set of preferences you would use mostly at work, you
+    might call it "Work preferences"
+</p>
+<br/>
+<form>
+    <div class="form-group">
+        <label for="fl-capture-prefsetname">Name for the Captured Pref-Set</label>
+        <input type="text" name="fl-capture-prefsetname" class="form-control"
+            id="fl-capture-prefsetname" placeholder="Capture Name">
+    </div>
+
+
+<p>
+    You are currently keyed in with {{keyedInUserToken}}, and the capture will be saved to that vault.
+</p>
+    <input type="button" class="btn btn-default fl-capture-back flc-capture-back" value="Back" />
+    <input type="button" class="btn btn-primary fl-capture-next flc-capture-next" value="Next" />
+
+
+{{> footer_location_partial activeSave="true"}}
