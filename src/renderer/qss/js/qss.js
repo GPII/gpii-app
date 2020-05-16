@@ -252,6 +252,7 @@
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
 
                         onMetric: null,
+                        onMetricState: null,
 
                         // Custom buttons events
                         onQssStartProcess: null,
