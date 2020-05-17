@@ -1,0 +1,63 @@
+{{> page_header_partial pageHeader="4. Decide where to save your settings"}}
+
+{{#if isKeyedIn}}
+<p>
+    Select a preference set where you want to save your captured preferences.
+    Any new settings will replace settings that are older.
+</p>
+<p>
+    You can also create a new preference set.
+</p>
+
+<br/>
+
+<span>Save to</span>
+<div class="dropdown">
+    <button style="padding-left: 0px" id="example-dropdown" class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+        <span class="flc-current-selected-prefset">
+            <a class="flc-select-prefset-dropdown" data-prefsset-id="{{defaultPrefsSet.prefsSetId}}" href="#"><img width="30px" src="./at_home.png" /> {{defaultPrefsSet.name}}</a>
+        </span>
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu fl-prefsset-dropdown" role="menu" aria-labelledby="dropdown-example">
+        {{#each preferences.contexts}}
+        <li>
+            <a style="padding-left: 0px" class="flc-select-prefset-dropdown" data-type="existing" data-prefsset-id="{{@key}}" data-prefsset-name="{{this.name}}" href="#">
+                <img width="30px" src="./at_home.png" /> {{this.name}}
+            </a>
+        </li>
+        {{/each}}
+        <li>
+            <a style="padding-left: 0px" class="flc-select-prefset-dropdown" data-type="save-new" data-prefsset-id="gpii-default" href="#">
+                <img width="30px" src="./save_new_set.png" /> Save as a new set...
+            </a>
+        </li>
+    </ul>
+</div>
+
+<p>
+    You are currently keyed in with {{keyedInUserToken}}, and the capture will be saved to that vault.
+</p>
+    <input type="button" class="btn btn-default fl-capture-back flc-capture-back" value="Back" />
+    <input type="button" class="btn btn-primary fl-capture-next flc-capture-next" value="Next" />
+
+{{else}}
+<p>
+    You are not currently keyed in to Morphic. Please key in in order to save this capture.  If you have a Morphic Key
+    you may also enter it below and click "Key-In" to key in to the system.
+</p>
+
+<br/>
+
+<div class="form-group">
+    <label for="fl-capture-keyinKey">Morphic Key</label>
+    <input type="text" name="fl-capture-keyinKey" class="form-control"
+        id="fl-capture-keyinKey" placeholder="Morphic Key" />
+    <input type="button" class="btn btn-primary fl-capture-keyin flc-capture-keyin" value="Key-In" />
+</div>
+
+<br/><br/>
+    <input type="button" class="btn btn-default fl-capture-back flc-capture-back" value="Back" />
+{{/if}}
+
+{{> footer_location_partial activeSave="true"}}
