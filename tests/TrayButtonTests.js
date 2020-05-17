@@ -47,10 +47,6 @@ gpii.tests.app.trayButton.buttonTests = fluid.freezeRecursive([
     {
         name: "isKeyedIn",
         value: false
-    },
-    {
-        name: "icon",
-        value: "bad icon file"
     }
 ]);
 
