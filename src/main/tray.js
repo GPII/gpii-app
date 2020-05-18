@@ -45,7 +45,8 @@ fluid.defaults("gpii.app.tray", {
     events: {
         onActivePreferenceSetAltered: null, // passed from parent
         onMenuUpdated: null,
-        onTrayIconClicked: null
+        onTrayIconClicked: null,
+        onTrayIconMenuShown: null
     },
     model: {
         isKeyedIn: false,
@@ -364,6 +365,7 @@ gpii.app.trayButton.windowMessage = function (that, hwnd, msg, wParam) {
 
         case gpii.app.trayButton.notifications.showMenu:
             if (that.menu) {
+                that.events.onTrayIconMenuShown.fire();
                 that.menu.popup({});
             }
             break;

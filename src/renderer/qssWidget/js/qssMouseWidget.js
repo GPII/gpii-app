@@ -136,7 +136,9 @@
                     events: {
                         // Add events the main process to be notified for
                         onQssWidgetSettingAltered:       "{mouse}.events.onQssWidgetSettingAltered",
-                        onQssWidgetNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired"
+                        onQssWidgetNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired",
+                        onMetric: null,
+                        onMetricState: null
                     }
                 }
             }
