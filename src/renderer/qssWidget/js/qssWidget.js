@@ -44,7 +44,7 @@
      * showing the "Learn more" links, etc.
      */
     fluid.defaults("gpii.psp.qssWidget", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.psp.metrics.qssWidget"],
 
         model: {
             setting: {}
@@ -105,7 +105,8 @@
             // Volume & Mute related event
             onQssGetVolumeRequested: null,
             onQssReApplyPreferencesRequired: null,
-            onQssGetEnvironmentalLoginKeyRequested: null
+            onQssGetEnvironmentalLoginKeyRequested: null,
+            onSideCarToggled: null
         },
 
         styles: {
@@ -224,7 +225,8 @@
                                             "{that}",
                                             "{qssWidget}",
                                             "{sideCar}.container",
-                                            "{qssWidget}.options.styles"
+                                            "{qssWidget}.options.styles",
+                                            "{qssWidget}.events.onSideCarToggled"
                                         ]
                                     }
                                 }
@@ -327,7 +329,9 @@
                         // Volume button
                         onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
                         onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
-                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested"
+                        onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested",
+                        onMetric:                        "{qssWidget}.events.onMetric",
+                        onMetricState:                   "{qssWidget}.events.onMetricState"
                     }
                 }
             }
@@ -435,8 +439,9 @@
      * @param  {Component} qssWidget - instance of the qssWidget
      * @param  {jQuery} sideCarContainer - instance of the sideCar container
      * @param  {Object} styles - A hash containing CSS classes for the different buttons
+     * @param  {Event} onToggled - The event to raise of the sideCar has been opened or closed.
      */
-    gpii.psp.qssWidget.openSideCarActivated = function (sidePanelButton, qssWidget, sideCarContainer, styles) {
+    gpii.psp.qssWidget.openSideCarActivated = function (sidePanelButton, qssWidget, sideCarContainer, styles, onToggled) {
         if (qssWidget.model.setting.sideCar || qssWidget.model.setting.sideCarWithSettings) {
             // remove all of the default classes
             sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
@@ -449,6 +454,7 @@
                 sidePanelButton.container.addClass(styles.closeSidePanel);
                 // changing button's label
                 sidePanelButton.applier.change("label", qssWidget.model.messages.hideSideCar, null, "fromWidget");
+                onToggled.fire("open");
             } else {
                 qssWidget.events.onSideCarClosed.fire();
 
@@ -457,6 +463,7 @@
                 sidePanelButton.container.addClass(styles.openSidePanel);
                 // changing button's label
                 sidePanelButton.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
+                onToggled.fire("close");
             }
         } else {
             // If there is no side panel content use button as a link.

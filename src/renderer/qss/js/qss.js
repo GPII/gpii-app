@@ -123,7 +123,8 @@
             onResetAllRequired: null,
             onSaveRequired: null,
             onQssClosed: null,
-            onUndoIndicatorChanged: null
+            onUndoIndicatorChanged: null,
+            onMetric: null
         },
         listeners: {
             onResetAllRequired: "{list}.events.onMorePanelClosed.fire",
@@ -442,7 +443,7 @@
      * the `focusManager` and the channels for communication with the main process.
      */
     fluid.defaults("gpii.qss", {
-        gradeNames: ["fluid.viewComponent"],
+        gradeNames: ["fluid.viewComponent", "gpii.qss.metrics"],
 
         model: {
             isKeyedIn: false,
@@ -554,6 +555,9 @@
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
+
+                        onMetric: null,
+                        onMetricState: null,
 
                         // Custom buttons events
                         onQssStartProcess: null,

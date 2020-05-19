@@ -149,6 +149,8 @@ fluid.defaults("gpii.app.qss", {
                     onQssSaveRequired: null,
                     onQssPspToggled: null,
 
+                    onMetric: null,
+
                     // Custom buttons events
                     onQssStartProcess: null,
                     onQssExecuteKeySequence: null
