@@ -108,7 +108,8 @@ jqUnit.asyncTest("Testing tray button", function () {
     var trayButton = gpii.app.trayButton({
         events: {
             onMenuUpdated: null,
-            onTrayIconClicked: null
+            onTrayIconClicked: null,
+            onTrayIconMenuShown: null
         },
         listeners: {
             onMenuUpdated: {
