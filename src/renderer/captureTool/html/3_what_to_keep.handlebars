@@ -1,0 +1,74 @@
+<div class="fl-flex-container">
+
+<div class="fl-flex-regular-box">
+    {{> page_header_partial pageHeader="3. Decide which settings to keep"}}
+
+    <p>
+        The capture tool found {{currentNumberOfTotalSettingsToRender}} settings in the {{capturedSettingsToRender.length}} applications. Look at each application's settings
+        and decide which settings you want to keep.
+    </p>
+    {{#if solutionsWithErrors}}
+    <div class="alert alert-danger" role="alert">
+        <span>There was an error capturing the following solutions.</span>
+        <ul>
+        {{#each solutionsWithErrors}}
+            <li>{{this}}</li>
+        {{/each}}
+        </ul>
+    </div>
+    {{/if}}
+    <hr/>
+    <div>
+        <span><span class="flc-num-settings-selected">0</span> settings selected</span>
+        <a href="#" class="flc-select-all-settings fl-settings-action-link">Select All</a>
+        <a href="#" class="flc-clear-all-settings fl-settings-action-link">Clear All</a>
+    </div>
+</div>
+
+{{!-- <form> --}}
+<div class="form-group fl-capture-scrolled fl-flex-expand-box">
+    {{#each capturedSettingsToRender}}
+    <div>
+        <div class="clearfix color-bg-light-vivid-low" style="margin-bottom: 2px; padding: 2px">
+            <div class="checkbox inline">
+                <label>
+                    <input type="checkbox" name="fc-solutions-to-keep" value="{{this.id}}" id="fc-solution-{{this.id}}" />
+                    <span> </span>
+                </label>
+            </div>
+            <strong>{{this.name}} ( <a class="flc-hideshow-numsetting-link fl-settings-action-link" data-solution="{{this.id}}"> {{this.numberOfRenderSettings}} settings </a> ) </strong>
+            <input class="flc-hideshow-solution btn btn-default theme-light pull-right" type="button" value="Show Settings" data-show="false" data-solution="{{this.id}}" />
+        </div>
+        <div style="margin-left: 40px; display: none;" id="flc-settings-for-{{this.id}}">
+        {{#each this.renderSettings}}
+            {{!-- <div class="pull-right" style="color: gray"><em>Debug Info: {{this.debugInfo}}</em></div> --}}
+            <div class="checkbox">
+                <label>
+                    <input name="fc-settings-to-keep" value="{{../id}}:{{this.settingId}}" type="checkbox" />
+                    <span>{{this.settingLabel}}: <strong>{{this.settingVal}}</strong></span>
+                    <img src="./u128.png" data-toggle="tooltip" title="{{this.settingDesc}}"
+                        aria-hidden="true" />
+
+                </label>
+            </div>
+        {{/each}}
+        </div>
+    </div>
+    {{/each}}
+</div>
+<div class="checkbox">
+    <label>
+        <input name="flc-toggle-show-default-settings" value="show-defaults" type="checkbox" />
+        <span>Show values that match application defaults</span>
+    </label>
+</div>
+{{!-- </form> --}}
+
+<div class="fl-flex-regular-box">
+    <input type="button" class="btn btn-default fl-capture-back flc-capture-back" value="Back" />
+    <input type="button" class="btn btn-primary fl-capture-next flc-capture-next" value="Next" />
+</div>
+
+</div>
+
+{{> footer_location_partial activeWhatToKeep="true"}}

@@ -24,6 +24,7 @@ require("./assetsManager.js");
 require("./common/utils.js");
 require("./common/ws.js");
 require("./dialogs/dialogManager.js");
+require("./dialogs/captureToolDialog.js");
 require("./storage.js");
 require("./factsManager.js");
 require("./gpiiConnector.js");
@@ -33,6 +34,7 @@ require("./settingsBroker.js");
 require("./shortcutsManager.js");
 require("./siteConfigurationHandler.js");
 require("./surveys/surveyManager.js");
+require("./storage.js");
 require("./tray.js");
 require("./userErrorsHandler.js");
 require("./metrics.js");
@@ -101,9 +103,16 @@ fluid.defaults("gpii.app", {
     defaultUserToken: "noUser",
     // prerequisites
     members: {
-        machineId: "@expand:{that}.installID.getMachineID()"
+        machineId: "@expand:{that}.installID.getMachineID()",
+        onPSPPrerequisitesReady: "@expand:fluid.promise()"
     },
     components: {
+        settingsDir: {
+            type: "gpii.settingsDir"
+        },
+        configurationHandler: {
+            type: "gpii.app.siteConfigurationHandler"
+        },
         userErrorHandler: {
             type: "gpii.app.userErrorsHandler",
             options: {
@@ -242,6 +251,21 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        captureTool: {
+            type: "gpii.app.captureTool",
+            createOnEvent: "onOpenCaptureTool",
+            options: {
+                model: {
+                    isKeyedIn: "{app}.model.isKeyedIn",
+                    keyedInUserToken: "{app}.model.keyedInUserToken",
+                    preferences: "{pspChannel}.model.preferences"
+                }
+            }
+        },
+        diagnosticsCollector: {
+            type: "gpii.app.diagnosticsCollector",
+            createOnEvent: "onPSPPrerequisitesReady"
+        },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -349,6 +373,8 @@ fluid.defaults("gpii.app", {
         onPSPChannelConnected: null,
         onPSPReady: null,
 
+        onOpenCaptureTool: null,
+
         onKeyedIn: null,
         onKeyedOut: null,
 
@@ -382,9 +408,12 @@ fluid.defaults("gpii.app", {
         },
 
         "onPSPPrerequisitesReady.notifyPSPReady": {
-            this: "{that}.events.onPSPReady",
-            method: "fire",
+            func: "{that}.events.onPSPReady.fire",
             priority: "last"
+        },
+        "onPSPPrerequisitesReady.resolvePromise": {
+            func: "{that}.onPSPPrerequisitesReady.resolve",
+            priority: "after:notifyPSPReady"
         }
 
         // Disabled per: https://github.com/GPII/gpii-app/pull/100#issuecomment-471778768
@@ -396,8 +425,8 @@ fluid.defaults("gpii.app", {
     },
     invokers: {
         updateKeyedInUserToken: {
-            changePath: "keyedInUserToken",
-            value: "{arguments}.0"
+            funcName: "gpii.app.updateKeyedInUserToken",
+            args: ["{that}", "{arguments}.0"]
         },
         updatePreferences: {
             changePath: "preferences",
@@ -434,6 +463,18 @@ fluid.defaults("gpii.app", {
     },
     defaultTheme: "white"
 });
+
+// Indicative fix for GPII-3818
+gpii.app.updateKeyedInUserToken = function (that, userToken) {
+    var updateFunc = function () {
+        that.applier.change("keyedInUserToken", userToken);
+    };
+    if (that.onPSPPrerequisitesReady.disposition) {
+        updateFunc();
+    } else {
+        that.onPSPPrerequisitesReady.then(updateFunc);
+    }
+};
 
 /**
  * Get the Gpii key name of the last environmental login.

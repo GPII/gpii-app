@@ -30,7 +30,7 @@
         "title": "Chrome Read Aloud",
         "tip": "<p>Turns on and adjusts Read Aloud mode in Chrome</p>",
         "extendedTip": "<p>To use Read Aloud</p><ol><li>Open web page in Chrome <img height=12 src='../../icons/chrome.svg'></li><li>Select / highlight text</li><li>Click Play button that pops up</li></ol>",
-        "sideCar": "<p>On this menu you can turn on the Read Aloud function installed in the <b>Chrome Browser</b>. When Read Aloud is turned on:</p><ol><li>Select / Highlight text in Chrome</li><li>Click Play button that pops up</li></ol><p>NOTE: when you first turn on read aloud you may have to refresh open pages first.</p><p><b>Microsoft Edge</b> browser also has a Read Aloud mode.  It is always on. To use it:</p><ol><li>Open the Edge browser</li><li>Right-click a webpage and choose “Read Aloud” from the menu</li></ol><p>A Read Aloud toolbar will appear in Edge where you can control the reading.</p><p>Microsoft Word and OneNote also have read aloud features. You can <a href='https://morphic.zendesk.com/hc/en-us/articles/360030418393-Chrome-Read-Aloud'>learn more about read aloud</a> on the Morphic knowledge base.</p>"
+        "sideCar": "<p>On this menu you can turn on the Read Aloud function installed in the <b>Chrome Browser</b>. When Read Aloud is turned on:</p><ol><li>Select / Highlight text in Chrome</li><li>Click Play button that pops up</li></ol><p>NOTE: when you first turn on read aloud you may have to refresh open pages first.</p><p><b>Microsoft Edge</b> browser also has a Read Aloud mode.  It is always on. To use it:</p><ol><li>Open the Edge browser</li><li>Right-click a webpage and choose “Read Aloud” from the menu</li></ol><p>A Read Aloud toolbar will appear in Edge where you can control the reading.</p><p>Microsoft Word and OneNote also have read aloud features. You can <a href='https://morphic.world/basics/learn-more-about-quickstrip#readaloud'>learn more about read aloud</a> on the Morphic knowledge base.</p>"
     },
     "gpii_app_qss_settings_common-highContrastTheme": {
         "tooltip": "<p>Change the contrast between the text and background color, so text is easier to read.</p><p>Contrast changes will affect Windows, Edge, Chrome, and some other applications.</p>",
@@ -157,5 +157,18 @@
         "tooltip": "<p>Button will not work here until Morphic is updated.</p>",
         "title": "",
         "tip": ""
+    },
+    "gpii_app_qss_settings_common-colorVision": {
+        "tooltip": "<p>Change the colors displayed on the screen to make things easier to view or distinguish.</p>",
+        "title": "Color Vision",
+        "tip": "<p>Color Vision Filters</p><p>Shifts colors to help those with some form of color blindness distinguish colors.</p>",
+        "footerTip": "<div class='colorWheelTip'><p>Pick an option that makes the nine colors below more distinct.</p><center><img height=64 src='../../assets/color-vision-wheel.png' /></center></div>",
+        "enum": [
+            "Standard colors",
+            "Red-Green (Green weak)",
+            "Red-Green (Red weak)",
+            "Blue-Yellow (Tritanomaly)"
+        ],
+        "sideCarWithSettings": "<p>In addition to the Windows color vision options presented in the panel to the left, there are also several grayscale options provided in Windows setting.</p><p>Here is the link to take you directly to the full set of Color Vision Options in Windows Settings:</p><ul><li><a href='ms-settings:easeofaccess-colorfilter'>Color Vision Settings</a></li></ul>"
     }
 }
