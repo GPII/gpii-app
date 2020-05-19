@@ -19,6 +19,8 @@
 "use strict";
 
 var fluid = require("infusion");
+var gpii = fluid.registerNamespace("gpii");
+fluid.registerNamespace("gpii.app.metrics");
 
 /*
 
@@ -174,6 +176,19 @@ tray-icon: The tray icon was clicked
     }
 }
 
+
+office-change: When one of the simplification buttons have been clicked.
+{
+  "module": "metrics.app",
+  "event": "office-change",
+  "data": {
+    "id": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.office.word-ribbon",
+    "oldValue": "Basics+StandardSet",
+    "value": "Basics+Essentials+StandardSet"
+  },
+}
+
+
 */
 
 
@@ -243,20 +258,11 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
             func: "{eventLog}.setState",
             args: [ "focus", "{arguments}.0.path" ]
         }],
-        "{channelListener}.events.onQssButtonActivated": {
-            namespace: "metrics",
-            func: "{eventLog}.uiMetric",
-            args: [ "button-activated", {
-                buttonPath: "{arguments}.0.path",
-                key: "{arguments}.2.key",
-                mouse: "{arguments}.2.type"
-            } ]
-        },
         "{channelListener}.events.onQssButtonMouseEnter": [{
             namespace: "metric",
             func: "{eventLog}.uiMetric",
             args: [ "mouse-over", {
-                id:"{arguments}.0.path",
+                path:"{arguments}.0.path",
                 qss: true
             } ]
         }, {
@@ -317,6 +323,10 @@ fluid.defaults("gpii.app.metrics.qssInWrapper", {
     }
 });
 
+gpii.app.metrics.asString = function (object) {
+    return fluid.isValue(object) ? object.toString() : "";
+};
+
 /** Mix-in grade to provide metrics for QSS widgets */
 fluid.defaults("gpii.app.metrics.qssWidget", {
     gradeNames: ["fluid.component"],
@@ -325,7 +335,8 @@ fluid.defaults("gpii.app.metrics.qssWidget", {
             func: "{eventLog}.uiMetric",
             args: ["setting-changed", {
                 path: "{arguments}.0.path",
-                value: "{arguments}.0.value"
+                // Needs to always be a string.
+                setTo: "@expand:gpii.app.metrics.asString({arguments}.0.value)"
             }]
         },
         "onDialogShown.metrics": {
