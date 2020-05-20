@@ -60,7 +60,9 @@ fluid.defaults("gpii.app.qssNotification", {
             options: {
                 events: {
                     onQssNotificationClosed: null,
-                    onQssNotificationHeightChanged: "{qssNotification}.events.onContentHeightChanged"
+                    onQssNotificationHeightChanged: "{qssNotification}.events.onContentHeightChanged",
+                    onMetric: null,
+                    onMetricState: null
                 },
                 listeners: {
                     onQssNotificationClosed: {

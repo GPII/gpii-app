@@ -1,4 +1,7 @@
 {
+    // Unique identifier for the deployment.
+    site: "default.gpii.net",
+
     // Whether to hide the QSS save button.
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
@@ -185,5 +188,8 @@
     autoLogin: {
         blockedUsers: ["admin*", "guest*", "student*", "visitor*", "volunteer*"],
         userIdSource: "username"
-    }
+    },
+
+    // Metrics switch (read by the service): "<morphic>:<metrics>"
+    metricsSwitch: "on:on" // (eg, "on:on"=both on (default), "off:on"=metrics only)
 }

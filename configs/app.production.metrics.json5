@@ -1,0 +1,8 @@
+// Start the app in production, and include metrics.
+{
+    "type": "gpii.appMetrics",
+    "mergeConfigs": [
+        "%gpii-app/configs/app.production.json",
+        "%gpii-app/configs/app.metrics.base.json5"
+    ]
+}
