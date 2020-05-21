@@ -465,9 +465,13 @@ gpii.app.captureTool.savePreferences = function (flatSolutionsRegistry, keyedInU
 
     payload.contexts[options.prefSetId] = options.prefSetPayload;
 
-    var prefsTogo = gpii.lifecycleManager.transformSettingsToPrefs(options.prefSetPayload.preferences, flatSolutionsRegistry);
+    // Note: During the development of the capture tool there has been occasional back and forth discussion as to
+    // whether we should be saving the raw application settings, or the transform with some of them going to generic
+    // preferences. For the time being we are using application settings as the work better with the validation. GPII-4488.
+    // If there was a desire to make the transform before saving, the line below can be used to generate the preferences.
+    // var prefsTogo = gpii.lifecycleManager.transformSettingsToPrefs(options.prefSetPayload.preferences, flatSolutionsRegistry);
 
-    payload.contexts[options.prefSetId].preferences = prefsTogo;
+    payload.contexts[options.prefSetId].preferences = options.prefSetPayload.preferences;
 
     flowManager.savePreferences(keyedInUserToken, payload);
 };
