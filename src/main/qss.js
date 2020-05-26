@@ -843,13 +843,10 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
             translatedSetting.switchTitle = message.switchTitle;
         }
 
-        // footerTip
         translatedSetting.widget = translatedSetting.widget || {};
-        if (fluid.isValue(message.footerTip)) {
-            translatedSetting.widget.footerTip = message.footerTip;
-        } else {
-            translatedSetting.widget.footerTip = "";
-        }
+
+        // footerTip
+        translatedSetting.widget.footerTip = message.footerTip || "";
 
         // sideCar
         translatedSetting.sideCar = message.sideCar || "";

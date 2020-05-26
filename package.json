@@ -9,9 +9,11 @@
     },
     "license": "BSD-3-Clause",
     "dependencies": {
+        "bootstrap": "3.3.7",
         "electron": "3.0.2",
         "electron-edge-js": "8.3.8",
         "electron-localshortcut": "3.1.0",
+        "gpii-handlebars": "2.1.0",
         "infusion": "3.0.0-dev.20190328T144119Z.ec44dbfab",
         "nan": "2.10.0",
         "node-jqunit": "1.1.8",
@@ -35,10 +37,11 @@
         "shelljs": "0.8.2"
     },
     "optionalDependencies": {
-        "gpii-windows": "GPII/windows#2d5edfbb164d6352ef81c70fa6961f9f278eab74"
+        "gpii-windows": "0.3.0-dev.20200514T214925Z.26f1e42"
     },
     "scripts": {
         "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
+        "service": "npm --prefix ./node_modules/gpii-windows/gpii-service run service-dev",
         "dev": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron . ./configs app.dev",
         "build": "electron ./scripts/compileMessageBundles.js && .\\trayButton\\build.cmd",
         "postinstall": "npm run build",

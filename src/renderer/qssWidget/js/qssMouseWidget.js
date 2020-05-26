@@ -129,16 +129,18 @@
                         setting: "{mouse}.model.setting.settings.largerMousePointer"
                     }
                 }
-            //},
-            //channelNotifier: {
-            //    type: "gpii.psp.channelNotifier",
-            //    options: {
-            //        events: {
-            //            // Add events the main process to be notified for
-            //            onQssWidgetSettingAltered:       "{mouse}.events.onQssWidgetSettingAltered",
-            //            onQssWidgetNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired"
-            //        }
-            //    }
+            },
+            channelNotifier: {
+                type: "gpii.psp.channelNotifier",
+                options: {
+                    events: {
+                        // Add events the main process to be notified for
+                        onQssWidgetSettingAltered:       "{mouse}.events.onQssWidgetSettingAltered",
+                        onQssWidgetNotificationRequired: "{mouse}.events.onQssWidgetNotificationRequired",
+                        onMetric: null,
+                        onMetricState: null
+                    }
+                }
             }
         }
     });

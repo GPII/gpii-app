@@ -8,7 +8,7 @@
             "disabled": false,
             env: {
                 NODE_ENV: "app.production",
-                GPII_CLOUD_URL: "https://flowmanager.prd.gcp.gpii.net"
+                GPII_CLOUD_URL: "https://flowmanager.stg.gcp.gpii.net"
             }
         }
     },
@@ -24,7 +24,7 @@
             path: "%ProgramData%\\Morphic\\siteConfig.json5",
             // Get the URL from the secrets file
             //url: "${siteConfigUrl}"
-            url: "https://raw.githubusercontent.com/javihernandez/morphic-siteConfigs/master/onOffSwitchTesting/siteconfig_standard.json5"
+            url: "https://raw.githubusercontent.com/GPII/gpii-app/master/siteconfig.json5"
         }]
     },
     "siteConfigFile": [

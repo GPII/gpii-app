@@ -49,31 +49,35 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
                     ]
                 }
             },
-            target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
+            target: "{that qssWrapper}.options.settingOptions.hiddenSettings"
         },
         distributeQssConfig: {
             record: "{that}.options.siteConfig.qss",
-            target: "{app qssWrapper}.options.siteConfig"
+            target: "{that qssWrapper}.options.siteConfig"
         },
         distributeQssWidgetConfig: {
             record: "{that}.options.siteConfig.qss",
-            target: "{app qssWidget}.options.config.params.siteConfig"
+            target: "{that qssWidget}.options.config.params.siteConfig"
         },
         distributeLanguageLabelTemplate: {
             record: "{that}.options.siteConfig.qss.languageOptionLabel",
-            target: "{app qssWrapper}.options.settingOptions.languageOptionLabelTemplate"
+            target: "{that qssWrapper}.options.settingOptions.languageOptionLabelTemplate"
         },
         distributeDefaultLanguage: {
             record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
-            target: "{app qssWrapper}.options.settingOptions.systemDefaultLanguage"
+            target: "{that qssWrapper}.options.settingOptions.systemDefaultLanguage"
         },
         distributeTooltipShowDelay: {
             record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
-            target: "{app qssTooltipDialog}.options.showDelay"
+            target: "{that qssTooltipDialog}.options.showDelay"
+        },
+        distributeQssMorePanelConfig: {
+            record: "{that}.options.siteConfig.qssMorePanel",
+            target: "{that qssMorePanel}.options.siteConfig"
         },
         distributeQssClickOutside: {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
-            target: "{app gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
+            target: "{that gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
         },
         distributeAppBarQss: {
             record: "{that}.options.siteConfig.appBarQss",
@@ -81,11 +85,11 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         },
         distributeOpenQssShortcut: {
             record: "{that}.options.siteConfig.openQssShortcut",
-            target: "{app gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
+            target: "{that gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
         },
         distributeDisableRestartWarning: {
             record: "{that}.options.siteConfig.disableRestartWarning",
-            target: "{app gpiiConnector}.options.defaultPreferences.disableRestartWarning"
+            target: "{that gpiiConnector}.options.defaultPreferences.disableRestartWarning"
         },
         distributeDefaultLanguageGpiiConnector: {
             record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
@@ -97,11 +101,11 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         },
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
-            target: "{app surveyConnector}.options.config.surveyTriggersUrl"
+            target: "{that surveyConnector}.options.config.surveyTriggersUrl"
         },
         distributeAboutDialogConfig: {
             record: "{that}.options.siteConfig.aboutDialog",
-            target: "{app aboutDialog}.options.siteConfig"
+            target: "{that aboutDialog}.options.siteConfig"
         },
         distributeDialogManagerConfig: {
             record: "{that}.options.siteConfig.dialogManager",
@@ -113,7 +117,12 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         },
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",
-            target: "{app tray}.options.trayType"
+            target: "{that tray}.options.trayType"
+        },
+        distributeResetToStandardProfileUrl: {
+            record: "{that}.options.siteConfig.resetToStandardProfileUrl",
+            target: "{that defaultSettingsLoader}.options.defaultSettingsUrl",
+            priority: "after:flowManager.remoteDefaultSettings"
         },
         distributeMetrics: {
             record: "{that}.options.siteConfig.metrics",

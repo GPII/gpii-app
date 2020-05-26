@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <title>Morphic Capture Tool</title>
+        <link rel="stylesheet" href="../../../node_modules/winstrap/dist/css/winstrap.min.css">
+        <link rel="stylesheet" href="../common/css/dialog.css">
+        <link rel="stylesheet" href="../common/css/titlebar.css">
+        <link rel="stylesheet" href="../common/css/button.css">
+        <link rel="stylesheet" href="../qss/css/qss.css">
+        <link rel="stylesheet" href="./css/captureDialogue.css">
+
+        <!-- https://stackoverflow.com/questions/22658015/bootstrap-throws-uncaught-error-bootstraps-javascript-requires-jquery -->
+        <script>
+            window.jQuery = window.$ = require('jquery');
+        </script>
+
+        <script type="text/javascript" src="../../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="../../../node_modules/infusion/dist/infusion-all.js"></script>
+
+        <script type="text/javascript" src="../common/js/elementRepeater.js"></script>
+        <script type="text/javascript" src="../common/js/elementInteractionListeners.js"></script>
+        <script type="text/javascript" src="../common/js/channelUtils.js"></script>
+        <script type="text/javascript" src="../common/js/utils.js"></script>
+        <script type="text/javascript" src="../common/js/focusManager.js"></script>
+        <script type="text/javascript" src="../common/js/baseWindowUtils.js"></script>
+
+        <script type="text/javascript" src="../../shared/utils.js"></script>
+        <script type="text/javascript" src="../../shared/channelUtils.js"></script>
+
+        <script type="text/javascript" src="../../../node_modules/markdown-it/dist/markdown-it.js"></script>
+
+        <script type="text/javascript" src="../../../node_modules/gpii-binder/src/js/binder.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-binder/src/js/transforms.js"></script>
+
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/lib/delete-and-add.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/lib/i18n.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/equals.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/helper.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/jsonify.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/md-common.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/messageHelper.js"></script>
+        <!-- This is pretty wild, looking in to the root cause. Currently documented here as FLUID-6452: -->
+        <!-- https://issues.fluidproject.org/browse/FLUID-6452                                           -->
+        <script>
+            var Handlebars = require("Handlebars");
+            var requireBackup = require;
+            require = undefined;
+        </script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/common/renderer.js"></script>
+        <script>
+            require = requireBackup;
+        </script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/ajaxCapable.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/hasRequiredOptions.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/md-client.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/renderer.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/templateAware.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/templateFormControl.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/serverResourceAware.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/templateManager.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/templateMessage.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/templateRequestAndRender.js"></script>
+        <script type="text/javascript" src="../../../node_modules/gpii-handlebars/src/js/client/messageHelper.js"></script>
+        <script type="text/javascript" src="js/common-event-bindings.js"></script>
+
+        <script type="text/javascript" src="js/capture.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+
+        <!-- https://stackoverflow.com/questions/20547819/vertical-align-with-bootstrap-3 -->
+        <style>
+        .vcenter {
+            display: inline-block;
+            vertical-align: middle;
+            float: none;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="fl-dialog fl-dialog-fullScreen">
+                    <div class="fl-dialog-content fl-scrollable">
+                        <!-- <img class="fl-dialog-contentIcon" src="../../icons/Morphic-Logo-Black-Partial.svg"> -->
+
+                        <div class="fl-dialog-contentText" tabindex="0">
+                            <!-- <div class="flc-contentTitle fl-title">Capture Tool</div> -->
+
+                            <div id="flc-captureWidget">
+                                <div id="flc-captureWidgetInitial">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="fl-dialog-footer"></div>
+            <!-- </div> -->
+        </div>
+    </body>
+
+</html>
