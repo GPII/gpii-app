@@ -253,6 +253,7 @@ gpii.app.qssWidget.onMorePanelClosed = function (that) {
 gpii.app.qssWidget.resizeWidget = function (that, sideCar) {
     var width = that.model.scaleFactor * (sideCar ? that.options.config.attrs.widthWithSideCar : that.options.config.attrs.width),
         isOffScreen = that.model.offset.x < that.options.config.attrs.width,
+        offsetWithSideCar = (that.options.config.attrs.widthWithSideCar - that.options.config.attrs.width) * that.model.scaleFactor, // px
         arrowPosition = "default";
 
     if (!sideCar && that.model.offset.x > 0) { // no sideCar, the window is not too close to the right edge
@@ -276,9 +277,8 @@ gpii.app.qssWidget.resizeWidget = function (that, sideCar) {
         arrowPosition = "right";
         that.channelNotifier.events.onReverseSideCar.fire();
     } else { // with sideCar, the window is not too close to the right edge
-        // the arrow and the widget moves to a new position
-        arrowPosition = "left";
-        that.applier.change("offset", { x: that.model.offset.x - that.options.config.attrs.width, y: that.model.offset.y });
+        that.applier.change("widgetPosition", { x: that.model.offset.x, y: that.model.offset.y });
+        that.applier.change("offset", { x: that.model.offset.x - offsetWithSideCar, y: that.model.offset.y });
     }
     that.channelNotifier.events.onArrowChange.fire(arrowPosition);
     that.setBounds(width, that.model.height, that.model.offset.x, that.model.offset.y);

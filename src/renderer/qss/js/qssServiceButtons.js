@@ -171,7 +171,7 @@
         if (!that.container.hasClass(that.options.styles.activated)) {
             that.notifyButtonActivated(activationParams);
             that.container.toggleClass(that.options.styles.activated, true);
-            qssList.events.onMorePanelRequired.fire();
+            qssList.events.onMorePanelRequired.fire(activationParams);
             qssList.qssMorePanel.container.css("display", "block");
         } else {
             qssList.events.onMorePanelClosed.fire();

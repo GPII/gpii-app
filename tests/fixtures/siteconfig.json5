@@ -1,5 +1,33 @@
 {
     hideQssSaveButton: false,
+    qss: {
+        buttonList: [
+            "language",
+            "screen-zoom",
+            "text-zoom",
+            "high-contrast",
+            "read-aloud",
+            "color-vision",
+            "mouse",
+            "snipping-tool",
+            "volume",
+            "launch-documorph",
+            "cloud-folder-open",
+            "usb-open",
+            "screen-capture",
+            "url-customize-qss",
+            "url-google-drive",
+            "url-one-drive",
+            "url-dropbox",
+            "office-simplification",
+            "service-more",
+            "service-save",
+            "service-undo",
+            "service-saved-settings",
+            "service-reset-all",
+            "service-close"
+        ]
+    },
     qssScaleFactor: 0.85,
     closeQssOnClickOutside: true,
     openQssShortcut: "Shift+CmdOrCtrl+Alt+Super+M",
