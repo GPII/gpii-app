@@ -12,7 +12,8 @@
             "disabled": false,
             env: {
                 NODE_ENV: "app.production",
-                GPII_CLOUD_URL: "https://flowmanager.stg.gcp.gpii.net"
+                GPII_CLOUD_URL: "https://flowmanager.jhernandez.dev.gcp.gpii.net",
+                NODE_TLS_REJECT_UNAUTHORIZED: 0
             }
         }
     },
