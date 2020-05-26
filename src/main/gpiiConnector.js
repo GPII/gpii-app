@@ -729,8 +729,6 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
         }
     },
 
-    eventDelay: 6000,
-
     events: {
         onQssSettingsUpdate: null
     },
@@ -740,21 +738,9 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
             func: "gpii.app.dev.gpiiConnector.qss.distributeQssSettings",
             args: [
                 "{that}",
+                "{app}",
                 "{arguments}.0"
             ]
-        }
-    },
-
-    components: {
-        settingsUpdateTimeout: {
-            type: "gpii.app.timer",
-            options: {
-                listeners: {
-                    onTimerFinished: {
-                        func: "{gpii.app.dev.gpiiConnector.qss}.events.onQssSettingsUpdate.fire"
-                    }
-                }
-            }
         }
     }
 });
@@ -764,9 +750,10 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
  * Fires the `onQssSettingsUpdate` event if needed to notify the QSS about setting changes.
  * Note that in case the changes are coming from snapset or active set update, they are not undoable (they indicate a full QSS reset).
  * @param {Component} that - The instance of `gpii.app.dev.gpiiConnector` component
+ * @param {Component} app - The instance of `gpii.app` component
  * @param {Object} message - The PSP channel decorated (with QSS data) massage
  */
-gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) {
+gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, app, message) {
     var payload = message.payload || {},
         value = payload.value || {},
         preferences = value.preferences || {},
@@ -790,16 +777,14 @@ gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, message) 
 
         fluid.log("gpiiConnector.qss Controls to be sent: ", settingControls);
 
-        // temporary setTimeout because it didn't apply it properly on launch
-        // this MUST be solved prolery
         // updating the whole settings group with the data from payload.value.settingGroups[0].settingControls
-        that.settingsUpdateTimeout.start(that.options.eventDelay,
-            [
+        app.onPSPReadyForKeyIn.then(function () {
+            that.events.onQssSettingsUpdate.fire(
                 fluid.hashToArray(settingControls, "path"), // set to the expected format
                 gpii.app.gpiiConnector.isFullPrefSetUpdate(that.previousState, value),
                 updateDefaultValues
-            ]
-        );
+            );
+        });
 
         // Update the state of the last Pref Set update, in order to determine
         // the type of update in the future

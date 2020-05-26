@@ -89,7 +89,7 @@ gpii.tests.qss.stepperTests = [
         listener: "fluid.identity"
     }, {
         task: "gpii.test.linger",
-        args: [7000], // temporary fix related to GPII-4478
+        args: [100], // temporary fix related to GPII-4478
         resolve: "fluid.identity"
     }, { // Clicking on the increment button...
         func: "gpii.test.executeJavaScriptInWebContents",
