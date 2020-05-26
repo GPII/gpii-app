@@ -71,7 +71,7 @@
 //            }
             // TODO: Use one of the new grades here once it's merged:
             // https://github.com/GPII/universal/pull/751
-//        }
+        }
     },
     "mergeConfigs": [
         "%gpii-universal/gpii/configs/shared/gpii.config.untrusted.development.dynamicDR.local.json5",
