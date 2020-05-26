@@ -62,7 +62,7 @@
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#textzoom"
     }, {
         "id": "volume",
-        "path": "http://registry\\.gpii\\.net/common/volume",
+        "path": "volume-control",
         "schema": {
             "type": "volume",
             "min": 0,

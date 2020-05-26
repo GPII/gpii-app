@@ -113,6 +113,7 @@ fluid.defaults("gpii.app.qssWidget", {
                     onQssOpenUsbRequested: null,
                     onQssUnmountUsbRequested: null,
                     onQssGetVolumeRequested: null,
+                    onQssVolumeControl: null,
                     onQssReApplyPreferencesRequired: null,
                     onQssGetEnvironmentalLoginKeyRequested: null,
                     onLearnMoreClicked: null,
@@ -164,6 +165,10 @@ fluid.defaults("gpii.app.qssWidget", {
                             "{qssWidget}.dialog",
                             "{arguments}.0" // messageChannel
                         ]
+                    },
+                    onQssVolumeControl: {
+                        funcName: "gpii.app.volumeControl",
+                        args: [ "{arguments}.0" ]
                     },
                     onQssReApplyPreferencesRequired: {
                         funcName: "{app}.reApplyPreferences"

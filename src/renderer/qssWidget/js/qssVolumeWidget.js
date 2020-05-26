@@ -97,6 +97,22 @@
                     },
                     events: {
                         onNotificationRequired: "{volume}.events.onNotificationRequired"
+                    },
+                    invokers: {
+                        activateIncBtn: {
+                            funcName: "gpii.qssWidget.volume.activateButton",
+                            args: [
+                                "up", // volume up
+                                "{channelNotifier}.events.onQssVolumeControl" // volume control event
+                            ]
+                        },
+                        activateDecBtn: {
+                            funcName: "gpii.qssWidget.volume.activateButton",
+                            args: [
+                                "down", // volume down
+                                "{channelNotifier}.events.onQssVolumeControl" // volume control event
+                            ]
+                        }
                     }
                 }
             },
@@ -126,6 +142,18 @@
             }
         }
     });
+
+
+    /**
+     * Invoked whenever the either button is activated. Fires the onQssVolumeControl
+     * with the appropriate action ("up", or "down"). This activates the windows control
+     * for volume up or down
+     * @param {String} action - it can be up or down
+     * @param {fluid.event} volumeControlEvent - the onQssVolumeControl event
+     */
+    gpii.qssWidget.volume.activateButton = function (action, volumeControlEvent) {
+        volumeControlEvent.fire(action);
+    };
 
     /**
      * Set the actual volume value in the case the volume is changed through the Windows itself
