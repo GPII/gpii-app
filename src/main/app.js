@@ -38,6 +38,7 @@ require("./storage.js");
 require("./tray.js");
 require("./userErrorsHandler.js");
 require("./metrics.js");
+require("./linkRedirect.js");
 
 // enhance the normal require to work with .json5 files
 require("json5/lib/register");

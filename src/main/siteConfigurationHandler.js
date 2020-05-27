@@ -14,7 +14,8 @@
  */
 "use strict";
 
-var fluid = require("infusion");
+var fluid = require("infusion"),
+    URL = require("url").URL;
 
 var gpii = fluid.registerNamespace("gpii");
 
@@ -111,6 +112,27 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeMetrics: {
             record: "{that}.options.siteConfig.metrics",
             target: "{/ gpii.app.metrics}.options.siteConfig"
+        },
+        distributeQssConfigUrl: {
+            record: {
+                // Tweaks the redirect url so it's on the same port as the app.
+                expander: {
+                    funcName: "gpii.app.siteConfigurationHandler.setUrlPort",
+                    args: [
+                        {
+                            expander: {
+                                funcName: "fluid.firstDefined",
+                                args: [
+                                    "{that}.options.siteConfig.qss.currentTabRedirect",
+                                    "{gpii.app.linkRedirect}.options.defaultRedirectUrl"
+                                ]
+                            }
+                        },
+                        "{kettle.server}.options.port"
+                    ]
+                }
+            },
+            target: "{that qssWrapper}.options.siteConfig.currentTabRedirect"
         }
     },
 
@@ -153,6 +175,26 @@ gpii.app.siteConfigurationHandler.requireFirst = function (files) {
     // If nothing gets loaded, then re-throw the first error.
     if (!togo && firstError) {
         throw firstError;
+    }
+    return togo;
+};
+
+/**
+ * Sets the port value of a url.
+ * @param {String} url The url to update.
+ * @param {Number} port The new port number.
+ * @return {String} The url, with the updated port.
+ */
+gpii.app.siteConfigurationHandler.setUrlPort = function (url, port) {
+    var togo;
+    if (url) {
+        try {
+            var u = new URL(url);
+            u.port = port;
+            togo = u.href;
+        } catch (e) {
+            fluid.log(fluid.logLevel.WARN, "Unable to parse url '" + url + "' ", e.message);
+        }
     }
     return togo;
 };

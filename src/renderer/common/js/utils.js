@@ -92,15 +92,27 @@
      * @param {String} siteUrl - cloud folder's url
      * @param {Boolean} alwaysUseChrome - true to use chrome, rather than the default browser.
      * @param {Boolean} forceFullScreen - the function requires the browser to be open maximized
+     * @param {String} redirectUrl - [optional] A url which will wrap `siteUrl`. This can be used to make a redirection
+     *  url. Current use case is to make an extension open an existing tab. `siteUrl` is encoded and added to the end of
+     *  this, or a placeholder of `$1` can be used.
      */
-    gpii.windows.openUrl = function (siteUrl, alwaysUseChrome, forceFullScreen) {
+    gpii.windows.openUrl = function (siteUrl, alwaysUseChrome, forceFullScreen, redirectUrl) {
         if (fluid.isValue(siteUrl)) {
+            var finalUrl = siteUrl;
+
+            // Wrap the url in the opensametab
+            if (redirectUrl) {
+                finalUrl = redirectUrl.replace(/\$1|$/, encodeURIComponent(siteUrl));
+            }
+
+            fluid.log("Opening link", finalUrl);
+
             if (alwaysUseChrome) {
                 var command =
                     // Check chrome is installed
                     "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe\" /ve"
                     // If so, run chrome
-                    + " && start chrome \"" + siteUrl.replace(/"/g, "%22") + "\"";
+                    + " && start chrome \"" + finalUrl.replace(/"/g, "%22") + "\"";
                 if (forceFullScreen) {
                     // adding the full screen option for Chrome as well
                     command += " --start-fullscreen";
@@ -108,12 +120,12 @@
                 child_process.exec(command, function (err) {
                     if (err) {
                         // It failed, so use the default browser.
-                        shell.openExternal(siteUrl);
+                        shell.openExternal(finalUrl);
                     }
                 });
             } else {
                 // we have the url, opening it in the default browser
-                shell.openExternal(siteUrl);
+                shell.openExternal(finalUrl);
             }
         } else {
             // there is no value in the config, sending the warning

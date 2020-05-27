@@ -26,6 +26,14 @@
             "metrics": {
                 "record": "gpii.app.metrics",
                 "target": "{/ gpii.metrics}.options.gradeNames"
+            },
+            "linkRedirect": {
+                "record": {
+                    "linkRedirect": {
+                        "type": "gpii.app.linkRedirect"
+                    }
+                },
+                "target": "{/ gpii.flowManager.local}.options.components"
             }
         }
     }
