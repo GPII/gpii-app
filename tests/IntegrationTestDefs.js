@@ -222,6 +222,12 @@ gpii.tests.dev.testDefs = {
     }, { // Test the menu that will be rendered
         func: "gpii.tests.dev.testInitialMenu",
         args: "{that}.app.tray.menu"
+    }, {
+        // we need some minor timeout for the QSS to get
+        // in ready state.
+        task: "gpii.test.linger",
+        args: [4000],
+        resolve: "fluid.identity"
     }, { // Test menu after key in
         func: "{that}.app.keyIn",
         args: "snapset_1a"
