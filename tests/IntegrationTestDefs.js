@@ -226,7 +226,7 @@ gpii.tests.dev.testDefs = {
         // we need some minor timeout for the QSS to get
         // in ready state.
         task: "gpii.test.linger",
-        args: [4000],
+        args: [5000],
         resolve: "fluid.identity"
     }, { // Test menu after key in
         func: "{that}.app.keyIn",
