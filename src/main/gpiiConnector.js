@@ -749,8 +749,8 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
 /**
  * Fires the `onQssSettingsUpdate` event if needed to notify the QSS about setting changes.
  * Note that in case the changes are coming from snapset or active set update, they are not undoable (they indicate a full QSS reset).
- * @param {Component} that - The instance of `gpii.app.dev.gpiiConnector` component
- * @param {Component} app - The instance of `gpii.app` component
+ * @param {gpii.app.dev.gpiiConnector} that - The instance of `gpii.app.dev.gpiiConnector` component
+ * @param {gpii.app} app - The instance of `gpii.app` component
  * @param {Object} message - The PSP channel decorated (with QSS data) massage
  */
 gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, app, message) {
@@ -793,26 +793,4 @@ gpii.app.dev.gpiiConnector.qss.distributeQssSettings = function (that, app, mess
             activeSet: value.activePrefsSetName
         };
     }
-};
-
-
-/**
- * Adds missing QSS settings with default values in case it is a full pref set update.
- * @param {Component} that - The instance of `gpii.app.dev.gpiiComponent` component
- * @param {Object} defaultQssSettingValues - The default QSS settings in the format <path>: <value>
- * @param {Object} qssSettingControls - The map of qss settings
- * @param {Object} updateDetails - The metadata for the current update
- * @return {Object} - the populated setting controls
- */
-gpii.app.dev.gpiiConnector.qss.applySettingDefaults = function (that, defaultQssSettingValues, qssSettingControls, updateDetails) {
-    // Whether the update is a full preference set update (fired from change in the snapset or active preference set),
-    // or a change of a missing in the preference set setting from the QSS
-    if (gpii.app.gpiiConnector.isFullPrefSetUpdate(that.previousState, updateDetails)) {
-        fluid.log("gpiiConnect.qss: Merge QSS default settings");
-
-        // add missing QSS settings to the update list (this is needed for triggering reset of the QSS)
-        qssSettingControls = fluid.extend(true, {}, defaultQssSettingValues, qssSettingControls);
-    }
-
-    return qssSettingControls;
 };
