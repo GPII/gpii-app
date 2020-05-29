@@ -101,7 +101,6 @@
             onQssUnmountUsbRequested: null,
 
             // Volume & Mute related event
-            onQssGetVolumeRequested: null,
             onQssVolumeControl: null,
             onQssReApplyPreferencesRequired: null,
             onQssGetEnvironmentalLoginKeyRequested: null,
@@ -301,7 +300,6 @@
                         onQssOpenUsbRequested:           "{qssWidget}.events.onQssOpenUsbRequested",
                         onQssUnmountUsbRequested:        "{qssWidget}.events.onQssUnmountUsbRequested",
                         // Volume button
-                        onQssGetVolumeRequested:         "{qssWidget}.events.onQssGetVolumeRequested",
                         onQssVolumeControl:              "{qssWidget}.events.onQssVolumeControl",
                         onQssReApplyPreferencesRequired: "{qssWidget}.events.onQssReApplyPreferencesRequired",
                         onQssGetEnvironmentalLoginKeyRequested: "{qssWidget}.events.onQssGetEnvironmentalLoginKeyRequested",

@@ -471,31 +471,6 @@ gpii.app.ejectUSB = function (browserWindow, messageChannel, messages) {
 };
 
 /**
- * Get the actual volume value. If there are an error or no value return the default
- * volume value
- * @param {Object} browserWindow - An Electron `BrowserWindow` object.
- * @param {String} messageChannel - The channel to which the message should be sent.
- * @return {Number} - The actual value of the volume
- */
-gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
-    var defaultVolumeValue = 0.5;
-    try {
-        var volumeValue = gpii.windows.nativeSettingsHandler.GetVolume().value;
-
-        if (isNaN(volumeValue)) {
-            gpii.app.notifyWindow(browserWindow, messageChannel, defaultVolumeValue);
-            return defaultVolumeValue;
-        } else {
-            gpii.app.notifyWindow(browserWindow, messageChannel, volumeValue);
-            return volumeValue;
-        }
-    } catch (err) {
-        fluid.log(fluid.logLevel.WARN, err);
-        return defaultVolumeValue;
-    }
-};
-
-/**
  * A standard volume control, it can simulate volume up, down and mute
  * @param {String} command - accepts "up", "down" and "mute" as commands
  */

@@ -50,8 +50,7 @@ fluid.defaults("gpii.app.qssWrapper", {
 
         // paths might be needed for some reason
         settingPaths: {
-            language: "http://registry\\.gpii\\.net/common/language",
-            volume: "http://registry\\.gpii\\.net/common/volume"
+            language: "http://registry\\.gpii\\.net/common/language"
         },
 
         settingMessagesPrefix: "gpii_app_qss_settings",
@@ -685,20 +684,11 @@ gpii.app.qssWrapper.loadSettings = function (assetsManager, installedLanguages, 
         return setting.path === settingOptions.settingPaths.language;
     });
 
-    var volumeSetting = fluid.find_if(loadedSettings, function (setting) {
-        return setting.path === settingOptions.settingPaths.volume;
-    });
-
     // we double check if this setting exists because can be disabled via siteConfig's buttonList
     if (fluid.isValue(languageSetting)) {
         gpii.app.qssWrapper.populateLanguageSettingOptions(settingOptions, locale, installedLanguages, languageSetting);
         // sync the language value as well
         languageSetting.value = locale;
-    }
-
-    // we double check if this setting exists because can be disabled via siteConfig's buttonList
-    if (fluid.isValue(volumeSetting)) {
-        volumeSetting.value = gpii.windows.nativeSettingsHandler.GetVolume().value;
     }
 
     /*
@@ -1032,7 +1022,7 @@ fluid.defaults("gpii.app.qssInWrapper", {
 fluid.defaults("gpii.app.undoInWrapper", {
     gradeNames: "gpii.app.undoStack",
     // paths of settings that are not undoable
-    unwatchedSettings: ["appTextZoom"],
+    unwatchedSettings: ["appTextZoom", "volume-control"],
 
     listeners: {
         "onChangeUndone.applyChange": {

@@ -65,16 +65,12 @@
         "path": "volume-control",
         "schema": {
             "type": "volume",
-            "min": 0,
-            "max": 1,
-            "divisibleBy": 0.02,
-            "previousValue": 0.5,
             "image": "volume-mute.svg"
         },
         "buttonTypes": ["largeButton", "settingButton"],
         "tabindex": 125,
         "messageKey": "common-volume",
-        "value": 0.5,
+        "value": false,
         "learnMoreLink": "https://morphic.world/basics/learn-more-about-quickstrip#volume-mute"
 
     }, {
