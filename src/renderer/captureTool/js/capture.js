@@ -380,7 +380,7 @@
                             args: ["{gpii.captureTool}", "{arguments}.0"]
                         },
                         "preferencesSavedSuccess.onSuccess": {
-                            func: "gpii.captureTool.saveCapturedPreferences",
+                            func: "gpii.captureTool.preferencesSavedSuccess",
                             args: ["{gpii.captureTool}"]
                         },
                         "preferencesSavedError.onError": {
@@ -714,6 +714,7 @@
         if (that.model.currentlySaving) {
             that.applier.change("preferencesSavedError", JSON.stringify(errorPayload, null, 4));
             that.applier.change("currentPage", "5_error_confirmation");
+            that.render("5_error_confirmation");
             that.applier.change("currentlySaving", false);
         }
     };
