@@ -148,7 +148,17 @@
             // if an existing set is chosen.
             prefsSetName: "MyCapture",
 
-            // Value to keep track of if we are currently saving.
+            // Value to keep track of if we are currently saving the capture preferences.
+            //
+            // Because we depend on the same model events as the rest of the QSS (preferencesSavedSuccess, and
+            // preferencesSavedError) to determine if preferences are successfully saved, we set the value of
+            // this model property to determine if we are between the second to last and final screen of the capture
+            // tool. Saving occurs between this final dialog transition. If this value is false we can safely ignore the
+            // event. If we don't track capture saving state we'll jump to the capture saved confirmation screen if
+            // someone saves via the QSS at any point in the capture tool workflow.
+            //
+            // This isn't perfect, there is an incredibly small chance that someone could click the QSS save and
+            // capture save at the same time.
             currentlySaving: false
 
         },
