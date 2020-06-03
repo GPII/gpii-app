@@ -636,18 +636,14 @@
             }
         }
         else if (currentPage === "4_confirm_update_prefsset") {
-            // that.applier.change("currentPage", "5_confirmation");
             if (that.model.prefsSetSaveType === "existing") {
                 that.applier.change("prefsSetId", that.model.selectedPrefsSet);
                 that.applier.change("prefsSetName", that.model.selectedPrefsSetName);
             }
-            // that.render("5_confirmation");
             that.applier.change("currentlySaving", true);
             that.saveCapturedPreferences();
         }
         else if (currentPage === "4_save_name") {
-            // that.applier.change("currentPage", "5_confirmation");
-            // that.render("5_confirmation");
             that.applier.change("currentlySaving", true);
             that.saveCapturedPreferences();
         }
