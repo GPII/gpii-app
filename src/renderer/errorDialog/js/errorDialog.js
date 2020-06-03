@@ -107,7 +107,8 @@
         gradeNames: [
             "fluid.viewComponent",
             "gpii.psp.heightObservable",
-            "gpii.psp.selectorsTextRenderer"
+            "gpii.psp.selectorsTextRenderer",
+            "gpii.psp.metrics.dialog"
         ],
 
         model: {
@@ -157,7 +158,10 @@
                     events: {
                         onErrorDialogClosed: null,
                         onErrorDialogButtonClicked: null,
-                        onErrorDialogContentHeightChanged: "{errorDialog}.events.onHeightChanged"
+                        onErrorDialogContentHeightChanged: "{errorDialog}.events.onHeightChanged",
+
+                        onMetric: "{errorDialog}.events.onMetric",
+                        onMetricState: "{errorDialog}.events.onMetricState"
                     }
                 }
             },

@@ -116,7 +116,8 @@ fluid.defaults("gpii.app.qssWrapper", {
         onActivePreferenceSetAltered: null,
         onUndoRequired: null,
         onResetAllRequired: null,
-        onSaveRequired: null
+        onSaveRequired: null,
+        onMetric: null
     },
 
     listeners: {
@@ -832,11 +833,10 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
             translatedSetting.switchTitle = message.switchTitle;
         }
 
-        // footerTip
         translatedSetting.widget = translatedSetting.widget || {};
-        if (fluid.isValue(message.footerTip)) {
-            translatedSetting.widget.footerTip = message.footerTip;
-        }
+
+        // footerTip
+        translatedSetting.widget.footerTip = message.footerTip || "";
 
         // sideCar
         translatedSetting.sideCar = message.sideCar || "";
@@ -1021,7 +1021,8 @@ fluid.defaults("gpii.app.qssInWrapper", {
         },
         "{channelListener}.events.onQssUndoRequired": "{qssWrapper}.events.onUndoRequired",
         "{channelListener}.events.onQssResetAllRequired": "{qssWrapper}.events.onResetAllRequired",
-        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired"
+        "{channelListener}.events.onQssSaveRequired": "{qssWrapper}.events.onSaveRequired",
+        "{channelListener}.events.onMetric": "{qssWrapper}.events.onMetric"
     }
 });
 

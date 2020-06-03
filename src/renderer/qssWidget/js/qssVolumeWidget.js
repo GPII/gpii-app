@@ -166,9 +166,9 @@
      * @param {Component} that - The `gpii.psp.widgets.volume.switchButton` instance.
      * @param {Component} volumeWidget - The `gpii.psp.widgets.volume` instance.
      * @param {Component} stepper - The `gpii.psp.widgets.volumeStepper instance.
-     * @param {EventListener} event - onQssWidgetSettingAltered event
+     * #param {EventListener} event - onQssWidgetSettingAltered event
      */
-    gpii.qssWidget.volume.toggleModel = function (that, volumeWidget, stepper, event) {
+    gpii.qssWidget.volume.toggleModel = function (that, volumeWidget, stepper) {
         if (!volumeWidget.model.setting.value && !that.model.enabled) {
             return;
         }
@@ -190,6 +190,7 @@
         }
 
         // update the volume setting
-        event.fire(volumeWidget.model.setting);
+        // This event has already been triggered in the previous block.
+        // event.fire(volumeWidget.model.setting);
     };
 })(fluid);
