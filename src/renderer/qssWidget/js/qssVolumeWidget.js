@@ -41,9 +41,7 @@
         model: {
             setting: {},
             messages: {},
-            value: "{that}.model.setting.value",
-            previousValue: "{that}.model.setting.schema.previousValue",
-            messageChannel: "volumeMessageChannel" // Channel listening for messages related volume/mute functionality
+            value: "{that}.model.setting.value"
         },
         events: {
             onHeightChanged: null
@@ -53,27 +51,16 @@
                 this: "{that}.dom.helpImage",
                 method: "attr",
                 args: ["src", "{that}.model.setting.schema.helpImage"]
-            },
-            "onCreate.registerIpcListener": {
-                funcName: "gpii.psp.registerIpcListener",
-                args: ["{that}.model.messageChannel", "{volume}.loadActualValue"]
-            },
-            "onCreate.sendGetVolumeRequest": {
-                funcName: "{channelNotifier}.events.onQssGetVolumeRequested.fire",
-                args: ["{that}.model.messageChannel"]
             }
         },
         modelListeners: {
-            value: {
-                funcName: "gpii.qssWidget.volume.updateSwitchState",
-                args: ["{switchButton}", "{change}.value"]
+            "setting.value": {
+                func: "{channelNotifier}.events.onQssWidgetSettingAltered.fire",
+                args: ["{that}.model.setting"],
+                includeSource: "fromWidget"
             }
         },
         invokers: {
-            loadActualValue: {
-                funcName: "gpii.qssWidget.volume.loadActualValue",
-                args: ["{volume}", "{arguments}.0"]
-            },
             calculateHeight: {
                 funcName: "gpii.qssWidget.calculateHeight",
                 args: [
@@ -90,13 +77,25 @@
                 options: {
                     sounds: "{volume}.options.sounds",
                     model: {
-                        setting: "{volume}.model.setting",
-                        messages: "{volume}.model.messages",
-                        previousValue: "{volume}.model.previousValue",
-                        value: "{volume}.model.setting.value"
+                        messages: "{volume}.model.messages"
                     },
-                    events: {
-                        onNotificationRequired: "{volume}.events.onNotificationRequired"
+                    invokers: {
+                        activateIncBtn: {
+                            funcName: "gpii.qssWidget.volume.activateButton",
+                            args: [
+                                "up", // volume up
+                                "{volume}",
+                                "{channelNotifier}.events.onQssVolumeControl" // volume control event
+                            ]
+                        },
+                        activateDecBtn: {
+                            funcName: "gpii.qssWidget.volume.activateButton",
+                            args: [
+                                "down", // volume down
+                                "{volume}",
+                                "{channelNotifier}.events.onQssVolumeControl" // volume control event
+                            ]
+                        }
                     }
                 }
             },
@@ -105,12 +104,7 @@
                 container: "{that}.dom.switch",
                 options: {
                     model: {
-                        enabled: {
-                            expander: {
-                                funcName: "gpii.qssWidget.volume.transformValue",
-                                args: ["{volume}.model.setting.value"]
-                            }
-                        },
+                        enabled: "{volume}.model.value",
                         messages: {
                             on: "{volume}.model.messages.on",
                             off: "{volume}.model.messages.off"
@@ -119,7 +113,10 @@
                     invokers: {
                         toggleModel: {
                             funcName: "gpii.qssWidget.volume.toggleModel",
-                            args: ["{that}", "{volume}", "{stepper}", "{channelNotifier}.events.onQssWidgetSettingAltered"]
+                            args: [
+                                "{that}",
+                                "{channelNotifier}.events.onQssVolumeControl" // volume control event
+                            ]
                         }
                     }
                 }
@@ -127,70 +124,36 @@
         }
     });
 
-    /**
-     * Set the actual volume value in the case the volume is changed through the Windows itself
-     * @param {Component} that - The `gpii.psp.widgets.volume` instance.
-     * @param {Number} value - The value of the setting.
-     */
-    gpii.qssWidget.volume.loadActualValue = function (that, value) {
-        that.applier.change("value", value, null, "fromWidget");
-    };
 
     /**
-     * Invoked whenever the volume value is changed and updating the state of the
-     * volume switch button.
-     * @param {Component} switchButton - The `gpii.psp.widgets.volume.switchButton` instance.
-     * @param {Number} value - The value of the setting.
+     * Invoked whenever the either button is activated. Fires the onQssVolumeControl
+     * with the appropriate action ("up", or "down"). This activates the windows control
+     * for volume up or down
+     * @param {String} action - it can be up or down.
+     * @param {gpii.qssWidget.volume} volumeWidget - The `gpii.psp.widgets.volume.switchButton` instance.
+     * @param {fluid.event} volumeControlEvent - the onQssVolumeControl event.
      */
-    gpii.qssWidget.volume.updateSwitchState = function (switchButton, value) {
-        if (!value !== switchButton.model.enabled) {
-            switchButton.applier.change("enabled", !switchButton.model.enabled, null, "fromWidget");
-        } else if (value !== 0 && switchButton.model.enabled) {
-            switchButton.applier.change("enabled", !switchButton.model.enabled, null, "fromWidget");
+    gpii.qssWidget.volume.activateButton = function (action, volumeWidget, volumeControlEvent) {
+        volumeControlEvent.fire(action);
+
+        // Switch mute toggle if already muted
+        if (volumeWidget.model.value) {
+            volumeWidget.applier.change("value", false, null, "fromWidget");
         }
-    };
-
-    /**
-     * Transforms a number value to boolean.
-     * @param {Number} value - The value of the setting
-     * @return {Boolean} The modified value.
-     */
-    gpii.qssWidget.volume.transformValue = function (value) {
-        return !value;
     };
 
     /**
      * Invoked whenever the user has activated the "switch" UI element (either
      * by clicking on it or pressing "Space" or "Enter"). What this function
-     * does is to update model value and update settings.
-     * @param {Component} that - The `gpii.psp.widgets.volume.switchButton` instance.
-     * @param {Component} volumeWidget - The `gpii.psp.widgets.volume` instance.
-     * @param {Component} stepper - The `gpii.psp.widgets.volumeStepper instance.
-     * #param {EventListener} event - onQssWidgetSettingAltered event
+     * does is to change the `enabled` model property to its opposite value and update settings.
+     * @param {gpii.qssWidget.volume.switchButton} that - The `gpii.psp.widgets.switch` instance.
+     * @param {fluid.event} volumeControlEvent - the onQssVolumeControl event.
      */
-    gpii.qssWidget.volume.toggleModel = function (that, volumeWidget, stepper) {
-        if (!volumeWidget.model.setting.value && !that.model.enabled) {
-            return;
-        }
+    gpii.qssWidget.volume.toggleModel = function (that, volumeControlEvent) {
+        // toggle the widget
+        that.applier.change("enabled", !that.model.enabled, null, "fromWidget");
 
-        if (volumeWidget.model.setting.value !== 0) {
-            volumeWidget.applier.change("previousValue", volumeWidget.model.setting.value, null, "fromWidget");
-            stepper.applier.change("previousValue", volumeWidget.model.setting.value, null, "fromWidget");
-            that.applier.change("previousValue", volumeWidget.model.setting.value, null, "fromWidget");
-        }
-
-        if (!that.model.enabled && volumeWidget.model.setting.value !== 0) {
-            volumeWidget.applier.change("value", 0, null, "fromWidget");
-            stepper.applier.change("value", 0, null, "fromWidget");
-
-        } else {
-            volumeWidget.applier.change("value", volumeWidget.model.previousValue, null, "fromWidget");
-            stepper.applier.change("value", volumeWidget.model.previousValue, null, "fromWidget");
-
-        }
-
-        // update the volume setting
-        // This event has already been triggered in the previous block.
-        // event.fire(volumeWidget.model.setting);
+        // use the onQssVolumeControl event to send the mute event
+        volumeControlEvent.fire("mute");
     };
 })(fluid);

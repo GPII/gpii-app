@@ -471,27 +471,34 @@ gpii.app.ejectUSB = function (browserWindow, messageChannel, messages) {
 };
 
 /**
- * Get the actual volume value. If there are an error or no value return the default
- * volume value
- * @param {Object} browserWindow - An Electron `BrowserWindow` object.
- * @param {String} messageChannel - The channel to which the message should be sent.
- * @return {Number} - The actual value of the volume
+ * A standard volume control, it can simulate volume up, down and mute
+ * @param {String} command - accepts "up", "down" and "mute" as commands
  */
-gpii.app.getVolumeValue = function (browserWindow, messageChannel) {
-    var defaultVolumeValue = 0.5;
-    try {
-        var volumeValue = gpii.windows.nativeSettingsHandler.GetVolume().value;
+gpii.app.volumeControl = function (command) {
+    var WM_APPCOMMAND = 0x319, // https://docs.microsoft.com/windows/win32/inputdev/wm-appcommand
+        APPCOMMAND_VOLUME_MUTE = 8,
+        APPCOMMAND_VOLUME_DOWN = 9,
+        APPCOMMAND_VOLUME_UP = 10,
+        action = false; // by default there will be no action taken
 
-        if (isNaN(volumeValue)) {
-            gpii.app.notifyWindow(browserWindow, messageChannel, defaultVolumeValue);
-            return defaultVolumeValue;
-        } else {
-            gpii.app.notifyWindow(browserWindow, messageChannel, volumeValue);
-            return volumeValue;
-        }
-    } catch (err) {
-        fluid.log(fluid.logLevel.WARN, err);
-        return defaultVolumeValue;
+    // determine which command to use
+    switch (command) {
+    case "up":
+        action = APPCOMMAND_VOLUME_UP;
+        break;
+    case "down":
+        action = APPCOMMAND_VOLUME_DOWN;
+        break;
+    case "mute":
+        action = APPCOMMAND_VOLUME_MUTE;
+        break;
+    }
+
+    // Send the volume up/down command directly to the task tray (rather than a simulated key press)
+    if (action) {
+        gpii.windows.messages.sendMessage("Shell_TrayWnd", WM_APPCOMMAND, 0, gpii.windows.makeLong(0, action));
+    } else {
+        fluid.log(fluid.logLevel.WARN, "gpii.app.volumeControl: Invalid volume command - " + command);
     }
 };
 

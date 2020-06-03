@@ -72,14 +72,6 @@ gpii.tests.qss.volumeTests = [
             clickVolumeSwitchBtn
         ],
         resolve: "fluid.identity"
-    }, { // ... should notify the core
-        event: "{that}.app.settingsBroker.events.onSettingApplied",
-        listener: "jqUnit.assertLeftHand",
-        args: [
-            "Change event was fired from QSS widget interaction.",
-            { path: "http://registry\\.gpii\\.net/common/volume", value: 0 },
-            "{arguments}.0"
-        ]
     }, { // ... and the button image should be visible
         task: "gpii.test.executeJavaScriptInWebContents",
         args: [
