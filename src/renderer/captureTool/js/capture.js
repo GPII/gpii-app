@@ -484,8 +484,8 @@
     gpii.captureTool.determineDefaultPrefsSet = function (preferences) {
         if (!preferences || !preferences.contexts) {
             return {
-                prefSetId: "",
-                name: ""
+                prefSetId: "gpii-default",
+                name: "GPII Default"
             };
         }
 
