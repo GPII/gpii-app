@@ -222,12 +222,6 @@ gpii.tests.dev.testDefs = {
     }, { // Test the menu that will be rendered
         func: "gpii.tests.dev.testInitialMenu",
         args: "{that}.app.tray.menu"
-    }, {
-        // we need some minor timeout for the QSS to get
-        // in ready state.
-        task: "gpii.test.linger",
-        args: [5000],
-        resolve: "fluid.identity"
     }, { // Test menu after key in
         func: "{that}.app.keyIn",
         args: "snapset_1a"
@@ -236,9 +230,7 @@ gpii.tests.dev.testDefs = {
         args: ["{that}.app.tray.menu.model.menuTemplate"],
         listener: "gpii.tests.dev.testMenuSnapsetKeyedIn"
     }, {
-        changeEvent: "{that}.app.tray.applier.modelChanged",
-        path: "tooltip",
-        listener: "gpii.tests.dev.testTrayKeyedIn",
+        func: "gpii.tests.dev.testTrayKeyedIn",
         args: ["{that}.app.tray", "Default preferences"]
     }, { // Test menu after key out
         func: "{that}.app.keyOut"
