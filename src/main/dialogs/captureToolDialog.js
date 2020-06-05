@@ -470,8 +470,37 @@ gpii.app.captureTool.savePreferences = function (flatSolutionsRegistry, keyedInU
     // preferences. For the time being we are using application settings as the work better with the validation. GPII-4488.
     // If there was a desire to make the transform before saving, the line below can be used to generate the preferences.
     // var prefsTogo = gpii.lifecycleManager.transformSettingsToPrefs(options.prefSetPayload.preferences, flatSolutionsRegistry);
+    //
+    // Based on further comments, and notes in https://issues.gpii.net/browse/GPII-4497 this is where we must make
+    // the decision point (and in the future this should be configurable here, via IoC, and probably much earlier in the
+    // UI workflow based on UX feedback) as to which combination of application specific and generic prefs we are saving.
+    // As of this moment, we will be saving all application specific preferences. This allows for zero lossy data, generic
+    // prefs can still be calculated from them at any point in the future from the prefs safe.
+    var finalPreferences = gpii.app.captureTool.settingsToAllApplicationSpecific(options.prefSetPayload.preferences);
 
-    payload.contexts[options.prefSetId].preferences = options.prefSetPayload.preferences;
+    payload.contexts[options.prefSetId].preferences = finalPreferences;
 
     flowManager.savePreferences(keyedInUserToken, payload);
+};
+
+/**
+ * This takes the settings capture and translates it to application specific preferences ready to be saved to the users
+ * preferences safe. In practice, this just means prefixing each of the application ID keys with
+ * "http://registry.gpii.net/applications/".
+ *
+ * @param {Object} settings - The captured settings, keyed by application ID.
+ * @return {Object} Returns the application specific preferences ready to save.
+ */
+gpii.app.captureTool.settingsToAllApplicationSpecific = function (settings) {
+    var togo = {};
+    fluid.each(settings, function (appSettings, appId) {
+        var nextBlock = fluid.copy(appSettings);
+        // fluid.each(nextBlock, function (settingBlock) {
+        //     if (settingBlock.path) {
+        //         delete settingBlock.path;
+        //     }
+        // })
+        togo["http://registry.gpii.net/applications/" + appId] = fluid.copy(nextBlock);
+    });
+    return togo;
 };
