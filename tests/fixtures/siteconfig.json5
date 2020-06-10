@@ -10,5 +10,6 @@
     	resizable: true,
     	alwaysOnTop: true
     },
-    surveyTriggersUrl: "http://localhost:8083/surveys/triggers.json"
+    surveyTriggersUrl: "http://localhost:8083/surveys/triggers.json",
+    resetToStandardProfileUrl: "https://raw.githubusercontent.com/GPII/universal/master/testData/defaultSettings/defaultSettings.win32.json5"
 }
