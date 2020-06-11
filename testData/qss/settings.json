@@ -226,10 +226,10 @@
                 "schema": {
                     "type": "boolean",
                     "mapOn": 1,
-                    "mapOff": 0.5,
-                    "default": 0.5
+                    "mapOff": 0,
+                    "default": 0
                 },
-                "value": 0.5,
+                "value": 0,
                 "messageKey": "windows-largerMousePointer"
             }
         },
