@@ -189,7 +189,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             args: [
                 "{that}",
                 "{arguments}.0", // settings
-                "{arguments}.0"  // notUndoable
+                "{arguments}.1",  // notUndoable,
+                "{arguments}.2"  // updateDefaultValues
             ]
         },
         updateSetting: {
@@ -197,7 +198,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             args: [
                 "{that}",
                 "{arguments}.0", // updatedSetting
-                "{arguments}.1"  // notUndoable
+                "{arguments}.1",  // notUndoable
+                "{arguments}.2"  // updateDefaultValues
             ]
         },
         getSetting: {
@@ -212,7 +214,8 @@ fluid.defaults("gpii.app.qssWrapper", {
             args: [
                 "{that}",
                 "{arguments}.0", // updatedSetting
-                "{arguments}.1" // source
+                "{arguments}.1", // source
+                "{arguments}.2"  // updateDefaultValues
             ]
         },
         showRestartWarningNotification: {
@@ -462,13 +465,15 @@ gpii.app.undoStack.revertChange = function (qssWrapper, change) {
  * @param {Component} that - The `gpii.app.qssWrapper` component
  * @param {Object} updatedSetting - The setting with updated state
  * @param {Boolean} notUndoable - Whether the setting is undoable or not
+ * @param {Boolean} updateDefaultValues - Whether or not the default values to be updated.
  */
-gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable) {
+gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable, updateDefaultValues) {
     var updateNamespace = notUndoable ? "gpii.app.undoStack.notUndoable" : null;
 
     that.alterSetting(
         fluid.filterKeys(updatedSetting, ["path", "value"]),
-        updateNamespace
+        updateNamespace,
+        updateDefaultValues
     );
 };
 
@@ -482,10 +487,11 @@ gpii.app.qssWrapper.updateSetting = function (that, updatedSetting, notUndoable)
  * @param {String} settings.path - The path of the setting to be updated
  * @param {Any} settings.value - The new value of the setting
  * @param {Boolean} notUndoable - Whether these setting changes are undoable
+ * @param {Boolean} updateDefaultValues - Whether or not the default values to be updated.
  */
-gpii.app.qssWrapper.updateSettings = function (that, settings, notUndoable) {
+gpii.app.qssWrapper.updateSettings = function (that, settings, notUndoable, updateDefaultValues) {
     fluid.each(settings, function (setting) {
-        that.updateSetting(setting, notUndoable);
+        that.updateSetting(setting, notUndoable, updateDefaultValues);
     });
 };
 
@@ -760,26 +766,34 @@ gpii.app.qssWrapper.getSetting = function (settings, path) {
  * @param {Object} updatedSetting - The new setting. The setting with the same path in
  * the QSS will be replaced.
  * @param {String} [source] - The source of the update.
+ * @param {Boolean} updateDefaultValues - Whatever or not the default values to be overwritten.
  */
-gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source) {
+gpii.app.qssWrapper.alterSetting = function (that, updatedSetting, source, updateDefaultValues) {
     if (fluid.isValue(updatedSetting)) { // adding a check just in case of some missteps
-
         fluid.each(that.model.settings, function (setting, index) {
             if (gpii.app.hasSecondarySettings(setting)) {
-
+                // SECONDARY settings
                 fluid.each(setting.settings, function (nestedSetting, key) {
                     if (nestedSetting.path === updatedSetting.path && !fluid.model.diff(nestedSetting, updatedSetting)) {
-
                         // applying the secondary setting's change
                         that.applier.change("settings." + index + ".settings." + key, updatedSetting, null, source);
+
+                        if (updateDefaultValues) {
+                            // update default schema values on request
+                            that.applier.change("settings." + index + ".settings." + key, {schema: {default: updatedSetting.value}}, null, source);
+                        }
                     }
                 });
-
             } else {
+                // PRIMARY settings
                 if (setting.id !== "MakeYourOwn" && setting.path === updatedSetting.path && !fluid.model.diff(setting, updatedSetting)) {
-
                     // applying primary setting's change
                     that.applier.change("settings." + index, updatedSetting, null, source);
+
+                    if (updateDefaultValues) {
+                        // update default schema values on request
+                        that.applier.change("settings." + index, {schema: {default: updatedSetting.value}}, null, source);
+                    }
                 }
             }
         });

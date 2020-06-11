@@ -146,7 +146,20 @@
             // Prefs Set Name to Save the captured settings to. This is either
             // what is typed in the input for saving to a new set, or the `selectedPrefsSetName`
             // if an existing set is chosen.
-            prefsSetName: "MyCapture"
+            prefsSetName: "MyCapture",
+
+            // Value to keep track of if we are currently saving the capture preferences.
+            //
+            // Because we depend on the same model events as the rest of the QSS (preferencesSavedSuccess, and
+            // preferencesSavedError) to determine if preferences are successfully saved, we set the value of
+            // this model property to determine if we are between the second to last and final screen of the capture
+            // tool. Saving occurs between this final dialog transition. If this value is false we can safely ignore the
+            // event. If we don't track capture saving state we'll jump to the capture saved confirmation screen if
+            // someone saves via the QSS at any point in the capture tool workflow.
+            //
+            // This isn't perfect, there is an incredibly small chance that someone could click the QSS save and
+            // capture save at the same time.
+            currentlySaving: false
 
         },
         modelListeners: {
@@ -376,28 +389,13 @@
                             funcName: "gpii.captureTool.channelModelUpdate",
                             args: ["{gpii.captureTool}", "{arguments}.0"]
                         },
-                        "preferencesSavedSuccess.setPage": {
-                            func: "{gpii.captureTool}.applier.change",
-                            args: ["currentPage", "5_confirmation"]
+                        "preferencesSavedSuccess.onSuccess": {
+                            func: "gpii.captureTool.preferencesSavedSuccess",
+                            args: ["{gpii.captureTool}"]
                         },
-                        "preferencesSavedSuccess.render": {
-                            func: "{gpii.captureTool}.render",
-                            args: ["5_confirmation"],
-                            priority: "after:setPage"
-                        },
-                        "preferencesSavedError.logErrorInModel": {
-                            func: "{gpii.captureTool}.applier.change",
-                            args: ["preferencesSavedError", "@expand:JSON.stringify({arguments}.0, null, 4)"]
-                        },
-                        "preferencesSavedError.setPage": {
-                            func: "{gpii.captureTool}.applier.change",
-                            args: ["currentPage", "5_error_confirmation"],
-                            priority: "after:logErrorInModel"
-                        },
-                        "preferencesSavedError.render": {
-                            func: "{gpii.captureTool}.render",
-                            args: ["5_error_confirmation"],
-                            priority: "after:setPage"
+                        "preferencesSavedError.onError": {
+                            func: "gpii.captureTool.preferencesSavedError",
+                            args: ["{gpii.captureTool}", "{arguments}.0"]
                         }
                     }
                 }
@@ -638,17 +636,15 @@
             }
         }
         else if (currentPage === "4_confirm_update_prefsset") {
-            // that.applier.change("currentPage", "5_confirmation");
             if (that.model.prefsSetSaveType === "existing") {
                 that.applier.change("prefsSetId", that.model.selectedPrefsSet);
                 that.applier.change("prefsSetName", that.model.selectedPrefsSetName);
             }
-            // that.render("5_confirmation");
+            that.applier.change("currentlySaving", true);
             that.saveCapturedPreferences();
         }
         else if (currentPage === "4_save_name") {
-            // that.applier.change("currentPage", "5_confirmation");
-            // that.render("5_confirmation");
+            that.applier.change("currentlySaving", true);
             that.saveCapturedPreferences();
         }
         else {
@@ -710,6 +706,23 @@
             prefSetId: that.model.prefsSetId,
             prefSetPayload: prefSetPayload
         });
+    };
+
+    gpii.captureTool.preferencesSavedSuccess = function (that) {
+        if (that.model.currentlySaving) {
+            that.applier.change("currentPage", "5_confirmation");
+            that.render("5_confirmation");
+            that.applier.change("currentlySaving", false);
+        }
+    };
+
+    gpii.captureTool.preferencesSavedError = function (that, errorPayload) {
+        if (that.model.currentlySaving) {
+            that.applier.change("preferencesSavedError", JSON.stringify(errorPayload, null, 4));
+            that.applier.change("currentPage", "5_error_confirmation");
+            that.render("5_error_confirmation");
+            that.applier.change("currentlySaving", false);
+        }
     };
 
     gpii.captureTool.updateCapturedPreferences = function (that) {
