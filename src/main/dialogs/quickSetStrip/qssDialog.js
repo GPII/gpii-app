@@ -262,10 +262,15 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
         qssButtonTypes   = options.qssButtonTypes,
         buttonWidth      = options.dialogContentMetrics.buttonWidth,
         separatorWidth   = options.dialogContentMetrics.separatorWidth,
-        closeButtonWidth = options.dialogContentMetrics.closeButtonWidth;
+        closeButtonWidth = options.dialogContentMetrics.closeButtonWidth,
+        buttonsWidth = buttonWidth * 2, // adding the first buttons by default
+        showQssCloseButton = (options.siteConfig && options.siteConfig.showQssCloseButton) ? true : false;
 
-    // start off with the first button size and the constant close button
-    var buttonsWidth = closeButtonWidth + buttonWidth;
+    if (showQssCloseButton) {
+        // start off with the first button size and the constant close button
+        buttonsWidth += closeButtonWidth;
+    }
+
     // check the type of the previous button, if the current is small
     // in the future, we might have the case that there aren't two small sequential buttons
     for (var i = 1; i < buttons.length; i++) {
@@ -273,12 +278,14 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
             !buttons[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
             buttons[i].path !== qssButtonTypes.closeButton
         ) {
-            if (separatorIds.includes(buttons[i].buttonTypes[0])) {
-                // this is separator type button, which is slimmer that the others
-                buttonsWidth += separatorWidth;
-            } else {
-                // standart button width
-                buttonsWidth += buttonWidth;
+            if (buttons[i].path !== qssButtonTypes.closeButton) {
+                if (separatorIds.includes(buttons[i].buttonTypes[0])) {
+                    // this is separator type button, which is slimmer that the others
+                    buttonsWidth += separatorWidth;
+                } else {
+                    // standart button width
+                    buttonsWidth += buttonWidth;
+                }
             }
         }
     }
