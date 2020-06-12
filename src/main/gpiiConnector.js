@@ -41,8 +41,7 @@ fluid.defaults("gpii.app.gpiiConnector", {
         closeQssOnBlur: false,
         // The QSS will take up space from the desktop work area. Ignored if closeQssOnBlur is true.
         appBarQss: false,
-        disableRestartWarning: false,
-        defaultSettingsData: null
+        disableRestartWarning: false
     },
 
     events: {

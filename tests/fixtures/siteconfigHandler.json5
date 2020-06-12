@@ -8,8 +8,5 @@
         messages: {
             keyedOut: "To save your settings you need to setup a Morphic Account."
         }
-    },
-    defaultSettingsData: {
-        fileLocation: "V:\\tests\\fixtures\\defaultSettings123.json5"
     }
 }
