@@ -325,7 +325,7 @@ gpii.tests.surveyTriggerManager.testDefs = {
          * to delay the tests a bit.
          */
             task: "gpii.test.linger",
-            args: [4000],
+            args: [5500],
             resolve: "fluid.identity"
         },
         triggerHandlersSequence,
