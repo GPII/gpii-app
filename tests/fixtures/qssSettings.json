@@ -412,7 +412,7 @@
         "path": "mySavedSettings",
         "schema": {
             "type": "mySavedSettings",
-            "sideCar": false
+            "sidecar": false
         },
         "buttonTypes": ["smallButton"],
         "tabindex": 230,
