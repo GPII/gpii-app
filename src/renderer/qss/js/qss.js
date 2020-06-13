@@ -151,45 +151,6 @@
         },
 
         components: {
-            qssStripRepeater: {
-                type: "gpii.psp.repeater",
-                container: "{list}.dom.mainPanel",
-                options: {
-                    defaultHandlerGrade: "{list}.options.defaultHandlerGrade",
-                    handlerGrades: "{list}.options.handlerGrades",
-                    model: {
-                        items: "{list}.options.settings"
-                    },
-                    dynamicContainerMarkup: "{list}.options.dynamicContainerMarkup",
-                    markup: "{list}.options.markup",
-                    events: {
-                        onUndoIndicatorChanged: "{list}.events.onUndoIndicatorChanged",
-                        onButtonFocusRequired: "{list}.events.onButtonFocusRequired",
-
-                        onButtonFocused: "{list}.events.onButtonFocused",
-                        onButtonActivated: "{list}.events.onButtonActivated",
-                        onButtonMouseEnter: "{list}.events.onButtonMouseEnter",
-                        onButtonMouseLeave: "{list}.events.onButtonMouseLeave",
-
-                        onSettingAltered: "{list}.events.onSettingAltered",
-                        onNotificationRequired: "{list}.events.onNotificationRequired",
-                        onMorePanelRequired: "{list}.events.onMorePanelRequired",
-                        onUndoRequired: "{list}.events.onUndoRequired",
-                        onResetAllRequired: "{list}.events.onResetAllRequired",
-                        onSaveRequired: "{list}.events.onSaveRequired",
-                        onQssClosed: "{list}.events.onQssClosed"
-                    },
-                    invokers: {
-                        getHandlerType: {
-                            funcName: "gpii.qss.list.getHandlerType",
-                            args: [
-                                "{that}",
-                                "{arguments}.0" // item
-                            ]
-                        }
-                    }
-                }
-            },
             qssMorePanel: {
                 type: "fluid.viewComponent",
                 container: "{list}.dom.morePanel",
@@ -210,40 +171,21 @@
                     }
                 }
             },
+            qssStripRepeater: {
+                type: "gpii.psp.repeaterInList",
+                container: "{list}.dom.mainPanel",
+                options: {
+                    model: {
+                        items: "{list}.options.settings"
+                    }
+                }
+            },
             qssMorePanelRepeater: {
-                type: "gpii.psp.repeater",
+                type: "gpii.psp.repeaterInList",
                 container: "{list}.dom.morePanelGrid",
                 options: {
-                    defaultHandlerGrade: "{list}.options.defaultHandlerGrade",
-                    handlerGrades: "{list}.options.handlerGrades",
                     model: {
                         items: "{list}.options.morePanelSettings"
-                    },
-                    dynamicContainerMarkup: "{list}.options.dynamicContainerMarkup",
-                    markup: "{list}.options.markup",
-                    events: {
-                        onUndoIndicatorChanged: "{list}.events.onUndoIndicatorChanged",
-                        onButtonFocusRequired: "{list}.events.onButtonFocusRequired",
-
-                        onButtonFocused: "{list}.events.onButtonFocused",
-                        onButtonActivated: "{list}.events.onButtonActivated",
-                        onButtonMouseEnter: "{list}.events.onButtonMouseEnter",
-                        onButtonMouseLeave: "{list}.events.onButtonMouseLeave",
-
-                        onSettingAltered: "{list}.events.onSettingAltered",
-                        onNotificationRequired: "{list}.events.onNotificationRequired",
-                        onUndoRequired: "{list}.events.onUndoRequired",
-                        onResetAllRequired: "{list}.events.onResetAllRequired",
-                        onSaveRequired: "{list}.events.onSaveRequired"
-                    },
-                    invokers: {
-                        getHandlerType: {
-                            funcName: "gpii.qss.list.getHandlerType",
-                            args: [
-                                "{that}",
-                                "{arguments}.0" // item
-                            ]
-                        }
                     }
                 }
             },
@@ -411,6 +353,48 @@
         return handlerGrades[settingType] || that.options.defaultHandlerGrade;
     };
 
+
+    /**
+     * Grade creates to be used for rendering of the QSS strip and `More panel` buttons.
+     */
+    fluid.defaults("gpii.psp.repeaterInList", {
+        gradeNames:"gpii.psp.repeater",
+        defaultHandlerGrade: "{list}.options.defaultHandlerGrade",
+        handlerGrades: "{list}.options.handlerGrades",
+
+        dynamicContainerMarkup: "{list}.options.dynamicContainerMarkup",
+        markup: "{list}.options.markup",
+
+        events: {
+            onUndoIndicatorChanged: "{list}.events.onUndoIndicatorChanged",
+            onButtonFocusRequired: "{list}.events.onButtonFocusRequired",
+
+            onButtonFocused: "{list}.events.onButtonFocused",
+            onButtonActivated: "{list}.events.onButtonActivated",
+            onButtonMouseEnter: "{list}.events.onButtonMouseEnter",
+            onButtonMouseLeave: "{list}.events.onButtonMouseLeave",
+
+            onSettingAltered: "{list}.events.onSettingAltered",
+            onNotificationRequired: "{list}.events.onNotificationRequired",
+            onMorePanelRequired: "{list}.events.onMorePanelRequired",
+            onUndoRequired: "{list}.events.onUndoRequired",
+            onResetAllRequired: "{list}.events.onResetAllRequired",
+            onSaveRequired: "{list}.events.onSaveRequired",
+            onQssClosed: "{list}.events.onQssClosed"
+        },
+
+        invokers: {
+            getHandlerType: {
+                funcName: "gpii.qss.list.getHandlerType",
+                args: [
+                    "{that}",
+                    "{arguments}.0" // item
+                ]
+            }
+        }
+    });
+
+
     /**
      * Wrapper that enables internationalization of the `gpii.qss` component and
      * intercepts all anchor tags on the page so that an external browser is used
@@ -437,6 +421,7 @@
             }
         }
     });
+
 
     /**
      * Represents all renderer components of the QSS including the list of settings,
@@ -480,7 +465,7 @@
                 args: ["{arguments}.0"]
             },
             onQssWidgetToggled: {
-                funcName: "gpii.qss.onQssWidgetToggled",
+                funcName: "gpii.qss.closeMorePanelOnClick",
                 args: ["{arguments}.0", "{arguments}.1", "{list}.events.onMorePanelClosed"]
             }
         },
@@ -582,7 +567,7 @@
      * @param {Boolean} isShown - The state of the widget dialog.
      * @param {fluid.event} event - The `onMorePanelClosed` event.
      */
-    gpii.qss.onQssWidgetToggled = function (button, isShown, event) {
+    gpii.qss.closeMorePanelOnClick = function (button, isShown, event) {
         if (!button.schema.morePanel && isShown) {
             event.fire();
         }

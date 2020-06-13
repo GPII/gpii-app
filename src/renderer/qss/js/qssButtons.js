@@ -310,7 +310,7 @@
      * @param {Boolean} isShown - Whether the QSS widget has been shown or hidden.
      */
     gpii.qss.buttonPresenter.applyActivatedStyle = function (that, container, setting, isShown) {
-        if (that.typeName !== "gpii.qss.moreButtonPresenter") {
+        if (!fluid.componentHasGrade(that, "gpii.qss.moreButtonPresenter")) {
             var activatedClass = that.options.styles.activated;
             container.toggleClass(activatedClass, isShown && that.model.item.path === setting.path);
         }
