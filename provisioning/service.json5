@@ -1,4 +1,8 @@
 // Service configuration for production.
+//
+// For more information about the possible configuration options, check
+// https://github.com/GPII/windows/blob/master/gpii-service/README.md
+//
 {
     "processes": {
         "gpii": {
@@ -19,6 +23,8 @@
     "autoUpdate": {
         "enabled": false,
         "lastUpdatesFile": "%ProgramData%\\Morphic\\last-updates.json5",
+        "retries": 3,
+        "retryDelay": 5000,
         "files": [{
             // Auto-update the site config.
             path: "%ProgramData%\\Morphic\\siteConfig.json5",
