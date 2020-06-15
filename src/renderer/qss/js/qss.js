@@ -26,7 +26,24 @@
      * the `defaultHandlerGrade` will be used for its presenter.
      */
     fluid.defaults("gpii.qss.list", {
-        gradeNames: ["gpii.psp.repeater"],
+        gradeNames: ["fluid.viewComponent"],
+
+        model: {
+            messages: {
+                infoBlock: null,
+                buttonBlock1: null,
+                buttonBlock2: null,
+                skipButtonLabel: null
+            }
+        },
+
+        selectors: {
+            morePanel: ".flc-quickSetStrip-more",
+            morePanelGrid: ".flc-quickSetStrip-more-button-grid",
+            mainPanel: ".flc-quickSetStrip-main",
+            closeMorePanelBtn: ".flc-quickSetStrip-more-close",
+            skipBtn: ".flc-quickSetStrip-more-skip"
+        },
 
         defaultHandlerGrade: "gpii.qss.buttonPresenter",
         handlerGrades: {
@@ -61,6 +78,22 @@
             "url-dropbox":       "gpii.qss.urlDropboxPresenter",
             "url-customize-qss": "gpii.qss.urlCustomizeQssPresenter"
         },
+        eventDelay: 10,
+        focusElementDelay: 200,
+
+        settings: {
+            expander: {
+                funcName: "gpii.qss.list.filterQssSettings",
+                args: ["{that}.model.items", false]
+            }
+        },
+
+        morePanelSettings: {
+            expander: {
+                funcName: "gpii.qss.list.filterQssSettings",
+                args: ["{that}.model.items", true]
+            }
+        },
 
         dynamicContainerMarkup: {
             container:
@@ -85,22 +118,226 @@
             onSettingAltered: null,
             onNotificationRequired: null,
             onMorePanelRequired: null,
+            onMorePanelClosed: null,
             onUndoRequired: null,
             onResetAllRequired: null,
             onSaveRequired: null,
+            onQssClosed: null,
+            onUndoIndicatorChanged: null,
             onMetric: null
         },
-
-        invokers: {
-            getHandlerType: {
-                funcName: "gpii.qss.list.getHandlerType",
+        listeners: {
+            onResetAllRequired: "{list}.events.onMorePanelClosed.fire",
+            onQssClosed: "{list}.events.onMorePanelClosed.fire",
+            onMorePanelRequired: {
+                funcName: "gpii.qss.list.focusSkipButton",
                 args: [
-                    "{that}",
-                    "{arguments}.0" // item
+                    "{skipButton}.container",
+                    "{focusElementTimeout}",
+                    "{arguments}.0",
+                    "{that}.options.focusElementDelay"
                 ]
+            }
+        },
+        modelListeners: {
+            "items": {
+                func: "gpii.qss.list.filterSettings",
+                args: [
+                    "{qssStripRepeater}",
+                    "{qssMorePanelRepeater}",
+                    "{that}.model.items"
+                ]
+            }
+        },
+
+        components: {
+            qssMorePanel: {
+                type: "fluid.viewComponent",
+                container: "{list}.dom.morePanel",
+                options: {
+                    gradeNames: "gpii.psp.selectorsTextRenderer",
+                    enableRichText: true,
+                    selectors: {
+                        infoBlock: ".flc-info-block",
+                        buttonBlock1: ".flc-button-block-1",
+                        buttonBlock2: ".flc-button-block-2"
+                    },
+                    model: {
+                        messages: {
+                            infoBlock: "{list}.model.messages.infoBlock",
+                            buttonBlock1: "{list}.model.messages.buttonBlock1",
+                            buttonBlock2: "{list}.model.messages.buttonBlock2"
+                        }
+                    }
+                }
+            },
+            qssStripRepeater: {
+                type: "gpii.psp.repeaterInList",
+                container: "{list}.dom.mainPanel",
+                options: {
+                    model: {
+                        items: "{list}.options.settings"
+                    }
+                }
+            },
+            qssMorePanelRepeater: {
+                type: "gpii.psp.repeaterInList",
+                container: "{list}.dom.morePanelGrid",
+                options: {
+                    model: {
+                        items: "{list}.options.morePanelSettings"
+                    }
+                }
+            },
+            closeMorePanelBtn: {
+                type: "gpii.psp.widgets.button",
+                container: "{that}.dom.closeMorePanelBtn",
+                options: {
+                    attrs: {
+                        "aria-label": "Close More Panel"
+                    },
+                    listeners: {
+                        onClick: "{list}.events.onMorePanelClosed.fire"
+                    }
+                }
+            },
+            skipButton: {
+                type: "gpii.psp.widgets.button",
+                container: "{that}.dom.skipBtn",
+                options: {
+                    model: {
+                        label: "{list}.model.messages.skipButtonLabel"
+                    },
+                    attrs: {
+                        "aria-label": "{list}.model.messages.skipButtonLabel"
+                    },
+                    listeners: {
+                        onClick: {
+                            funcName: "gpii.qss.list.onClickSkipButton",
+                            args: [
+                                "{that}.container",
+                                "{list}.options.selectors.morePanelGrid",
+                                "{focusElementTimeout}",
+                                "{list}.options.focusElementDelay"
+                            ]
+                        }
+                    }
+                }
+            },
+            windowKeyListener: {
+                type: "fluid.component",
+                options: {
+                    gradeNames: "gpii.app.keyListener",
+                    target: {
+                        expander: {
+                            funcName: "jQuery",
+                            args: [window]
+                        }
+                    },
+                    events: {
+                        onEscapePressed: null
+                    },
+                    listeners: {
+                        onEscapePressed: {
+                            funcName: "{list}.eventTimeout.start",
+                            args: ["{list}.options.eventDelay"]
+                        }
+                    }
+                }
+            },
+            eventTimeout: {
+                type: "gpii.app.timer",
+                options: {
+                    listeners: {
+                        onTimerFinished: {
+                            func: "{list}.events.onMorePanelClosed.fire"
+                        }
+                    }
+                }
+            },
+            focusElementTimeout: {
+                type: "gpii.app.timer",
+                options: {
+                    listeners: {
+                        onTimerFinished: {
+                            func: "{focusManager}.focusElement",
+                            args: [
+                                "{arguments}",
+                                true // applyHighlight
+                            ]
+                        }
+                    }
+                }
             }
         }
     });
+
+
+    /**
+     * Focusing the `skipButton` when the `more panel` is opened via keyboard.
+     * @param {jQuery} skipButton - The jQuery object representing the container of the `skipButton`.
+     * @param {focusElementTimeout} focusElementTimeout - The gpii.app.timer instance.
+     * @param {Object} activationParams - An object containing parameter's for the activation
+     * of the `more panel` button.
+     * @param {Number} focusDelay - The timeout duration in milliseconds.
+     */
+    gpii.qss.list.focusSkipButton = function (skipButton, focusElementTimeout, activationParams, focusDelay) {
+        if (fluid.get(activationParams, "key")) {
+            focusElementTimeout.start(focusDelay, skipButton);
+        }
+    };
+
+    /**
+     * Focusing the first button in the `more panel` grid when the skip button is activated.
+     * @param {jQuery} skipButtonContainer - The jQuery object representing the container of the `skipButton`.
+     * @param {String} morePanelGrid - The `morePanelGrid` selector.
+     * @param {focusElementTimeout} focusElementTimeout - The gpii.app.timer instance.
+     * @param {Number} focusDelay - The timeout duration in milliseconds.
+     */
+    gpii.qss.list.onClickSkipButton = function (skipButtonContainer, morePanelGrid, focusElementTimeout, focusDelay) {
+        var element = jQuery(morePanelGrid + " .fl-focusable")[0];
+
+        focusElementTimeout.start(focusDelay, [element]);
+    };
+
+    /**
+     * Using the filterQssSettings to add the items to the main and the more button.
+     * @param {qssStripRepeater} qssStripRepeater - The gpii.psp.repeater instance.
+     * @param {qssMorePanelRepeater} qssMorePanelRepeater - The gpii.psp.repeater instance.
+     * @param {Object[]} items - all available buttons found in settings.json.
+     */
+    gpii.qss.list.filterSettings = function (qssStripRepeater, qssMorePanelRepeater, items) {
+        var qssStripItems = gpii.qss.list.filterQssSettings(items, false),
+            morePanelItems = gpii.qss.list.filterQssSettings(items, true);
+
+        qssStripRepeater.applier.change("items", qssStripItems, null, "gpii.qss.list");
+        qssMorePanelRepeater.applier.change("items", morePanelItems, null, "gpii.qss.list");
+    };
+
+    /**
+     * Filter the settings object between the main and more panels using the
+     * setting.schema.morePanel key
+     * @param {Object[]} settings - all available buttons found in settings.json
+     * @param {Boolean} morePanel - to be in the main or the main panel
+     * @return {Object[]} - same structure as the settings, but filtered result
+     */
+    gpii.qss.list.filterQssSettings = function (settings, morePanel) {
+        var filteredSetting = [];
+
+        fluid.each(settings, function (setting) {
+            if (setting.schema) {
+                if (morePanel) {
+                    if (setting.schema.morePanel) {
+                        filteredSetting.push(setting);
+                    }
+                } else if (!setting.schema.morePanel) {
+                    filteredSetting.push(setting);
+                }
+            }
+        });
+
+        return filteredSetting;
+    };
 
     /**
      * Returns the correct handler type (a grade inheriting from `gpii.qss.buttonPresenter`)
@@ -115,6 +352,48 @@
 
         return handlerGrades[settingType] || that.options.defaultHandlerGrade;
     };
+
+
+    /**
+     * Grade creates to be used for rendering of the QSS strip and `More panel` buttons.
+     */
+    fluid.defaults("gpii.psp.repeaterInList", {
+        gradeNames:"gpii.psp.repeater",
+        defaultHandlerGrade: "{list}.options.defaultHandlerGrade",
+        handlerGrades: "{list}.options.handlerGrades",
+
+        dynamicContainerMarkup: "{list}.options.dynamicContainerMarkup",
+        markup: "{list}.options.markup",
+
+        events: {
+            onUndoIndicatorChanged: "{list}.events.onUndoIndicatorChanged",
+            onButtonFocusRequired: "{list}.events.onButtonFocusRequired",
+
+            onButtonFocused: "{list}.events.onButtonFocused",
+            onButtonActivated: "{list}.events.onButtonActivated",
+            onButtonMouseEnter: "{list}.events.onButtonMouseEnter",
+            onButtonMouseLeave: "{list}.events.onButtonMouseLeave",
+
+            onSettingAltered: "{list}.events.onSettingAltered",
+            onNotificationRequired: "{list}.events.onNotificationRequired",
+            onMorePanelRequired: "{list}.events.onMorePanelRequired",
+            onUndoRequired: "{list}.events.onUndoRequired",
+            onResetAllRequired: "{list}.events.onResetAllRequired",
+            onSaveRequired: "{list}.events.onSaveRequired",
+            onQssClosed: "{list}.events.onQssClosed"
+        },
+
+        invokers: {
+            getHandlerType: {
+                funcName: "gpii.qss.list.getHandlerType",
+                args: [
+                    "{that}",
+                    "{arguments}.0" // item
+                ]
+            }
+        }
+    });
+
 
     /**
      * Wrapper that enables internationalization of the `gpii.qss` component and
@@ -143,6 +422,7 @@
         }
     });
 
+
     /**
      * Represents all renderer components of the QSS including the list of settings,
      * the `focusManager` and the channels for communication with the main process.
@@ -169,7 +449,7 @@
         defaultFocusButtonType: "psp",
 
         listeners: {
-            "onQssOpen": {
+            onQssOpen: {
                 funcName: "gpii.qss.onQssOpen",
                 args: [
                     "{quickSetStripList}",
@@ -179,11 +459,14 @@
                     "{arguments}.0" // params
                 ]
             },
-
             onQssLogoToggled: {
                 this: "{that}.dom.logo",
                 method: "toggle",
                 args: ["{arguments}.0"]
+            },
+            onQssWidgetToggled: {
+                funcName: "gpii.qss.closeMorePanelOnClick",
+                args: ["{arguments}.0", "{arguments}.1", "{list}.events.onMorePanelClosed"]
             }
         },
 
@@ -203,7 +486,13 @@
             },
             focusManager: {
                 type: "gpii.qss.qssFocusManager",
-                container: "{qss}.container"
+                container: "{qss}.container",
+                options: {
+                    events: {
+                        onMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
+                        onMorePanelClosed: "{list}.events.onMorePanelClosed"
+                    }
+                }
             },
             channelListener: {
                 type: "gpii.psp.channelListener",
@@ -247,6 +536,7 @@
                         onQssSettingAltered:   "{quickSetStripList}.events.onSettingAltered",
                         onQssNotificationRequired: "{quickSetStripList}.events.onNotificationRequired",
                         onQssMorePanelRequired: "{quickSetStripList}.events.onMorePanelRequired",
+                        onMorePanelClosed: "{list}.events.onMorePanelClosed",
                         onQssUndoRequired: "{quickSetStripList}.events.onUndoRequired",
                         onQssResetAllRequired: "{quickSetStripList}.events.onResetAllRequired",
                         onQssSaveRequired: "{quickSetStripList}.events.onSaveRequired",
@@ -269,6 +559,19 @@
             }
         }
     });
+
+
+    /**
+     * Closing the More Panel when a widget from the main QSS is opened.
+     * @param {Object} button - The button which has been activated.
+     * @param {Boolean} isShown - The state of the widget dialog.
+     * @param {fluid.event} event - The `onMorePanelClosed` event.
+     */
+    gpii.qss.closeMorePanelOnClick = function (button, isShown, event) {
+        if (!button.schema.morePanel && isShown) {
+            event.fire();
+        }
+    };
 
     /**
      * Returns the index of the `setting` object in the `settings` array. Settings are identified
