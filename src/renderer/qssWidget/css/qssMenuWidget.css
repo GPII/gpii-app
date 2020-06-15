@@ -143,3 +143,9 @@
     margin-top: 5px;
 }
 /* Specific version for the Office Simplification's widget: END */
+
+/* CSS specific for the color wheel footertip */
+.colorWheelTip {
+    position: relative;
+    bottom: 10px;
+}

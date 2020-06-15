@@ -19,8 +19,11 @@
 var fluid = require("infusion");
 var gpii  = fluid.registerNamespace("gpii");
 
-var clickMoreBtn  = "jQuery(\".fl-qss-btnId-service-more\").click()",
-    clickCloseBtn = "jQuery(\".fl-qss-btnId-service-close\").click()";
+var clickMoreBtn        = "jQuery(\".fl-qss-btnId-service-more\").click()",
+    ifMorePanelVisible 	= "jQuery(\".fl-quickSetStrip-more\").is(\":visible\")",
+    ifMorePanelActive 	= "jQuery(\".fl-qss-btnId-service-more\").hasClass(\"fl-activated\")",
+    closeMoreDialog 	= "jQuery(\".fl-more-closeButton\").click()",
+    clickCloseBtn       = "jQuery(\".fl-qss-btnId-service-close\").click()";
 
 
 fluid.registerNamespace("gpii.tests.qss.morePanelTests");
@@ -28,34 +31,82 @@ fluid.registerNamespace("gpii.tests.qss.morePanelTests");
 gpii.tests.qss.morePanelTests = [
     { // Open the QSS...
         func: "{that}.app.tray.events.onTrayIconClicked.fire"
-    }, {  // When the "More" button is clicked...
+    }, { // open the `More Panel`
         func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickMoreBtn
         ]
-    }, { // ... the QSS More panel will show up.
-        changeEvent: "{that}.app.qssWrapper.qssMorePanel.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertTrue",
+    }, {
+        event: "{that}.app.qssWrapper.qss.channelListener.events.onQssMorePanelRequired",
+        listener: "jqUnit.assert",
+        args: ["`onQssMorePanelRequired` event is fired"]
+    }, {
+        task: "gpii.test.executeJavaScriptInWebContents",
         args: [
-            "The QSS More panel is shown when the More button in the QSS is clicked",
-            "{that}.app.qssWrapper.qssMorePanel.model.isShown"
+            "{that}.app.qssWrapper.qss.dialog",
+            ifMorePanelActive
+        ],
+        resolve: "jqUnit.assertTrue",
+        resolveArgs: ["The `More Panel` button is active: ", "{arguments}.0"]
+    },  {
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            ifMorePanelVisible
+        ],
+        resolve: "jqUnit.assertTrue",
+        resolveArgs: ["The `More Panel` is displayed: ", "{arguments}.0"]
+    }, {
+        func: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            closeMoreDialog
         ]
-    }, { // If the "More" button is clicked once again...
+    }, {
+        event: "{that}.app.qssWrapper.qss.channelListener.events.onMorePanelClosed",
+        listener: "jqUnit.assert",
+        args: ["`onMorePanelClosed` event is fired"]
+    }, {
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            ifMorePanelVisible
+        ],
+        resolve: "jqUnit.assertFalse",
+        resolveArgs: ["The `More Panel` is not displayed: ", "{arguments}.0"]
+    }, {
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            ifMorePanelActive
+        ],
+        resolve: "jqUnit.assertFalse",
+        resolveArgs: ["The `More Panel` button is not active: ", "{arguments}.0"]
+    }, { // open the `More Panel`
         func: "gpii.test.executeJavaScriptInWebContents",
         args: [
             "{that}.app.qssWrapper.qss.dialog",
             clickMoreBtn
         ]
-    }, { // ... the QSS More panel will be hidden.
-        changeEvent: "{that}.app.qssWrapper.qssMorePanel.applier.modelChanged",
-        path: "isShown",
-        listener: "jqUnit.assertFalse",
+    }, { // second click closes the `More Panel`
+        func: "gpii.test.executeJavaScriptInWebContents",
         args: [
-            "The QSS More panel is hidden if the More button in the QSS is clicked while the More panel is open",
-            "{that}.app.qssWrapper.qssMorePanel.model.isShown"
+            "{that}.app.qssWrapper.qss.dialog",
+            clickMoreBtn
         ]
+    }, {
+        event: "{that}.app.qssWrapper.qss.channelListener.events.onMorePanelClosed",
+        listener: "jqUnit.assert",
+        args: ["`onMorePanelClosed` event is fired"]
+    }, {
+        task: "gpii.test.executeJavaScriptInWebContents",
+        args: [
+            "{that}.app.qssWrapper.qss.dialog",
+            ifMorePanelVisible
+        ],
+        resolve: "jqUnit.assertFalse",
+        resolveArgs: ["The `More Panel` is not displayed: ", "{arguments}.0"]
     }, { // Close the QSS
         task: "gpii.test.executeJavaScriptInWebContents",
         args: [

@@ -47,10 +47,6 @@ gpii.tests.app.trayButton.buttonTests = fluid.freezeRecursive([
     {
         name: "isKeyedIn",
         value: false
-    },
-    {
-        name: "icon",
-        value: "bad icon file"
     }
 ]);
 
@@ -112,7 +108,8 @@ jqUnit.asyncTest("Testing tray button", function () {
     var trayButton = gpii.app.trayButton({
         events: {
             onMenuUpdated: null,
-            onTrayIconClicked: null
+            onTrayIconClicked: null,
+            onTrayIconMenuShown: null
         },
         listeners: {
             onMenuUpdated: {

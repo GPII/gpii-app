@@ -145,6 +145,8 @@ fluid.defaults("gpii.app.dialog", {
         }
     },
     members: {
+        // A promise which resolves when onDialogReady is fired
+        onDialogReady: "@expand:fluid.promise()",
         /**
          * Blurrable dialogs will have the `gradeNames` property which will hold all gradeNames
          * of the containing component. Useful when performing checks about the component if
@@ -194,7 +196,7 @@ fluid.defaults("gpii.app.dialog", {
             args: ["{that}"]
         },
         "onCreate.registerDialogReadyListener": {
-            funcName: "gpii.app.dialog.registerDailogReadyListener",
+            funcName: "gpii.app.dialog.registerDialogReadyListener",
             args: "{that}"
         },
         "onCreate.applyScaleFactor": {
@@ -202,7 +204,7 @@ fluid.defaults("gpii.app.dialog", {
             args: ["{that}", "{that}.model.scaleFactor"]
         },
         "onDestroy.cleanupElectron": {
-            this: "{that}.dialog",
+            "this": "{that}.dialog",
             method: "destroy",
             priority: "last"
         }
@@ -454,11 +456,12 @@ gpii.app.dialog.setDialogZoom = function (dialog, scaleFactor) {
  * the id of a `gpii.app.dialog` instance.
  * @param {Component} that - The instance of `gpii.app.dialog` component
  */
-gpii.app.dialog.registerDailogReadyListener = function (that) {
+gpii.app.dialog.registerDialogReadyListener = function (that) {
     // Use a local function so that we can de-register the channel listener when needed
     function handleReadyResponse(event, relatedCmpId) {
         if (that.id === relatedCmpId) {
             that.events.onDialogReady.fire();
+            that.onDialogReady.resolve();
 
             // detach current dialog's "ready listener"
             ipcMain.removeListener("onDialogReady", handleReadyResponse);
@@ -537,6 +540,11 @@ gpii.app.dialog.handleShownStateChange = function (that, isShown, showInactive) 
  * @param {Number} offsetY - The y offset from the bottom edge of the screen.
  */
 gpii.app.dialog.setBounds = function (that, restrictions, width, height, offsetX, offsetY) {
+    // applies scale factor to the `more panel` height
+    if (fluid.isValue(height) && that.options.config.morePanelHeight === height) {
+        height = that.model.scaleFactor * height;
+    }
+
     // As default use currently set values
     offsetX  = fluid.isValue(offsetX) ? offsetX : that.model.offset.x;
     offsetY  = fluid.isValue(offsetY) ? offsetY : that.model.offset.y;

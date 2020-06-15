@@ -1,4 +1,7 @@
 {
+    // Unique identifier for the deployment.
+    site: "default.gpii.net",
+
     // Whether to hide the QSS save button.
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
@@ -6,7 +9,7 @@
     // Configuration options for the QSS window
     qss: {
         // Whether a user can open Settings pages and Control Panels of the operating system
-        // this is used to show different data in the sideCar container
+        // this is used to show different data in the sidecar container
         osSettingsAvailable: true,
 
         // Determines if the QSS will be shown automatically on Morphic's startup
@@ -93,52 +96,65 @@
                 "buttonType": "KEY",
                 "buttonData": "^+{Escape}",
                 "popupText": "<p>Executes Ctrl+Shift+Esc combination, which opens Windows Task Manager.</p>"
-            }, {
-                "buttonId": "MakeYourOwn",
-                "buttonName": "Launch Notepad",
-                "buttonType": "APP",
-                "buttonData": "C:\\Windows\\system32\\notepad.exe",
-                "fullScreen": true,
-                "popupText": "<p>Launch the Notepad application.</p>",
-                "description": "The full description of the button..."
-            }, {
-                "buttonId": "MakeYourOwn",
-                "buttonName": "Open Reddit",
-                "buttonType": "WEB",
-                "buttonData": "www.reddit.com",
-                "fullScreen": true,
-                "popupText": "<p>Open Reddit in a web browser.</p>",
-                "description": "The full description of the button..."
             },
+            "||",
             "language",
-            "translate-tools",
             "screen-zoom",
             "text-zoom",
-            "screen-capture",
-            "snipping-tool",
-            "office-simplification",
             "high-contrast",
-            "mouse",
+            "snipping-tool",
+            "color-vision",
             "read-aloud",
             "volume",
             "launch-documorph",
             "cloud-folder-open",
             "usb-open",
-            "url-google-drive",
-            "url-one-drive",
-            "url-dropbox",
-            "url-customize-qss",
+            "||",
             "service-more",
             "service-save",
             "service-undo",
             "service-saved-settings",
             "service-reset-all",
             "service-close"
+        ],
+
+        morePanelList: [
+            [ // first row of buttons
+            ],
+            [ // second row of buttons
+                {
+                    "buttonId": "MakeYourOwn",
+                    "buttonName": "Launch Notepad",
+                    "buttonType": "APP",
+                    "buttonData": "C:\\Windows\\system32\\notepad.exe",
+                    "fullScreen": true,
+                    "popupText": "<p>Launch the Notepad application.</p>",
+                    "description": "The full description of the button..."
+                }, {
+                    "buttonId": "MakeYourOwn",
+                    "buttonName": "Open Reddit",
+                    "buttonType": "WEB",
+                    "buttonData": "www.reddit.com",
+                    "fullScreen": true,
+                    "popupText": "<p>Open Reddit in a web browser.</p>",
+                    "description": "The full description of the button..."
+                },
+                "screen-capture",
+                "url-customize-qss",
+                "url-google-drive",
+                "url-one-drive",
+                "url-dropbox",
+                "translate-tools",
+                "office-simplification",
+                "mouse"
+            ],
+            [ // third row of buttons
+            ]
         ]
     },
 
     // Whether to hide the QSS when a user clicks outside of it
-    closeQssOnClickOutside: true,
+    closeQssOnClickOutside: false,
 
     // Whether to disable the displaying of notifications that suggest some
     // applications may need to be restarted in order for a changed setting to be
@@ -148,21 +164,6 @@
 
     // The shortcut that open the QSS. For posible values refer to: https://electronjs.org/docs/api/accelerator
     openQssShortcut: "Shift+Ctrl+AltOrOption+SuperOrCmd+M",
-
-    // Configuration options for the QSS More panel
-    qssMorePanel: {
-        // These are default values. The actual dimensions of the QSS more panel
-        // are qssScaleFactor * defaultWidth and qssScaleFactor * defaultHeight.
-        defaultWidth: 600,
-        defaultHeight: 450,
-        movable: true,
-        resizable: true,
-        alwaysOnTop: true,
-
-        urls: {
-            moreInfo: "http://morphic.world/more"
-        }
-    },
 
     // Configuration options for the About dialog
     aboutDialog: {
@@ -218,5 +219,16 @@
     surveyTriggersUrl: "http://survey.gpii.net/survey-triggers.json",
 
     // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
-    trayType: ["gpii.app.trayButton"]
+    trayType: ["gpii.app.trayButton"],
+
+    // URL to the reset to standard profile. If no provided, the system will use a fallback one
+    resetToStandardProfileUrl: "https://raw.githubusercontent.com/GPII/universal/master/testData/defaultSettings/defaultSettings.win32.json5",
+
+    autoLogin: {
+        blockedUsers: ["admin*", "guest*", "student*", "visitor*", "volunteer*"],
+        userIdSource: "username"
+    },
+
+    // Metrics switch (read by the service): "<morphic>:<metrics>"
+    metricsSwitch: "on:on" // (eg, "on:on"=both on (default), "off:on"=metrics only)
 }

@@ -18,32 +18,35 @@ body {
 }
 
 .fl-qssWidget {
-    height: calc(100% - 12px);
-    padding: 10px;
-    border: 2px solid #002957;
-    border-radius: 5px;
-    box-sizing: border-box;
-
     display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    flex-direction: row;
+
+    height: calc(100% - 12px);
+    padding: 0;
+
+    border: none;
+    border-radius: 0;
     
-    background-color: #ffffff;
+    background: none;
     color: #19294c;
 
     font: normal 9px "Segoe UI", "Sans-Serif";
 
     overflow-x: hidden;
-    overflow-y: overlay;
-}
-
-.fl-qssWidget {
-    display: flex;
-    justify-content: center;
-    border: none;
-    border-radius: 0;
-    padding: 0;
-    background: none;
     overflow-y: hidden;
 }
+
+.horizontal-reverse .fl-qssWidget {
+    flex-direction: row-reverse;
+}
+
+.horizontal-reverse .fl-qssWidget .fl-sidecar-holder {
+    border: 1px solid #002957;
+    border-right: none;
+}
+
 .fl-widget-holder {
     display: flex;
     justify-content: center;
@@ -53,6 +56,10 @@ body {
     border: 1px solid #002957;
     background: white;
     overflow-y: hidden;
+}
+
+.fl-widget-content {
+    height: calc(100% - 45px);
 }
 
 .fl-sidecar-holder {
@@ -206,7 +213,6 @@ body {
 
     position: absolute;
     top: -1px;
-    left: 50%;
     width: 0;
     height: 0;
 
@@ -214,6 +220,44 @@ body {
     border-bottom: none;
 
     pointer-events: none;
+}
+
+.fl-qssWidget-arrow-left .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-left .fl-qssWidget-arrow:after {
+    left: 64px;
+}
+
+.fl-qssWidget-arrow-center .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-center .fl-qssWidget-arrow:after {
+    left: 83px;
+}
+
+.fl-qssWidget-arrow-right .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-right .fl-qssWidget-arrow:after {
+    left: 213px;
+}
+
+.fl-qssWidget-arrow-tight-right .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-tight-right .fl-qssWidget-arrow:after {
+    left: 260px;
+}
+
+/* Arrow position without sidecar */
+.fl-qssWidget-arrow-right-closed .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-right-closed .fl-qssWidget-arrow:after {
+    left: 130px;
+}
+
+/* Arrow position for my saved settings button */
+.fl-qssWidget-arrow-right-mySavedSettings .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-right-mySavedSettings .fl-qssWidget-arrow:after {
+    left: 112px;
+}
+
+/* Arrow position for my saved settings button with opened sidecar */
+.fl-qssWidget-arrow-right-mySavedSettingsSidecar .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-right-mySavedSettingsSidecar .fl-qssWidget-arrow:after {
+    left: 242px;
 }
 
 .fl-qssWidget-arrow:before {

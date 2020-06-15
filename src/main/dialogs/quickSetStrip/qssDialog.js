@@ -74,8 +74,8 @@ fluid.defaults("gpii.app.qss", {
             // the width will be computed once component loads up
             height: 64,
 
-            alwaysOnTop: true,
-            transparent: false
+            alwaysOnTop: false,
+            transparent: true
         },
         params: {
             settings: "{that}.model.settings",
@@ -89,12 +89,22 @@ fluid.defaults("gpii.app.qss", {
         onQssWidgetToggled: null,
         onQssSettingAltered: null,
         onQssLogoToggled: null,
+        // This is the incoming event by which the rest of the system and gpiiConnector
         onSettingUpdated: null,
+        // This is the event which is relayed across to the renderer process via IPC. We make sure not to do this
+        // until it has signalled readiness via onDialogReady (GPII-3818)
+        onSettingUpdatedUnbottled: null,
 
         onUndoIndicatorChanged: null
     },
+    listeners: {
+        "onSettingUpdated.bottle": {
+            funcName: "gpii.app.qss.bottleSettingUpdated",
+            args: ["{that}", "{arguments}.0"]
+        }
+    },
 
-    linkedWindowsGrades: ["gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
+    linkedWindowsGrades: ["gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qss"],
 
     components: {
         channelNotifier: {
@@ -103,7 +113,7 @@ fluid.defaults("gpii.app.qss", {
                 events: {
                     onQssOpen: "{qss}.events.onQssOpen",
                     onQssWidgetToggled: "{qss}.events.onQssWidgetToggled",
-                    onSettingUpdated: "{qss}.events.onSettingUpdated",
+                    onSettingUpdated: "{qss}.events.onSettingUpdatedUnbottled",
                     onQssLogoToggled: "{qss}.events.onQssLogoToggled",
                     onUndoIndicatorChanged: "{qss}.events.onUndoIndicatorChanged",
                     onIsKeyedInChanged: null
@@ -143,10 +153,13 @@ fluid.defaults("gpii.app.qss", {
                     onQssSettingAltered: "{qss}.events.onQssSettingAltered",
                     onQssNotificationRequired: null,
                     onQssMorePanelRequired: null,
+                    onMorePanelClosed: null,
                     onQssUndoRequired: null,
                     onQssResetAllRequired: null,
                     onQssSaveRequired: null,
                     onQssPspToggled: null,
+
+                    onMetric: null,
 
                     // Custom buttons events
                     onQssStartProcess: null,
@@ -209,6 +222,30 @@ fluid.defaults("gpii.app.qss", {
     }
 });
 
+gpii.app.qss.bottleSettingUpdated = function (that, newSettings) {
+    var fireIt = function () {
+        fluid.log("QSS Dialog firing unbottled settings update ", newSettings);
+        that.events.onSettingUpdatedUnbottled.fire(newSettings);
+    };
+    if (that.onDialogReady.disposition) {
+        fluid.log("QSS Dialog received settings update in live state, firing now");
+        fireIt();
+    } else {
+        fluid.log("QSS Dialog received settings update before renderer process is ready, bottling: ", newSettings);
+        that.onDialogReady.then(fireIt);
+    }
+};
+
+/**
+ * Calculates the height of the QSS strip
+ * @param {gpii.app.qssInWrapper} that - instance of the qssInWrapper
+ * @param {Integer} height - the desired height of the QSS
+ */
+gpii.app.qss.computeQssHeight = function (that, height) {
+    var scaledQssHeight = height * that.model.scaleFactor;
+    that.setBounds(null, scaledQssHeight);
+};
+
 /**
  * Represents a group of setting data from which we using only the buttonTypes array
  * @typedef {Object} ButtonDefinition
@@ -242,12 +279,20 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
     var buttonsWidth = closeButtonWidth + buttonWidth;
     // check the type of the previous button, if the current is small
     // in the future, we might have the case that there aren't two small sequential buttons
-    for (var i = 1; i < buttons.length; i++) {
-        if (!buttons[i].buttonTypes.includes(qssButtonTypes.smallButton) ||
-            !buttons[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
-            buttons[i].path !== qssButtonTypes.closeButton
+
+    var filteredSetting = [];
+
+    fluid.each(buttons, function (button) {
+        if (fluid.isValue(button.schema) && !button.schema.morePanel) {
+            filteredSetting.push(button);
+        }
+    });
+    for (var i = 1; i < filteredSetting.length; i++) {
+        if (!filteredSetting[i].buttonTypes.includes(qssButtonTypes.smallButton) ||
+            !filteredSetting[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
+            filteredSetting[i].path !== qssButtonTypes.closeButton
         ) {
-            if (separatorIds.includes(buttons[i].buttonTypes[0])) {
+            if (separatorIds.includes(filteredSetting[i].buttonTypes[0])) {
                 // this is separator type button, which is slimmer that the others
                 buttonsWidth += separatorWidth;
             } else {

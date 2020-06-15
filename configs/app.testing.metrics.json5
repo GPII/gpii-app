@@ -1,0 +1,8 @@
+// Start the app in testing, and include metrics.
+{
+    "type": "gpii.appMetrics",
+    "mergeConfigs": [
+        "%gpii-app/configs/app.testing.json",
+        "%gpii-app/configs/app.metrics.base.json5"
+    ]
+}

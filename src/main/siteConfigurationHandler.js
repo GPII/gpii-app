@@ -30,8 +30,11 @@ var gpii = fluid.registerNamespace("gpii");
 fluid.defaults("gpii.app.siteConfigurationHandler", {
     gradeNames: ["fluid.component"],
 
-    siteConfigPath: "%gpii-app/siteconfig.json5",
-    siteConfig: "@expand:fluid.require({that}.options.siteConfigPath)",
+    siteConfigPath: [
+        process.env.ProgramData + "/Morphic/siteconfig.json5",
+        "%gpii-app/siteconfig.json5"
+    ],
+    siteConfig: "@expand:{that}.requireFirst({that}.options.siteConfigPath)",
 
     saveSettingPath: "save",
 
@@ -46,51 +49,47 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
                     ]
                 }
             },
-            target: "{app qssWrapper}.options.settingOptions.hiddenSettings"
+            target: "{that qssWrapper}.options.settingOptions.hiddenSettings"
         },
         distributeQssConfig: {
             record: "{that}.options.siteConfig.qss",
-            target: "{app qssWrapper}.options.siteConfig"
+            target: "{that qssWrapper}.options.siteConfig"
         },
         distributeQssWidgetConfig: {
             record: "{that}.options.siteConfig.qss",
-            target: "{app qssWidget}.options.config.params.siteConfig"
+            target: "{that qssWidget}.options.config.params.siteConfig"
         },
         distributeLanguageLabelTemplate: {
             record: "{that}.options.siteConfig.qss.languageOptionLabel",
-            target: "{app qssWrapper}.options.settingOptions.languageOptionLabelTemplate"
+            target: "{that qssWrapper}.options.settingOptions.languageOptionLabelTemplate"
         },
         distributeDefaultLanguage: {
             record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
-            target: "{app qssWrapper}.options.settingOptions.systemDefaultLanguage"
+            target: "{that qssWrapper}.options.settingOptions.systemDefaultLanguage"
         },
         distributeTooltipShowDelay: {
             record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
-            target: "{app qssTooltipDialog}.options.showDelay"
-        },
-        distributeQssMorePanelConfig: {
-            record: "{that}.options.siteConfig.qssMorePanel",
-            target: "{app qssMorePanel}.options.siteConfig"
+            target: "{that qssTooltipDialog}.options.showDelay"
         },
         distributeQssClickOutside: {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
-            target: "{app gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
+            target: "{that gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
         },
         distributeOpenQssShortcut: {
             record: "{that}.options.siteConfig.openQssShortcut",
-            target: "{app gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
+            target: "{that gpiiConnector}.options.defaultPreferences.gpiiAppShortcut"
         },
         distributeDisableRestartWarning: {
             record: "{that}.options.siteConfig.disableRestartWarning",
-            target: "{app gpiiConnector}.options.defaultPreferences.disableRestartWarning"
+            target: "{that gpiiConnector}.options.defaultPreferences.disableRestartWarning"
         },
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
-            target: "{app surveyConnector}.options.config.surveyTriggersUrl"
+            target: "{that surveyConnector}.options.config.surveyTriggersUrl"
         },
         distributeAboutDialogConfig: {
             record: "{that}.options.siteConfig.aboutDialog",
-            target: "{app aboutDialog}.options.siteConfig"
+            target: "{that aboutDialog}.options.siteConfig"
         },
         distributePromotionWindowConfig: {
             record: "{that}.options.siteConfig.promotionWindow",
@@ -98,8 +97,25 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         },
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",
-            target: "{app tray}.options.trayType"
+            target: "{that tray}.options.trayType"
+        },
+        distributeResetToStandardProfileUrl: {
+            record: "{that}.options.siteConfig.resetToStandardProfileUrl",
+            target: "{that defaultSettingsLoader}.options.defaultSettingsUrl",
+            priority: "after:flowManager.remoteDefaultSettings"
+        },
+        distributeAutoLogin: {
+            record: "{that}.options.siteConfig.autoLogin",
+            target: "{/ gpii.windows.userListeners.windowsLogin}.options.config"
+        },
+        distributeMetrics: {
+            record: "{that}.options.siteConfig.metrics",
+            target: "{/ gpii.app.metrics}.options.siteConfig"
         }
+    },
+
+    invokers: {
+        requireFirst: "gpii.app.siteConfigurationHandler.requireFirst"
     }
 });
 
@@ -111,4 +127,32 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
  */
 gpii.app.siteConfigurationHandler.getSaveDistribution = function (saveSettingPath, shouldHideSaveButton) {
     return shouldHideSaveButton ? [saveSettingPath] : [];
+};
+
+/**
+ * Requires the first successfully required file in the given array. Used to load a file and provide a fall-back
+ * location if it doesn't exist.
+ *
+ * @param {Array<String>} files The files to attempt to require. Only the first successful file is required.
+ * @return {Object} The loaded module from the first successful required file.
+ */
+gpii.app.siteConfigurationHandler.requireFirst = function (files) {
+    var firstError;
+    var togo = fluid.find(fluid.makeArray(files), function (file) {
+        try {
+            fluid.log(fluid.logLevel.WARN, "Reading site config from " + file);
+            return fluid.require(file);
+        } catch (e) {
+            fluid.log(fluid.logLevel.WARN, "Unable to read site config from " + file + ": " + e.message);
+            if (!firstError) {
+                firstError = e;
+            }
+        }
+    });
+
+    // If nothing gets loaded, then re-throw the first error.
+    if (!togo && firstError) {
+        throw firstError;
+    }
+    return togo;
 };
