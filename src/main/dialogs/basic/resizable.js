@@ -41,7 +41,7 @@ fluid.defaults("gpii.app.resizable", {
             awaitingRescale: null
         },
         // Ignore changes to the work area
-        ignoreWorkarea: false
+        ignoreWorkArea: false
     },
 
     /*
