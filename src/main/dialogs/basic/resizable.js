@@ -234,6 +234,11 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that) {
      * be resized/repositioned and shown again.
      */
 
+    // repositioning promotion window dialog
+    if (that.typeName === "gpii.app.promotionWindowDialog") {
+        that.events.onRepositioningRequired.fire();
+    };
+
     if (!that.beforeRescale.awaitingRescale) {
         that.beforeRescale = {
             wasFocused: electron.BrowserWindow.getFocusedWindow() === that.dialog,

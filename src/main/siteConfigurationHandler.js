@@ -91,6 +91,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.aboutDialog",
             target: "{that aboutDialog}.options.siteConfig"
         },
+        distributePromotionWindowConfig: {
+            record: "{that}.options.siteConfig.promotionWindow",
+            target: "{app promotionWindowDialog}.options.siteConfig"
+        },
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",
             target: "{that tray}.options.trayType"
