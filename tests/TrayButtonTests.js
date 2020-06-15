@@ -92,7 +92,7 @@ jqUnit.asyncTest("Testing tray button", function () {
 
     var tests = gpii.tests.app.trayButton.buttonTests;
     var checkButtonExpects = 3;
-    jqUnit.expect(checkButtonExpects * (tests.length + 2) + 6);
+    jqUnit.expect(checkButtonExpects * (tests.length + 2) + 7);
 
     // Make sure there isn't a button already (from another instance).
     var buttonWindows = gpii.windows.findWindows(["Shell_TrayWnd", "GPII-TrayButton"]);
@@ -108,7 +108,8 @@ jqUnit.asyncTest("Testing tray button", function () {
     var trayButton = gpii.app.trayButton({
         events: {
             onMenuUpdated: null,
-            onTrayIconClicked: null
+            onTrayIconClicked: null,
+            onTrayIconMenuShown: null
         },
         listeners: {
             onMenuUpdated: {
@@ -152,6 +153,17 @@ jqUnit.asyncTest("Testing tray button", function () {
                 trayButton.applier.change(test.name, test.value);
                 gpii.tests.app.trayButton.checkButton(buttonWindow, taskbarWindow);
             });
+
+            // Check getIconBounds() is correct.
+            var buttonRect = gpii.windows.getWindowRect(buttonWindow);
+            var rect = {
+                x: buttonRect.left,
+                y: buttonRect.top,
+                width: buttonRect.width,
+                height: buttonRect.height
+            };
+
+            jqUnit.assertDeepEq("getIconBounds must return the button window rect", rect, trayButton.getIconBounds());
 
             // Kill the button process, it should restart.
             gpii.windows.killProcessByName("tray-button.exe");

@@ -1,0 +1,12 @@
+.fl-closeBtn {
+	position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 1000;
+
+	min-width: 28px;
+	margin: 0;
+    padding: 5px;
+    
+    background: #fff;
+}

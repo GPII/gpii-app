@@ -165,7 +165,7 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
 gpii.app.resizable.computeScaleFactor = function (that) {
     var screenSize = gpii.app.getPrimaryDisplay().workAreaSize,
         extendedWidth = that.getExtendedWidth(),
-        scaleFactor = (screenSize.width / extendedWidth) * that.model.scaleFactor;
+        scaleFactor = ((screenSize.width / extendedWidth) * that.model.scaleFactor).toFixed(2);
 
     return Math.min(scaleFactor, that.model.maxScaleFactor);
 };
@@ -176,17 +176,16 @@ gpii.app.resizable.computeScaleFactor = function (that) {
  * @param {Component} that - The `gpii.app.resizable` component.
  */
 gpii.app.resizable.fitToScreen = function (that) {
-    // resizing the QSS only if its called from the QSS wrapper
-    // in any other case there is no need to resize it
-    if (that.typeName === "gpii.app.qssInWrapper") {
+    // check for preventing a weird bug related to GPII-3822
+    if (that.typeName !== "gpii.app.qssTooltipDialog") {
         // getting the scale factor
         var scaleFactor = that.computeScaleFactor();
+
         // changing the scale factor only if its different in the current one
-        if (scaleFactor === that.model.scaleFactor) {
-            that.setBounds();
-        } else {
+        if (scaleFactor !== that.model.scaleFactor) {
             that.applier.change("scaleFactor", scaleFactor);
         }
+        that.setBounds();
     }
 };
 
@@ -239,6 +238,11 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
      * When the time is up, the DPI changes are considered to be applied successfully and the dialog can
      * be resized/repositioned and shown again.
      */
+
+    // repositioning promotion window dialog
+    if (that.typeName === "gpii.app.promotionWindowDialog") {
+        that.events.onRepositioningRequired.fire();
+    }
 
     // Don't adjust to work area changes.
     var ignore = that.ignoreWorkArea && (changedMetrics.length === 1 && changedMetrics[0] === "workArea");

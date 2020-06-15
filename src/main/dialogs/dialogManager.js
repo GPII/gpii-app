@@ -21,6 +21,7 @@ require("./waitDialog.js");
 require("./surveyDialog.js");
 require("./errorDialog.js");
 require("./aboutDialog.js");
+require("./promotionWindowDialog.js");
 require("../common/utils.js");
 
 
@@ -147,7 +148,7 @@ fluid.defaults("gpii.app.dialogManager", {
 
     modelListeners: {
         isKeyedIn: {
-            funcName: "gpii.app.dialogManager.closeDialogsOnKeyOut",
+            funcName: "gpii.app.dialogManager.closeDialogsOnKeyInOut",
             args: ["{that}", "{change}.value"],
             excludeSource: "init"
         }
@@ -164,6 +165,14 @@ fluid.defaults("gpii.app.dialogManager", {
         },
         aboutDialog: {
             type: "gpii.app.aboutDialog",
+            options: {
+                model: {
+                    scaleFactor: "{dialogManager}.model.scaleFactor"
+                }
+            }
+        },
+        promotionWindow: {
+            type: "gpii.app.promotionWindowDialog",
             options: {
                 model: {
                     scaleFactor: "{dialogManager}.model.scaleFactor"
@@ -331,13 +340,15 @@ gpii.app.dialogManager.close = function (dialogManager, selector) {
 
 /**
  * A function responsible for closing all dialogs which need to be closed
- * whenever the user keyes out of the PSP.
+ * whenever the user key in or out.
  * @param {Component} dialogManager - The `gpii.app.dialogManager` instance.
  * @param {Boolean} isKeyedIn - Indicates whether there is a currently keyed
  * in user.
  */
-gpii.app.dialogManager.closeDialogsOnKeyOut = function (dialogManager, isKeyedIn) {
+gpii.app.dialogManager.closeDialogsOnKeyInOut = function (dialogManager, isKeyedIn) {
     if (!isKeyedIn) {
         dialogManager.close("survey");
+    } else {
+        dialogManager.close("promotionWindow");
     }
 };

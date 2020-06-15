@@ -45,7 +45,8 @@ fluid.defaults("gpii.app.tray", {
     events: {
         onActivePreferenceSetAltered: null, // passed from parent
         onMenuUpdated: null,
-        onTrayIconClicked: null
+        onTrayIconClicked: null,
+        onTrayIconMenuShown: null
     },
     model: {
         isKeyedIn: false,
@@ -225,6 +226,10 @@ fluid.defaults("gpii.app.trayButton", {
         updateButton: {
             func: "{that}.sendDataMessage", // command, data
             args: [ "{that}.trayButtonWindow", "{arguments}.0", "{arguments}.1" ]
+        },
+        getIconBounds: {
+            funcName: "fluid.identity",
+            args: [ "{that}.rect" ]
         }
     },
     listeners: {
@@ -260,6 +265,8 @@ fluid.defaults("gpii.app.trayButton", {
         // Path to the tray button window.
         trayButtonWindow: ["Shell_TrayWnd", "GPII-TrayButton"],
         trayButtonMessage: "GPII-TrayButton-Message",
+        trayButtonPositionMessage: "GPII-TrayButtonPos-Message",
+        rect: {},
         menu: null,
         // true if the mouse pointer is currently over the button
         mouseOver: false
@@ -354,8 +361,9 @@ gpii.app.trayButton.setMenu = function (that, menu) {
  * @param {Number} hwnd The message window.
  * @param {Number|String} msg The message.
  * @param {Number} wParam Message data.
+ * @param {Number} lParam Extra message data.
  */
-gpii.app.trayButton.windowMessage = function (that, hwnd, msg, wParam) {
+gpii.app.trayButton.windowMessage = function (that, hwnd, msg, wParam, lParam) {
     if (msg === that.trayButtonMessage) {
         switch (wParam) {
         case gpii.app.trayButton.notifications.click:
@@ -364,6 +372,7 @@ gpii.app.trayButton.windowMessage = function (that, hwnd, msg, wParam) {
 
         case gpii.app.trayButton.notifications.showMenu:
             if (that.menu) {
+                that.events.onTrayIconMenuShown.fire();
                 that.menu.popup({});
             }
             break;
@@ -386,5 +395,14 @@ gpii.app.trayButton.windowMessage = function (that, hwnd, msg, wParam) {
         default:
             break;
         }
+    } else if (msg === that.trayButtonPositionMessage) {
+        var lParamValue = lParam.address();
+        // The bounding rectangle is 4 shorts crammed in both the message parameters.
+        that.rect = {
+            x: wParam & 0xffff,
+            y: (wParam >> 16) & 0xffff,
+            width: lParamValue & 0xffff,
+            height: (lParamValue >> 16) & 0xffff
+        };
     }
 };

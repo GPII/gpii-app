@@ -27,6 +27,10 @@
     fluid.defaults("gpii.qss.qssFocusManager", {
         gradeNames: ["gpii.qss.horizontalFocusManager", "gpii.qss.verticalFocusManager"],
 
+        model: {
+            morePanelActivated: false
+        },
+
         maxElementsPerFocusGroup: 2,
 
         styles: {
@@ -50,13 +54,21 @@
             "onArrowRightPressed.impl": {
                 funcName: "gpii.qss.qssFocusManager.onArrowRightPressed",
                 args: ["{that}"]
+            },
+            onMorePanelRequired: {
+                changePath: "morePanelActivated",
+                value: true
+            },
+            onMorePanelClosed: {
+                changePath: "morePanelActivated",
+                value: false
             }
         },
 
         invokers: {
             getFocusInfo: {
                 funcName: "gpii.qss.qssFocusManager.getFocusInfo",
-                args: ["{that}.container", "{that}.options.styles"]
+                args: ["{that}.container", "{that}.options.styles", "{that}.model.morePanelActivated"]
             },
             getFocusGroupsInfo: {
                 funcName: "gpii.qss.qssFocusManager.getFocusGroupsInfo",
@@ -88,12 +100,14 @@
      * focus manager handles focus.
      * @param {Object} styles - A styles object containing various classes related to focusing
      * of elements
+     * @param {Boolean} morePanelActivated - `true` if "More Panel" is open.
      * @return {Object} Information about the focusable elements.
      */
-    gpii.qss.qssFocusManager.getFocusInfo = function (container, styles) {
+    gpii.qss.qssFocusManager.getFocusInfo = function (container, styles, morePanelActivated) {
+        var childContainer = morePanelActivated ? ".flc-quickSetStrip-more " : "";
         var focusableElements =
             container
-                .find("." + styles.focusable + ":visible")
+                .find(childContainer + "." + styles.focusable + ":visible")
                 .filter(function (index, element) {
                     var tabindex = gpii.qss.qssFocusManager.getTabIndex(element);
                     return tabindex >= 0;

@@ -128,6 +128,15 @@
      */
     fluid.defaults("gpii.qss.moreButtonPresenter", {
         gradeNames: ["gpii.qss.buttonPresenter"],
+        listeners: {
+            "{list}.events.onMorePanelClosed": {
+                funcName: "gpii.qss.moreButtonPresenter.applyStylesOnClose",
+                args: [
+                    "{that}",
+                    "{list}"
+                ]
+            }
+        },
         invokers: {
             activate: {
                 funcName: "gpii.qss.moreButtonPresenter.activate",
@@ -141,16 +150,32 @@
     });
 
     /**
+     * Applies the appropriate styles to "More Panel" button and the QSS Strip when the "More Panel" is closed.
+     * @param {gpii.qss.moreButtonPresenter} that - The `gpii.qss.moreButtonPresenter` instance.
+     * @param {gpii.qss.list} qssList - The `gpii.qss.list` instance.
+     */
+    gpii.qss.moreButtonPresenter.applyStylesOnClose = function (that, qssList) {
+        qssList.qssMorePanel.container.css("display", "none");
+        that.container.toggleClass(that.options.styles.activated, false);
+    };
+
+    /**
      * A custom function for handling activation of the "More..." QSS button. Reuses the generic
      * `notifyButtonActivated` invoker.
-     * @param {Component} that - The `gpii.qss.moreButtonPresenter` instance.
-     * @param {Component} qssList - The `gpii.qss.list` instance.
+     * @param {gpii.qss.moreButtonPresenter} that - The `gpii.qss.moreButtonPresenter` instance.
+     * @param {gpii.qss.list} qssList - The `gpii.qss.list` instance.
      * @param {Object} activationParams - An object containing parameter's for the activation
      * of the button (e.g. which key was used to activate the button).
      */
     gpii.qss.moreButtonPresenter.activate = function (that, qssList, activationParams) {
-        that.notifyButtonActivated(activationParams);
-        qssList.events.onMorePanelRequired.fire();
+        if (!that.container.hasClass(that.options.styles.activated)) {
+            that.notifyButtonActivated(activationParams);
+            that.container.toggleClass(that.options.styles.activated, true);
+            qssList.events.onMorePanelRequired.fire(activationParams);
+            qssList.qssMorePanel.container.css("display", "block");
+        } else {
+            qssList.events.onMorePanelClosed.fire();
+        }
     };
 
 
@@ -225,7 +250,11 @@
                 funcName: "gpii.windows.openUrl",
                 args: [
                     "{that}.model.item.schema.url", // using the url from the custom button's schema
-                    "{gpii.qss}.options.siteConfig.alwaysUseChrome", // Override the OS default browser.
+                    true, // Override the OS default browser to always use Chrome instead
+                    // the reasoning for it can be found here:
+                    // https://issues.gpii.net/browse/GPII-4422?focusedCommentId=43800&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-43800
+                    // if you want to use the value from site config this is:
+                    // "{gpii.qss}.options.siteConfig.alwaysUseChrome"
                     "{that}.model.item.schema.fullScreen" // using the fullScreen from the custom button's schema
                 ]
             }

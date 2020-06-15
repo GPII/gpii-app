@@ -24,6 +24,7 @@ require("./assetsManager.js");
 require("./common/utils.js");
 require("./common/ws.js");
 require("./dialogs/dialogManager.js");
+require("./dialogs/captureToolDialog.js");
 require("./storage.js");
 require("./factsManager.js");
 require("./gpiiConnector.js");
@@ -33,6 +34,7 @@ require("./settingsBroker.js");
 require("./shortcutsManager.js");
 require("./siteConfigurationHandler.js");
 require("./surveys/surveyManager.js");
+require("./storage.js");
 require("./tray.js");
 require("./userErrorsHandler.js");
 require("./metrics.js");
@@ -103,9 +105,15 @@ fluid.defaults("gpii.app", {
     // prerequisites
     members: {
         machineId: "@expand:{that}.installID.getMachineID()",
-        onPSPPrerequisitesReady: "@expand:fluid.promise()"
+        onPSPReadyForKeyIn: "@expand:fluid.promise()"
     },
     components: {
+        settingsDir: {
+            type: "gpii.settingsDir"
+        },
+        configurationHandler: {
+            type: "gpii.app.siteConfigurationHandler"
+        },
         userErrorHandler: {
             type: "gpii.app.userErrorsHandler",
             options: {
@@ -245,6 +253,21 @@ fluid.defaults("gpii.app", {
                 }
             }
         },
+        captureTool: {
+            type: "gpii.app.captureTool",
+            createOnEvent: "onOpenCaptureTool",
+            options: {
+                model: {
+                    isKeyedIn: "{app}.model.isKeyedIn",
+                    keyedInUserToken: "{app}.model.keyedInUserToken",
+                    preferences: "{pspChannel}.model.preferences"
+                }
+            }
+        },
+        diagnosticsCollector: {
+            type: "gpii.app.diagnosticsCollector",
+            createOnEvent: "onPSPPrerequisitesReady"
+        },
         shortcutsManager: {
             type: "gpii.app.shortcutsManager",
             createOnEvent: "onPSPPrerequisitesReady",
@@ -337,6 +360,16 @@ fluid.defaults("gpii.app", {
             }
         }
     },
+    distributeOptions: {
+        relayQssDialogReady: {
+            target: "{that gpii.app.qss}.options.listeners",
+            record: {
+                "onDialogReady.relayToApp": {
+                    func: "{gpii.app}.events.onQSSDialogReady.fire"
+                }
+            }
+        }
+    },
     events: {
         onPSPPrerequisitesReady: {
             events: {
@@ -345,12 +378,21 @@ fluid.defaults("gpii.app", {
                 onPSPChannelConnected: "onPSPChannelConnected"
             }
         },
+        onPSPReadyForKeyIn: {
+            events: {
+                resetAtStartSuccess: "{flowManager}.events.resetAtStartSuccess",
+                onQSSDialogReady: "onQSSDialogReady"
+            }
+        },
+        onQSSDialogReady: null,
         onGPIIReady: null,
 
         onAppReady: null,
 
         onPSPChannelConnected: null,
         onPSPReady: null,
+
+        onOpenCaptureTool: null,
 
         onKeyedIn: null,
         onKeyedOut: null,
@@ -388,8 +430,8 @@ fluid.defaults("gpii.app", {
             func: "{that}.events.onPSPReady.fire",
             priority: "last"
         },
-        "onPSPPrerequisitesReady.resolvePromise": {
-            func: "{that}.onPSPPrerequisitesReady.resolve",
+        "onPSPReadyForKeyIn.resolvePromise": {
+            func: "{that}.onPSPReadyForKeyIn.resolve",
             priority: "after:notifyPSPReady"
         }
 
@@ -444,12 +486,15 @@ fluid.defaults("gpii.app", {
 // Indicative fix for GPII-3818
 gpii.app.updateKeyedInUserToken = function (that, userToken) {
     var updateFunc = function () {
+        fluid.log("Main app firing unbottled user token update to ", userToken);
         that.applier.change("keyedInUserToken", userToken);
     };
-    if (that.onPSPPrerequisitesReady.disposition) {
+    if (that.onPSPReadyForKeyIn.disposition) {
+        fluid.log("Main app received userToken update in live state, firing now");
         updateFunc();
     } else {
-        that.onPSPPrerequisitesReady.then(updateFunc);
+        fluid.log("Main app received userToken update before renderer process is ready, deferring for " + userToken);
+        that.onPSPReadyForKeyIn.then(updateFunc);
     }
 };
 

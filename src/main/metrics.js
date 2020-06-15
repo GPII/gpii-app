@@ -19,21 +19,30 @@
 "use strict";
 
 var fluid = require("infusion");
+var gpii = fluid.registerNamespace("gpii");
+fluid.registerNamespace("gpii.app.metrics");
 
 /*
 
 The following events are captured:
 
+site-id: Recorded at start-up, to identify the deployment.
+
 qss-shown: The quick-strip was shown.
 {
     "module":"metrics.app",
     "event":"qss-shown",
+    "qss": "open" // This will be present in all subsequent messages, until it is closed.
+    "app": "active" // This will be present in all subsequent messages, only when the QSS (or any other morphic window)
+                    // is the active window.
 }
 
 qss-hidden: The quick-strip was hidden.
 {
     "module":"metrics.app",
     "event":"qss-hidden",
+    "data": { duration: 56 } // how long it was shown for
+    "qss": "open" // This will be removed in all subsequent messages, until it is re-opened.
 }
 
 button-focused: A button on the quick-strip has been focused.
@@ -41,8 +50,12 @@ button-focused: A button on the quick-strip has been focused.
     "module": "metrics.app",
     "event": "button-focused",
     "data": {
-        "buttonPath":"undo"
-    }
+        "buttonPath":"openUSB"
+    },
+    "focus": "openUSB" // This will be present in all subsequent messages, while this button has the focus or while
+                       // the widget window is open. Note that this may still be present even when the qss has lost
+                       // focus or hidden. Combine with the "qss" and "app" fields for accuracy.
+    "hover": "openUSB" // this will be added to all subsequent events, while the mouse is over it.
 }
 
 button-activated: A quick-strip button has been actioned.
@@ -82,7 +95,29 @@ widget-hidden: A qss widget is closed
     "event":"widget-hidden",
     "data": {
         "path":"appTextZoom"
+        "duration": 15 // how long it was shown for
     }
+}
+
+widget-focus: A component within a widget has gained focus
+{
+  "module": "metrics.app",
+  "event": "widget-focus",
+  "data": {
+    "id": "en-US"
+  },
+  "widget-focus": "en-US" // this will be added to all subsequent events, until it loses focus.
+  "widget-hover": "en-US" // this will be added to all subsequent events, while the mouse is over it.
+}
+
+widget-unfocus: A component within a widget has lost focus
+{
+  "module": "metrics.app",
+  "event": "widget-unfocus",
+  "data": {
+    "id": "learnMoreLink"
+  }
+  "widget-focus": "learnMoreLink" // this will not be present in subsequent events, until another gains focus.
 }
 
 setting-changed: A setting has changed via a quick-strip widget
@@ -95,11 +130,70 @@ setting-changed: A setting has changed via a quick-strip widget
     }
 }
 
+tooltip-shown: QS tooltip was shown
+{
+  "module": "metrics.app",
+  "event": "tooltip-shown",
+  "data": {
+    "path": "http://registry\\.gpii\\.net/common/language"
+  }
+}
+
+tooltip-shown: QS tooltip was hidden
+{
+  "module": "metrics.app",
+  "event": "tooltip-hidden",
+  "data": {
+    "path": "http://registry\\.gpii\\.net/common/language"
+    "duration": 10
+  }
+}
+
+reset: The reset to standard desktop icon was clicked:
+{
+  "module": "startup",
+  "event": "reset",
+  "data": {
+    "commandLine": "morphic-app.exe --reset"
+  }
+}
+
+open: The show Morphic desktop link was clicked:
+{
+  "module": "startup",
+  "event": "open",
+  "data": {
+    "commandLine": "morphic-app.exe"
+  }
+}
+
+tray-icon: The tray icon was clicked
+{
+    "module":"metrics.app",
+    "event":"setting-changed",
+    "data":{
+        "menu": true // optional: true of icon was right-clicked.
+    }
+}
+
+
+office-change: When one of the simplification buttons have been clicked.
+{
+  "module": "metrics.app",
+  "event": "office-change",
+  "data": {
+    "id": "http://registry\\.gpii\\.net/applications/com\\.microsoft\\.office.word-ribbon",
+    "oldValue": "Basics+StandardSet",
+    "value": "Basics+Essentials+StandardSet"
+  },
+}
+
+
 */
 
 
 /**
- * Component that controls the tray widgets.
+ * Metrics for gpii-app
  */
 fluid.defaults("gpii.app.metrics", {
     gradeNames: ["fluid.component"],
@@ -111,13 +205,36 @@ fluid.defaults("gpii.app.metrics", {
     },
     distributeOptions: {
         "qss": {
-            "record": "gpii.app.metrics.qssInWrapper",
-            "target": "{/ gpii.app.qssInWrapper}.options.gradeNames"
+            record: "gpii.app.metrics.qssInWrapper",
+            target: "{/ gpii.app.qssInWrapper}.options.gradeNames"
         },
         "qssWidget": {
-            "record": "gpii.app.metrics.qssWidget",
-            "target": "{/ gpii.app.qssWidget}.options.gradeNames"
+            record: "gpii.app.metrics.qssWidget",
+            target: "{/ gpii.app.qssWidget}.options.gradeNames"
+        },
+        "tooltip": {
+            record: "gpii.app.metrics.qssTooltipDialog",
+            target: "{/ gpii.app.qssTooltipDialog}.options.gradeNames"
+        },
+        "notification": {
+            record: "gpii.app.metrics.qssNotification",
+            target: "{/ gpii.app.qssNotification}.options.gradeNames"
+        },
+        "error": {
+            record: "gpii.app.metrics.errorDialog",
+            target: "{/ gpii.app.errorDialog}.options.gradeNames"
+        },
+        "more": {
+            record: "gpii.app.metrics.morePanel",
+            target: "{/ gpii.app.qssMorePanel}.options.gradeNames"
         }
+    },
+    durationEvents: {
+        "tooltip-shown": "tooltip-hidden",
+        "qss-shown": "qss-hidden",
+        "widget-shown": "widget-hidden",
+        "widget-focus": "widget-unfocus",
+        "notification-shown": "notification-hidden"
     }
 });
 
@@ -125,53 +242,200 @@ fluid.defaults("gpii.app.metrics", {
 fluid.defaults("gpii.app.metrics.qssInWrapper", {
     gradeNames: ["fluid.component"],
     listeners: {
-        "{channelListener}.events.onQssButtonFocused": {
-            func: "{eventLog}.metrics.uiMetric",
+        "onCreate.logSite": {
+            func: "{eventLog}.uiMetric",
+            args: [ "site-id", "{siteConfigurationHandler}.options.siteConfig.site" ]
+        },
+        "{channelListener}.events.onQssButtonFocused": [{
+            namespace: "metric",
+            func: "{eventLog}.uiMetric",
             args: [ "button-focused", {
                 buttonPath: "{arguments}.0.path"
             } ]
-        },
-        "{channelListener}.events.onQssButtonActivated": {
-            func: "{eventLog}.metrics.uiMetric",
-            args: [ "button-activated", {
-                buttonPath: "{arguments}.0.path",
-                key: "{arguments}.2.key",
-                mouse: "{arguments}.2.type"
+        }, {
+            priority: "before:metric",
+            namespace: "metrics-state",
+            func: "{eventLog}.setState",
+            args: [ "focus", "{arguments}.0.path" ]
+        }],
+        "{channelListener}.events.onQssButtonMouseEnter": [{
+            namespace: "metric",
+            func: "{eventLog}.uiMetric",
+            args: [ "mouse-over", {
+                path:"{arguments}.0.path",
+                qss: true
             } ]
+        }, {
+            namespace: "metric-state",
+            func: "{eventLog}.setState",
+            args: [ "hover", "{arguments}.0.path" ]
+        }],
+        "{channelListener}.events.onQssButtonMouseLeave": {
+            namespace: "metric-state",
+            func: "{eventLog}.setState",
+            args: [ "hover" ]
+        },
+        "{channelListener}.events.onQssButtonsFocusLost": {
+            namespace: "metric-state",
+            func: "{eventLog}.setState",
+            args: [ "focus" ]
         },
         "onDialogShown.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "qss-shown" ]
         },
         "onDialogHidden.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "qss-hidden" ]
+        },
+        "onDialogShown.logState": {
+            priority: "before:metrics",
+            func: "{eventLog}.setState",
+            args: [ "qss", "open" ]
+        },
+        "onDialogHidden.logState": {
+            priority: "after:metrics",
+            func: "{eventLog}.setState",
+            args: [ "qss" ]
+        }
+    },
+    components: {
+        trayListener: {
+            createOnEvent: "{app}.events.onPSPReady",
+            type: "fluid.component",
+            options: {
+                listeners: {
+                    "{gpii.app}.tray.events.onTrayIconClicked": {
+                        func: "{eventLog}.uiMetric",
+                        args: [ "tray-icon" ]
+                    },
+                    "{gpii.app}.tray.events.onTrayIconMenuShown": {
+                        func: "{eventLog}.uiMetric",
+                        args: [ "button-activated", {
+                            buttonPath: "{arguments}.0.path",
+                            key: "{arguments}.2.key",
+                            mouse: "{arguments}.2.type"
+                        } ]
+                    }
+                }
+            }
         }
     }
 });
+
+gpii.app.metrics.asString = function (object) {
+    return fluid.isValue(object) ? object.toString() : "";
+};
 
 /** Mix-in grade to provide metrics for QSS widgets */
 fluid.defaults("gpii.app.metrics.qssWidget", {
     gradeNames: ["fluid.component"],
     listeners: {
         "onQssWidgetSettingAltered.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: ["setting-changed", {
                 path: "{arguments}.0.path",
-                value: "{arguments}.0.value"
+                // Needs to always be a string.
+                setTo: "@expand:gpii.app.metrics.asString({arguments}.0.value)"
             }]
         },
         "onDialogShown.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "widget-shown", {
                 path: "{that}.model.setting.path"
             } ]
         },
         "onDialogHidden.metrics": {
-            func: "{eventLog}.metrics.uiMetric",
+            func: "{eventLog}.uiMetric",
             args: [ "widget-hidden", {
                 path: "{that}.model.setting.path"
             } ]
+        },
+        "{channelListener}.events.onMetric": {
+            namespace: "metric",
+            func: "{eventLog}.uiMetric",
+            args: [ "{arguments}.0", "{arguments}.1" ]
+        },
+        "{channelListener}.events.onMetricState": {
+            namespace: "metrics-state",
+            func: "{eventLog}.setState",
+            args: [ "{arguments}.0", "{arguments}.1" ]
+        }
+    }
+});
+
+/** Mix-in grade to provide metrics for QSS widgets */
+fluid.defaults("gpii.app.metrics.qssTooltipDialog", {
+    gradeNames: ["fluid.component"],
+    listeners: {
+        "onDialogShown.metrics": {
+            func: "{eventLog}.uiMetric",
+            args: [ "tooltip-shown", {
+                path: "{that}.model.setting.path"
+            } ]
+        },
+        "onDialogHidden.metrics": {
+            func: "{eventLog}.uiMetric",
+            args: [ "tooltip-hidden", {
+                path: "{that}.model.setting.path"
+            } ]
+        }
+    }
+});
+
+// Notification dialog
+fluid.defaults("gpii.app.metrics.qssNotification", {
+    gradeNames: ["fluid.component"],
+    listeners: {
+        "onQssNotificationShown.metrics": {
+            func: "{eventLog}.uiMetric",
+            args: ["notification-shown", {
+                description: "{arguments}.0.description"
+            }]
+        },
+        "onDialogHidden.metrics": {
+            func: "{eventLog}.uiMetric",
+            args: ["notification-hidden"]
+        }
+    }
+});
+
+// Error dialog
+fluid.defaults("gpii.app.metrics.errorDialog", {
+    gradeNames: ["fluid.component"],
+    listeners: {
+        "onDialogShown.metrics": {
+            func: "{eventLog}.uiMetric",
+            args: ["error-shown", {errCode: "{that}.options.config.params.errCode"}]
+        },
+        "onDialogHidden.metrics": {
+            func: "{eventLog}.uiMetric",
+            args: ["error-hidden", {errCode: "{that}.options.config.params.errCode"}]
+        },
+        "{channelListener}.events.onMetric": {
+            namespace: "metric",
+            func: "{eventLog}.uiMetric",
+            args: ["{arguments}.0", "{arguments}.1"]
+        },
+        "{channelListener}.events.onMetricState": {
+            namespace: "metrics-state",
+            func: "{eventLog}.setState",
+            args: ["{arguments}.0", "{arguments}.1"]
+        }
+    }
+});
+
+// More panel
+fluid.defaults("gpii.app.metrics.morePanel", {
+    gradeNames: ["fluid.component"],
+    listeners: {
+        "onDialogShown.metrics": {
+            func: "{eventLog}.uiMetric",
+            args: ["more-shown"]
+        },
+        "onDialogHidden.metrics": {
+            func: "{eventLog}.uiMetric",
+            args: ["more-hidden"]
         }
     }
 });

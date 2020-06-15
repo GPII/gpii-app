@@ -179,7 +179,6 @@
                     index: "{sourcePath}",
                     item:  "{source}",
                     handlerType: "@expand:{repeater}.getHandlerType({that}.options.item)",
-
                     modelListeners: {
                         /*
                          * Simulate bi-directional binding for items as using `dynamicComponent` corrupts this binding
