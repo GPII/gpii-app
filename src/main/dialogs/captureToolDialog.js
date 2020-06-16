@@ -495,11 +495,14 @@ gpii.app.captureTool.settingsToAllApplicationSpecific = function (settings) {
     var togo = {};
     fluid.each(settings, function (appSettings, appId) {
         var nextBlock = fluid.copy(appSettings);
-        // fluid.each(nextBlock, function (settingBlock) {
-        //     if (settingBlock.path) {
-        //         delete settingBlock.path;
-        //     }
-        // })
+        fluid.each(nextBlock, function (settingBlock) {
+            // SPI Settings Hack to remove the values which will eventually be fixed in GPII-3119
+            if (settingBlock.path) {
+                fluid.remove_if(settingBlock, function (val, idx) {
+                    return idx === "path";
+                })
+            }
+        })
         togo["http://registry.gpii.net/applications/" + appId] = fluid.copy(nextBlock);
     });
     return togo;
