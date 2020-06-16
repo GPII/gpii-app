@@ -71,10 +71,6 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
             target: "{that qssTooltipDialog}.options.showDelay"
         },
-        distributeQssMorePanelConfig: {
-            record: "{that}.options.siteConfig.qssMorePanel",
-            target: "{that qssMorePanel}.options.siteConfig"
-        },
         distributeQssClickOutside: {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
             target: "{that gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
@@ -94,6 +90,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeAboutDialogConfig: {
             record: "{that}.options.siteConfig.aboutDialog",
             target: "{that aboutDialog}.options.siteConfig"
+        },
+        distributePromotionWindowConfig: {
+            record: "{that}.options.siteConfig.promotionWindow",
+            target: "{app promotionWindowDialog}.options.siteConfig"
         },
         distributeTrayType: {
             record: "{that}.options.siteConfig.trayType",

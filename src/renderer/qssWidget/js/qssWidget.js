@@ -60,8 +60,8 @@
             office: ".flc-qssOfficeWidget",
             translateTools: ".flc-qssTranslateToolsWidget",
             mySavedSettings: ".flc-qssMySavedSettingsWidget",
-            sideCar: ".flc-sidecar-panel",
-            sideCarButton: ".flc-sidecar-button",
+            sidecar: ".flc-sidecar-panel",
+            sidecarButton: ".flc-sidecar-button",
             mouse: ".flc-qssMouseWidget"
         },
 
@@ -88,6 +88,8 @@
             // It can be used to access the main events and utils from them
             // Usage: {channelNotifier}.events.onQssWidgetHideQssRequested
 
+            onSidecarActivated: null,
+            onSidecarClosed: null,
             onWidgetClosed: null,
             onQssWidgetHideQssRequested: null,
             onSettingUpdated: null,
@@ -104,14 +106,24 @@
             onQssGetVolumeRequested: null,
             onQssReApplyPreferencesRequired: null,
             onQssGetEnvironmentalLoginKeyRequested: null,
-            onSideCarToggled: null
+            onSidecarToggled: null
         },
 
         styles: {
             hideSidePanel: "fl-hide-sidecar",
             openSidePanel: "btn-icon-open",
             closeSidePanel: "btn-icon-close",
-            openLinkIcon: "btn-icon-link"
+            openLinkIcon: "btn-icon-link",
+            reverseSidecar: "horizontal-reverse",
+            arrowStyles: {
+                centerArrow: "fl-qssWidget-arrow-center",
+                leftArrow: "fl-qssWidget-arrow-left",
+                rightArrow: "fl-qssWidget-arrow-right",
+                tightRightArrow: "fl-qssWidget-arrow-tight-right",
+                rightArrowClosed: "fl-qssWidget-arrow-right-closed",
+                rightArrowMySavedSettings: "fl-qssWidget-arrow-right-mySavedSettings",
+                rightArrowMySavedSettingsSidecar: "fl-qssWidget-arrow-right-mySavedSettingsSidecar"
+            }
         },
         sounds: {},
 
@@ -180,27 +192,27 @@
                             priority: "last"
                         },
                         "onCreate.hideSidePanel": {
-                            this: "{qssWidget}.dom.sideCar",
+                            this: "{qssWidget}.dom.sidecar",
                             method: "addClass",
                             args: ["{qssWidget}.options.styles.hideSidePanel"]
                         }
                     },
                     components: {
-                        openSideCarButton: {
+                        openSidecarButton: {
                             type: "gpii.psp.widgets.button",
-                            container: "{qssWidget}.dom.sideCarButton",
+                            container: "{qssWidget}.dom.sidecarButton",
                             options: {
                                 model: {
                                     label: {
                                         expander: {
-                                            funcName: "gpii.psp.qssWidget.getSideCarButtonLabel",
+                                            funcName: "gpii.psp.qssWidget.getSidecarButtonLabel",
                                             args: ["{qssWidget}.model.setting", "{qssWidget}.model.messages.learnMore", "{qssWidget}.model.messages.helpAndMoreOptions"]
                                         }
                                     }
                                 },
                                 listeners: {
                                     "onCreate.applyStyles": {
-                                        funcName: "gpii.psp.qssWidget.applySideCarButtonStyles",
+                                        funcName: "gpii.psp.qssWidget.applySidecarButtonStyles",
                                         args: [
                                             "{that}.container",
                                             "{qssWidget}.model.setting",
@@ -208,13 +220,13 @@
                                         ]
                                     },
                                     onClick: {
-                                        funcName: "gpii.psp.qssWidget.openSideCarActivated",
+                                        funcName: "gpii.psp.qssWidget.openSidecarActivated",
                                         args: [
                                             "{that}",
                                             "{qssWidget}",
-                                            "{sideCar}.container",
+                                            "{sidecar}.container",
                                             "{qssWidget}.options.styles",
-                                            "{qssWidget}.events.onSideCarToggled"
+                                            "{qssWidget}.events.onSidecarToggled"
                                         ]
                                     }
                                 }
@@ -223,9 +235,9 @@
                     }
                 }
             },
-            sideCar: {
-                type: "gpii.qssWidget.sideCar",
-                container: "{qssWidget}.dom.sideCar",
+            sidecar: {
+                type: "gpii.qssWidget.sidecar",
+                container: "{qssWidget}.dom.sidecar",
                 options: {
                     model: {
                         setting: "{qssWidget}.model.setting",
@@ -281,7 +293,20 @@
                 options: {
                     events: {
                         // Add events from the main process to be listened for
-                        onSettingUpdated: "{qssWidget}.events.onSettingUpdated"
+                        onSettingUpdated: "{qssWidget}.events.onSettingUpdated",
+                        onReverseSidecar: null,
+                        onArrowChange: null
+                    },
+                    listeners: {
+                        onReverseSidecar: {
+                            this: "{qssWidget}.container",
+                            method: "addClass",
+                            args: ["{qssWidget}.options.styles.reverseSidecar"]
+                        },
+                        onArrowChange: {
+                            funcName: "gpii.psp.qssWidget.changeArrowPosition",
+                            args: ["{qssWidget}.container", "{qssWidget}.options.styles.arrowStyles", "{arguments}.0"]
+                        }
                     }
                 }
             },
@@ -290,6 +315,8 @@
                 options: {
                     events: {
                         // Add events the main process to be notified for
+                        onSidecarActivated:              "{qssWidget}.events.onSidecarActivated",
+                        onSidecarClosed:                 "{qssWidget}.events.onSidecarClosed",
                         onQssWidgetClosed:               "{qssWidget}.events.onWidgetClosed",
                         onQssWidgetHideQssRequested:     "{qssWidget}.events.onQssWidgetHideQssRequested",
                         onQssWidgetHeightChanged:        "{qssWidget}.events.onQssWidgetHeightChanged",
@@ -321,6 +348,14 @@
             }, {
                 funcName: "gpii.psp.qssWidget.updateContainerVisibility",
                 args: ["{that}"]
+            }],
+            onQssWidgetCreated: [{
+                this: "{qssWidget}.container",
+                method: "removeClass",
+                args: ["{qssWidget}.options.styles.reverseSidecar"]
+            }, {
+                funcName: "gpii.psp.qssWidget.changeArrowPosition",
+                args: ["{qssWidget}.container", "{qssWidget}.options.styles.arrowStyles", null]
             }]
         },
         invokers: {
@@ -335,17 +370,45 @@
     });
 
     /**
-     * Adds the required style to the sideCar button
-     * @param  {jQuery} container - jQuery instance of the sideCar's button
-     * @param  {Object} setting - Object containing sideCar content data
+     * Applies the new arrow direction class on the widget's root dom element
+     * @param  {jQuery} container - jQuery instance of the QSS widget
+     * @param  {Object} arrowStyles - A hash containing CSS classes for the different arrow positions
+     * @param  {String} position - The new direction of the arrow
+     */
+    gpii.psp.qssWidget.changeArrowPosition = function (container, arrowStyles, position) {
+        // removing any possible arrow classes
+        container.removeClass(arrowStyles.centerArrow + " " + arrowStyles.leftArrow + " " + arrowStyles.rightArrow + " " + arrowStyles.tightRightArrow + " " + arrowStyles.rightArrowClosed + " " + arrowStyles.rightArrowMySavedSettings + " " + arrowStyles.rightArrowMySavedSettingsSidecar);
+
+        if (position === "left") {
+            container.addClass(arrowStyles.leftArrow);
+        } else if (position === "right") {
+            container.addClass(arrowStyles.rightArrow);
+        } else if (position === "tight-right") {
+            container.addClass(arrowStyles.tightRightArrow);
+        } else if (position === "right-closed") {
+            container.addClass(arrowStyles.rightArrowClosed);
+        } else if (position === "right-mySavedSettings") {
+            container.addClass(arrowStyles.rightArrowMySavedSettings);
+        } else if (position === "right-mySavedSettings-sidecar") {
+            container.addClass(arrowStyles.rightArrowMySavedSettingsSidecar);
+        } else {
+            // default positon
+            container.addClass(arrowStyles.centerArrow);
+        }
+    };
+
+    /**
+     * Adds the required style to the sidecar button
+     * @param  {jQuery} container - jQuery instance of the sidecar's button
+     * @param  {Object} setting - Object containing sidecar content data
      * @param  {Object} styles - A hash containing CSS classes for the different buttons
      */
-    gpii.psp.qssWidget.applySideCarButtonStyles = function (container, setting, styles) {
+    gpii.psp.qssWidget.applySidecarButtonStyles = function (container, setting, styles) {
         // removing the default classes
         container.removeClass(styles.openLinkIcon + " " + styles.openSidePanel + " " + styles.closeSidePanel);
 
-        if (setting.sideCar || setting.sideCarWithSettings) {
-            // we have content in the sideCar
+        if (setting.sidecar || setting.sidecarWithSettings) {
+            // we have content in the sidecar
             container.addClass(styles.openSidePanel);
         } else {
             // we don't have content
@@ -354,15 +417,15 @@
     };
 
     /**
-     * Picks the right button name based on the sideCar content
-     * @param  {Object} setting - Object containing sideCar content data
+     * Picks the right button name based on the sidecar content
+     * @param  {Object} setting - Object containing sidecar content data
      * @param  {String} learnMoreMessage - text for the Learn More button
      * @param  {String} helpAndMoreMessage - text for Help & More button
      * @return {String} - returns string for the button's name
      */
-    gpii.psp.qssWidget.getSideCarButtonLabel = function (setting, learnMoreMessage, helpAndMoreMessage) {
-        // if there is sideCar (with or without settings) we are showing the appropriate label
-        if (setting.sideCar || setting.sideCarWithSettings) {
+    gpii.psp.qssWidget.getSidecarButtonLabel = function (setting, learnMoreMessage, helpAndMoreMessage) {
+        // if there is sidecar (with or without settings) we are showing the appropriate label
+        if (setting.sidecar || setting.sidecarWithSettings) {
             return helpAndMoreMessage;
         }
         // by default we are showing the label for the external help link
@@ -370,29 +433,33 @@
     };
 
     /**
-     * Does the right kind of action when the sideCar button is clicked, if its a Learn More type
-     * just opens an url, if not opens/closes the sideCar panel itself
-     * @param  {Component} sidePanelButton - instance of the sideCar button
+     * Does the right kind of action when the sidecar button is clicked, if its a Learn More type
+     * just opens an url, if not opens/closes the sidecar panel itself
+     * @param  {Component} sidePanelButton - instance of the sidecar button
      * @param  {Component} qssWidget - instance of the qssWidget
-     * @param  {jQuery} sideCarContainer - instance of the sideCar container
+     * @param  {jQuery} sidecarContainer - instance of the sidecar container
      * @param  {Object} styles - A hash containing CSS classes for the different buttons
-     * @param  {Event} onToggled - The event to raise of the sideCar has been opened or closed.
+     * @param  {Event} onToggled - The event to raise of the sidecar has been opened or closed.
      */
-    gpii.psp.qssWidget.openSideCarActivated = function (sidePanelButton, qssWidget, sideCarContainer, styles, onToggled) {
-        if (qssWidget.model.setting.sideCar || qssWidget.model.setting.sideCarWithSettings) {
+    gpii.psp.qssWidget.openSidecarActivated = function (sidePanelButton, qssWidget, sidecarContainer, styles, onToggled) {
+        if (qssWidget.model.setting.sidecar || qssWidget.model.setting.sidecarWithSettings) {
             // remove all of the default classes
             sidePanelButton.container.removeClass(styles.closeSidePanel + " " + styles.openSidePanel);
 
-            if (sideCarContainer.hasClass(styles.hideSidePanel)) {
+            if (sidecarContainer.hasClass(styles.hideSidePanel)) {
+                qssWidget.events.onSidecarActivated.fire();
+
                 // showing the panel
-                sideCarContainer.removeClass(styles.hideSidePanel);
+                sidecarContainer.removeClass(styles.hideSidePanel);
                 sidePanelButton.container.addClass(styles.closeSidePanel);
                 // changing button's label
-                sidePanelButton.applier.change("label", qssWidget.model.messages.hideSideCar, null, "fromWidget");
+                sidePanelButton.applier.change("label", qssWidget.model.messages.hideSidecar, null, "fromWidget");
                 onToggled.fire("open");
             } else {
+                qssWidget.events.onSidecarClosed.fire();
+
                 // hiding the panel
-                sideCarContainer.addClass(styles.hideSidePanel);
+                sidecarContainer.addClass(styles.hideSidePanel);
                 sidePanelButton.container.addClass(styles.openSidePanel);
                 // changing button's label
                 sidePanelButton.applier.change("label", qssWidget.model.messages.helpAndMoreOptions, null, "fromWidget");
@@ -507,7 +574,7 @@
      */
     gpii.qssWidget.calculateHeight = function (container, parentContainer, heightListenerContainer) {
         var baseHeight = container.outerHeight(true) - parentContainer.outerHeight(true) + heightListenerContainer[0].scrollHeight,
-            heightFix = 55; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
+            heightFix = 12; // the height calculation is prone to mistakes, so this gives a little bit of height to fix it
         return baseHeight + heightFix;
     };
 

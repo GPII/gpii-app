@@ -201,6 +201,27 @@ gpii.app.hasButtonList = function (siteConfig) {
 };
 
 /**
+ * Checks if the morePanelList attribute exists in the siteConfig object
+ * @param {Object} siteConfig - instance of the siteConfig object
+ * @return {Boolean} - `true` if there is button list found
+ */
+gpii.app.hasMorePanelList = function (siteConfig) {
+    return fluid.isValue(siteConfig.morePanelList);
+};
+
+/**
+ * Returns the number of rows of buttons for the More Panel
+ * @param {Object} siteConfig - instance of the siteConfig object
+ * @return {Integer} - number of rows of buttons for the More Panel,
+ * just counts the rows of the siteConfig.morePanelList array
+ */
+gpii.app.getMorePanelRows = function (siteConfig) {
+    var defaultRows = 0;
+
+    return (siteConfig.morePanelList && siteConfig.morePanelList.length > 0) ? siteConfig.morePanelList.length : defaultRows;
+};
+
+/**
  * Looks for a `id` and matches it to the provided string
  * return empty array when there is no button found
  * @param {String} buttonId - the `id` of the button
@@ -408,6 +429,30 @@ gpii.app.filterButtonList = function (siteConfigButtonList, availableButtons) {
     });
 
     return matchedList.concat(afterList);
+};
+
+/**
+ * The function gets the current qss.morePanelList data and makes a proper list for rendering
+ * it will auto-fill any empty rows, or end of cols with the `fill` grid element
+ * @param  {Array} morePanelList - simple array with the desired buttons
+ * @param  {Integer} rows - number of desired rows
+ * @param  {Integer} cols - number of desred cols
+ * @param  {String} fill - the id of the grid element - "x" for filled one, and "-" for invisible
+ * @return {Array} - simple array with filled spaces
+ */
+gpii.app.prepareMorePanelList = function (morePanelList, rows, cols, fill) {
+    var result = [],
+        row, col;
+
+    for (row = 0; row < rows; row++) {
+        for (col = 0; col < cols; col++) {
+            // gets the buttonId if any, or not fills with the filler grid element
+            var buttonId = (morePanelList[row] && morePanelList[row][col]) ? morePanelList[row][col] : fill;
+            result.push(buttonId);
+        }
+    }
+
+    return result;
 };
 
 /**

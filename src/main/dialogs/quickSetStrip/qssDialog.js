@@ -74,8 +74,8 @@ fluid.defaults("gpii.app.qss", {
             // the width will be computed once component loads up
             height: 64,
 
-            alwaysOnTop: true,
-            transparent: false
+            alwaysOnTop: false,
+            transparent: true
         },
         params: {
             settings: "{that}.model.settings",
@@ -104,7 +104,7 @@ fluid.defaults("gpii.app.qss", {
         }
     },
 
-    linkedWindowsGrades: ["gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qssMorePanel", "gpii.app.qss"],
+    linkedWindowsGrades: ["gpii.app.qssWidget",  "gpii.app.qssNotification", "gpii.app.qss"],
 
     components: {
         channelNotifier: {
@@ -153,6 +153,7 @@ fluid.defaults("gpii.app.qss", {
                     onQssSettingAltered: "{qss}.events.onQssSettingAltered",
                     onQssNotificationRequired: null,
                     onQssMorePanelRequired: null,
+                    onMorePanelClosed: null,
                     onQssUndoRequired: null,
                     onQssResetAllRequired: null,
                     onQssSaveRequired: null,
@@ -236,6 +237,16 @@ gpii.app.qss.bottleSettingUpdated = function (that, newSettings) {
 };
 
 /**
+ * Calculates the height of the QSS strip
+ * @param {gpii.app.qssInWrapper} that - instance of the qssInWrapper
+ * @param {Integer} height - the desired height of the QSS
+ */
+gpii.app.qss.computeQssHeight = function (that, height) {
+    var scaledQssHeight = height * that.model.scaleFactor;
+    that.setBounds(null, scaledQssHeight);
+};
+
+/**
  * Represents a group of setting data from which we using only the buttonTypes array
  * @typedef {Object} ButtonDefinition
  * @property {ButtonDefinition[]} [settings] The nested setting of the button if has one.
@@ -268,12 +279,20 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
     var buttonsWidth = closeButtonWidth + buttonWidth;
     // check the type of the previous button, if the current is small
     // in the future, we might have the case that there aren't two small sequential buttons
-    for (var i = 1; i < buttons.length; i++) {
-        if (!buttons[i].buttonTypes.includes(qssButtonTypes.smallButton) ||
-            !buttons[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
-            buttons[i].path !== qssButtonTypes.closeButton
+
+    var filteredSetting = [];
+
+    fluid.each(buttons, function (button) {
+        if (fluid.isValue(button.schema) && !button.schema.morePanel) {
+            filteredSetting.push(button);
+        }
+    });
+    for (var i = 1; i < filteredSetting.length; i++) {
+        if (!filteredSetting[i].buttonTypes.includes(qssButtonTypes.smallButton) ||
+            !filteredSetting[i - 1].buttonTypes.includes(qssButtonTypes.smallButton) &&
+            filteredSetting[i].path !== qssButtonTypes.closeButton
         ) {
-            if (separatorIds.includes(buttons[i].buttonTypes[0])) {
+            if (separatorIds.includes(filteredSetting[i].buttonTypes[0])) {
                 // this is separator type button, which is slimmer that the others
                 buttonsWidth += separatorWidth;
             } else {
