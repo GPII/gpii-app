@@ -42,6 +42,30 @@ gpii.app.isWin10OS = function () {
 fluid.registerNamespace("gpii.browserWindow");
 
 /**
+ * Gets information about the primary display.
+ *
+ * A wrapper for `electron.screen.getPrimaryDisplay()`, where an additional function is called with the result to adjust
+ * the desktop size to ignore the area consumed by the QSS.
+ *
+ * @return {Electron.Display} Information about the primary display.
+ */
+gpii.app.getPrimaryDisplay = function () {
+    var display = electron.screen.getPrimaryDisplay();
+    if (gpii.app.getPrimaryDisplay.override) {
+        display = gpii.app.getPrimaryDisplay.override(display);
+    }
+    return display;
+};
+
+/**
+ * Adjusts the desktop size to ignore the area consumed by the QSS.
+ * @type {Function}
+ * @param {Electron.Display} display The result of electron.screen.getPrimaryDisplay().
+ * @return {Electron.Display} The adjusted result.
+ */
+gpii.app.getPrimaryDisplay.override = null;
+
+/**
  * Computes the new dimensions of a `BrowserWindow` so that all its content
  * is vertically fully visible on the screen.
  * @param {Number} width - The width of the `BrowserWindow`.
@@ -54,7 +78,7 @@ gpii.browserWindow.computeWindowSize = function (width, height, offsetX, offsetY
     // ensure proper values are given
     offsetY = Math.max(0, (offsetY || 0));
 
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+    var screenSize = gpii.app.getPrimaryDisplay().workAreaSize,
         maxHeight = screenSize.height - offsetY;
     height = Math.min(height, maxHeight);
 
@@ -80,7 +104,7 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
     offsetX = Math.max(0, (offsetX || 0));
     offsetY = Math.max(0, (offsetY || 0));
 
-    var screenSize = electron.screen.getPrimaryDisplay().workArea;
+    var screenSize = gpii.app.getPrimaryDisplay().workArea;
 
     // position relatively to the bottom right corner
     // note that as offset is positive we're restricting window
@@ -112,7 +136,7 @@ gpii.browserWindow.computeWindowPosition = function (width, height, offsetX, off
  * @return {{x: Number, y: Number}} The desired window position.
  */
 gpii.browserWindow.computeCentralWindowPosition = function (width, height) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+    var screenSize = gpii.app.getPrimaryDisplay().workAreaSize,
         desiredX = Math.round((screenSize.width - width) / 2),
         desiredY = Math.round((screenSize.height - height) / 2);
 

@@ -39,7 +39,9 @@ fluid.defaults("gpii.app.resizable", {
         beforeRescale: {
             wasFocused: null,
             awaitingRescale: null
-        }
+        },
+        // Ignore changes to the work area
+        ignoreWorkArea: false
     },
 
     /*
@@ -86,7 +88,8 @@ fluid.defaults("gpii.app.resizable", {
         "onDisplayMetricsChanged.handleDisplayMetricsChange": {
             func: "gpii.app.resizable.handleDisplayMetricsChange",
             args: [
-                "{that}"
+                "{that}",
+                "{arguments}.2" // changedMetrics
             ]
         },
         "onDestroy.removeDisplayMetricsListener": {
@@ -160,7 +163,7 @@ gpii.app.resizable.addDisplayMetricsListener = function (that) {
  * @return {Number} - The new scale factor.
  */
 gpii.app.resizable.computeScaleFactor = function (that) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+    var screenSize = gpii.app.getPrimaryDisplay().workAreaSize,
         extendedWidth = that.getExtendedWidth(),
         scaleFactor = ((screenSize.width / extendedWidth) * that.model.scaleFactor).toFixed(2);
 
@@ -216,8 +219,10 @@ gpii.app.resizable.refreshDialog = function (that) {
  * Handle electron's `display-metrics-changed` event by resizing the component if
  * necessary.
  * @param {Component} that - The `gpii.app.resizable` component.
+ * @param {Array<String>} changedMetrics - Strings that describe the changes. One or more of "bounds", "workArea",
+ *  "scaleFactor" and "rotation".
  */
-gpii.app.resizable.handleDisplayMetricsChange = function (that) {
+gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) {
     /**
      * There is a notorious issue about wrong positioning and sizing of Electron `BrowserWindow`s
      * when the screen DPI has a value different from 1: https://github.com/electron/electron/issues/10862.
@@ -237,19 +242,28 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that) {
     // repositioning promotion window dialog
     if (that.typeName === "gpii.app.promotionWindowDialog") {
         that.events.onRepositioningRequired.fire();
-    };
-
-    if (!that.beforeRescale.awaitingRescale) {
-        that.beforeRescale = {
-            wasFocused: electron.BrowserWindow.getFocusedWindow() === that.dialog,
-            awaitingRescale: true
-        };
-
-        that.dialog.hide();
     }
 
-    // it would restart the timer
-    that.refreshDialogTimeout.start(that.options.refreshTimeout);
+    // Don't adjust to work area changes.
+    var ignore = that.ignoreWorkArea && (changedMetrics.length === 1 && changedMetrics[0] === "workArea");
+
+    if (!ignore) {
+        if (!that.beforeRescale.awaitingRescale) {
+            that.beforeRescale = {
+                wasFocused: electron.BrowserWindow.getFocusedWindow() === that.dialog,
+                awaitingRescale: true
+            };
+
+            that.dialog.hide();
+        }
+
+        if (changedMetrics.includes("scaleFactor")) {
+            // it would restart the timer
+            that.refreshDialogTimeout.start(that.options.refreshTimeout);
+        } else {
+            gpii.app.resizable.refreshDialog(that);
+        }
+    }
 };
 
 /**

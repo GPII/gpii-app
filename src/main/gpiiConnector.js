@@ -39,6 +39,8 @@ fluid.defaults("gpii.app.gpiiConnector", {
          * be used instead.
          */
         closeQssOnBlur: false,
+        // The QSS will take up space from the desktop work area. Ignored if closeQssOnBlur is true.
+        appBarQss: false,
         disableRestartWarning: false
     },
 
@@ -269,6 +271,7 @@ gpii.app.extractPreferencesData = function (message, defaultPreferences) {
         // value is `false` (in case this is not specified in the payload). Note that
         // the latter will always be the case in the keyed out payload!
         closeQssOnBlur = fluid.isValue(value.closeQssOnBlur) ? value.closeQssOnBlur : defaultPreferences.closeQssOnBlur,
+        appBarQss = fluid.isValue(value.appBarQss) ? value.appBarQss : defaultPreferences.appBarQss,
         disableRestartWarning =
             fluid.isValue(value.disableRestartWarning) ?
                 value.disableRestartWarning :
@@ -301,6 +304,7 @@ gpii.app.extractPreferencesData = function (message, defaultPreferences) {
         activeSet: activeSet,
         settingGroups: settingGroups,
         closeQssOnBlur: closeQssOnBlur,
+        appBarQss: appBarQss,
         disableRestartWarning: disableRestartWarning,
         gpiiAppShortcut: gpiiAppShortcut
     };

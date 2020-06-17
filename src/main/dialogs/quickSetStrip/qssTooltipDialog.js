@@ -165,13 +165,12 @@ gpii.app.qssTooltipDialog.showIfPossible = function (that, setting, btnCenterOff
  * the screen.
  */
 gpii.app.qssTooltipDialog.getTooltipPosition = function (that, btnCenterOffset) {
-    var screen = require("electron").screen, // used to get the current screen size
-        availableDirections = that.model.availableDirections,
+    var availableDirections = that.model.availableDirections,
         arrowDirection = availableDirections.defaultDirection, // default tooltip arrow direction
         arrowWidth = that.options.arrowWidth,
         scaleFactor = that.model.scaleFactor,
         tooltipWidth = that.options.config.attrs.width * scaleFactor, // current tooltip width
-        screenWidth = screen.getPrimaryDisplay().workAreaSize.width, // current screen size
+        screenWidth = gpii.app.getPrimaryDisplay().workAreaSize.width, // current screen size
         offsetX = btnCenterOffset.x - scaleFactor * arrowWidth / 2; // calculate the offset
 
     // checking if the offset is too big and the tooltip will show off screen

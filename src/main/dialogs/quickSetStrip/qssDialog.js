@@ -14,8 +14,7 @@
  */
 "use strict";
 
-var fluid = require("infusion"),
-    electron = require("electron");
+var fluid = require("infusion");
 
 var gpii = fluid.registerNamespace("gpii");
 
@@ -49,7 +48,9 @@ fluid.defaults("gpii.app.qss", {
         // Whether the Morphic logo is currently shown
         isLogoShown: true,
         // Whether blurring should be respected by the dialog
-        closeQssOnBlur: null
+        closeQssOnBlur: null,
+        // Make the window consume the desktop work area.
+        appBarQss: null
     },
 
     modelListeners: {
@@ -63,6 +64,12 @@ fluid.defaults("gpii.app.qss", {
             args: ["{change}.value"],
             // it is shown at first
             excludeSource: "init"
+        },
+        isShown: {
+            funcName: "gpii.app.qss.appBarUpdate",
+            args: ["{that}", "{appBar}", "{that}.dialog", "{change}.value", "{that}.model.appBarQss"],
+            namespace: "appBar",
+            priority: "before:impl"
         }
     },
 
@@ -187,6 +194,38 @@ fluid.defaults("gpii.app.qss", {
                     }
                 }
             }
+        },
+        appBar: {
+            type: "gpii.windows.appBar",
+            options: {
+                invokers: {
+                    getNativeWindowHandle: {
+                        this: "{qss}.dialog",
+                        method: "getNativeWindowHandle"
+                    },
+                    hookWindowMessage: {
+                        this: "{qss}.dialog",
+                        method: "hookWindowMessage",
+                        args: ["{arguments}.0", "{arguments}.1"]
+                    },
+                    unhookWindowMessage: {
+                        this: "{qss}.dialog",
+                        method: "unhookWindowMessage",
+                        args: ["{arguments}.0", "{arguments}.1"]
+                    },
+                    getBarHeight: "{qss}.getQssPixelHeight"
+                },
+                listeners: {
+                    "onCreate.init": {
+                        funcName: "gpii.app.qss.appBarInit",
+                        args: ["{that}"],
+                        priority: "first"
+                    },
+                    onPositionChange: {
+                        funcName: "{qss}.setBounds"
+                    }
+                }
+            }
         }
     },
     invokers: {
@@ -218,6 +257,10 @@ fluid.defaults("gpii.app.qss", {
         fitToScreen: {
             funcName: "gpii.app.qss.fitToScreen",
             args: ["{that}"]
+        },
+        getQssPixelHeight: {
+            funcName: "gpii.app.qss.getQssPixelHeight",
+            args: ["{that}"]
         }
     }
 });
@@ -244,6 +287,26 @@ gpii.app.qss.bottleSettingUpdated = function (that, newSettings) {
 gpii.app.qss.computeQssHeight = function (that, height) {
     var scaledQssHeight = height * that.model.scaleFactor;
     that.setBounds(null, scaledQssHeight);
+};
+
+/**
+ * Calculates the height of the QSS strip
+ * @param {gpii.app.qssInWrapper} that - instance of the qssInWrapper
+ * @param {Integer} height - the desired height of the QSS
+ */
+gpii.app.qss.computeQssHeight = function (that, height) {
+    var scaledQssHeight = height * that.model.scaleFactor;
+    that.setBounds(null, scaledQssHeight);
+};
+
+/**
+ * Gets the actual height of the QSS, in physical pixels.
+ * @param {gpii.app.qssInWrapper} that - instance of the qssInWrapper
+ * @return {Number} The height of the QSS in physical pixels.
+ */
+gpii.app.qss.getQssPixelHeight = function (that) {
+    return Math.floor(Math.round(that.options.config.attrs.height * that.model.scaleFactor)
+        * gpii.app.getPrimaryDisplay().scaleFactor);
 };
 
 /**
@@ -313,7 +376,7 @@ gpii.app.qss.computeQssButtonsWidth = function (options, modelScaleFactor, butto
  * @param {Component} that - The `gpii.app.qss` component.
  */
 gpii.app.qss.fitToScreen = function (that) {
-    var screenSize = electron.screen.getPrimaryDisplay().workAreaSize,
+    var screenSize = gpii.app.getPrimaryDisplay().workAreaSize,
         qssButtonsWidth = gpii.app.qss.computeQssButtonsWidth(that.options, that.model.scaleFactor, that.model.settings),
         qssLogoWidth = that.options.dialogContentMetrics.logoWidth * that.model.scaleFactor;
 
@@ -388,5 +451,45 @@ gpii.app.qss.show = function (that, params) {
 gpii.app.qss.handleBlur = function (that, tray, closeQssOnBlur) {
     if (closeQssOnBlur && !tray.isMouseOver()) {
         that.hide();
+    }
+};
+
+/**
+ * Initialisation for the QSS being an App Bar.
+ * @param {Component} appBar The gpii.windows.appBar instance.
+ */
+gpii.app.qss.appBarInit = function (appBar) {
+    if (!gpii.app.getPrimaryDisplay.override) {
+        // Add an override to the display information, to ignore the space in the desktop consumed by the qss.
+        gpii.app.getPrimaryDisplay.override = function (display) {
+            if (appBar.enabled) {
+                display.workArea.height = appBar.getWorkAreaBottom() / display.scaleFactor - display.workArea.y;
+                display.workAreaSize.height = display.workArea.height;
+            }
+            return display;
+        };
+    }
+};
+
+/**
+ * The visibility of the QSS is changing, and the size of the work area needs to be adjusted accordingly.
+ *
+ * @param {Component} qss The gpii.app.qss instance.
+ * @param {Component} appBar The gpii.windows.appBar instance.
+ * @param {BrowserWindow} dialog The BrowserWindow for the QSS.
+ * @param {Boolean} shown `true` if the QSS is being shown, and the work area should be consumed.
+ * @param {Boolean} appBarQss `true` if this feature is enabled.
+ */
+gpii.app.qss.appBarUpdate = function (qss, appBar, dialog, shown, appBarQss) {
+    if (shown && appBarQss) {
+        // Ignore changes to the work area while adjusting it, so the QSS doesn't flicker or move around needlessly.
+        qss.ignoreWorkArea = true;
+        setTimeout(function () {
+            qss.ignoreWorkArea = false;
+        }, 3000);
+        appBar.enable();
+    } else {
+        qss.ignoreWorkArea = false;
+        appBar.disable();
     }
 };
