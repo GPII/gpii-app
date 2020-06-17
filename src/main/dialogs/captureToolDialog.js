@@ -500,9 +500,9 @@ gpii.app.captureTool.settingsToAllApplicationSpecific = function (settings) {
             if (settingBlock.path) {
                 fluid.remove_if(settingBlock, function (val, idx) {
                     return idx === "path";
-                })
+                });
             }
-        })
+        });
         togo["http://registry.gpii.net/applications/" + appId] = fluid.copy(nextBlock);
     });
     return togo;
