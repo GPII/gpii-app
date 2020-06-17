@@ -31,6 +31,12 @@
 
         alwaysUseChrome: false,
 
+        // The redirect url to open links by showing the tab if the link is already open in the browser. The encoded
+        // destination url is added to the end of this, or replaces `$1`. Normally, this value is
+        // "http://opensametab.morphic.org/redirect/", but it can be "http://refreshsametab.morphic.org/redirect/"
+        // to make the tab reload itself.
+        currentTabRedirect: "http://opensametab.morphic.org/redirect/",
+
         // The template that is used for every label of the language setting's options.
         // The "%" followed by a word specifies a variable and there are three possible variables:
         // - native - the name of the language in its native form

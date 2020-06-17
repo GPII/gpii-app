@@ -247,7 +247,7 @@
         gradeNames: ["gpii.qss.buttonPresenter"],
         invokers: {
             activate: {
-                funcName: "gpii.windows.openUrl",
+                func: "{gpii.qss}.openUrl",
                 args: [
                     "{that}.model.item.schema.url", // using the url from the custom button's schema
                     true, // Override the OS default browser to always use Chrome instead

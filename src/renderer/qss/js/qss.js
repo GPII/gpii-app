@@ -556,6 +556,15 @@
             updateIsKeyedIn: {
                 changePath: "isKeyedIn",
                 value: "{arguments}.0"
+            },
+            openUrl: {
+                funcName: "gpii.windows.openUrl",
+                args: [
+                    "{arguments}.0", // siteUrl
+                    "{arguments}.1", // alwaysUseChrome
+                    "{arguments}.2", // forceFullScreen
+                    "{that}.options.siteConfig.currentTabRedirect" // redirectUrl,
+                ]
             }
         }
     });
