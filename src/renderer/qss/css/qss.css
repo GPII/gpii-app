@@ -120,6 +120,10 @@ body {
     opacity: 0.4;
 }
 
+.fl-qss-button.fl-qss-unknown {
+    opacity: 0.4 !important;
+}
+
 .fl-qss-button.fl-qss-dimmed {
     background-color: #a7a9ad;
 }

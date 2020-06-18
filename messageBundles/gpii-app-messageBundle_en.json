@@ -35,6 +35,8 @@
         "keyedIn": "Your settings were saved to the Morphic Cloud."
     },
 
+    "gpii_qss_unknownButtonPresenter_notification": "This button is not supported on this version of Morphic. This computer will need to be updated to a newer version of Morphic before this button will work here.",
+
     "gpii_psp_qssWidget_learnMore": "Help / Learn more",
     "gpii_psp_qssWidget_helpAndMoreOptions": "Help & More options",
     "gpii_psp_qssWidget_hideSidecar": "Hide",

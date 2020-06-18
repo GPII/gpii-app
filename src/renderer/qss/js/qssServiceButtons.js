@@ -123,6 +123,41 @@
     };
 
     /**
+     * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the unknown type
+     * QSS buttons (all that don't have definitions).
+     */
+    fluid.defaults("gpii.qss.unknownButtonPresenter", {
+        gradeNames: ["gpii.qss.buttonPresenter"],
+        model: {
+            messages: {
+                notification: null
+            }
+        },
+        invokers: {
+            activate: {
+                funcName: "gpii.qss.unknownButtonPresenter.activate",
+                args: [
+                    "{that}",
+                    "{list}"
+                ]
+            }
+        }
+    });
+
+    /**
+     * A custom function for handling activation of the unknown type QSS buttons. It just shows
+     * the proper notification why this button it's disabled.
+     * @param {gpii.qss.unknownButtonPresenter} that - The `gpii.qss.unknownButtonPresenter` instance.
+     * @param {gpii.qss.list} qssList - The `gpii.qss.list` instance.
+     */
+    gpii.qss.unknownButtonPresenter.activate = function (that, qssList) {
+        qssList.events.onNotificationRequired.fire({
+            description: that.model.messages.notification,
+            closeOnBlur: true
+        });
+    };
+
+    /**
      * Inherits from `gpii.qss.buttonPresenter` and handles interactions with the "More..."
      * QSS button.
      */

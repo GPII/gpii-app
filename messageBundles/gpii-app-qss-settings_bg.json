@@ -113,6 +113,11 @@
         "tooltip": "<p>Отваря уеб страница където да промените бутоните в лентата.</p>",
         "title": "Промени бутоните"
     },
+    "gpii_app_qss_settings_unknown-button": {
+        "tooltip": "<p>Трябва да обновите Morphic, за да използвате този бутон.</p>",
+        "title": "",
+        "tip": ""
+    },
     "gpii_app_qss_settings_common-colorVision": {
         "tooltip": "<p>Променя цветовете на екрана с цел да се отличават по-лесно.</p>",
         "title": "Филтри Цветове",
