@@ -86,7 +86,14 @@ fluid.defaults("gpii.app.captureTool", {
         isKeyedIn: false,
         keyedInUserToken: null,
         preferences: {},
-        flatSolutionsRegistry: {}
+        flatSolutionsRegistry: {},
+
+        // Solutions to ignore. This is a runtime configurable variable with ID's of
+        // solutions to exclude from the capture process.
+        solutionsToExclude: [
+            "net.gpii.test.speechControl",
+            "net.gpii.explode"
+        ]
     },
     /*
      * Raw options to be passed to the Electron `BrowserWindow` that is created.
@@ -216,7 +223,7 @@ fluid.defaults("gpii.app.captureTool", {
                     },
                     getAllSolutionsCapture: {
                         funcName: "gpii.app.captureTool.channelGetAllSolutionsCapture",
-                        args: ["{captureTool}.channelNotifier", "{flowManager}", "{arguments}.0"]
+                        args: ["{captureTool}.model.solutionsToExclude", "{captureTool}.channelNotifier", "{flowManager}", "{arguments}.0"]
                     },
                     captureDoneButton: {
                         func: "{captureTool}.close"
@@ -410,17 +417,23 @@ gpii.app.captureTool.safelyGetSolutionsCapture = function (flowManager, solution
 /**
  * Fetches the entire system capture and sends it to the renderer over the `channelNotifier`.
  *
+ * @param {Array<String>} solutionsToExclude - Array of Solution IDs to exclude from capture.
  * @param {gpii.app.channelNotifier} channelNotifier - The channel notifier to the renderer process.
  * @param {gpii.flowManager.local} flowManager - The local flow manager.
  * @param {Object} args - Optional object contains an array `solutionsList` of solution ID's to capture.
  */
-gpii.app.captureTool.channelGetAllSolutionsCapture = function (channelNotifier, flowManager, args) {
+gpii.app.captureTool.channelGetAllSolutionsCapture = function (solutionsToExclude, channelNotifier, flowManager, args) {
     var options = {
         solutionsList: []
     };
     if (args.solutionsList) {
         options.solutionsList = args.solutionsList;
     }
+
+    // Filter out excluded solutions (usually ridiculous ones like net.gpii.explode)
+    fluid.remove_if(options.solutionsList, function (val) {
+        return solutionsToExclude.indexOf(val) >= 0;
+    });
 
     var result = gpii.app.captureTool.safelyGetSolutionsCapture(flowManager, options.solutionsList);
     result.then(function (data) {
