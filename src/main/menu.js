@@ -406,8 +406,8 @@ fluid.defaults("gpii.app.menu", {
             target: "showCaptureTool",
             singleTransform: {
                 type: "fluid.transforms.free",
-                func: "gpii.app.menu.getSimpleMenuItem",
-                args: ["Capture Tool", "onCaptureTool"]
+                func: "gpii.app.menu.getOptionalMenuItem",
+                args: ["{siteConfigurationHandler}.options.siteConfig.hideCaptureToolButton", "Capture Tool", "onCaptureTool"]
             },
             forward: {
                 excludeSource: "init"
@@ -417,8 +417,8 @@ fluid.defaults("gpii.app.menu", {
             target: "showCaptureDiagnostics",
             singleTransform: {
                 type: "fluid.transforms.free",
-                func: "gpii.app.menu.getSimpleMenuItem",
-                args: ["Capture Tool Diagnostics", "onCaptureDiagnostics"]
+                func: "gpii.app.menu.getOptionalMenuItem",
+                args: ["{siteConfigurationHandler}.options.siteConfig.hideCaptureToolButton", "Capture Tool Diagnostics", "onCaptureDiagnostics"]
             },
             forward: {
                 excludeSource: "init"
@@ -561,6 +561,30 @@ gpii.app.menu.getSimpleMenuItem = function (label, event, payload) {
         click: event,
         args: payload || {}
     };
+};
+
+/**
+  * Generates an object that represents a selectable menu item. Similar to getSimpleMenuItem,
+  * but respects an initial boolean which could be a setting from the siteConfig determining
+  * whether to display this item or not.
+  * @param {Boolean} hideItem - If true, this menu item will not be displayed. (ie. this function
+  * will not return the usual menu structure).
+  * @param {String} label - The label of the item.
+  * @param {String} event - The event to be triggered on click.
+  * @param {Object} [payload] - The payload that is to be supplied with the on click event.
+  * @return {ElectronMenuItem} A simple selectable Electron menu item.
+  */
+gpii.app.menu.getOptionalMenuItem = function (hideItem, label, event, payload) {
+    if (hideItem) {
+        return;
+    }
+    else {
+        return {
+            label: label,
+            click: event,
+            args: payload || {}
+        };
+    }
 };
 
 /**
