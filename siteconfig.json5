@@ -6,6 +6,10 @@
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
 
+    // Whether to hide the Capture Tool buttons.
+    // These "buttons" are actually currently right click menu items on the task tray.
+    hideCaptureToolButton: false,
+
     // Configuration options for the QSS window
     qss: {
         // Whether a user can open Settings pages and Control Panels of the operating system
