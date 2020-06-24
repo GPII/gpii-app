@@ -6,21 +6,14 @@
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
 
-    // File containing default values which are used after resetting user settings
-    // if relativePath is true then fileLocation is joined after %appdata%, so the
-    // end result its something similar to:
-    // "C:\Users\vagrant\AppData\Roaming\gpii\defaultSettings.json5"
-    // if relativePath is false then fileLocation is assumed that its absolute path
-    // and no changes are done to it
-    defaultSettingsData: {
-        relativePath: true,
-        fileLocation: "gpii\\defaultSettings.json5"
-    },
+    // Whether to hide the Capture Tool buttons.
+    // These "buttons" are actually currently right click menu items on the task tray.
+    hideCaptureToolButton: false,
 
     // Configuration options for the QSS window
     qss: {
         // Whether a user can open Settings pages and Control Panels of the operating system
-        // this is used to show different data in the sideCar container
+        // this is used to show different data in the sidecar container
         osSettingsAvailable: true,
 
         // Determines if the QSS will be shown automatically on Morphic's startup

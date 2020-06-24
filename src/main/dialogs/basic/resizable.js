@@ -41,7 +41,7 @@ fluid.defaults("gpii.app.resizable", {
             awaitingRescale: null
         },
         // Ignore changes to the work area
-        ignoreWorkarea: false
+        ignoreWorkArea: false
     },
 
     /*
@@ -238,6 +238,11 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
      * When the time is up, the DPI changes are considered to be applied successfully and the dialog can
      * be resized/repositioned and shown again.
      */
+
+    // repositioning promotion window dialog
+    if (that.typeName === "gpii.app.promotionWindowDialog") {
+        that.events.onRepositioningRequired.fire();
+    }
 
     // Don't adjust to work area changes.
     var ignore = that.ignoreWorkArea && (changedMetrics.length === 1 && changedMetrics[0] === "workArea");

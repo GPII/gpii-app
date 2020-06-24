@@ -862,11 +862,11 @@ gpii.app.qssWrapper.applySettingTranslation = function (qssSettingMessages, sett
         // footerTip
         translatedSetting.widget.footerTip = message.footerTip || "";
 
-        // sideCar
-        translatedSetting.sideCar = message.sideCar || "";
+        // sidecar
+        translatedSetting.sidecar = message.sidecar || "";
 
-        // sideCar (with osSettingsAvailable set to true)
-        translatedSetting.sideCarWithSettings = message.sideCarWithSettings || "";
+        // sidecar (with osSettingsAvailable set to true)
+        translatedSetting.sidecarWithSettings = message.sidecarWithSettings || "";
 
         translatedSetting.schema.title = message.title;
         if (message["enum"]) {

@@ -255,8 +255,8 @@ body {
 }
 
 /* Arrow position for my saved settings button with opened sidecar */
-.fl-qssWidget-arrow-right-mySavedSettingsSideCar .fl-qssWidget-arrow:before,
-.fl-qssWidget-arrow-right-mySavedSettingsSideCar .fl-qssWidget-arrow:after {
+.fl-qssWidget-arrow-right-mySavedSettingsSidecar .fl-qssWidget-arrow:before,
+.fl-qssWidget-arrow-right-mySavedSettingsSidecar .fl-qssWidget-arrow:after {
     left: 242px;
 }
 
