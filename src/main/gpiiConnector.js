@@ -749,7 +749,6 @@ fluid.defaults("gpii.app.dev.gpiiConnector.qss", {
     }
 });
 
-
 /**
  * Fires the `onQssSettingsUpdate` event if needed to notify the QSS about setting changes.
  * Note that in case the changes are coming from snapset or active set update, they are not undoable (they indicate a full QSS reset).

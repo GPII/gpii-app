@@ -248,6 +248,11 @@ gpii.app.resizable.handleDisplayMetricsChange = function (that, changedMetrics) 
     var ignore = that.ignoreWorkArea && (changedMetrics.length === 1 && changedMetrics[0] === "workArea");
 
     if (!ignore) {
+        // repositioning promotion window dialog
+        if (that.typeName === "gpii.app.promotionWindowDialog") {
+            that.events.onRepositioningRequired.fire();
+        };
+
         if (!that.beforeRescale.awaitingRescale) {
             that.beforeRescale = {
                 wasFocused: electron.BrowserWindow.getFocusedWindow() === that.dialog,

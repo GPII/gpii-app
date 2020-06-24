@@ -57,8 +57,6 @@ app.on("second-instance", function (event, commandLine) {
         var gpiiApp = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app")[0];
         service.closing().then(gpiiApp.exit, gpiiApp.exit);
     } else {
-        var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
-        qssWrapper.qss.show();
         var reset = commandLine.indexOf("--reset") > -1;
 
         // Log this metric
@@ -66,6 +64,9 @@ app.on("second-instance", function (event, commandLine) {
         if (eventLog) {
             eventLog.logEvent("startup", reset ? "reset" : "open", {commandLine: commandLine});
         }
+
+        var qssWrapper = fluid.queryIoCSelector(fluid.rootComponent, "gpii.app.qssWrapper")[0];
+        qssWrapper.qss.show();
 
         if (reset) {
             setTimeout(function () {

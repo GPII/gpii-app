@@ -6,6 +6,10 @@
     // `true` if the button should be hidden and `false` otherwise.
     hideQssSaveButton: false,
 
+    // Whether to hide the Capture Tool buttons.
+    // These "buttons" are actually currently right click menu items on the task tray.
+    hideCaptureToolButton: false,
+
     // Configuration options for the QSS window
     qss: {
         // Whether a user can open Settings pages and Control Panels of the operating system
@@ -141,7 +145,6 @@
                     "popupText": "<p>Open Reddit in a web browser.</p>",
                     "description": "The full description of the button..."
                 },
-                "screen-capture",
                 "url-customize-qss",
                 "url-google-drive",
                 "url-one-drive",
@@ -173,6 +176,11 @@
             morphicHome: "https://morphic.world",
             submitSuggestions: "mailto:suggestions@morphic.world"
         }
+    },
+
+    // Configuration options for the dialog manager
+    dialogManager: {
+        showErrorDialog: true
     },
 
     promotionWindow: {
@@ -222,6 +230,13 @@
 
     // The type of widget to use in the task bar - "gpii.app.trayButton", "gpii.app.trayIcon", or both.
     trayType: ["gpii.app.trayButton"],
+
+    metrics: {
+        // Can be true to disable everything, or "errors-only" to only capture errors.
+        disable: false,
+        // true to disable capturing key/mouse timings
+        disableInput: false
+    },
 
     // URL to the reset to standard profile. If no provided, the system will use a fallback one
     resetToStandardProfileUrl: "https://raw.githubusercontent.com/GPII/universal/master/testData/defaultSettings/defaultSettings.win32.json5",

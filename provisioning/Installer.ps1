@@ -14,10 +14,8 @@ $projectDir = (Get-Item $provisioningDir).parent.FullName
 
 Import-Module (Join-Path $provisioningDir 'Provisioning.psm1') -Force
 
-#$installerRepo = "https://github.com/GPII/gpii-wix-installer"
-#$installerBranch = "HST"
-$installerRepo = "https://github.com/stegru/gpii-wix-installer"
-$installerBranch = "GPII-2338"
+$installerRepo = "https://github.com/GPII/gpii-wix-installer"
+$installerBranch = "master"
 
 # Obtaining useful tools location.
 $installerDir = Join-Path $env:SystemDrive "installer" # a.k.a. C:\installer\
@@ -45,10 +43,22 @@ if (Test-Path -Path $installerDir){
 }
 Invoke-Command $git "clone --branch $($installerBranch) $($installerRepo) $($installerDir)"
 
+# Place documorph inside the installer directory, if it's here.
+$documorphFile = (Join-Path $provisioningDir 'documorph.msm')
+if (Test-Path $documorphFile) {
+    Copy-Item $documorphFile $installerDir
+}
+
 # Place filebeat inside the installer directory, if it's here.
 $filebeatFile = (Join-Path $provisioningDir 'filebeat.msm')
 if (Test-Path $filebeatFile) {
     Copy-Item $filebeatFile $installerDir
+}
+
+# Place sharex inside the installer directory, if it's here.
+$sharexFile = (Join-Path $provisioningDir 'sharex.msm')
+if (Test-Path $sharexFile) {
+    Copy-Item $sharexFile $installerDir
 }
 
 # Create staging folder

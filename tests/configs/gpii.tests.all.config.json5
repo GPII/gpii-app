@@ -55,6 +55,7 @@
                 "record": "gpii.tests.app.mockedSystemLanguageListener",
                 "target": "{that gpii.app}.options.components.systemLanguageListener.type"
             }
+        }//,
         // TODO: Remove this once we have everything working with out.
         // This cannot be done safely here if we expect to be able to run tests predictably once couch is available.
 //        "components": {
@@ -70,7 +71,7 @@
 //            }
             // TODO: Use one of the new grades here once it's merged:
             // https://github.com/GPII/universal/pull/751
-        }
+//        }
     },
     "mergeConfigs": [
         "%gpii-universal/gpii/configs/shared/gpii.config.untrusted.development.dynamicDR.local.json5",

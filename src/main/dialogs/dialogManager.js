@@ -128,6 +128,10 @@ gpii.app.dialogManager.queue.enqueue = function (that, options) {
 fluid.defaults("gpii.app.dialogManager", {
     gradeNames: ["fluid.modelComponent"],
 
+    siteConfig: {
+        showErrorDialog: null
+    },
+
     model: {
         isKeyedIn: false,
         scaleFactor: 1
@@ -307,7 +311,9 @@ gpii.app.dialogManager.show = function (dialogManager, selector, options) {
     var dialog = dialogManager.get(selector);
     if (dialog) {
         if (dialog.typeName === dialogManager.options.sequentialDialogsGrade) {
-            dialogManager.errorQueue.enqueue(options);
+            if (dialogManager.options.siteConfig.showErrorDialog) {
+                dialogManager.errorQueue.enqueue(options);
+            }
         } else {
             dialog.show(options);
         }

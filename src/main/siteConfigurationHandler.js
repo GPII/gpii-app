@@ -71,6 +71,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.qss.tooltipDisplayDelay",
             target: "{that qssTooltipDialog}.options.showDelay"
         },
+        distributeQssMorePanelConfig: {
+            record: "{that}.options.siteConfig.qssMorePanel",
+            target: "{that qssMorePanel}.options.siteConfig"
+        },
         distributeQssClickOutside: {
             record: "{that}.options.siteConfig.closeQssOnClickOutside",
             target: "{that gpiiConnector}.options.defaultPreferences.closeQssOnBlur"
@@ -87,6 +91,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             record: "{that}.options.siteConfig.disableRestartWarning",
             target: "{that gpiiConnector}.options.defaultPreferences.disableRestartWarning"
         },
+        distributeDefaultLanguageGpiiConnector: {
+            record: "{that}.options.siteConfig.qss.systemDefaultLanguage",
+            target: "{app gpiiConnector}.options.defaultPreferences.systemDefaultLanguage"
+        },
         distributeSurveyTriggersUrl: {
             record: "{that}.options.siteConfig.surveyTriggersUrl",
             target: "{that surveyConnector}.options.config.surveyTriggersUrl"
@@ -94,6 +102,10 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
         distributeAboutDialogConfig: {
             record: "{that}.options.siteConfig.aboutDialog",
             target: "{that aboutDialog}.options.siteConfig"
+        },
+        distributeDialogManagerConfig: {
+            record: "{that}.options.siteConfig.dialogManager",
+            target: "{app dialogManager}.options.siteConfig"
         },
         distributePromotionWindowConfig: {
             record: "{that}.options.siteConfig.promotionWindow",
@@ -108,13 +120,13 @@ fluid.defaults("gpii.app.siteConfigurationHandler", {
             target: "{that defaultSettingsLoader}.options.defaultSettingsUrl",
             priority: "after:flowManager.remoteDefaultSettings"
         },
-        distributeAutoLogin: {
-            record: "{that}.options.siteConfig.autoLogin",
-            target: "{/ gpii.windows.userListeners.windowsLogin}.options.config"
-        },
         distributeMetrics: {
             record: "{that}.options.siteConfig.metrics",
             target: "{/ gpii.app.metrics}.options.siteConfig"
+        },
+        distributeAutoLogin: {
+            record: "{that}.options.siteConfig.autoLogin",
+            target: "{/ gpii.windows.userListeners.windowsLogin}.options.config"
         }
     },
 

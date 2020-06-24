@@ -1,6 +1,6 @@
 {
     "name": "gpii-app",
-    "version": "1.0.1",
+    "version": "1.3.5-r3",
     "description": "Electron application and libraries to run the GPII as a native user space application on the desktop",
     "main": "main.js",
     "repository": {
@@ -37,7 +37,7 @@
         "shelljs": "0.8.2"
     },
     "optionalDependencies": {
-        "gpii-windows": "0.3.0-dev.20200608T145224Z.d5a5a66"
+        "gpii-windows": "javihernandez/windows#060f99dd9a408622708d2ff499db54ed4d680381"
     },
     "scripts": {
         "start": "set GPII_TEST_COUCH_USE_EXTERNAL=TRUE && electron .",
